@@ -33,47 +33,17 @@
 
 package org.restlet.test.resource;
 
-import java.io.IOException;
-
-import org.restlet.data.Status;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ResourceException;
-import org.restlet.test.RestletTestCase;
+import org.restlet.resource.Get;
 
 /**
- * Test the annotated resources, client and server sides.
+ * Annotated interface that declares a single "Get" method.
  * 
- * @author Jerome Louvel
+ * @author Thierry Boileau
+ * 
  */
-public class AnnotatedResource3TestCase extends RestletTestCase {
+public interface AnnotatedInterface01 {
 
-    private ClientResource clientResource;
-
-    protected void setUp() throws Exception {
-        super.setUp();
-        Finder finder = new Finder();
-        finder.setTargetClass(MyResource3.class);
-
-        this.clientResource = new ClientResource("http://local");
-        this.clientResource.setNext(finder);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        clientResource = null;
-        super.tearDown();
-    }
-
-    public void testGet() throws IOException, ResourceException {
-        Status status = null;
-        try {
-            clientResource.get();
-            status = clientResource.getStatus();
-        } catch (ResourceException e) {
-            status = e.getStatus();
-        }
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, status);
-    }
+    @Get
+    public String asText();
 
 }

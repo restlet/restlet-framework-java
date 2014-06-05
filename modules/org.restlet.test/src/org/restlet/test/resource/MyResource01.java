@@ -33,44 +33,32 @@
 
 package org.restlet.test.resource;
 
-import java.io.IOException;
-
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ResourceException;
-import org.restlet.test.RestletTestCase;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Options;
+import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 
 /**
- * Test the annotated resources, client and server sides.
+ * Sample annotated interface.
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource2TestCase extends RestletTestCase {
+public interface MyResource01 {
 
-    private ClientResource clientResource;
+    @Get
+    public MyBean represent();
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        Finder finder = new Finder();
-        finder.setTargetClass(MyResource2.class);
+    @Put
+    public String store(MyBean bean);
 
-        this.clientResource = new ClientResource("http://local");
-        this.clientResource.setNext(finder);
-    }
+    @Post
+    public boolean accept(MyBean bean);
 
-    @Override
-    protected void tearDown() throws Exception {
-        clientResource = null;
-        super.tearDown();
-    }
+    @Delete("txt")
+    public String remove();
 
-    public void testGet() throws IOException, ResourceException {
-        Representation result = clientResource.get(MediaType.APPLICATION_ATOM);
-        assertNotNull(result);
-        assertEquals("<content/>", result.getText());
-        assertEquals(MediaType.TEXT_XML, result.getMediaType());
-    }
+    @Options("txt")
+    public String describe();
 
 }

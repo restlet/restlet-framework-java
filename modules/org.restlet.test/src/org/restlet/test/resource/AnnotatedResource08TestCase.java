@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
@@ -47,14 +48,14 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource4TestCase extends RestletTestCase {
+public class AnnotatedResource08TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
     protected void setUp() throws Exception {
         super.setUp();
         Finder finder = new Finder();
-        finder.setTargetClass(MyResource4.class);
+        finder.setTargetClass(MyResource08.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
@@ -66,22 +67,44 @@ public class AnnotatedResource4TestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testGet() throws IOException, ResourceException {
-        Representation result = clientResource.get(MediaType.APPLICATION_JSON);
+    public void testPost() throws IOException, ResourceException {
+        Representation input = new StringRepresentation("root",
+                MediaType.APPLICATION_XML);
+        Representation result = clientResource.post(input,
+                MediaType.APPLICATION_XML);
         assertNotNull(result);
-        assertEquals("[\"root\"]", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
-
-        result = clientResource.get(MediaType.APPLICATION_XML);
-        assertNotNull(result);
-        assertEquals("<root/>", result.getText());
+        assertEquals("root1", result.getText());
         assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
 
-        result = clientResource.get(MediaType.TEXT_HTML);
+        input = new StringRepresentation("root", MediaType.APPLICATION_XML);
+        result = clientResource.post(input, MediaType.APPLICATION_JSON);
         assertNotNull(result);
-        assertEquals("<html><body>root</body></html>", result.getText());
-        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
+        assertEquals("root1", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
 
+        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
+        result = clientResource.post(input, MediaType.APPLICATION_JSON);
+        assertNotNull(result);
+        assertEquals("root1", result.getText());
+        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+
+        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
+        result = clientResource.post(input, MediaType.APPLICATION_XML);
+        assertNotNull(result);
+        assertEquals("root1", result.getText());
+        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
+
+        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
+        result = clientResource.post(input, MediaType.APPLICATION_WWW_FORM);
+        assertNotNull(result);
+        assertEquals("root2", result.getText());
+        assertEquals(MediaType.APPLICATION_WWW_FORM, result.getMediaType());
+
+        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
+        result = clientResource.post(input, MediaType.TEXT_HTML);
+        assertNotNull(result);
+        assertEquals("root2", result.getText());
+        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
     }
 
 }

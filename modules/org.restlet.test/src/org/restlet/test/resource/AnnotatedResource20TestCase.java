@@ -35,8 +35,8 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
@@ -47,36 +47,39 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource6TestCase extends RestletTestCase {
+public class AnnotatedResource20TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
+    private MyResource20 myResource;
+
     protected void setUp() throws Exception {
         super.setUp();
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().getRegisteredConverters()
+                .add(new JacksonConverter());
+        Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
-        finder.setTargetClass(MyResource6.class);
+        finder.setTargetClass(MyServerResource20.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
+        this.myResource = clientResource.wrap(MyResource20.class);
     }
 
     @Override
     protected void tearDown() throws Exception {
         clientResource = null;
+        myResource = null;
         super.tearDown();
     }
 
-    public void testPost() throws IOException, ResourceException {
-        Representation result = clientResource.post("[\"root\"]",
-                MediaType.APPLICATION_JSON);
-        assertNotNull(result);
-        assertEquals("[\"root\"]2", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
-
-        result = clientResource.post("<root/>", MediaType.APPLICATION_XML);
-        assertNotNull(result);
-        assertEquals("<root/>1", result.getText());
-        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
+    public void testGet() throws IOException, ResourceException {
+        try {
+            myResource.represent();
+        } catch (MyException e) {
+            assertNotNull(e.getDate());
+        }
     }
 
 }

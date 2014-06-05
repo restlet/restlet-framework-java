@@ -33,32 +33,47 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Options;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
+import java.io.IOException;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Finder;
+import org.restlet.resource.ResourceException;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Sample annotated interface.
+ * Test the annotated resources, client and server sides.
  * 
  * @author Jerome Louvel
  */
-public interface MyResource1 {
+public class AnnotatedResource03TestCase extends RestletTestCase {
 
-    @Get
-    public MyBean represent();
+    private ClientResource clientResource;
 
-    @Put
-    public String store(MyBean bean);
+    protected void setUp() throws Exception {
+        super.setUp();
+        Finder finder = new Finder();
+        finder.setTargetClass(MyResource03.class);
 
-    @Post
-    public boolean accept(MyBean bean);
+        this.clientResource = new ClientResource("http://local");
+        this.clientResource.setNext(finder);
+    }
 
-    @Delete("txt")
-    public String remove();
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        super.tearDown();
+    }
 
-    @Options("txt")
-    public String describe();
+    public void testGet() throws IOException, ResourceException {
+        Status status = null;
+        try {
+            clientResource.get();
+            status = clientResource.getStatus();
+        } catch (ResourceException e) {
+            status = e.getStatus();
+        }
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, status);
+    }
 
 }

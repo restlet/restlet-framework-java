@@ -33,14 +33,19 @@
 
 package org.restlet.test.resource;
 
-/**
- * Annotated interface that extends {@link AnnotatedInterface1} and
- * {@link AnnotatedInterface2}.
- * 
- * @author Thierry Boileau
- * 
- */
-public interface AnnotatedInterface3 extends AnnotatedInterface1,
-        AnnotatedInterface2 {
+import org.restlet.resource.Post;
+import org.restlet.resource.ServerResource;
+
+public class MyResource05 extends ServerResource {
+
+    @Post("txt:xml")
+    public String storeXml(String entity) {
+        return entity;
+    }
+
+    @Post("txt:json")
+    public String storeJson(String entity) {
+        return entity;
+    }
 
 }

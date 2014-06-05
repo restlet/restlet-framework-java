@@ -51,7 +51,7 @@ import org.restlet.routing.Router;
  * 
  * @author Thierry Boileau
  */
-public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
+public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
 
     public static final Method SI = new Method("SI", "What a method!",
             "http://restlet.org", true, true);
@@ -70,7 +70,7 @@ public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
             @Override
             public Restlet createInboundRoot() {
                 Router router = new Router(getContext());
-                router.attach(path, MyResource9.class);
+                router.attach(path, MyResource09.class);
                 return router;
             }
         };
@@ -83,7 +83,7 @@ public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
      * @throws ResourceException
      */
     public void testSI() throws IOException, ResourceException {
-        Method method = AnnotatedResource9TestCase.SI;
+        Method method = AnnotatedResource09TestCase.SI;
 
         String text = "text";
         Form form = new Form();
@@ -146,7 +146,7 @@ public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
      * @throws ResourceException
      */
     public void testSNI() throws IOException, ResourceException {
-        Method method = AnnotatedResource9TestCase.SNI;
+        Method method = AnnotatedResource09TestCase.SNI;
 
         String text = "text";
         Form form = new Form();
@@ -203,7 +203,7 @@ public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
      * @throws ResourceException
      */
     public void testUSI() throws IOException, ResourceException {
-        Method method = AnnotatedResource9TestCase.USI;
+        Method method = AnnotatedResource09TestCase.USI;
 
         String text = "text";
         Form form = new Form();
@@ -277,7 +277,7 @@ public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
      * @throws ResourceException
      */
     public void testUSNI() throws IOException, ResourceException {
-        Method method = AnnotatedResource9TestCase.USNI;
+        Method method = AnnotatedResource09TestCase.USNI;
 
         String text = "text";
         Form form = new Form();

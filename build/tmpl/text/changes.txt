@@ -15,9 +15,16 @@ Changes log
       - Added static Resource#toInteger, toFloat, toByte, toLong, toDouble, toBoolean 
         methods accepting 'null' string values to facilitate the processing of path 
         variables and query parameters.
+      - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
+        toRepresentation(...) and toStatus(...).
+      - Added org.restlet.resource.@Status annotation type to automatically convert
+        Throwable Java classes between HTTP statuses and error response entities.
+        NOTE: implementation is still pending.
  
     - Bug fixed
       - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
+      - ServerResource#doCatch() method wasn't invoking StatusService to set the error
+        representation if empty.
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features

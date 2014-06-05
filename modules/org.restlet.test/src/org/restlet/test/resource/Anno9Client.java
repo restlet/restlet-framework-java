@@ -8,7 +8,7 @@ public class Anno9Client {
      */
     public static void main(String[] args) throws Exception {
 
-        AnnotatedResource9TestCase anno9 = new AnnotatedResource9TestCase();
+        AnnotatedResource09TestCase anno9 = new AnnotatedResource09TestCase();
         anno9.initClient();
         anno9.testSI();
 

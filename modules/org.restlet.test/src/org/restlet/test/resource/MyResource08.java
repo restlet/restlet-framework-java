@@ -33,22 +33,19 @@
 
 package org.restlet.test.resource;
 
+import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-/**
- * Abstract {@link ServerResource} that implements several annotated interfaces.
- * 
- * @author Thierry Boileau
- */
-public abstract class AbstractAnnotatedServerResource extends ServerResource
-        implements AnnotatedInterface03 {
+public class MyResource08 extends ServerResource {
 
-    public String accept() {
-        return "accept";
+    @Post("xml|json:xml|json")
+    public String store1(String entity) {
+        return entity + "1";
     }
 
-    public String asText() {
-        return "asText";
+    @Post("form|html:form|html")
+    public String store2(String entity) {
+        return entity + "2";
     }
 
 }

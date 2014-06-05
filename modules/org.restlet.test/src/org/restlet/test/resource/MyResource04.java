@@ -33,17 +33,24 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.Post;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
-/**
- * Annotated interface that declares a single "Post" method.
- * 
- * @author Thierry Boileau
- * 
- */
-public interface AnnotatedInterface2 {
+public class MyResource04 extends ServerResource {
 
-    @Post
-    public String accept();
+    @Get("xml")
+    public String toXml() {
+        return "<root/>";
+    }
+
+    @Get("json")
+    public String toJson() {
+        return "[\"root\"]";
+    }
+
+    @Get("html")
+    public String toHtml() {
+        return "<html><body>root</body></html>";
+    }
 
 }

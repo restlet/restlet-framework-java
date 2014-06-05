@@ -47,14 +47,14 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource5TestCase extends RestletTestCase {
+public class AnnotatedResource04TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
     protected void setUp() throws Exception {
         super.setUp();
         Finder finder = new Finder();
-        finder.setTargetClass(MyResource5.class);
+        finder.setTargetClass(MyResource04.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
@@ -66,17 +66,22 @@ public class AnnotatedResource5TestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testPost() throws IOException, ResourceException {
-        Representation result = clientResource.post("[\"root\"]",
-                MediaType.APPLICATION_JSON);
+    public void testGet() throws IOException, ResourceException {
+        Representation result = clientResource.get(MediaType.APPLICATION_JSON);
         assertNotNull(result);
         assertEquals("[\"root\"]", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
 
-        result = clientResource.post("<root/>", MediaType.APPLICATION_XML);
+        result = clientResource.get(MediaType.APPLICATION_XML);
         assertNotNull(result);
         assertEquals("<root/>", result.getText());
         assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
+
+        result = clientResource.get(MediaType.TEXT_HTML);
+        assertNotNull(result);
+        assertEquals("<html><body>root</body></html>", result.getText());
+        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
+
     }
 
 }

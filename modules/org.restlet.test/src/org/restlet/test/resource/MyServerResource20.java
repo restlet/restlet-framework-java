@@ -33,21 +33,34 @@
 
 package org.restlet.test.resource;
 
-import java.io.IOException;
+import java.util.Date;
 
-import org.restlet.resource.Post;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
 import org.restlet.resource.ServerResource;
 
-public class MyResource6 extends ServerResource {
+/**
+ * Sample server resource.
+ * 
+ * @author Jerome Louvel
+ */
+public class MyServerResource20 extends ServerResource implements MyResource20 {
 
-    @Post("txt:xml")
-    public String storeXml(String entity) throws IOException {
-        return entity + "1";
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(Protocol.HTTP, 8111);
+        server.setNext(MyServerResource20.class);
+        server.start();
     }
 
-    @Post("txt:json")
-    public String storeJson(String entity) throws IOException {
-        return entity + "2";
+    private volatile MyBean myBean = new MyBean("myName", "myDescription");
+
+    @SuppressWarnings("unused")
+    public MyBean represent() throws MyException {
+        if (true) {
+            throw new MyException(new Date());
+        }
+
+        return myBean;
     }
 
 }

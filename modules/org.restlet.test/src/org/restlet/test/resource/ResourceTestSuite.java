@@ -43,14 +43,14 @@ public class ResourceTestSuite {
         // $JUnit-BEGIN$
         // suite.addTestSuite(DirectoryTestCase.class);
 
-        suite.addTestSuite(AnnotatedResource1TestCase.class);
-        suite.addTestSuite(AnnotatedResource2TestCase.class);
-        suite.addTestSuite(AnnotatedResource3TestCase.class);
-        suite.addTestSuite(AnnotatedResource4TestCase.class);
-        suite.addTestSuite(AnnotatedResource5TestCase.class);
-        suite.addTestSuite(AnnotatedResource6TestCase.class);
-        suite.addTestSuite(AnnotatedResource7TestCase.class);
-        suite.addTestSuite(AnnotatedResource8TestCase.class);
+        suite.addTestSuite(AnnotatedResource01TestCase.class);
+        suite.addTestSuite(AnnotatedResource02TestCase.class);
+        suite.addTestSuite(AnnotatedResource03TestCase.class);
+        suite.addTestSuite(AnnotatedResource04TestCase.class);
+        suite.addTestSuite(AnnotatedResource05TestCase.class);
+        suite.addTestSuite(AnnotatedResource06TestCase.class);
+        suite.addTestSuite(AnnotatedResource07TestCase.class);
+        suite.addTestSuite(AnnotatedResource08TestCase.class);
         // FIXME the new internal connector based on HttpUrlConnection does not
         // support non-HTTP methods.
         // suite.addTestSuite(AnnotatedResource9TestCase.class);

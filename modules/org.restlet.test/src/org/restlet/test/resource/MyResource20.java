@@ -33,45 +33,16 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.Get;
 
 /**
- * Sample server resource.
+ * Sample annotated interface.
  * 
  * @author Jerome Louvel
  */
-public class MyServerResource1 extends ServerResource implements MyResource1 {
+public interface MyResource20 {
 
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.HTTP, 8111);
-        server.setNext(MyServerResource1.class);
-        server.start();
-    }
-
-    private volatile MyBean myBean = new MyBean("myName", "myDescription");
-
-    public boolean accept(MyBean bean) {
-        return bean.equals(myBean);
-    }
-
-    public String describe() {
-        return "MyDescription";
-    }
-
-    public String remove() {
-        myBean = null;
-        return "Done";
-    }
-
-    public MyBean represent() {
-        return myBean;
-    }
-
-    public String store(MyBean bean) {
-        myBean = bean;
-        return "Done";
-    }
+    @Get
+    public MyBean represent() throws MyException;
 
 }

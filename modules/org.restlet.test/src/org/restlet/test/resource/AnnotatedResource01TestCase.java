@@ -51,11 +51,11 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource1TestCase extends RestletTestCase {
+public class AnnotatedResource01TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
-    private MyResource1 myResource;
+    private MyResource01 myResource;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -64,11 +64,11 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
         .add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
-        finder.setTargetClass(MyServerResource1.class);
+        finder.setTargetClass(MyServerResource01.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
-        this.myResource = clientResource.wrap(MyResource1.class);
+        this.myResource = clientResource.wrap(MyResource01.class);
     }
 
     @Override

@@ -33,19 +33,45 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.Post;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
 import org.restlet.resource.ServerResource;
 
-public class MyResource7 extends ServerResource {
+/**
+ * Sample server resource.
+ * 
+ * @author Jerome Louvel
+ */
+public class MyServerResource01 extends ServerResource implements MyResource01 {
 
-    @Post("json:xml")
-    public String storeJson(String entity) {
-        return entity + "1";
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(Protocol.HTTP, 8111);
+        server.setNext(MyServerResource01.class);
+        server.start();
     }
 
-    @Post("xml:xml")
-    public String storeXml(String entity) {
-        return entity + "2";
+    private volatile MyBean myBean = new MyBean("myName", "myDescription");
+
+    public boolean accept(MyBean bean) {
+        return bean.equals(myBean);
+    }
+
+    public String describe() {
+        return "MyDescription";
+    }
+
+    public String remove() {
+        myBean = null;
+        return "Done";
+    }
+
+    public MyBean represent() {
+        return myBean;
+    }
+
+    public String store(MyBean bean) {
+        myBean = bean;
+        return "Done";
     }
 
 }

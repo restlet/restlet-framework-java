@@ -33,17 +33,14 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
-
-public class MyResource2 extends ServerResource {
-
-    @Get
-    public Representation represent() {
-        return new StringRepresentation("<content/>", MediaType.TEXT_XML);
-    }
+/**
+ * Annotated interface that extends {@link AnnotatedInterface01} and
+ * {@link AnnotatedInterface02}.
+ * 
+ * @author Thierry Boileau
+ * 
+ */
+public interface AnnotatedInterface03 extends AnnotatedInterface01,
+        AnnotatedInterface02 {
 
 }

@@ -33,22 +33,44 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.ServerResource;
+import java.io.IOException;
+
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Finder;
+import org.restlet.resource.ResourceException;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Abstract {@link ServerResource} that implements several annotated interfaces.
+ * Test the annotated resources, client and server sides.
  * 
- * @author Thierry Boileau
+ * @author Jerome Louvel
  */
-public abstract class AbstractAnnotatedServerResource extends ServerResource
-        implements AnnotatedInterface03 {
+public class AnnotatedResource02TestCase extends RestletTestCase {
 
-    public String accept() {
-        return "accept";
+    private ClientResource clientResource;
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        Finder finder = new Finder();
+        finder.setTargetClass(MyResource02.class);
+
+        this.clientResource = new ClientResource("http://local");
+        this.clientResource.setNext(finder);
     }
 
-    public String asText() {
-        return "asText";
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        super.tearDown();
+    }
+
+    public void testGet() throws IOException, ResourceException {
+        Representation result = clientResource.get(MediaType.APPLICATION_ATOM);
+        assertNotNull(result);
+        assertEquals("<content/>", result.getText());
+        assertEquals(MediaType.TEXT_XML, result.getMediaType());
     }
 
 }

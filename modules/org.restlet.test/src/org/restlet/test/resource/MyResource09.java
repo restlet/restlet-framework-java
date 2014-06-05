@@ -36,7 +36,7 @@ package org.restlet.test.resource;
 import org.restlet.data.Form;
 import org.restlet.resource.ServerResource;
 
-public class MyResource9 extends ServerResource {
+public class MyResource09 extends ServerResource {
 
     @SIMethod("form:html")
     public String si1(Form form) {

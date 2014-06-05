@@ -33,19 +33,44 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.Post;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
-public class MyResource5 extends ServerResource {
+/**
+ * Sample server resource that sets the "existing" flag to false.
+ * 
+ * @author Jerome Louvel
+ */
+public class MyResource03 extends ServerResource implements MyResource01 {
 
-    @Post("txt:xml")
-    public String storeXml(String entity) {
-        return entity;
+    private volatile MyBean myBean = new MyBean("myName", "myDescription");
+
+    @Override
+    protected void doInit() throws ResourceException {
+        super.doInit();
+        setExisting(false);
     }
 
-    @Post("txt:json")
-    public String storeJson(String entity) {
-        return entity;
+    public boolean accept(MyBean bean) {
+        return bean.equals(myBean);
+    }
+
+    public String describe() {
+        return "MyDescription";
+    }
+
+    public String remove() {
+        myBean = null;
+        return "Done";
+    }
+
+    public MyBean represent() {
+        return myBean;
+    }
+
+    public String store(MyBean bean) {
+        myBean = bean;
+        return "Done";
     }
 
 }

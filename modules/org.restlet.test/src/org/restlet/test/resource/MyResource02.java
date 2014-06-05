@@ -33,17 +33,17 @@
 
 package org.restlet.test.resource;
 
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
-/**
- * Annotated interface that declares a single "Get" method.
- * 
- * @author Thierry Boileau
- * 
- */
-public interface AnnotatedInterface1 {
+public class MyResource02 extends ServerResource {
 
     @Get
-    public String asText();
+    public Representation represent() {
+        return new StringRepresentation("<content/>", MediaType.TEXT_XML);
+    }
 
 }

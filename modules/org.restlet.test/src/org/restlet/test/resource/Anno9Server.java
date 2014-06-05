@@ -7,7 +7,7 @@ public class Anno9Server {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        InternalConnectorTestCase anno9 = new AnnotatedResource9TestCase();
+        InternalConnectorTestCase anno9 = new AnnotatedResource09TestCase();
         anno9.initServer();
     }
 
