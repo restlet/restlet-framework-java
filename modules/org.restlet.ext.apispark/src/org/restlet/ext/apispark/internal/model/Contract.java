@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class Contract {
      * Representations available with this API Note: their "name" is used as a
      * reference further in this description.
      */
-    private List<Representation> Representations;
+    private List<Representation> representations;
 
     /** Resources provided by the API. */
     private List<Resource> resources;
@@ -66,10 +67,16 @@ public class Contract {
     }
 
     public List<Representation> getRepresentations() {
-        return Representations;
+        if (representations == null) {
+            representations = new ArrayList<Representation>();
+        }
+        return representations;
     }
 
     public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
         return resources;
     }
 
@@ -82,7 +89,7 @@ public class Contract {
     }
 
     public void setRepresentations(List<Representation> representations) {
-        Representations = representations;
+        this.representations = representations;
     }
 
     public void setResources(List<Resource> resources) {

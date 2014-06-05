@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,13 +46,13 @@ public class Operation {
     private String description;
 
     /** Headers to use for this operation. */
-    private List<Parameter> headers;
+    private List<Header> headers;
 
     /** Representation retrieved by this operation if any. */
     private Body inRepresentation;
 
     /** HTTP method for this operation. */
-    private Method method;
+    private String method;
 
     /**
      * Unique name for this operation<br>
@@ -66,16 +67,25 @@ public class Operation {
     private Body outRepresentation;
 
     /** Query parameters available for this operation. */
-    private List<Parameter> queryParameters;
+    private List<QueryParameter> queryParameters;
 
     /** Possible response messages you could encounter. */
     private List<Response> responses;
+
+    /** Mediatypes produced by this operation */
+    private List<String> produces;
+
+    /** Mediatypes consumed by this operation */
+    private List<String> consumes;
 
     public String getDescription() {
         return description;
     }
 
-    public List<Parameter> getHeaders() {
+    public List<Header> getHeaders() {
+        if (headers == null) {
+            headers = new ArrayList<Header>();
+        }
         return headers;
     }
 
@@ -83,7 +93,7 @@ public class Operation {
         return inRepresentation;
     }
 
-    public Method getMethod() {
+    public String getMethod() {
         return method;
     }
 
@@ -95,11 +105,17 @@ public class Operation {
         return outRepresentation;
     }
 
-    public List<Parameter> getQueryParameters() {
+    public List<QueryParameter> getQueryParameters() {
+        if (queryParameters == null) {
+            queryParameters = new ArrayList<QueryParameter>();
+        }
         return queryParameters;
     }
 
     public List<Response> getResponses() {
+        if (responses == null) {
+            responses = new ArrayList<Response>();
+        }
         return responses;
     }
 
@@ -107,7 +123,7 @@ public class Operation {
         this.description = description;
     }
 
-    public void setHeaders(List<Parameter> headers) {
+    public void setHeaders(List<Header> headers) {
         this.headers = headers;
     }
 
@@ -115,7 +131,7 @@ public class Operation {
         this.inRepresentation = inRepresentation;
     }
 
-    public void setMethod(Method method) {
+    public void setMethod(String method) {
         this.method = method;
     }
 
@@ -127,11 +143,33 @@ public class Operation {
         this.outRepresentation = outRepresentation;
     }
 
-    public void setQueryParameters(List<Parameter> queryParameters) {
+    public void setQueryParameters(List<QueryParameter> queryParameters) {
         this.queryParameters = queryParameters;
     }
 
     public void setResponses(List<Response> responses) {
         this.responses = responses;
+    }
+
+    public List<String> getProduces() {
+        if (produces == null) {
+            produces = new ArrayList<String>();
+        }
+        return produces;
+    }
+
+    public void setProduces(List<String> produces) {
+        this.produces = produces;
+    }
+
+    public List<String> getConsumes() {
+        if (consumes == null) {
+            consumes = new ArrayList<String>();
+        }
+        return consumes;
+    }
+
+    public void setConsumes(List<String> consumes) {
+        this.consumes = consumes;
     }
 }

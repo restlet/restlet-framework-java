@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,6 +79,9 @@ public class Parameter {
     }
 
     public List<String> getPossibleValues() {
+        if (possibleValues == null) {
+            possibleValues = new ArrayList<String>();
+        }
         return possibleValues;
     }
 

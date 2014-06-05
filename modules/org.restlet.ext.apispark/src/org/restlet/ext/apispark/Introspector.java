@@ -68,14 +68,14 @@ import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Body;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.Parameter;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Variant;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
@@ -198,69 +198,88 @@ public class Introspector {
                 operation.setDescription(toString(mi.getDocumentations()));
                 operation.setName(mi.getMethod().getName());
                 // TODO complete Method class with mi.getName()
-                operation
-                        .setMethod(new org.restlet.ext.apispark.internal.model.Method());
-                operation.getMethod().setDescription(
-                        mi.getMethod().getDescription());
-                operation.getMethod().setName(mi.getMethod().getName());
+                operation.setMethod(mi.getMethod().getName());
+
+                // Fill fields produces/consumes
+                String mediaType;
+                if (mi.getRequest() != null
+                        && mi.getRequest().getRepresentations() != null) {
+                    List<RepresentationInfo> consumed = mi.getRequest()
+                            .getRepresentations();
+                    for (RepresentationInfo reprInfo : consumed) {
+                        mediaType = reprInfo.getMediaType().getName();
+                        operation.getConsumes().add(mediaType);
+                    }
+                }
+
+                if (mi.getResponse() != null
+                        && mi.getResponse().getRepresentations() != null) {
+                    List<RepresentationInfo> produced = mi.getResponse()
+                            .getRepresentations();
+                    for (RepresentationInfo reprInfo : produced) {
+                        mediaType = reprInfo.getMediaType().getName();
+                        operation.getProduces().add(mediaType);
+                    }
+                }
 
                 // Complete parameters
-                operation.setHeaders(new ArrayList<Parameter>());
-                operation.setQueryParameters(new ArrayList<Parameter>());
+                operation.setHeaders(new ArrayList<Header>());
+                operation.setQueryParameters(new ArrayList<QueryParameter>());
                 if (mi.getRequest() != null) {
                     for (ParameterInfo pi : mi.getRequest().getParameters()) {
                         if (ParameterStyle.HEADER.equals(pi.getStyle())) {
-                            Parameter parameter = new Parameter();
-                            parameter.setAllowMultiple(pi.isRepeating());
-                            parameter.setDefaultValue(pi.getDefaultValue());
-                            parameter.setDescription(toString(
+                            Header header = new Header();
+                            header.setAllowMultiple(pi.isRepeating());
+                            header.setDefaultValue(pi.getDefaultValue());
+                            header.setDescription(toString(
                                     pi.getDocumentations(),
                                     pi.getDefaultValue()));
-                            parameter.setName(pi.getName());
-                            parameter
-                                    .setPossibleValues(new ArrayList<String>());
-                            parameter.setRequired(pi.isRequired());
+                            header.setName(pi.getName());
+                            header.setPossibleValues(new ArrayList<String>());
+                            header.setRequired(pi.isRequired());
 
-                            operation.getHeaders().add(parameter);
+                            operation.getHeaders().add(header);
                         } else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
-                            Parameter parameter = new Parameter();
-                            parameter.setAllowMultiple(pi.isRepeating());
-                            parameter.setDefaultValue(pi.getDefaultValue());
-                            parameter.setDescription(toString(
+                            QueryParameter queryParameter = new QueryParameter();
+                            queryParameter.setAllowMultiple(pi.isRepeating());
+                            queryParameter
+                                    .setDefaultValue(pi.getDefaultValue());
+                            queryParameter.setDescription(toString(
                                     pi.getDocumentations(),
                                     pi.getDefaultValue()));
-                            parameter.setName(pi.getName());
-                            parameter
+                            queryParameter.setName(pi.getName());
+                            queryParameter
                                     .setPossibleValues(new ArrayList<String>());
-                            parameter.setRequired(pi.isRequired());
+                            queryParameter.setRequired(pi.isRequired());
 
-                            operation.getQueryParameters().add(parameter);
+                            operation.getQueryParameters().add(queryParameter);
                         }
                     }
                 }
                 for (ParameterInfo pi : mi.getParameters()) {
                     if (ParameterStyle.HEADER.equals(pi.getStyle())) {
-                        Parameter parameter = new Parameter();
-                        parameter.setAllowMultiple(pi.isRepeating());
-                        parameter.setDefaultValue(pi.getDefaultValue());
-                        parameter.setDescription(toString(
-                                pi.getDocumentations(), pi.getDefaultValue()));
-                        parameter.setName(pi.getName());
-                        parameter.setPossibleValues(new ArrayList<String>());
-                        parameter.setRequired(pi.isRequired());
+                        Header header = new Header();
+                        header.setAllowMultiple(pi.isRepeating());
+                        header.setDefaultValue(pi.getDefaultValue());
+                        header.setDescription(toString(pi.getDocumentations(),
+                                pi.getDefaultValue()));
+                        header.setName(pi.getName());
+                        header.setPossibleValues(new ArrayList<String>());
+                        header.setRequired(pi.isRequired());
 
-                        operation.getHeaders().add(parameter);
+                        operation.getHeaders().add(header);
                     } else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
-                        Parameter parameter = new Parameter();
-                        parameter.setAllowMultiple(pi.isRepeating());
-                        parameter.setDefaultValue(pi.getDefaultValue());
-                        parameter.setDescription(toString(
+                        QueryParameter queryParameter = new QueryParameter();
+                        queryParameter.setAllowMultiple(pi.isRepeating());
+                        queryParameter.setDefaultValue(pi.getDefaultValue());
+                        queryParameter.setDescription(toString(
                                 pi.getDocumentations(), pi.getDefaultValue()));
-                        parameter.setName(pi.getName());
-                        parameter.setPossibleValues(new ArrayList<String>());
-                        parameter.setRequired(pi.isRequired());
+                        queryParameter.setName(pi.getName());
+                        queryParameter
+                                .setPossibleValues(new ArrayList<String>());
+                        queryParameter.setRequired(pi.isRequired());
 
-                        operation.getQueryParameters().add(parameter);
+                        operation.getQueryParameters().add(queryParameter);
                     }
                 }
 
@@ -1087,12 +1106,6 @@ public class Introspector {
                 // one representation / several variants for APIspark
                 rep.setDescription(toString(ri.getDocumentations()));
                 rep.setName(ri.getName());
-                if (ri.getMediaType() != null) {
-                    Variant variant = new Variant();
-                    variant.setDataType(ri.getMediaType().getName());
-                    rep.setVariants(new ArrayList<Variant>());
-                    rep.getVariants().add(variant);
-                }
 
                 rep.setProperties(new ArrayList<Property>());
                 for (PropertyInfo pi : ri.getProperties()) {

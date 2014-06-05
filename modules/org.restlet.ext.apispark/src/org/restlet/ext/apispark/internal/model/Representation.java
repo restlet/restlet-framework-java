@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,9 +57,6 @@ public class Representation {
     /** Indicates if the representation is structured or not. */
     private boolean raw;
 
-    /** List of variants available for this representation. */
-    private List<Variant> variants;
-
     public String getDescription() {
         return description;
     }
@@ -72,11 +70,10 @@ public class Representation {
     }
 
     public List<Property> getProperties() {
+        if (properties == null) {
+            properties = new ArrayList<Property>();
+        }
         return properties;
-    }
-
-    public List<Variant> getVariants() {
-        return variants;
     }
 
     public boolean isRaw() {
@@ -101,9 +98,5 @@ public class Representation {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
-    }
-
-    public void setVariants(List<Variant> variants) {
-        this.variants = variants;
     }
 }

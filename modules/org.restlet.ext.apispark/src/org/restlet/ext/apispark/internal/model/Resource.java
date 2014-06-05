@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,10 +66,16 @@ public class Resource {
     }
 
     public List<Operation> getOperations() {
+        if (operations == null) {
+            operations = new ArrayList<Operation>();
+        }
         return operations;
     }
 
     public List<PathVariable> getPathVariables() {
+        if (pathVariables == null) {
+            pathVariables = new ArrayList<PathVariable>();
+        }
         return pathVariables;
     }
 
