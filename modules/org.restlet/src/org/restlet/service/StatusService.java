@@ -134,10 +134,13 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
+     *             instead.
      */
+    @Deprecated
     public Representation getRepresentation(Status status, Request request,
             Response response) {
-        return null;
+        return toRepresentation(status, request, response);
     }
 
     /**
@@ -155,25 +158,12 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
      */
+    @Deprecated
     public Status getStatus(Throwable throwable, Request request,
             Response response) {
-        Status result = null;
-
-        if (throwable instanceof ResourceException) {
-            ResourceException re = (ResourceException) throwable;
-
-            if (re.getCause() != null) {
-                // What is most interesting is the embedded cause
-                result = new Status(re.getStatus(), re.getCause());
-            } else {
-                result = re.getStatus();
-            }
-        } else {
-            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
-        }
-
-        return result;
+        return toStatus(throwable, request, response);
     }
 
     /**
@@ -187,11 +177,11 @@ public class StatusService extends Service {
      * @param resource
      *            The parent resource.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toStatus(Throwable, Resource)} instead.
      */
+    @Deprecated
     public Status getStatus(Throwable throwable, Resource resource) {
-        return getStatus(throwable,
-                (resource == null) ? null : resource.getRequest(),
-                (resource == null) ? null : resource.getResponse());
+        return toStatus(throwable, resource);
     }
 
     /**
@@ -232,6 +222,107 @@ public class StatusService extends Service {
      */
     public void setOverwriting(boolean overwriting) {
         this.overwriting = overwriting;
+    }
+
+    /**
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overridden. By default it invokes
+     * {@link #toRepresentation(Status, Request, Response)}.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param resource
+     *            The parent resource.
+     * @return The representation of the given status.
+     */
+    public Representation toRepresentation(Status status, Resource resource) {
+        return toRepresentation(status, resource.getRequest(),
+                resource.getResponse());
+    }
+
+    /**
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overridden. It returns null by default.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    public Representation toRepresentation(Status status, Request request,
+            Response response) {
+        return null;
+    }
+
+    /**
+     * Returns a status for a given exception or error. By default it unwraps
+     * the status of {@link ResourceException}. For other exceptions or errors,
+     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
+     * <br>
+     * In order to customize the default behavior, this method can be
+     * overridden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    public Status toStatus(Throwable throwable, Request request,
+            Response response) {
+        Status result = null;
+
+        if (throwable instanceof ResourceException) {
+            ResourceException re = (ResourceException) throwable;
+
+            if (re.getCause() != null) {
+                // What is most interesting is the embedded cause
+                result = new Status(re.getStatus(), re.getCause());
+            } else {
+                result = re.getStatus();
+            }
+        } else {
+            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a status for a given exception or error. By default it returns an
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+     * In order to customize the default behavior, this method can be
+     * overridden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param resource
+     *            The parent resource.
+     * @return The representation of the given status.
+     */
+    public Status toStatus(Throwable throwable, Resource resource) {
+        return toStatus(throwable,
+                (resource == null) ? null : resource.getRequest(),
+                (resource == null) ? null : resource.getResponse());
+    }
+
+    /**
+     * 
+     * @param status
+     * @param representation
+     * @return
+     */
+    public Throwable toThrowable(Status status, Representation representation) {
+        Throwable result = null;
+
+        return result;
     }
 
 }

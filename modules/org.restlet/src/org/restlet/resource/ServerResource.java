@@ -255,7 +255,7 @@ public abstract class ServerResource extends Resource {
      */
     protected void doCatch(Throwable throwable) {
         Level level = Level.INFO;
-        Status status = getStatusService().getStatus(throwable, this);
+        Status status = getStatusService().toStatus(throwable, this);
 
         if (status.isServerError()) {
             level = Level.WARNING;
@@ -270,6 +270,11 @@ public abstract class ServerResource extends Resource {
 
         if (getResponse() != null) {
             getResponse().setStatus(status);
+
+            if (getResponseEntity() == null) {
+                getResponse().setEntity(
+                        getStatusService().toRepresentation(status, this));
+            }
         }
     }
 

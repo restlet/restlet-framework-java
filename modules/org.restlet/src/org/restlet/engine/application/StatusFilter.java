@@ -132,7 +132,7 @@ public class StatusFilter extends Filter {
         // Do we need to get a representation for the current status?
         if (response.getStatus().isError()
                 && ((response.getEntity() == null) || isOverwriting())) {
-            response.setEntity(getRepresentation(response.getStatus(), request,
+            response.setEntity(toRepresentation(response.getStatus(), request,
                     response));
         }
     }
@@ -247,24 +247,13 @@ public class StatusFilter extends Filter {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
+     *             instead.
      */
+    @Deprecated
     protected Representation getRepresentation(Status status, Request request,
             Response response) {
-        Representation result = null;
-
-        try {
-            result = getStatusService().getRepresentation(status, request,
-                    response);
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to get the custom status representation", e);
-        }
-
-        if (result == null) {
-            result = getDefaultRepresentation(status, request, response);
-        }
-
-        return result;
+        return toRepresentation(status, request, response);
     }
 
     /**
@@ -280,10 +269,12 @@ public class StatusFilter extends Filter {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
      */
+    @Deprecated
     protected Status getStatus(Throwable throwable, Request request,
             Response response) {
-        return getStatusService().getStatus(throwable, request, response);
+        return getStatusService().toStatus(throwable, request, response);
     }
 
     /**
@@ -356,5 +347,56 @@ public class StatusFilter extends Filter {
      */
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
+    }
+
+    /**
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overridden.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    protected Representation toRepresentation(Status status, Request request,
+            Response response) {
+        Representation result = null;
+
+        try {
+            result = getStatusService().toRepresentation(status, request,
+                    response);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get the custom status representation", e);
+        }
+
+        if (result == null) {
+            result = getDefaultRepresentation(status, request, response);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a status for a given exception or error. By default it returns an
+     * {@link Status#SERVER_ERROR_INTERNAL} status including the related error
+     * or exception and logs a severe message.<br>
+     * In order to customize the default behavior, this method can be overriden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    protected Status toStatus(Throwable throwable, Request request,
+            Response response) {
+        return getStatus(throwable, request, response);
     }
 }
