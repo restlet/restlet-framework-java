@@ -72,6 +72,12 @@ public class Operation {
     /** Possible response messages you could encounter. */
     private List<Response> responses;
 
+    /** Mediatypes produced by this operation */
+    private List<String> produces;
+
+    /** Mediatypes consumed by this operation */
+    private List<String> consumes;
+
     public String getDescription() {
         return description;
     }
@@ -143,5 +149,27 @@ public class Operation {
 
     public void setResponses(List<Response> responses) {
         this.responses = responses;
+    }
+
+    public List<String> getProduces() {
+        if (produces == null) {
+            produces = new ArrayList<String>();
+        }
+        return produces;
+    }
+
+    public void setProduces(List<String> produces) {
+        this.produces = produces;
+    }
+
+    public List<String> getConsumes() {
+        if (consumes == null) {
+            consumes = new ArrayList<String>();
+        }
+        return consumes;
+    }
+
+    public void setConsumes(List<String> consumes) {
+        this.consumes = consumes;
     }
 }

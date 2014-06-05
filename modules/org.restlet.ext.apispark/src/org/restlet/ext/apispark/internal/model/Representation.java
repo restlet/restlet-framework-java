@@ -57,9 +57,6 @@ public class Representation {
     /** Indicates if the representation is structured or not. */
     private boolean raw;
 
-    /** List of variants available for this representation. */
-    private List<Variant> variants;
-
     public String getDescription() {
         return description;
     }
@@ -77,13 +74,6 @@ public class Representation {
             properties = new ArrayList<Property>();
         }
         return properties;
-    }
-
-    public List<Variant> getVariants() {
-        if (variants == null) {
-            variants = new ArrayList<Variant>();
-        }
-        return variants;
     }
 
     public boolean isRaw() {
@@ -108,9 +98,5 @@ public class Representation {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
-    }
-
-    public void setVariants(List<Variant> variants) {
-        this.variants = variants;
     }
 }
