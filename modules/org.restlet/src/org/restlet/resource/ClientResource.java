@@ -1402,7 +1402,7 @@ public class ClientResource extends Resource {
      */
     public Representation patch(Object entity) throws ResourceException {
         try {
-            return patch(toRepresentation(entity, null));
+            return patch(toRepresentation(entity));
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1443,8 +1443,7 @@ public class ClientResource extends Resource {
     public Representation patch(Object entity, MediaType mediaType)
             throws ResourceException {
         try {
-            return handle(Method.PATCH, toRepresentation(entity, null),
-                    mediaType);
+            return handle(Method.PATCH, toRepresentation(entity), mediaType);
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1478,7 +1477,7 @@ public class ClientResource extends Resource {
      */
     public Representation post(Object entity) throws ResourceException {
         try {
-            return post(toRepresentation(entity, null));
+            return post(toRepresentation(entity));
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1521,8 +1520,7 @@ public class ClientResource extends Resource {
     public Representation post(Object entity, MediaType mediaType)
             throws ResourceException {
         try {
-            return handle(Method.POST, toRepresentation(entity, null),
-                    mediaType);
+            return handle(Method.POST, toRepresentation(entity), mediaType);
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1558,7 +1556,7 @@ public class ClientResource extends Resource {
      */
     public Representation put(Object entity) throws ResourceException {
         try {
-            return put(toRepresentation(entity, null));
+            return put(toRepresentation(entity));
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1601,7 +1599,7 @@ public class ClientResource extends Resource {
     public Representation put(Object entity, MediaType mediaType)
             throws ResourceException {
         try {
-            return handle(Method.PUT, toRepresentation(entity, null), mediaType);
+            return handle(Method.PUT, toRepresentation(entity), mediaType);
         } catch (IOException e) {
             throw new ResourceException(e);
         }

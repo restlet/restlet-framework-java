@@ -53,6 +53,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -109,6 +110,83 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class Resource {
+
+    /**
+     * Converts the given {@link String} value into a {@link Boolean} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Boolean} value or null.
+     */
+    public static Boolean toBoolean(String value) {
+        return (value != null) ? Boolean.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Byte} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Byte} value or null.
+     */
+    public static Byte toByte(String value) {
+        return (value != null) ? Byte.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Double} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Double} value or null.
+     */
+    public static Double toDouble(String value) {
+        return (value != null) ? Double.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Float} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Float} value or null.
+     */
+    public static Float toFloat(String value) {
+        return (value != null) ? Float.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Integer} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Integer} value or null.
+     */
+    public static Integer toInteger(String value) {
+        return (value != null) ? Integer.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Long} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Long} value or null.
+     */
+    public static Long toLong(String value) {
+        return (value != null) ? Long.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Short} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Short} value or null.
+     */
+    public static Short toShort(String value) {
+        return (value != null) ? Short.valueOf(value) : null;
+    }
 
     // [ifndef gwt] member
     /** The parent application. */
@@ -843,6 +921,34 @@ public abstract class Resource {
         }
 
         return result;
+    }
+
+    /**
+     * Converts an object into a representation based on the default converter
+     * service variant.
+     * 
+     * @param source
+     *            The object to convert.
+     * @return The wrapper representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source) throws IOException {
+        return toRepresentation(source, (Variant) null);
+    }
+
+    /**
+     * Converts an object into a representation based on a given media type.
+     * 
+     * @param source
+     *            The object to convert.
+     * @param target
+     *            The target representation media type.
+     * @return The wrapper representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, MediaType target)
+            throws IOException {
+        return toRepresentation(source, new Variant(target));
     }
 
     /**

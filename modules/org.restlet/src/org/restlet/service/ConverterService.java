@@ -280,6 +280,36 @@ public class ConverterService extends Service {
      * @param source
      *            The source object to convert.
      * @param target
+     *            The target representation media type.
+     * @return The converted representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, MediaType target)
+            throws IOException {
+        return toRepresentation(source, new Variant(target));
+    }
+
+    /**
+     * Converts a regular Java object into a Representation.
+     * 
+     * @param source
+     *            The source object to convert.
+     * @param target
+     *            The target representation variant.
+     * @return The converted representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, Variant target)
+            throws IOException {
+        return toRepresentation(source, target, null);
+    }
+
+    /**
+     * Converts a regular Java object into a Representation.
+     * 
+     * @param source
+     *            The source object to convert.
+     * @param target
      *            The target representation variant.
      * @param resource
      *            The parent resource.

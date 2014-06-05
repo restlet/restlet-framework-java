@@ -4,8 +4,21 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - New features
+      - 
+
     - Enhancements
       - Updated agent.properties file with recent Opera user agent signature.
+      - Added Resource#toRepresentation(Object, MediaType) convenience method.
+      - Added ConverterService#toRepresentation(Object, MediaType) convenience method.
+      - Added ConverterService#toRepresentation(Object, Variant) convenience method.
+      - Added static Resource#toInteger, toFloat, toByte, toLong, toDouble, toBoolean 
+        methods accepting 'null' string values to facilitate the processing of path 
+        variables and query parameters.
+ 
+    - Bug fixed
+      - 
+    
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features
