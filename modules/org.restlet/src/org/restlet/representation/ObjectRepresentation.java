@@ -222,6 +222,7 @@ public class ObjectRepresentation<T extends Serializable> extends
             this.object = (T) decoder.readObject();
 
             if (is.read() != -1) {
+                decoder.close();
                 throw new IOException(
                         "The input stream has not been fully read.");
             }

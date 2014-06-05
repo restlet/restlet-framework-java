@@ -138,7 +138,7 @@ public class ReflectUtils {
      * @param parameterizedType
      * @return
      */
-    private String buildParameterTypeName(Class<?> parameterType,
+    public String buildParameterTypeName(Class<?> parameterType,
             java.lang.reflect.Type genericParameterType,
             ParameterizedType parameterizedType) {
         java.lang.reflect.Type type;

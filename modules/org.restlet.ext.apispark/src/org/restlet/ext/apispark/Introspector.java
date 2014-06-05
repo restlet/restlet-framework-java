@@ -1216,7 +1216,7 @@ public class Introspector {
      * 
      * @return The current definition.
      */
-    public Definition getDefinition() {
+    private Definition getDefinition() {
         return definition;
     }
 
@@ -1276,14 +1276,5 @@ public class Introspector {
         }
         return result;
     }
-
-    /**
-     * Sets the current definition.
-     * 
-     * @param definition
-     *            The current definition.
-     */
-    public void setDefinition(Definition definition) {
-        this.definition = definition;
-    }
+    
 }

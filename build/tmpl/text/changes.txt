@@ -17,8 +17,7 @@ Changes log
         variables and query parameters.
  
     - Bug fixed
-      - 
-    
+      - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features

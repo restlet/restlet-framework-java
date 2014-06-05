@@ -302,6 +302,7 @@ public final class DateUtils {
      *            to be converted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
+    @SafeVarargs
     private static <T> List<T> unmodifiableList(final T... array) {
         return Collections.unmodifiableList(Arrays.asList(array));
     }

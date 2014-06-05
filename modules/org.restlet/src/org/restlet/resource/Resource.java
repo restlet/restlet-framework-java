@@ -655,10 +655,8 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the request cache directives.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cache-Control" header.
+     * Returns the request cache directives. Note that when used with HTTP
+     * connectors, this property maps to the "Cache-Control" header.
      * 
      * @return The cache directives.
      */
@@ -695,10 +693,8 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the response cache directives.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cache-Control" header.
+     * Returns the response cache directives. Note that when used with HTTP
+     * connectors, this property maps to the "Cache-Control" header.
      * 
      * @return The cache directives.
      */
