@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.restlet.data.Method;
-import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
@@ -65,12 +65,12 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
     }
 
     public void testGetAnnotationsWithGenericParameterType() {
-        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
+        List<MethodAnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
-        for (AnnotationInfo ai : infos) {
-            if (ai.getResourceClass().equals(IChild.class)
+        for (MethodAnnotationInfo ai : infos) {
+            if (ai.getJavaClass().equals(IChild.class)
                     && ai.getRestletMethod().equals(Method.PUT)) {
                 found = true;
                 Assert.assertEquals(String.class, ai.getJavaInputTypes()[0]);
@@ -82,12 +82,12 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
     }
 
     public void testGetAnnotationsWithGenericReturnType() {
-        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
+        List<MethodAnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
-        for (AnnotationInfo ai : infos) {
-            if (ai.getResourceClass().equals(IChild.class)
+        for (MethodAnnotationInfo ai : infos) {
+            if (ai.getJavaClass().equals(IChild.class)
                     && ai.getRestletMethod().equals(Method.GET)) {
                 found = true;
                 Assert.assertEquals(String.class, ai.getJavaOutputType());

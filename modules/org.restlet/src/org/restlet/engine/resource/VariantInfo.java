@@ -45,7 +45,7 @@ import org.restlet.representation.Variant;
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
-    private final AnnotationInfo annotationInfo;
+    private final MethodAnnotationInfo annotationInfo;
 
     /** Affinity between this variant and an incoming representation. */
     private float inputScore;
@@ -68,7 +68,7 @@ public class VariantInfo extends Variant {
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
+    public VariantInfo(MediaType mediaType, MethodAnnotationInfo annotationInfo) {
         super(mediaType);
         this.annotationInfo = annotationInfo;
         inputScore = 1.0f;
@@ -82,7 +82,7 @@ public class VariantInfo extends Variant {
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public VariantInfo(Variant variant, AnnotationInfo annotationInfo) {
+    public VariantInfo(Variant variant, MethodAnnotationInfo annotationInfo) {
         this(variant.getMediaType(), annotationInfo);
         setCharacterSet(variant.getCharacterSet());
         setEncodings(variant.getEncodings());
@@ -120,7 +120,7 @@ public class VariantInfo extends Variant {
      * 
      * @return The optional annotation descriptor.
      */
-    public AnnotationInfo getAnnotationInfo() {
+    public MethodAnnotationInfo getAnnotationInfo() {
         return annotationInfo;
     }
     

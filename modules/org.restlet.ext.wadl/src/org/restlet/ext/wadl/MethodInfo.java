@@ -42,7 +42,7 @@ import java.util.Map;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Variant;
@@ -72,11 +72,11 @@ public class MethodInfo extends DocumentedInfo {
             ServerResource resource) {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
-        List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+        List<MethodAnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
                 .getInstance().getAnnotations(resource.getClass()) : null;
 
         if (annotations != null && metadataService != null) {
-            for (AnnotationInfo annotationInfo : annotations) {
+            for (MethodAnnotationInfo annotationInfo : annotations) {
                 try {
                     if (info.getName()
                             .equals(annotationInfo.getRestletMethod())) {

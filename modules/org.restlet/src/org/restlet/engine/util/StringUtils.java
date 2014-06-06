@@ -141,7 +141,7 @@ public class StringUtils {
         /**
          * Returns the numeric value of an entity according to its name.
          * 
-         * @param value
+         * @param name
          *            The name of the entity.
          * @return The numeric value of an entity according to its name.
          */

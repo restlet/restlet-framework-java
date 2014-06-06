@@ -48,7 +48,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -118,7 +118,7 @@ public class StrictConneg extends Conneg {
      *            The annotation descriptor to score.
      * @return The annotation descriptor score.
      */
-    protected float scoreAnnotation(AnnotationInfo annotation) {
+    protected float scoreAnnotation(MethodAnnotationInfo annotation) {
         float result = -1.0F;
 
         if (annotation != null) {

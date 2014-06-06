@@ -43,6 +43,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -68,18 +69,18 @@ public class MethodInfo extends DocumentedInfo {
      *            The server resource to describe.
      */
     public static void describeAnnotation(MethodInfo info,
-            AnnotationInfo annotation, ServerResource resource) {
+            MethodAnnotationInfo annotation, ServerResource resource) {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
 
         if (metadataService != null) {
-            AnnotationInfo ai = annotation;
+            MethodAnnotationInfo ai = annotation;
             if (ai == null) {
                 // Check if there is an annotation having the same method.
-                List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+                List<MethodAnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
                         .getInstance().getAnnotations(resource.getClass())
                         : null;
-                for (AnnotationInfo annotationInfo : annotations) {
+                for (MethodAnnotationInfo annotationInfo : annotations) {
                     if (info.getMethod().equals(
                             annotationInfo.getRestletMethod())) {
                         ai = annotationInfo;

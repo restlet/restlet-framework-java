@@ -39,7 +39,7 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
@@ -108,10 +108,10 @@ public class ResourceInfo extends DocumentedInfo {
         for (Method method : methodsList) {
             if (resource instanceof ServerResource) {
                 ServerResource sr = (ServerResource) resource;
-                List<AnnotationInfo> annotations = sr.isAnnotated() ? AnnotationUtils
+                List<MethodAnnotationInfo> annotations = sr.isAnnotated() ? AnnotationUtils
                         .getInstance().getAnnotations(resource.getClass())
                         : null;
-                for (AnnotationInfo annotationInfo : annotations) {
+                for (MethodAnnotationInfo annotationInfo : annotations) {
                     if (method.equals(annotationInfo.getRestletMethod())) {
                         methodInfo = new MethodInfo();
                         methods.add(methodInfo);

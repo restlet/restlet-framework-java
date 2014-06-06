@@ -57,6 +57,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -172,7 +173,7 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation delete() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo;
+        MethodAnnotationInfo annotationInfo;
 
         try {
             annotationInfo = getAnnotation(Method.DELETE);
@@ -385,7 +386,7 @@ public abstract class ServerResource extends Resource {
      */
     private RepresentationInfo doGetInfo() throws ResourceException {
         RepresentationInfo result = null;
-        AnnotationInfo annotationInfo;
+        MethodAnnotationInfo annotationInfo;
 
         try {
             annotationInfo = getAnnotation(Method.GET);
@@ -485,7 +486,7 @@ public abstract class ServerResource extends Resource {
      * @return The response entity.
      * @throws ResourceException
      */
-    private Representation doHandle(AnnotationInfo annotationInfo,
+    private Representation doHandle(MethodAnnotationInfo annotationInfo,
             Variant variant) throws ResourceException {
         Representation result = null;
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
@@ -573,7 +574,7 @@ public abstract class ServerResource extends Resource {
         try {
             if (getAnnotation(method) != null) {
                 // We know the method is supported, let's check the entity.
-                AnnotationInfo annotationInfo = getAnnotation(method, query,
+                MethodAnnotationInfo annotationInfo = getAnnotation(method, query,
                         entity);
 
                 if (annotationInfo != null) {
@@ -707,7 +708,7 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation get() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo;
+        MethodAnnotationInfo annotationInfo;
 
         try {
             annotationInfo = getAnnotation(Method.GET);
@@ -762,7 +763,7 @@ public abstract class ServerResource extends Resource {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    private AnnotationInfo getAnnotation(Method method) throws IOException {
+    private MethodAnnotationInfo getAnnotation(Method method) throws IOException {
         return getAnnotation(method, getQuery(), null);
     }
 
@@ -778,7 +779,7 @@ public abstract class ServerResource extends Resource {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    private AnnotationInfo getAnnotation(Method method, Form query,
+    private MethodAnnotationInfo getAnnotation(Method method, Form query,
             Representation entity) throws IOException {
         if (isAnnotated()) {
             return AnnotationUtils.getInstance().getAnnotation(
@@ -794,7 +795,7 @@ public abstract class ServerResource extends Resource {
      * 
      * @return The annotation descriptors.
      */
-    private List<AnnotationInfo> getAnnotations() {
+    private List<MethodAnnotationInfo> getAnnotations() {
         return isAnnotated() ? AnnotationUtils.getInstance().getAnnotations(
                 getClass()) : null;
     }
@@ -932,7 +933,7 @@ public abstract class ServerResource extends Resource {
                 List<Variant> annoVariants = null;
                 method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
-                for (AnnotationInfo annotationInfo : getAnnotations()) {
+                for (MethodAnnotationInfo annotationInfo : getAnnotations()) {
                     try {
                         if (annotationInfo.isCompatible(method, getQuery(),
                                 getRequestEntity(), getMetadataService(),
@@ -1181,7 +1182,7 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation options() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo;
+        MethodAnnotationInfo annotationInfo;
 
         try {
             annotationInfo = getAnnotation(Method.OPTIONS);
@@ -1782,10 +1783,10 @@ public abstract class ServerResource extends Resource {
      */
     public void updateAllowedMethods() {
         getAllowedMethods().clear();
-        List<AnnotationInfo> annotations = getAnnotations();
+        List<MethodAnnotationInfo> annotations = getAnnotations();
 
         if (annotations != null) {
-            for (AnnotationInfo annotationInfo : annotations) {
+            for (MethodAnnotationInfo annotationInfo : annotations) {
                 if (!getAllowedMethods().contains(
                         annotationInfo.getRestletMethod())) {
                     getAllowedMethods().add(annotationInfo.getRestletMethod());

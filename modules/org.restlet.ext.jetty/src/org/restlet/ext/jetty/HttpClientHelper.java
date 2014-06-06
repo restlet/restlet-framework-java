@@ -57,10 +57,9 @@ import org.restlet.ext.jetty.internal.JettyClientCall;
 import org.restlet.ext.jetty.internal.RestletSslContextFactory;
 
 /**
- * HTTP client connector using the Jetty project.<br>
- * <br>
- * Here is the list of parameters that are supported. They should be set in the
- * Client's context before it is started:
+ * HTTP client connector using the Jetty project. Here is the list of parameters
+ * that are supported. They should be set in the Client's context before it is
+ * started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
