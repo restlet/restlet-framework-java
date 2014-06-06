@@ -54,9 +54,6 @@ import org.restlet.service.MetadataService;
  */
 public class AnnotationUtils {
 
-    /** Annotation info cache. */
-    private final ConcurrentMap<Class<?>, List<MethodAnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<MethodAnnotationInfo>>();
-
     /** Current instance. */
     private static AnnotationUtils instance = new AnnotationUtils();
 
@@ -64,6 +61,9 @@ public class AnnotationUtils {
     public static AnnotationUtils getInstance() {
         return instance;
     }
+
+    /** Annotation info cache. */
+    private final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
 
     /**
      * Protected constructor.
@@ -85,14 +85,14 @@ public class AnnotationUtils {
      *            The Java method to inspect.
      * @return The annotation descriptors.
      */
-    private List<MethodAnnotationInfo> addAnnotationDescriptors(
-            List<MethodAnnotationInfo> descriptors, Class<?> resourceClass,
+    private List<AnnotationInfo> addAnnotationDescriptors(
+            List<AnnotationInfo> descriptors, Class<?> resourceClass,
             Class<?> initialResourceClass, java.lang.reflect.Method javaMethod) {
-        List<MethodAnnotationInfo> result = descriptors;
+        List<AnnotationInfo> result = descriptors;
 
         // Add the annotation descriptor
         if (result == null) {
-            result = new CopyOnWriteArrayList<MethodAnnotationInfo>();
+            result = new CopyOnWriteArrayList<AnnotationInfo>();
         }
 
         for (Annotation annotation : javaMethod.getAnnotations()) {
@@ -138,15 +138,15 @@ public class AnnotationUtils {
      *            The class or interface that runs the javaMethod.
      * @return The annotation descriptors.
      */
-    private List<MethodAnnotationInfo> addAnnotations(
-            List<MethodAnnotationInfo> descriptors, Class<?> clazz,
+    private List<AnnotationInfo> addAnnotations(
+            List<AnnotationInfo> descriptors, Class<?> clazz,
             Class<?> initialClass) {
-        List<MethodAnnotationInfo> result = descriptors;
+        List<AnnotationInfo> result = descriptors;
 
         if (clazz != null && !ServerResource.class.equals(clazz)) {
             // Add the annotation descriptor
             if (result == null) {
-                result = new CopyOnWriteArrayList<MethodAnnotationInfo>();
+                result = new CopyOnWriteArrayList<AnnotationInfo>();
             }
 
             // Inspect the current class
@@ -188,6 +188,44 @@ public class AnnotationUtils {
     }
 
     /**
+     * Returns the annotation descriptors for the given resource class.
+     * 
+     * @param clazz
+     *            The resource class to introspect.
+     * @return The list of annotation descriptors.
+     */
+    public synchronized List<AnnotationInfo> getAnnotations(Class<?> clazz) {
+        List<AnnotationInfo> result = cache.get(clazz);
+
+        if (result == null) {
+            // Inspect the class itself for annotations
+            result = addAnnotations(result, clazz, clazz);
+
+            // Put the list in the cache if no one was previously present
+            List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
+
+            if (prev != null) {
+                // Reuse the previous entry
+                result = prev;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the annotation descriptors for the given resource class.
+     * 
+     * @param javaMethod
+     *            The Java method.
+     * @return The list of annotation descriptors.
+     */
+    public List<AnnotationInfo> getAnnotations(Class<?> clazz,
+            java.lang.reflect.Method javaMethod) {
+        return addAnnotationDescriptors(null, clazz, clazz, javaMethod);
+    }
+
+    /**
      * Returns the first annotation descriptor matching the given Java method.
      * 
      * @param annotations
@@ -196,12 +234,14 @@ public class AnnotationUtils {
      *            The method to match.
      * @return The annotation descriptor.
      */
-    public MethodAnnotationInfo getAnnotation(List<MethodAnnotationInfo> annotations,
+    public MethodAnnotationInfo getMethodAnnotation(
+            List<AnnotationInfo> annotations,
             java.lang.reflect.Method javaMethod) {
         if (annotations != null) {
-            for (MethodAnnotationInfo annotationInfo : annotations) {
-                if (annotationInfo.getJavaMethod().equals(javaMethod)) {
-                    return annotationInfo;
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (annotationInfo instanceof MethodAnnotationInfo
+                        && annotationInfo.getJavaMethod().equals(javaMethod)) {
+                    return (MethodAnnotationInfo) annotationInfo;
                 }
             }
         }
@@ -228,59 +268,24 @@ public class AnnotationUtils {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    public MethodAnnotationInfo getAnnotation(List<MethodAnnotationInfo> annotations,
+    public MethodAnnotationInfo getMethodAnnotation(List<AnnotationInfo> annotations,
             Method restletMethod, Form query, Representation entity,
             MetadataService metadataService,
             org.restlet.service.ConverterService converterService)
             throws IOException {
         if (annotations != null) {
-            for (MethodAnnotationInfo annotationInfo : annotations) {
-                if (annotationInfo.isCompatible(restletMethod, query, entity,
-                        metadataService, converterService)) {
-                    return annotationInfo;
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (annotationInfo instanceof MethodAnnotationInfo) {
+                    if (((MethodAnnotationInfo) annotationInfo).isCompatible(
+                            restletMethod, query, entity, metadataService,
+                            converterService)) {
+                        return (MethodAnnotationInfo) annotationInfo;
+                    }
                 }
             }
         }
 
         return null;
-    }
-
-    /**
-     * Returns the annotation descriptors for the given resource class.
-     * 
-     * @param clazz
-     *            The resource class to introspect.
-     * @return The list of annotation descriptors.
-     */
-    public List<MethodAnnotationInfo> getAnnotations(Class<?> clazz) {
-        List<MethodAnnotationInfo> result = cache.get(clazz);
-
-        if (result == null) {
-            // Inspect the class itself for annotations
-            result = addAnnotations(result, clazz, clazz);
-
-            // Put the list in the cache if no one was previously present
-            List<MethodAnnotationInfo> prev = cache.putIfAbsent(clazz, result);
-
-            if (prev != null) {
-                // Reuse the previous entry
-                result = prev;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the annotation descriptors for the given resource class.
-     * 
-     * @param javaMethod
-     *            The Java method.
-     * @return The list of annotation descriptors.
-     */
-    public List<MethodAnnotationInfo> getAnnotations(Class<?> clazz,
-            java.lang.reflect.Method javaMethod) {
-        return addAnnotationDescriptors(null, clazz, clazz, javaMethod);
     }
 
     /**

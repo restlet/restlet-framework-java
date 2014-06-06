@@ -64,7 +64,7 @@ import org.restlet.resource.Result;
 public class ClientInvocationHandler<T> implements InvocationHandler {
 
     /** The annotations of the resource interface. */
-    private final List<MethodAnnotationInfo> annotations;
+    private final List<AnnotationInfo> annotations;
 
     /** The associated client resource. */
     private final ClientResource clientResource;
@@ -110,7 +110,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      * 
      * @return The annotations of the resource interface.
      */
-    public List<MethodAnnotationInfo> getAnnotations() {
+    public List<AnnotationInfo> getAnnotations() {
         return annotations;
     }
 
@@ -146,8 +146,8 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            MethodAnnotationInfo annotationInfo = annotationUtils.getAnnotation(
-                    annotations, javaMethod);
+            MethodAnnotationInfo annotationInfo = annotationUtils
+                    .getMethodAnnotation(annotations, javaMethod);
 
             if (annotationInfo != null) {
                 Representation requestEntity = null;

@@ -574,8 +574,8 @@ public abstract class ServerResource extends Resource {
         try {
             if (getAnnotation(method) != null) {
                 // We know the method is supported, let's check the entity.
-                MethodAnnotationInfo annotationInfo = getAnnotation(method, query,
-                        entity);
+                MethodAnnotationInfo annotationInfo = getAnnotation(method,
+                        query, entity);
 
                 if (annotationInfo != null) {
                     result = doHandle(annotationInfo, null);
@@ -763,7 +763,8 @@ public abstract class ServerResource extends Resource {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    private MethodAnnotationInfo getAnnotation(Method method) throws IOException {
+    private MethodAnnotationInfo getAnnotation(Method method)
+            throws IOException {
         return getAnnotation(method, getQuery(), null);
     }
 
@@ -782,7 +783,7 @@ public abstract class ServerResource extends Resource {
     private MethodAnnotationInfo getAnnotation(Method method, Form query,
             Representation entity) throws IOException {
         if (isAnnotated()) {
-            return AnnotationUtils.getInstance().getAnnotation(
+            return AnnotationUtils.getInstance().getMethodAnnotation(
                     getAnnotations(), method, query, entity,
                     getMetadataService(), getConverterService());
         }
@@ -795,7 +796,7 @@ public abstract class ServerResource extends Resource {
      * 
      * @return The annotation descriptors.
      */
-    private List<MethodAnnotationInfo> getAnnotations() {
+    private List<AnnotationInfo> getAnnotations() {
         return isAnnotated() ? AnnotationUtils.getInstance().getAnnotations(
                 getClass()) : null;
     }
@@ -933,45 +934,56 @@ public abstract class ServerResource extends Resource {
                 List<Variant> annoVariants = null;
                 method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
-                for (MethodAnnotationInfo annotationInfo : getAnnotations()) {
+                for (AnnotationInfo annotationInfo : getAnnotations()) {
                     try {
-                        if (annotationInfo.isCompatible(method, getQuery(),
-                                getRequestEntity(), getMetadataService(),
-                                getConverterService())) {
-                            annoVariants = annotationInfo
-                                    .getResponseVariants(getMetadataService(),
-                                            getConverterService());
+                        if (annotationInfo instanceof MethodAnnotationInfo) {
+                            MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
 
-                            if (annoVariants != null) {
-                                // Compute an affinity score between this
-                                // annotation and the input entity.
-                                float score = 0.5f;
-                                if ((getRequest().getEntity() != null)
-                                        && getRequest().getEntity()
-                                                .isAvailable()) {
-                                    MediaType emt = getRequest().getEntity()
-                                            .getMediaType();
-                                    List<MediaType> amts = getMetadataService()
-                                            .getAllMediaTypes(
-                                                    annotationInfo.getInput());
-                                    if (amts != null) {
-                                        for (MediaType amt : amts) {
-                                            if (amt.equals(emt)) {
-                                                score = 1.0f;
-                                            } else if (amt.includes(emt)) {
-                                                score = Math.max(0.8f, score);
-                                            } else if (amt.isCompatible(emt)) {
-                                                score = Math.max(0.6f, score);
+                            if (methodAnnotationInfo
+                                    .isCompatible(method, getQuery(),
+                                            getRequestEntity(),
+                                            getMetadataService(),
+                                            getConverterService())) {
+                                annoVariants = methodAnnotationInfo
+                                        .getResponseVariants(
+                                                getMetadataService(),
+                                                getConverterService());
+
+                                if (annoVariants != null) {
+                                    // Compute an affinity score between this
+                                    // annotation and the input entity.
+                                    float score = 0.5f;
+                                    if ((getRequest().getEntity() != null)
+                                            && getRequest().getEntity()
+                                                    .isAvailable()) {
+                                        MediaType emt = getRequest()
+                                                .getEntity().getMediaType();
+                                        List<MediaType> amts = getMetadataService()
+                                                .getAllMediaTypes(
+                                                        methodAnnotationInfo
+                                                                .getInput());
+                                        if (amts != null) {
+                                            for (MediaType amt : amts) {
+                                                if (amt.equals(emt)) {
+                                                    score = 1.0f;
+                                                } else if (amt.includes(emt)) {
+                                                    score = Math.max(0.8f,
+                                                            score);
+                                                } else if (amt
+                                                        .isCompatible(emt)) {
+                                                    score = Math.max(0.6f,
+                                                            score);
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                for (Variant v : annoVariants) {
-                                    VariantInfo vi = new VariantInfo(v,
-                                            annotationInfo);
-                                    vi.setInputScore(score);
-                                    result.add(vi);
+                                    for (Variant v : annoVariants) {
+                                        VariantInfo vi = new VariantInfo(v,
+                                                methodAnnotationInfo);
+                                        vi.setInputScore(score);
+                                        result.add(vi);
+                                    }
                                 }
                             }
                         }
@@ -1783,13 +1795,18 @@ public abstract class ServerResource extends Resource {
      */
     public void updateAllowedMethods() {
         getAllowedMethods().clear();
-        List<MethodAnnotationInfo> annotations = getAnnotations();
+        List<AnnotationInfo> annotations = getAnnotations();
 
         if (annotations != null) {
-            for (MethodAnnotationInfo annotationInfo : annotations) {
-                if (!getAllowedMethods().contains(
-                        annotationInfo.getRestletMethod())) {
-                    getAllowedMethods().add(annotationInfo.getRestletMethod());
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (annotationInfo instanceof MethodAnnotationInfo) {
+                    MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
+
+                    if (!getAllowedMethods().contains(
+                            methodAnnotationInfo.getRestletMethod())) {
+                        getAllowedMethods().add(
+                                methodAnnotationInfo.getRestletMethod());
+                    }
                 }
             }
         }

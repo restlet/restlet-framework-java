@@ -75,19 +75,25 @@ public class MethodInfo extends DocumentedInfo {
 
         if (metadataService != null) {
             MethodAnnotationInfo ai = annotation;
+
             if (ai == null) {
                 // Check if there is an annotation having the same method.
-                List<MethodAnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+                List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
                         .getInstance().getAnnotations(resource.getClass())
                         : null;
-                for (MethodAnnotationInfo annotationInfo : annotations) {
-                    if (info.getMethod().equals(
-                            annotationInfo.getRestletMethod())) {
-                        ai = annotationInfo;
-                        break;
+
+                for (AnnotationInfo annotationInfo : annotations) {
+                    if (annotationInfo instanceof MethodAnnotationInfo) {
+                        MethodAnnotationInfo mai = (MethodAnnotationInfo) annotationInfo;
+
+                        if (info.getMethod().equals(mai.getRestletMethod())) {
+                            ai = mai;
+                            break;
+                        }
                     }
                 }
             }
+
             if (ai != null) {
                 try {
                     // Describe the request

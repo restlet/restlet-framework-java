@@ -37,8 +37,9 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.restlet.data.Method;
-import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.test.RestletTestCase;
@@ -65,34 +66,47 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
     }
 
     public void testGetAnnotationsWithGenericParameterType() {
-        List<MethodAnnotationInfo> infos = AnnotationUtils.getInstance()
+        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
-        for (MethodAnnotationInfo ai : infos) {
-            if (ai.getJavaClass().equals(IChild.class)
-                    && ai.getRestletMethod().equals(Method.PUT)) {
-                found = true;
-                Assert.assertEquals(String.class, ai.getJavaInputTypes()[0]);
+
+        for (AnnotationInfo ai : infos) {
+            if (ai instanceof MethodAnnotationInfo) {
+                MethodAnnotationInfo mai = (MethodAnnotationInfo) ai;
+
+                if (mai.getJavaClass().equals(IChild.class)
+                        && mai.getRestletMethod().equals(Method.PUT)) {
+                    found = true;
+                    Assert.assertEquals(String.class,
+                            mai.getJavaInputTypes()[0]);
+                }
             }
         }
+
         Assert.assertEquals(
                 "Didn't find a method with IChild as the declaring class.",
                 true, found);
     }
 
     public void testGetAnnotationsWithGenericReturnType() {
-        List<MethodAnnotationInfo> infos = AnnotationUtils.getInstance()
+        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
-        for (MethodAnnotationInfo ai : infos) {
-            if (ai.getJavaClass().equals(IChild.class)
-                    && ai.getRestletMethod().equals(Method.GET)) {
-                found = true;
-                Assert.assertEquals(String.class, ai.getJavaOutputType());
+
+        for (AnnotationInfo ai : infos) {
+            if (ai instanceof MethodAnnotationInfo) {
+                MethodAnnotationInfo mai = (MethodAnnotationInfo) ai;
+
+                if (mai.getJavaClass().equals(IChild.class)
+                        && mai.getRestletMethod().equals(Method.GET)) {
+                    found = true;
+                    Assert.assertEquals(String.class, mai.getJavaOutputType());
+                }
             }
         }
+
         Assert.assertEquals(
                 "Didn't find a method with IChild as the declaring class.",
                 true, found);
