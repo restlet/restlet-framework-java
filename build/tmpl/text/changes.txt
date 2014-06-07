@@ -19,7 +19,9 @@ Changes log
         toRepresentation(...) and toStatus(...).
       - Added org.restlet.resource.@Status annotation type to automatically convert
         Throwable Java classes between HTTP statuses and error response entities.
-        NOTE: implementation is still pending.
+        NOTE: implementation is in progress.
+      - StatusService.toStatus(Throwable, ...) methods now support @Status annotations
+        to set the proper code.
  
     - Bug fixed
       - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    

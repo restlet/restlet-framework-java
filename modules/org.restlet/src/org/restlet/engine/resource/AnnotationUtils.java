@@ -72,61 +72,6 @@ public class AnnotationUtils {
     }
 
     /**
-     * Computes the annotation descriptors for the given Java method.
-     * 
-     * @param descriptors
-     *            The annotation descriptors to update or null to create a new
-     *            one.
-     * @param resourceClass
-     *            The class or interface that hosts the javaMethod.
-     * @param initialResourceClass
-     *            The class or interface that runs the javaMethod.
-     * @param javaMethod
-     *            The Java method to inspect.
-     * @return The annotation descriptors.
-     */
-    private List<AnnotationInfo> addAnnotationDescriptors(
-            List<AnnotationInfo> descriptors, Class<?> resourceClass,
-            Class<?> initialResourceClass, java.lang.reflect.Method javaMethod) {
-        List<AnnotationInfo> result = descriptors;
-
-        // Add the annotation descriptor
-        if (result == null) {
-            result = new CopyOnWriteArrayList<AnnotationInfo>();
-        }
-
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Annotation methodAnnotation = annotation.annotationType()
-                    .getAnnotation(org.restlet.engine.connector.Method.class);
-
-            Method restletMethod = getRestletMethod(annotation,
-                    methodAnnotation);
-            if (restletMethod != null) {
-
-                String toString = annotation.toString();
-                int startIndex = annotation.annotationType().getCanonicalName()
-                        .length() + 8;
-                int endIndex = toString.length() - 1;
-                String value = null;
-
-                if (endIndex > startIndex) {
-                    value = toString.substring(startIndex, endIndex);
-
-                    if ("".equals(value)) {
-                        value = null;
-                    }
-                }
-
-                result.add(new MethodAnnotationInfo(initialResourceClass,
-                        restletMethod, javaMethod, value));
-
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Computes the annotation descriptors for the given class or interface.
      * 
      * @param descriptors
@@ -150,15 +95,17 @@ public class AnnotationUtils {
             }
 
             // Inspect the current class
+            addStatusAnnotationDescriptors(result, clazz, initialClass);
+
             if (clazz.isInterface()) {
                 for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-                    addAnnotationDescriptors(result, clazz, initialClass,
+                    addMethodAnnotationDescriptors(result, clazz, initialClass,
                             javaMethod);
                 }
             } else {
                 for (java.lang.reflect.Method javaMethod : clazz
                         .getDeclaredMethods()) {
-                    addAnnotationDescriptors(result, clazz, initialClass,
+                    addMethodAnnotationDescriptors(result, clazz, initialClass,
                             javaMethod);
                 }
             }
@@ -181,10 +128,108 @@ public class AnnotationUtils {
     }
 
     /**
+     * Computes the annotation descriptors for the given Java method.
+     * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
+     * @param clazz
+     *            The class or interface that hosts the javaMethod.
+     * @param initialClass
+     *            The class or interface that runs the javaMethod.
+     * @return The annotation descriptors.
+     */
+    private List<AnnotationInfo> addStatusAnnotationDescriptors(
+            List<AnnotationInfo> descriptors, Class<?> clazz,
+            Class<?> initialClass) {
+        List<AnnotationInfo> result = descriptors;
+        Annotation annotation = clazz
+                .getAnnotation(org.restlet.resource.Status.class);
+
+        if (annotation != null) {
+            result.add(new StatusAnnotationInfo(initialClass,
+                    ((org.restlet.resource.Status) annotation).value()));
+        }
+
+        return result;
+    }
+
+    /**
+     * Computes the annotation descriptors for the given Java method.
+     * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
+     * @param clazz
+     *            The class or interface that hosts the javaMethod.
+     * @param initialClass
+     *            The class or interface that runs the javaMethod.
+     * @param javaMethod
+     *            The Java method to inspect.
+     * @return The annotation descriptors.
+     */
+    private List<AnnotationInfo> addMethodAnnotationDescriptors(
+            List<AnnotationInfo> descriptors, Class<?> clazz,
+            Class<?> initialClass, java.lang.reflect.Method javaMethod) {
+        List<AnnotationInfo> result = descriptors;
+
+        for (Annotation annotation : javaMethod.getAnnotations()) {
+            Annotation methodAnnotation = annotation.annotationType()
+                    .getAnnotation(org.restlet.engine.connector.Method.class);
+            Method restletMethod = getRestletMethod(annotation,
+                    methodAnnotation);
+
+            if (restletMethod != null) {
+                String toString = annotation.toString();
+                int startIndex = annotation.annotationType().getCanonicalName()
+                        .length() + 8;
+                int endIndex = toString.length() - 1;
+                String value = null;
+
+                if (endIndex > startIndex) {
+                    value = toString.substring(startIndex, endIndex);
+
+                    if ("".equals(value)) {
+                        value = null;
+                    }
+                }
+
+                if (result == null) {
+                    result = new CopyOnWriteArrayList<AnnotationInfo>();
+                }
+
+                result.add(new MethodAnnotationInfo(initialClass,
+                        restletMethod, javaMethod, value));
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Clears the annotation descriptors cache.
      */
     public void clearCache() {
         cache.clear();
+    }
+
+    /**
+     * Returns the status annotation descriptor if present of null.
+     * 
+     * @param clazz
+     *            The class with the status attached.
+     * @return The status annotation descriptor if present of null.
+     */
+    public StatusAnnotationInfo getStatusAnnotationInfo(Class<?> clazz) {
+        List<AnnotationInfo> annotationInfos = getAnnotations(clazz);
+
+        for (AnnotationInfo annotationInfo : annotationInfos) {
+            if (annotationInfo instanceof StatusAnnotationInfo) {
+                return (StatusAnnotationInfo) annotationInfo;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -222,7 +267,7 @@ public class AnnotationUtils {
      */
     public List<AnnotationInfo> getAnnotations(Class<?> clazz,
             java.lang.reflect.Method javaMethod) {
-        return addAnnotationDescriptors(null, clazz, clazz, javaMethod);
+        return addMethodAnnotationDescriptors(null, clazz, clazz, javaMethod);
     }
 
     /**
@@ -268,9 +313,9 @@ public class AnnotationUtils {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    public MethodAnnotationInfo getMethodAnnotation(List<AnnotationInfo> annotations,
-            Method restletMethod, Form query, Representation entity,
-            MetadataService metadataService,
+    public MethodAnnotationInfo getMethodAnnotation(
+            List<AnnotationInfo> annotations, Method restletMethod, Form query,
+            Representation entity, MetadataService metadataService,
             org.restlet.service.ConverterService converterService)
             throws IOException {
         if (annotations != null) {
@@ -299,7 +344,7 @@ public class AnnotationUtils {
      */
     protected Method getRestletMethod(Annotation annotation,
             Annotation methodAnnotation) {
-        return methodAnnotation == null ? null
+        return (methodAnnotation == null) ? null
                 : Method.valueOf(((org.restlet.engine.connector.Method) methodAnnotation)
                         .value());
     }

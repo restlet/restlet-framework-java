@@ -454,10 +454,11 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     @Override
     public String toString() {
-        return "AnnotationInfo [javaMethod: " + javaMethod + ", javaClass: "
-                + getJavaClass() + ", restletMethod: " + restletMethod
-                + ", input: " + getInput() + ", value: " + getAnnotationValue()
-                + ", output: " + getOutput() + ", query: " + getQuery() + "]";
+        return "MethodAnnotationInfo [javaMethod: " + javaMethod
+                + ", javaClass: " + getJavaClass() + ", restletMethod: "
+                + restletMethod + ", input: " + getInput() + ", value: "
+                + getAnnotationValue() + ", output: " + getOutput()
+                + ", query: " + getQuery() + "]";
     }
 
 }

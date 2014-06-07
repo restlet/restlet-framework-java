@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.restlet.resource.Status;
 
-@Status("500")
+@Status("401")
 public class MyException extends Throwable {
 
     private static final long serialVersionUID = 1L;

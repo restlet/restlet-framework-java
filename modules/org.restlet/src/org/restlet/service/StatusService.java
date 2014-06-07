@@ -38,9 +38,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -289,7 +291,14 @@ public class StatusService extends Service {
                 result = re.getStatus();
             }
         } else {
-            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+            StatusAnnotationInfo sai = AnnotationUtils.getInstance()
+                    .getStatusAnnotationInfo(throwable.getClass());
+
+            if (sai != null) {
+                result = new Status(sai.getStatus(), throwable);
+            } else {
+                result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+            }
         }
 
         return result;

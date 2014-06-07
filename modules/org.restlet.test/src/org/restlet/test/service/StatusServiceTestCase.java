@@ -33,21 +33,24 @@
 
 package org.restlet.test.service;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Date;
 
-public class ServiceTestSuite {
+import org.restlet.data.Status;
+import org.restlet.service.StatusService;
+import org.restlet.test.RestletTestCase;
+import org.restlet.test.resource.MyException;
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite("Service package");
+/**
+ * Unit tests for the status service.
+ * 
+ * @author Jerome Louvel
+ */
+public class StatusServiceTestCase extends RestletTestCase {
 
-        // $JUnit-BEGIN$
-        suite.addTestSuite(ConnegServiceTestCase.class);
-        suite.addTestSuite(MetadataServiceTestCase.class);
-        suite.addTestSuite(StatusServiceTestCase.class);
-        // $JUnit-END$
-
-        return suite;
+    public void testAnnotation() {
+        StatusService ss = new StatusService();
+        Status status = ss.toStatus(new MyException(new Date()), null, null);
+        assertEquals(401, status.getCode());
     }
 
 }
