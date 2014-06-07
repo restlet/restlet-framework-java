@@ -248,8 +248,7 @@ public abstract class ServerResource extends Resource {
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
      * the result of
-     * {@link org.restlet.service.StatusService#getStatus(Throwable, Resource)}
-     * .
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, Resource)}.
      * 
      * @param throwable
      *            The caught error or exception.
@@ -274,7 +273,8 @@ public abstract class ServerResource extends Resource {
 
             if (getResponseEntity() == null) {
                 getResponse().setEntity(
-                        getStatusService().toRepresentation(status, this));
+                        getStatusService().toRepresentation(status, throwable,
+                                this));
             }
         }
     }

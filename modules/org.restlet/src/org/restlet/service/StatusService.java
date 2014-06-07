@@ -142,7 +142,7 @@ public class StatusService extends Service {
     @Deprecated
     public Representation getRepresentation(Status status, Request request,
             Response response) {
-        return toRepresentation(status, request, response);
+        return toRepresentation(status, null, request, response, null);
     }
 
     /**
@@ -234,30 +234,40 @@ public class StatusService extends Service {
      * 
      * @param status
      *            The status to represent.
+     * @param throwable
+     *            The exception or error caught.
      * @param resource
      *            The parent resource.
      * @return The representation of the given status.
      */
-    public Representation toRepresentation(Status status, Resource resource) {
-        return toRepresentation(status, resource.getRequest(),
-                resource.getResponse());
+    public Representation toRepresentation(Status status, Throwable throwable,
+            Resource resource) {
+        return toRepresentation(status, throwable, resource.getRequest(),
+                resource.getResponse(), resource.getConverterService());
     }
 
     /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden. It returns null by default.
+     * Returns a representation for the given status. In order to customize the
+     * default representation, this method can be overridden. It returns null by
+     * default.
      * 
      * @param status
      *            The status to represent.
+     * @param throwable
+     *            The exception or error caught.
      * @param request
      *            The request handled.
      * @param response
      *            The response updated.
+     * @param converterService
+     *            The converter service.
      * @return The representation of the given status.
      */
-    public Representation toRepresentation(Status status, Request request,
-            Response response) {
+    public Representation toRepresentation(Status status, Throwable throwable,
+            Request request, Response response,
+            ConverterService converterService) {
+                
+        
         return null;
     }
 

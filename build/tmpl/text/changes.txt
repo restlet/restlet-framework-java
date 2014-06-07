@@ -16,7 +16,10 @@ Changes log
         methods accepting 'null' string values to facilitate the processing of path 
         variables and query parameters.
       - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
-        toRepresentation(...) and toStatus(...).
+        toRepresentation(...) and toStatus(...), added additional parameters to allow
+        access to throwable and converter service if available.
+      - Aligned behavior of StatusService (underlying StatusFilter) with the behavior of
+        the ServerResource#doCatch() method in case a throwable is intercepted.
       - Added org.restlet.resource.@Status annotation type to automatically convert
         Throwable Java classes between HTTP statuses and error response entities.
         NOTE: implementation is in progress.
