@@ -56,6 +56,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
+import org.restlet.ext.apispark.internal.conversion.SwaggerConverter;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
@@ -193,10 +194,15 @@ public class Introspector {
 
             resource.setOperations(new ArrayList<Operation>());
             for (MethodInfo mi : ri.getMethods()) {
-                LOGGER.info("Method " + mi.getMethod().getName() + " added.");
+                String methodName = mi.getMethod().getName().toUpperCase();
+                if (methodName.equals("OPTIONS") || methodName.equals("PATCH")) {
+                    LOGGER.info("Method " + methodName + " ignored.");
+                    continue;
+                }
+                LOGGER.info("Method " + methodName + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(toString(mi.getDocumentations()));
-                operation.setName(mi.getMethod().getName());
+                operation.setName(methodName);
                 // TODO complete Method class with mi.getName()
                 operation.setMethod(mi.getMethod().getName());
 
@@ -729,9 +735,10 @@ public class Introspector {
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
-        String appName = null;
+        String defSource = null;
         String compName = null;
         String definitionId = null;
+        String language = null;
 
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
@@ -748,8 +755,10 @@ public class Introspector {
                 compName = getParameter(args, ++i);
             } else if ("-d".equals(args[i])) {
                 definitionId = getParameter(args, ++i);
+            } else if ("-l".equals(args[i])) {
+                language = getParameter(args, ++i).toLowerCase();
             } else {
-                appName = args[i];
+                defSource = args[i];
             }
         }
 
@@ -761,7 +770,7 @@ public class Introspector {
             serviceUrl += "/";
         }
 
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(appName)) {
+        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(defSource)) {
             printHelp();
             System.exit(1);
         }
@@ -774,63 +783,79 @@ public class Introspector {
         // serviceUrl
 
         // Validate the application class name
-        Application application = getApplication(appName);
-        Component component = getComponent(compName);
+        Application application = null;
+        Component component = null;
+        Definition definition = null;
+        if (language == null) {
+            application = getApplication(defSource);
+            component = getComponent(compName);
+        }
 
         if (application != null) {
             LOGGER.fine("Instantiate introspector");
             Introspector i = new Introspector(component, application);
-
-            try {
-                ClientResource cr = new ClientResource(serviceUrl
-                        + "definitions");
-                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin,
-                        upwd);
-                LOGGER.fine("Generate documentation");
-                Definition definition = i.getDefinition();
-
-                if (definitionId == null) {
-                    LOGGER.fine("Create a new documentation");
-                    cr.post(definition, MediaType.APPLICATION_JSON);
-                } else {
-                    cr.addSegment(definitionId);
-                    LOGGER.fine("Update the documentation of "
-                            + cr.getReference().toString());
-                    cr.put(definition, MediaType.APPLICATION_JSON);
-                }
-
-                LOGGER.fine("Display result");
-                System.out.println("Process successfully achieved.");
-                // This is not printed by a logger which may be muted.
-                if (cr.getResponseEntity() != null
-                        && cr.getResponseEntity().isAvailable()) {
-                    try {
-                        cr.getResponseEntity().write(System.out);
-                        System.out.println();
-                    } catch (IOException e) {
-                        // [PENDING] analysis
-                        LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
-                    }
-                }
-                if (cr.getLocationRef() != null) {
-                    System.out
-                            .println("Your Web API documentation is accessible at this URL: "
-                                    + cr.getLocationRef());
-                }
-            } catch (ResourceException e) {
-                // TODO Should we detail by status?
-                if (e.getStatus().isConnectorError()) {
-                    LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
-                    LOGGER.severe("Could you check that the following service is up? "
-                            + serviceUrl);
-                } else if (e.getStatus().isClientError()) {
-                    LOGGER.severe("Check that you provide valid credentials, or valid service url.");
-                } else if (e.getStatus().isServerError()) {
-                    LOGGER.severe("The server side encounters some issues, please try later.");
-                }
+            definition = i.getDefinition();
+            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
+        } else if (language != null) {
+            if (language.equals("swagger")) {
+                definition = new SwaggerConverter().getDefinition(defSource,
+                        ulogin, upwd);
+            }
+            if (definition != null) {
+                sendDefinition(definition, definitionId, ulogin, upwd,
+                        serviceUrl);
             }
         } else {
-            LOGGER.severe("Please provide a valid application class name.");
+            LOGGER.severe("Please provide a valid application class name or definition URL.");
+        }
+    }
+
+    private static void sendDefinition(Definition definition,
+            String definitionId, String ulogin, String upwd, String serviceUrl) {
+        try {
+            ClientResource cr = new ClientResource(serviceUrl + "definitions");
+            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
+            LOGGER.fine("Generate documentation");
+
+            if (definitionId == null) {
+                LOGGER.fine("Create a new documentation");
+                cr.post(definition, MediaType.APPLICATION_JSON);
+            } else {
+                cr.addSegment(definitionId);
+                LOGGER.fine("Update the documentation of "
+                        + cr.getReference().toString());
+                cr.put(definition, MediaType.APPLICATION_JSON);
+            }
+
+            LOGGER.fine("Display result");
+            System.out.println("Process successfully achieved.");
+            // This is not printed by a logger which may be muted.
+            if (cr.getResponseEntity() != null
+                    && cr.getResponseEntity().isAvailable()) {
+                try {
+                    cr.getResponseEntity().write(System.out);
+                    System.out.println();
+                } catch (IOException e) {
+                    // [PENDING] analysis
+                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
+                }
+            }
+            if (cr.getLocationRef() != null) {
+                System.out
+                        .println("Your Web API documentation is accessible at this URL: "
+                                + cr.getLocationRef());
+            }
+        } catch (ResourceException e) {
+            // TODO Should we detail by status?
+            if (e.getStatus().isConnectorError()) {
+                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
+                LOGGER.severe("Could you check that the following service is up? "
+                        + serviceUrl);
+            } else if (e.getStatus().isClientError()) {
+                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
+            } else if (e.getStatus().isServerError()) {
+                LOGGER.severe("The server side encounters some issues, please try later.");
+            }
         }
     }
 
@@ -842,11 +867,14 @@ public class Introspector {
 
         o.println("SYNOPSIS");
         printSynopsis(o, Introspector.class, "[options] APPLICATION");
+        printSynopsis(o, Introspector.class,
+                "-l swagger [options] SWAGGER DEFINITION URL/PATH");
         o.println("DESCRIPTION");
         printSentence(
                 o,
                 "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class.");
+                "the full name of your Restlet application class or by the swagger definition available on the ",
+                "URL/PATH");
         printSentence(
                 o,
                 "If the whole process is successfull, it displays the url of the corresponding documentation.");
@@ -863,6 +891,10 @@ public class Introspector {
                 o,
                 "-d",
                 "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
+        printOption(
+                o,
+                "-l",
+                "The optional name of the description language of the definition you want to upload. Possible value: swagger");
         o.println("LOGGING");
         printSentence(
                 o,
@@ -1276,5 +1308,5 @@ public class Introspector {
         }
         return result;
     }
-    
+
 }

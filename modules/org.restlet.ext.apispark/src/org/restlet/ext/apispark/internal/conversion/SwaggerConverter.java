@@ -1,3 +1,36 @@
+/**
+ * Copyright 2005-2014 Restlet
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
 package org.restlet.ext.apispark.internal.conversion;
 
 import java.io.File;
@@ -36,13 +69,41 @@ import org.restlet.ext.apispark.internal.swagger.model.ResponseMessageDeclaratio
 import org.restlet.ext.apispark.internal.swagger.model.TypePropertyDeclaration;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SwaggerConverter {
+/**
+ * Retrieve a Swagger definition and convert it to Restlet Web API Definition
+ * 
+ * @author Cyprien Quilici
+ */
+
+public class SwaggerConverter extends ServerResource {
 
     /** Internal logger. */
     protected static Logger LOGGER = Context.getCurrentLogger();
+
+    public static void main(String[] args) {
+        SwaggerConverter sc = new SwaggerConverter();
+        // Definition definition =
+        // sc.getDefinition("http://petstore.swagger.wordnik.com/api/api-docs",
+        // "", "");
+        Definition definition = sc.getDefinition(
+                "https://apispark.com/apis/1505/versions/1/swagger",
+                "a70ec5d3-d58b-44d5-9dd0-d59aac452202",
+                "cba7e948-3b5e-45a4-bd0d-b6a008dd3b15");
+        // Definition definition =
+        // sc.getDefinition("/home/unencrypted/swagger-codegen/1505/api-docs.json",
+        // "", "");
+        try {
+            System.out.println(new ObjectMapper()
+                    .writeValueAsString(definition));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Definition getDefinition(String address, String userName,
             String password) {
@@ -51,10 +112,12 @@ public class SwaggerConverter {
         ResourceListing resourceListing = new ResourceListing();
         Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
         if (remote) {
+            LOGGER.info("Reading file: " + address);
             resourceListing = createAuthenticatedClientResource(address,
                     userName, password, apisparkAddress).get(
                     ResourceListing.class);
             for (ResourceDeclaration api : resourceListing.getApis()) {
+                LOGGER.info("Reading file: " + address + api.getPath());
                 apis.put(
                         api.getPath(),
                         createAuthenticatedClientResource(
@@ -68,13 +131,11 @@ public class SwaggerConverter {
                 resourceListing = om.readValue(resourceListingFile,
                         ResourceListing.class);
                 String basePath = resourceListingFile.getParent();
-                LOGGER.log(Level.INFO, "Base path: " + basePath);
+                LOGGER.info("Base path: " + basePath);
                 for (ResourceDeclaration api : resourceListing.getApis()) {
-                    apis.put(
-                            api.getPath(),
-                            createAuthenticatedClientResource(
-                                    basePath + api.getPath(), userName,
-                                    password, false).get(ApiDeclaration.class));
+                    LOGGER.info("Reading file " + basePath + api.getPath());
+                    apis.put(api.getPath(), om.readValue(new File(basePath
+                            + api.getPath()), ApiDeclaration.class));
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Cannot read file", e);
@@ -118,6 +179,7 @@ public class SwaggerConverter {
             rwadef.setLicense(swagDec.getInfo().getLicenseUrl());
             Contract rwadContract = new Contract();
             rwadContract.setName(swagDec.getInfo().getTitle());
+            LOGGER.info("Contract " + rwadContract.getName() + " added.");
             rwadContract.setDescription(swagDec.getInfo().getDescription());
             rwadef.setContract(rwadContract);
 
@@ -125,8 +187,14 @@ public class SwaggerConverter {
             Resource rwadResource;
             for (Entry<String, ApiDeclaration> entry : apis.entrySet()) {
                 ApiDeclaration swagApiResourceDec = entry.getValue();
-                List<String> apiProduces = swagApiResourceDec.getProduces();
-                List<String> apiConsumes = swagApiResourceDec.getConsumes();
+                List<String> apiProduces = new ArrayList<String>();
+                List<String> apiConsumes = new ArrayList<String>();
+                if (swagApiResourceDec.getProduces() != null) {
+                    apiProduces = swagApiResourceDec.getProduces();
+                }
+                if (swagApiResourceDec.getConsumes() != null) {
+                    apiConsumes = swagApiResourceDec.getConsumes();
+                }
 
                 for (ResourceDeclaration api : swagApiResourceDec.getApis()) {
                     declaredPathVariables = new ArrayList<String>();
@@ -137,6 +205,12 @@ public class SwaggerConverter {
                     Operation rwadOperation;
                     for (ResourceOperationDeclaration swagOperation : api
                             .getOperations()) {
+                        String methodName = swagOperation.getMethod();
+                        if (methodName.equals("OPTIONS")
+                                || methodName.equals("PATCH")) {
+                            LOGGER.info("Method " + methodName + " ignored.");
+                            continue;
+                        }
                         rwadOperation = new Operation();
                         rwadOperation.setMethod(swagOperation.getMethod());
                         rwadOperation.setName(swagOperation.getNickname());
@@ -276,6 +350,7 @@ public class SwaggerConverter {
                         rwadOperation
                                 .setDescription(swagOperation.getSummary());
                         rwadResource.getOperations().add(rwadOperation);
+                        LOGGER.info("Method " + methodName + " added.");
 
                         // Add representations
                         Iterator<Entry<String, ModelDeclaration>> representationsIt = swagApiResourceDec
@@ -295,7 +370,6 @@ public class SwaggerConverter {
                                     .getKey())) {
                                 declaredTypes.add(representationPair.getKey());
                                 Representation rwadRepr = new Representation();
-                                rwadRepr.setProperties(new ArrayList<Property>());
                                 rwadRepr.setName(representationPair.getKey());
                                 rwadRepr.setDescription(swagRepresentation
                                         .getDescription());
@@ -361,9 +435,14 @@ public class SwaggerConverter {
                                             .isUniqueItems());
 
                                     rwadRepr.getProperties().add(rwadProperty);
+                                    LOGGER.info("Property "
+                                            + rwadProperty.getName()
+                                            + " added.");
                                 }
 
                                 rwadContract.getRepresentations().add(rwadRepr);
+                                LOGGER.info("Representation "
+                                        + rwadRepr.getName() + " added.");
                             }
                         }
 
@@ -383,16 +462,18 @@ public class SwaggerConverter {
                     }
 
                     rwadef.getContract().getResources().add(rwadResource);
+                    LOGGER.info("Resource " + api.getPath() + " added.");
                 }
 
                 if (rwadef.getEndpoint() == null) {
                     rwadef.setEndpoint(swagApiResourceDec.getBasePath());
                 }
             }
-
+            LOGGER.info("Definition successfully retrieved from Swagger definition");
             return rwadef;
         } catch (ResourceException e) {
-            e.printStackTrace();
+            LOGGER.severe("Impossible to read your API definition, check your Swagger file compliance"
+                    + e);
         }
         return null;
     }
