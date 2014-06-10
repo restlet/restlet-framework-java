@@ -36,6 +36,8 @@ package org.restlet.ext.swagger;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.routing.Filter;
+import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 
 /**
@@ -48,6 +50,7 @@ import org.restlet.routing.Router;
  * introspecting the application itself, but you can override this behavior.
  * 
  * Sample code integration:
+ * 
  * <pre>
  * &#064;Override
  * public Restlet createInboundRoot() {
@@ -64,6 +67,55 @@ import org.restlet.routing.Router;
  * 
  */
 public class SwaggerApplication extends Application {
+
+    /**
+     * Returns the next router available.
+     * 
+     * @param current
+     *            The current Restlet to inspect.
+     * @return The first router available.
+     */
+    private static Router getNextRouter(Restlet current) {
+        Router result = null;
+        if (current instanceof Router) {
+            result = (Router) current;
+        } else if (current instanceof Filter) {
+            result = getNextRouter(((Filter) current).getNext());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the next router available.
+     * 
+     * @param current
+     *            The current Restlet to inspect.
+     * @return The first router available.
+     */
+    private static boolean isDocumented(Restlet current) {
+        boolean documented = false;
+
+        Router router = null;
+        if (current instanceof Router) {
+            router = (Router) current;
+            for (Route route : router.getRoutes()) {
+                if (isDocumented(route.getNext())) {
+                    documented = true;
+                    break;
+                }
+            }
+        } else if (current instanceof Filter) {
+            documented = isDocumented(((Filter) current).getNext());
+        } else if (current instanceof SwaggerSpecificationRestlet) {
+            documented = true;
+        }
+
+        return documented;
+    }
+
+    /** Indicates if this application can document herself. */
+    private boolean documented;
 
     /**
      * Defines two routes, one for the high level "Resource listing", and the
@@ -121,6 +173,28 @@ public class SwaggerApplication extends Application {
     }
 
     /**
+     * Overrides the current implementation. It checks that the application has
+     * been documented using a {@link SwaggerSpecificationRestlet}. By default,
+     * the documentation is attached to the high level router, with the
+     * "/api-docs" path.
+     */
+    @Override
+    public Restlet getInboundRoot() {
+        Restlet inboundRoot = super.getInboundRoot();
+        if (!documented) {
+            Router rootRouter = getNextRouter(inboundRoot);
+
+            // Check that the application has been documented.
+            documented = isDocumented(rootRouter);
+            if (!documented) {
+                attachSwaggerSpecificationRestlet(rootRouter);
+                documented = true;
+            }
+        }
+        return inboundRoot;
+    }
+
+    /**
      * The dedicated {@link Restlet} that is able to generation the Swagger
      * specification formats.
      * 
@@ -134,5 +208,4 @@ public class SwaggerApplication extends Application {
         result.setApiInboundRoot(this);
         return result;
     }
-
 }
