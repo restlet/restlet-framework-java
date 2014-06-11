@@ -44,7 +44,10 @@ public class ServiceTestSuite {
         // $JUnit-BEGIN$
         suite.addTestSuite(ConnegServiceTestCase.class);
         suite.addTestSuite(MetadataServiceTestCase.class);
+        // [ifndef jee]
         suite.addTestSuite(StatusServiceTestCase.class);
+        // [enddef]
+
         // $JUnit-END$
 
         return suite;
