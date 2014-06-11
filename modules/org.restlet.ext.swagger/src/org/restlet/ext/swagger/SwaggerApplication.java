@@ -120,12 +120,12 @@ public class SwaggerApplication extends Application {
      * 
      * @param router
      *            The router on which defining the new route.
-     * @param rlPath
+     * @param resourceListingPath
      *            The path to which attach the Restlet that serves the resource
      *            listing.
      * @param resourceListingRestlet
      *            The Restlet that serves the resource listing.
-     * @param apPath
+     * @param apiDeclarationPath
      *            The path to which attach the Restlet that serves the
      *            declaration of a specific resource.
      * @param apiDeclarationRestlet
@@ -133,10 +133,10 @@ public class SwaggerApplication extends Application {
      *            resource.
      */
     public void attachSwaggerDocumentationRestlets(Router router,
-            String rlPath, Restlet resourceListingRestlet, String apPath,
-            Restlet apiDeclarationRestlet) {
-        router.attach(rlPath, resourceListingRestlet);
-        router.attach(apPath, apiDeclarationRestlet);
+            String resourceListingPath, Restlet resourceListingRestlet,
+            String apiDeclarationPath, Restlet apiDeclarationRestlet) {
+        router.attach(resourceListingPath, resourceListingRestlet);
+        router.attach(apiDeclarationPath, apiDeclarationRestlet);
     }
 
     /**
@@ -191,11 +191,11 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * The dedicated {@link Restlet} that is able to generation the Swagger
-     * specification formats.
+     * The dedicated {@link Restlet} able to generate the Swagger specification
+     * formats.
      * 
-     * @return The {@link Restlet} that is able to generation the Swagger
-     *         specification formats.
+     * @return The {@link Restlet} able to generate the Swagger specification
+     *         formats.
      */
     public SwaggerSpecificationRestlet getSwaggerSpecificationRestlet(
             Context context) {
