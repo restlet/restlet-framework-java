@@ -194,8 +194,8 @@ public class Introspector {
 
             resource.setOperations(new ArrayList<Operation>());
             for (MethodInfo mi : ri.getMethods()) {
-                String methodName = mi.getMethod().getName().toUpperCase();
-                if (methodName.equals("OPTIONS") || methodName.equals("PATCH")) {
+                String methodName = mi.getMethod().getName();
+                if ("OPTIONS".equals(methodName) || "PATCH".equals(methodName)) {
                     LOGGER.info("Method " + methodName + " ignored.");
                     continue;
                 }
@@ -794,6 +794,8 @@ public class Introspector {
         if (application != null) {
             LOGGER.fine("Instantiate introspector");
             Introspector i = new Introspector(component, application);
+
+            LOGGER.fine("Generate documentation");
             definition = i.getDefinition();
             sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
         } else if (language != null) {
@@ -813,15 +815,16 @@ public class Introspector {
     private static void sendDefinition(Definition definition,
             String definitionId, String ulogin, String upwd, String serviceUrl) {
         try {
-            ClientResource cr = new ClientResource(serviceUrl + "definitions");
+            ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
-            LOGGER.fine("Generate documentation");
 
             if (definitionId == null) {
+                cr.addSegment("definitions");
                 LOGGER.fine("Create a new documentation");
                 cr.post(definition, MediaType.APPLICATION_JSON);
             } else {
-                cr.addSegment(definitionId);
+                cr.addSegment("apis").addSegment(definitionId)
+                        .addSegment("definitions");
                 LOGGER.fine("Update the documentation of "
                         + cr.getReference().toString());
                 cr.put(definition, MediaType.APPLICATION_JSON);

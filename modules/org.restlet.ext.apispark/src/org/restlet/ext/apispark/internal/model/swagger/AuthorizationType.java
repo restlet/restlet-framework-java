@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.swagger.model;
+package org.restlet.ext.apispark.internal.model.swagger;
 
 public abstract class AuthorizationType {
     public final static String BASIC_AUTH = "basicAuth";

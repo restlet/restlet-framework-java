@@ -1,34 +1,25 @@
-package org.restlet.ext.apispark.internal.swagger.model;
+package org.restlet.ext.apispark.internal.model.swagger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class ApiDeclaration {
+public class ResourceListing {
     private String apiVersion;
 
     private String swaggerVersion;
 
     private String basePath;
 
-    private String resourcePath;
-
-    private List<String> produces;
-
-    private List<String> consumes;
-
     // private String resourcePath";
     private List<ResourceDeclaration> apis;
 
-    private Map<String, ModelDeclaration> models;
+    private ApiInfo info;
 
     private AuthorizationsDeclaration authorizations;
-
-    private ApiInfo info;
 
     public String getApiVersion() {
         return apiVersion;
@@ -55,6 +46,9 @@ public class ApiDeclaration {
     }
 
     public List<ResourceDeclaration> getApis() {
+        if (apis == null) {
+            apis = new ArrayList<ResourceDeclaration>();
+        }
         return apis;
     }
 
@@ -68,44 +62,6 @@ public class ApiDeclaration {
 
     public void setInfo(ApiInfo info) {
         this.info = info;
-    }
-
-    public Map<String, ModelDeclaration> getModels() {
-        return models;
-    }
-
-    public void setModels(Map<String, ModelDeclaration> models) {
-        this.models = models;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public List<String> getProduces() {
-        if (produces == null) {
-            produces = new ArrayList<String>();
-        }
-        return produces;
-    }
-
-    public void setProduces(List<String> produces) {
-        this.produces = produces;
-    }
-
-    public List<String> getConsumes() {
-        if (consumes == null) {
-            consumes = new ArrayList<String>();
-        }
-        return consumes;
-    }
-
-    public void setConsumes(List<String> consumes) {
-        this.consumes = consumes;
     }
 
     public AuthorizationsDeclaration getAuthorizations() {

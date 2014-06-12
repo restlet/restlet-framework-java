@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.swagger.model;
+package org.restlet.ext.apispark.internal.model.swagger;
 
 import java.util.ArrayList;
 import java.util.List;

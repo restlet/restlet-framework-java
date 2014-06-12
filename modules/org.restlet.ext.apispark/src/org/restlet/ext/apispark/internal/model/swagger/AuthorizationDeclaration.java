@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.swagger.model;
+package org.restlet.ext.apispark.internal.model.swagger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
