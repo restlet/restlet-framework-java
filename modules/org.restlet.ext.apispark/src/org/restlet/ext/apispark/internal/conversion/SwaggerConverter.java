@@ -59,6 +59,9 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ServerResource;
+
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ModelDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
@@ -67,15 +70,10 @@ import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationDeclarat
 import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Retrieve a Swagger definition and convert it to Restlet Web API Definition
+ * Retrieves a Swagger definition and converts it to Restlet Web API Definition.
  * 
  * @author Cyprien Quilici
  */
@@ -85,28 +83,20 @@ public class SwaggerConverter extends ServerResource {
     /** Internal logger. */
     protected static Logger LOGGER = Context.getCurrentLogger();
 
-    public static void main(String[] args) {
-        SwaggerConverter sc = new SwaggerConverter();
-        // Definition definition =
-        // sc.getDefinition("http://petstore.swagger.wordnik.com/api/api-docs",
-        // "", "");
-        Definition definition = sc.getDefinition(
-                "https://apispark.com/apis/1505/versions/1/swagger",
-                "a70ec5d3-d58b-44d5-9dd0-d59aac452202",
-                "cba7e948-3b5e-45a4-bd0d-b6a008dd3b15");
-        // Definition definition =
-        // sc.getDefinition("/home/unencrypted/swagger-codegen/1505/api-docs.json",
-        // "", "");
-        try {
-            System.out.println(new ObjectMapper()
-                    .writeValueAsString(definition));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
-
     public Definition getDefinition(String address, String userName,
-            String password) {
+            String password) throws SwaggerConversionException {
+
+        // Check that URL is non empty and well formed
+        Pattern p = Pattern
+                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        if (address == null) {
+            throw new SwaggerConversionException("url",
+                    "You did not provide any URL");
+        }
+        if (!p.matcher(address).matches()) {
+            throw new SwaggerConversionException("url",
+                    "You did not provide a valid URL");
+        }
         boolean remote = address.startsWith("http");
         boolean apisparkAddress = apisparkAddress(address);
         ResourceListing resourceListing = new ResourceListing();
@@ -119,7 +109,7 @@ public class SwaggerConverter extends ServerResource {
             for (ResourceDeclaration api : resourceListing.getApis()) {
                 LOGGER.info("Reading file: " + address + api.getPath());
                 apis.put(
-                        api.getPath(),
+                        api.getPath().replaceAll("/", ""),
                         createAuthenticatedClientResource(
                                 address + api.getPath(), userName, password,
                                 apisparkAddress).get(ApiDeclaration.class));
@@ -165,8 +155,35 @@ public class SwaggerConverter extends ServerResource {
         return m.matches();
     }
 
-    public Definition convert(ResourceListing swagDec,
-            Map<String, ApiDeclaration> apis) {
+    private void validateFiles(ResourceListing resourceListing,
+            Map<String, ApiDeclaration> apiDeclarations)
+            throws SwaggerConversionException {
+        List<String> listedApis = new ArrayList<String>();
+        for (ResourceDeclaration resourceDeclaration : resourceListing
+                .getApis()) {
+            listedApis.add(resourceDeclaration.getPath().replaceAll("/", ""));
+        }
+        for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
+            if (!listedApis.contains(entry.getKey())) {
+                throw new SwaggerConversionException("file", "The file "
+                        + entry.getKey()
+                        + " is not mapped in your resource listing");
+            }
+        }
+        for (String listedApi : listedApis) {
+            if (!apiDeclarations.containsKey(listedApi)) {
+                throw new SwaggerConversionException("file", "The file "
+                        + listedApi + " is missing");
+            }
+        }
+    }
+
+    public Definition convert(ResourceListing resourceListing,
+            Map<String, ApiDeclaration> apiDeclarations)
+            throws SwaggerConversionException {
+
+        validateFiles(resourceListing, apiDeclarations);
+
         List<String> declaredTypes = new ArrayList<String>();
         List<String> declaredPathVariables;
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
@@ -174,18 +191,20 @@ public class SwaggerConverter extends ServerResource {
         // Get the Swagger compliant JSON
         try {
             Definition rwadef = new Definition();
-            rwadef.setVersion(swagDec.getApiVersion());
-            rwadef.setContact(swagDec.getInfo().getContact());
-            rwadef.setLicense(swagDec.getInfo().getLicenseUrl());
+            rwadef.setVersion(resourceListing.getApiVersion());
+            rwadef.setContact(resourceListing.getInfo().getContact());
+            rwadef.setLicense(resourceListing.getInfo().getLicenseUrl());
             Contract rwadContract = new Contract();
-            rwadContract.setName(swagDec.getInfo().getTitle());
+            rwadContract.setName(resourceListing.getInfo().getTitle());
             LOGGER.info("Contract " + rwadContract.getName() + " added.");
-            rwadContract.setDescription(swagDec.getInfo().getDescription());
+            rwadContract.setDescription(resourceListing.getInfo()
+                    .getDescription());
             rwadef.setContract(rwadContract);
 
             // Resource listing
             Resource rwadResource;
-            for (Entry<String, ApiDeclaration> entry : apis.entrySet()) {
+            for (Entry<String, ApiDeclaration> entry : apiDeclarations
+                    .entrySet()) {
                 ApiDeclaration swagApiResourceDec = entry.getValue();
                 List<String> apiProduces = new ArrayList<String>();
                 List<String> apiConsumes = new ArrayList<String>();
@@ -206,8 +225,8 @@ public class SwaggerConverter extends ServerResource {
                     for (ResourceOperationDeclaration swagOperation : api
                             .getOperations()) {
                         String methodName = swagOperation.getMethod();
-                        if (methodName.equals("OPTIONS")
-                                || methodName.equals("PATCH")) {
+                        if ("OPTIONS".equals(methodName)
+                                || "PATCH".equals(methodName)) {
                             LOGGER.info("Method " + methodName + " ignored.");
                             continue;
                         }
@@ -471,11 +490,12 @@ public class SwaggerConverter extends ServerResource {
             }
             LOGGER.info("Definition successfully retrieved from Swagger definition");
             return rwadef;
-        } catch (ResourceException e) {
-            LOGGER.severe("Impossible to read your API definition, check your Swagger file compliance"
+        } catch (Exception e) {
+            LOGGER.severe("Impossible to read your API definition, check your Swagger specs compliance"
                     + e);
+            throw new SwaggerConversionException("compliance",
+                    "Impossible to read your API definition, check your Swagger specs compliance");
         }
-        return null;
     }
 
     private Representation getRepresentationByName(String name,

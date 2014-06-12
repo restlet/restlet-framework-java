@@ -56,6 +56,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
+import org.restlet.ext.apispark.internal.conversion.SwaggerConversionException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerConverter;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
@@ -730,8 +731,9 @@ public class Introspector {
      * Main class, invoke this class without argument to get help instructions.
      * 
      * @param args
+     * @throws SwaggerConversionException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SwaggerConversionException {
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
