@@ -34,6 +34,7 @@
 package org.restlet.ext.apispark.internal.conversion;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,9 +60,6 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ServerResource;
-
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ModelDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
@@ -70,6 +68,9 @@ import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationDeclarat
 import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ServerResource;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -87,27 +88,24 @@ public class SwaggerConverter extends ServerResource {
             String password) throws SwaggerConversionException {
 
         // Check that URL is non empty and well formed
-        Pattern p = Pattern
-                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
         if (address == null) {
             throw new SwaggerConversionException("url",
                     "You did not provide any URL");
         }
-        if (!p.matcher(address).matches()) {
-            throw new SwaggerConversionException("url",
-                    "You did not provide a valid URL");
-        }
-        boolean remote = address.startsWith("http");
+        Pattern p = Pattern
+                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        boolean remote = p.matcher(address).matches();
         boolean apisparkAddress = apisparkAddress(address);
         ResourceListing resourceListing = new ResourceListing();
         Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
         if (remote) {
-            LOGGER.info("Reading file: " + address);
+            LOGGER.log(Level.FINE, "Reading file: " + address);
             resourceListing = createAuthenticatedClientResource(address,
                     userName, password, apisparkAddress).get(
                     ResourceListing.class);
             for (ResourceDeclaration api : resourceListing.getApis()) {
-                LOGGER.info("Reading file: " + address + api.getPath());
+                LOGGER.log(Level.FINE,
+                        "Reading file: " + address + api.getPath());
                 apis.put(
                         api.getPath().replaceAll("/", ""),
                         createAuthenticatedClientResource(
@@ -121,14 +119,15 @@ public class SwaggerConverter extends ServerResource {
                 resourceListing = om.readValue(resourceListingFile,
                         ResourceListing.class);
                 String basePath = resourceListingFile.getParent();
-                LOGGER.info("Base path: " + basePath);
+                LOGGER.log(Level.FINE, "Base path: " + basePath);
                 for (ResourceDeclaration api : resourceListing.getApis()) {
-                    LOGGER.info("Reading file " + basePath + api.getPath());
+                    LOGGER.log(Level.FINE,
+                            "Reading file " + basePath + api.getPath());
                     apis.put(api.getPath(), om.readValue(new File(basePath
                             + api.getPath()), ApiDeclaration.class));
                 }
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Cannot read file", e);
+                throw new SwaggerConversionException("file", e.getMessage());
             }
         }
         return convert(resourceListing, apis);
@@ -139,11 +138,12 @@ public class SwaggerConverter extends ServerResource {
         ClientResource cr = new ClientResource(url);
         cr.accept(MediaType.APPLICATION_JSON);
         if (apisparkAddress) {
-            LOGGER.fine("Internal source: " + userName + " " + password);
+            LOGGER.log(Level.FINE, "Internal source: " + userName + " "
+                    + password);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
                     password);
         } else {
-            LOGGER.fine("External source");
+            LOGGER.log(Level.FINE, "External source");
         }
         return cr;
     }
@@ -158,23 +158,14 @@ public class SwaggerConverter extends ServerResource {
     private void validateFiles(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws SwaggerConversionException {
-        List<String> listedApis = new ArrayList<String>();
-        for (ResourceDeclaration resourceDeclaration : resourceListing
-                .getApis()) {
-            listedApis.add(resourceDeclaration.getPath().replaceAll("/", ""));
+        int mappedFiles = resourceListing.getApis().size();
+        if (mappedFiles < apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "One of your API declarations is not mapped in your resource listing");
         }
-        for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
-            if (!listedApis.contains(entry.getKey())) {
-                throw new SwaggerConversionException("file", "The file "
-                        + entry.getKey()
-                        + " is not mapped in your resource listing");
-            }
-        }
-        for (String listedApi : listedApis) {
-            if (!apiDeclarations.containsKey(listedApi)) {
-                throw new SwaggerConversionException("file", "The file "
-                        + listedApi + " is missing");
-            }
+        if (mappedFiles > apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "Some API declarations are missing");
         }
     }
 
@@ -184,6 +175,7 @@ public class SwaggerConverter extends ServerResource {
 
         validateFiles(resourceListing, apiDeclarations);
 
+        boolean containsRawTypes = false;
         List<String> declaredTypes = new ArrayList<String>();
         List<String> declaredPathVariables;
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
@@ -196,7 +188,8 @@ public class SwaggerConverter extends ServerResource {
             rwadef.setLicense(resourceListing.getInfo().getLicenseUrl());
             Contract rwadContract = new Contract();
             rwadContract.setName(resourceListing.getInfo().getTitle());
-            LOGGER.info("Contract " + rwadContract.getName() + " added.");
+            LOGGER.log(Level.FINE, "Contract " + rwadContract.getName()
+                    + " added.");
             rwadContract.setDescription(resourceListing.getInfo()
                     .getDescription());
             rwadef.setContract(rwadContract);
@@ -224,10 +217,16 @@ public class SwaggerConverter extends ServerResource {
                     Operation rwadOperation;
                     for (ResourceOperationDeclaration swagOperation : api
                             .getOperations()) {
+                        if ("GET".equals(swagOperation.getMethod())
+                                && "void".equals(swagOperation.getType())) {
+
+                            continue;
+                        }
                         String methodName = swagOperation.getMethod();
                         if ("OPTIONS".equals(methodName)
                                 || "PATCH".equals(methodName)) {
-                            LOGGER.info("Method " + methodName + " ignored.");
+                            LOGGER.log(Level.FINE, "Method " + methodName
+                                    + " ignored.");
                             continue;
                         }
                         rwadOperation = new Operation();
@@ -235,19 +234,36 @@ public class SwaggerConverter extends ServerResource {
                         rwadOperation.setName(swagOperation.getNickname());
 
                         // Set variants
+                        Representation rwadFile;
                         for (String produced : apiProduces.isEmpty() ? swagOperation
                                 .getProduces() : apiProduces) {
+                            if (!containsRawTypes
+                                    && produced.equals("multipart/form-data")) {
+                                rwadFile = new Representation();
+                                rwadFile.setName("File");
+                                rwadFile.setRaw(true);
+                                containsRawTypes = true;
+                                rwadContract.getRepresentations().add(rwadFile);
+                            }
                             rwadOperation.getProduces().add(produced);
                         }
                         for (String consumed : apiConsumes.isEmpty() ? swagOperation
                                 .getConsumes() : apiConsumes) {
+                            if (!containsRawTypes
+                                    && consumed.equals("multipart/form-data")) {
+                                rwadFile = new Representation();
+                                rwadFile.setName("File");
+                                rwadFile.setRaw(true);
+                                containsRawTypes = true;
+                                rwadContract.getRepresentations().add(rwadFile);
+                            }
                             rwadOperation.getConsumes().add(consumed);
                         }
 
                         // Set outrepresentation
                         Body rwadOutRepr = new Body();
                         if (swagOperation.getType().equals("array")) {
-                            LOGGER.fine("Operation: "
+                            LOGGER.log(Level.FINE, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns an array");
                             rwadOutRepr.setArray(true);
@@ -260,7 +276,7 @@ public class SwaggerConverter extends ServerResource {
                                         .getItems().getRef());
                             }
                         } else {
-                            LOGGER.fine("Operation: "
+                            LOGGER.log(Level.FINE, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns a single Representation");
                             rwadOutRepr.setArray(false);
@@ -312,8 +328,14 @@ public class SwaggerConverter extends ServerResource {
                                     .get(0);
                             if (swagBodyParam.getType().equals("array")) {
                                 rwadInRepr.setArray(true);
-                                rwadInRepr.setRepresentation(swagBodyParam
-                                        .getItems().getType());
+                                if (swagBodyParam.getItems() != null
+                                        && swagBodyParam.getItems().getType() != null) {
+                                    rwadInRepr.setRepresentation(swagBodyParam
+                                            .getItems().getType());
+                                } else {
+                                    rwadInRepr.setRepresentation(swagBodyParam
+                                            .getItems().getRef());
+                                }
                             } else {
                                 rwadInRepr.setArray(false);
                                 rwadInRepr.setRepresentation(swagBodyParam
@@ -369,7 +391,8 @@ public class SwaggerConverter extends ServerResource {
                         rwadOperation
                                 .setDescription(swagOperation.getSummary());
                         rwadResource.getOperations().add(rwadOperation);
-                        LOGGER.info("Method " + methodName + " added.");
+                        LOGGER.log(Level.FINE, "Method " + methodName
+                                + " added.");
 
                         // Add representations
                         Iterator<Entry<String, ModelDeclaration>> representationsIt = swagApiResourceDec
@@ -454,13 +477,13 @@ public class SwaggerConverter extends ServerResource {
                                             .isUniqueItems());
 
                                     rwadRepr.getProperties().add(rwadProperty);
-                                    LOGGER.info("Property "
+                                    LOGGER.log(Level.FINE, "Property "
                                             + rwadProperty.getName()
                                             + " added.");
                                 }
 
                                 rwadContract.getRepresentations().add(rwadRepr);
-                                LOGGER.info("Representation "
+                                LOGGER.log(Level.FINE, "Representation "
                                         + rwadRepr.getName() + " added.");
                             }
                         }
@@ -481,20 +504,25 @@ public class SwaggerConverter extends ServerResource {
                     }
 
                     rwadef.getContract().getResources().add(rwadResource);
-                    LOGGER.info("Resource " + api.getPath() + " added.");
+                    LOGGER.log(Level.FINE, "Resource " + api.getPath()
+                            + " added.");
                 }
 
                 if (rwadef.getEndpoint() == null) {
                     rwadef.setEndpoint(swagApiResourceDec.getBasePath());
                 }
             }
-            LOGGER.info("Definition successfully retrieved from Swagger definition");
+            LOGGER.log(Level.FINE,
+                    "Definition successfully retrieved from Swagger definition");
             return rwadef;
         } catch (Exception e) {
-            LOGGER.severe("Impossible to read your API definition, check your Swagger specs compliance"
-                    + e);
-            throw new SwaggerConversionException("compliance",
-                    "Impossible to read your API definition, check your Swagger specs compliance");
+            if (e instanceof FileNotFoundException) {
+                throw new SwaggerConversionException("file",
+                        ((FileNotFoundException) e).getMessage());
+            } else {
+                throw new SwaggerConversionException("compliance",
+                        "Impossible to read your API definition, check your Swagger specs compliance");
+            }
         }
     }
 

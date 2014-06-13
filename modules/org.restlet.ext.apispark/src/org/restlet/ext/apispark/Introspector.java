@@ -380,7 +380,7 @@ public class Introspector {
                         + Application.class.getName() + " class.");
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Cannot locate the application class.", e);
+            LOGGER.log(Level.SEVERE, "Cannot locate the definition source.", e);
         } catch (InstantiationException e) {
             LOGGER.log(Level.SEVERE,
                     "Cannot instantiate the application class.", e);
@@ -731,7 +731,7 @@ public class Introspector {
      * Main class, invoke this class without argument to get help instructions.
      * 
      * @param args
-     * @throws SwaggerConversionException 
+     * @throws SwaggerConversionException
      */
     public static void main(String[] args) throws SwaggerConversionException {
         String ulogin = null;
