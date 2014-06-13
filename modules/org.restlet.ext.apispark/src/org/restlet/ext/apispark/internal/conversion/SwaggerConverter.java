@@ -217,11 +217,6 @@ public class SwaggerConverter extends ServerResource {
                     Operation rwadOperation;
                     for (ResourceOperationDeclaration swagOperation : api
                             .getOperations()) {
-                        if ("GET".equals(swagOperation.getMethod())
-                                && "void".equals(swagOperation.getType())) {
-
-                            continue;
-                        }
                         String methodName = swagOperation.getMethod();
                         if ("OPTIONS".equals(methodName)
                                 || "PATCH".equals(methodName)) {
