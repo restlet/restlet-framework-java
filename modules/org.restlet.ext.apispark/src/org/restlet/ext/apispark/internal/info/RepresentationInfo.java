@@ -39,8 +39,8 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 
 /**

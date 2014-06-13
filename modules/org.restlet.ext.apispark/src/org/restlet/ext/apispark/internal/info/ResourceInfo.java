@@ -203,7 +203,7 @@ public class ResourceInfo extends DocumentedInfo {
 
         if (!getDocumentations().isEmpty()) {
             String titleResource = getDocumentations().get(0).getTitle();
-            if (titleResource != null && !"".equals(titleResource)) {
+            if (titleResource != null && !titleResource.isEmpty()) {
                 DocumentationInfo doc = null;
 
                 if (result.getDocumentations().isEmpty()) {

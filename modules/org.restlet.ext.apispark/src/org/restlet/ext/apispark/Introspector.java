@@ -77,6 +77,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -788,7 +789,6 @@ public class Introspector {
                         upwd);
                 LOGGER.fine("Generate documentation");
                 Definition definition = i.getDefinition();
-
                 if (definitionId == null) {
                     LOGGER.fine("Create a new documentation");
                     cr.post(definition, MediaType.APPLICATION_JSON);
@@ -1092,11 +1092,6 @@ public class Introspector {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
-                if (ReflectUtils.isJdkClass(ri.getType())) {
-                    // Filter the representations we want to expose.
-                    // TODO find a better way to express such filter
-                    continue;
-                }
                 LOGGER.info("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 
@@ -1129,7 +1124,7 @@ public class Introspector {
                     rep.getProperties().add(p);
                 }
 
-                rep.setRaw(ri.isRaw());
+                rep.setRaw(ri.isRaw() || ReflectUtils.isJdkClass(ri.getType()));
                 contract.getRepresentations().add(rep);
             }
 
@@ -1276,5 +1271,5 @@ public class Introspector {
         }
         return result;
     }
-    
+
 }
