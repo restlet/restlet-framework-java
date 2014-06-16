@@ -41,11 +41,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -100,7 +100,8 @@ import org.restlet.routing.VirtualHost;
 public class Introspector {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Context.getCurrentLogger();
+    protected static Logger LOGGER = Logger.getLogger(Introspector.class
+            .getName());
 
     /**
      * Completes a map of representations with a list of representations.
@@ -173,7 +174,7 @@ public class Introspector {
                 addResources(application, contract, ri.getChildResources(),
                         resource.getResourcePath(), mapReps);
             }
-            LOGGER.info("Resource " + ri.getPath() + " added.");
+            LOGGER.fine("Resource " + ri.getPath() + " added.");
 
             if (ri.getMethods().isEmpty()) {
                 LOGGER.warning("Resource " + ri.getIdentifier()
@@ -198,10 +199,10 @@ public class Introspector {
             for (MethodInfo mi : ri.getMethods()) {
                 String methodName = mi.getMethod().getName();
                 if ("OPTIONS".equals(methodName) || "PATCH".equals(methodName)) {
-                    LOGGER.info("Method " + methodName + " ignored.");
+                    LOGGER.fine("Method " + methodName + " ignored.");
                     continue;
                 }
-                LOGGER.info("Method " + methodName + " added.");
+                LOGGER.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(toString(mi.getDocumentations()));
                 operation.setName(methodName);
@@ -735,6 +736,7 @@ public class Introspector {
      * @throws SwaggerConversionException
      */
     public static void main(String[] args) throws SwaggerConversionException {
+        Engine.register();
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
@@ -760,10 +762,19 @@ public class Introspector {
                 definitionId = getParameter(args, ++i);
             } else if ("-l".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
+            } else if ("-v".equals(args[i])) {
+                Engine.setLogLevel(Level.FINE);
             } else {
                 defSource = args[i];
             }
         }
+        Engine.getLogger("").getHandlers()[0]
+                .setFilter(new java.util.logging.Filter() {
+                    public boolean isLoggable(LogRecord record) {
+                        return record.getLoggerName().startsWith(
+                                "org.restlet.ext.apispark");
+                    }
+                });
 
         LOGGER.fine("Check parameters");
         if (isEmpty(serviceUrl)) {
@@ -795,10 +806,10 @@ public class Introspector {
         }
 
         if (application != null) {
-            LOGGER.fine("Instantiate introspector");
+            LOGGER.info("Instantiate introspector");
             Introspector i = new Introspector(component, application);
 
-            LOGGER.fine("Generate documentation");
+            LOGGER.info("Generate documentation");
             definition = i.getDefinition();
             sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
         } else if (language != null) {
@@ -823,12 +834,12 @@ public class Introspector {
 
             if (definitionId == null) {
                 cr.addSegment("definitions");
-                LOGGER.fine("Create a new documentation");
+                LOGGER.info("Create a new documentation");
                 cr.post(definition, MediaType.APPLICATION_JSON);
             } else {
                 cr.addSegment("apis").addSegment(definitionId)
                         .addSegment("definitions");
-                LOGGER.fine("Update the documentation of "
+                LOGGER.info("Update the documentation of "
                         + cr.getReference().toString());
                 cr.put(definition, MediaType.APPLICATION_JSON);
             }
@@ -901,13 +912,8 @@ public class Introspector {
                 o,
                 "-l",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        o.println("LOGGING");
-        printSentence(
-                o,
-                "You can get a detailled log of the process using the JDK's API.",
-                "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
-                "Here is the name of the used Logger: "
-                        + Introspector.class.getName());
+        printOption(o, "-v",
+                "The optional parameter switching the process to a verbose mode");
     }
 
     /**
@@ -1037,7 +1043,7 @@ public class Introspector {
                         "Please provide a name to your application, used "
                                 + contract.getName() + " by default.");
             }
-            LOGGER.info("Contract " + contract.getName() + " added.");
+            LOGGER.fine("Contract " + contract.getName() + " added.");
 
             // List of resources.
             contract.setResources(new ArrayList<Resource>());
@@ -1050,7 +1056,7 @@ public class Introspector {
                     .getRegisteredServers()) {
                 for (Protocol protocol : helper.getProtocols()) {
                     if (!protocols.contains(protocol.getName())) {
-                        LOGGER.info("Protocol " + protocol.getName()
+                        LOGGER.fine("Protocol " + protocol.getName()
                                 + " added.");
                         protocols.add(protocol.getName());
                     }
@@ -1130,7 +1136,7 @@ public class Introspector {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
-                LOGGER.info("Representation " + ri.getName() + " added.");
+                LOGGER.fine("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 
                 // TODO analyze
@@ -1142,7 +1148,7 @@ public class Introspector {
 
                 rep.setProperties(new ArrayList<Property>());
                 for (PropertyInfo pi : ri.getProperties()) {
-                    LOGGER.info("Property " + pi.getName() + " added.");
+                    LOGGER.fine("Property " + pi.getName() + " added.");
                     Property p = new Property();
                     p.setDefaultValue(pi.getDefaultValue());
                     p.setDescription(pi.getDescription());
@@ -1214,7 +1220,7 @@ public class Introspector {
      * @param application
      *            An application to introspect.
      */
-    public Introspector(Application application) {
+    public Introspector(Application application, boolean verbose) {
         this(null, application);
     }
 

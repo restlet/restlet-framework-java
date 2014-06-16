@@ -47,7 +47,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.model.Body;
@@ -82,7 +81,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SwaggerConverter extends ServerResource {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Context.getCurrentLogger();
+    protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
+            .getName());
 
     public Definition getDefinition(String address, String userName,
             String password) throws SwaggerConversionException {
@@ -138,12 +138,12 @@ public class SwaggerConverter extends ServerResource {
         ClientResource cr = new ClientResource(url);
         cr.accept(MediaType.APPLICATION_JSON);
         if (apisparkAddress) {
-            LOGGER.log(Level.FINE, "Internal source: " + userName + " "
+            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
                     + password);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
                     password);
         } else {
-            LOGGER.log(Level.FINE, "External source");
+            LOGGER.log(Level.FINER, "External source");
         }
         return cr;
     }
@@ -258,7 +258,7 @@ public class SwaggerConverter extends ServerResource {
                         // Set outrepresentation
                         Body rwadOutRepr = new Body();
                         if (swagOperation.getType().equals("array")) {
-                            LOGGER.log(Level.FINE, "Operation: "
+                            LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns an array");
                             rwadOutRepr.setArray(true);
@@ -271,7 +271,7 @@ public class SwaggerConverter extends ServerResource {
                                         .getItems().getRef());
                             }
                         } else {
-                            LOGGER.log(Level.FINE, "Operation: "
+                            LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns a single Representation");
                             rwadOutRepr.setArray(false);
