@@ -743,9 +743,8 @@ public class Introspector {
         String compName = null;
         String definitionId = null;
         String language = null;
-        boolean verbose = false;
 
-        LOGGER.info("Get parameters");
+        LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
             if ("-h".equals(args[i])) {
                 printHelp();
@@ -763,12 +762,11 @@ public class Introspector {
             } else if ("-l".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
             } else if ("-v".equals(args[i])) {
-                verbose = true;
+                Engine.setLogLevel(Level.FINE);
             } else {
                 defSource = args[i];
             }
         }
-        Engine.setLogLevel(verbose ? Level.FINE : Level.INFO);
         Engine.getLogger("").getHandlers()[0]
                 .setFilter(new java.util.logging.Filter() {
                     public boolean isLoggable(LogRecord record) {
@@ -777,7 +775,7 @@ public class Introspector {
                     }
                 });
 
-        LOGGER.info("Check parameters");
+        LOGGER.fine("Check parameters");
         if (isEmpty(serviceUrl)) {
             serviceUrl = "https://apispark.com/";
         }
@@ -808,7 +806,7 @@ public class Introspector {
 
         if (application != null) {
             LOGGER.info("Instantiate introspector");
-            Introspector i = new Introspector(component, application, verbose);
+            Introspector i = new Introspector(component, application);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
@@ -913,15 +911,8 @@ public class Introspector {
                 o,
                 "-l",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        o.println("LOGGING");
         printOption(o, "-v",
                 "The optional parameter switching the process to a verbose mode");
-        printSentence(
-                o,
-                "You can get a detailled log of the process using the JDK's API.",
-                "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
-                "Here is the name of the used Logger: "
-                        + Introspector.class.getName());
     }
 
     /**
@@ -1234,7 +1225,7 @@ public class Introspector {
      *            An application to introspect.
      */
     public Introspector(Application application, boolean verbose) {
-        this(null, application, verbose);
+        this(null, application);
     }
 
     /**
@@ -1246,8 +1237,7 @@ public class Introspector {
      * @param application
      *            An application to introspect.
      */
-    public Introspector(Component component, Application application,
-            boolean verbose) {
+    public Introspector(Component component, Application application) {
         definition = toDefinition(getApplicationInfo(application, null));
 
         if (component != null && definition != null) {

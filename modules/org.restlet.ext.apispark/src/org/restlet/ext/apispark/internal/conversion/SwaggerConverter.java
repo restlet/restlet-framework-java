@@ -81,8 +81,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SwaggerConverter extends ServerResource {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger
-            .getLogger(SwaggerConverter.class.getName());
+    protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
+            .getName());
 
     public Definition getDefinition(String address, String userName,
             String password) throws SwaggerConversionException {
