@@ -79,7 +79,6 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
