@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Body;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -374,8 +375,9 @@ public class SwaggerConverter extends ServerResource {
                                 body.setRepresentation(swagResponse
                                         .getResponseModel());
                                 rwadResponse.setBody(body);
-                                rwadResponse.setName("Error "
-                                        + swagResponse.getCode());
+                                rwadResponse.setName(Status.valueOf(
+                                        swagResponse.getCode())
+                                        .getReasonPhrase());
                                 rwadResponse.setCode(swagResponse.getCode());
                                 rwadResponse.setMessage(swagResponse
                                         .getMessage());
