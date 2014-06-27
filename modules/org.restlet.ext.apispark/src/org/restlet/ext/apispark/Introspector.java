@@ -33,6 +33,8 @@
 
 package org.restlet.ext.apispark;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -79,6 +81,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -813,6 +816,13 @@ public class Introspector {
 
     private static void sendDefinition(Definition definition,
             String definitionId, String ulogin, String upwd, String serviceUrl) {
+        try {
+            new JacksonRepresentation<Definition>(definition)
+                    .write(new FileOutputStream(new File(
+                            "/tmp/pourCyprien.json")));
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         try {
             ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);

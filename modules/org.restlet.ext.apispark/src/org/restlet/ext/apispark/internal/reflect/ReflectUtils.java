@@ -110,10 +110,14 @@ public class ReflectUtils {
      * @return
      */
     public static boolean isJdkClass(Class<?> clazz) {
-        if (clazz != null && clazz.getPackage() != null) {
-            return (clazz.getPackage().getName().startsWith("java.") || clazz
-                    .getPackage().getName().startsWith("javax."));
+        if (clazz != null) {
+            if (clazz.isPrimitive()) {
+                return true;
+            } else if (clazz.getPackage() != null) {
+                return (clazz.getPackage().getName().startsWith("java.") || clazz
+                        .getPackage().getName().startsWith("javax."));
 
+            }
         }
         return false;
     }
