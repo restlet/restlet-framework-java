@@ -33,8 +33,6 @@
 
 package org.restlet.ext.apispark;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -81,7 +79,6 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -814,63 +811,6 @@ public class Introspector {
         }
     }
 
-    private static void sendDefinition(Definition definition,
-            String definitionId, String ulogin, String upwd, String serviceUrl) {
-        try {
-            new JacksonRepresentation<Definition>(definition)
-                    .write(new FileOutputStream(new File(
-                            "/tmp/pourCyprien.json")));
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        try {
-            ClientResource cr = new ClientResource(serviceUrl);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
-
-            if (definitionId == null) {
-                cr.addSegment("definitions");
-                LOGGER.info("Create a new documentation");
-                cr.post(definition, MediaType.APPLICATION_JSON);
-            } else {
-                cr.addSegment("apis").addSegment(definitionId)
-                        .addSegment("definitions");
-                LOGGER.info("Update the documentation of "
-                        + cr.getReference().toString());
-                cr.put(definition, MediaType.APPLICATION_JSON);
-            }
-
-            LOGGER.fine("Display result");
-            System.out.println("Process successfully achieved.");
-            // This is not printed by a logger which may be muted.
-            if (cr.getResponseEntity() != null
-                    && cr.getResponseEntity().isAvailable()) {
-                try {
-                    cr.getResponseEntity().write(System.out);
-                    System.out.println();
-                } catch (IOException e) {
-                    // [PENDING] analysis
-                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
-                }
-            }
-            if (cr.getLocationRef() != null) {
-                System.out
-                        .println("Your Web API documentation is accessible at this URL: "
-                                + cr.getLocationRef());
-            }
-        } catch (ResourceException e) {
-            // TODO Should we detail by status?
-            if (e.getStatus().isConnectorError()) {
-                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
-                LOGGER.severe("Could you check that the following service is up? "
-                        + serviceUrl);
-            } else if (e.getStatus().isClientError()) {
-                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
-            } else if (e.getStatus().isServerError()) {
-                LOGGER.severe("The server side encounters some issues, please try later.");
-            }
-        }
-    }
-
     /**
      * Prints the instructions necessary to launch this tool.
      */
@@ -1009,6 +949,56 @@ public class Introspector {
     private static void printSynopsis(PrintStream o, Class<?> clazz,
             String command) {
         printSentence(o, 7, clazz.getName(), command);
+    }
+
+    private static void sendDefinition(Definition definition,
+            String definitionId, String ulogin, String upwd, String serviceUrl) {
+        try {
+            ClientResource cr = new ClientResource(serviceUrl);
+            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
+
+            if (definitionId == null) {
+                cr.addSegment("definitions");
+                LOGGER.info("Create a new documentation");
+                cr.post(definition, MediaType.APPLICATION_JSON);
+            } else {
+                cr.addSegment("apis").addSegment(definitionId)
+                        .addSegment("definitions");
+                LOGGER.info("Update the documentation of "
+                        + cr.getReference().toString());
+                cr.put(definition, MediaType.APPLICATION_JSON);
+            }
+
+            LOGGER.fine("Display result");
+            System.out.println("Process successfully achieved.");
+            // This is not printed by a logger which may be muted.
+            if (cr.getResponseEntity() != null
+                    && cr.getResponseEntity().isAvailable()) {
+                try {
+                    cr.getResponseEntity().write(System.out);
+                    System.out.println();
+                } catch (IOException e) {
+                    // [PENDING] analysis
+                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
+                }
+            }
+            if (cr.getLocationRef() != null) {
+                System.out
+                        .println("Your Web API documentation is accessible at this URL: "
+                                + cr.getLocationRef());
+            }
+        } catch (ResourceException e) {
+            // TODO Should we detail by status?
+            if (e.getStatus().isConnectorError()) {
+                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
+                LOGGER.severe("Could you check that the following service is up? "
+                        + serviceUrl);
+            } else if (e.getStatus().isClientError()) {
+                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
+            } else if (e.getStatus().isServerError()) {
+                LOGGER.severe("The server side encounters some issues, please try later.");
+            }
+        }
     }
 
     /**
@@ -1166,8 +1156,8 @@ public class Introspector {
                 rep.setRaw(ri.isRaw() || ReflectUtils.isJdkClass(ri.getType()));
                 contract.getRepresentations().add(rep);
             }
-
         }
+
         return result;
     }
 
