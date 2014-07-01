@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Operation {
 

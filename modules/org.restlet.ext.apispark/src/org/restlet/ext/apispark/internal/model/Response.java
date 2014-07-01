@@ -37,7 +37,7 @@ import org.restlet.data.Status;
 
 /**
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Response {
 

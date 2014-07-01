@@ -35,7 +35,7 @@ package org.restlet.ext.apispark.internal.model;
 
 /**
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Parse {
 

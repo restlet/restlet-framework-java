@@ -38,7 +38,7 @@ import org.restlet.data.Protocol;
 /**
  * TODO
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Endpoint {
 

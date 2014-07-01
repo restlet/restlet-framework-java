@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -953,6 +955,25 @@ public class Introspector {
 
     private static void sendDefinition(Definition definition,
             String definitionId, String ulogin, String upwd, String serviceUrl) {
+        Collections.sort(definition.getContract().getRepresentations(),
+                new Comparator<Representation>() {
+
+                    @Override
+                    public int compare(Representation o1, Representation o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                });
+        Collections.sort(definition.getContract().getResources(),
+                new Comparator<Resource>() {
+
+                    @Override
+                    public int compare(Resource o1, Resource o2) {
+                        return o1.getResourcePath().compareTo(
+                                o2.getResourcePath());
+                    }
+
+                });
         try {
             ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);

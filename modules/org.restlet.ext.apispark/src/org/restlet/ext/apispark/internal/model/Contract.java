@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * TODO
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Contract {
 
