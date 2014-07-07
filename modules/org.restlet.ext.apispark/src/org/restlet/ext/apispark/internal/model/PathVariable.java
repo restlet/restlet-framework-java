@@ -47,6 +47,11 @@ public class PathVariable {
 
     /** Name of this variable. */
     private String name;
+    
+    /**
+     * The expected type of the parameter. By default, string
+     */
+    private String type = "string";
 
     public String getDescription() {
         return description;
@@ -70,5 +75,13 @@ public class PathVariable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -62,6 +62,11 @@ public class Parameter {
      * possible values for it.
      */
     private List<String> possibleValues;
+    
+    /**
+     * The expected type of the parameter. By default, string
+     */
+    private String type = "string";
 
     /** Indicates whether the parameter is mandatory or not. */
     private boolean required;
@@ -115,5 +120,13 @@ public class Parameter {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
