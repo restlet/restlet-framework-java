@@ -1,33 +1,33 @@
 /**
  * Copyright 2005-2014 Restlet
- *
+ * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
  * 1.0 (the "Licenses"). You can select the license that you prefer but you may
  * not use this file except in compliance with one of these Licenses.
- *
+ * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- *
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.opensource.org/licenses/lgpl-3.0
- *
+ * 
  * You can obtain a copy of the LGPL 2.1 license at
  * http://www.opensource.org/licenses/lgpl-2.1
- *
+ * 
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.opensource.org/licenses/cddl1
- *
+ * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- *
+ * 
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- *
+ * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- *
+ * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -85,6 +85,7 @@ import org.restlet.ext.apispark.internal.info.ParameterInfo;
 import org.restlet.ext.apispark.internal.info.ParameterStyle;
 import org.restlet.ext.apispark.internal.info.PropertyInfo;
 import org.restlet.ext.apispark.internal.info.RepresentationInfo;
+import org.restlet.ext.apispark.internal.info.RequestInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Body;
@@ -99,6 +100,8 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -107,12 +110,13 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 import org.restlet.routing.TemplateRoute;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
  * console.
- *
+ * 
  * @author Thierry Boileau
  */
 public class JaxrsIntrospector {
@@ -122,7 +126,7 @@ public class JaxrsIntrospector {
 
     /**
      * Completes a map of representations with a list of representations.
-     *
+     * 
      * @param mapReps
      *            The map to complete.
      * @param representations
@@ -142,7 +146,7 @@ public class JaxrsIntrospector {
 
     /**
      * Completes the given {@link Contract} with the list of resources.
-     *
+     * 
      * @param application
      *            The source application.
      * @param contract
@@ -371,7 +375,7 @@ public class JaxrsIntrospector {
     /**
      * Returns an instance of what must be a subclass of {@link Application}.
      * Returns null in case of errors.
-     *
+     * 
      * @param className
      *            The name of the application class.
      * @return An instance of what must be a subclass of {@link Application}.
@@ -427,7 +431,7 @@ public class JaxrsIntrospector {
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
-     *
+     * 
      * @param request
      *            The current request.
      * @param response
@@ -439,17 +443,22 @@ public class JaxrsIntrospector {
         ApplicationInfo applicationInfo = new ApplicationInfo();
 
         for (Class<?> clazz : application.getClasses()) {
-            scan(clazz);
+            scan(clazz, applicationInfo, baseRef);
         }
-        for (Object object : application.getSingletons()) {
-            scan(object.getClass());
+        for (Object singleton : application.getSingletons()) {
+            if (singleton != null) {
+                scan(singleton.getClass(), applicationInfo, baseRef);
+            }
         }
         applicationInfo.getResources().setBaseRef(baseRef);
 
         return applicationInfo;
     }
 
-    private static void scan(Class<?> clazz) {
+    private static void scan(Class<?> clazz, ApplicationInfo info,
+            Reference baseRef) {
+        info.getResources().setBaseRef(baseRef);
+
         System.out.println(clazz);
         // Introduced by Jax-rs 2.0
         // ConstrainedTo ct = clazz.getAnnotation(ConstrainedTo.class);
@@ -479,108 +488,250 @@ public class JaxrsIntrospector {
 
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
-            scan(method);
+            scan(method, info, c, e, path, p);
         }
 
     }
 
-    private static void scan(Method method) {
+    private static String getPath(String rootPath, String relativePath) {
+        String result = null;
+
+        if (rootPath == null) {
+            rootPath = "/";
+        } else if (!rootPath.startsWith("/")) {
+            rootPath += "/" + rootPath;
+        }
+
+        if (rootPath.endsWith("/")) {
+            if (relativePath.startsWith("/")) {
+                result = rootPath + relativePath.substring(1);
+            } else {
+                result = rootPath + relativePath;
+            }
+        } else {
+            if (relativePath.startsWith("/")) {
+                result = rootPath + relativePath;
+            } else {
+                result = rootPath + "/" + relativePath;
+            }
+        }
+
+        return result;
+    }
+
+    private static String getPath(Path rootPath, Path relativePath) {
+        return getPath(((rootPath != null) ? rootPath.value() : null),
+                ((relativePath != null) ? relativePath.value() : null));
+    }
+
+    private static void scan(Method method, ApplicationInfo info,
+            Consumes cConsumes, Encoded cEncoded, Path cPath, Produces cProduces) {
+        MethodInfo mi = new MethodInfo();
+        // TODO set documentation?
+
+        // Path decide on which resource to put this method
+        Path path = method.getAnnotation(Path.class);
+        String fullPath = getPath(cPath, path);
+
+        ResourceInfo resource = null;
+        for (ResourceInfo ri : info.getResources().getResources()) {
+            if (fullPath.equals(ri.getPath())) {
+                resource = ri;
+                break;
+            }
+        }
+        if (resource == null) {
+            resource = new ResourceInfo();
+            // TODO how to set the identifier?
+            resource.setIdentifier(fullPath);
+            resource.setPath(fullPath);
+            info.getResources().getResources().add(resource);
+        }
+        resource.getMethods().add(mi);
+
+        PathParam pathparam = method.getAnnotation(PathParam.class);
+        if (pathparam != null) {
+            ParameterInfo pi = new ParameterInfo(pathparam.value(),
+                    ParameterStyle.TEMPLATE, "Path parameter: "
+                            + pathparam.value());
+            pi.setRequired(true);
+            resource.getParameters().add(pi);
+        } else {
+            // let's check that parameters are rightly specified
+            Template template = new Template(fullPath);
+            for (String var : template.getVariableNames()) {
+                boolean found = false;
+                for (ParameterInfo pi : resource.getParameters()) {
+                    if (pi.getStyle().equals(ParameterStyle.TEMPLATE)
+                            && var.equals(pi.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    ParameterInfo pi = new ParameterInfo(var,
+                            ParameterStyle.TEMPLATE, "Path parameter: " + var);
+                    pi.setRequired(true);
+                    resource.getParameters().add(pi);
+                }
+            }
+        }
+
         // Introduced by Jax-rs 2.0
         // BeanParam beanparam = method.getAnnotation(BeanParam.class);
-        Consumes consumes = method.getAnnotation(Consumes.class);
-        if (consumes != null) {
-            System.out.println("consumes " + consumes.value());
-        }
+
         CookieParam cookieparam = method.getAnnotation(CookieParam.class);
         if (cookieparam != null) {
             System.out.println("cookieparam " + cookieparam.value());
+            ParameterInfo pi = new ParameterInfo(cookieparam.value(),
+                    ParameterStyle.COOKIE, "Cookie parameter: "
+                            + cookieparam.value());
+            mi.getParameters().add(pi);
         }
-       
-        DefaultValue defaultvalue = method.getAnnotation(DefaultValue.class);
-        if (defaultvalue != null) {
-            System.out.println("defaultvalue " + defaultvalue.value());
-        }
-        DELETE delete = method.getAnnotation(DELETE.class);
-        if (delete != null) {
-            System.out.println("delete " + delete);
-        }
+        // TODO what encoded is designed for?
         Encoded encoded = method.getAnnotation(Encoded.class);
         System.out.println("encoded " + encoded);
         FormParam formparam = method.getAnnotation(FormParam.class);
         if (formparam != null) {
             System.out.println("formparam " + formparam.value());
+            // TODO what to do of method.getAnnotation(FormParam.class)?
         }
-        GET get = method.getAnnotation(GET.class);
-        if (get != null) {
-            System.out.println("get " + get);
-        }
-        HEAD head = method.getAnnotation(HEAD.class);
-        if (head != null) {
-            System.out.println("head " + head);
-        }
+
         HeaderParam headerparam = method.getAnnotation(HeaderParam.class);
         if (headerparam != null) {
             System.out.println("headerparam " + headerparam.value());
-        }
-        HttpMethod httpmethod = method.getAnnotation(HttpMethod.class);
-        if (httpmethod != null) {
-            System.out.println("httpmethod " + httpmethod.value());
+            ParameterInfo pi = new ParameterInfo(headerparam.value(),
+                    ParameterStyle.HEADER, "Header parameter: "
+                            + cookieparam.value());
+            mi.getParameters().add(pi);
         }
         MatrixParam matrixparam = method.getAnnotation(MatrixParam.class);
         if (matrixparam != null) {
             System.out.println("matrixparam " + matrixparam.value());
-        }
-        OPTIONS options = method.getAnnotation(OPTIONS.class);
-        if (options != null) {
-            System.out.println("options " + options);
-        }
-        Path path = method.getAnnotation(Path.class);
-        if (path != null) {
-            System.out.println("path " + path.value());
-        }
-        PathParam pathparam = method.getAnnotation(PathParam.class);
-        if (pathparam != null) {
-            System.out.println("pathparam " + pathparam.value());
-        }
-        POST post = method.getAnnotation(POST.class);
-        if (post != null) {
-            System.out.println("post " + post);
-        }
-        Produces produces = method.getAnnotation(Produces.class);
-        if (produces != null) {
-            System.out.println("produces " + produces.value());
-        }
-        PUT put = method.getAnnotation(PUT.class);
-        if (put != null) {
-            System.out.println("put " + put);
+            ParameterInfo pi = new ParameterInfo(matrixparam.value(),
+                    ParameterStyle.MATRIX, "Matrix parameter: "
+                            + cookieparam.value());
+            mi.getParameters().add(pi);
         }
         QueryParam queryparam = method.getAnnotation(QueryParam.class);
         if (queryparam != null) {
             System.out.println("queryparam " + queryparam.value());
+            ParameterInfo pi = new ParameterInfo(queryparam.value(),
+                    ParameterStyle.QUERY, "Query parameter: "
+                            + cookieparam.value());
+            mi.getParameters().add(pi);
         }
-        // Introduced by Jax-rs 2.0,
-        // Context context = method.getAnnotation(Context.class);
 
+        DefaultValue defaultvalue = method.getAnnotation(DefaultValue.class);
+        if (defaultvalue != null) {
+            System.out.println("defaultvalue " + defaultvalue.value());
+            // TODO method.getAnnotation(DefaultValue.class);?
+        }
+
+        DELETE delete = method.getAnnotation(DELETE.class);
+        GET get = method.getAnnotation(GET.class);
+        HEAD head = method.getAnnotation(HEAD.class);
+        OPTIONS options = method.getAnnotation(OPTIONS.class);
+        POST post = method.getAnnotation(POST.class);
+        PUT put = method.getAnnotation(PUT.class);
+        HttpMethod httpmethod = method.getAnnotation(HttpMethod.class);
+        if (delete != null) {
+            System.out.println("delete " + delete);
+            mi.setMethod(org.restlet.data.Method.DELETE);
+        } else if (get != null) {
+            System.out.println("get " + get);
+            mi.setMethod(org.restlet.data.Method.GET);
+        } else if (head != null) {
+            System.out.println("head " + head);
+            mi.setMethod(org.restlet.data.Method.HEAD);
+        } else if (httpmethod != null) {
+            System.out.println("httpmethod " + httpmethod.value());
+            mi.setMethod(org.restlet.data.Method.valueOf(httpmethod.value()));
+        } else if (options != null) {
+            System.out.println("options " + options);
+            mi.setMethod(org.restlet.data.Method.OPTIONS);
+        } else if (post != null) {
+            System.out.println("post " + post);
+            mi.setMethod(org.restlet.data.Method.POST);
+        } else if (put != null) {
+            System.out.println("put " + put);
+            mi.setMethod(org.restlet.data.Method.PUT);
+        }
+
+        Produces produces = method.getAnnotation(Produces.class);
+        if (produces == null) {
+            produces = cProduces;
+        }
+        Class<?> outputClass = method.getReturnType();
+        if (produces != null && outputClass != null
+                && !Void.class.equals(outputClass)) {
+            System.out.println("produces " + produces.value());
+            for (String produce : produces.value()) {
+                Variant variant = new Variant(MediaType.valueOf(produce));
+                RepresentationInfo representationInfo = null;
+
+                if (javax.ws.rs.core.Response.class
+                        .isAssignableFrom(outputClass)) {
+                    // We can't interpret such responses
+                    representationInfo = new RepresentationInfo(variant);
+                    representationInfo
+                            .setType(org.restlet.representation.Representation.class);
+                    representationInfo.setIdentifier(representationInfo
+                            .getType().getCanonicalName());
+                    representationInfo.setName(representationInfo.getType()
+                            .getSimpleName());
+                    representationInfo.setRaw(true);
+                } else {
+                    representationInfo = RepresentationInfo.describe(mi,
+                            outputClass, variant);
+                }
+                mi.getResponse().getRepresentations().add(representationInfo);
+            }
+        }
+
+        // Cope with the incoming representation
+        Consumes consumes = method.getAnnotation(Consumes.class);
+        if (consumes == null) {
+            consumes = cConsumes;
+        }
+        if (consumes != null) {
+            System.out.println("consumes " + consumes.value());
+            consumes.value();
+        }
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] parameterTypes = method.getParameterTypes();
         int i = 0;
         for (Annotation[] annotations : parameterAnnotations) {
             Class<?> parameterType = parameterTypes[i++];
             for (Annotation annotation : annotations) {
-                scanParameter(annotation, parameterType);
+                scanParameter(annotation, parameterType, info, resource, mi,
+                        consumes);
             }
         }
 
+        // Introduced by Jax-rs 2.0,
+        // Context context = method.getAnnotation(Context.class);
     }
 
     private static void scanParameter(Annotation annotation,
-            Class<?> parameterType) {
+            Class<?> parameterType, ApplicationInfo info,
+            ResourceInfo resource, MethodInfo method, Consumes consumes) {
+        // indicates that this parameters is instantiated from annotation
+        boolean valueComputed = false;
+        // TODO sounds like there are several level of parameters, be careful
+
         // Introduced by Jax-rs 2.0
         // BeanParam
+
         if (annotation instanceof CookieParam) {
+            valueComputed = true;
             CookieParam myAnnotation = (CookieParam) annotation;
             if (myAnnotation != null) {
                 System.out.println("cookieparam " + myAnnotation.value());
+                ParameterInfo pi = new ParameterInfo(myAnnotation.value(),
+                        ParameterStyle.COOKIE, "Cookie parameter: "
+                                + myAnnotation.value());
+                method.getRequest().getParameters().add(pi);
             }
             System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof DefaultValue) {
@@ -590,42 +741,116 @@ public class JaxrsIntrospector {
                 System.out.println("defaultvalue " + defaultvalue.value());
             }
         } else if (annotation instanceof Encoded) {
+            // ? valueComputed = true;
             Encoded encoded = (Encoded) annotation;
-                System.out.println("encoded " + encoded);
+            System.out.println("encoded " + encoded);
             System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof FormParam) {
+            valueComputed = true;
             FormParam formparam = (FormParam) annotation;
             if (formparam != null) {
                 System.out.println("formparam " + formparam.value());
+                RepresentationInfo ri = null;
+                // Gives an indication on the kind of representation handled
+                for (RepresentationInfo r : method.getRequest()
+                        .getRepresentations()) {
+                    if (r.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+                        ri = r;
+                        break;
+                    }
+                }
+                if (ri == null) {
+                    // TODO identify using the method's name, and the resource
+                    // path
+                    ri = new RepresentationInfo();
+                    ri.setIdentifier(method.getMethod().getName());
+                    ri.setName(method.getMethod().getName());
+                    ri.setMediaType(MediaType.APPLICATION_WWW_FORM);
+                    method.getRequest().getRepresentations().add(ri);
+                }
+                ParameterInfo pi = new ParameterInfo(formparam.value(),
+                        ParameterStyle.PLAIN, "body parameter: "
+                                + formparam.value());
+                method.getParameters().add(pi);
             }
-            System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof HeaderParam) {
+            valueComputed = true;
             HeaderParam headerparam = (HeaderParam) annotation;
             if (headerparam != null) {
                 System.out.println("headerparam " + headerparam.value());
+                System.out.println("param: " + parameterType.getName());
+                ParameterInfo pi = new ParameterInfo(headerparam.value(),
+                        ParameterStyle.HEADER, "header parameter: "
+                                + headerparam.value());
+                method.getParameters().add(pi);
             }
-            System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof MatrixParam) {
+            valueComputed = true;
             MatrixParam matrixparam = (MatrixParam) annotation;
             if (matrixparam != null) {
                 System.out.println("matrixparam " + matrixparam.value());
+                System.out.println("param: " + parameterType.getName());
+                ParameterInfo pi = new ParameterInfo(matrixparam.value(),
+                        ParameterStyle.MATRIX, "matrix parameter: "
+                                + matrixparam.value());
+                method.getParameters().add(pi);
             }
-            System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof PathParam) {
+            valueComputed = true;
             PathParam pathparam = (PathParam) annotation;
             if (pathparam != null) {
                 System.out.println("pathparam " + pathparam.value());
+                System.out.println("param: " + parameterType.getName());
+                boolean found = false;
+                for (ParameterInfo pi : resource.getParameters()) {
+                    if (pi.getName().equals(pathparam.value())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    ParameterInfo pi = new ParameterInfo(pathparam.value(),
+                            ParameterStyle.TEMPLATE, "Path parameter: "
+                                    + pathparam.value());
+                    resource.getParameters().add(pi);
+                }
             }
-            System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof QueryParam) {
+            valueComputed = true;
             QueryParam queryparam = (QueryParam) annotation;
             if (queryparam != null) {
                 System.out.println("queryparam " + queryparam.value());
+                ParameterInfo pi = new ParameterInfo(queryparam.value(),
+                        ParameterStyle.QUERY, "Query parameter: "
+                                + queryparam.value());
+                method.getParameters().add(pi);
             }
             System.out.println("param: " + parameterType.getName());
         } else if (annotation instanceof javax.ws.rs.core.Context) {
+            valueComputed = true;
             javax.ws.rs.core.Context context = (javax.ws.rs.core.Context) annotation;
             System.out.println("context: " + context);
+        }
+
+        if (!valueComputed) {
+            // We make the assumption this represents the body...
+            if (consumes != null && parameterType != null
+                    && !Void.class.equals(parameterType)) {
+                System.out.println("consumes " + consumes.value());
+                for (String consume : consumes.value()) {
+                    Variant variant = new Variant(MediaType.valueOf(consume));
+                    RepresentationInfo representationInfo = null;
+
+                    representationInfo = RepresentationInfo.describe(method,
+                            parameterType, variant);
+                    if (method.getRequest() == null) {
+                        method.setRequest(new RequestInfo());
+                    }
+                    method.getRequest().getRepresentations()
+                    .add(representationInfo);                        
+                }
+            }
+
         }
     }
 
@@ -682,7 +907,7 @@ public class JaxrsIntrospector {
 
     /**
      * Returns the value according to its index.
-     *
+     * 
      * @param args
      *            The argument table.
      * @param index
@@ -705,7 +930,7 @@ public class JaxrsIntrospector {
 
     /**
      * Completes the data available about a given Filter instance.
-     *
+     * 
      * @param applicationInfo
      *            The parent application.
      * @param filter
@@ -725,7 +950,7 @@ public class JaxrsIntrospector {
 
     /**
      * Completes the data available about a given Finder instance.
-     *
+     * 
      * @param applicationInfo
      *            The parent application.
      * @param resourceInfo
@@ -765,7 +990,7 @@ public class JaxrsIntrospector {
 
     /**
      * Completes the data available about a given Restlet instance.
-     *
+     * 
      * @param applicationInfo
      *            The parent application.
      * @param resourceInfo
@@ -793,7 +1018,7 @@ public class JaxrsIntrospector {
 
     /**
      * Returns the APISpark data about the given Route instance.
-     *
+     * 
      * @param applicationInfo
      *            The parent application.
      * @param route
@@ -824,7 +1049,7 @@ public class JaxrsIntrospector {
     /**
      * Completes the list of ResourceInfo instances for the given Router
      * instance.
-     *
+     * 
      * @param applicationInfo
      *            The parent application.
      * @param router
@@ -859,7 +1084,7 @@ public class JaxrsIntrospector {
 
     /**
      * Indicates if the given velue is either null or empty.
-     *
+     * 
      * @param value
      *            The value.
      * @return True if the value is either null or empty.
@@ -870,7 +1095,7 @@ public class JaxrsIntrospector {
 
     /**
      * Main class, invoke this class without argument to get help instructions.
-     *
+     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -932,7 +1157,14 @@ public class JaxrsIntrospector {
                         upwd);
                 LOGGER.fine("Generate documentation");
                 Definition definition = i.getDefinition();
-
+                JacksonRepresentation<Definition> jr = new JacksonRepresentation<Definition>(
+                        definition);
+                try {
+                    jr.write(System.out);
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
                 if (definitionId == null) {
                     LOGGER.fine("Create a new documentation");
                     cr.post(definition, MediaType.APPLICATION_JSON);
@@ -1018,7 +1250,7 @@ public class JaxrsIntrospector {
 
     /**
      * Displays an option and its description to the console.
-     *
+     * 
      * @param o
      *            The console stream.
      * @param option
@@ -1035,7 +1267,7 @@ public class JaxrsIntrospector {
     /**
      * Formats a list of Strings by lines of 80 characters maximul, and displays
      * it to the console.
-     *
+     * 
      * @param o
      *            The console.
      * @param shift
@@ -1091,7 +1323,7 @@ public class JaxrsIntrospector {
 
     /**
      * Displays a list of String to the console.
-     *
+     * 
      * @param o
      *            The console stream.
      * @param strings
@@ -1103,7 +1335,7 @@ public class JaxrsIntrospector {
 
     /**
      * Displays the command line.
-     *
+     * 
      * @param o
      *            The console stream.
      * @param clazz
@@ -1118,7 +1350,7 @@ public class JaxrsIntrospector {
 
     /**
      * Converts a ApplicationInfo to a {@link Definition} object.
-     *
+     * 
      * @param application
      *            The {@link ApplicationInfo} instance.
      * @return The definintion instance.
@@ -1283,7 +1515,7 @@ public class JaxrsIntrospector {
 
     /**
      * Concats a list of {@link DocumentationInfo} instances as a single String.
-     *
+     * 
      * @param dis
      *            The list of {@link DocumentationInfo} instances.
      * @return A String value.
@@ -1294,7 +1526,7 @@ public class JaxrsIntrospector {
 
     /**
      * Concats a list of {@link DocumentationInfo} instances as a single String.
-     *
+     * 
      * @param dis
      *            The list of {@link DocumentationInfo} instances.
      * @return A String value.
@@ -1321,7 +1553,7 @@ public class JaxrsIntrospector {
 
     /**
      * Constructor.
-     *
+     * 
      * @param application
      *            An application to introspect.
      */
@@ -1342,7 +1574,7 @@ public class JaxrsIntrospector {
 
     /**
      * Returns the current definition.
-     *
+     * 
      * @return The current definition.
      */
     private Definition getDefinition() {

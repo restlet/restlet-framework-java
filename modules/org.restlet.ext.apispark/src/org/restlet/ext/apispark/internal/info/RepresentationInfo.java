@@ -68,7 +68,7 @@ public class RepresentationInfo extends DocumentedInfo {
      *            The target variant.
      * @return The APISpark representation information.
      */
-    protected static RepresentationInfo describe(MethodInfo methodInfo,
+    public static RepresentationInfo describe(MethodInfo methodInfo,
             Class<?> representationClass, Variant variant) {
         RepresentationInfo result = null;
 
