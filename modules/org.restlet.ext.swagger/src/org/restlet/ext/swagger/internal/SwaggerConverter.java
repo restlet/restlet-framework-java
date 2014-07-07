@@ -33,16 +33,22 @@
 
 package org.restlet.ext.swagger.internal;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.restlet.Context;
-import org.restlet.data.Status;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.ext.swagger.internal.model.Body;
 import org.restlet.ext.swagger.internal.model.Contract;
 import org.restlet.ext.swagger.internal.model.Definition;
@@ -53,18 +59,18 @@ import org.restlet.ext.swagger.internal.model.QueryParameter;
 import org.restlet.ext.swagger.internal.model.Representation;
 import org.restlet.ext.swagger.internal.model.Resource;
 import org.restlet.ext.swagger.internal.model.Response;
-import org.restlet.ext.swagger.internal.swagger.ApiDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ApiInfo;
-import org.restlet.ext.swagger.internal.swagger.ItemsDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ModelDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ResourceDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ResourceListing;
-import org.restlet.ext.swagger.internal.swagger.ResourceOperationDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ResourceOperationParameterDeclaration;
-import org.restlet.ext.swagger.internal.swagger.ResponseMessageDeclaration;
-import org.restlet.ext.swagger.internal.swagger.TypePropertyDeclaration;
-import org.restlet.resource.ResourceException;
+import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ModelDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ResourceDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
+import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameterDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.ServerResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Retrieves a Swagger definition and converts it to Restlet Web API Definition.
@@ -75,105 +81,101 @@ import org.restlet.resource.ServerResource;
 public class SwaggerConverter extends ServerResource {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Context.getCurrentLogger();
+    protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
+            .getName());
 
-    public ResourceListing getResourcelisting(Definition definition) {
-        ResourceListing result = new ResourceListing();
+    public Definition getDefinition(String address, String userName,
+            String password) throws SwaggerConversionException {
 
-        // common properties
-        result.setApiVersion(definition.getVersion());
-        result.setInfo(new ApiInfo());
-        if (definition.getContact() != null) {
-            result.getInfo().setContact(definition.getContact());
+        // Check that URL is non empty and well formed
+        if (address == null) {
+            throw new SwaggerConversionException("url",
+                    "You did not provide any URL");
         }
-        if (definition.getLicense() != null) {
-            result.getInfo().setLicenseUrl(definition.getLicense());
-        }
-        if (definition.getContract() != null) {
-            result.getInfo().setTitle(definition.getContract().getName());
-            result.getInfo().setDescription(
-                    definition.getContract().getDescription());
-        }
-        result.setBasePath(definition.getEndpoint());
-        // operations
-        if (definition.getContract() != null
-                && definition.getContract().getResources() != null) {
-            result.setApis(new ArrayList<ResourceDeclaration>());
-
-            for (Resource resource : definition.getContract().getResources()) {
-                ResourceDeclaration rd = new ResourceDeclaration();
-                rd.setDescription(resource.getDescription());
-                rd.setPath(resource.getResourcePath());
-                rd.setOperations(new ArrayList<ResourceOperationDeclaration>());
-
-                if (resource.getOperations() != null) {
-                    for (Operation operation : resource.getOperations()) {
-                        ResourceOperationDeclaration rod = new ResourceOperationDeclaration();
-                        // rod.setAuthorizations(authorizations);
-                        rod.setConsumes(operation.getConsumes());
-                        // rod.setDeprecated(deprecated);
-                        rod.setMethod(operation.getMethod());
-                        rod.setNickname(operation.getName());
-                        // rod.setNotes(notes);
-                        rod.setParameters(parameters);
-                        rod.setProduces(operation.getProduces());
-                        rod.setResponseMessages(responseMessages);
-                        rod.setSummary(operation.getDescription());
-
-                        if (operation.getOutRepresentation() != null) {
-                            if (operation.getOutRepresentation().isArray()) {
-                                rod.setType("array");
-                                if (operation.getOutRepresentation()
-                                        .getRepresentation() != null) {
-                                    // TODO how to set either type or ref?
-                                    rod.setItems(new ItemsDeclaration());
-                                    rod.getItems().setType(
-                                            operation.getOutRepresentation()
-                                                    .getRepresentation());
-                                    rod.getItems().setRef(
-                                            operation.getOutRepresentation()
-                                                    .getRepresentation());
-                                    // rod.getItems().setFormat(format);;
-                                }
-                            } else {
-                                // TODO how to set either type or ref?
-                                rod.setType(operation.getOutRepresentation()
-                                        .getRepresentation());
-                                rod.setRef(operation.getOutRepresentation()
-                                        .getRepresentation());
-                            }
-                        } else if (operation.getResponses() != null) {
-                            for (Response response : operation.getResponses()) {
-                                if (Status.isSuccess(response.getCode())) {
-                                    
-                                    
-                                }
-                            }
-                        }
-                        
-                        rd.getOperations().add(rod);
-                    }
-                }
-
-                result.getApis().add(rd);
+        Pattern p = Pattern
+                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        boolean remote = p.matcher(address).matches();
+        boolean apisparkAddress = apisparkAddress(address);
+        ResourceListing resourceListing = new ResourceListing();
+        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
+        if (remote) {
+            LOGGER.log(Level.FINE, "Reading file: " + address);
+            resourceListing = createAuthenticatedClientResource(address,
+                    userName, password, apisparkAddress).get(
+                    ResourceListing.class);
+            for (ResourceDeclaration api : resourceListing.getApis()) {
+                LOGGER.log(Level.FINE,
+                        "Reading file: " + address + api.getPath());
+                apis.put(
+                        api.getPath().replaceAll("/", ""),
+                        createAuthenticatedClientResource(
+                                address + api.getPath(), userName, password,
+                                apisparkAddress).get(ApiDeclaration.class));
             }
-            definition.getContract().getRepresentations();
-            definition.getContract().getResources();
-
+        } else {
+            File resourceListingFile = new File(address);
+            ObjectMapper om = new ObjectMapper();
+            try {
+                resourceListing = om.readValue(resourceListingFile,
+                        ResourceListing.class);
+                String basePath = resourceListingFile.getParent();
+                LOGGER.log(Level.FINE, "Base path: " + basePath);
+                for (ResourceDeclaration api : resourceListing.getApis()) {
+                    LOGGER.log(Level.FINE,
+                            "Reading file " + basePath + api.getPath());
+                    apis.put(api.getPath(), om.readValue(new File(basePath
+                            + api.getPath()), ApiDeclaration.class));
+                }
+            } catch (IOException e) {
+                throw new SwaggerConversionException("file", e.getMessage());
+            }
         }
-
-        return result;
-
+        return convert(resourceListing, apis);
     }
 
-    public ApiDeclaration getApiDeclaration(String resource) {
-        ApiDeclaration result = null;
-
-        return result;
+    private ClientResource createAuthenticatedClientResource(String url,
+            String userName, String password, boolean apisparkAddress) {
+        ClientResource cr = new ClientResource(url);
+        cr.accept(MediaType.APPLICATION_JSON);
+        if (apisparkAddress) {
+            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
+                    + password);
+            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
+                    password);
+        } else {
+            LOGGER.log(Level.FINER, "External source");
+        }
+        return cr;
     }
 
-    public Definition convert(ResourceListing swagDec,
-            Map<String, ApiDeclaration> apis) {
+    private boolean apisparkAddress(String address) {
+        Pattern p = Pattern
+                .compile("http[s]?://[^/]+/apis/[0-9]+/versions/[0-9]+/swagger(/[a-z]+/?)?");
+        Matcher m = p.matcher(address);
+        return m.matches();
+    }
+
+    private void validateFiles(ResourceListing resourceListing,
+            Map<String, ApiDeclaration> apiDeclarations)
+            throws SwaggerConversionException {
+        int mappedFiles = resourceListing.getApis().size();
+        if (mappedFiles < apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "One of your API declarations is not mapped in your resource listing");
+        }
+        if (mappedFiles > apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "Some API declarations are missing");
+        }
+    }
+
+    public Definition convert(ResourceListing resourceListing,
+            Map<String, ApiDeclaration> apiDeclarations)
+            throws SwaggerConversionException {
+
+        validateFiles(resourceListing, apiDeclarations);
+
+        boolean containsRawTypes = false;
         List<String> declaredTypes = new ArrayList<String>();
         List<String> declaredPathVariables;
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
@@ -181,18 +183,21 @@ public class SwaggerConverter extends ServerResource {
         // Get the Swagger compliant JSON
         try {
             Definition rwadef = new Definition();
-            rwadef.setVersion(swagDec.getApiVersion());
-            rwadef.setContact(swagDec.getInfo().getContact());
-            rwadef.setLicense(swagDec.getInfo().getLicenseUrl());
+            rwadef.setVersion(resourceListing.getApiVersion());
+            rwadef.setContact(resourceListing.getInfo().getContact());
+            rwadef.setLicense(resourceListing.getInfo().getLicenseUrl());
             Contract rwadContract = new Contract();
-            rwadContract.setName(swagDec.getInfo().getTitle());
-            LOGGER.info("Contract " + rwadContract.getName() + " added.");
-            rwadContract.setDescription(swagDec.getInfo().getDescription());
+            rwadContract.setName(resourceListing.getInfo().getTitle());
+            LOGGER.log(Level.FINE, "Contract " + rwadContract.getName()
+                    + " added.");
+            rwadContract.setDescription(resourceListing.getInfo()
+                    .getDescription());
             rwadef.setContract(rwadContract);
 
             // Resource listing
             Resource rwadResource;
-            for (Entry<String, ApiDeclaration> entry : apis.entrySet()) {
+            for (Entry<String, ApiDeclaration> entry : apiDeclarations
+                    .entrySet()) {
                 ApiDeclaration swagApiResourceDec = entry.getValue();
                 List<String> apiProduces = new ArrayList<String>();
                 List<String> apiConsumes = new ArrayList<String>();
@@ -215,7 +220,8 @@ public class SwaggerConverter extends ServerResource {
                         String methodName = swagOperation.getMethod();
                         if ("OPTIONS".equals(methodName)
                                 || "PATCH".equals(methodName)) {
-                            LOGGER.info("Method " + methodName + " ignored.");
+                            LOGGER.log(Level.FINE, "Method " + methodName
+                                    + " ignored.");
                             continue;
                         }
                         rwadOperation = new Operation();
@@ -223,19 +229,36 @@ public class SwaggerConverter extends ServerResource {
                         rwadOperation.setName(swagOperation.getNickname());
 
                         // Set variants
+                        Representation rwadFile;
                         for (String produced : apiProduces.isEmpty() ? swagOperation
                                 .getProduces() : apiProduces) {
+                            if (!containsRawTypes
+                                    && produced.equals("multipart/form-data")) {
+                                rwadFile = new Representation();
+                                rwadFile.setName("File");
+                                rwadFile.setRaw(true);
+                                containsRawTypes = true;
+                                rwadContract.getRepresentations().add(rwadFile);
+                            }
                             rwadOperation.getProduces().add(produced);
                         }
                         for (String consumed : apiConsumes.isEmpty() ? swagOperation
                                 .getConsumes() : apiConsumes) {
+                            if (!containsRawTypes
+                                    && consumed.equals("multipart/form-data")) {
+                                rwadFile = new Representation();
+                                rwadFile.setName("File");
+                                rwadFile.setRaw(true);
+                                containsRawTypes = true;
+                                rwadContract.getRepresentations().add(rwadFile);
+                            }
                             rwadOperation.getConsumes().add(consumed);
                         }
 
                         // Set outrepresentation
                         Body rwadOutRepr = new Body();
-                        if ("array".equals(swagOperation.getType())) {
-                            LOGGER.fine("Operation: "
+                        if (swagOperation.getType().equals("array")) {
+                            LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns an array");
                             rwadOutRepr.setArray(true);
@@ -248,7 +271,7 @@ public class SwaggerConverter extends ServerResource {
                                         .getItems().getRef());
                             }
                         } else {
-                            LOGGER.fine("Operation: "
+                            LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns a single Representation");
                             rwadOutRepr.setArray(false);
@@ -298,10 +321,16 @@ public class SwaggerConverter extends ServerResource {
                             Body rwadInRepr = new Body();
                             ResourceOperationParameterDeclaration swagBodyParam = swagBodyParams
                                     .get(0);
-                            if ("array".equals(swagBodyParam.getType())) {
+                            if (swagBodyParam.getType().equals("array")) {
                                 rwadInRepr.setArray(true);
-                                rwadInRepr.setRepresentation(swagBodyParam
-                                        .getItems().getType());
+                                if (swagBodyParam.getItems() != null
+                                        && swagBodyParam.getItems().getType() != null) {
+                                    rwadInRepr.setRepresentation(swagBodyParam
+                                            .getItems().getType());
+                                } else {
+                                    rwadInRepr.setRepresentation(swagBodyParam
+                                            .getItems().getRef());
+                                }
                             } else {
                                 rwadInRepr.setArray(false);
                                 rwadInRepr.setRepresentation(swagBodyParam
@@ -357,7 +386,8 @@ public class SwaggerConverter extends ServerResource {
                         rwadOperation
                                 .setDescription(swagOperation.getSummary());
                         rwadResource.getOperations().add(rwadOperation);
-                        LOGGER.info("Method " + methodName + " added.");
+                        LOGGER.log(Level.FINE, "Method " + methodName
+                                + " added.");
 
                         // Add representations
                         Iterator<Entry<String, ModelDeclaration>> representationsIt = swagApiResourceDec
@@ -390,15 +420,19 @@ public class SwaggerConverter extends ServerResource {
                                             .next();
                                     TypePropertyDeclaration swagProperty = propertiesPair
                                             .getValue();
-                                    boolean isArray = "array"
-                                            .equals(swagProperty.getType());
-
                                     Property rwadProperty = new Property();
                                     rwadProperty.setName(propertiesPair
                                             .getKey());
 
                                     // Set property's type
-                                    if (isArray) {
+                                    if (swagProperty.getType() != null
+                                            && !swagProperty.getType().equals(
+                                                    "array")) {
+                                        rwadProperty.setType(swagProperty
+                                                .getType());
+                                    } else if (swagProperty.getType() != null
+                                            && swagProperty.getType().equals(
+                                                    "array")) {
                                         rwadProperty
                                                 .setType(swagProperty
                                                         .getItems().getType() != null ? swagProperty
@@ -406,9 +440,6 @@ public class SwaggerConverter extends ServerResource {
                                                         : swagProperty
                                                                 .getItems()
                                                                 .getRef());
-                                    } else if (swagProperty.getType() != null) {
-                                        rwadProperty.setType(swagProperty
-                                                .getType());
                                     } else if (swagProperty.getRef() != null) {
                                         rwadProperty.setType(swagProperty
                                                 .getRef());
@@ -424,8 +455,10 @@ public class SwaggerConverter extends ServerResource {
                                     } else {
                                         rwadProperty.setMinOccurs(0);
                                     }
-                                    if (isArray) {
-                                        rwadProperty.setMaxOccurs(-1);
+                                    if (swagProperty.getType() != null) {
+                                        rwadProperty.setMaxOccurs(swagProperty
+                                                .getType().equals("array") ? -1
+                                                : 1);
                                     } else {
                                         rwadProperty.setMaxOccurs(1);
                                     }
@@ -439,13 +472,13 @@ public class SwaggerConverter extends ServerResource {
                                             .isUniqueItems());
 
                                     rwadRepr.getProperties().add(rwadProperty);
-                                    LOGGER.info("Property "
+                                    LOGGER.log(Level.FINE, "Property "
                                             + rwadProperty.getName()
                                             + " added.");
                                 }
 
                                 rwadContract.getRepresentations().add(rwadRepr);
-                                LOGGER.info("Representation "
+                                LOGGER.log(Level.FINE, "Representation "
                                         + rwadRepr.getName() + " added.");
                             }
                         }
@@ -466,20 +499,26 @@ public class SwaggerConverter extends ServerResource {
                     }
 
                     rwadef.getContract().getResources().add(rwadResource);
-                    LOGGER.info("Resource " + api.getPath() + " added.");
+                    LOGGER.log(Level.FINE, "Resource " + api.getPath()
+                            + " added.");
                 }
 
                 if (rwadef.getEndpoint() == null) {
                     rwadef.setEndpoint(swagApiResourceDec.getBasePath());
                 }
             }
-            LOGGER.info("Definition successfully retrieved from Swagger definition");
+            LOGGER.log(Level.FINE,
+                    "Definition successfully retrieved from Swagger definition");
             return rwadef;
-        } catch (ResourceException e) {
-            LOGGER.severe("Impossible to read your API definition, check your Swagger file compliance"
-                    + e);
+        } catch (Exception e) {
+            if (e instanceof FileNotFoundException) {
+                throw new SwaggerConversionException("file",
+                        ((FileNotFoundException) e).getMessage());
+            } else {
+                throw new SwaggerConversionException("compliance",
+                        "Impossible to read your API definition, check your Swagger specs compliance");
+            }
         }
-        return null;
     }
 
     private Representation getRepresentationByName(String name,

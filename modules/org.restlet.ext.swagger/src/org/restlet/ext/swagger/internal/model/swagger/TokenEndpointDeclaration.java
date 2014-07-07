@@ -1,21 +1,21 @@
-package org.restlet.ext.swagger.internal.swagger;
+package org.restlet.ext.swagger.internal.model.swagger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class ImplicitDeclaration {
+public class TokenEndpointDeclaration {
 
-    private LoginEndpointDeclaration loginEndpoint;
+    private String url;
 
     private String tokenName;
 
-    public LoginEndpointDeclaration getLoginEndpoint() {
-        return loginEndpoint;
+    public String getUrl() {
+        return url;
     }
 
-    public void setLoginEndpoint(LoginEndpointDeclaration loginEndpoint) {
-        this.loginEndpoint = loginEndpoint;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getTokenName() {

@@ -1,4 +1,4 @@
-package org.restlet.ext.swagger.internal.swagger;
+package org.restlet.ext.swagger.internal.model.swagger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

@@ -46,7 +46,7 @@ public class Property {
      * Type of this property, either a primitive type or a reference to a
      * representation.
      */
-    private String dataType;
+    private String type;
 
     // TODO review comment
     /**
@@ -87,6 +87,11 @@ public class Property {
      * possible values.
      */
     private List<String> possibleValues;
+    
+    /**
+     * Specifies whether the property is required in all representations or not.
+     */
+    private boolean required;
 
     // TODO review comment
     /**
@@ -131,7 +136,7 @@ public class Property {
     }
 
     public String getType() {
-        return dataType;
+        return type;
     }
 
     public boolean isUniqueItems() {
@@ -171,10 +176,18 @@ public class Property {
     }
 
     public void setType(String type) {
-        this.dataType = type;
+        this.type = type;
     }
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 }

@@ -1,4 +1,4 @@
-package org.restlet.ext.swagger.internal.swagger;
+package org.restlet.ext.swagger.internal.model.swagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +55,9 @@ public class ApiDeclaration {
     }
 
     public List<ResourceDeclaration> getApis() {
+        if (apis == null) {
+            apis = new ArrayList<ResourceDeclaration>();
+        }
         return apis;
     }
 
