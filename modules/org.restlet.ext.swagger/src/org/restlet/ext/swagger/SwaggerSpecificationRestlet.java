@@ -41,6 +41,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.ext.swagger.internal.reflect.Introspector;
 
 import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.SwaggerSpec;
@@ -182,6 +183,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
         if (!Method.GET.equals(request.getMethod())) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
+
+        
+        Introspector i = new Introspector(null, application);
 
         Object resource = request.getAttributes().get("resource");
         Documentation documentation = null;
