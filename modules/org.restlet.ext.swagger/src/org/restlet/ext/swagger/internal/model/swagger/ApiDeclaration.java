@@ -1,6 +1,7 @@
 package org.restlet.ext.swagger.internal.model.swagger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,9 @@ public class ApiDeclaration {
     }
 
     public Map<String, ModelDeclaration> getModels() {
+        if (models == null) {
+            models = new HashMap<String, ModelDeclaration>();
+        }
         return models;
     }
 
