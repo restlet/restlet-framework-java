@@ -172,39 +172,34 @@ public class RWADefToSwaggerConverter extends ServerResource {
                 }
 
                 // Get in representation
-                Body inRepr = operation.getOutRepresentation();
-                ropd = new ResourceOperationParameterDeclaration();
-                ropd.setParamType("body");
-                ropd.setRequired(true);
-                if (inRepr.isArray()) {
-                    ropd.setType("array");
-                    if (isPrimitiveType(inRepr.getRepresentation())) {
-                        ropd.getItems().setType(inRepr.getRepresentation());
-                    } else {
-                        ropd.getItems().setRef(inRepr.getRepresentation());
-                    }
-                } else {
+                Body inRepr = operation.getInRepresentation();
+                if (inRepr != null) {
+                    ropd = new ResourceOperationParameterDeclaration();
+                    ropd.setParamType("body");
+                    ropd.setRequired(true);
                     ropd.setType(inRepr.getRepresentation());
+                    if (inRepr.getRepresentation() != null) {
+                        usedModels.add(inRepr.getRepresentation());
+                    }
+                    rod.getParameters().add(ropd);
                 }
-                if (inRepr.getRepresentation() != null) {
-                    usedModels.add(inRepr.getRepresentation());
-                }
-                rod.getParameters().add(ropd);
 
                 // Get out representation
                 Body outRepr = operation.getOutRepresentation();
-                if (outRepr.isArray()) {
-                    rod.setType("array");
-                    if (isPrimitiveType(outRepr.getRepresentation())) {
-                        rod.getItems().setType(outRepr.getRepresentation());
+                if (outRepr != null) {
+                    if (outRepr.isArray()) {
+                        rod.setType("array");
+                        if (isPrimitiveType(outRepr.getRepresentation())) {
+                            rod.getItems().setType(outRepr.getRepresentation());
+                        } else {
+                            rod.getItems().setRef(outRepr.getRepresentation());
+                        }
                     } else {
-                        rod.getItems().setRef(outRepr.getRepresentation());
+                        rod.setType(outRepr.getRepresentation());
                     }
-                } else {
-                    rod.setType(outRepr.getRepresentation());
-                }
-                if (outRepr.getRepresentation() != null) {
-                    usedModels.add(outRepr.getRepresentation());
+                    if (outRepr.getRepresentation() != null) {
+                        usedModels.add(outRepr.getRepresentation());
+                    }
                 }
 
                 // Get query parameters

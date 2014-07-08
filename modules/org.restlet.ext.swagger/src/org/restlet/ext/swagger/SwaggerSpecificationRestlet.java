@@ -38,12 +38,18 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.ext.swagger.internal.RWADefToSwaggerConverter;
+import org.restlet.ext.swagger.internal.model.Definition;
+import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
 import org.restlet.ext.swagger.internal.reflect.Introspector;
+import org.restlet.util.Series;
 
-import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.SwaggerSpec;
 
 /**
@@ -99,19 +105,21 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public SwaggerSpecificationRestlet(Context context) {
         super(context);
-        swaggerVersion = SwaggerSpec.version();
+        swaggerVersion = "1.2";
     }
 
     /**
      * Returns the Swagger documentation of a given resource, also known as
      * "API Declaration" in Swagger vocabulary.
      * 
-     * @param resourcePath
-     *            The path of the resource to describe.
-     * @return The Swagger documentation of a given resource
+     * @param category
+     *            The category of the resource to describe.
+     * @param def
+     *            The RWADef definition of the application
+     * @return The API declaration
      */
-    public Documentation getApiDeclaration(String resourcePath) {
-        return null;
+    public ApiDeclaration getApiDeclaration(String category, Definition def) {
+        return new RWADefToSwaggerConverter().getApiDeclaration(category, def);
     }
 
     /**
@@ -163,8 +171,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the whole resource listing of the
      *         Application.
      */
-    public Documentation getResourceListing() {
-        return null;
+    public ResourceListing getResourceListing(Definition def) {
+        return new RWADefToSwaggerConverter().getResourcelisting(def);
     }
 
     /**
@@ -176,30 +184,41 @@ public class SwaggerSpecificationRestlet extends Restlet {
         return swaggerVersion;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
+
+        // CORS support for Swagger-UI
+        Series<Header> headers = new Series<Header>(Header.class);
+        headers.set(
+                "Access-Control-Expose-Headers",
+                "Authorization, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-OAuth-Scopes, X-Accepted-OAuth-Scopes");
+        headers.set("Access-Control-Allow-Headers", "Authorization,");
+        headers.set("Access-Control-Allow-Credentials", "true");
+        headers.set("Access-Control-Allow-Methods", "GET");
+        Series<Header> reqHeaders = (Series<Header>) request.getAttributes()
+                .get(HeaderConstants.ATTRIBUTE_HEADERS);
+        String requestOrigin = reqHeaders.getFirstValue("Origin", "*");
+        headers.set("Access-Control-Allow-Origin", requestOrigin);
+        response.getAttributes()
+                .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         if (!Method.GET.equals(request.getMethod())) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
-        
         Introspector i = new Introspector(null, application);
+        Definition rwadef = i.getDefinition();
 
         Object resource = request.getAttributes().get("resource");
-        Documentation documentation = null;
-        if (resource instanceof String) {
-            documentation = getApiDeclaration((String) resource);
-        } else {
-            documentation = getResourceListing();
-        }
 
-        if (response.getEntity() != null) {
-            response.setEntity(new JacksonRepresentation<Documentation>(
-                    documentation));
+        if (resource instanceof String) {
+            response.setEntity(new JacksonRepresentation<ApiDeclaration>(
+                    getApiDeclaration((String) resource, rwadef)));
         } else {
-            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            response.setEntity(new JacksonRepresentation<ResourceListing>(
+                    getResourceListing(rwadef)));
         }
     }
 

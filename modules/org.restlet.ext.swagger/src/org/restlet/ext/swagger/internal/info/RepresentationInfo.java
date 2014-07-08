@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.swagger.internal.model.Representation;
 import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
 
@@ -99,8 +98,8 @@ public class RepresentationInfo extends DocumentedInfo {
         result.setName(clazz.getSimpleName());
 
         // TODO we don't introspect jdk's class
-        if (Representation.class.isAssignableFrom(clazz)
-                || ReflectUtils.isJdkClass(clazz)) {
+        if (org.restlet.representation.Representation.class
+                .isAssignableFrom(clazz) || ReflectUtils.isJdkClass(clazz)) {
             result.setRaw(true);
         } else {
             // TODO support parent types
