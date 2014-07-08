@@ -177,7 +177,11 @@ public class RWADefToSwaggerConverter extends ServerResource {
                     ropd = new ResourceOperationParameterDeclaration();
                     ropd.setParamType("body");
                     ropd.setRequired(true);
-                    ropd.setType(inRepr.getRepresentation());
+                    if (inRepr.getRepresentation().equals("Representation")) {
+                        ropd.setType("File");
+                    } else {
+                        ropd.setType(inRepr.getRepresentation());
+                    }
                     if (inRepr.getRepresentation() != null) {
                         usedModels.add(inRepr.getRepresentation());
                     }

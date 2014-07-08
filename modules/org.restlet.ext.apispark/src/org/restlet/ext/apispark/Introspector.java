@@ -1261,7 +1261,7 @@ public class Introspector {
      * 
      * @return The current definition.
      */
-    private Definition getDefinition() {
+    public Definition getDefinition() {
         return definition;
     }
 

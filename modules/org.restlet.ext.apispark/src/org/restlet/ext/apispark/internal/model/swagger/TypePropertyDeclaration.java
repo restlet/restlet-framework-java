@@ -27,6 +27,7 @@ public class TypePropertyDeclaration {
     private boolean uniqueItems;
 
     @JsonProperty("enum")
+    @JsonInclude(Include.NON_EMPTY)
     private List<String> enum_;
 
     public String getType() {

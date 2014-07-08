@@ -40,6 +40,7 @@ public class ResourceOperationParameterDeclaration {
     private String defaultValue;
 
     @JsonProperty("enum")
+    @JsonInclude(Include.NON_EMPTY)
     private List<String> enum_;
 
     private boolean allowMultiple;
