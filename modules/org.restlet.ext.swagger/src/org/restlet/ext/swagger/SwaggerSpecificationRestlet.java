@@ -88,6 +88,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The version of Swagger. */
     private String swaggerVersion;
 
+    /** The RWADef of the API. */
+    private Definition rwadef;
+
     /**
      * Default constructor.<br>
      * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
@@ -114,12 +117,15 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * 
      * @param category
      *            The category of the resource to describe.
-     * @param def
-     *            The RWADef definition of the application
      * @return The API declaration
      */
-    public ApiDeclaration getApiDeclaration(String category, Definition def) {
-        return new RWADefToSwaggerConverter().getApiDeclaration(category, def);
+    public ApiDeclaration getApiDeclaration(String category) {
+        if (rwadef == null) {
+            Introspector i = new Introspector(application, false);
+            rwadef = i.getDefinition();
+        }
+        return new RWADefToSwaggerConverter().getApiDeclaration(category,
+                rwadef);
     }
 
     /**
@@ -171,8 +177,12 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the whole resource listing of the
      *         Application.
      */
-    public ResourceListing getResourceListing(Definition def) {
-        return new RWADefToSwaggerConverter().getResourcelisting(def);
+    public ResourceListing getResourceListing() {
+        if (rwadef == null) {
+            Introspector i = new Introspector(application, false);
+            rwadef = i.getDefinition();
+        }
+        return new RWADefToSwaggerConverter().getResourcelisting(rwadef);
     }
 
     /**
@@ -208,17 +218,14 @@ public class SwaggerSpecificationRestlet extends Restlet {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
-        Introspector i = new Introspector(null, application);
-        Definition rwadef = i.getDefinition();
-
         Object resource = request.getAttributes().get("resource");
 
         if (resource instanceof String) {
             response.setEntity(new JacksonRepresentation<ApiDeclaration>(
-                    getApiDeclaration((String) resource, rwadef)));
+                    getApiDeclaration((String) resource)));
         } else {
             response.setEntity(new JacksonRepresentation<ResourceListing>(
-                    getResourceListing(rwadef)));
+                    getResourceListing()));
         }
     }
 
