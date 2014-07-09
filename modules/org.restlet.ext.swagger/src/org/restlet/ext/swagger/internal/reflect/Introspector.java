@@ -33,17 +33,11 @@
 
 package org.restlet.ext.swagger.internal.reflect;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
@@ -51,15 +45,11 @@ import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
-import org.restlet.ext.swagger.internal.SwaggerConversionException;
-import org.restlet.ext.swagger.internal.SwaggerConverter;
 import org.restlet.ext.swagger.internal.info.ApplicationInfo;
 import org.restlet.ext.swagger.internal.info.DocumentationInfo;
 import org.restlet.ext.swagger.internal.info.MethodInfo;
@@ -80,11 +70,8 @@ import org.restlet.ext.swagger.internal.model.QueryParameter;
 import org.restlet.ext.swagger.internal.model.Representation;
 import org.restlet.ext.swagger.internal.model.Resource;
 import org.restlet.ext.swagger.internal.model.Response;
-import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
-import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
@@ -340,60 +327,6 @@ public class Introspector {
     }
 
     /**
-     * Returns an instance of what must be a subclass of {@link Application}.
-     * Returns null in case of errors.
-     * 
-     * @param className
-     *            The name of the application class.
-     * @return An instance of what must be a subclass of {@link Application}.
-     */
-    private static Application getApplication(String className) {
-        Application result = null;
-
-        if (className == null) {
-            return result;
-        }
-
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-            if (Application.class.isAssignableFrom(clazz)) {
-                result = (Application) clazz.getConstructor().newInstance();
-            } else {
-                LOGGER.log(Level.SEVERE, className
-                        + " does not seem to a valid subclass of "
-                        + Application.class.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Cannot locate the definition source.", e);
-        } catch (InstantiationException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (IllegalAccessException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (IllegalArgumentException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Check that the application class has an empty constructor.",
-                    e);
-        } catch (InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (NoSuchMethodException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Check that the application class has an empty constructor.",
-                    e);
-        } catch (SecurityException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
@@ -426,58 +359,6 @@ public class Introspector {
         //
 
         return applicationInfo;
-    }
-
-    /**
-     * Returns an instance of what must be a subclass of {@link Component}.
-     * Returns null in case of errors.
-     * 
-     * @param className
-     *            The name of the component class.
-     * @return An instance of what must be a subclass of {@link Component}.
-     */
-    private static Component getComponent(String className) {
-        Component result = null;
-
-        if (className == null) {
-            return result;
-        }
-
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-            if (Component.class.isAssignableFrom(clazz)) {
-                result = (Component) clazz.getConstructor().newInstance();
-            } else {
-                LOGGER.log(Level.SEVERE, className
-                        + " does not seem to a valid subclass of "
-                        + Component.class.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Cannot locate the component class.", e);
-        } catch (InstantiationException e) {
-            LOGGER.log(Level.SEVERE, "Cannot instantiate the component class.",
-                    e);
-        } catch (IllegalAccessException e) {
-            LOGGER.log(Level.SEVERE, "Cannot instantiate the component class.",
-                    e);
-        } catch (IllegalArgumentException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Check that the component class has an empty constructor.",
-                    e);
-        } catch (InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE, "Cannot instantiate the component class.",
-                    e);
-        } catch (NoSuchMethodException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Check that the component class has an empty constructor.",
-                    e);
-        } catch (SecurityException e) {
-            LOGGER.log(Level.SEVERE, "Cannot instantiate the component class.",
-                    e);
-        }
-
-        return result;
     }
 
     /**
@@ -522,29 +403,6 @@ public class Introspector {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the value according to its index.
-     * 
-     * @param args
-     *            The argument table.
-     * @param index
-     *            The index of the argument.
-     * @return The value of the given argument.
-     */
-    private static String getParameter(String[] args, int index) {
-        if (index >= args.length) {
-            return null;
-        } else {
-            String value = args[index];
-            if ("-s".equals(value) || "-u".equals(value) || "-p".equals(value)
-                    || "-d".equals(value) || "-c".equals(value)) {
-                // In case the given value is actually an option, reset it.
-                value = null;
-            }
-            return value;
-        }
     }
 
     /**
@@ -703,323 +561,6 @@ public class Introspector {
         }
 
         return result;
-    }
-
-    /**
-     * Indicates if the given velue is either null or empty.
-     * 
-     * @param value
-     *            The value.
-     * @return True if the value is either null or empty.
-     */
-    private static boolean isEmpty(String value) {
-        return value == null || value.isEmpty();
-    }
-
-    /**
-     * Main class, invoke this class without argument to get help instructions.
-     * 
-     * @param args
-     * @throws SwaggerConversionException
-     */
-    public static void main(String[] args) throws SwaggerConversionException {
-        Engine.register();
-        String ulogin = null;
-        String upwd = null;
-        String serviceUrl = null;
-        String defSource = null;
-        String compName = null;
-        String definitionId = null;
-        String language = null;
-
-        LOGGER.fine("Get parameters");
-        for (int i = 0; i < (args.length); i++) {
-            if ("-h".equals(args[i])) {
-                printHelp();
-                System.exit(0);
-            } else if ("-u".equals(args[i])) {
-                ulogin = getParameter(args, ++i);
-            } else if ("-p".equals(args[i])) {
-                upwd = getParameter(args, ++i);
-            } else if ("-s".equals(args[i])) {
-                serviceUrl = getParameter(args, ++i);
-            } else if ("-c".equals(args[i])) {
-                compName = getParameter(args, ++i);
-            } else if ("-d".equals(args[i])) {
-                definitionId = getParameter(args, ++i);
-            } else if ("-l".equals(args[i])) {
-                language = getParameter(args, ++i).toLowerCase();
-            } else if ("-v".equals(args[i])) {
-                Engine.setLogLevel(Level.FINE);
-            } else {
-                defSource = args[i];
-            }
-        }
-        Engine.getLogger("").getHandlers()[0]
-                .setFilter(new java.util.logging.Filter() {
-                    public boolean isLoggable(LogRecord record) {
-                        return record.getLoggerName().startsWith(
-                                "org.restlet.ext.apispark");
-                    }
-                });
-
-        LOGGER.fine("Check parameters");
-        if (isEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/";
-        }
-        if (!serviceUrl.endsWith("/")) {
-            serviceUrl += "/";
-        }
-
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(defSource)) {
-            printHelp();
-            System.exit(1);
-        }
-
-        // TODO validate the definition URL:
-        // * accept absolute urls
-        // * accept relative urls such as /definitions/{id} and concatenate with
-        // the serviceUrl
-        // * accept relative urls such as {id} and concatenate with the
-        // serviceUrl
-
-        // Validate the application class name
-        Application application = null;
-        Component component = null;
-        Definition definition = null;
-        if (language == null) {
-            application = getApplication(defSource);
-            component = getComponent(compName);
-        }
-
-        if (application != null) {
-            LOGGER.info("Instantiate introspector");
-            Introspector i = new Introspector(component, application);
-
-            LOGGER.info("Generate documentation");
-            definition = i.getDefinition();
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
-        } else if (language != null) {
-            if (language.equals("swagger")) {
-                definition = new SwaggerConverter().getDefinition(defSource,
-                        ulogin, upwd);
-            }
-            if (definition != null) {
-                sendDefinition(definition, definitionId, ulogin, upwd,
-                        serviceUrl);
-            }
-        } else {
-            LOGGER.severe("Please provide a valid application class name or definition URL.");
-        }
-    }
-
-    /**
-     * Prints the instructions necessary to launch this tool.
-     */
-    private static void printHelp() {
-        PrintStream o = System.out;
-
-        o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class, "[options] APPLICATION");
-        printSynopsis(o, Introspector.class,
-                "-l swagger [options] SWAGGER DEFINITION URL/PATH");
-        o.println("DESCRIPTION");
-        printSentence(
-                o,
-                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class or by the swagger definition available on the ",
-                "URL/PATH");
-        printSentence(
-                o,
-                "If the whole process is successfull, it displays the url of the corresponding documentation.");
-        o.println("OPTIONS");
-        printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user name.");
-        printOption(o, "-p", "The mandatory APISpark user secret key.");
-        printOption(o, "-s",
-                "The optional APISpark platform URL (by default https://apispark.com).");
-        printOption(o, "-c",
-                "The optional full name of your Restlet Component class.",
-                "This allows to collect some other data, such as the endpoint.");
-        printOption(
-                o,
-                "-d",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
-        printOption(
-                o,
-                "-l",
-                "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        printOption(o, "-v",
-                "The optional parameter switching the process to a verbose mode");
-    }
-
-    /**
-     * Displays an option and its description to the console.
-     * 
-     * @param o
-     *            The console stream.
-     * @param option
-     *            The option.
-     * @param strings
-     *            The option's description.
-     */
-    private static void printOption(PrintStream o, String option,
-            String... strings) {
-        printSentence(o, 7, option);
-        printSentence(o, 14, strings);
-    }
-
-    /**
-     * Formats a list of Strings by lines of 80 characters maximul, and displays
-     * it to the console.
-     * 
-     * @param o
-     *            The console.
-     * @param shift
-     *            The number of characters to shift the list of strings on the
-     *            left.
-     * @param strings
-     *            The list of Strings to display.
-     */
-    private static void printSentence(PrintStream o, int shift,
-            String... strings) {
-        int blockLength = 80 - shift - 1;
-        String tab = "";
-        for (int i = 0; i < shift; i++) {
-            tab = tab.concat(" ");
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < strings.length; i++) {
-            if (i > 0) {
-                sb.append(" ");
-            }
-            sb.append(strings[i]);
-        }
-        String sentence = sb.toString();
-        // Cut in slices
-        int index = 0;
-        while (index < (sentence.length() - 1)) {
-            o.print(tab);
-            int length = Math.min(index + blockLength, sentence.length() - 1);
-            if ((length - index) < blockLength) {
-                o.println(sentence.substring(index));
-                index = length + 1;
-            } else if (sentence.charAt(length) == ' ') {
-                o.println(sentence.substring(index, length));
-                index = length + 1;
-            } else {
-                length = sentence.substring(index, length - 1).lastIndexOf(' ');
-                if (length != -1) {
-                    o.println(sentence.substring(index, index + length));
-                    index += length + 1;
-                } else {
-                    length = sentence.substring(index).indexOf(' ');
-                    if (length != -1) {
-                        o.println(sentence.substring(index, index + length));
-                        index += length + 1;
-                    } else {
-                        o.println(sentence.substring(index));
-                        index = sentence.length();
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Displays a list of String to the console.
-     * 
-     * @param o
-     *            The console stream.
-     * @param strings
-     *            The list of Strings to display.
-     */
-    private static void printSentence(PrintStream o, String... strings) {
-        printSentence(o, 7, strings);
-    }
-
-    /**
-     * Displays the command line.
-     * 
-     * @param o
-     *            The console stream.
-     * @param clazz
-     *            The main class.
-     * @param command
-     *            The command line.
-     */
-    private static void printSynopsis(PrintStream o, Class<?> clazz,
-            String command) {
-        printSentence(o, 7, clazz.getName(), command);
-    }
-
-    private static void sendDefinition(Definition definition,
-            String definitionId, String ulogin, String upwd, String serviceUrl) {
-        Collections.sort(definition.getContract().getRepresentations(),
-                new Comparator<Representation>() {
-
-                    @Override
-                    public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-
-                });
-        Collections.sort(definition.getContract().getResources(),
-                new Comparator<Resource>() {
-
-                    @Override
-                    public int compare(Resource o1, Resource o2) {
-                        return o1.getResourcePath().compareTo(
-                                o2.getResourcePath());
-                    }
-
-                });
-        try {
-            ClientResource cr = new ClientResource(serviceUrl);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
-
-            if (definitionId == null) {
-                cr.addSegment("definitions");
-                LOGGER.info("Create a new documentation");
-                cr.post(definition, MediaType.APPLICATION_JSON);
-            } else {
-                cr.addSegment("apis").addSegment(definitionId)
-                        .addSegment("definitions");
-                LOGGER.info("Update the documentation of "
-                        + cr.getReference().toString());
-                cr.put(definition, MediaType.APPLICATION_JSON);
-            }
-
-            LOGGER.fine("Display result");
-            System.out.println("Process successfully achieved.");
-            // This is not printed by a logger which may be muted.
-            if (cr.getResponseEntity() != null
-                    && cr.getResponseEntity().isAvailable()) {
-                try {
-                    cr.getResponseEntity().write(System.out);
-                    System.out.println();
-                } catch (IOException e) {
-                    // [PENDING] analysis
-                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
-                }
-            }
-            if (cr.getLocationRef() != null) {
-                System.out
-                        .println("Your Web API documentation is accessible at this URL: "
-                                + cr.getLocationRef());
-            }
-        } catch (ResourceException e) {
-            // TODO Should we detail by status?
-            if (e.getStatus().isConnectorError()) {
-                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
-                LOGGER.severe("Could you check that the following service is up? "
-                        + serviceUrl);
-            } else if (e.getStatus().isClientError()) {
-                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
-            } else if (e.getStatus().isServerError()) {
-                LOGGER.severe("The server side encounters some issues, please try later.");
-            }
-        }
     }
 
     /**
