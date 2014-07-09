@@ -34,11 +34,13 @@
 package org.restlet.ext.swagger.internal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
@@ -65,7 +67,7 @@ import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.resource.ServerResource;
 
 /**
- * Retrieves a Swagger definition and converts it to Restlet Web API Definition.
+ * Retrieves Swagger Resource Listing or API Declaration given a Restlet Web API Definition.
  * 
  * @author Cyprien Quilici
  */
@@ -233,12 +235,15 @@ public class RWADefToSwaggerConverter extends ServerResource {
             result.getApis().add(rd);
         }
 
-        result.setModels(new HashMap<String, ModelDeclaration>());
+        result.setModels(new TreeMap<String, ModelDeclaration>());
         Iterator<String> iterator = usedModels.iterator();
         while (iterator.hasNext()) {
             String model = iterator.next();
             Representation repr = getRepresentationByName(model,
                     def.getContract());
+            if (repr == null) {
+                continue;
+            }
             ModelDeclaration md = new ModelDeclaration();
             md.setId(model);
             md.setDescription(repr.getDescription());
@@ -279,6 +284,11 @@ public class RWADefToSwaggerConverter extends ServerResource {
             result.getModels().put(md.getId(), md);
         }
 
+        Collections.sort(result.getApis(), new Comparator<ResourceDeclaration>(){
+            @Override
+            public int compare(ResourceDeclaration o1, ResourceDeclaration o2) {
+                return o1.getPath().compareTo(o2.getPath());
+            }});
         return result;
     }
 
