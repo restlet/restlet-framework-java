@@ -48,6 +48,7 @@ import org.restlet.ext.swagger.internal.model.Definition;
 import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
 import org.restlet.ext.swagger.internal.reflect.Introspector;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 import com.wordnik.swagger.core.SwaggerSpec;
@@ -117,15 +118,16 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * 
      * @param category
      *            The category of the resource to describe.
-     * @return The API declaration
+     * @return The representation of the API declaration.
      */
-    public ApiDeclaration getApiDeclaration(String category) {
+    public Representation getApiDeclaration(String category) {
         if (rwadef == null) {
             Introspector i = new Introspector(application, false);
             rwadef = i.getDefinition();
         }
-        return new RWADefToSwaggerConverter().getApiDeclaration(category,
-                rwadef);
+        return new JacksonRepresentation<ApiDeclaration>(
+                new RWADefToSwaggerConverter().getApiDeclaration(category,
+                        rwadef));
     }
 
     /**
@@ -177,12 +179,13 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the whole resource listing of the
      *         Application.
      */
-    public ResourceListing getResourceListing() {
+    public Representation getResourceListing() {
         if (rwadef == null) {
             Introspector i = new Introspector(application, false);
             rwadef = i.getDefinition();
         }
-        return new RWADefToSwaggerConverter().getResourcelisting(rwadef);
+        return new JacksonRepresentation<ResourceListing>(
+                new RWADefToSwaggerConverter().getResourcelisting(rwadef));
     }
 
     /**
@@ -221,11 +224,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
         Object resource = request.getAttributes().get("resource");
 
         if (resource instanceof String) {
-            response.setEntity(new JacksonRepresentation<ApiDeclaration>(
-                    getApiDeclaration((String) resource)));
+            response.setEntity(getApiDeclaration((String) resource));
         } else {
-            response.setEntity(new JacksonRepresentation<ResourceListing>(
-                    getResourceListing()));
+            response.setEntity(getResourceListing());
         }
     }
 

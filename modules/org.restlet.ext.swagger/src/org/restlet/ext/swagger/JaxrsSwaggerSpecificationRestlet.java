@@ -43,11 +43,11 @@ import javax.ws.rs.Path;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.jaxrs.JaxRsRestlet;
 import org.restlet.ext.swagger.internal.SwaggerJaxRsResourceGenerator;
 import org.restlet.ext.swagger.internal.SwaggerRestletIterable;
-import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
+import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
 import com.wordnik.swagger.annotations.Api;
@@ -117,8 +117,8 @@ public class JaxrsSwaggerSpecificationRestlet extends
     }
 
     @Override
-    public ApiDeclaration getApiDeclaration(String resourcePath) {
-        ApiDeclaration documentation = null;
+    public Representation getApiDeclaration(String resourcePath) {
+        Documentation documentation = null;
 
         SwaggerRestletIterable crawler = new SwaggerRestletIterable(
                 apiInboundRoot);
@@ -140,7 +140,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
                 }
             }
         }
-        return documentation;
+        return new JacksonRepresentation<Documentation>(documentation);
     }
 
     private JaxRsRestlet getNextJaxRsRestlet(Restlet restlet) {
@@ -153,8 +153,8 @@ public class JaxrsSwaggerSpecificationRestlet extends
     }
 
     @Override
-    public ResourceListing getResourceListing() {
-        ResourceListing documentation = new ResourceListing();
+    public Representation getResourceListing() {
+        Documentation documentation = new Documentation();
         documentation.setApiVersion(getApiVersion());
         documentation.setSwaggerVersion(getSwaggerVersion());
         documentation.setBasePath(getBasePath());
@@ -201,7 +201,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
                 }
             }
         }
-        return documentation;
+        return new JacksonRepresentation<Documentation>(documentation);
     }
 
     private Collection<DocumentationEndPoint> scan(JaxRsRestlet jaxRsRestlet,
