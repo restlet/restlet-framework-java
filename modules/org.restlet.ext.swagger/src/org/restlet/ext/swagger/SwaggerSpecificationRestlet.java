@@ -48,6 +48,7 @@ import org.restlet.ext.swagger.internal.model.Definition;
 import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
 import org.restlet.ext.swagger.internal.reflect.Introspector;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 import com.wordnik.swagger.core.SwaggerSpec;
@@ -88,6 +89,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The version of Swagger. */
     private String swaggerVersion;
 
+    /** The RWADef of the API. */
+    private Definition rwadef;
+
     /**
      * Default constructor.<br>
      * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
@@ -114,12 +118,16 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * 
      * @param category
      *            The category of the resource to describe.
-     * @param def
-     *            The RWADef definition of the application
-     * @return The API declaration
+     * @return The representation of the API declaration.
      */
-    public ApiDeclaration getApiDeclaration(String category, Definition def) {
-        return new RWADefToSwaggerConverter().getApiDeclaration(category, def);
+    public Representation getApiDeclaration(String category) {
+        if (rwadef == null) {
+            Introspector i = new Introspector(application, false);
+            rwadef = i.getDefinition();
+        }
+        return new JacksonRepresentation<ApiDeclaration>(
+                new RWADefToSwaggerConverter().getApiDeclaration(category,
+                        rwadef));
     }
 
     /**
@@ -171,8 +179,13 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the whole resource listing of the
      *         Application.
      */
-    public ResourceListing getResourceListing(Definition def) {
-        return new RWADefToSwaggerConverter().getResourcelisting(def);
+    public Representation getResourceListing() {
+        if (rwadef == null) {
+            Introspector i = new Introspector(application, false);
+            rwadef = i.getDefinition();
+        }
+        return new JacksonRepresentation<ResourceListing>(
+                new RWADefToSwaggerConverter().getResourcelisting(rwadef));
     }
 
     /**
@@ -208,17 +221,12 @@ public class SwaggerSpecificationRestlet extends Restlet {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
-        Introspector i = new Introspector(null, application);
-        Definition rwadef = i.getDefinition();
-
         Object resource = request.getAttributes().get("resource");
 
         if (resource instanceof String) {
-            response.setEntity(new JacksonRepresentation<ApiDeclaration>(
-                    getApiDeclaration((String) resource, rwadef)));
+            response.setEntity(getApiDeclaration((String) resource));
         } else {
-            response.setEntity(new JacksonRepresentation<ResourceListing>(
-                    getResourceListing(rwadef)));
+            response.setEntity(getResourceListing());
         }
     }
 
