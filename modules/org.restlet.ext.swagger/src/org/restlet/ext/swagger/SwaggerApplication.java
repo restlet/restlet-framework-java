@@ -166,6 +166,7 @@ public class SwaggerApplication extends Application {
         SwaggerSpecificationRestlet restlet = getSwaggerSpecificationRestlet(getContext());
         attachSwaggerDocumentationRestlets(router, path, restlet, path
                 + "/{resource}", restlet);
+        documented = true;
     }
 
     /**
@@ -184,7 +185,6 @@ public class SwaggerApplication extends Application {
             documented = isDocumented(rootRouter);
             if (!documented) {
                 attachSwaggerSpecificationRestlet(rootRouter);
-                documented = true;
             }
         }
         return inboundRoot;

@@ -31,34 +31,25 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Body {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
+    /**
+     * Indicates whether you should provide an array of [type] or just one
+     * [type].
+     */
     private boolean array;
 
-    /** Textual description of this variable. */
-    private String description;
+    /** Reference of the representation in the body of the message. */
+    private String type;
 
-    /** Name of this variable. */
-    private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getName() {
-        return name;
+    public String getRepresentation() {
+        return type;
     }
 
     public boolean isArray() {
@@ -69,19 +60,7 @@ public class PathVariable {
         this.array = array;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setRepresentation(String representation) {
+        this.type = representation;
     }
 }

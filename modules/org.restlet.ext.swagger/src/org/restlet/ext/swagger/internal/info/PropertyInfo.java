@@ -31,22 +31,16 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.info;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * TODO: need to describe class.
  * 
- * @author Cyprien Quilici
+ * @author Thierry Boileau
  */
-public class Property {
-
-    /**
-     * Type of this property, either a primitive type or a reference to a
-     * representation.
-     */
-    private String type;
+public class PropertyInfo {
 
     // TODO review comment
     /**
@@ -87,11 +81,12 @@ public class Property {
      * possible values.
      */
     private List<String> possibleValues;
-    
+
     /**
-     * Specifies whether the property is required in all representations or not.
+     * Type of this property, either a primitive type or a reference to a
+     * representation.
      */
-    private boolean required;
+    private Class<?> type;
 
     // TODO review comment
     /**
@@ -129,13 +124,10 @@ public class Property {
     }
 
     public List<String> getPossibleValues() {
-        if (possibleValues == null) {
-            possibleValues = new ArrayList<String>();
-        }
         return possibleValues;
     }
 
-    public String getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -175,19 +167,11 @@ public class Property {
         this.possibleValues = possibleValues;
     }
 
-    public void setType(String type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
     }
 }

@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.model.swagger;
+package org.restlet.ext.swagger.internal.model.swagger;
 
 import java.util.ArrayList;
 import java.util.HashMap;

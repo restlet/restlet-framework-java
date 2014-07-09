@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet
  */
 
-package org.restlet.ext.apispark.internal.reflect;
+package org.restlet.ext.swagger.internal.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -108,14 +108,10 @@ public class ReflectUtils {
      * @return
      */
     public static boolean isJdkClass(Class<?> clazz) {
-        if (clazz != null) {
-            if (clazz.isPrimitive()) {
-                return true;
-            } else if (clazz.getPackage() != null) {
-                return (clazz.getPackage().getName().startsWith("java.") || clazz
-                        .getPackage().getName().startsWith("javax."));
+        if (clazz != null && clazz.getPackage() != null) {
+            return (clazz.getPackage().getName().startsWith("java.") || clazz
+                    .getPackage().getName().startsWith("javax."));
 
-            }
         }
         return false;
     }

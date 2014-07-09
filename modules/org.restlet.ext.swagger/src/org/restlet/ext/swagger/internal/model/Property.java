@@ -31,14 +31,14 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
 public class Property {
 

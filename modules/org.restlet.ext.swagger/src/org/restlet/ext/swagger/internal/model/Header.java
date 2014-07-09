@@ -31,57 +31,12 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Header extends Parameter {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
-
-    /** Textual description of this variable. */
-    private String description;
-
-    /** Name of this variable. */
-    private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isArray() {
-        return array;
-    }
-
-    public void setArray(boolean array) {
-        this.array = array;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

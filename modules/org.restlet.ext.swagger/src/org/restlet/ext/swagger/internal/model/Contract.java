@@ -31,27 +31,32 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * TODO
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Contract {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
-
-    /** Textual description of this variable. */
+    /** Textual description of the API. */
     private String description;
 
-    /** Name of this variable. */
+    /** Name of the API. */
     private String name;
-    
+
     /**
-     * The expected type of the parameter. By default, string
+     * Representations available with this API Note: their "name" is used as a
+     * reference further in this description.
      */
-    private String type = "string";
+    private List<Representation> representations;
+
+    /** Resources provided by the API. */
+    private List<Resource> resources;
 
     public String getDescription() {
         return description;
@@ -61,12 +66,18 @@ public class PathVariable {
         return name;
     }
 
-    public boolean isArray() {
-        return array;
+    public List<Representation> getRepresentations() {
+        if (representations == null) {
+            representations = new ArrayList<Representation>();
+        }
+        return representations;
     }
 
-    public void setArray(boolean array) {
-        this.array = array;
+    public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
+        return resources;
     }
 
     public void setDescription(String description) {
@@ -77,11 +88,11 @@ public class PathVariable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public void setRepresentations(List<Representation> representations) {
+        this.representations = representations;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 }

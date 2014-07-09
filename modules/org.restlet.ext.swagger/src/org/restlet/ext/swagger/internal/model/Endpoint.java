@@ -31,57 +31,47 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
+
+import org.restlet.data.Protocol;
 
 /**
+ * TODO
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Endpoint {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
+    /** The host's name. */
+    private String host;
 
-    /** Textual description of this variable. */
-    private String description;
+    /** The endpoint's port. */
+    private int port;
 
-    /** Name of this variable. */
-    private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
+    /** Protocol used for this endpoint. */
+    private Protocol protocol;
 
-    public String getDescription() {
-        return description;
+    public String getHost() {
+        return host;
     }
 
-    public String getName() {
-        return name;
+    public int getPort() {
+        return port;
     }
 
-    public boolean isArray() {
-        return array;
+    public Protocol getProtocol() {
+        return protocol;
     }
 
-    public void setArray(boolean array) {
-        this.array = array;
+    public void setHost(String host) {
+        this.host = host;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPort(int port) {
+        this.port = port;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 }

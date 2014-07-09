@@ -31,27 +31,31 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Resource {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
-
-    /** Textual description of this variable. */
+    /** Textual description of this resource */
     private String description;
 
-    /** Name of this variable. */
+    /** Name of this resource */
     private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
+
+    /** List of the APIs this resource provides */
+    private List<Operation> operations;
+
+    /** The variables you must provide for this operation. */
+    private List<PathVariable> pathVariables;
+
+    /** Relative path from the endpoint to this resource */
+    private String resourcePath;
 
     public String getDescription() {
         return description;
@@ -61,12 +65,22 @@ public class PathVariable {
         return name;
     }
 
-    public boolean isArray() {
-        return array;
+    public List<Operation> getOperations() {
+        if (operations == null) {
+            operations = new ArrayList<Operation>();
+        }
+        return operations;
     }
 
-    public void setArray(boolean array) {
-        this.array = array;
+    public List<PathVariable> getPathVariables() {
+        if (pathVariables == null) {
+            pathVariables = new ArrayList<PathVariable>();
+        }
+        return pathVariables;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
     }
 
     public void setDescription(String description) {
@@ -77,11 +91,15 @@ public class PathVariable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPathVariables(List<PathVariable> pathVariables) {
+        this.pathVariables = pathVariables;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
     }
 }

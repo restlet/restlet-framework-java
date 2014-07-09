@@ -43,9 +43,11 @@ import javax.ws.rs.Path;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.jaxrs.JaxRsRestlet;
 import org.restlet.ext.swagger.internal.SwaggerJaxRsResourceGenerator;
 import org.restlet.ext.swagger.internal.SwaggerRestletIterable;
+import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
 import com.wordnik.swagger.annotations.Api;
@@ -115,7 +117,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
     }
 
     @Override
-    public Documentation getApiDeclaration(String resourcePath) {
+    public Representation getApiDeclaration(String resourcePath) {
         Documentation documentation = null;
 
         SwaggerRestletIterable crawler = new SwaggerRestletIterable(
@@ -138,7 +140,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
                 }
             }
         }
-        return documentation;
+        return new JacksonRepresentation<Documentation>(documentation);
     }
 
     private JaxRsRestlet getNextJaxRsRestlet(Restlet restlet) {
@@ -151,7 +153,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
     }
 
     @Override
-    public Documentation getResourceListing() {
+    public Representation getResourceListing() {
         Documentation documentation = new Documentation();
         documentation.setApiVersion(getApiVersion());
         documentation.setSwaggerVersion(getSwaggerVersion());
@@ -199,7 +201,7 @@ public class JaxrsSwaggerSpecificationRestlet extends
                 }
             }
         }
-        return documentation;
+        return new JacksonRepresentation<Documentation>(documentation);
     }
 
     private Collection<DocumentationEndPoint> scan(JaxRsRestlet jaxRsRestlet,

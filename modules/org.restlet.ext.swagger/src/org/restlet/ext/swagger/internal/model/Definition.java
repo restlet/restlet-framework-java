@@ -31,57 +31,70 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Definition {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
+    /** Any useful information for a user that plans to access to the API. */
+    private String contact;
 
-    /** Textual description of this variable. */
-    private String description;
+    /** Contract of this API. */
+    private Contract contract;
 
-    /** Name of this variable. */
-    private String name;
-    
     /**
-     * The expected type of the parameter. By default, string
+     * Base URL on which you can access the API<br>
+     * Note: will enable multiple endpoints and protocols in the future (use
+     * class Endpoint in a list).
      */
-    private String type = "string";
+    private String endpoint;
 
-    public String getDescription() {
-        return description;
+    /** URL of the description of the license used by the API. */
+    private String license;
+
+    /** Current version of the API. */
+    private String version;
+
+    public String getContact() {
+        return contact;
     }
 
-    public String getName() {
-        return name;
+    public Contract getContract() {
+        return contract;
     }
 
-    public boolean isArray() {
-        return array;
+    public String getEndpoint() {
+        return endpoint;
     }
 
-    public void setArray(boolean array) {
-        this.array = array;
+    public String getLicense() {
+        return license;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getVersion() {
+        return version;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
-    public String getType() {
-        return type;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

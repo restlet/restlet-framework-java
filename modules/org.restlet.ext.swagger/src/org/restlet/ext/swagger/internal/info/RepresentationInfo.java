@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.info;
+package org.restlet.ext.swagger.internal.info;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
 
 /**
@@ -67,7 +67,7 @@ public class RepresentationInfo extends DocumentedInfo {
      *            The target variant.
      * @return The APISpark representation information.
      */
-    public static RepresentationInfo describe(MethodInfo methodInfo,
+    protected static RepresentationInfo describe(MethodInfo methodInfo,
             Class<?> representationClass, Variant variant) {
         RepresentationInfo result = null;
 

@@ -31,57 +31,33 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.info;
 
 /**
+ * Enumerates the supported styles of parameters.
  * 
- * @author Cyprien Quilici
+ * @author Jerome Louvel
  */
-public class PathVariable {
+public enum ParameterStyle {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
+    HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
 
-    /** Textual description of this variable. */
-    private String description;
+    @Override
+    public String toString() {
+        String result = null;
+        if (equals(HEADER)) {
+            result = "header";
+        } else if (equals(MATRIX)) {
+            result = "matrix";
+        } else if (equals(PLAIN)) {
+            result = "plain";
+        } else if (equals(QUERY)) {
+            result = "query";
+        } else if (equals(TEMPLATE)) {
+            result = "template";
+        }
 
-    /** Name of this variable. */
-    private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
-
-    public String getDescription() {
-        return description;
+        return result;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isArray() {
-        return array;
-    }
-
-    public void setArray(boolean array) {
-        this.array = array;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

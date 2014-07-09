@@ -31,27 +31,31 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.swagger.internal.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
-public class PathVariable {
+public class Representation {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
-
-    /** Textual description of this variable. */
+    /** Textual description of this representation. */
     private String description;
 
-    /** Name of this variable. */
+    /** Name of the representation. */
     private String name;
-    
-    /**
-     * The expected type of the parameter. By default, string
-     */
-    private String type = "string";
+
+    /** Reference to its parent type if any. */
+    private String parentType;
+
+    /** List of this representation's properties. */
+    private List<Property> properties;
+
+    /** Indicates if the representation is structured or not. */
+    private boolean raw;
 
     public String getDescription() {
         return description;
@@ -61,12 +65,19 @@ public class PathVariable {
         return name;
     }
 
-    public boolean isArray() {
-        return array;
+    public String getParentType() {
+        return parentType;
     }
 
-    public void setArray(boolean array) {
-        this.array = array;
+    public List<Property> getProperties() {
+        if (properties == null) {
+            properties = new ArrayList<Property>();
+        }
+        return properties;
+    }
+
+    public boolean isRaw() {
+        return raw;
     }
 
     public void setDescription(String description) {
@@ -77,11 +88,15 @@ public class PathVariable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public void setParentType(String parentType) {
+        this.parentType = parentType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
+    public void setRaw(boolean raw) {
+        this.raw = raw;
     }
 }
