@@ -67,7 +67,8 @@ import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.resource.ServerResource;
 
 /**
- * Retrieves Swagger Resource Listing or API Declaration given a Restlet Web API Definition.
+ * Retrieves Swagger Resource Listing or API Declaration given a Restlet Web API
+ * Definition.
  * 
  * @author Cyprien Quilici
  */
@@ -120,6 +121,15 @@ public class RWADefToSwaggerConverter extends ServerResource {
                 }
             }
         }
+        Collections.sort(result.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+
+                });
         return result;
     }
 
@@ -284,11 +294,14 @@ public class RWADefToSwaggerConverter extends ServerResource {
             result.getModels().put(md.getId(), md);
         }
 
-        Collections.sort(result.getApis(), new Comparator<ResourceDeclaration>(){
-            @Override
-            public int compare(ResourceDeclaration o1, ResourceDeclaration o2) {
-                return o1.getPath().compareTo(o2.getPath());
-            }});
+        Collections.sort(result.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+                });
         return result;
     }
 
