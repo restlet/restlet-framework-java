@@ -251,7 +251,7 @@ public class RWADefToSwaggerConverter extends ServerResource {
             String model = iterator.next();
             Representation repr = getRepresentationByName(model,
                     def.getContract());
-            if (repr == null) {
+            if (repr == null || isPrimitiveType(model)) {
                 continue;
             }
             ModelDeclaration md = new ModelDeclaration();
