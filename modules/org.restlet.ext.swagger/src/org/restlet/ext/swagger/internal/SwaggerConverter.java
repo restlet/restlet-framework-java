@@ -37,11 +37,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -60,6 +65,8 @@ import org.restlet.ext.swagger.internal.model.Representation;
 import org.restlet.ext.swagger.internal.model.Resource;
 import org.restlet.ext.swagger.internal.model.Response;
 import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
+import org.restlet.ext.swagger.internal.model.swagger.ApiInfo;
+import org.restlet.ext.swagger.internal.model.swagger.ItemsDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ModelDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResourceDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
@@ -68,7 +75,6 @@ import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameter
 import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ServerResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -78,98 +84,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Cyprien Quilici
  */
 
-public class SwaggerConverter extends ServerResource {
+public abstract class SwaggerConverter {
 
     /** Internal logger. */
     protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
             .getName());
 
-    public Definition getDefinition(String address, String userName,
-            String password) throws SwaggerConversionException {
+    private static final String SWAGGER_VERSION = "1.2";
 
-        // Check that URL is non empty and well formed
-        if (address == null) {
-            throw new SwaggerConversionException("url",
-                    "You did not provide any URL");
-        }
-        Pattern p = Pattern
-                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-        boolean remote = p.matcher(address).matches();
-        boolean apisparkAddress = apisparkAddress(address);
-        ResourceListing resourceListing = new ResourceListing();
-        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
-        if (remote) {
-            LOGGER.log(Level.FINE, "Reading file: " + address);
-            resourceListing = createAuthenticatedClientResource(address,
-                    userName, password, apisparkAddress).get(
-                    ResourceListing.class);
-            for (ResourceDeclaration api : resourceListing.getApis()) {
-                LOGGER.log(Level.FINE,
-                        "Reading file: " + address + api.getPath());
-                apis.put(
-                        api.getPath().replaceAll("/", ""),
-                        createAuthenticatedClientResource(
-                                address + api.getPath(), userName, password,
-                                apisparkAddress).get(ApiDeclaration.class));
-            }
-        } else {
-            File resourceListingFile = new File(address);
-            ObjectMapper om = new ObjectMapper();
-            try {
-                resourceListing = om.readValue(resourceListingFile,
-                        ResourceListing.class);
-                String basePath = resourceListingFile.getParent();
-                LOGGER.log(Level.FINE, "Base path: " + basePath);
-                for (ResourceDeclaration api : resourceListing.getApis()) {
-                    LOGGER.log(Level.FINE,
-                            "Reading file " + basePath + api.getPath());
-                    apis.put(api.getPath(), om.readValue(new File(basePath
-                            + api.getPath()), ApiDeclaration.class));
-                }
-            } catch (IOException e) {
-                throw new SwaggerConversionException("file", e.getMessage());
-            }
-        }
-        return convert(resourceListing, apis);
-    }
-
-    private ClientResource createAuthenticatedClientResource(String url,
-            String userName, String password, boolean apisparkAddress) {
-        ClientResource cr = new ClientResource(url);
-        cr.accept(MediaType.APPLICATION_JSON);
-        if (apisparkAddress) {
-            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
-                    + password);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
-                    password);
-        } else {
-            LOGGER.log(Level.FINER, "External source");
-        }
-        return cr;
-    }
-
-    private boolean apisparkAddress(String address) {
+    private static boolean apisparkAddress(String address) {
         Pattern p = Pattern
                 .compile("http[s]?://[^/]+/apis/[0-9]+/versions/[0-9]+/swagger(/[a-z]+/?)?");
         Matcher m = p.matcher(address);
         return m.matches();
     }
 
-    private void validateFiles(ResourceListing resourceListing,
-            Map<String, ApiDeclaration> apiDeclarations)
-            throws SwaggerConversionException {
-        int mappedFiles = resourceListing.getApis().size();
-        if (mappedFiles < apiDeclarations.size()) {
-            throw new SwaggerConversionException("file",
-                    "One of your API declarations is not mapped in your resource listing");
-        }
-        if (mappedFiles > apiDeclarations.size()) {
-            throw new SwaggerConversionException("file",
-                    "Some API declarations are missing");
-        }
-    }
-
-    public Definition convert(ResourceListing resourceListing,
+    public static Definition convert(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws SwaggerConversionException {
 
@@ -492,7 +422,7 @@ public class SwaggerConverter extends ServerResource {
                             List<String> subtypesOf = subtypesPair.getValue();
                             for (String subtypeOf : subtypesOf) {
                                 Representation repr = getRepresentationByName(
-                                        subtypeOf, rwadContract);
+                                        rwadContract, subtypeOf);
                                 repr.setParentType(subtypesPair.getKey());
                             }
                         }
@@ -521,7 +451,340 @@ public class SwaggerConverter extends ServerResource {
         }
     }
 
-    private Representation getRepresentationByName(String name,
+    private static ClientResource createAuthenticatedClientResource(String url,
+            String userName, String password, boolean apisparkAddress) {
+        ClientResource cr = new ClientResource(url);
+        cr.accept(MediaType.APPLICATION_JSON);
+        if (apisparkAddress) {
+            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
+                    + password);
+            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
+                    password);
+        } else {
+            LOGGER.log(Level.FINER, "External source");
+        }
+        return cr;
+    }
+
+    /**
+     * Retrieves the Swagger API declaration corresponding to a category of the
+     * given Restlet Web API Definition
+     * 
+     * @param category
+     *            The category of the API declaration
+     * @param def
+     *            The Restlet Web API Definition
+     * @return The Swagger API definition of the given category
+     */
+    public static ApiDeclaration getApiDeclaration(String category,
+            Definition def) {
+        ApiDeclaration result = new ApiDeclaration();
+        result.setApiVersion(def.getVersion() == null ? "1.0" : def
+                .getVersion());
+        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
+                : def.getEndpoint());
+        result.setInfo(new ApiInfo());
+        result.setSwaggerVersion(SWAGGER_VERSION);
+        result.setResourcePath("/" + category);
+        Set<String> usedModels = new HashSet<String>();
+
+        // Get resources
+        for (Resource resource : def.getContract().getResources()) {
+            // Discriminate the resources of one category
+            if (!resource.getResourcePath().startsWith("/" + category)) {
+                continue;
+            }
+            ResourceDeclaration rd = new ResourceDeclaration();
+            rd.setPath(resource.getResourcePath());
+            rd.setDescription(resource.getDescription());
+
+            // Get operations
+            for (Operation operation : resource.getOperations()) {
+                ResourceOperationDeclaration rod = new ResourceOperationDeclaration();
+                rod.setMethod(operation.getMethod());
+                rod.setSummary(operation.getDescription());
+                rod.setNickname(operation.getName());
+                rod.setProduces(operation.getProduces());
+                rod.setConsumes(operation.getConsumes());
+
+                // Get path variables
+                ResourceOperationParameterDeclaration ropd;
+                for (PathVariable pv : resource.getPathVariables()) {
+                    ropd = new ResourceOperationParameterDeclaration();
+                    ropd.setParamType("path");
+                    ropd.setType("string");
+                    ropd.setRequired(true);
+                    ropd.setName(pv.getName());
+                    ropd.setAllowMultiple(false);
+                    ropd.setDescription(pv.getDescription());
+                    rod.getParameters().add(ropd);
+                }
+
+                // Get in representation
+                Body inRepr = operation.getInRepresentation();
+                if (inRepr != null) {
+                    ropd = new ResourceOperationParameterDeclaration();
+                    ropd.setParamType("body");
+                    ropd.setRequired(true);
+                    if (inRepr.getRepresentation().equals("Representation")) {
+                        ropd.setType("File");
+                    } else {
+                        ropd.setType(swaggerizeType(inRepr.getRepresentation()));
+                    }
+                    if (inRepr.getRepresentation() != null) {
+                        usedModels.add(inRepr.getRepresentation());
+                    }
+                    rod.getParameters().add(ropd);
+                }
+
+                // Get out representation
+                Body outRepr = operation.getOutRepresentation();
+                if (outRepr != null && outRepr.getRepresentation() != null) {
+                    if (outRepr.isArray()) {
+                        rod.setType("array");
+                        if (isPrimitiveType(outRepr.getRepresentation())) {
+                            rod.getItems()
+                                    .setType(
+                                            swaggerizeType(outRepr
+                                                    .getRepresentation()));
+                        } else {
+                            rod.getItems().setRef(outRepr.getRepresentation());
+                        }
+                    } else {
+                        rod.setType(swaggerizeType(outRepr.getRepresentation()));
+                    }
+                    if (outRepr.getRepresentation() != null) {
+                        usedModels.add(outRepr.getRepresentation());
+                    }
+                } else {
+                    rod.setType("void");
+                }
+
+                // Get query parameters
+                for (QueryParameter qp : operation.getQueryParameters()) {
+                    ropd = new ResourceOperationParameterDeclaration();
+                    ropd.setParamType("query");
+                    ropd.setType("string");
+                    ropd.setName(qp.getName());
+                    ropd.setAllowMultiple(true);
+                    ropd.setDescription(qp.getDescription());
+                    ropd.setEnum_(qp.getPossibleValues());
+                    ropd.setDefaultValue(qp.getDefaultValue());
+                    rod.getParameters().add(ropd);
+                }
+
+                // Get response messages
+                for (Response response : operation.getResponses()) {
+                    ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
+                    rmd.setCode(response.getCode());
+                    rmd.setMessage(response.getMessage());
+                    rmd.setResponseModel(response.getBody().getRepresentation());
+                    rod.getResponseMessages().add(rmd);
+                }
+
+                rd.getOperations().add(rod);
+            }
+            result.getApis().add(rd);
+        }
+
+        result.setModels(new TreeMap<String, ModelDeclaration>());
+        Iterator<String> iterator = usedModels.iterator();
+        while (iterator.hasNext()) {
+            String model = iterator.next();
+            Representation repr = getRepresentationByName(model,
+                    def.getContract());
+            if (repr == null || isPrimitiveType(model)) {
+                continue;
+            }
+            ModelDeclaration md = new ModelDeclaration();
+            md.setId(model);
+            md.setDescription(repr.getDescription());
+            for (Property prop : repr.getProperties()) {
+                if (prop.isRequired()) {
+                    md.getRequired().add(prop.getName());
+                }
+                if (!isPrimitiveType(prop.getType())
+                        && !usedModels.contains(prop.getType())) {
+                    usedModels.add(prop.getType());
+                    iterator = usedModels.iterator();
+                }
+                TypePropertyDeclaration tpd = new TypePropertyDeclaration();
+                tpd.setDescription(prop.getDescription());
+                tpd.setEnum_(prop.getPossibleValues());
+
+                if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
+                    tpd.setType("array");
+                    tpd.setItems(new ItemsDeclaration());
+                    if (isPrimitiveType(prop.getType())) {
+                        tpd.getItems().setType(swaggerizeType(prop.getType()));
+                    } else {
+                        tpd.getItems().setRef(prop.getType());
+                    }
+                } else {
+                    if (isPrimitiveType(prop.getType())) {
+                        tpd.setType(swaggerizeType(prop.getType()));
+                    } else {
+                        tpd.setRef(prop.getType());
+                    }
+                }
+                tpd.setMaximum(prop.getMax());
+                tpd.setMinimum(prop.getMin());
+                tpd.setUniqueItems(prop.isUniqueItems());
+
+                md.getProperties().put(prop.getName(), tpd);
+            }
+            result.getModels().put(md.getId(), md);
+        }
+
+        Collections.sort(result.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+                });
+        return result;
+    }
+
+    /**
+     * 
+     * @param address
+     * @param userName
+     * @param password
+     * @return
+     * @throws SwaggerConversionException
+     */
+    public static Definition getDefinition(String address, String userName,
+            String password) throws SwaggerConversionException {
+
+        // Check that URL is non empty and well formed
+        if (address == null) {
+            throw new SwaggerConversionException("url",
+                    "You did not provide any URL");
+        }
+        Pattern p = Pattern
+                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        boolean remote = p.matcher(address).matches();
+        boolean apisparkAddress = apisparkAddress(address);
+        ResourceListing resourceListing = new ResourceListing();
+        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
+        if (remote) {
+            LOGGER.log(Level.FINE, "Reading file: " + address);
+            resourceListing = createAuthenticatedClientResource(address,
+                    userName, password, apisparkAddress).get(
+                    ResourceListing.class);
+            for (ResourceDeclaration api : resourceListing.getApis()) {
+                LOGGER.log(Level.FINE,
+                        "Reading file: " + address + api.getPath());
+                apis.put(
+                        api.getPath().replaceAll("/", ""),
+                        createAuthenticatedClientResource(
+                                address + api.getPath(), userName, password,
+                                apisparkAddress).get(ApiDeclaration.class));
+            }
+        } else {
+            File resourceListingFile = new File(address);
+            ObjectMapper om = new ObjectMapper();
+            try {
+                resourceListing = om.readValue(resourceListingFile,
+                        ResourceListing.class);
+                String basePath = resourceListingFile.getParent();
+                LOGGER.log(Level.FINE, "Base path: " + basePath);
+                for (ResourceDeclaration api : resourceListing.getApis()) {
+                    LOGGER.log(Level.FINE,
+                            "Reading file " + basePath + api.getPath());
+                    apis.put(api.getPath(), om.readValue(new File(basePath
+                            + api.getPath()), ApiDeclaration.class));
+                }
+            } catch (IOException e) {
+                throw new SwaggerConversionException("file", e.getMessage());
+            }
+        }
+        return convert(resourceListing, apis);
+    }
+
+    /**
+     * Extracts the first segment of a path. Will retrieve "/pet" from
+     * "/pet/{petId}" for example.
+     * 
+     * @param path
+     *            The path of which the segment will be extracted
+     * @return The first segment of the given path
+     */
+    private static String getFirstSegment(String path) {
+        String segment = null;
+        if (path != null) {
+            segment = "/";
+            for (String part : path.split("/")) {
+                if (part != null && !"".equals(part)) {
+                    segment += part;
+                    break;
+                }
+            }
+        }
+        return segment;
+    }
+
+    /**
+     * Returns the list of parameters of a given Swagger operation according to
+     * a given type, it returns an empty list when no parameters match the given
+     * type.
+     * 
+     * @param operation
+     *            The Swagger operation.
+     * @param type
+     *            The type of parameters to filter.
+     * @return The list of parameters of a given Swagger operation according to
+     *         a given type.
+     */
+    private static List<ResourceOperationParameterDeclaration> getParametersByType(
+            ResourceOperationDeclaration operation, String type) {
+        List<ResourceOperationParameterDeclaration> params = new ArrayList<ResourceOperationParameterDeclaration>();
+        if (type != null) {
+            for (ResourceOperationParameterDeclaration param : operation
+                    .getParameters()) {
+                if (type.equals(param.getParamType())) {
+                    params.add(param);
+                }
+            }
+        }
+        return params;
+    }
+
+    /**
+     * Returns the representation given its name from the list of
+     * representations of the given contract.
+     * 
+     * @param contract
+     *            The contract.
+     * @param name
+     *            The name of the representation.
+     * @return A representation.
+     */
+    private static Representation getRepresentationByName(Contract contract,
+            String name) {
+        if (name != null) {
+            for (Representation repr : contract.getRepresentations()) {
+                if (name.equals(repr.getName())) {
+                    return repr;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves a representation from a Restlet Web API Definition given its
+     * name
+     * 
+     * @param name
+     *            The name of the representation
+     * @param contract
+     *            The contract, extracted from the Restlet Web API Definition
+     * @return The representation of the given name
+     */
+    private static Representation getRepresentationByName(String name,
             Contract contract) {
         for (Representation repr : contract.getRepresentations()) {
             if (repr.getName().equals(name)) {
@@ -531,15 +794,123 @@ public class SwaggerConverter extends ServerResource {
         return null;
     }
 
-    private List<ResourceOperationParameterDeclaration> getParametersByType(
-            ResourceOperationDeclaration swagOperation, String type) {
-        List<ResourceOperationParameterDeclaration> params = new ArrayList<ResourceOperationParameterDeclaration>();
-        for (ResourceOperationParameterDeclaration param : swagOperation
-                .getParameters()) {
-            if (param.getParamType().equals(type)) {
-                params.add(param);
+    /**
+     * Retrieves the Swagger resource listing from a Restlet Web API Definition
+     * 
+     * @param def
+     *            The Restlet Web API Definition
+     * @return The corresponding resource listing
+     */
+    public static ResourceListing getResourcelisting(Definition def) {
+        ResourceListing result = new ResourceListing();
+
+        // common properties
+        result.setApiVersion(def.getVersion() == null ? "1.0" : def
+                .getVersion());
+        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
+                : def.getEndpoint());
+        result.setInfo(new ApiInfo());
+        result.setSwaggerVersion(SWAGGER_VERSION);
+        if (def.getContact() != null) {
+            result.getInfo().setContact(def.getContact());
+        }
+        if (def.getLicense() != null) {
+            result.getInfo().setLicenseUrl(def.getLicense());
+        }
+        if (def.getContract() != null) {
+            result.getInfo().setTitle(def.getContract().getName());
+            result.getInfo().setDescription(def.getContract().getDescription());
+        }
+        // Resources
+        List<String> addedApis = new ArrayList<String>();
+        if (def.getContract() != null
+                && def.getContract().getResources() != null) {
+            result.setApis(new ArrayList<ResourceDeclaration>());
+
+            for (Resource resource : def.getContract().getResources()) {
+                ResourceDeclaration rd = new ResourceDeclaration();
+                rd.setDescription(resource.getDescription());
+                rd.setPath(getFirstSegment(resource.getResourcePath()));
+                if (!addedApis.contains(rd.getPath())) {
+                    addedApis.add(rd.getPath());
+                    result.getApis().add(rd);
+                }
             }
         }
-        return params;
+        Collections.sort(result.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+
+                });
+        return result;
+    }
+
+    /**
+     * Returns true if the given type is a primitive type, false otherwise.
+     * 
+     * @param type
+     *            The type to be analysed
+     * @return A boolean of value true if the given type is primitive, false
+     *         otherwise.
+     */
+    private static boolean isPrimitiveType(String type) {
+        if ("string".equals(type.toLowerCase())
+                || "int".equals(type.toLowerCase())
+                || "integer".equals(type.toLowerCase())
+                || "long".equals(type.toLowerCase())
+                || "float".equals(type.toLowerCase())
+                || "double".equals(type.toLowerCase())
+                || "date".equals(type.toLowerCase())
+                || "boolean".equals(type.toLowerCase())
+                || "bool".equals(type.toLowerCase())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the primitive types as Swagger expects them
+     * 
+     * @param type
+     *            The type name to Swaggerize
+     * @return The Swaggerized type
+     */
+    private static String swaggerizeType(String type) {
+        switch (type) {
+        case "Integer":
+            return "int";
+        case "String":
+            return "string";
+        case "Boolean":
+            return "boolean";
+        default:
+            return type;
+        }
+    }
+
+    private static void validateFiles(ResourceListing resourceListing,
+            Map<String, ApiDeclaration> apiDeclarations)
+            throws SwaggerConversionException {
+        int mappedFiles = resourceListing.getApis().size();
+        if (mappedFiles < apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "One of your API declarations is not mapped in your resource listing");
+        }
+        if (mappedFiles > apiDeclarations.size()) {
+            throw new SwaggerConversionException("file",
+                    "Some API declarations are missing");
+        }
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private SwaggerConverter() {
     }
 }

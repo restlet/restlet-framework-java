@@ -43,7 +43,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.ext.swagger.internal.RWADefToSwaggerConverter;
+import org.restlet.ext.swagger.internal.SwaggerConverter;
 import org.restlet.ext.swagger.internal.model.Definition;
 import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
@@ -71,14 +71,14 @@ import com.wordnik.swagger.core.SwaggerSpec;
  */
 public class SwaggerSpecificationRestlet extends Restlet {
 
-    /** The Application to describe. */
-    Application application;
-
     /** The root Restlet to describe. */
     Restlet apiInboundRoot;
 
     /** The version of the API. */
     private String apiVersion;
+
+    /** The Application to describe. */
+    Application application;
 
     /** The base path of the API. */
     private String basePath;
@@ -86,11 +86,11 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The root Restlet to describe. */
     private String jsonPath;
 
-    /** The version of Swagger. */
-    private String swaggerVersion;
-
     /** The RWADef of the API. */
     private Definition rwadef;
+
+    /** The version of Swagger. */
+    private String swaggerVersion;
 
     /**
      * Default constructor.<br>
@@ -126,8 +126,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
             rwadef = i.getDefinition();
         }
         return new JacksonRepresentation<ApiDeclaration>(
-                new RWADefToSwaggerConverter().getApiDeclaration(category,
-                        rwadef));
+                SwaggerConverter.getApiDeclaration(category, rwadef));
     }
 
     /**
@@ -185,7 +184,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
             rwadef = i.getDefinition();
         }
         return new JacksonRepresentation<ResourceListing>(
-                new RWADefToSwaggerConverter().getResourcelisting(rwadef));
+                SwaggerConverter.getResourcelisting(rwadef));
     }
 
     /**
