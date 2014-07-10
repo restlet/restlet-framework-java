@@ -33,9 +33,7 @@
 
 package org.restlet.ext.swagger.internal;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,11 +47,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.ext.swagger.internal.model.Body;
 import org.restlet.ext.swagger.internal.model.Contract;
 import org.restlet.ext.swagger.internal.model.Definition;
@@ -74,36 +68,37 @@ import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationDeclarati
 import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameterDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
-import org.restlet.resource.ClientResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Retrieves a Swagger definition and converts it to Restlet Web API Definition.
+ * Tool library for converting Restlet Web API Definition to and from Swagger
+ * documentation.
  * 
  * @author Cyprien Quilici
  */
-
 public abstract class SwaggerConverter {
 
     /** Internal logger. */
     protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
             .getName());
 
+    /** Supported version of Swagger. */
     private static final String SWAGGER_VERSION = "1.2";
 
-    private static boolean apisparkAddress(String address) {
-        Pattern p = Pattern
-                .compile("http[s]?://[^/]+/apis/[0-9]+/versions/[0-9]+/swagger(/[a-z]+/?)?");
-        Matcher m = p.matcher(address);
-        return m.matches();
-    }
-
+    /**
+     * Converts a Swagger documentation to a Restlet definition.
+     * 
+     * @param resourceListing
+     *            The Swagger resource listing.
+     * @param apiDeclarations
+     *            The Swagger list of Swagger API declarations.
+     * @return The Restlet definition.
+     * @throws SwaggerConversionException
+     */
     public static Definition convert(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws SwaggerConversionException {
 
-        validateFiles(resourceListing, apiDeclarations);
+        validate(resourceListing, apiDeclarations);
 
         boolean containsRawTypes = false;
         List<String> declaredTypes = new ArrayList<String>();
@@ -451,21 +446,6 @@ public abstract class SwaggerConverter {
         }
     }
 
-    private static ClientResource createAuthenticatedClientResource(String url,
-            String userName, String password, boolean apisparkAddress) {
-        ClientResource cr = new ClientResource(url);
-        cr.accept(MediaType.APPLICATION_JSON);
-        if (apisparkAddress) {
-            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
-                    + password);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
-                    password);
-        } else {
-            LOGGER.log(Level.FINER, "External source");
-        }
-        return cr;
-    }
-
     /**
      * Retrieves the Swagger API declaration corresponding to a category of the
      * given Restlet Web API Definition
@@ -479,10 +459,8 @@ public abstract class SwaggerConverter {
     public static ApiDeclaration getApiDeclaration(String category,
             Definition def) {
         ApiDeclaration result = new ApiDeclaration();
-        result.setApiVersion(def.getVersion() == null ? "1.0" : def
-                .getVersion());
-        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
-                : def.getEndpoint());
+        result.setApiVersion(def.getVersion());
+        result.setBasePath(def.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         result.setResourcePath("/" + category);
@@ -591,8 +569,8 @@ public abstract class SwaggerConverter {
         Iterator<String> iterator = usedModels.iterator();
         while (iterator.hasNext()) {
             String model = iterator.next();
-            Representation repr = getRepresentationByName(model,
-                    def.getContract());
+            Representation repr = getRepresentationByName(def.getContract(),
+                    model);
             if (repr == null || isPrimitiveType(model)) {
                 continue;
             }
@@ -648,63 +626,6 @@ public abstract class SwaggerConverter {
     }
 
     /**
-     * 
-     * @param address
-     * @param userName
-     * @param password
-     * @return
-     * @throws SwaggerConversionException
-     */
-    public static Definition getDefinition(String address, String userName,
-            String password) throws SwaggerConversionException {
-
-        // Check that URL is non empty and well formed
-        if (address == null) {
-            throw new SwaggerConversionException("url",
-                    "You did not provide any URL");
-        }
-        Pattern p = Pattern
-                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-        boolean remote = p.matcher(address).matches();
-        boolean apisparkAddress = apisparkAddress(address);
-        ResourceListing resourceListing = new ResourceListing();
-        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
-        if (remote) {
-            LOGGER.log(Level.FINE, "Reading file: " + address);
-            resourceListing = createAuthenticatedClientResource(address,
-                    userName, password, apisparkAddress).get(
-                    ResourceListing.class);
-            for (ResourceDeclaration api : resourceListing.getApis()) {
-                LOGGER.log(Level.FINE,
-                        "Reading file: " + address + api.getPath());
-                apis.put(
-                        api.getPath().replaceAll("/", ""),
-                        createAuthenticatedClientResource(
-                                address + api.getPath(), userName, password,
-                                apisparkAddress).get(ApiDeclaration.class));
-            }
-        } else {
-            File resourceListingFile = new File(address);
-            ObjectMapper om = new ObjectMapper();
-            try {
-                resourceListing = om.readValue(resourceListingFile,
-                        ResourceListing.class);
-                String basePath = resourceListingFile.getParent();
-                LOGGER.log(Level.FINE, "Base path: " + basePath);
-                for (ResourceDeclaration api : resourceListing.getApis()) {
-                    LOGGER.log(Level.FINE,
-                            "Reading file " + basePath + api.getPath());
-                    apis.put(api.getPath(), om.readValue(new File(basePath
-                            + api.getPath()), ApiDeclaration.class));
-                }
-            } catch (IOException e) {
-                throw new SwaggerConversionException("file", e.getMessage());
-            }
-        }
-        return convert(resourceListing, apis);
-    }
-
-    /**
      * Extracts the first segment of a path. Will retrieve "/pet" from
      * "/pet/{petId}" for example.
      * 
@@ -717,7 +638,7 @@ public abstract class SwaggerConverter {
         if (path != null) {
             segment = "/";
             for (String part : path.split("/")) {
-                if (part != null && !"".equals(part)) {
+                if (part != null && !part.isEmpty()) {
                     segment += part;
                     break;
                 }
@@ -775,40 +696,18 @@ public abstract class SwaggerConverter {
     }
 
     /**
-     * Retrieves a representation from a Restlet Web API Definition given its
-     * name
-     * 
-     * @param name
-     *            The name of the representation
-     * @param contract
-     *            The contract, extracted from the Restlet Web API Definition
-     * @return The representation of the given name
-     */
-    private static Representation getRepresentationByName(String name,
-            Contract contract) {
-        for (Representation repr : contract.getRepresentations()) {
-            if (repr.getName().equals(name)) {
-                return repr;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves the Swagger resource listing from a Restlet Web API Definition
+     * Converts a Restlet Web API Definition to a Swagger resource listing.
      * 
      * @param def
-     *            The Restlet Web API Definition
+     *            The Restlet Web API Definition.
      * @return The corresponding resource listing
      */
     public static ResourceListing getResourcelisting(Definition def) {
         ResourceListing result = new ResourceListing();
 
         // common properties
-        result.setApiVersion(def.getVersion() == null ? "1.0" : def
-                .getVersion());
-        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
-                : def.getEndpoint());
+        result.setApiVersion(def.getVersion());
+        result.setBasePath(def.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         if (def.getContact() != null) {
@@ -850,7 +749,7 @@ public abstract class SwaggerConverter {
     }
 
     /**
-     * Returns true if the given type is a primitive type, false otherwise.
+     * Indicates if the given type is a primitive type.
      * 
      * @param type
      *            The type to be analysed
@@ -868,9 +767,8 @@ public abstract class SwaggerConverter {
                 || "boolean".equals(type.toLowerCase())
                 || "bool".equals(type.toLowerCase())) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -893,7 +791,17 @@ public abstract class SwaggerConverter {
         }
     }
 
-    private static void validateFiles(ResourceListing resourceListing,
+    /**
+     * Indicates of the given resource listing and list of API declarations
+     * match.
+     * 
+     * @param resourceListing
+     *            The Swagger resource listing.
+     * @param apiDeclarations
+     *            The list of Swagger API declarations.
+     * @throws SwaggerConversionException
+     */
+    private static void validate(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws SwaggerConversionException {
         int mappedFiles = resourceListing.getApis().size();

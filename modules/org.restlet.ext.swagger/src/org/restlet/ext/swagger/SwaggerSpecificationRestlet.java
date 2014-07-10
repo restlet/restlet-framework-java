@@ -83,11 +83,11 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The base path of the API. */
     private String basePath;
 
+    /** The RWADef of the API. */
+    private Definition definition;
+
     /** The root Restlet to describe. */
     private String jsonPath;
-
-    /** The RWADef of the API. */
-    private Definition rwadef;
 
     /** The version of Swagger. */
     private String swaggerVersion;
@@ -121,12 +121,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the API declaration.
      */
     public Representation getApiDeclaration(String category) {
-        if (rwadef == null) {
-            Introspector i = new Introspector(application, false);
-            rwadef = i.getDefinition();
-        }
         return new JacksonRepresentation<ApiDeclaration>(
-                SwaggerConverter.getApiDeclaration(category, rwadef));
+                SwaggerConverter.getApiDeclaration(category, getDefinition()));
     }
 
     /**
@@ -163,6 +159,29 @@ public class SwaggerSpecificationRestlet extends Restlet {
     }
 
     /**
+     * Returns the application's definition.
+     * 
+     * @return The application's definition.
+     */
+    private synchronized Definition getDefinition() {
+        if (definition == null) {
+            synchronized (SwaggerSpecificationRestlet.class) {
+                Introspector i = new Introspector(application, false);
+                definition = i.getDefinition();
+                // This data seems necessary for Swagger codegen.
+                if (definition.getVersion() == null) {
+                    definition.setVersion("1.0");
+                }
+                if (definition.getEndpoint() == null) {
+                    definition.setEndpoint("http://localhost:9000/v1");
+                }
+            }
+        }
+
+        return definition;
+    }
+
+    /**
      * Returns the base path of the API's resource.
      * 
      * @return The base path of the API's resource.
@@ -179,12 +198,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      *         Application.
      */
     public Representation getResourceListing() {
-        if (rwadef == null) {
-            Introspector i = new Introspector(application, false);
-            rwadef = i.getDefinition();
-        }
         return new JacksonRepresentation<ResourceListing>(
-                SwaggerConverter.getResourcelisting(rwadef));
+                SwaggerConverter.getResourcelisting(getDefinition()));
     }
 
     /**
