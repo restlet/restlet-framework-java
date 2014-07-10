@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -46,8 +45,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -62,7 +59,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.ext.apispark.internal.conversion.SwaggerConversionException;
-import org.restlet.ext.apispark.internal.conversion.SwaggerConverter;
+import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
@@ -83,9 +80,6 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
@@ -97,8 +91,6 @@ import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -347,21 +339,6 @@ public class Introspector {
         }
     }
 
-    private static ClientResource createAuthenticatedClientResource(String url,
-            String userName, String password, boolean apisparkAddress) {
-        ClientResource cr = new ClientResource(url);
-        cr.accept(MediaType.APPLICATION_JSON);
-        if (apisparkAddress) {
-            LOGGER.log(Level.FINER, "Internal source: " + userName + " "
-                    + password);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
-                    password);
-        } else {
-            LOGGER.log(Level.FINER, "External source");
-        }
-        return cr;
-    }
-
     /**
      * Returns an instance of what must be a subclass of {@link Application}.
      * Returns null in case of errors.
@@ -501,63 +478,6 @@ public class Introspector {
         }
 
         return result;
-    }
-
-    /**
-     * 
-     * @param address
-     * @param userName
-     * @param password
-     * @return
-     * @throws SwaggerConversionException
-     */
-    private static Definition getDefinition(String address, String userName,
-            String password) throws SwaggerConversionException {
-
-        // Check that URL is non empty and well formed
-        if (address == null) {
-            throw new SwaggerConversionException("url",
-                    "You did not provide any URL");
-        }
-        Pattern p = Pattern
-                .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-        boolean remote = p.matcher(address).matches();
-        boolean apisparkAddress = isApisparkUrl(address);
-        ResourceListing resourceListing = new ResourceListing();
-        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
-        if (remote) {
-            LOGGER.log(Level.FINE, "Reading file: " + address);
-            resourceListing = createAuthenticatedClientResource(address,
-                    userName, password, apisparkAddress).get(
-                    ResourceListing.class);
-            for (ResourceDeclaration api : resourceListing.getApis()) {
-                LOGGER.log(Level.FINE,
-                        "Reading file: " + address + api.getPath());
-                apis.put(
-                        api.getPath().replaceAll("/", ""),
-                        createAuthenticatedClientResource(
-                                address + api.getPath(), userName, password,
-                                apisparkAddress).get(ApiDeclaration.class));
-            }
-        } else {
-            File resourceListingFile = new File(address);
-            ObjectMapper om = new ObjectMapper();
-            try {
-                resourceListing = om.readValue(resourceListingFile,
-                        ResourceListing.class);
-                String basePath = resourceListingFile.getParent();
-                LOGGER.log(Level.FINE, "Base path: " + basePath);
-                for (ResourceDeclaration api : resourceListing.getApis()) {
-                    LOGGER.log(Level.FINE,
-                            "Reading file " + basePath + api.getPath());
-                    apis.put(api.getPath(), om.readValue(new File(basePath
-                            + api.getPath()), ApiDeclaration.class));
-                }
-            } catch (IOException e) {
-                throw new SwaggerConversionException("file", e.getMessage());
-            }
-        }
-        return SwaggerConverter.convert(resourceListing, apis);
     }
 
     /**
@@ -785,13 +705,6 @@ public class Introspector {
         return result;
     }
 
-    private static boolean isApisparkUrl(String url) {
-        Pattern p = Pattern
-                .compile("http[s]?://[^/]+/apis/[0-9]+/versions/[0-9]+/swagger(/[a-z]+/?)?");
-        Matcher m = p.matcher(url);
-        return m.matches();
-    }
-
     /**
      * Indicates if the given velue is either null or empty.
      * 
@@ -886,7 +799,7 @@ public class Introspector {
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
         } else if ("swagger".equals(language)) {
-            definition = getDefinition(defSource, ulogin, upwd);
+            definition = SwaggerUtils.getDefinition(defSource, ulogin, upwd);
         }
         if (definition != null) {
             sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
@@ -1343,7 +1256,7 @@ public class Introspector {
      * 
      * @return The current definition.
      */
-    public Definition getDefinition() {
+    private Definition getDefinition() {
         return definition;
     }
 
