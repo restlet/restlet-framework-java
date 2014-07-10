@@ -801,8 +801,8 @@ public class Introspector {
             sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl);
         } else if (language != null) {
             if (language.equals("swagger")) {
-                definition = new SwaggerConverter().getDefinition(defSource,
-                        ulogin, upwd);
+                definition = SwaggerConverter.getDefinition(defSource, ulogin,
+                        upwd);
             }
             if (definition != null) {
                 sendDefinition(definition, definitionId, ulogin, upwd,
