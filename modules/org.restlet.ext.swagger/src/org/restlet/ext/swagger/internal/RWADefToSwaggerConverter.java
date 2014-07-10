@@ -83,35 +83,37 @@ public class RWADefToSwaggerConverter extends ServerResource {
     /**
      * Retrieves the Swagger resource listing from a Restlet Web API Definition
      * 
-     * @param definition
+     * @param def
      *            The Restlet Web API Definition
      * @return The corresponding resource listing
      */
-    public ResourceListing getResourcelisting(Definition definition) {
+    public ResourceListing getResourcelisting(Definition def) {
         ResourceListing result = new ResourceListing();
 
         // common properties
-        result.setApiVersion(definition.getVersion());
+        result.setApiVersion(def.getVersion() == null ? "1.0" : def
+                .getVersion());
+        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
+                : def.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SwaggerVersion);
-        if (definition.getContact() != null) {
-            result.getInfo().setContact(definition.getContact());
+        if (def.getContact() != null) {
+            result.getInfo().setContact(def.getContact());
         }
-        if (definition.getLicense() != null) {
-            result.getInfo().setLicenseUrl(definition.getLicense());
+        if (def.getLicense() != null) {
+            result.getInfo().setLicenseUrl(def.getLicense());
         }
-        if (definition.getContract() != null) {
-            result.getInfo().setTitle(definition.getContract().getName());
-            result.getInfo().setDescription(
-                    definition.getContract().getDescription());
+        if (def.getContract() != null) {
+            result.getInfo().setTitle(def.getContract().getName());
+            result.getInfo().setDescription(def.getContract().getDescription());
         }
         // Resources
         List<String> addedApis = new ArrayList<String>();
-        if (definition.getContract() != null
-                && definition.getContract().getResources() != null) {
+        if (def.getContract() != null
+                && def.getContract().getResources() != null) {
             result.setApis(new ArrayList<ResourceDeclaration>());
 
-            for (Resource resource : definition.getContract().getResources()) {
+            for (Resource resource : def.getContract().getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
                 rd.setPath(getFirstSegment(resource.getResourcePath()));
@@ -145,9 +147,12 @@ public class RWADefToSwaggerConverter extends ServerResource {
      */
     public ApiDeclaration getApiDeclaration(String category, Definition def) {
         ApiDeclaration result = new ApiDeclaration();
-        result.setBasePath(def.getEndpoint());
+        result.setApiVersion(def.getVersion() == null ? "1.0" : def
+                .getVersion());
+        result.setBasePath(def.getEndpoint() == null ? "http://localhost:9000/v1"
+                : def.getEndpoint());
+        result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SwaggerVersion);
-        result.setApiVersion(def.getVersion());
         result.setResourcePath("/" + category);
         Set<String> usedModels = new HashSet<String>();
 
@@ -192,7 +197,7 @@ public class RWADefToSwaggerConverter extends ServerResource {
                     if (inRepr.getRepresentation().equals("Representation")) {
                         ropd.setType("File");
                     } else {
-                        ropd.setType(inRepr.getRepresentation());
+                        ropd.setType(swaggerizeType(inRepr.getRepresentation()));
                     }
                     if (inRepr.getRepresentation() != null) {
                         usedModels.add(inRepr.getRepresentation());
@@ -202,20 +207,25 @@ public class RWADefToSwaggerConverter extends ServerResource {
 
                 // Get out representation
                 Body outRepr = operation.getOutRepresentation();
-                if (outRepr != null) {
+                if (outRepr != null && outRepr.getRepresentation() != null) {
                     if (outRepr.isArray()) {
                         rod.setType("array");
                         if (isPrimitiveType(outRepr.getRepresentation())) {
-                            rod.getItems().setType(outRepr.getRepresentation());
+                            rod.getItems()
+                                    .setType(
+                                            swaggerizeType(outRepr
+                                                    .getRepresentation()));
                         } else {
                             rod.getItems().setRef(outRepr.getRepresentation());
                         }
                     } else {
-                        rod.setType(outRepr.getRepresentation());
+                        rod.setType(swaggerizeType(outRepr.getRepresentation()));
                     }
                     if (outRepr.getRepresentation() != null) {
                         usedModels.add(outRepr.getRepresentation());
                     }
+                } else {
+                    rod.setType("void");
                 }
 
                 // Get query parameters
@@ -274,13 +284,13 @@ public class RWADefToSwaggerConverter extends ServerResource {
                     tpd.setType("array");
                     tpd.setItems(new ItemsDeclaration());
                     if (isPrimitiveType(prop.getType())) {
-                        tpd.getItems().setType(prop.getType());
+                        tpd.getItems().setType(swaggerizeType(prop.getType()));
                     } else {
                         tpd.getItems().setRef(prop.getType());
                     }
                 } else {
                     if (isPrimitiveType(prop.getType())) {
-                        tpd.setType(prop.getType());
+                        tpd.setType(swaggerizeType(prop.getType()));
                     } else {
                         tpd.setRef(prop.getType());
                     }
@@ -368,6 +378,26 @@ public class RWADefToSwaggerConverter extends ServerResource {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Returns the primitive types as Swagger expects them
+     * 
+     * @param type
+     *            The type name to Swaggerize
+     * @return The Swaggerized type
+     */
+    private String swaggerizeType(String type) {
+        switch (type) {
+        case "Integer":
+            return "int";
+        case "String":
+            return "string";
+        case "Boolean":
+            return "boolean";
+        default:
+            return type;
         }
     }
 }
