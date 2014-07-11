@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -560,7 +561,7 @@ public abstract class SwaggerConverter {
 
         // common properties
         result.setApiVersion(definition.getVersion());
-        result.setBasePath(definition.getEndpoint());
+        // result.setBasePath(definition.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         if (definition.getContact() != null) {
