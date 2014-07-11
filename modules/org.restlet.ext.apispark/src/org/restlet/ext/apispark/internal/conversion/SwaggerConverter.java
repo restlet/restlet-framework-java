@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Body;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -553,11 +554,15 @@ public abstract class SwaggerConverter {
 
                 // Get response messages
                 for (Response response : operation.getResponses()) {
+                    if (Status.isSuccess(response.getCode())) {
+                        continue;
+                    }
                     ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
                     rmd.setCode(response.getCode());
                     rmd.setMessage(response.getMessage());
                     if (response.getBody() != null) {
-                        rmd.setResponseModel(response.getBody().getRepresentation());
+                        rmd.setResponseModel(response.getBody()
+                                .getRepresentation());
                     }
                     rod.getResponseMessages().add(rmd);
                 }
@@ -709,7 +714,6 @@ public abstract class SwaggerConverter {
 
         // common properties
         result.setApiVersion(def.getVersion());
-        result.setBasePath(def.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         if (def.getContact() != null) {
