@@ -556,7 +556,9 @@ public abstract class SwaggerConverter {
                     ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
                     rmd.setCode(response.getCode());
                     rmd.setMessage(response.getMessage());
-                    rmd.setResponseModel(response.getBody().getRepresentation());
+                    if (response.getBody() != null) {
+                        rmd.setResponseModel(response.getBody().getRepresentation());
+                    }
                     rod.getResponseMessages().add(rmd);
                 }
 
@@ -779,14 +781,13 @@ public abstract class SwaggerConverter {
      * @return The Swaggerized type
      */
     private static String swaggerizeType(String type) {
-        switch (type) {
-        case "Integer":
+        if ("Integer".equals(type)) {
             return "int";
-        case "String":
+        } else if ("String".equals(type)) {
             return "string";
-        case "Boolean":
+        } else if ("Boolean".equals(type)) {
             return "boolean";
-        default:
+        } else {
             return type;
         }
     }
