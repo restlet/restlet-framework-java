@@ -54,7 +54,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-
 import com.wordnik.swagger.annotations.ApiError;
 import com.wordnik.swagger.annotations.ApiErrors;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -302,7 +301,7 @@ public class SwaggerJaxRsResourceGenerator {
             Class<?> returnType = method.getReturnType();
             if (returnType != null) {
                 op.setResponseClass(returnType.getSimpleName());
-                // TODO "List[" + name + "]" 
+                // TODO "List[" + name + "]"
                 // for Collections as Arrays
 
                 if (!returnType.isPrimitive()) { // TODO

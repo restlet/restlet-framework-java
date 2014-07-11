@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Body;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -553,10 +554,16 @@ public abstract class SwaggerConverter {
 
                 // Get response messages
                 for (Response response : operation.getResponses()) {
+                    if (Status.isSuccess(response.getCode())) {
+                        continue;
+                    }
                     ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
                     rmd.setCode(response.getCode());
                     rmd.setMessage(response.getMessage());
-                    rmd.setResponseModel(response.getBody().getRepresentation());
+                    if (response.getBody() != null) {
+                        rmd.setResponseModel(response.getBody()
+                                .getRepresentation());
+                    }
                     rod.getResponseMessages().add(rmd);
                 }
 
@@ -707,7 +714,6 @@ public abstract class SwaggerConverter {
 
         // common properties
         result.setApiVersion(def.getVersion());
-        result.setBasePath(def.getEndpoint());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         if (def.getContact() != null) {
@@ -779,14 +785,13 @@ public abstract class SwaggerConverter {
      * @return The Swaggerized type
      */
     private static String swaggerizeType(String type) {
-        switch (type) {
-        case "Integer":
+        if ("Integer".equals(type)) {
             return "int";
-        case "String":
+        } else if ("String".equals(type)) {
             return "string";
-        case "Boolean":
+        } else if ("Boolean".equals(type)) {
             return "boolean";
-        default:
+        } else {
             return type;
         }
     }
