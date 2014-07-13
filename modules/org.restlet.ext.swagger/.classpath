@@ -9,9 +9,9 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.ws.rs"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.slf4j"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.scala"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.e4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.e4"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json4s"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.scala"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
