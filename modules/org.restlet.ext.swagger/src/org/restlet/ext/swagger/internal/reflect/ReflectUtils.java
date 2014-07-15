@@ -192,4 +192,26 @@ public class ReflectUtils {
         }
     }
 
+    /**
+     * Extracts the first segment of a path. Will retrieve "/pet" from
+     * "/pet/{petId}" for example.
+     * 
+     * @param path
+     *            The path of which the segment will be extracted.
+     * @return The first segment of the given path.
+     */
+    public static String getFirstSegment(String path) {
+        String segment = null;
+        if (path != null) {
+            int start = (path.startsWith("/")) ? 1 : 0;
+            int index = path.indexOf("/", start);
+            if (index != -1) {
+                segment = "/" + path.substring(start, index);
+            } else {
+                segment = "/" + path.substring(start);
+            }
+        }
+        return segment;
+    }
+
 }

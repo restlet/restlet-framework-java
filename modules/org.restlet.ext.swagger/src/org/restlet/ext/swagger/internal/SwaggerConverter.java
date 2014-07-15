@@ -71,6 +71,7 @@ import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationDeclarati
 import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameterDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
+import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
@@ -506,28 +507,6 @@ public abstract class SwaggerConverter {
     }
 
     /**
-     * Extracts the first segment of a path. Will retrieve "/pet" from
-     * "/pet/{petId}" for example.
-     * 
-     * @param path
-     *            The path of which the segment will be extracted.
-     * @return The first segment of the given path.
-     */
-    private static String getFirstSegment(String path) {
-        String segment = null;
-        if (path != null) {
-            int start = (path.startsWith("/")) ? 1 : 0;
-            int index = path.indexOf("/", start);
-            if (index != -1) {
-                segment = "/" + path.substring(start, index);
-            } else {
-                segment = "/" + path.substring(start);
-            }
-        }
-        return segment;
-    }
-
-    /**
      * Returns the representation given its name from the list of
      * representations of the given contract.
      * 
@@ -584,7 +563,7 @@ public abstract class SwaggerConverter {
             for (Resource resource : definition.getContract().getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
-                rd.setPath(getFirstSegment(resource.getResourcePath()));
+                rd.setPath(ReflectUtils.getFirstSegment(resource.getResourcePath()));
                 if (!addedApis.contains(rd.getPath())) {
                     addedApis.add(rd.getPath());
                     result.getApis().add(rd);
