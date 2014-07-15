@@ -49,7 +49,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.swagger.internal.model.Body;
 import org.restlet.ext.swagger.internal.model.Contract;
@@ -127,31 +126,18 @@ public abstract class SwaggerConverter {
                 ApiDeclaration swagApiDeclaration = entry.getValue();
                 List<String> apiProduces = swagApiDeclaration.getProduces();
                 List<String> apiConsumes = swagApiDeclaration.getConsumes();
-                if (apiProduces == null) {
-                    apiProduces = new ArrayList<String>();
-                }
-                if (apiConsumes == null) {
-                    apiConsumes = new ArrayList<String>();
-                }
 
                 for (ResourceDeclaration api : swagApiDeclaration.getApis()) {
                     declaredPathVariables = new ArrayList<String>();
                     resource = new Resource();
                     resource.setResourcePath(api.getPath());
+                    resource.setSection(entry.getKey());
 
                     // Operations listing
                     Operation operation;
                     for (ResourceOperationDeclaration swagOperation : api
                             .getOperations()) {
                         String methodName = swagOperation.getMethod();
-                        // TODO why do we prevent describing these methods?
-                        // Let's describe the API as it is.
-                        if (Method.OPTIONS.getName().equals(methodName)
-                                || Method.PATCH.getName().equals(methodName)) {
-                            LOGGER.log(Level.FINE, "Method " + methodName
-                                    + " ignored.");
-                            continue;
-                        }
                         operation = new Operation();
                         operation.setMethod(swagOperation.getMethod());
                         operation.setName(swagOperation.getNickname());
@@ -195,11 +181,10 @@ public abstract class SwaggerConverter {
                                     + swagOperation.getNickname()
                                     + " returns an array");
                             rwadOutRepr.setArray(true);
-                            if (swagOperation.getItems() != null
-                                    && swagOperation.getItems().getType() != null) {
+                            if (swagOperation.getItems().getType() != null) {
                                 rwadOutRepr.setRepresentation(swagOperation
                                         .getItems().getType());
-                            } else if (swagOperation.getItems() != null) {
+                            } else {
                                 rwadOutRepr.setRepresentation(swagOperation
                                         .getItems().getRef());
                             }
