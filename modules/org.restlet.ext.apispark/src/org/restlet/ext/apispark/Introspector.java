@@ -288,7 +288,7 @@ public class Introspector {
                     // for Restlet one representation / several variants for
                     // APIspark
                     body.setRepresentation(mi.getRequest().getRepresentations()
-                            .get(0).getName());
+                            .get(0).getType().getSimpleName());
                     body.setArray(mi.getRequest().getRepresentations().get(0)
                             .isCollection());
 
@@ -305,7 +305,8 @@ public class Introspector {
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
                         body.setRepresentation(mi.getResponse()
-                                .getRepresentations().get(0).getName());
+                                .getRepresentations().get(0).getType()
+                                .getSimpleName());
                         body.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
@@ -1178,6 +1179,9 @@ public class Introspector {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
+                if (ri.isCollection()) {
+                    continue;
+                }
                 LOGGER.fine("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 

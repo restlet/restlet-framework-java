@@ -98,6 +98,9 @@ public class ResourceOperationDeclaration {
     }
 
     public ItemsDeclaration getItems() {
+        if (items == null) {
+            items = new ItemsDeclaration();
+        }
         return items;
     }
 
