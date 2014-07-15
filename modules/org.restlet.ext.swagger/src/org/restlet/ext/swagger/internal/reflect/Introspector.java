@@ -34,6 +34,8 @@
 package org.restlet.ext.swagger.internal.reflect;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -756,6 +758,25 @@ public class Introspector {
             }
         }
 
+        Collections.sort(result.getContract().getRepresentations(),
+                new Comparator<Representation>() {
+
+                    @Override
+                    public int compare(Representation o1, Representation o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                });
+        Collections.sort(result.getContract().getResources(),
+                new Comparator<Resource>() {
+
+                    @Override
+                    public int compare(Resource o1, Resource o2) {
+                        return o1.getResourcePath().compareTo(
+                                o2.getResourcePath());
+                    }
+
+                });
         return result;
     }
 
