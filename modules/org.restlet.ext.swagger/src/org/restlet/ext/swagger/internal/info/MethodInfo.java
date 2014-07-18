@@ -43,8 +43,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
-import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -98,14 +98,12 @@ public class MethodInfo extends DocumentedInfo {
                 try {
                     // Describe the request
                     Class<?>[] classes = ai.getJavaInputTypes();
-                    Class<?> inputClass = (classes != null && classes.length > 0) ? classes[0]
-                            : null;
-
                     List<Variant> requestVariants = ai.getRequestVariants(
                             resource.getMetadataService(),
                             resource.getConverterService());
 
-                    if (requestVariants != null) {
+                    if (classes != null && classes.length > 0
+                            && requestVariants != null) {
                         for (Variant variant : requestVariants) {
                             if ((variant.getMediaType() != null)
                                     && ((info.getRequest() == null) || !info
@@ -116,7 +114,11 @@ public class MethodInfo extends DocumentedInfo {
                                 }
 
                                 RepresentationInfo representationInfo = RepresentationInfo
-                                        .describe(info, inputClass, variant);
+                                        .describe(info, ai.getJavaMethod()
+                                                .getParameterTypes()[0], ai
+                                                .getJavaMethod()
+                                                .getGenericParameterTypes()[0],
+                                                variant);
 
                                 info.getRequest().getRepresentations()
                                         .add(representationInfo);
@@ -138,6 +140,7 @@ public class MethodInfo extends DocumentedInfo {
                     }
 
                     // Describe the response
+
                     Class<?> outputClass = ai.getJavaOutputType();
 
                     if (outputClass != null) {
@@ -153,7 +156,10 @@ public class MethodInfo extends DocumentedInfo {
                                                 .getRepresentations()
                                                 .contains(variant)) {
                                     RepresentationInfo representationInfo = RepresentationInfo
-                                            .describe(info, outputClass,
+                                            .describe(info, ai.getJavaMethod()
+                                                    .getReturnType(), ai
+                                                    .getJavaMethod()
+                                                    .getGenericReturnType(),
                                                     variant);
 
                                     info.getResponse().getRepresentations()

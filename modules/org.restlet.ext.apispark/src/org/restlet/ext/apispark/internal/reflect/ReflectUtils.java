@@ -77,7 +77,7 @@ public class ReflectUtils {
         return field.getType();
     }
 
-    private static Class<?> getSimpleClass(java.lang.reflect.Type type) {
+    public static Class<?> getSimpleClass(java.lang.reflect.Type type) {
         if (type instanceof Class<?>) {
             Class<?> c = (Class<?>) type;
             if (c.isArray()) {
@@ -98,7 +98,7 @@ public class ReflectUtils {
                                 "We don't support generic types with several arguments.");
             }
         }
-        return type.getClass();
+        return (type != null) ? type.getClass() : null;
     }
 
     /**

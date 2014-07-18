@@ -38,6 +38,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,6 +68,7 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.IntrospectionConverter;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
@@ -367,81 +369,91 @@ public class JaxrsIntrospector extends IntrospectionUtils {
                         + JaxrsIntrospector.class.getName());
     }
 
-    private static void scan(Annotation annotation, Class<?> parameterType,
-            ApplicationInfo info, ResourceInfo resource, MethodInfo method,
-            Consumes consumes) {
+    private static void scan(Annotation[] annotations, Class<?> parameterClass,
+            Type parameterType, ApplicationInfo info, ResourceInfo resource,
+            MethodInfo method, Consumes consumes) {
         // Indicates that this parameter is instantiated from annotation
         boolean valueComputed = false;
         // TODO sounds like there are several level of parameters, be carefull
 
-        // Introduced by Jax-rs 2.0
-        // BeanParam
-
-        if (annotation instanceof CookieParam) {
-            valueComputed = true;
-            String value = ((CookieParam) annotation).value();
-            ParameterInfo pi = new ParameterInfo(value, ParameterStyle.COOKIE,
-                    "Cookie parameter: " + value);
-            method.getRequest().getParameters().add(pi);
-        } else if (annotation instanceof DefaultValue) {
-            // TODO Do we support DefaultValue annotation?
-            // DefaultValue defaultvalue = (DefaultValue) annotation;
-        } else if (annotation instanceof Encoded) {
-            // TODO Do we support encoded annotation?
-            // Encoded encoded = (Encoded) annotation;
-        } else if (annotation instanceof FormParam) {
-            valueComputed = true;
-            addRepresentation(method, (FormParam) annotation);
-        } else if (annotation instanceof HeaderParam) {
-            valueComputed = true;
-            String value = ((HeaderParam) annotation).value();
-            ParameterInfo pi = new ParameterInfo(value, ParameterStyle.HEADER,
-                    "header parameter: " + value);
-            method.getParameters().add(pi);
-        } else if (annotation instanceof MatrixParam) {
-            valueComputed = true;
-            String value = ((MatrixParam) annotation).value();
-            ParameterInfo pi = new ParameterInfo(value, ParameterStyle.MATRIX,
-                    "matrix parameter: " + value);
-            method.getParameters().add(pi);
-        } else if (annotation instanceof PathParam) {
-            valueComputed = true;
-            String value = ((PathParam) annotation).value();
-            boolean found = false;
-            for (ParameterInfo pi : resource.getParameters()) {
-                if (pi.getName().equals(value)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+        for (Annotation annotation : annotations) {
+            // Introduced by Jax-rs 2.0
+            // BeanParam
+            if (annotation instanceof CookieParam) {
+                valueComputed = true;
+                String value = ((CookieParam) annotation).value();
                 ParameterInfo pi = new ParameterInfo(value,
-                        ParameterStyle.TEMPLATE, "Path parameter: " + value);
-                resource.getParameters().add(pi);
-            }
+                        ParameterStyle.COOKIE, "Cookie parameter: " + value);
+                method.getRequest().getParameters().add(pi);
+            } else if (annotation instanceof DefaultValue) {
+                // TODO Do we support DefaultValue annotation?
+                // DefaultValue defaultvalue = (DefaultValue) annotation;
+            } else if (annotation instanceof Encoded) {
+                // TODO Do we support encoded annotation?
+                // Encoded encoded = (Encoded) annotation;
+            } else if (annotation instanceof FormParam) {
+                valueComputed = true;
+                addRepresentation(method, (FormParam) annotation);
+            } else if (annotation instanceof HeaderParam) {
+                valueComputed = true;
+                String value = ((HeaderParam) annotation).value();
+                ParameterInfo pi = new ParameterInfo(value,
+                        ParameterStyle.HEADER, "header parameter: " + value);
+                method.getParameters().add(pi);
+            } else if (annotation instanceof MatrixParam) {
+                valueComputed = true;
+                String value = ((MatrixParam) annotation).value();
+                ParameterInfo pi = new ParameterInfo(value,
+                        ParameterStyle.MATRIX, "matrix parameter: " + value);
+                method.getParameters().add(pi);
+            } else if (annotation instanceof PathParam) {
+                valueComputed = true;
+                String value = ((PathParam) annotation).value();
+                boolean found = false;
+                for (ParameterInfo p : resource.getParameters()) {
+                    if (p.getName().equals(value)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    ParameterInfo pi = new ParameterInfo(value,
+                            ParameterStyle.TEMPLATE, "Path parameter: " + value);
+                    resource.getParameters().add(pi);
+                }
 
-        } else if (annotation instanceof QueryParam) {
-            valueComputed = true;
-            String value = ((QueryParam) annotation).value();
-            ParameterInfo pi = new ParameterInfo(value, ParameterStyle.QUERY,
-                    "Query parameter: " + value);
-            method.getParameters().add(pi);
-        } else if (annotation instanceof javax.ws.rs.core.Context) {
-            valueComputed = true;
-            javax.ws.rs.core.Context context = (javax.ws.rs.core.Context) annotation;
-            // TODO scan context annotation.
+            } else if (annotation instanceof QueryParam) {
+                valueComputed = true;
+                String value = ((QueryParam) annotation).value();
+                ParameterInfo pi = new ParameterInfo(value,
+                        ParameterStyle.QUERY, "Query parameter: " + value);
+                method.getParameters().add(pi);
+            } else if (annotation instanceof javax.ws.rs.core.Context) {
+                valueComputed = true;
+                javax.ws.rs.core.Context context = (javax.ws.rs.core.Context) annotation;
+                // TODO scan context annotation.
+            }
         }
 
         if (!valueComputed) {
             // We make the assumption this represents the body...
-            if (consumes != null && parameterType != null
-                    && !Void.class.equals(parameterType)) {
-                for (String consume : consumes.value()) {
+            if (parameterClass != null && !Void.class.equals(parameterClass)) {
+                String[] mediaTypes = null;
+                if (consumes == null || consumes.value() == null
+                        || consumes.value().length == 0) {
+                    // We assume this can't really happen...
+                    // Perhaps, we should rely on Produces annotations?
+                    mediaTypes = new String[1];
+                    mediaTypes[0] = MediaType.APPLICATION_ALL.getName();
+                } else {
+                    mediaTypes = consumes.value();
+                }
+                for (String consume : mediaTypes) {
                     Variant variant = new Variant(MediaType.valueOf(consume));
                     RepresentationInfo representationInfo = null;
 
                     representationInfo = RepresentationInfo.describe(method,
-                            parameterType, variant);
+                            parameterClass, parameterType, variant);
                     if (method.getRequest() == null) {
                         method.setRequest(new RequestInfo());
                     }
@@ -692,8 +704,9 @@ public class JaxrsIntrospector extends IntrospectionUtils {
                             .getSimpleName());
                     representationInfo.setRaw(true);
                 } else {
-                    representationInfo = RepresentationInfo.describe(mi,
-                            outputClass, variant);
+                    representationInfo = RepresentationInfo
+                            .describe(mi, outputClass,
+                                    method.getGenericReturnType(), variant);
                 }
                 mi.getResponse().getRepresentations().add(representationInfo);
             }
@@ -708,10 +721,15 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         Class<?>[] parameterTypes = method.getParameterTypes();
         int i = 0;
         for (Annotation[] annotations : parameterAnnotations) {
-            Class<?> parameterType = parameterTypes[i++];
-            for (Annotation annotation : annotations) {
-                scan(annotation, parameterType, info, resource, mi, consumes);
-            }
+            Class<?> parameterType = parameterTypes[i];
+            scan(annotations, parameterType,
+                    method.getGenericParameterTypes()[i], info, resource, mi,
+                    consumes);
+            i++;
+        }
+        if (mi.getResponse().getStatuses().isEmpty()) {
+            mi.getResponse().getStatuses().add(Status.SUCCESS_OK);
+            mi.getResponse().setDocumentation("Success");
         }
 
         // Introduced by Jax-rs 2.0,

@@ -34,11 +34,11 @@
 package org.restlet.ext.apispark.internal.info;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
 
@@ -68,11 +68,13 @@ public class RepresentationInfo extends DocumentedInfo {
      * @return The APISpark representation information.
      */
     public static RepresentationInfo describe(MethodInfo methodInfo,
-            Class<?> representationClass, Variant variant) {
+            Class<?> representationClass, Type representationType,
+            Variant variant) {
         RepresentationInfo result = null;
 
         if (representationClass != null) {
-            result = introspect(representationClass, variant.getMediaType());
+            result = introspect(representationClass, representationType,
+                    variant.getMediaType());
         }
 
         return result;
@@ -84,37 +86,38 @@ public class RepresentationInfo extends DocumentedInfo {
      * 
      * @param clazz
      *            The class to document.
+     * @param type
+     *            The class to document.
      * @param variant
      *            The current variant.
      * @return The description of the given class as a
      *         {@link RepresentationInfo}.
      */
-    public static RepresentationInfo introspect(Class<?> clazz,
+    public static RepresentationInfo introspect(Class<?> clazz, Type type,
             MediaType mediaType) {
         // Introspect the java class
         RepresentationInfo result = new RepresentationInfo(mediaType);
-        result.setType(clazz);
-        result.setIdentifier(clazz.getName());
-        result.setName(clazz.getSimpleName());
+        result.setCollection(ReflectUtils.isListType(clazz));
+        Class<?> c = ReflectUtils.getSimpleClass(type);
+        result.setType((c == null) ? clazz : c);
+        boolean generic = c != null
+                && !c.getCanonicalName().equals(clazz.getCanonicalName());
+        if (generic) {
+            result.setIdentifier(clazz.getName() + c.getName());
+            result.setName(clazz.getSimpleName() + c.getSimpleName());
+        } else {
+            result.setIdentifier(result.getType().getName());
+            result.setName(result.getType().getSimpleName());
+        }
 
-        // TODO we don't introspect jdk's class
         if (org.restlet.representation.Representation.class
-                .isAssignableFrom(clazz) || ReflectUtils.isJdkClass(clazz)) {
+                .isAssignableFrom(clazz) || ReflectUtils.isJdkClass(c)) {
             result.setRaw(true);
         } else {
-            // TODO support parent types
-            if (clazz.getSuperclass() != null
-                    && !ReflectUtils.isJdkClass(clazz.getSuperclass())) {
-                // TODO This type must introspected too, as it will reveal other
-                // representation
-                result.setParentType(clazz.getSuperclass());
-            }
-
             for (Field field : ReflectUtils.getAllDeclaredFields(clazz)) {
                 if (!"serialVersionUID".equals(field.getName())) {
                     PropertyInfo property = new PropertyInfo();
                     property.setName(field.getName());
-                    // TODO how do we handle generics?
                     property.setType(ReflectUtils.getSimpleClass(field));
                     property.setMinOccurs(0);
                     if (ReflectUtils.isListType(field.getType())) {
@@ -129,6 +132,9 @@ public class RepresentationInfo extends DocumentedInfo {
         return result;
     }
 
+    /** Indicates if this representation is a collection. */
+    private boolean collection;
+
     /** Identifier for that element. */
     private String identifier;
 
@@ -140,12 +146,6 @@ public class RepresentationInfo extends DocumentedInfo {
 
     /** List of parameters. */
     private List<ParameterInfo> parameters;
-
-    /** Reference to its parent type if any. */
-    private Class<?> parentType;
-
-    /** List of locations of one or more meta data profiles. */
-    private List<Reference> profiles;
 
     /** List of this representation's properties. */
     private List<PropertyInfo> properties;
@@ -257,29 +257,6 @@ public class RepresentationInfo extends DocumentedInfo {
         return p;
     }
 
-    public Class<?> getParentType() {
-        return parentType;
-    }
-
-    /**
-     * Returns the list of locations of one or more meta data profiles.
-     * 
-     * @return The list of locations of one or more meta data profiles.
-     */
-    public List<Reference> getProfiles() {
-        // Lazy initialization with double-check.
-        List<Reference> p = this.profiles;
-        if (p == null) {
-            synchronized (this) {
-                p = this.profiles;
-                if (p == null) {
-                    this.profiles = p = new ArrayList<Reference>();
-                }
-            }
-        }
-        return p;
-    }
-
     public List<PropertyInfo> getProperties() {
         // Lazy initialization with double-check.
         List<PropertyInfo> p = this.properties;
@@ -307,8 +284,16 @@ public class RepresentationInfo extends DocumentedInfo {
         return type;
     }
 
+    public boolean isCollection() {
+        return collection;
+    }
+
     public boolean isRaw() {
         return raw;
+    }
+
+    public void setCollection(boolean collection) {
+        this.collection = collection;
     }
 
     /**
@@ -343,20 +328,6 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
-    }
-
-    public void setParentType(Class<?> parentType) {
-        this.parentType = parentType;
-    }
-
-    /**
-     * Sets the list of locations of one or more meta data profiles.
-     * 
-     * @param profiles
-     *            The list of locations of one or more meta data profiles.
-     */
-    public void setProfiles(List<Reference> profiles) {
-        this.profiles = profiles;
     }
 
     public void setProperties(List<PropertyInfo> properties) {

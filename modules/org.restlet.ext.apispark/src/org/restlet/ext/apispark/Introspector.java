@@ -33,12 +33,9 @@
 
 package org.restlet.ext.apispark;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -48,8 +45,6 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
@@ -60,13 +55,9 @@ import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
@@ -451,46 +442,6 @@ public class Introspector extends IntrospectionUtils {
     }
 
     /**
-     * Prints the instructions necessary to launch this tool.
-     */
-    private static void printHelp() {
-        PrintStream o = System.out;
-
-        o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class, "[options] APPLICATION");
-        printSynopsis(o, Introspector.class,
-                "-l swagger [options] SWAGGER DEFINITION URL/PATH");
-        o.println("DESCRIPTION");
-        printSentence(
-                o,
-                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class or by the swagger definition available on the ",
-                "URL/PATH");
-        printSentence(
-                o,
-                "If the whole process is successfull, it displays the url of the corresponding documentation.");
-        o.println("OPTIONS");
-        printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user name.");
-        printOption(o, "-p", "The mandatory APISpark user secret key.");
-        printOption(o, "-s",
-                "The optional APISpark platform URL (by default https://apispark.com).");
-        printOption(o, "-c",
-                "The optional full name of your Restlet Component class.",
-                "This allows to collect some other data, such as the endpoint.");
-        printOption(
-                o,
-                "-d",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
-        printOption(
-                o,
-                "-l",
-                "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        printOption(o, "-v",
-                "The optional parameter switching the process to a verbose mode");
-    }
-
-    /**
      * Main class, invoke this class without argument to get help instructions.
      * 
      * @param args
@@ -576,10 +527,51 @@ public class Introspector extends IntrospectionUtils {
             definition = SwaggerUtils.getDefinition(defSource, ulogin, upwd);
         }
         if (definition != null) {
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl, LOGGER);
+            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl,
+                    LOGGER);
         } else {
             LOGGER.severe("Please provide a valid application class name or definition URL.");
         }
+    }
+
+    /**
+     * Prints the instructions necessary to launch this tool.
+     */
+    private static void printHelp() {
+        PrintStream o = System.out;
+
+        o.println("SYNOPSIS");
+        printSynopsis(o, Introspector.class, "[options] APPLICATION");
+        printSynopsis(o, Introspector.class,
+                "-l swagger [options] SWAGGER DEFINITION URL/PATH");
+        o.println("DESCRIPTION");
+        printSentence(
+                o,
+                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
+                "the full name of your Restlet application class or by the swagger definition available on the ",
+                "URL/PATH");
+        printSentence(
+                o,
+                "If the whole process is successfull, it displays the url of the corresponding documentation.");
+        o.println("OPTIONS");
+        printOption(o, "-h", "Prints this help.");
+        printOption(o, "-u", "The mandatory APISpark user name.");
+        printOption(o, "-p", "The mandatory APISpark user secret key.");
+        printOption(o, "-s",
+                "The optional APISpark platform URL (by default https://apispark.com).");
+        printOption(o, "-c",
+                "The optional full name of your Restlet Component class.",
+                "This allows to collect some other data, such as the endpoint.");
+        printOption(
+                o,
+                "-d",
+                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
+        printOption(
+                o,
+                "-l",
+                "The optional name of the description language of the definition you want to upload. Possible value: swagger");
+        printOption(o, "-v",
+                "The optional parameter switching the process to a verbose mode");
     }
 
     /** The current Web API definition. */

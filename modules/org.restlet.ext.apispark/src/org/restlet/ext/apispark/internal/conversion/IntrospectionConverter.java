@@ -1,6 +1,8 @@
 package org.restlet.ext.apispark.internal.conversion;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,7 +231,9 @@ public class IntrospectionConverter {
                     // for Restlet one representation / several variants for
                     // APIspark
                     body.setRepresentation(mi.getRequest().getRepresentations()
-                            .get(0).getName());
+                            .get(0).getType().getSimpleName());
+                    body.setArray(mi.getRequest().getRepresentations().get(0)
+                            .isCollection());
 
                     operation.setInRepresentation(body);
                 }
@@ -244,7 +248,10 @@ public class IntrospectionConverter {
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
                         body.setRepresentation(mi.getResponse()
-                                .getRepresentations().get(0).getName());
+                                .getRepresentations().get(0).getType()
+                                .getSimpleName());
+                        body.setArray(mi.getResponse().getRepresentations()
+                                .get(0).isCollection());
                     }
                     operation.setOutRepresentation(body);
 
@@ -341,9 +348,25 @@ public class IntrospectionConverter {
             List<RepresentationInfo> toBeAdded = new ArrayList<RepresentationInfo>();
             // Initialize the list of classes to be anaylized
             for (RepresentationInfo ri : mapReps.values()) {
+                if (ri.isRaw()) {
+                    continue;
+                }
+                if (ri.isCollection()
+                        && !mapReps.containsKey(ri.getType().getName())) {
+                    // Check if the type has been described.
+                    RepresentationInfo r = new RepresentationInfo(
+                            ri.getMediaType());
+                    r.setType(ri.getType());
+                    toBeAdded.add(r);
+                }
                 // Parent class
-                Class<?> parentType = ri.getParentType();
-                if (ri.getParentType() != null
+                Class<?> parentType = ri.getType().getSuperclass();
+                if (parentType != null && ReflectUtils.isJdkClass(parentType)) {
+                    // TODO This type must introspected too, as it will reveal
+                    // other representation
+                    parentType = null;
+                }
+                if (parentType != null
                         && !mapReps.containsKey(parentType.getName())) {
                     RepresentationInfo r = new RepresentationInfo(
                             ri.getMediaType());
@@ -369,14 +392,26 @@ public class IntrospectionConverter {
                 toBeAdded.clear();
                 for (int i = 0; i < tab.length; i++) {
                     RepresentationInfo current = tab[i];
-                    if (!ReflectUtils.isJdkClass(current.getType())) {
+                    if (!current.isRaw()
+                            && !ReflectUtils.isJdkClass(current.getType())) {
                         if (!mapReps.containsKey(current.getName())) {
+                            // TODO clearly something is wrong here. We should
+                            // list all representations when discovering the
+                            // method.
                             RepresentationInfo ri = RepresentationInfo
-                                    .introspect(current.getType(),
+                                    .introspect(current.getType(), null,
                                             current.getMediaType());
                             mapReps.put(ri.getIdentifier(), ri);
                             // have a look at the parent type
-                            Class<?> parentType = ri.getParentType();
+
+                            Class<?> parentType = ri.getType().getSuperclass();
+                            if (parentType != null
+                                    && ReflectUtils.isJdkClass(parentType)) {
+                                // TODO This type must introspected too, as it
+                                // will reveal
+                                // other representation
+                                parentType = null;
+                            }
                             if (parentType != null
                                     && !mapReps.containsKey(parentType
                                             .getName())) {
@@ -402,6 +437,9 @@ public class IntrospectionConverter {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
+                if (ri.isCollection()) {
+                    continue;
+                }
                 logger.fine("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 
@@ -439,6 +477,25 @@ public class IntrospectionConverter {
             }
         }
 
+        Collections.sort(result.getContract().getRepresentations(),
+                new Comparator<Representation>() {
+
+                    @Override
+                    public int compare(Representation o1, Representation o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                });
+        Collections.sort(result.getContract().getResources(),
+                new Comparator<Resource>() {
+
+                    @Override
+                    public int compare(Resource o1, Resource o2) {
+                        return o1.getResourcePath().compareTo(
+                                o2.getResourcePath());
+                    }
+
+                });
         return result;
     }
 

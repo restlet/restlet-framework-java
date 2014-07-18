@@ -40,7 +40,7 @@ package org.restlet.ext.swagger.internal.info;
  */
 public enum ParameterStyle {
 
-    HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
+    COOKIE, HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
 
     @Override
     public String toString() {
@@ -55,6 +55,8 @@ public enum ParameterStyle {
             result = "query";
         } else if (equals(TEMPLATE)) {
             result = "template";
+        } else if (equals(COOKIE)) {
+            result = "cookie";
         }
 
         return result;
