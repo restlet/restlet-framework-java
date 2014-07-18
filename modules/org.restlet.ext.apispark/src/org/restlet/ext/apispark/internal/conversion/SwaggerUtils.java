@@ -52,7 +52,7 @@ import org.restlet.resource.ClientResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tool library for Swagger.
+ * Tools library for Swagger.
  * 
  * @author Cyprien Quilici
  */

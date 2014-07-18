@@ -73,7 +73,7 @@ import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**
- * Tool library for converting Restlet Web API Definition to and from Swagger
+ * Tools library for converting Restlet Web API Definition to and from Swagger
  * documentation.
  * 
  * @author Cyprien Quilici
