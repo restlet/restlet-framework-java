@@ -328,6 +328,7 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         this.object = null;
         this.validationEventHandler = validationHandler;
         this.xmlRepresentation = xmlRepresentation;
+        this.secureProcessing = true;
     }
 
     /**
