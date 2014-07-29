@@ -85,6 +85,9 @@ public class CallResolver extends Resolver<Object> {
             } else if (partName.startsWith("b")) {
                 result = getReferenceContent(partName.substring(1), reference
                         .getBaseRef());
+            } else if (partName.startsWith("t")) {
+                result = getReferenceContent(partName.substring(1), reference
+                        .getTargetRef());
             } else if (partName.equals("e")) {
                 result = reference.getRelativePart();
             } else if (partName.equals("f")) {
