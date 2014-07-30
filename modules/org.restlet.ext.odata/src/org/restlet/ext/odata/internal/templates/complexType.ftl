@@ -64,9 +64,9 @@ public <#if type.abstractType>abstract </#if>class ${className} {
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
   <#if property.complexType??>
-    private ${property.complexType.className} ${property.propertyName};
+    private ${property.complexType.className} ${property.propertyName}<#if property.defaultValue??> = ${property.defaultValue}</#if>;
   <#else>
-    // private [error: no defined type] ${property.propertyName};
+    // private [error: no defined type] ${property.propertyName}<#if property.defaultValue??> = ${property.defaultValue}</#if>;
   </#if>
 </#list>
 

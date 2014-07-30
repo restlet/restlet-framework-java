@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,21 +70,21 @@ public class Professor {
     private String surname;
     private String userName;
     private Tracking tracking;
-    private List<CoOp> academicallyDirectedCoOps;
-    private List<Address> addresses;
+    private List<CoOp> academicallyDirectedCoOps = new ArrayList<CoOp>();
+    private List<Address> addresses = new ArrayList<Address>();
     private CoOp defaultCoOp;
     private Department department;
     private Division division;
-    private List<CoOp> institutionallyDirectedCoOps;
+    private List<CoOp> institutionallyDirectedCoOps = new ArrayList<CoOp>();
     private Language preferredLanguage;
-    private List<Report> reports;
-    private List<Role> roles;
-    private List<CoOp> scientificallyDirectedCoOps;
-    private List<CoOp> supervisedCoOps;
-    private List<Group> supervisedGroups;
-    private List<JobPosting> supervisedJobPostings;
-    private List<Job> supervisedJobs;
-    private List<Telephone> telephones;
+    private List<Report> reports = new ArrayList<Report>();
+    private List<Role> roles = new ArrayList<Role>();
+    private List<CoOp> scientificallyDirectedCoOps = new ArrayList<CoOp>();
+    private List<CoOp> supervisedCoOps = new ArrayList<CoOp>();
+    private List<Group> supervisedGroups = new ArrayList<Group>();
+    private List<JobPosting> supervisedJobPostings = new ArrayList<JobPosting>();
+    private List<Job> supervisedJobs = new ArrayList<Job>();
+    private List<Telephone> telephones = new ArrayList<Telephone>();
 
     /**
      * Constructor without parameter.

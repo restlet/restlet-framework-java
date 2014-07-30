@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser;
@@ -52,9 +53,9 @@ public class Role {
     private int id;
     private String name;
     private Tracking tracking;
-    private List<Permission> permissions;
-    private List<ReportType> reportType;
-    private List<AuthenticatedUser> users;
+    private List<Permission> permissions = new ArrayList<Permission>();
+    private List<ReportType> reportType = new ArrayList<ReportType>();
+    private List<AuthenticatedUser> users = new ArrayList<AuthenticatedUser>();
 
     /**
      * Constructor without parameter.

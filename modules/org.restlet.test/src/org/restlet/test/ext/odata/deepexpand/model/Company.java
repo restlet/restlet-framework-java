@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.ActivitySector;
@@ -61,16 +62,16 @@ public class Company {
     private String webSite;
     private Tracking tracking;
     private ActivitySector activitySector;
-    private List<Branch> branches;
+    private List<Branch> branches = new ArrayList<Branch>();
     private Category category;
     private Branch centralBranch;
     private Multilingual comments;
     private CompanyPerson contactPerson;
-    private List<CoOp> coOps;
-    private List<InsuranceContract> insuranceContracts;
-    private List<JobPosting> jobPostings;
+    private List<CoOp> coOps = new ArrayList<CoOp>();
+    private List<InsuranceContract> insuranceContracts = new ArrayList<InsuranceContract>();
+    private List<JobPosting> jobPostings = new ArrayList<JobPosting>();
     private Multilingual name;
-    private List<CompanyPerson> persons;
+    private List<CompanyPerson> persons = new ArrayList<CompanyPerson>();
 
     /**
      * Constructor without parameter.

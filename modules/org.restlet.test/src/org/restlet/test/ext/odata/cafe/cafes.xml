@@ -27,6 +27,27 @@
 				<d:ZipCode m:type="Edm.Int32">92300</d:ZipCode>
 				<d:City>Levallois-Perret</d:City>
 				<d:CompanyName>Cafe corp.</d:CompanyName>
+				<d:spatial m:type="cafe.Point">
+					<d:geo_type>LINESTRING</d:geo_type>
+					<d:geo_name>GEONAME</d:geo_name>
+					<d:x m:type="Collection(Edm.Double)">
+						<d:element>7.29</d:element>
+						<d:element>7.29</d:element>
+					</d:x>
+					<d:y m:type="Collection(Edm.Double)">
+						<d:element>65.32000000000001</d:element>
+						<d:element>65.32000000000001</d:element>
+					</d:y>
+					<d:properties m:type="Collection(cafe.StructAny)">
+						<d:element>
+							<d:name>md</d:name>
+							<d:type>FLOAT</d:type>
+							<d:unit>meters</d:unit>
+							<d:unitType>depth measure</d:unitType>
+							<d:values>[0.0,2670.9678]</d:values>
+						</d:element>
+					</d:properties>
+				</d:spatial>
 			</m:properties>
 		</content>
 	</entry>

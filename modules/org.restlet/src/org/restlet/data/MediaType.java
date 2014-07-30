@@ -589,6 +589,11 @@ public final class MediaType extends Metadata {
             "All multipart data");
 
     // [ifndef gwt] member
+    public static final MediaType MULTIPART_MIXED = register("multipart/mixed",
+            "Mixed multipart data");
+
+
+    // [ifndef gwt] member
     public static final MediaType MULTIPART_FORM_DATA = register(
             "multipart/form-data", "Multipart form data");
 

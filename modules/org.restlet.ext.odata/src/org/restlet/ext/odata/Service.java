@@ -35,11 +35,15 @@ package org.restlet.ext.odata;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +53,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Cookie;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -58,12 +63,10 @@ import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.ext.atom.Content;
 import org.restlet.ext.atom.Entry;
-import org.restlet.ext.atom.Feed;
-import org.restlet.ext.atom.Link;
-import org.restlet.ext.atom.Relation;
-import org.restlet.ext.odata.internal.EntryContentHandler;
+import org.restlet.ext.odata.batch.util.RestletBatchRequestHelper;
 import org.restlet.ext.odata.internal.edm.AssociationEnd;
 import org.restlet.ext.odata.internal.edm.ComplexProperty;
 import org.restlet.ext.odata.internal.edm.EntityContainer;
@@ -73,9 +76,13 @@ import org.restlet.ext.odata.internal.edm.Metadata;
 import org.restlet.ext.odata.internal.edm.Property;
 import org.restlet.ext.odata.internal.edm.TypeUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
+import org.restlet.ext.odata.streaming.StreamReference;
+import org.restlet.ext.odata.validation.annotation.SystemGenerated;
+import org.restlet.ext.odata.xml.AtomFeedHandler;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.XmlWriter;
+import org.restlet.ext.xml.format.XmlFormatParser;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -129,7 +136,13 @@ public class Service {
 
     /** The internal logger. */
     private Logger logger;
-
+    
+    private String slug = "";
+   
+    /** 
+     * add Query parameter in request header for each call.
+     */
+    private Map<String, String> parameters;
     /**
      * The maximum version of the OData protocol extensions the client can
      * accept in a response.
@@ -147,6 +160,18 @@ public class Service {
 
     /** The reference of the WCF service. */
     private Reference serviceRef;
+
+	/** The content type. */
+	private String contentType;
+
+	/** The isUpdateStreamData used to decide update operation on stream. */
+	private boolean isUpdateStreamData;	
+	
+	/** List of cookies used to cache the cookies sent from server. */
+	List<Cookie> cookies;
+	
+	/** The isPostRequest used to differentiate POST request. */
+	private boolean isPostRequest;	
 
     /**
      * Constructor.
@@ -199,6 +224,8 @@ public class Service {
 
     /**
      * Adds an entity to an entity set.
+     * @param <T>
+     * @param <T>
      * 
      * @param entitySetName
      *            The path of the entity set relatively to the service URI.
@@ -206,41 +233,103 @@ public class Service {
      *            The entity to put.
      * @throws Exception
      */
-    public void addEntity(String entitySetName, Object entity) throws Exception {
-        if (entity != null) {
-            Entry entry = toEntry(entity);
+	public <T> T addEntity(String entitySetName, Object entity) throws Exception {
+		if (entity != null) {
+			isPostRequest = Boolean.TRUE;
+			Metadata metadata = (Metadata) getMetadata();
+			EntityType type = metadata.getEntityType(entity.getClass());
+			ClientResource resource = createResource(entitySetName);
+			Representation rep = null;
+			try {
+				if (type.isBlob()) { // entity type is set to BLOB if hasStream property of an entity is true.
+					
+					InputStream inputStream = this.handleStreamingWithSlug(entity, type);
+					if (getMetadata() == null) { 
+						throw new Exception("Can't add entity to this entity set " + resource.getReference()
+								+ " due to the lack of the service's metadata.");
+					}
+					//post the inputstream with slug header.
+					rep = resource.post(inputStream, slug, contentType);
+					
+                    AtomFeedHandler<T> feedHandler = new AtomFeedHandler<T>(type.getName(), type, entity.getClass(), metadata);
+                    T newEntity = RestletBatchRequestHelper.getEntity(rep, feedHandler);
+					this.merge(entity, feedHandler.getFeed().getEntries().get(0).getId()); //merge the remaining properties using merge request.
+					return newEntity;
+				} else {
+					if (getMetadata() == null) {
+						throw new Exception("Can't add entity to this entity set " + resource.getReference()
+								+ " due to the lack of the service's metadata.");
+					}
+					Entry entry = toEntry(entity);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					entry.write(baos);
+					baos.flush();
+					StringRepresentation r = new StringRepresentation(baos.toString(), MediaType.APPLICATION_ATOM);
+					rep = resource.post(r);
+					// parse the response to populate the newly created entity object
+					
+                    AtomFeedHandler<T> feedHandler = new AtomFeedHandler<T>(type.getName(), type, entity.getClass(), metadata);
+                    T newEntity = RestletBatchRequestHelper.getEntity(rep, feedHandler);
+                    return newEntity;
+				}
+			} catch (ResourceException re) {
+				throw new ResourceException(re.getStatus(), "Can't add entity to this entity set "
+						+ resource.getReference());
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING,
+	                    "Can't add the entity : " + " due to " + e.getMessage());
+			}finally {
+				isPostRequest = Boolean.FALSE;
+				this.latestRequest = resource.getRequest();
+				this.latestResponse = resource.getResponse();
+			}
+		}
+		return null;
+	}
 
-            ClientResource resource = createResource(entitySetName);
-            if (getMetadata() == null) {
-                throw new Exception("Can't add entity to this entity set "
-                        + resource.getReference()
-                        + " due to the lack of the service's metadata.");
-            }
 
-            try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                entry.write(baos);
-                baos.flush();
-                StringRepresentation r = new StringRepresentation(
-                        baos.toString(), MediaType.APPLICATION_ATOM);
-                Representation rep = resource.post(r);
-                EntryContentHandler<?> entryContentHandler = new EntryContentHandler<Object>(
-                        entity.getClass(), (Metadata) getMetadata(),
-                        getLogger());
-                Feed feed = new Feed();
-                feed.getEntries().add(new Entry(rep, entryContentHandler));
-            } catch (ResourceException re) {
-                throw new ResourceException(re.getStatus(),
-                        "Can't add entity to this entity set "
-                                + resource.getReference());
-            } finally {
-                this.latestRequest = resource.getRequest();
-                this.latestResponse = resource.getResponse();
-            }
-        }
-    }
+	/**
+	 * Method to handle Streaming data for create/update operation.
+	 * It also creates slug header which we need for creating request headers for MLE.
+	 * @param entity
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+    private InputStream handleStreamingWithSlug(Object entity, EntityType type) throws Exception {
+    	List<Property> properties = type.getProperties();
+		Iterator<Property> iterator = properties.iterator();
+		InputStream inputStream = null;
+		slug="";
+		// Create the SLUG header for Streaming.
+		// As streaming entity requires mandatory fields to be passed as slug header.
+		// Request body contains only stream data. Slug header contains mandatory fields like PK.
+		while (iterator.hasNext()) {
+			Property prop = iterator.next();
+			if (!prop.isNullable()) {
+				Object propertyObject = ReflectUtils.getPropertyObject(entity, prop.getNormalizedName());
+				String propName = prop.getName() + "=" + propertyObject.toString();
+				if (slug.isEmpty()) {
+					slug = propName;
+				} else {
+					slug = slug + "," + propName;
+				}
+			} else {
+				if (prop.getType().getName().contains("Stream")) { // find the streaming property from entity and assign stream value to it.  
+					Object propertyObject = ReflectUtils.invokeGetter(entity, prop.getNormalizedName());					
+					if(null!= propertyObject){
+						StreamReference streamReference = (StreamReference) propertyObject;
+						inputStream = streamReference.getInputStream();
+	                    contentType = streamReference.getContentType();
+	                    isUpdateStreamData = streamReference.isUpdateStreamData();
+	                }				
+               }
+			}
+		}
+		return inputStream;
+	}
 
-    /**
+	/**
      * Adds an association between the source and the target entity via the
      * given property name.
      * 
@@ -280,7 +369,7 @@ public class Service {
     /**
      * Returns an instance of {@link ClientResource} given an absolute
      * reference. This resource is completed with the service credentials. This
-     * method can be overriden in order to complete the sent requests.
+     * method can be overridden in order to complete the sent requests.
      * 
      * @param reference
      *            The reference of the target resource.
@@ -293,23 +382,41 @@ public class Service {
             // We provide our own cient connector.
             resource.setNext(clientConnector);
         }
+        
+        // add the cached cookies to request to prevent submitting the form in form based auth.
+        if(this.cookies != null){
+        	resource.getRequest().getCookies().addAll(this.cookies);
+        }
 
         resource.setChallengeResponse(getCredentials());
-
+        Series<Header> headers = new Series<Header>(Header.class);
         if (getClientVersion() != null || getMaxClientVersion() != null) {
-            Series<Header> headers = new Series<Header>(Header.class);
-
+        	
             if (getClientVersion() != null) {
                 headers.add("DataServiceVersion", getClientVersion());
             }
 
             if (getMaxClientVersion() != null) {
                 headers.add("MaxDataServiceVersion", getMaxClientVersion());
-            }
-
-            resource.setAttribute(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+            }            
+          
         }
+       
+		/*
+		 * Check if query parameter map is not null and not empty, add all the
+		 * Query parameters in request as a header.
+		 */
+		if (getParameter() != null && !getParameter().isEmpty()) {
+			Iterator<java.util.Map.Entry<String, String>> iterator = getParameter()
+					.entrySet().iterator();
+			while (iterator.hasNext()) {
+				java.util.Map.Entry<String, String> entry = iterator.next();
+				headers.add(entry.getKey(), entry.getValue());
+			}
 
+		}    
+        resource.setAttribute(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+       
         return resource;
     }
 
@@ -475,7 +582,7 @@ public class Service {
      * 
      * @return The metadata document related to the current service.
      */
-    protected Object getMetadata() {
+    public Object getMetadata() {
         if (metadata == null) {
             ClientResource resource = createResource("$metadata");
 
@@ -485,6 +592,14 @@ public class Service {
                         "Get the metadata for " + getServiceRef() + " at "
                                 + resource.getReference());
                 Representation rep = resource.get(MediaType.APPLICATION_XML);
+                // after metadata request is handled by submitting the form, get the cookies from response and cache it.
+                Series<Cookie> responseCookies = resource.getResponse().getRequest().getCookies();
+                if(responseCookies != null){
+                	if(this.cookies == null){
+                		this.cookies = new ArrayList<Cookie>();
+                	}
+                	this.cookies.addAll(responseCookies);
+                }
                 this.metadata = new Metadata(rep, resource.getReference());
             } catch (ResourceException e) {
                 getLogger().log(
@@ -850,18 +965,51 @@ public class Service {
 
             if (function != null) {
                 ClientResource resource = createResource(service);
-                resource.setMethod(function.getMethod());
-                if (parameters != null) {
-                    for (org.restlet.ext.odata.internal.edm.Parameter parameter : function
-                            .getParameters()) {
-                        resource.getReference().addQueryParameter(
-                                parameter.getName(),
-                                TypeUtils.getLiteralForm(parameters
-                                        .getFirstValue(parameter.getName()),
-                                        parameter.getType()));
-                    }
+                if(function.getMethod() !=null){
+                	resource.setMethod(function.getMethod());
                 }
-
+                if (parameters != null) {
+                	// if this is GET/DELETE method then send the paramenters in query string
+                	if(resource.getMethod().equals(new org.restlet.data.Method("GET")) || resource.getMethod().equals(new org.restlet.data.Method("DELETE"))){
+	                    for (org.restlet.ext.odata.internal.edm.Parameter parameter : function
+	                            .getParameters()) {                    	
+	                        resource.getReference().addQueryParameter(
+	                                parameter.getName(),
+	                                TypeUtils.getLiteralForm(parameters
+	                                        .getFirstValue(parameter.getName()),
+	                                        parameter.getType()));
+	                    }
+                	}else{
+                	    StringBuilder sb = new StringBuilder();
+                		sb.append("{"+"\n");
+                		String json ="";
+                		int noOfParameters=0;
+                		for (Parameter parameter : parameters) {
+                			noOfParameters++;
+							sb.append("\"").append(parameter.getName()).append("\"").append(":");
+							for (org.restlet.ext.odata.internal.edm.Parameter edmParameter : function.getParameters()) {
+								if(parameter.getName().equalsIgnoreCase(edmParameter.getName())){
+									if(edmParameter.getType().contains("String")){
+										json = "\"" + parameter.getValue()+ "\"";
+									}else if(edmParameter.getType().contains("Collection")){
+										json = parameter.getValue();
+									}else{
+										json = parameter.getValue();
+									}
+									sb.append(json);
+									if(noOfParameters!=parameters.size()){
+										sb.append(",");
+									}
+								}
+							}
+						}
+                		sb.append("\n"+"}");
+                		Series<Header> headerSeries = new Series<Header>(Header.class);
+                    	resource.getRequest().setEntity(sb.toString(), MediaType.APPLICATION_JSON);
+                    	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT,MediaType.APPLICATION_ATOM.getName(),headerSeries);
+                	    resource.setAttribute(HeaderConstants.ATTRIBUTE_HEADERS, headerSeries);
+                	}
+                }
                 result = resource.handle();
                 this.latestRequest = resource.getRequest();
                 this.latestResponse = resource.getResponse();
@@ -1132,6 +1280,8 @@ public class Service {
                             AttributesImpl nullAttrs) throws SAXException {
                         for (Field field : entity.getClass()
                                 .getDeclaredFields()) {
+                        	SystemGenerated systemGeneratedAnnotation = field
+                        			.getAnnotation(SystemGenerated.class);
                             String getter = "get"
                                     + field.getName().substring(0, 1)
                                             .toUpperCase()
@@ -1139,11 +1289,93 @@ public class Service {
                             Property prop = ((Metadata) getMetadata())
                                     .getProperty(entity, field.getName());
 
-                            if (prop != null) {
+							if (prop != null && systemGeneratedAnnotation == null && isPostRequest) {
+                                writeProperty(writer, entity, prop, getter,
+                                        nullAttrs);
+                            }
+							else if (prop != null && !isPostRequest) {
                                 writeProperty(writer, entity, prop, getter,
                                         nullAttrs);
                             }
                         }
+                    }
+                    
+                    /**
+                     * Write collection property element.
+                     *
+                     * @param writer the writer
+                     * @param entity the entity
+                     * @param value the value
+                     * @param prop the prop
+                     * @param nullAttrs the null attrs
+                     * @throws SAXException the SAX exception
+                     */
+                    private void writeCollectionProperty(XmlWriter writer, Object entity, Object value, Property prop, AttributesImpl nullAttrs) throws SAXException {
+						if (value instanceof List) {
+							try {
+								Field field = entity.getClass().getDeclaredField(
+										prop.getName());
+								if (field.getGenericType() instanceof ParameterizedType) {
+									// determine what type of collection it is
+									ParameterizedType listType = (ParameterizedType) field
+											.getGenericType();
+									Class<?> listClass = (Class<?>) listType
+											.getActualTypeArguments()[0]; // get the parameterized class 
+									String mType = null;
+									boolean isPrimitiveCollection = false;
+									AttributesImpl typeAttr = new AttributesImpl();
+									if(listClass.getName().toLowerCase().startsWith("java")){ // collection of primitives
+										mType = "Collection("+ TypeUtils.toEdmType(listClass.getName()) + ")";
+										isPrimitiveCollection = true;
+									}else{	// collection of complex
+										String[] className = listClass.getName().split("\\.");
+										mType = "Collection("+ className[0].toUpperCase() + "." + className[1] + ")";
+									}
+									List<?> obj = (List<?>) value;
+									// write collection property tag 
+									typeAttr.addAttribute(
+										WCF_DATASERVICES_METADATA_NAMESPACE,
+										"type", "type", "string", mType);
+									if(obj.size() == 0){
+										typeAttr.addAttribute(
+			                                    WCF_DATASERVICES_METADATA_NAMESPACE,
+			                                    "null", null, "boolean", "true");
+									}
+									writer.startElement(
+										WCF_DATASERVICES_NAMESPACE,
+										prop.getName(), prop.getName(),
+										typeAttr);
+									// write element tags
+									for (Object object : obj) {
+										if(isPrimitiveCollection){
+											if(object.toString().length()>0){
+												writer.dataElement(WCF_DATASERVICES_NAMESPACE, XmlFormatParser.DATASERVICES_ELEMENT.getLocalPart(), object.toString());
+											}else{
+												writer.emptyElement(
+														WCF_DATASERVICES_NAMESPACE,
+														XmlFormatParser.DATASERVICES_ELEMENT.getLocalPart(), XmlFormatParser.DATASERVICES_ELEMENT.getLocalPart(),
+														nullAttrs);
+											}
+										}else{ // complex collection
+											writer.startElement(
+													WCF_DATASERVICES_NAMESPACE,
+													XmlFormatParser.DATASERVICES_ELEMENT.getLocalPart());
+											// write complex property under <element></element>
+											write(writer, object, nullAttrs);
+											writer.endElement(
+													WCF_DATASERVICES_NAMESPACE,
+													XmlFormatParser.DATASERVICES_ELEMENT.getLocalPart());
+										}
+									}
+								}
+							} catch (SecurityException e) {
+								getLogger().warning(
+				                        "Can't write the collection property: " + e.getMessage());
+							} catch (NoSuchFieldException e) {
+								getLogger().warning(
+				                        "Can't write the collection property: " + e.getMessage());
+							}
+						}
                     }
 
                     private void writeProperty(XmlWriter writer, Object entity,
@@ -1156,79 +1388,80 @@ public class Service {
                                     && method.getParameterTypes().length == 0) {
                                 Object value = null;
 
-                                try {
-                                    value = method.invoke(entity,
-                                            (Object[]) null);
-                                } catch (Exception e) {
-                                }
+								try {
+									value = method.invoke(entity,
+											(Object[]) null);
+								} catch (Exception e) {
+									getLogger().warning(
+					                        "Error occurred while invoking the method : " + e.getMessage());
+								}
 
-                                if (value != null) {
-                                    writer.startElement(
-                                            WCF_DATASERVICES_NAMESPACE,
-                                            prop.getName());
+								if (value != null) {
+									AttributesImpl typeAttr = new AttributesImpl();
+									if (prop instanceof ComplexProperty) { // if this is collection or complex type
+										if (value instanceof List) { // collection
+											writeCollectionProperty(writer,
+													entity, value, prop, nullAttrs);
+										} else { // complex type
+											EntityType type = ((Metadata) getMetadata()).getEntityType(entity.getClass());
+											// prefix the namespace for m:type 
+											String packageName = type.getSchema().getNamespace().getName() + "." ;
+											typeAttr.addAttribute(
+													WCF_DATASERVICES_METADATA_NAMESPACE,
+													"type", "type", "string",packageName + 
+													((ComplexProperty) prop)
+															.getComplexType()
+															.getName());
+											writer.startElement(
+													WCF_DATASERVICES_NAMESPACE,
+													prop.getName(), prop.getName(),
+													typeAttr);
+											// write data
+											write(writer, value, nullAttrs);
+										}
+									} else {
+										typeAttr.addAttribute(
+												WCF_DATASERVICES_METADATA_NAMESPACE,
+												"type", "type", "string", prop
+														.getType().getName());
+										writer.startElement(
+												WCF_DATASERVICES_NAMESPACE,
+												prop.getName(), prop.getName(),
+												typeAttr);
+										writer.characters(TypeUtils.toEdm(
+												value, prop.getType()));
+									}
 
-                                    if (prop instanceof ComplexProperty) {
-                                        write(writer, value, nullAttrs);
-                                    } else {
-                                        writer.characters(TypeUtils.toEdm(
-                                                value, prop.getType()));
-                                    }
-
-                                    writer.endElement(
-                                            WCF_DATASERVICES_NAMESPACE,
-                                            prop.getName());
-                                } else {
-                                    if (prop.isNullable()) {
-                                        writer.emptyElement(
-                                                WCF_DATASERVICES_NAMESPACE,
-                                                prop.getName(), prop.getName(),
-                                                nullAttrs);
-                                    } else {
-                                        getLogger().warning(
-                                                "The following property has a null value but is not marked as nullable: "
-                                                        + prop.getName());
-                                        writer.emptyElement(
-                                                WCF_DATASERVICES_NAMESPACE,
-                                                prop.getName());
-                                    }
-                                }
-                                break;
-                            }
+									writer.endElement(
+											WCF_DATASERVICES_NAMESPACE,
+											prop.getName());
+								} else {
+									if (prop.isNullable()) {
+										writer.emptyElement(
+												WCF_DATASERVICES_NAMESPACE,
+												prop.getName(), prop.getName(),
+												nullAttrs);
+									} else {
+										getLogger().warning(
+												"The following property has a null value but is not marked as nullable: "
+														+ prop.getName());
+										writer.emptyElement(
+												WCF_DATASERVICES_NAMESPACE,
+												prop.getName());
+									}
+								}
+								break;
+							}
                         }
                     }
                 };
                 r.setNamespaceAware(true);
+				result = new Entry();
+				Content content = new Content();
+				content.setInlineContent(r);
+				content.setToEncode(false);
 
-                if (type.isBlob()) {
-                    result = new Entry() {
-                        @Override
-                        public void writeInlineContent(XmlWriter writer)
-                                throws SAXException {
-                            try {
-                                r.write(writer);
-                            } catch (IOException e) {
-                                throw new SAXException(e);
-                            }
-                        }
-                    };
-                    result.setNamespaceAware(true);
-
-                    Link editLink = new Link(getValueEditRef(entity),
-                            Relation.EDIT_MEDIA, null);
-                    result.getLinks().add(editLink);
-                    Content content = new Content();
-                    // Get the external blob reference
-                    content.setExternalRef(getValueRef(entity));
-                    content.setToEncode(false);
-                    result.setContent(content);
-                } else {
-                    result = new Entry();
-                    Content content = new Content();
-                    content.setInlineContent(r);
-                    content.setToEncode(false);
-
-                    result.setContent(content);
-                }
+				result.setContent(content);
             }
         }
 
@@ -1246,9 +1479,17 @@ public class Service {
         if (getMetadata() == null || entity == null) {
             return;
         }
-
-        Entry entry = toEntry(entity);
-        ClientResource resource = createResource(getSubpath(entity));
+        EntityType type = metadata.getEntityType(entity.getClass());
+		ClientResource resource = createResource(getSubpath(entity));
+        if (type.isBlob()) {
+			InputStream inputStream = this.handleStreamingWithSlug(entity, type);
+			if (null != inputStream || isUpdateStreamData) {//Check for null inputstream and isUpdateStreamData=true then upadate null to stream data
+				resource.put(inputStream, slug, contentType);
+			}
+			// now do merge request for non-stream properties
+			this.mergeEntity(entity);
+		}else{
+			Entry entry = toEntry(entity);
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1269,7 +1510,100 @@ public class Service {
         } finally {
             this.latestRequest = resource.getRequest();
             this.latestResponse = resource.getResponse();
+			}
+		}
+    }
+
+    /**
+    * Method for merger operation.
+    * @param entity
+	*            The entity to merge.
+	*/
+    public void mergeEntity(Object entity) {
+		this.merge(entity,null);
+	}
+	
+	/**
+	 * Updates an entity.
+	 * 
+	 * @param entity
+	 *            The entity to put.
+	 * @throws Exception
+	 */
+	private void merge(Object entity,String id) {
+		if (getMetadata() == null || entity == null) {
+			return;
+		}
+		EntityType type = metadata.getEntityType(entity.getClass());
+		if (type.isBlob()) {
+			List<Property> properties = type.getProperties();
+			Iterator<Property> iterator = properties.iterator();
+			while (iterator.hasNext()) {
+				Property prop = iterator.next();				
+				if (prop.getType().getName().contains("Stream")) {
+						try {
+							// merge request should not contain data for stream property, so setting it to null.
+							ReflectUtils.invokeSetter(entity, prop.getNormalizedName(), null);
+						} catch (Exception e) {		
+							getLogger().warning(
+			                        "Can't merge the object: " + e.getMessage());
+						}
+					break;
+				}
+				
+			}
+		}
+		Entry entry = toEntry(entity);
+		
+		ClientResource resource;
+		if(null!=id){
+			resource = createResource(new Reference(id));
+		}
+		else{
+			resource= createResource(getSubpath(entity));
+		}
+	
+
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			entry.write(baos);
+			baos.flush();
+			StringRepresentation r = new StringRepresentation(baos.toString(), MediaType.APPLICATION_ATOM);
+			String tag = getTag(entity);
+
+			if (tag != null) {
+				// Add a condition
+				resource.getConditions().setMatch(Arrays.asList(new Tag(tag)));
+			}
+			resource.merge(r);
+		} catch (ResourceException re) {
+			throw new ResourceException(re.getStatus(),
+					"Can't update this entity " + resource.getReference());
+		} catch (IOException io) {
+			getLogger().warning(
+                    "IO exception while merging the entity: " + io.getMessage());
+        } finally {
+            this.latestRequest = resource.getRequest();
+            this.latestResponse = resource.getResponse();
         }
     }
+
+	/**
+	 * Gets Query parameter.
+	 *
+	 * @return the parameter
+	 */
+	public Map<String, String> getParameter() {
+		return parameters;
+	}
+
+	/**
+	 * Sets Query parameter in request header.
+	 *
+	 * @param parameter the parameter
+	 */
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
+	}
 
 }

@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Category;
@@ -52,11 +53,11 @@ public class Category {
     private int id;
     private String path;
     private Tracking tracking;
-    private List<Category> childCategories;
-    private List<Company> companies;
+    private List<Category> childCategories = new ArrayList<Category>();
+    private List<Company> companies = new ArrayList<Company>();
     private Multilingual name;
     private Category parentCategory;
-    private List<Registration> preferredByRegistrations;
+    private List<Registration> preferredByRegistrations = new ArrayList<Registration>();
 
     /**
      * Constructor without parameter.

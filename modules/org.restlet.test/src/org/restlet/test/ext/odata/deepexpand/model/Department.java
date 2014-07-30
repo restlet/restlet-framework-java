@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser;
@@ -53,8 +54,8 @@ public class Department {
     private int id;
     private Tracking tracking;
     private List<AuthenticatedUser> authenticatedUsers;
-    private List<Division> divisions;
-    private List<Lesson> lessons;
+    private List<Division> divisions = new ArrayList<Division>();
+    private List<Lesson> lessons = new ArrayList<Lesson>();
     private Multilingual name;
     private University university;
 

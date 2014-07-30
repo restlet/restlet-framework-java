@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Person;
@@ -50,7 +51,7 @@ public class Language {
     private int id;
     private String localeCode;
     private String name;
-    private List<Person> preferredByPersons;
+    private List<Person> preferredByPersons = new ArrayList<Person>();
 
     /**
      * Constructor without parameter.

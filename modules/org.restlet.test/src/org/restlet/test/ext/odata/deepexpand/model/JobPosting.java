@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.CoOp;
@@ -60,11 +61,11 @@ public class JobPosting {
     private Company company;
     private CoOp coOp;
     private Multilingual description;
-    private List<JobPostingPart> jobPostingParts;
-    private List<Job> jobs;
+    private List<JobPostingPart> jobPostingParts = new ArrayList<JobPostingPart>();
+    private List<Job> jobs = new ArrayList<Job>();
     private CompanyPerson managingCompanyPerson;
     private Multilingual name;
-    private List<Registration> preferredByRegistrations;
+    private List<Registration> preferredByRegistrations = new ArrayList<Registration>();
     private Professor supervisingProfessor;
 
     /**

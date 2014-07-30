@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.CoOp;
@@ -50,7 +51,7 @@ public class Lesson {
 
     private int id;
     private Tracking tracking;
-    private List<CoOp> coOps;
+    private List<CoOp> coOps = new ArrayList<CoOp>();
     private Department department;
     private Multilingual name;
 

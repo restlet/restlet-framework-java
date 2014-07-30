@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Branch;
@@ -63,7 +64,7 @@ public class JobPostingPart {
     private Location expeditionLocation;
     private JobPosting jobPosting;
     private CompanyPerson managingCompanyPerson;
-    private List<JobPostingPartSpecialPayable> specialPayables;
+    private List<JobPostingPartSpecialPayable> specialPayables = new ArrayList<JobPostingPartSpecialPayable>();
 
     /**
      * Constructor without parameter.

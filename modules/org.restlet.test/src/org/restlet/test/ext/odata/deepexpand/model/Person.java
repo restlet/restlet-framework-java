@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,9 +60,9 @@ public class Person {
     private String notes;
     private String surname;
     private Tracking tracking;
-    private List<Address> addresses;
-    private Language preferredLanguage;
-    private List<Telephone> telephones;
+    private List<Address> addresses = new ArrayList<Address>();
+    private Language preferredLanguage ;
+    private List<Telephone> telephones = new ArrayList<Telephone>();
 
     /**
      * Constructor without parameter.

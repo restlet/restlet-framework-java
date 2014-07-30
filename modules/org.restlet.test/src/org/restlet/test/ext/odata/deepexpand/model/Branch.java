@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Company;
@@ -56,10 +57,10 @@ public class Branch {
     private EmbeddableAddress address;
     private Tracking tracking;
     private Company company;
-    private List<JobPart> jobParts;
-    private List<JobPostingPart> jobPostingParts;
+    private List<JobPart> jobParts = new ArrayList<JobPart>();
+    private List<JobPostingPart> jobPostingParts = new ArrayList<JobPostingPart>();
     private Multilingual name;
-    private List<CompanyPerson> persons;
+    private List<CompanyPerson> persons = new ArrayList<CompanyPerson>();
 
     /**
      * Constructor without parameter.

@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Attachment;
@@ -52,10 +53,10 @@ public class InsuranceContract {
     private int id;
     private String name;
     private Tracking tracking;
-    private List<Attachment> attachments;
+    private List<Attachment> attachments = new ArrayList<Attachment>();
     private CoOp coop;
     private Company insuranceCompany;
-    private List<Registration> registrations;
+    private List<Registration> registrations = new ArrayList<Registration>();
 
     /**
      * Constructor without parameter.

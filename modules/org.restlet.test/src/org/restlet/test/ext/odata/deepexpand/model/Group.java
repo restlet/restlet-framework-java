@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,11 +61,11 @@ public class Group {
     private boolean passed;
     private Tracking tracking;
     private CoOp coOp;
-    private List<Invitation> invitations;
+    private List<Invitation> invitations = new ArrayList<Invitation>();
     private Job job;
-    private List<Registration> registrations;
-    private List<Report> reports;
-    private List<Professor> supervisingProfessors;
+    private List<Registration> registrations = new ArrayList<Registration>();
+    private List<Report> reports = new ArrayList<Report>();
+    private List<Professor> supervisingProfessors = new ArrayList<Professor>();
 
     /**
      * Constructor without parameter.

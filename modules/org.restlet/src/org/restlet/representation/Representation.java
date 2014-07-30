@@ -112,6 +112,10 @@ public abstract class Representation extends RepresentationInfo {
      */
     private volatile long size;
 
+	private volatile String slugHeader;
+
+	private volatile boolean x_http_header;
+
     /**
      * Default constructor.
      */
@@ -132,6 +136,8 @@ public abstract class Representation extends RepresentationInfo {
         this.isTransient = false;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
+		this.setSlugHeader(null);
+		this.setX_http_header(false);
         // [ifndef gwt]
         this.digest = null;
         this.range = null;
@@ -622,6 +628,40 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
+	 * @return the slugHeader
+	 */
+	public String getSlugHeader() {
+		return slugHeader;
+	}
+
+	/**
+	 * @param slugHeader
+	 *            the slugHeader to set
+	 */
+	public void setSlugHeader(String slugHeader) {
+		this.slugHeader = slugHeader;
+	}
+
+	/**
+	 * @return the x_http_header 
+	 * 			true if the request is for merge.
+	 */
+	public boolean isX_http_header() {
+		return x_http_header;
+	}
+
+	
+	/**
+	 * Indicates if the request is for merge.
+	 * 
+	 * @param x_http_header
+	 *            True if the request is for merge.
+	 */
+	public void setX_http_header(boolean x_http_header) {
+		this.x_http_header = x_http_header;
+	}
+
+	/**
      * Indicates if the representation's content is transient.
      * 
      * @param isTransient

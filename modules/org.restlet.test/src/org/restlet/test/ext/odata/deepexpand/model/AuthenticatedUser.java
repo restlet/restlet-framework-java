@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,13 +65,13 @@ public class AuthenticatedUser {
     private String surname;
     private String userName;
     private Tracking tracking;
-    private List<Address> addresses;
+    private List<Address> addresses = new ArrayList<Address>();
     private CoOp defaultCoOp;
     private Department department;
     private Language preferredLanguage;
-    private List<Report> reports;
-    private List<Role> roles;
-    private List<Telephone> telephones;
+    private List<Report> reports = new ArrayList<Report>();
+    private List<Role> roles = new ArrayList<Role>();
+    private List<Telephone> telephones = new ArrayList<Telephone>();
 
     /**
      * Constructor without parameter.

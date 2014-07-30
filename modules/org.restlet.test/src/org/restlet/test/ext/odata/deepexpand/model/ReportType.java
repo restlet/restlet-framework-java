@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Multilingual;
@@ -57,8 +58,8 @@ public class ReportType {
     private Tracking tracking;
     private Multilingual comments;
     private Multilingual name;
-    private List<Report> reports;
-    private List<Role> roles;
+    private List<Report> reports = new ArrayList<Report>();
+    private List<Role> roles = new ArrayList<Role>();
 
     /**
      * Constructor without parameter.

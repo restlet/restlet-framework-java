@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class Job {
     private String state;
     private Tracking tracking;
     private Group group;
-    private List<JobPart> jobParts;
+    private List<JobPart> jobParts = new ArrayList<JobPart>();
     private JobPosting jobPosting;
     private Professor supervisingProfessor;
 

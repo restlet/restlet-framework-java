@@ -34,7 +34,9 @@
 package org.restlet.test.ext.odata;
 
 import java.util.Iterator;
+import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.ext.odata.Query;
@@ -43,6 +45,10 @@ import org.restlet.test.ext.odata.cafe.Cafe;
 import org.restlet.test.ext.odata.cafe.CafeService;
 import org.restlet.test.ext.odata.cafe.Contact;
 import org.restlet.test.ext.odata.cafe.Item;
+import org.restlet.test.ext.odata.cafe.Point;
+import org.restlet.test.ext.odata.cafe.StructAny;
+
+import sun.security.jca.GetInstance.Instance;
 
 /**
  * Test case for OData service.
@@ -92,6 +98,10 @@ public class ODataCafeTestCase extends RestletTestCase {
         assertEquals("Cafe corp.", cafe.getCompanyName());
         assertEquals("Levallois-Perret", cafe.getCity());
         assertEquals(92300, cafe.getZipCode());
+        
+        //test complex type and collection type (Including collection of simple type as well as complex type).
+        assertNotNull(cafe.getSpatial());
+        assertComplextTypeParsing(cafe.getSpatial());
 
         assertTrue(iterator.hasNext());
         cafe = iterator.next();
@@ -103,6 +113,55 @@ public class ODataCafeTestCase extends RestletTestCase {
     }
 
     /**
+     * This checks that if an entity has a property of complex type.
+     * Also it checks for the collection properties of primitives as well as complex type.
+     * 
+     * @param point
+     *            complex entity to test.
+     */
+    private void assertComplextTypeParsing(Point point) {
+		
+    	assertEquals("LINESTRING", point.getGeo_type());
+    	assertEquals("GEONAME", point.getGeo_name());
+    	
+    	assertNotNull(point.getX());
+    	assertTrue(point.getX().size()>0);
+    	
+    	List<java.lang.Double> listX = point.getX();
+    	
+    	for (Iterator iterator = listX.iterator(); iterator.hasNext();) {
+			Double element = (Double) iterator.next();
+			assertTrue(element instanceof Double);
+			assertNotNull(element);
+		}
+    	
+    	assertNotNull(point.getY());
+    	assertTrue(point.getY().size()>0);
+    	
+    	List<java.lang.Double> listY = point.getY();
+    	
+    	for (Iterator iterator = listY.iterator(); iterator.hasNext();) {
+			Double element = (Double) iterator.next();
+			assertTrue(element instanceof Double);
+			assertNotNull(element);
+		}
+    	
+    	assertNotNull(point.getProperties());
+    	assertTrue(point.getProperties().size()>0);
+		
+    	List<StructAny> listComplexObject = point.getProperties();
+    	
+    	for (Iterator iterator = listComplexObject.iterator(); iterator.hasNext();) {
+			StructAny structAny = (StructAny) iterator.next();
+			assertEquals("md", structAny.getName());
+			assertEquals("FLOAT", structAny.getType());
+			assertEquals("meters", structAny.getUnit());
+			assertEquals("depth measure", structAny.getUnitType());
+			assertEquals("[0.0,2670.9678]", structAny.getValues());
+		}
+	}
+
+	/**
      * Tests the parsing of Feed element with expansion of the one to one
      * association "Contact".
      */

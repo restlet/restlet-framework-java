@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -74,14 +75,14 @@ public class Registration {
     private CoOp coop;
     private Group group;
     private InsuranceContract insuranceContract;
-    private List<Requirement> meetsRequirements;
-    private List<Payment> payments;
-    private List<Category> preferredCategories;
-    private List<JobPosting> preferredJobPostings;
-    private List<Location> preferredLocations;
-    private List<Invitation> receivedInvitations;
-    private List<Report> reports;
-    private List<Invitation> sentInvitations;
+    private List<Requirement> meetsRequirements = new ArrayList<Requirement>();
+    private List<Payment> payments = new ArrayList<Payment>();
+    private List<Category> preferredCategories = new ArrayList<Category>();
+    private List<JobPosting> preferredJobPostings = new ArrayList<JobPosting>();
+    private List<Location> preferredLocations = new ArrayList<Location>();
+    private List<Invitation> receivedInvitations = new ArrayList<Invitation>();
+    private List<Report> reports = new ArrayList<Report>();
+    private List<Invitation> sentInvitations = new ArrayList<Invitation>();
     private Student student;
 
     /**

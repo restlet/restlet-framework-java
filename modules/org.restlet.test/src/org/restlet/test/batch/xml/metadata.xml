@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<edmx:Edmx Version="1.0"
+	xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices>
+		<Schema Namespace="org.restlet.test.batch.crud"
+			xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+			xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+			xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+         <EntityType Name="Cafe">
+				<Key>
+					<PropertyRef Name="ID" />
+				</Key>
+			<Property Name="ID" Type="Edm.String" Nullable="false" />
+			<Property Name="Name" Type="Edm.String" Nullable="true" />
+			<Property Name="ZipCode" Type="Edm.Int32" Nullable="false" />
+			<Property Name="City" Type="Edm.String" Nullable="true" />
+			<Property Name="MediaType" Type="Edm.String" Nullable="false"/>
+			<Property Name="baseMultiPart" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+		 <EntityContainer Name="CafeServiceDataModel"
+				m:IsDefaultEntityContainer="true">
+				<EntitySet Name="Cafes" EntityType="org.restlet.test.batch.crud.Cafe" />
+			</EntityContainer>
+      </Schema>
+   </edmx:DataServices>
+</edmx:Edmx>

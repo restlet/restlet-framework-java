@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Multilingual;
@@ -50,7 +51,7 @@ public class Nationality {
     private String code;
     private int id;
     private Multilingual name;
-    private List<Student> students;
+    private List<Student> students = new ArrayList<Student>();
 
     /**
      * Constructor without parameter.

@@ -34,7 +34,10 @@
 package org.restlet.test.ext.odata.cafecustofeeds;
 
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.restlet.test.ext.odata.cafe.Point;
 import org.restlet.test.ext.odata.cafecustofeeds.Contact;
 import org.restlet.test.ext.odata.cafecustofeeds.Item;
 
@@ -46,13 +49,14 @@ import org.restlet.test.ext.odata.cafecustofeeds.Item;
 */
 public class Cafe {
 
+private Point spatial;
 private String city;
 private String companyName;
 private String id;
 private String name;
 private int zipCode;
 private Contact contact;
-private List<Item> items;    /**
+private List<Item> items = new ArrayList<Item>();    /**
      * Constructor without parameter.
      * 
      */
@@ -204,6 +208,20 @@ private List<Item> items;    /**
    public void setItems(List<Item> items) {
       this.items = items;
    }
+
+/**
+ * @return the spatial
+ */
+public Point getSpatial() {
+	return spatial;
+}
+
+/**
+ * @param spatial the spatial to set
+ */
+public void setSpatial(Point spatial) {
+	this.spatial = spatial;
+}
 
 
 }

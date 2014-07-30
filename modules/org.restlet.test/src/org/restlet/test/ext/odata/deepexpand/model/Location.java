@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.JobPart;
@@ -55,12 +56,12 @@ public class Location {
     private String path;
     private String type;
     private Tracking tracking;
-    private List<Location> childLocations;
-    private List<Student> issuedIdStudents;
-    private List<JobPart> jobPartsInExpedition;
-    private List<JobPostingPart> jobPostingPartsInExpedition;
+    private List<Location> childLocations = new ArrayList<Location>();
+    private List<Student> issuedIdStudents = new ArrayList<Student>();
+    private List<JobPart> jobPartsInExpedition = new ArrayList<JobPart>();
+    private List<JobPostingPart> jobPostingPartsInExpedition = new ArrayList<JobPostingPart>();
     private Location parentLocation;
-    private List<Registration> preferredByRegistrations;
+    private List<Registration> preferredByRegistrations = new ArrayList<Registration>();
 
     /**
      * Constructor without parameter.

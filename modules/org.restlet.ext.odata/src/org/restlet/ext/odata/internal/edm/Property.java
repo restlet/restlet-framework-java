@@ -33,6 +33,9 @@
 
 package org.restlet.ext.odata.internal.edm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
@@ -65,6 +68,8 @@ public class Property extends NamedObject {
 
     /** The type of the property. */
     private Type type;
+    
+    private List<String> annotations = new ArrayList<String>();
 
     /**
      * Constructor.
@@ -231,4 +236,17 @@ public class Property extends NamedObject {
         this.type = type;
     }
 
+	/**
+	 * @return the annotations
+	 */
+	public List<String> getAnnotations() {
+		return annotations;
+	}
+
+	/**
+	 * @param annotations the annotations to set
+	 */
+	public void setAnnotations(List<String> annotations) {
+		this.annotations = annotations;
+	}        
 }

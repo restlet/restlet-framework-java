@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class Report {
     private int id;
     private String title;
     private Tracking tracking;
-    private List<Attachment> attachments;
+    private List<Attachment> attachments = new ArrayList<Attachment>();
     private CoOp coOp;
     private Group group;
     private JobPart jobPart;

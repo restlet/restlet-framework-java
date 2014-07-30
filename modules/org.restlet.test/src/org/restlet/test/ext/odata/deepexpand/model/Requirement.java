@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.CoOp;
@@ -52,7 +53,7 @@ public class Requirement {
     private String type;
     private Tracking tracking;
     private CoOp coOp;
-    private List<Registration> fullfillingRegistrations;
+    private List<Registration> fullfillingRegistrations = new ArrayList<Registration>();
     private Multilingual name;
 
     /**

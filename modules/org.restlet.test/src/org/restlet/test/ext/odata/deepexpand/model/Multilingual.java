@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Literal;
@@ -47,7 +48,7 @@ import org.restlet.test.ext.odata.deepexpand.model.Literal;
 public class Multilingual {
 
     private int id;
-    private List<Literal> literals;
+    private List<Literal> literals = new ArrayList<Literal>();
 
     /**
      * Constructor without parameter.

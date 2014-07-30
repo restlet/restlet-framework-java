@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.CoOp;
@@ -54,10 +55,10 @@ public class FinancialSource {
     private int id;
     private String name;
     private Tracking tracking;
-    private List<CoOp> coOps;
-    private List<JobPartSpecialPayable> jobPartSpecialPayables;
-    private List<JobPostingPartSpecialPayable> jobPostingPartSpecialPayables;
-    private List<Payment> payments;
+    private List<CoOp> coOps = new ArrayList<CoOp>();
+    private List<JobPartSpecialPayable> jobPartSpecialPayables = new ArrayList<JobPartSpecialPayable>();
+    private List<JobPostingPartSpecialPayable> jobPostingPartSpecialPayables = new ArrayList<JobPostingPartSpecialPayable>();
+    private List<Payment> payments = new ArrayList<Payment>();
 
     /**
      * Constructor without parameter.

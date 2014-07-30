@@ -40,10 +40,14 @@ import ${clazz};
 </#list>
 
 <#list type.importedTypes?sort as t>
-import ${t.fullClassName};
+import ${packageName}.${t.className};
 </#list>
 </#compress>
 
+import org.restlet.ext.odata.validation.annotation.NotNull;
+import org.restlet.ext.odata.validation.annotation.PrimaryKey;
+import org.restlet.ext.odata.validation.annotation.SystemGenerated;
+import org.restlet.ext.odata.validation.annotation.JavaReservedKeyWord;
 
 <#compress>
 /**
@@ -57,6 +61,9 @@ import ${t.fullClassName};
 public <#if type.abstractType>abstract </#if>class ${className} {
 
 <#list type.properties?sort_by("name") as property>
+	<#list property.annotations as annotation>
+  	@${annotation}
+  	</#list>
   <#if property.type??>
     private ${property.type.className} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
   <#else>
@@ -65,13 +72,13 @@ public <#if type.abstractType>abstract </#if>class ${className} {
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
   <#if property.complexType??>
-    private ${property.complexType.className} ${property.propertyName};
+    private ${property.complexType.className} ${property.propertyName}<#if property.defaultValue??> = ${property.defaultValue}</#if>;;
   <#else>
-    // private [error: no defined type] ${property.propertyName};
+    // private [error: no defined type] ${property.propertyName}<#if property.defaultValue??> = ${property.defaultValue}</#if>;;
   </#if>
 </#list>
 <#list type.associations?sort_by("name") as association>
-    private <#if association.toRole.toMany>List<${association.toRole.type.className}><#else>${association.toRole.type.className}</#if> ${association.normalizedName};
+    private <#if association.toRole.toMany> List<${association.toRole.type.className}> <#else> ${association.toRole.type.className} </#if> ${association.normalizedName} <#if association.toRole.toMany> = new ArrayList<${association.toRole.type.className}>()</#if>;
 </#list>
 <#if type.blob>
     /** The reference of the underlying blob representation. */

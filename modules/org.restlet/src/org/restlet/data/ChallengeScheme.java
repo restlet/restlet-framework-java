@@ -92,6 +92,10 @@ public final class ChallengeScheme {
     /** Cookie HTTP scheme. */
     public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
             "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
+    
+    /** HTTP Negotiate scheme. */
+    public static final ChallengeScheme HTTP_NEGOTIATE = new ChallengeScheme(
+            "HTTP_NEGOTIATE", "Negotiate", "HTTP Negotiate authentication");
 
     /** Digest HTTP scheme. */
     public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme(
@@ -152,6 +156,7 @@ public final class ChallengeScheme {
                 HTTP_AZURE_SHAREDKEY_LITE);
         schemes.put(HTTP_BASIC.getName().toLowerCase(), HTTP_BASIC);
         schemes.put(HTTP_COOKIE.getName().toLowerCase(), HTTP_COOKIE);
+        schemes.put(HTTP_NEGOTIATE.getName().toLowerCase(), HTTP_NEGOTIATE);
         schemes.put(HTTP_DIGEST.getName().toLowerCase(), HTTP_DIGEST);
         schemes.put(HTTP_NTLM.getName().toLowerCase(), HTTP_NTLM);
         schemes.put(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH);

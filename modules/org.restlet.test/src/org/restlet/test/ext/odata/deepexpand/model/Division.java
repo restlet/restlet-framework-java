@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.Department;
@@ -51,7 +52,7 @@ public class Division {
     private int id;
     private Tracking tracking;
     private Department department;
-    private List<FacultyUser> facultyUsers;
+    private List<FacultyUser> facultyUsers = new ArrayList<FacultyUser>();
     private Multilingual name;
 
     /**

@@ -129,6 +129,7 @@ public class EntityType extends ODataType {
         for (NavigationProperty property : getAssociations()) {
             if (property.getToRole().isToMany()) {
                 result.add("java.util.List");
+                result.add("java.util.ArrayList");
                 break;
             }
         }

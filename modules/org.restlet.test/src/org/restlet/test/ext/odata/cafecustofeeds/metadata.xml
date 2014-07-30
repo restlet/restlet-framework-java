@@ -70,6 +70,21 @@
 					<End Role="Cafe" EntitySet="Cafes" />
 				</AssociationSet>
 			</EntityContainer>
+			<ComplexType Name="StructAny">
+				<Property Name="name" Nullable="true" Type="Edm.String"/>
+				<Property Name="type" Nullable="true" Type="Edm.String"/>
+				<Property Name="unit" Nullable="true" Type="Edm.String"/>
+				<Property Name="unitType" Nullable="true" Type="Edm.String"/>
+				<Property Name="values" Nullable="true" Type="Edm.String"/>
+			</ComplexType>
+			<ComplexType Name="Point">
+				<Property Name="geo_type" Nullable="true" Type="Edm.String"/>
+				<Property Name="geo_name" Nullable="true" Type="Edm.String"/>
+				<Property Name="x" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="y" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="z" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="properties" Nullable="true" Type="Collection(OW5000.StructAny)"/>
+			</ComplexType>
 		</Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

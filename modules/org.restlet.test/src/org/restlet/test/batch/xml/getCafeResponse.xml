@@ -1,0 +1,24 @@
+
+
+HTTP/1.1 200 OK
+Content-Type: application/xml;charset=utf-8
+Location: http://localhost:8111/Cafe.svc/Cafes('40')
+DataServiceVersion: 3.0
+
+<?xml version='1.0' encoding='utf-8'?><entry xmlns="http://www.w3.org/2005/Atom" 
+xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xml:base="http://134.132.100.20:8080/dsdataserver/dsl.svc/">
+<id>http://localhost:8111/Cafe.svc/Cafes('40')</id>
+<title type="text"/><updated>2014-05-27T09:17:16Z</updated><author><name/></author><link rel="edit" title="Cafes" href="Cafes('40')"/><link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Cafe" type="application/xml;type=feed" title="Cafe" href="Cafes('40')Cafe"/><category term="Cafes" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+<content type="application/xml">
+<m:properties><d:ref_value_status m:null="true"/>
+<d:tool_parm_name>40</d:tool_parm_name>
+<d:unit_type_id>UNKNOWN</d:unit_type_id>
+<d:create_date m:type="Edm.DateTime">2014-06-23T09:44:08</d:create_date>
+<d:update_date m:type="Edm.DateTime" m:null="true"/><d:ref_value_source m:null="true"/>
+<d:create_user_id>OWAT</d:create_user_id><d:update_user_id m:null="true"/>
+<d:City m:type="Edm.String">TestCity</d:City>
+<d:ID m:type="Edm.String">40</d:ID>
+<d:Name m:type="Edm.String">TestName</d:Name>
+<d:ZipCode m:type="Edm.Int32">111111</d:ZipCode>
+<d:tool_parm_id m:type="Edm.Int32">221</d:tool_parm_id>
+</m:properties></content></entry>

@@ -34,6 +34,7 @@
 package org.restlet.test.ext.odata.deepexpand.model;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.EntityAccess;
@@ -52,8 +53,8 @@ public class Permission {
     private String managerName;
     private String name;
     private Tracking tracking;
-    private List<EntityAccess> entityAccesses;
-    private List<Role> roles;
+    private List<EntityAccess> entityAccesses = new ArrayList<EntityAccess>();
+    private List<Role> roles = new ArrayList<Role>();
 
     /**
      * Constructor without parameter.
