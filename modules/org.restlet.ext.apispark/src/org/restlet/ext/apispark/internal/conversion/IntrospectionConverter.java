@@ -1,6 +1,7 @@
 package org.restlet.ext.apispark.internal.conversion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -87,9 +88,7 @@ public class IntrospectionConverter {
             resource.setName(ri.getIdentifier());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
-                resource.setSection("root");
             } else {
-                resource.setSection(ReflectUtils.getFirstSegment(ri.getPath()));
                 if (!ri.getPath().startsWith("/")) {
                     resource.setResourcePath("/" + ri.getPath());
                 } else {
@@ -464,7 +463,13 @@ public class IntrospectionConverter {
                     p.setPossibleValues(pi.getPossibleValues());
                     if (pi.getType() != null) {
                         // TODO: handle primitive type, etc
-                        p.setType(pi.getType().getSimpleName());
+                        String type = pi.getType().getSimpleName();
+                        if (isPrimitiveType(type)) {
+                            p.setType(convertPrimitiveTypes(pi.getType()
+                                    .getSimpleName()));
+                        } else {
+                            p.setType(type);
+                        }
                     }
 
                     p.setUniqueItems(pi.isUniqueItems());
@@ -532,6 +537,29 @@ public class IntrospectionConverter {
         }
 
         return defaultValue;
+    }
+
+    private static boolean isPrimitiveType(String type) {
+        String[] primitiveTypes = { "int", "Integer", "boolean", "Boolean",
+                "double", "Double", "float", "Float", "long", "Long" };
+        List<String> smartPrimitiveTypes = Arrays.asList(primitiveTypes);
+        return smartPrimitiveTypes.contains(type);
+    }
+
+    private static String convertPrimitiveTypes(String type) {
+        if ("int".equals(type)) {
+            return "Integer";
+        } else if ("boolean".equals(type)) {
+            return "Boolean";
+        } else if ("long".equals(type)) {
+            return "Long";
+        } else if ("float".equals(type)) {
+            return "Float";
+        } else if ("double".equals(type)) {
+            return "Double";
+        } else {
+            return type;
+        }
     }
 
     /**

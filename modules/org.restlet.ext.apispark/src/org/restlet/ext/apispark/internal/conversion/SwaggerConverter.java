@@ -131,7 +131,6 @@ public abstract class SwaggerConverter {
                     declaredPathVariables = new ArrayList<String>();
                     resource = new Resource();
                     resource.setResourcePath(api.getPath());
-                    resource.setSection(entry.getKey());
 
                     // Operations listing
                     Operation operation;
@@ -443,7 +442,7 @@ public abstract class SwaggerConverter {
             md.setId(model);
             md.setDescription(repr.getDescription());
             for (Property prop : repr.getProperties()) {
-                if (prop.isRequired()) {
+                if (prop.getMinOccurs() > 0) {
                     md.getRequired().add(prop.getName());
                 }
                 if (!isPrimitiveType(prop.getType())
@@ -548,7 +547,8 @@ public abstract class SwaggerConverter {
             for (Resource resource : definition.getContract().getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
-                rd.setPath(ReflectUtils.getFirstSegment(resource.getResourcePath()));
+                rd.setPath(ReflectUtils.getFirstSegment(resource
+                        .getResourcePath()));
                 if (!addedApis.contains(rd.getPath())) {
                     addedApis.add(rd.getPath());
                     result.getApis().add(rd);
