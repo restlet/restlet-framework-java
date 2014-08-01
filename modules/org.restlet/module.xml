@@ -18,6 +18,9 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/connector/HttpServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/HttpsServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/NetServerHelper*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
 ]]>
 		</files-sets>
