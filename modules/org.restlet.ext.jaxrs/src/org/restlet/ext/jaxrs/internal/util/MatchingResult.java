@@ -54,7 +54,7 @@ public class MatchingResult {
      * Creates a new MatchingResult
      * 
      * @param matched
-     *                The matched uri part
+     *            The matched uri part
      * @param variables
      * @param finalCapturingGroup
      */

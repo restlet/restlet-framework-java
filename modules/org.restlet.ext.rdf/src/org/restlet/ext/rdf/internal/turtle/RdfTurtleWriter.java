@@ -91,8 +91,8 @@ public class RdfTurtleWriter extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.writer.append("@prefix ").append(prefixes.get(key)).append(
-                    ": <").append(key).append(">.\n");
+            this.writer.append("@prefix ").append(prefixes.get(key))
+                    .append(": <").append(key).append(">.\n");
         }
 
         this.writer.append("@keywords a, is, of, has.\n");
@@ -226,11 +226,11 @@ public class RdfTurtleWriter extends GraphHandler {
         for (Link link : linkset) {
             if (link.hasReferenceSource()) {
                 if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsReference());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsReference());
                 } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
                 } else if (link.hasLinkTarget()) {
                     // TODO Hande source as link.
                 } else {
@@ -242,11 +242,11 @@ public class RdfTurtleWriter extends GraphHandler {
             } else if (link.hasGraphSource()) {
                 this.writingExtraDot = false;
                 if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsReference());
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsReference());
                 } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
                 } else if (link.hasLinkTarget()) {
                     // TODO Handle source as link.
                 } else {

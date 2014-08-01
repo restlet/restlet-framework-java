@@ -282,7 +282,7 @@ public class HttpMethodCall extends ClientCall {
         }
         return Status.CONNECTOR_ERROR_COMMUNICATION.getCode();
     }
-    
+
     /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.

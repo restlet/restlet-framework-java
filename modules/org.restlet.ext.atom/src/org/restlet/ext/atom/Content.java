@@ -224,9 +224,7 @@ public class Content {
                 writer.dataElement(ATOM_NAMESPACE, "content", null, attributes,
                         strContent);
             } else {
-                writer
-                        .startElement(ATOM_NAMESPACE, "content", null,
-                                attributes);
+                writer.startElement(ATOM_NAMESPACE, "content", null, attributes);
                 try {
                     writer.getWriter().write(strContent);
                 } catch (IOException e) {

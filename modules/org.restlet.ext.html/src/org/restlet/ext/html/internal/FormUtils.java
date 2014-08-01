@@ -238,8 +238,8 @@ public class FormUtils {
             MediaType mediaRange) {
         boolean result = false;
 
-        for (Iterator<? extends NamedValue<String>> iter = mediaRange.getParameters()
-                .iterator(); !result && iter.hasNext();) {
+        for (Iterator<? extends NamedValue<String>> iter = mediaRange
+                .getParameters().iterator(); !result && iter.hasNext();) {
             result = searchedEntry.equals(iter.next());
         }
 

@@ -60,7 +60,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      * This method is not supported by this implementation.
      * 
      * @throws UnsupportedOperationException
-     *                 ever.
+     *             ever.
      */
     @Override
     public <T> T createEndpoint(Application application, Class<T> endpointType)
@@ -75,7 +75,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      * Cookie, CacheControl, EntityTag, NewCookie, MediaType, Date.
      * 
      * @param type
-     *                the class of the header
+     *            the class of the header
      * @return an instance of HeaderDelegate for the supplied type
      * @see javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(Class)
      */

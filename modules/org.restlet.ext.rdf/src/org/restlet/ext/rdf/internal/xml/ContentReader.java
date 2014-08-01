@@ -199,17 +199,20 @@ class ContentReader extends DefaultHandler {
             popSubject();
         } else if (state == State.PREDICATE) {
             if (this.consumingContent) {
-                link(getCurrentSubject(), this.currentPredicate, getLiteral(
-                        builder.toString(), null, this.language.getValue()));
+                link(getCurrentSubject(),
+                        this.currentPredicate,
+                        getLiteral(builder.toString(), null,
+                                this.language.getValue()));
                 this.consumingContent = false;
             }
         } else if (state == State.OBJECT) {
         } else if (state == State.LITERAL) {
             if (nodeDepth == 0) {
                 // End of the XML literal
-                link(getCurrentSubject(), this.currentPredicate, getLiteral(
-                        builder.toString(), this.currentDataType, this.language
-                                .getValue()));
+                link(getCurrentSubject(),
+                        this.currentPredicate,
+                        getLiteral(builder.toString(), this.currentDataType,
+                                this.language.getValue()));
             } else {
                 // Still gleaning the content of an XML literal
                 // Glean the XML content
@@ -418,8 +421,8 @@ class ContentReader extends DefaultHandler {
                     resolve(uri, name));
         }
         for (String[] arc : arcs) {
-            this.graphHandler.link(result, resolve(null, arc[0]), getLiteral(
-                    arc[1], null, this.language.getValue()));
+            this.graphHandler.link(result, resolve(null, arc[0]),
+                    getLiteral(arc[1], null, this.language.getValue()));
         }
 
         return result;

@@ -158,9 +158,7 @@ public class RdfN3Reader extends RdfTurtleReader {
                     // take care of the "path" shorthands.
                     int j = i + 1;
                     if (j < lexicalUnits.size() && isPath(lexicalUnits.get(j))) {
-                        if ("!"
-                                .equalsIgnoreCase(lexicalUnits.get(j)
-                                        .getValue())) {
+                        if ("!".equalsIgnoreCase(lexicalUnits.get(j).getValue())) {
                             // Create a new BlankNode which is the object of the
                             // current link.
                             currentObject = new BlankNodeToken(newBlankNodeId())

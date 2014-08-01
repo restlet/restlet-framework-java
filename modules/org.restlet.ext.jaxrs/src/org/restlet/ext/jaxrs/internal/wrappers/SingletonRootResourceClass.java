@@ -74,8 +74,7 @@ public class SingletonRootResourceClass extends RootResourceClass {
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalPathParamTypeException
      * @throws InvocationTargetException
-     *                 if an exception occurs while the injecting of
-     *                 dependencies.
+     *             if an exception occurs while the injecting of dependencies.
      * @throws InjectException
      */
     SingletonRootResourceClass(Object rootResourceObject,
@@ -96,8 +95,8 @@ public class SingletonRootResourceClass extends RootResourceClass {
      * Creates an or gets the instance of this root resource class.
      * 
      * @param objectFactory
-     *                object responsible for instantiating the root resource
-     *                class. Optional, thus can be null.
+     *            object responsible for instantiating the root resource class.
+     *            Optional, thus can be null.
      * @return the wrapped root resource class instance
      * @throws InvocationTargetException
      * @throws InstantiateException

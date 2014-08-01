@@ -45,9 +45,9 @@ import org.restlet.routing.Filter;
  * @author Bryan Hunt
  */
 public interface FilterProvider extends RestletProvider {
-	/**
-	 * 
-	 * @return the filter instance
-	 */
+    /**
+     * 
+     * @return the filter instance
+     */
     Filter getFilter();
 }

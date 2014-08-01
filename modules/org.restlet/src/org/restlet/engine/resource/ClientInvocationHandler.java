@@ -126,7 +126,8 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /**
      * Allows for child classes to modify the request.
      */
-    protected Request getRequest(Method javaMethod, Object[] args) throws Throwable {
+    protected Request getRequest(Method javaMethod, Object[] args)
+            throws Throwable {
         return getClientResource().createRequest();
     }
 

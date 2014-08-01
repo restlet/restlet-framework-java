@@ -614,8 +614,8 @@ public class Request extends Message {
     public boolean isEntityAvailable() {
         // The declaration of the "result" variable is a workaround for the GWT
         // platform.
-        boolean result = (Method.GET.equals(getMethod())
-                || Method.HEAD.equals(getMethod()));
+        boolean result = (Method.GET.equals(getMethod()) || Method.HEAD
+                .equals(getMethod()));
         if (result) {
             return false;
         }

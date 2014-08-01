@@ -56,7 +56,7 @@ public class LoggerFacade {
         // [ifndef gwt] instruction
         return Logger.getAnonymousLogger();
         // [ifdef gwt] instruction uncomment
-        //return Logger.getLogger("");
+        // return Logger.getLogger("");
     }
 
     /**

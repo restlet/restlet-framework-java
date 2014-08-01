@@ -281,9 +281,9 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @return The new connection.
      * @throws IOException
      */
-    public abstract Connection<T> createConnection(
-            SocketChannel socketChannel, ConnectionController controller,
-            InetSocketAddress socketAddress) throws IOException;
+    public abstract Connection<T> createConnection(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException;
 
     /**
      * Creates the connection pool.

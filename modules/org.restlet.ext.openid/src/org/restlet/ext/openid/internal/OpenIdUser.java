@@ -45,7 +45,8 @@ import org.restlet.security.User;
  */
 public class OpenIdUser extends User {
 
-    public static void setValueFromAX(AttributeExchange attribute, String value, User u) {
+    public static void setValueFromAX(AttributeExchange attribute,
+            String value, User u) {
         if (attribute == AttributeExchange.EMAIL)
             u.setEmail(value);
         else if (attribute == AttributeExchange.FIRST_NAME)

@@ -143,8 +143,8 @@ public class Entry extends SaxRepresentation {
      * @throws IOException
      */
     public Entry(Context context, String entryUri) throws IOException {
-        this(context.getClientDispatcher().handle(
-                new Request(Method.GET, entryUri)).getEntity());
+        this(context.getClientDispatcher()
+                .handle(new Request(Method.GET, entryUri)).getEntity());
     }
 
     /**
@@ -549,7 +549,7 @@ public class Entry extends SaxRepresentation {
         if (getUpdated() != null) {
             Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
         }
-        
+
         writeInlineContent(writer);
 
         writer.endElement(ATOM_NAMESPACE, "entry");

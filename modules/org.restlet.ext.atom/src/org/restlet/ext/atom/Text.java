@@ -66,8 +66,8 @@ public class Text {
             String namespace, String localName) throws SAXException {
         if (date != null) {
             writer.startElement(namespace, localName);
-            writer.characters(DateUtils.format(date, DateUtils.FORMAT_RFC_3339
-                    .get(0)));
+            writer.characters(DateUtils.format(date,
+                    DateUtils.FORMAT_RFC_3339.get(0)));
             writer.endElement(namespace, localName);
         } else {
             writer.emptyElement(namespace, localName);

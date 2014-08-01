@@ -138,9 +138,9 @@ public class HttpDigestVerifier extends
             }
 
             try {
-                if (!HttpDigestHelper.isNonceValid(nonce, getDigestAuthenticator()
-                        .getServerKey(), getDigestAuthenticator()
-                        .getMaxServerNonceAge())) {
+                if (!HttpDigestHelper.isNonceValid(nonce,
+                        getDigestAuthenticator().getServerKey(),
+                        getDigestAuthenticator().getMaxServerNonceAge())) {
                     // Nonce expired, send challenge request with stale=true
                     result = RESULT_STALE;
                 }

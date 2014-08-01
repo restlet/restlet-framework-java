@@ -37,9 +37,9 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 
 /**
- * This is the base class for the other providers.  It handles the filtering
- * if a filter provider has been bound.  Users should typically not extend
- * this class, but instead extend an appropriate base provider.
+ * This is the base class for the other providers. It handles the filtering if a
+ * filter provider has been bound. Users should typically not extend this class,
+ * but instead extend an appropriate base provider.
  * 
  * @author Bryan Hunt
  * 
@@ -48,8 +48,8 @@ public abstract class BaseRestletProvider implements RestletProvider {
     private FilterProvider filterProvider;
 
     /**
-     * Called by getInboundRoot() to determine the filtered restlet
-     * that is next in the chain.
+     * Called by getInboundRoot() to determine the filtered restlet that is next
+     * in the chain.
      * 
      * @return the restlet to be filtered
      */
@@ -58,7 +58,8 @@ public abstract class BaseRestletProvider implements RestletProvider {
     /**
      * Called by OSGi DS to inject the filter provider service
      * 
-     * @param filterProvider the filter provider service
+     * @param filterProvider
+     *            the filter provider service
      */
     public void bindFilterProvider(FilterProvider filterProvider) {
         this.filterProvider = filterProvider;
@@ -79,7 +80,8 @@ public abstract class BaseRestletProvider implements RestletProvider {
     /**
      * Called by OSGi DS to un-inject the filter provider service
      * 
-     * @param filterProvider the filter provider service
+     * @param filterProvider
+     *            the filter provider service
      */
     public void unbindFilterProvider(FilterProvider filterProvider) {
         if (this.filterProvider == filterProvider)

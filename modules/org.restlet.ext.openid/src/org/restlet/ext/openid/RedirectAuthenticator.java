@@ -274,7 +274,7 @@ public class RedirectAuthenticator extends Authenticator {
     @Override
     protected int authenticated(Request request, Response response) {
         int ret = super.authenticated(request, response);
-        if( response != null && response.getStatus().isRedirection() )
+        if (response != null && response.getStatus().isRedirection())
             return STOP;
         return ret;
     }

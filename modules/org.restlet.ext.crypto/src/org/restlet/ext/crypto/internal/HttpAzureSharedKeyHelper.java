@@ -132,9 +132,8 @@ public class HttpAzureSharedKeyHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
 
         // Setup the method name
         final String methodName = request.getMethod().getName();

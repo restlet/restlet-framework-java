@@ -256,7 +256,8 @@ public class AwsUtils {
             toSign.append(Reference.encode(param.getName()));
 
             if (param.getValue() != null) {
-        		toSign.append('=').append(Reference.encode(param.getValue(), true));
+                toSign.append('=').append(
+                        Reference.encode(param.getValue(), true));
             }
         }
 

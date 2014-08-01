@@ -110,8 +110,7 @@ public final class ChallengeScheme {
 
     /** OAuth Bearer HTTP scheme. */
     public static final ChallengeScheme HTTP_OAUTH_BEARER = new ChallengeScheme(
-            "HTTP_Bearer", "Bearer",
-            "OAuth 2.0 bearer token authentication");
+            "HTTP_Bearer", "Bearer", "OAuth 2.0 bearer token authentication");
 
     /** OAuth MAC HTTP scheme. */
     public static final ChallengeScheme HTTP_OAUTH_MAC = new ChallengeScheme(

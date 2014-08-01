@@ -461,8 +461,8 @@ public class ResourceInfo extends DocumentedInfo {
                     builder.append(" ");
                 }
             }
-            attributes.addAttribute("", "type", null, "xs:string", builder
-                    .toString());
+            attributes.addAttribute("", "type", null, "xs:string",
+                    builder.toString());
         }
 
         if (getChildResources().isEmpty() && getDocumentations().isEmpty()

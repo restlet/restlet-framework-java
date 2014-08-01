@@ -119,8 +119,10 @@ public class OrderedMap<K, V> implements Map<K, V> {
             this.entryIter = entryIter;
         }
 
-        /** @return the next element
-         *  @see Iterator#hasNext() */
+        /**
+         * @return the next element
+         * @see Iterator#hasNext()
+         */
         public final boolean hasNext() {
             return this.entryIter.hasNext();
         }
@@ -413,8 +415,8 @@ public class OrderedMap<K, V> implements Map<K, V> {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Iterator<V> iterator() {
-                return new ValueSetIterator<K, V>((Iterator) elements
-                        .iterator());
+                return new ValueSetIterator<K, V>(
+                        (Iterator) elements.iterator());
             }
 
             public boolean remove(Object o) {

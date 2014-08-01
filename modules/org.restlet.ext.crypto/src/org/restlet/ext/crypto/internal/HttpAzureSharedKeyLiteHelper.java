@@ -89,9 +89,8 @@ public class HttpAzureSharedKeyLiteHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
 
         // Setup the Date header
         String date = "";

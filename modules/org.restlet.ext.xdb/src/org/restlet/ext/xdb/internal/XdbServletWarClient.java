@@ -45,7 +45,6 @@ import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.ClientHelper;
 
-
 /**
  * Connector acting as a WAR client for a Servlet Application. It internally
  * uses one of the available connectors registered with the current Restlet

@@ -254,12 +254,12 @@ public class Link {
         }
 
         if (getLength() > 0) {
-            attributes.addAttribute("", "length", null, "text", Long
-                    .toString(getLength()));
+            attributes.addAttribute("", "length", null, "text",
+                    Long.toString(getLength()));
         }
 
-        attributes.addAttribute("", "rel", null, "text", Relation
-                .toString(getRel()));
+        attributes.addAttribute("", "rel", null, "text",
+                Relation.toString(getRel()));
 
         if (getTitle() != null) {
             attributes.addAttribute("", "title", null, "text", getTitle());

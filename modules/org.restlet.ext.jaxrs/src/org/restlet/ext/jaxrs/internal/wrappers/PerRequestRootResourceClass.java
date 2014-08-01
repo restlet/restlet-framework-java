@@ -56,7 +56,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
  * @author Stephan
- *
+ * 
  */
 public class PerRequestRootResourceClass extends RootResourceClass {
 
@@ -82,15 +82,16 @@ public class PerRequestRootResourceClass extends RootResourceClass {
             IllegalPathOnClassException, MissingConstructorException,
             IllegalConstrParamTypeException, IllegalFieldTypeException,
             IllegalBeanSetterTypeException, IllegalPathParamTypeException {
-        super(jaxRsClass, tlContext, jaxRsProviders, extensionBackwardMapping, logger);
+        super(jaxRsClass, tlContext, jaxRsProviders, extensionBackwardMapping,
+                logger);
     }
 
     /**
      * Creates an or gets the instance of this root resource class.
      * 
      * @param objectFactory
-     *                object responsible for instantiating the root resource
-     *                class. Optional, thus can be null.
+     *            object responsible for instantiating the root resource class.
+     *            Optional, thus can be null.
      * @return the instantiated root resource object.
      * @throws InvocationTargetException
      * @throws InstantiateException

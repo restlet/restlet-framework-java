@@ -60,9 +60,8 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
         try {
             final CharArrayWriter credentials = new CharArrayWriter();
             credentials.write("^@");

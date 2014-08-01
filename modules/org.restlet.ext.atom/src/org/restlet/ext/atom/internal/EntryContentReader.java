@@ -215,8 +215,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getAuthors().add(this.currentPerson);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                    this.currentEntry.getSource().getAuthors().add(
-                            this.currentPerson);
+                    this.currentEntry.getSource().getAuthors()
+                            .add(this.currentPerson);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equals("name")) {
@@ -241,8 +241,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getLinks().add(this.currentLink);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_LINK) {
-                    this.currentEntry.getSource().getLinks().add(
-                            this.currentLink);
+                    this.currentEntry.getSource().getLinks()
+                            .add(this.currentLink);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
                 // Set the inline content, if any
@@ -275,8 +275,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getCategories().add(this.currentCategory);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_CATEGORY) {
-                    this.currentEntry.getSource().getCategories().add(
-                            this.currentCategory);
+                    this.currentEntry.getSource().getCategories()
+                            .add(this.currentCategory);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equalsIgnoreCase("content")) {

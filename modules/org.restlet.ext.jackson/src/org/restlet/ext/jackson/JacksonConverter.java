@@ -155,7 +155,7 @@ public class JacksonConverter extends ConverterHelper {
                         || VARIANT_TEXT_XML.isCompatible(variant)
                         || VARIANT_APPLICATION_YAML.isCompatible(variant)
                         || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
-                        .isCompatible(variant));
+                            .isCompatible(variant));
     }
 
     @Override

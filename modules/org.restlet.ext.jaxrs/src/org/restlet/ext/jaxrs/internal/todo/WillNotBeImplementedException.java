@@ -40,7 +40,8 @@ package org.restlet.ext.jaxrs.internal.todo;
  * 
  * @author Stephan Koops
  */
-public class WillNotBeImplementedException extends UnsupportedOperationException {
+public class WillNotBeImplementedException extends
+        UnsupportedOperationException {
     private static final long serialVersionUID = -746394839280273085L;
 
     /**

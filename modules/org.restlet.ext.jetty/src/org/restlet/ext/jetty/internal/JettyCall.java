@@ -314,7 +314,8 @@ public class JettyCall extends ServerCall {
             }
         } else {
             // Send the response entity
-            getConnection().getResponse().setStatus(getStatusCode(), getReasonPhrase());
+            getConnection().getResponse().setStatus(getStatusCode(),
+                    getReasonPhrase());
             super.sendResponse(response);
         }
 

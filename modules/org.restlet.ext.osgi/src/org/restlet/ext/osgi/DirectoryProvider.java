@@ -36,16 +36,16 @@ package org.restlet.ext.osgi;
 /**
  * This is an OSGi service interface for registering Restlet directories with a
  * router. Users are expected to register an instance as an OSGi service. It is
- * recommended that you use the {@link BaseDirectoryProvider}
- * implementation. You may extend it if necessary, or for complete control, provide
- * your own implementation of {@link DirectoryProvider}.
+ * recommended that you use the {@link BaseDirectoryProvider} implementation.
+ * You may extend it if necessary, or for complete control, provide your own
+ * implementation of {@link DirectoryProvider}.
  * 
  * @author Bryan Hunt
  */
 public interface DirectoryProvider extends RestletProvider {
-	/**
-	 * 
-	 * @return the fully qualified path of the directory
-	 */
+    /**
+     * 
+     * @return the fully qualified path of the directory
+     */
     String getPath();
 }

@@ -38,10 +38,11 @@ import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 
 /**
- * This class provides an implementation of {@link FilterProvider}. You
- * register this class as an OSGi declarative service. The service declaration
- * should look like:
+ * This class provides an implementation of {@link FilterProvider}. You register
+ * this class as an OSGi declarative service. The service declaration should
+ * look like:
  * <p>
+ * 
  * <pre>
  * {@code
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -53,25 +54,32 @@ import org.restlet.routing.Filter;
  * </scr:component>
  * }
  * </pre>
- * </p><p>
+ * 
+ * </p>
+ * <p>
  * The referenced services are:
  * <ul>
- *   <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
+ * <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * The provided services are:
  * <ul>
- *   <li>FilterProvider</li>
+ * <li>FilterProvider</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * Since filter providers have a reference to filter provider, filters can be
- * chained together.  To get the filters in the desired order, add a service
+ * chained together. To get the filters in the desired order, add a service
  * property to a filter, and then place a target filter on the reference
- * declaration.  For example:
+ * declaration. For example:
+ * 
  * <pre>
  * <reference bind="bindFilterProvider" cardinality="1..1" target="(type=authFilter)" interface="org.restlet.ext.osgi.FilterProvider" name="FilterProvider" policy="static" unbind="unbindFilterProvider"/>
  * </pre>
+ * 
  * </p>
+ * 
  * @author Bryan Hunt
  * 
  */
@@ -81,6 +89,7 @@ public abstract class BaseFilterProvider extends BaseRestletProvider implements
 
     /**
      * Called to construct the actual filter instance.
+     * 
      * @return the newly constructed filter instance.
      */
     protected abstract Filter createFilter(Context context);

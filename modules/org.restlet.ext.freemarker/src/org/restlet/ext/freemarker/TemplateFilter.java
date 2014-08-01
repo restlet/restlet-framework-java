@@ -132,8 +132,8 @@ public class TemplateFilter extends Filter {
     @Override
     protected void afterHandle(Request request, Response response) {
         if (response.isEntityAvailable()
-                && response.getEntity().getEncodings().contains(
-                        Encoding.FREEMARKER)) {
+                && response.getEntity().getEncodings()
+                        .contains(Encoding.FREEMARKER)) {
             TemplateRepresentation representation = new TemplateRepresentation(
                     response.getEntity(), this.configuration, response
                             .getEntity().getMediaType());

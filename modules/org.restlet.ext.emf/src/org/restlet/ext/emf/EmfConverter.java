@@ -142,7 +142,7 @@ public class EmfConverter extends ConverterHelper {
                         || VARIANT_APPLICATION_XMI.isCompatible(variant)
                         || VARIANT_APPLICATION_ECORE.isCompatible(variant)
                         || VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_TEXT_XML
-                        .isCompatible(variant));
+                            .isCompatible(variant));
     }
 
     @Override

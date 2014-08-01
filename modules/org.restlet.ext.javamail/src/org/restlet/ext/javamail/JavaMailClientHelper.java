@@ -332,8 +332,8 @@ public class JavaMailClientHelper extends ClientHelper {
         // Check if authentication required
         final boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
         final boolean apop = authenticate
-                && (ChallengeScheme.POP_DIGEST.equals(request.getChallengeResponse()
-                        .getScheme()));
+                && (ChallengeScheme.POP_DIGEST.equals(request
+                        .getChallengeResponse().getScheme()));
 
         String transport = null;
 

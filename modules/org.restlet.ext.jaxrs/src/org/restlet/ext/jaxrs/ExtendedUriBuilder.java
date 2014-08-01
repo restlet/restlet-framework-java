@@ -304,7 +304,7 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
     @SuppressWarnings("rawtypes")
     public ExtendedUriBuilder path(Class resource, String methodName)
             throws IllegalArgumentException {
-    	path(resource);
+        path(resource);
         super.path(resource, methodName);
         return this;
     }

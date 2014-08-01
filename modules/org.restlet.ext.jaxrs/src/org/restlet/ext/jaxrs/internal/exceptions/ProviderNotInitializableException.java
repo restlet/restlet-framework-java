@@ -44,7 +44,7 @@ public class ProviderNotInitializableException extends JaxRsException {
     private static final long serialVersionUID = 5567215105027326112L;
 
     /**
-     * @param message 
+     * @param message
      */
     public ProviderNotInitializableException() {
         super();

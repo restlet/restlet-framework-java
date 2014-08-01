@@ -578,7 +578,8 @@ public class StringUtils {
                                         entityValue = Integer.parseInt(
                                                 entityName.substring(1), 10);
                                     }
-                                    if(!Character.isValidCodePoint(entityValue)){
+                                    if (!Character
+                                            .isValidCodePoint(entityValue)) {
                                         // Invalid Unicode character
                                         entityValue = -1;
                                     }

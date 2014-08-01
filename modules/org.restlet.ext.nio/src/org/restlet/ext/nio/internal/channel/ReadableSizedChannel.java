@@ -148,12 +148,13 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      *            True if the end of the channel has been detected.
      */
     protected void setEndDetected(boolean endDetected) throws IOException {
-        if (this.endDetected != endDetected) {        	
+        if (this.endDetected != endDetected) {
             this.endDetected = endDetected;
 
-            if (endDetected && (getWrappedChannel() instanceof CompletionListener)) {
+            if (endDetected
+                    && (getWrappedChannel() instanceof CompletionListener)) {
                 ((CompletionListener) getWrappedChannel())
-                .onMessageCompleted(isEndDetected());
+                        .onMessageCompleted(isEndDetected());
             }
         }
     }

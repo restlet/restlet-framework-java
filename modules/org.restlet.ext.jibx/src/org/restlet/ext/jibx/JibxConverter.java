@@ -102,7 +102,7 @@ public class JibxConverter extends ConverterHelper {
         return (mediaType != null)
                 && (MediaType.APPLICATION_ALL_XML.isCompatible(mediaType)
                         || MediaType.APPLICATION_XML.isCompatible(mediaType) || MediaType.TEXT_XML
-                        .isCompatible(mediaType));
+                            .isCompatible(mediaType));
     }
 
     /**
@@ -118,7 +118,7 @@ public class JibxConverter extends ConverterHelper {
         return (variant != null)
                 && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
                         || VARIANT_APPLICATION_XML.isCompatible(variant) || VARIANT_TEXT_XML
-                        .isCompatible(variant));
+                            .isCompatible(variant));
     }
 
     /**

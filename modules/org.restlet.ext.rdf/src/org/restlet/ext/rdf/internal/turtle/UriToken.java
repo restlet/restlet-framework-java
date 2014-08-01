@@ -51,8 +51,8 @@ public class UriToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public UriToken(RdfTurtleReader contentHandler,
-            Context context) throws IOException {
+    public UriToken(RdfTurtleReader contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
         this.parse();
     }

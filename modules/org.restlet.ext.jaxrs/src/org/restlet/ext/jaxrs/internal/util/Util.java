@@ -329,7 +329,8 @@ public class Util {
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
         HeaderUtils.extractEntityHeaders(headers, restletResponse.getEntity());
 
-        // Copy extension headers, from jax-rs response attributes, and jax-rs api
+        // Copy extension headers, from jax-rs response attributes, and jax-rs
+        // api
         @SuppressWarnings("unchecked")
         Series<Header> extensionHeaders = (Series<Header>) jaxRsHeaders
                 .getFirst(HeaderConstants.ATTRIBUTE_HEADERS);

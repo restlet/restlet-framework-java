@@ -100,8 +100,8 @@ public class Categories extends SaxRepresentation {
      * @throws IOException
      */
     public Categories(Context context, String categoriesUri) throws IOException {
-        this(context.getClientDispatcher().handle(
-                new Request(Method.GET, categoriesUri)).getEntity());
+        this(context.getClientDispatcher()
+                .handle(new Request(Method.GET, categoriesUri)).getEntity());
     }
 
     /**

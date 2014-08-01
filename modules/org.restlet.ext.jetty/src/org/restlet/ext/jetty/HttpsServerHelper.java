@@ -104,8 +104,7 @@ public class HttpsServerHelper extends JettyServerHelper {
 
         try {
             sslContextFactory = new RestletSslContextFactory(
-                    org.restlet.engine.ssl.SslUtils
-                            .getSslContextFactory(this));
+                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);

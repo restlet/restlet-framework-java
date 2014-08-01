@@ -73,7 +73,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
         super(mediaType);
         setSize(expectedSize);
     }
-    
+
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         return IoUtils.getChannel(this);

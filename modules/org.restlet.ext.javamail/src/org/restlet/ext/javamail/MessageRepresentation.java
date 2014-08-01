@@ -160,8 +160,9 @@ public class MessageRepresentation extends DomRepresentation {
                             mimeBodyPart.getContentType());
                     if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                             true)) {
-                        content = new InputRepresentation(mimeBodyPart
-                                .getInputStream(), MediaType.TEXT_PLAIN);
+                        content = new InputRepresentation(
+                                mimeBodyPart.getInputStream(),
+                                MediaType.TEXT_PLAIN);
                         break;
                     }
 
@@ -172,8 +173,8 @@ public class MessageRepresentation extends DomRepresentation {
         } else {
             // Add the email body
             if (message.getContentType() != null) {
-                final ContentType contentType = new ContentType(message
-                        .getContentType());
+                final ContentType contentType = new ContentType(
+                        message.getContentType());
                 if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                         true)) {
                     content = new InputRepresentation(message.getInputStream(),
