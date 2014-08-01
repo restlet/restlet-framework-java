@@ -83,7 +83,7 @@ public class EmployeesResource {
 
     /** Creates a new employee from XML or JSON */
     @POST
-    @Consumes( { "application/xml", "text/xml", "application/json" })
+    @Consumes({ "application/xml", "text/xml", "application/json" })
     public Response createEmployee(Employee employee) {
         final int staffNo = this.employeeMgr.createEmployee(employee);
         final URI location = createdLocation(staffNo);
@@ -104,7 +104,7 @@ public class EmployeesResource {
     }
 
     @GET
-    @Produces( { "application/xml", "text/xml", "application/json" })
+    @Produces({ "application/xml", "text/xml", "application/json" })
     public EmployeeList getEmployees() {
         final EmployeeList employees = this.employeeMgr.getAll();
         // set detail URIs
@@ -143,23 +143,19 @@ public class EmployeesResource {
                 ps.println("\" method=\"POST\">");
                 ps.println("<table><tr>");
                 ps.println("<td>firstname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"firstname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"firstname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>lastname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"lastname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"lastname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>sex:</td>");
                 ps.println("<td><input type=\"text\" name=\"sex\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>department:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"department\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"department\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td></td>");
-                ps
-                        .println("<td><input type=\"submit\" value=\"create employee\" /></td>");
+                ps.println("<td><input type=\"submit\" value=\"create employee\" /></td>");
                 ps.println("</tr></table>");
                 ps.println("</form>");
                 ps.println("</body></html>");
@@ -169,7 +165,8 @@ public class EmployeesResource {
 
     /** Create sub resource for one concrete employee. */
     @Path("{staffNo}")
-    public EmployeeResource getSub(@PathParam("staffNo") int staffNo) {
+    public EmployeeResource getSub(@PathParam("staffNo")
+    int staffNo) {
         if (!this.employeeMgr.exists(staffNo)) {
             throw new WebApplicationException(Status.NOT_FOUND);
         }

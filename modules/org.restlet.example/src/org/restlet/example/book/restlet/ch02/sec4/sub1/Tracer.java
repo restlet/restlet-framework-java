@@ -51,12 +51,9 @@ public class Tracer extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         String entity = "Method       : " + request.getMethod()
-                + "\nResource URI : " 
-                + request.getResourceRef()
-                + "\nIP address   : " 
-                + request.getClientInfo().getAddress()
-                + "\nAgent name   : " 
-                + request.getClientInfo().getAgentName()
+                + "\nResource URI : " + request.getResourceRef()
+                + "\nIP address   : " + request.getClientInfo().getAddress()
+                + "\nAgent name   : " + request.getClientInfo().getAgentName()
                 + "\nAgent version: "
                 + request.getClientInfo().getAgentVersion();
         response.setEntity(entity, MediaType.TEXT_PLAIN);

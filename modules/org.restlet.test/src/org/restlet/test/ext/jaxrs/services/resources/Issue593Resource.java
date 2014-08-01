@@ -54,7 +54,8 @@ public class Issue593Resource {
     @GET
     @Path("example")
     @Produces("text/plain")
-    public String getPath(@Context UriInfo uriInfo) {
+    public String getPath(@Context
+    UriInfo uriInfo) {
         return uriInfo.getPath();
     }
 }

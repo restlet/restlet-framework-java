@@ -84,8 +84,7 @@ public class GaeEnroler implements Enroler {
      */
     public GaeEnroler(Application application, String adminRoleName,
             String adminRoleDescription) {
-        this(Role
-                .get(application, adminRoleName, adminRoleDescription));
+        this(Role.get(application, adminRoleName, adminRoleDescription));
     }
 
     /**

@@ -65,8 +65,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @see MessageBodyWriter
  */
 @Provider
-@Produces( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
-@Consumes( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
+@Produces({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
+@Consumes({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
     private final Logger logger = Context.getCurrentLogger();

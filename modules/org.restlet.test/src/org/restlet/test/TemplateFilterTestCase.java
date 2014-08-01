@@ -78,8 +78,8 @@ public class TemplateFilterTestCase extends RestletTestCase {
         @Override
         public Restlet createInboundRoot() {
             // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
+            this.directory = new Directory(getContext(),
+                    LocalReference.createFileReference(getTestDirectory()));
             this.directory.setNegotiatingContent(true);
             return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
                     this.directory);
@@ -114,8 +114,8 @@ public class TemplateFilterTestCase extends RestletTestCase {
         @Override
         public Restlet createInboundRoot() {
             // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
+            this.directory = new Directory(getContext(),
+                    LocalReference.createFileReference(getTestDirectory()));
             this.directory.setNegotiatingContent(true);
             return new org.restlet.ext.velocity.TemplateFilter(getContext(),
                     this.directory);

@@ -87,7 +87,7 @@ public class Property {
      * possible values.
      */
     private List<String> possibleValues;
-    
+
     /**
      * Specifies whether the property is required in all representations or not.
      */

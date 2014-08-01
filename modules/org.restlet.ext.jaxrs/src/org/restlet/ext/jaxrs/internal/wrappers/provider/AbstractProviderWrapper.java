@@ -159,8 +159,9 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException,
             InjectException, InvocationTargetException {
-        final ContextInjector iph = new ContextInjector(jaxRsProvider.getClass(),
-                tlContext, allProviders, extensionBackwardMapping);
+        final ContextInjector iph = new ContextInjector(
+                jaxRsProvider.getClass(), tlContext, allProviders,
+                extensionBackwardMapping);
         iph.injectInto(jaxRsProvider, false);
     }
 

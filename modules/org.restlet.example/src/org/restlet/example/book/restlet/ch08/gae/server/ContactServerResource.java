@@ -41,15 +41,15 @@ import org.restlet.ext.wadl.WadlServerResource;
  * Contact server resource implementing the {@link ContactResource} interface.
  */
 public class ContactServerResource extends WadlServerResource implements
-		ContactResource {
+        ContactResource {
 
-	public ContactRepresentation retrieve() {
-		ContactRepresentation contact = new ContactRepresentation();
-		contact.setFirstName("Homer");
-		contact.setLastName("Simpson");
-		contact.setLogin("chunkylover53");
-		contact.setSenderName("Homer Simpson");
-		return contact;
-	}
+    public ContactRepresentation retrieve() {
+        ContactRepresentation contact = new ContactRepresentation();
+        contact.setFirstName("Homer");
+        contact.setLastName("Simpson");
+        contact.setLogin("chunkylover53");
+        contact.setSenderName("Homer Simpson");
+        return contact;
+    }
 
 }

@@ -43,9 +43,9 @@ public class Issue971Object {
     public Issue971Object(String content) {
         this.content = content;
     }
-    
+
     public String getContent() {
         return content;
     }
-    
+
 }

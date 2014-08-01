@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
-
 /**
  * {@link InputStream} to wrap a source {@link InputStream} that has been
  * chunked. See section 3.6.1 of HTTP Protocol for more information on chunked
@@ -199,8 +198,8 @@ public class ChunkedInputStream extends InputEntityStream {
         int result = -1;
 
         if (canRead()) {
-            result = this.source.read(b, off, Math.min(len,
-                    (int) (this.chunkSize - this.position)));
+            result = this.source.read(b, off,
+                    Math.min(len, (int) (this.chunkSize - this.position)));
             this.position += result;
 
             if (len - result > 0) {

@@ -86,8 +86,7 @@ public class SimpleContainer implements Container {
         } catch (Exception e) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "Exception while closing the Simple response's output stream",
                             e);
         }

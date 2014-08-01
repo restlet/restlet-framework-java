@@ -182,8 +182,8 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                         + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
                 MediaType.TEXT_XML);
 
-        TransformRepresentation transRep = new TransformRepresentation(comp
-                .getContext(), xml, xslt);
+        TransformRepresentation transRep = new TransformRepresentation(
+                comp.getContext(), xml, xslt);
 
         // create a test-stream representation to be returned when the correct
         // code is presented
@@ -275,8 +275,8 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                 + MY_BASEPATH + "/xslt/one/1st.xsl");
         Representation xsltOne = comp.getContext().getClientDispatcher()
                 .handle(new Request(Method.GET, xsltOneRef)).getEntity();
-        TransformRepresentation tr = new TransformRepresentation(comp
-                .getContext(), xmlIn, xsltOne);
+        TransformRepresentation tr = new TransformRepresentation(
+                comp.getContext(), xmlIn, xsltOne);
 
         // TODO transformer output should go to SAX! The sax-event-stream should
         // then be fed into a DOMBuilder

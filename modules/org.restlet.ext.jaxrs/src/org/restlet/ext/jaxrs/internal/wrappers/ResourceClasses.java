@@ -298,8 +298,8 @@ public class ResourceClasses {
         }
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, this.tlContext,
-                    this.jaxRsProviders, this.extensionBackwardMapping, Context
-                            .getCurrentLogger());
+                    this.jaxRsProviders, this.extensionBackwardMapping,
+                    Context.getCurrentLogger());
             synchronized (this.resourceClasses) {
                 this.resourceClasses.put(jaxRsResourceClass, rc);
             }

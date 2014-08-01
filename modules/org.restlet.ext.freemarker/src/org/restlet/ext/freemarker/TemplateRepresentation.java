@@ -74,9 +74,9 @@ public class TemplateRepresentation extends WriterRepresentation {
             // Instantiate the template with the character set of the template
             // representation if it has been set, otherwise use UTF-8.
             if (templateRepresentation.getCharacterSet() != null) {
-                return new Template("template", templateRepresentation
-                        .getReader(), config, templateRepresentation
-                        .getCharacterSet().getName());
+                return new Template("template",
+                        templateRepresentation.getReader(), config,
+                        templateRepresentation.getCharacterSet().getName());
             }
 
             return new Template("template", templateRepresentation.getReader(),
@@ -327,8 +327,7 @@ public class TemplateRepresentation extends WriterRepresentation {
                         + te.getMessage());
             }
         } else {
-            Context
-                    .getCurrentLogger()
+            Context.getCurrentLogger()
                     .warning(
                             "Unable to write the template representation. No template found.");
         }

@@ -44,10 +44,11 @@ import org.restlet.routing.Template;
 /**
  * This class provides an implementation of {@link ResourceProvider}. You
  * register this class as an OSGi declarative service. It is expected that
- * clients will extend this class to create the Finder for the resource.
- * This allows the OSGi class loading mechanism to properly locate the resource
- * class.  The service declaration should look like:
+ * clients will extend this class to create the Finder for the resource. This
+ * allows the OSGi class loading mechanism to properly locate the resource
+ * class. The service declaration should look like:
  * <p>
+ * 
  * <pre>
  * {@code
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -59,60 +60,68 @@ import org.restlet.routing.Template;
  * </scr:component>
  * }
  * </pre>
- * </p><p>
+ * 
+ * </p>
+ * <p>
  * The service properties are:
  * <ul>
- *   <li>paths - the path(s) to the resource relative to the application - required - must not be null - may be a single value or a String[]</li>
- *   <li>matchingMode - the URI matching mode - optional - defaults to Template.MODE_EQUALS</li>
- * </ul>
- * </p><p>
- * The referenced services are:
- * <ul>
- *   <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
- * </ul>
- * </p><p>
- * The provided services are:
- * <ul>
- *   <li>FilterProvider</li>
+ * <li>paths - the path(s) to the resource relative to the application -
+ * required - must not be null - may be a single value or a String[]</li>
+ * <li>matchingMode - the URI matching mode - optional - defaults to
+ * Template.MODE_EQUALS</li>
  * </ul>
  * </p>
+ * <p>
+ * The referenced services are:
+ * <ul>
+ * <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
+ * </ul>
+ * </p>
+ * <p>
+ * The provided services are:
+ * <ul>
+ * <li>FilterProvider</li>
+ * </ul>
+ * </p>
+ * 
  * @author Bryan Hunt
  * 
  */
-public abstract class BaseResourceProvider extends BaseRestletProvider implements
-        ResourceProvider {
+public abstract class BaseResourceProvider extends BaseRestletProvider
+        implements ResourceProvider {
     private Finder finder;
 
     private String[] paths;
-    
+
     private Integer matchingMode;
-    
+
     /**
      * Called by OSGi DS to activate the service
      * 
-     * @param context the OSGi service context
+     * @param context
+     *            the OSGi service context
      */
     public void activate(ComponentContext context) {
         @SuppressWarnings("unchecked")
         Dictionary<String, Object> properties = context.getProperties();
         Object pathsProperty = properties.get("paths");
-        
-        if(pathsProperty instanceof String) {
-        	paths = new String[1];
-        	paths[0] = (String) pathsProperty;
-        }
-        else
-        	paths = (String[]) pathsProperty;
-        
+
+        if (pathsProperty instanceof String) {
+            paths = new String[1];
+            paths[0] = (String) pathsProperty;
+        } else
+            paths = (String[]) pathsProperty;
+
         matchingMode = (Integer) properties.get("matchingMode");
-        
+
         if (matchingMode == null)
-        	matchingMode = Template.MODE_EQUALS;
+            matchingMode = Template.MODE_EQUALS;
     }
 
     /**
      * 
-     * @param the restlet application context
+     * @param the
+     *            restlet application context
      * @return the finder for the resource
      */
     protected abstract Finder createFinder(Context context);
@@ -135,9 +144,9 @@ public abstract class BaseResourceProvider extends BaseRestletProvider implement
     public String[] getPaths() {
         return paths.clone();
     }
-    
+
     @Override
     public int getMatchingMode() {
-    	return matchingMode;
+        return matchingMode;
     }
 }

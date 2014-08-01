@@ -70,11 +70,9 @@ public class DirectServerWrapper implements ServerWrapper {
 
     public void startServer(final Application application, Protocol protocol)
             throws Exception {
-        this.connector = new Restlet()
-        {
+        this.connector = new Restlet() {
             @Override
-            public void handle(Request request, Response response)
-            {
+            public void handle(Request request, Response response) {
                 try {
                     application.handle(request, response);
                 } catch (JaxRsRuntimeException e) {

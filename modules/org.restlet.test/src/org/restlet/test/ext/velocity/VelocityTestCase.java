@@ -99,8 +99,8 @@ public class VelocityTestCase extends RestletTestCase {
         map.put("value", "myValue");
 
         // Standard approach
-        final TemplateRepresentation tr = new TemplateRepresentation(testFile
-                .getName(), map, MediaType.TEXT_PLAIN);
+        final TemplateRepresentation tr = new TemplateRepresentation(
+                testFile.getName(), map, MediaType.TEXT_PLAIN);
         tr.getEngine().setProperty("file.resource.loader.path",
                 testDir.getAbsolutePath());
         final String result = tr.getText();

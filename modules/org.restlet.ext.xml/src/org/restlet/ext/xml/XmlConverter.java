@@ -122,7 +122,7 @@ public class XmlConverter extends ConverterHelper {
         if ((target != null)
                 && (Document.class.isAssignableFrom(target)
                         || DomRepresentation.class.isAssignableFrom(target) || SaxRepresentation.class
-                        .isAssignableFrom(target))) {
+                            .isAssignableFrom(target))) {
             if (MediaType.APPLICATION_ALL_XML.isCompatible(source
                     .getMediaType())) {
                 result = 0.8F;
@@ -160,7 +160,7 @@ public class XmlConverter extends ConverterHelper {
                 }
             } else if (SaxRepresentation.class.isAssignableFrom(target)) {
                 if (source instanceof SaxRepresentation) {
-                    result = (SaxRepresentation)source;                    
+                    result = (SaxRepresentation) source;
                 } else {
                     result = new SaxRepresentation(source);
                 }

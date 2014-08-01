@@ -55,21 +55,21 @@ public class UriBuilderTestResource {
 
     @GET
     @Path("absolute")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getAbsoluteUriBuilder() {
         return this.uriInfo.getAbsolutePathBuilder().build().toString();
     }
 
     @GET
     @Path("base")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getBaseUriBuilder() {
         return this.uriInfo.getBaseUriBuilder().build().toString();
     }
 
     @POST
     @Path("absolute")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String postAbsoluteUriBuilder() {
         // LATER test also with uri of sub resource
         return this.uriInfo.getAbsolutePathBuilder().build().toString();
@@ -77,7 +77,7 @@ public class UriBuilderTestResource {
 
     @POST
     @Path("base")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String postBaseUriBuilder() {
         return this.uriInfo.getBaseUriBuilder().build().toString();
     }

@@ -206,7 +206,7 @@ public class WrapperRequest extends Request {
     public Reference getOriginalRef() {
         return wrappedRequest.getOriginalRef();
     }
-    
+
     /**
      * Returns the protocol by first returning the baseRef.schemeProtocol
      * property if it is set, or the resourceRef.schemeProtocol property

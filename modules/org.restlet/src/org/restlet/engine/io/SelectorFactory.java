@@ -68,8 +68,9 @@ public class SelectorFactory {
             // do nothing.
         }
     }
+
     // [enddef]
-    
+
     /**
      * Get an exclusive <code>Selector</code>.
      * 

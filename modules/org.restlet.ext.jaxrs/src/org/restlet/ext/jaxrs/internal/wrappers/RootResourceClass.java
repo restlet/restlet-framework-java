@@ -84,7 +84,7 @@ public abstract class RootResourceClass extends ResourceClass implements
         if (!found) {
             Class<?>[] interfaces = jaxRsClass.getInterfaces();
             for (int i = 0; !found && i < interfaces.length; i++) {
-                    found = (interfaces[i].isAnnotationPresent(Path.class));
+                found = (interfaces[i].isAnnotationPresent(Path.class));
             }
         }
 

@@ -60,6 +60,7 @@ public class Issue594Test extends JaxRsTestCase {
             }
         };
     }
+
     /**
      * This tests, if a sub resource class of a sub resource class of a root
      * resource class is accessable.
@@ -99,8 +100,7 @@ public class Issue594Test extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
-        assertEquals("project=PRJ\nrepository=REPO\nschema", entity
-                .getText());
+        assertEquals("project=PRJ\nrepository=REPO\nschema", entity.getText());
     }
 
     public void testGetSchema() throws Exception {
@@ -112,7 +112,7 @@ public class Issue594Test extends JaxRsTestCase {
         assertEquals("project=PRJ\nrepository=REPO\nschema\nschema=SCM",
                 entity.getText());
     }
-    
+
     public void testFooBarSimple() throws Exception {
         final Response response = get("/foo/bar/schema/simple");
         final Representation entity = response.getEntity();

@@ -50,8 +50,8 @@ public class TestPostChunkedClient {
         FileRepresentation fr = new FileRepresentation("file:///c:/test.mpg",
                 MediaType.VIDEO_MPEG);
         System.out.println("Size sent: " + fr.getSize());
-        InputRepresentation ir = new InputRepresentation(fr.getStream(), fr
-                .getMediaType());
+        InputRepresentation ir = new InputRepresentation(fr.getStream(),
+                fr.getMediaType());
 
         try {
             resource.post(ir);

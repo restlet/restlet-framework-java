@@ -70,7 +70,7 @@ public class GenericTypeTestCase extends JaxRsTestCase {
             public Set<Object> getSingletons() {
                 return (Set) Collections.singleton(new GenericTypeMBW());
             }
-    
+
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {

@@ -55,7 +55,8 @@ public class PathParamTestService2 {
     @GET
     @Produces("text/plain")
     @Path("decoded/{string}")
-    public String decoded(@PathParam("string") String string) {
+    public String decoded(@PathParam("string")
+    String string) {
         return string;
     }
 
@@ -63,61 +64,71 @@ public class PathParamTestService2 {
     @GET
     @Produces("text/plain")
     @Path("encoded/{string}")
-    public String encoded(@PathParam("string") String string) {
+    public String encoded(@PathParam("string")
+    String string) {
         return string;
     }
 
     @GET
     @Path("BigDecimal/{id}")
     @Produces("text/plain")
-    public String getBigDecimal(@PathParam("id") BigDecimal id) {
+    public String getBigDecimal(@PathParam("id")
+    BigDecimal id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("int/{id}")
     @Produces("text/plain")
-    public String getInt(@PathParam("id") int id) {
+    public String getInt(@PathParam("id")
+    int id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("Integer/{id}")
     @Produces("text/plain")
-    public String getInteger(@PathParam("id") Integer id) {
+    public String getInteger(@PathParam("id")
+    Integer id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("MediaType/{id}")
     @Produces("text/plain")
-    public String getMediaType(@PathParam("id") MediaType id) {
+    public String getMediaType(@PathParam("id")
+    MediaType id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("mn{id}")
     @Produces("text/plain")
-    public String getMn(@PathParam("id") int id) {
+    public String getMn(@PathParam("id")
+    int id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("multSegm/{string:.*}")
     @Produces("text/plain")
-    public String getMultSegment(@PathParam("string") String string) {
+    public String getMultSegment(@PathParam("string")
+    String string) {
         return string;
     }
 
     @GET
     @Path("abc{def}")
-    public String getX(@PathParam("def") String def) {
+    public String getX(@PathParam("def")
+    String def) {
         return def;
     }
 
     @GET
     @Path("a{bcd}ef/{12}34")
-    public String getX2(@PathParam("bcd") String bcd, @PathParam("12") String tt) {
+    public String getX2(@PathParam("bcd")
+    String bcd, @PathParam("12")
+    String tt) {
         return bcd + "\n" + tt;
     }
 }

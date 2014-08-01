@@ -42,7 +42,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ParamConstructorProvider {
 
-    public ParamConstructorProvider(@HeaderParam("host") String host) {
+    public ParamConstructorProvider(@HeaderParam("host")
+    String host) {
         System.out.println("host=" + host);
     }
 }

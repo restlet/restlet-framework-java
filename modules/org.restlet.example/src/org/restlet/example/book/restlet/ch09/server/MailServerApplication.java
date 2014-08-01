@@ -42,30 +42,33 @@ import org.restlet.routing.Router;
  */
 public class MailServerApplication extends WadlApplication {
 
-	/**
-	 * Constructor.
-	 */
-	public MailServerApplication() {
-		setName("RESTful Mail API application");
-		setDescription("Example API for 'Restlet in Action' book");
-		setOwner("Restlet S.A.S.");
-		setAuthor("The Restlet Team");
-	}
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail API application");
+        setDescription("Example API for 'Restlet in Action' book");
+        setOwner("Restlet S.A.S.");
+        setAuthor("The Restlet Team");
+    }
 
-	/**
-	 * Creates a root Router to dispatch call to server resources.
-	 */
-	@Override
-	public Restlet createInboundRoot() {
-		Router router = new Router(getContext());
-		router.attach("/", RootServerResource.class);
-		router.attach("/accounts/", AccountsServerResource.class);
-		router.attach("/accounts/{accountId}", AccountServerResource.class);
-		router.attach("/accounts/{accountId}/mails/", MailsServerResource.class);
-		router.attach("/accounts/{accountId}/mails/{mailId}", MailServerResource.class);
-		router.attach("/accounts/{accountId}/contacts/", ContactsServerResource.class);
-		router.attach("/accounts/{accountId}/contacts/{contactId}", ContactServerResource.class);
-		return router;
-	}
+    /**
+     * Creates a root Router to dispatch call to server resources.
+     */
+    @Override
+    public Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
+        router.attach("/accounts/{accountId}/mails/", MailsServerResource.class);
+        router.attach("/accounts/{accountId}/mails/{mailId}",
+                MailServerResource.class);
+        router.attach("/accounts/{accountId}/contacts/",
+                ContactsServerResource.class);
+        router.attach("/accounts/{accountId}/contacts/{contactId}",
+                ContactServerResource.class);
+        return router;
+    }
 
 }

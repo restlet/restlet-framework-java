@@ -138,8 +138,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
             this.finder.create();
             fail("Exception not thrown");
         } catch (IllegalStateException iae) {
-            assertEquals(
-                    "No bean named " + BEAN_NAME + " present.",
+            assertEquals("No bean named " + BEAN_NAME + " present.",
                     iae.getMessage());
         }
     }
@@ -151,8 +150,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
             this.finder.create();
             fail("Exception not thrown");
         } catch (IllegalStateException iae) {
-            assertEquals(
-                    "No bean named " + BEAN_NAME + " present.",
+            assertEquals("No bean named " + BEAN_NAME + " present.",
                     iae.getMessage());
         }
     }

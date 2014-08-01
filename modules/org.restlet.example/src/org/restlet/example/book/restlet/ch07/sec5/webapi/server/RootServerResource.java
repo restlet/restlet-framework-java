@@ -56,8 +56,7 @@ public class RootServerResource extends WadlServerResource implements
 
         DocumentationInfo doc = new DocumentationInfo();
         doc.setTitle("Mail application");
-        doc
-                .setTextContent("Simple string welcoming the user to the mail application");
+        doc.setTextContent("Simple string welcoming the user to the mail application");
         result.getDocumentations().add(doc);
         return result;
     }

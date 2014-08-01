@@ -307,9 +307,8 @@ public class RdfClientResource extends ClientResource {
                     new Preference<MediaType>(MediaType.TEXT_RDF_N3));
             newInfo.getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_RDF_NTRIPLES));
-            newInfo.getAcceptedMediaTypes()
-                    .add(new Preference<MediaType>(
-                            MediaType.TEXT_TURTLE));
+            newInfo.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(MediaType.TEXT_TURTLE));
             newInfo.getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_XML, 0.5F));
             newInfo.getAcceptedMediaTypes().add(

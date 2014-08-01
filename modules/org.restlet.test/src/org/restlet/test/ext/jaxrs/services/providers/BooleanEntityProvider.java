@@ -91,11 +91,11 @@ public class BooleanEntityProvider implements MessageBodyReader<Boolean>,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         String str = IoUtils.toString(entityStream);
-        
+
         if (str.length() == 0) {
             return null;
         }
-        
+
         return new Boolean(str);
     }
 

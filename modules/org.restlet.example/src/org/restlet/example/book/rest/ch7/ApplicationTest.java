@@ -50,8 +50,8 @@ public class ApplicationTest {
 
     public static void deleteBookmark(String userName, String password,
             String uri) {
-        ClientResource resource = getAuthenticatedResource(getBookmarkUri(
-                userName, uri), userName, password);
+        ClientResource resource = getAuthenticatedResource(
+                getBookmarkUri(userName, uri), userName, password);
         resource.delete();
         System.out.println(resource.getStatus() + " : "
                 + resource.getLocationRef());
@@ -115,8 +115,8 @@ public class ApplicationTest {
         } else if (args.length == 4) {
             putUser(args[0], args[1], args[2], args[3]);
         } else if (args.length == 6) {
-            putBookmark(args[0], args[1], args[2], args[3], args[4], Boolean
-                    .valueOf(args[5]));
+            putBookmark(args[0], args[1], args[2], args[3], args[4],
+                    Boolean.valueOf(args[5]));
         }
     }
 
@@ -130,8 +130,8 @@ public class ApplicationTest {
 
         // Create an authenticated resource as a bookmark is in
         // the user's private area
-        ClientResource resource = getAuthenticatedResource(getBookmarkUri(
-                userName, uri), userName, password);
+        ClientResource resource = getAuthenticatedResource(
+                getBookmarkUri(userName, uri), userName, password);
         resource.put(form.getWebRepresentation());
 
         System.out.println(resource.getStatus());

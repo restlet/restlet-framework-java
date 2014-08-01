@@ -73,8 +73,7 @@ public class MailServerApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("http://localhost:8111/", 
-                RootServerResource.class);
+        router.attach("http://localhost:8111/", RootServerResource.class);
         router.attach("http://localhost:8111/accounts/",
                 AccountsServerResource.class);
         router.attach("http://localhost:8111/accounts/{accountId}",

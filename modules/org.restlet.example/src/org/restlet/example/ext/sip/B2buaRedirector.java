@@ -72,8 +72,8 @@ public class B2buaRedirector extends Redirector {
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "false");
-        client.getContext().getParameters().add("pipeliningConnections",
-                "false");
+        client.getContext().getParameters()
+                .add("pipeliningConnections", "false");
 
         c.getDefaultHost().attachDefault(
                 new B2buaRedirector(null, "sip:localhost:8111"));

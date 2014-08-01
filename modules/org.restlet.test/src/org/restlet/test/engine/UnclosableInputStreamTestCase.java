@@ -39,7 +39,6 @@ import java.io.InputStream;
 import org.restlet.engine.io.UnclosableInputStream;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Unit tests for the HTTP KeepAlive.
  * 

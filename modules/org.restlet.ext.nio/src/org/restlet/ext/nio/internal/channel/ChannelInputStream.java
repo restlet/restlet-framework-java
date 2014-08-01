@@ -57,8 +57,7 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public class ChannelInputStream extends InputStream implements
-        BufferProcessor {
+public class ChannelInputStream extends InputStream implements BufferProcessor {
 
     /** The internal byte buffer. */
     private final Buffer buffer;

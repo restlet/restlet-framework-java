@@ -91,7 +91,8 @@ public class EntityGetter implements ParamGetter {
      * @throws NoMessageBodyReaderException
      * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue(String)
      */
-    public Object getValue() throws ConvertRepresentationException, InvocationTargetException {
+    public Object getValue() throws ConvertRepresentationException,
+            InvocationTargetException {
         final Request request = this.tlContext.get().getRequest();
         final Representation entity = request.getEntity();
         if (entity == null) {
@@ -107,8 +108,8 @@ public class EntityGetter implements ParamGetter {
                 .getJaxRsHttpHeaders(request);
         try {
             return mbr.readFrom(this.convToCl, this.convToGen,
-                    this.annotations, mediaType, entity.getCharacterSet(), httpHeaders, entity
-                            .getStream());
+                    this.annotations, mediaType, entity.getCharacterSet(),
+                    httpHeaders, entity.getStream());
         } catch (WebApplicationException wae) {
             throw wae;
         } catch (IOException e) {

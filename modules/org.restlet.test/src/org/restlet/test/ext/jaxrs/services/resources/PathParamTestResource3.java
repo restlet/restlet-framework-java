@@ -43,8 +43,9 @@ import javax.ws.rs.PathParam;
 @Path("supplemental/{doctype}/{entryid}")
 public class PathParamTestResource3 {
     @GET
-    public String get(@PathParam("doctype") String doctype, @PathParam("entryid") String entryid)
-    {
-        return doctype+"\n"+entryid+"\n";
+    public String get(@PathParam("doctype")
+    String doctype, @PathParam("entryid")
+    String entryid) {
+        return doctype + "\n" + entryid + "\n";
     }
 }

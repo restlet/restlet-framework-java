@@ -55,7 +55,7 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      *            The authentication realm
      */
     public AwsAuthenticator(Context context, String realm) {
-	this(context, false, realm);
+        this(context, false, realm);
     }
 
     /**
@@ -68,9 +68,8 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * @param realm
      *            The authentication realm
      */
-    public AwsAuthenticator(Context context, boolean optional,
-	    String realm) {
-	this(context, optional, realm, new AwsVerifier(null));
+    public AwsAuthenticator(Context context, boolean optional, String realm) {
+        this(context, optional, realm, new AwsVerifier(null));
     }
 
     /**
@@ -84,9 +83,9 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      *            The authentication realm
      * @param verifier
      */
-    public AwsAuthenticator(Context context, boolean optional,
-	    String realm, Verifier verifier) {
-	super(context, optional, ChallengeScheme.HTTP_AWS_S3, realm, verifier);
+    public AwsAuthenticator(Context context, boolean optional, String realm,
+            Verifier verifier) {
+        super(context, optional, ChallengeScheme.HTTP_AWS_S3, realm, verifier);
     }
 
     /**
@@ -97,7 +96,7 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * is 15 minutes.
      */
     public long getMaxRequestAge() {
-	return getVerifier().getMaxRequestAge();
+        return getVerifier().getMaxRequestAge();
     }
 
     /**
@@ -108,12 +107,12 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * is 15 minutes.
      */
     public void setMaxRequestAge(long value) {
-	getVerifier().setMaxRequestAge(value);
+        getVerifier().setMaxRequestAge(value);
     }
 
     @Override
     public AwsVerifier getVerifier() {
-	return (AwsVerifier) super.getVerifier();
+        return (AwsVerifier) super.getVerifier();
     }
 
     /**
@@ -123,10 +122,10 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      */
     @Override
     public void setVerifier(Verifier verifier) {
-	if (!(verifier instanceof AwsVerifier))
-	    throw new IllegalArgumentException();
+        if (!(verifier instanceof AwsVerifier))
+            throw new IllegalArgumentException();
 
-	super.setVerifier(verifier);
+        super.setVerifier(verifier);
     }
 
     /**
@@ -136,7 +135,7 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * @return the local wrapped verifier
      */
     public LocalVerifier getWrappedVerifier() {
-	return getVerifier().getWrappedVerifier();
+        return getVerifier().getWrappedVerifier();
     }
 
     /**
@@ -147,6 +146,6 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      *            The local verifier to wrap
      */
     public void setWrappedVerifier(LocalVerifier verifier) {
-	getVerifier().setWrappedVerifier(verifier);
+        getVerifier().setWrappedVerifier(verifier);
     }
 }

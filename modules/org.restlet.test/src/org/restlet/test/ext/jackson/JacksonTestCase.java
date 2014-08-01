@@ -126,7 +126,7 @@ public class JacksonTestCase extends RestletTestCase {
                 text, rep.getMediaType()), Customer.class);
         verify(customer, rep.getObject());
     }
-    
+
     public void testXmlBomb() throws IOException {
         ClientResource cr = new ClientResource(
                 "clap://class/org/restlet/test/ext/jackson/jacksonBomb.xml");
@@ -134,7 +134,8 @@ public class JacksonTestCase extends RestletTestCase {
         xmlRep.setMediaType(MediaType.APPLICATION_XML);
         boolean error = false;
         try {
-            new JacksonRepresentation<Customer>(xmlRep, Customer.class).getObject();            
+            new JacksonRepresentation<Customer>(xmlRep, Customer.class)
+                    .getObject();
         } catch (Exception e) {
             error = true;
         }

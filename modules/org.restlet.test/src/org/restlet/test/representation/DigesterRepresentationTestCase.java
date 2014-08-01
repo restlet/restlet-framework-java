@@ -79,7 +79,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
                         DigesterRepresentation digester = new DigesterRepresentation(
                                 rep);
                         digester.exhaust();
-                        
+
                         if (digester.checkDigest()) {
                             response.setStatus(Status.SUCCESS_OK);
                             StringRepresentation f = new StringRepresentation(

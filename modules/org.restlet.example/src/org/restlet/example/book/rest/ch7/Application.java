@@ -72,9 +72,9 @@ public class Application extends org.restlet.Application {
         /** Open and keep the db4o object container. */
         EmbeddedConfiguration config = Db4oEmbedded.newConfiguration();
         config.common().updateDepth(2);
-        this.container = Db4oEmbedded.openFile(config, System
-                .getProperty("user.home")
-                + File.separator + "restbook.dbo");
+        this.container = Db4oEmbedded.openFile(config,
+                System.getProperty("user.home") + File.separator
+                        + "restbook.dbo");
     }
 
     @Override
@@ -90,8 +90,8 @@ public class Application extends org.restlet.Application {
         // Add a route for bookmark resources
         final TemplateRoute uriRoute = router.attach(
                 "/users/{username}/bookmarks/{URI}", BookmarkResource.class);
-        uriRoute.getTemplate().getVariables().put("URI",
-                new Variable(Variable.TYPE_URI_ALL));
+        uriRoute.getTemplate().getVariables()
+                .put("URI", new Variable(Variable.TYPE_URI_ALL));
 
         return router;
     }

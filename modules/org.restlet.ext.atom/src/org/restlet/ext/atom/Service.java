@@ -143,8 +143,8 @@ public class Service extends SaxRepresentation {
      */
     public Service(Context context, String serviceUri) throws IOException {
         this(context.getClientDispatcher(), serviceUri, context
-                .getClientDispatcher().handle(
-                        new Request(Method.GET, serviceUri)).getEntity());
+                .getClientDispatcher()
+                .handle(new Request(Method.GET, serviceUri)).getEntity());
     }
 
     /**

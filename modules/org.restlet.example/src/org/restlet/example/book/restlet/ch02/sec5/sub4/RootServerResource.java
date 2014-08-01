@@ -38,8 +38,7 @@ import org.restlet.resource.ServerResource;
 /**
  * Implementing the Java annotated resource interface.
  */
-public class RootServerResource 
-    extends ServerResource implements RootResource {
+public class RootServerResource extends ServerResource implements RootResource {
 
     public String represent() {
         return "This is the root resource";

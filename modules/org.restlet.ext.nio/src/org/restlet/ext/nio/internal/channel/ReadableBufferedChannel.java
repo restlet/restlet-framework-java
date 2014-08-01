@@ -41,7 +41,6 @@ import org.restlet.engine.io.WakeupListener;
 import org.restlet.ext.nio.internal.buffer.Buffer;
 import org.restlet.ext.nio.internal.util.CompletionListener;
 
-
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
@@ -125,8 +124,8 @@ public class ReadableBufferedChannel extends
 
     /**
      * Callback invoked upon IO completion. Calls
-     * {@link CompletionListener#onMessageCompleted(boolean)} if the end has been
-     * reached.
+     * {@link CompletionListener#onMessageCompleted(boolean)} if the end has
+     * been reached.
      * 
      * @param eofDetected
      *            Indicates if the end of network connection was detected.

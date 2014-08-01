@@ -61,7 +61,7 @@ public class AnnotatedResource01TestCase extends RestletTestCase {
         super.setUp();
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().getRegisteredConverters()
-        .add(new JacksonConverter());
+                .add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource01.class);

@@ -44,10 +44,11 @@ import org.restlet.Restlet;
  * @author Bryan Hunt
  */
 public interface RestletProvider {
-	/**
-	 * 
-	 * @param context the Restlet application context
-	 * @return the node to be used as the inbound root of the handling chain
-	 */
+    /**
+     * 
+     * @param context
+     *            the Restlet application context
+     * @return the node to be used as the inbound root of the handling chain
+     */
     Restlet getInboundRoot(Context context);
 }

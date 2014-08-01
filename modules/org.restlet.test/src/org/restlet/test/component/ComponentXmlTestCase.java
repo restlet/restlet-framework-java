@@ -57,18 +57,14 @@ public class ComponentXmlTestCase extends RestletTestCase {
         AppendableRepresentation config = new AppendableRepresentation();
         config.append("<?xml version=\"1.0\"?>");
         config.append("<component>");
-        config
-                .append("<server protocol=\"HTTP\" port=\"" + this.port
-                        + "\" />");
+        config.append("<server protocol=\"HTTP\" port=\"" + this.port + "\" />");
         config.append("<server protocol=\"HTTP\" port=\"" + this.port2
                 + "\" />");
         config.append("<defaultHost hostPort=\"" + this.port2 + "\">");
-        config
-                .append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
+        config.append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
         config.append("</defaultHost>");
         config.append("<host hostPort=\"" + this.port + "\">");
-        config
-                .append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
+        config.append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.component.HelloWorldApplication\" /> ");
         config.append("</host>");
 
         config.append("</component>");

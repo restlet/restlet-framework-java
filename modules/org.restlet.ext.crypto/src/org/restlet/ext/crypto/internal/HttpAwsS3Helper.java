@@ -56,9 +56,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
         // Append the AWS credentials
         cw.append(challenge.getIdentifier())
                 .append(':')

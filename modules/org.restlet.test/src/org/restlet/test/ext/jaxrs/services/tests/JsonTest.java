@@ -147,8 +147,7 @@ public class JsonTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final JaxbRepresentation<Person> jaxbReprs = new JaxbRepresentation<Person>(
                 response.getEntity(), Person.class);
-        
-        
+
         final Person person = jaxbReprs.getObject();
         assertEquals("Angela", person.getFirstname());
         assertEquals("Merkel", person.getLastname());

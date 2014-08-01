@@ -91,7 +91,8 @@ public class SecurityContextService {
     @GET
     @Path("secure")
     @Produces("text/plain")
-    public String isSecure(@Context UriInfo uriInfo) {
+    public String isSecure(@Context
+    UriInfo uriInfo) {
         if (!this.securityContext.isSecure()) {
             final ResponseBuilder rb = Response
                     .status(Status.MOVED_PERMANENTLY);
@@ -103,8 +104,8 @@ public class SecurityContextService {
     }
 
     @POST
-    public Response post(MultivaluedMap<String, String> entity,
-            @Context UriInfo uriInfo) {
+    public Response post(MultivaluedMap<String, String> entity, @Context
+    UriInfo uriInfo) {
         if (!this.securityContext.isUserInRole("bat")) {
             throw new WebApplicationException(403);
         }

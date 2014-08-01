@@ -21,7 +21,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 
-public class GuiceSelfInjectingServerResourceModuleTestCase extends RestletTestCase {
+public class GuiceSelfInjectingServerResourceModuleTestCase extends
+        RestletTestCase {
 
     public interface HelloResource {
         @Get

@@ -234,8 +234,8 @@ public class ContextInjector {
         public void injectInto(Object resource, boolean allMustBeAvailable)
                 throws IllegalArgumentException, InjectException,
                 InvocationTargetException {
-            Util.inject(resource, this.fieldOrBeanSetter, this.iog
-                    .getParamValue());
+            Util.inject(resource, this.fieldOrBeanSetter,
+                    this.iog.getParamValue());
         }
     }
 

@@ -41,7 +41,8 @@ import org.restlet.ext.wadl.WadlServerResource;
 /**
  * Mail server resource implementing the {@link MailResource} interface.
  */
-public class MailServerResource extends WadlServerResource implements MailResource {
+public class MailServerResource extends WadlServerResource implements
+        MailResource {
 
     public MailRepresentation retrieve() {
         MailRepresentation mail = new MailRepresentation();

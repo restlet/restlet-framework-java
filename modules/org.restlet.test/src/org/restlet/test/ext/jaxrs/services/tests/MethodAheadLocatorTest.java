@@ -50,7 +50,6 @@ import org.restlet.test.ext.jaxrs.services.resources.MethodAheadLocatorTestServi
 public class MethodAheadLocatorTest extends JaxRsTestCase {
 
     @Override
-
     /**
      * @return
      */
@@ -59,11 +58,13 @@ public class MethodAheadLocatorTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(MethodAheadLocatorTestService.class);
+                return (Set) Collections
+                        .singleton(MethodAheadLocatorTestService.class);
             }
         };
     }
-   public void test1() throws IOException {
+
+    public void test1() throws IOException {
         final Response response = get("p1");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());

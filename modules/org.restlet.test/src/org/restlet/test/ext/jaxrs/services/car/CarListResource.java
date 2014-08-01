@@ -85,7 +85,8 @@ public class CarListResource {
      */
     @Path("{id}")
     @Encoded
-    public CarResource findCar(@javax.ws.rs.PathParam("id") int id) {
+    public CarResource findCar(@javax.ws.rs.PathParam("id")
+    int id) {
         return new CarResource(id);
     }
 
@@ -143,10 +144,11 @@ public class CarListResource {
      * This method do so, if it adds a new car to the car list.
      */
     @POST
-    public Response newCar(@Context UriInfo uriInfo) {
+    public Response newCar(@Context
+    UriInfo uriInfo) {
         final int newId = 47; // from business logic.
-        final URI newUri = uriInfo.getAbsolutePathBuilder().path("{id}").build(
-                newId);
+        final URI newUri = uriInfo.getAbsolutePathBuilder().path("{id}")
+                .build(newId);
         return Response.created(newUri).build();
     }
 

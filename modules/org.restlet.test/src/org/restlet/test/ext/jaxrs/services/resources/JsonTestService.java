@@ -68,9 +68,10 @@ public class JsonTestService {
 
     @GET
     @Path("person")
-    @Produces( { TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
-    public Person getPerson(@QueryParam("firstname") String firstname,
-            @QueryParam("lastname") String lastname) {
+    @Produces({ TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
+    public Person getPerson(@QueryParam("firstname")
+    String firstname, @QueryParam("lastname")
+    String lastname) {
         return new Person(firstname, lastname);
     }
 

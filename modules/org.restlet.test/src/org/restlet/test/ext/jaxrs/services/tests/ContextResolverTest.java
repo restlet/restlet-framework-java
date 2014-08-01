@@ -56,11 +56,12 @@ public class ContextResolverTest extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-			@SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(ContextResolverTestResource.class);
+                return (Set) Collections
+                        .singleton(ContextResolverTestResource.class);
             }
-    
+
             @Override
             public Set<Object> getSingletons() {
                 return TestUtils.createSet(new ContextResolverTestWriter(),

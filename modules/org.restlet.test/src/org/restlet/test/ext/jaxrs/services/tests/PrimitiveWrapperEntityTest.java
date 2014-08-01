@@ -61,12 +61,14 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
             @Override
             public Set<Object> getSingletons() {
                 return (Set) TestUtils.createSet(new IntegerEntityProvider(),
-                        new CharacterEntityProvider(), new BooleanEntityProvider());
+                        new CharacterEntityProvider(),
+                        new BooleanEntityProvider());
             }
-    
+
             @Override
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(PrimitiveWrapperEntityResource.class);
+                return (Set) Collections
+                        .singleton(PrimitiveWrapperEntityResource.class);
             }
         };
         return appConfig;
@@ -76,8 +78,8 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         final Response response = put("intReturnInt", new StringRepresentation(
                 "47"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                response.getStatus());
     }
 
     /**
@@ -87,8 +89,8 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         final Response response = put("charReturnCharacter",
                 new StringRepresentation("x"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                response.getStatus());
     }
 
     /**
@@ -121,7 +123,6 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         assertEmptyEntity(response);
     }
-
 
     public void test5() throws Exception {
         Response response = put("byteArrayReturnByteArray",

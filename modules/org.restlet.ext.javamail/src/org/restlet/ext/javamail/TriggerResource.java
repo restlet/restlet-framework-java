@@ -331,8 +331,8 @@ public class TriggerResource extends ServerResource {
 
         // 2 - Parse the list of mails
         if (response.isEntityAvailable()) {
-            final DomRepresentation rep = new DomRepresentation(response
-                    .getEntity());
+            final DomRepresentation rep = new DomRepresentation(
+                    response.getEntity());
             for (final Node node : rep.getNodes("/emails/email/@href")) {
                 final String href = node.getNodeValue();
                 if (href.startsWith("/")) {

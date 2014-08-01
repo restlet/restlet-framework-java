@@ -79,12 +79,14 @@ public class SimpleTrain {
         }
     }
 
-    public SimpleTrain(@HeaderParam("p") String p) {
+    public SimpleTrain(@HeaderParam("p")
+    String p) {
         "".equals(p);
         // this is a valid constructor
     }
 
-    public SimpleTrain(String x, @HeaderParam("p") String p) {
+    public SimpleTrain(String x, @HeaderParam("p")
+    String p) {
         "".equals(p);
         "".equals(x);
         if (checkForValidConstructor) {
@@ -116,7 +118,8 @@ public class SimpleTrain {
     @GET
     @Path("decode/{string}")
     @Produces("text/plain")
-    public String getTemplParamDecoded(@Context UriInfo uriInfo) {
+    public String getTemplParamDecoded(@Context
+    UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
@@ -129,7 +132,8 @@ public class SimpleTrain {
     @GET
     @Path("encode/{string}")
     @Produces("text/plain")
-    public String getTemplParamEncoded(@Context UriInfo uriInfo) {
+    public String getTemplParamEncoded(@Context
+    UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";

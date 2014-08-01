@@ -90,10 +90,11 @@ public class HttpHeaderTest extends JaxRsTestCase {
                 new Preference<MediaType>(MediaType.TEXT_XML, 0.2f));
         response = get("accMediaTypes", clientInfo);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("[" + MediaType.TEXT_HTML.toString() + ", "
-                + MediaType.TEXT_PLAIN.toString() + ", "
-                + MediaType.TEXT_XML.toString() + "]", response.getEntity()
-                .getText());
+        assertEquals(
+                "[" + MediaType.TEXT_HTML.toString() + ", "
+                        + MediaType.TEXT_PLAIN.toString() + ", "
+                        + MediaType.TEXT_XML.toString() + "]", response
+                        .getEntity().getText());
     }
 
     public void testCookies() throws IOException {

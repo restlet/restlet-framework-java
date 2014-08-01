@@ -33,7 +33,6 @@
 
 package org.restlet.engine.header;
 
-
 /**
  * Constants related to the HTTP protocol.
  * 

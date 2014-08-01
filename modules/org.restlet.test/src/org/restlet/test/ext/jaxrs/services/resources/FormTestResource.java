@@ -82,8 +82,9 @@ public class FormTestResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
-    public Object paramOnly(@FormParam("a") String a,
-            @FormParam("c") String c) {
+    public Object paramOnly(@FormParam("a")
+    String a, @FormParam("c")
+    String c) {
         String result = "a -> " + a + "\n";
         if (c != null) {
             result += "c -> " + c + "\n";
@@ -96,7 +97,8 @@ public class FormTestResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Object formAndParam(final MultivaluedMap<String, String> form,
-            @FormParam("a") final String a) {
+            @FormParam("a")
+            final String a) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException {
                 out.write("a -> ".getBytes());
@@ -120,8 +122,8 @@ public class FormTestResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
-    public Object paramAndForm(@FormParam("a") final String a,
-            final MultivaluedMap<String, String> form) {
+    public Object paramAndForm(@FormParam("a")
+    final String a, final MultivaluedMap<String, String> form) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException {
                 out.write("a -> ".getBytes());
@@ -140,15 +142,16 @@ public class FormTestResource {
             }
         };
     }
-    
+
     @Path("checkUnmodifiable")
     @POST
     @Produces("text/plain")
-    public Object checkUnmodifiable(@FormParam("a") List<String> as) {
+    public Object checkUnmodifiable(@FormParam("a")
+    List<String> as) {
         try {
             as.clear();
-            throw new WebApplicationException(Response.serverError().entity(
-                    "the List must be unmodifiable").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("the List must be unmodifiable").build());
         } catch (UnsupportedOperationException uoe) {
             return null;
         }

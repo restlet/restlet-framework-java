@@ -58,7 +58,9 @@ import org.restlet.engine.io.IoUtils;
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object,
+     *      java.lang.Class, java.lang.reflect.Type,
+     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
     @Override
     public long getSize(DataSource t, Class<?> type, Type genericType,

@@ -51,5 +51,5 @@ public class Issue971Resource {
     public Issue971Object getIssue971() {
         return new Issue971Object("issue 971 description");
     }
-    
+
 }

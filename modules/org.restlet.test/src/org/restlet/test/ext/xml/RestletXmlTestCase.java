@@ -103,7 +103,7 @@ public class RestletXmlTestCase extends RestletTestCase {
     @Override
     @Before
     protected void setUp() throws Exception {
-        super.setUp();        
+        super.setUp();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);

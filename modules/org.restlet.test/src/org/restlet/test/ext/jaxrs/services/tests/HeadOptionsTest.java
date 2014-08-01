@@ -63,7 +63,8 @@ public class HeadOptionsTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(HeadOptionsTestService.class);
+                return (Set) Collections
+                        .singleton(HeadOptionsTestService.class);
             }
         };
     }

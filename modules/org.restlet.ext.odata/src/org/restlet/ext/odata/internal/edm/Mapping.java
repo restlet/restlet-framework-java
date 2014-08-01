@@ -173,8 +173,8 @@ public class Mapping {
      * @return The he name of the attribute that stores the value to set.
      */
     public String getValueNodePath() {
-        return (isAttributeValue()) ? valuePath.substring(0, valuePath
-                .lastIndexOf("/")) : valuePath;
+        return (isAttributeValue()) ? valuePath.substring(0,
+                valuePath.lastIndexOf("/")) : valuePath;
     }
 
     /**

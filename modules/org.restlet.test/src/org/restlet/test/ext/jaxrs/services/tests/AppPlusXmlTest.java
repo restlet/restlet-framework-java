@@ -66,7 +66,7 @@ public class AppPlusXmlTest extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-			@SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(AppPlusXmlResource.class);
             }

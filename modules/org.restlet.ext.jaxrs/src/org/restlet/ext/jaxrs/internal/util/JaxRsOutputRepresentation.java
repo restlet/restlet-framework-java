@@ -91,8 +91,9 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
     public JaxRsOutputRepresentation(T object, Type genericType,
             MediaType mediaType, Annotation[] annotations,
             MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
-        super(mediaType, mbw.getSize(object, (object != null ? object
-                .getClass() : null), genericType, annotations, mediaType));
+        super(mediaType, mbw.getSize(object,
+                (object != null ? object.getClass() : null), genericType,
+                annotations, mediaType));
         if (!mediaType.isConcrete()) {
             throw new IllegalArgumentException(mediaType + " is not concrete");
         }

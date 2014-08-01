@@ -122,8 +122,7 @@ public class NioUtils {
     public static void copy(ReadableByteChannel readableChannel,
             OutputStream outputStream) throws IOException {
         if ((readableChannel != null) && (outputStream != null)) {
-            IoUtils.copy(new ChannelInputStream(readableChannel),
-                    outputStream);
+            IoUtils.copy(new ChannelInputStream(readableChannel), outputStream);
         }
     }
 

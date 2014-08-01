@@ -57,14 +57,14 @@ public class InputStreamReader extends Reader {
     public InputStreamReader(InputStream stream) {
         this(stream.getText());
     }
-    
+
     /**
      * Constructor.
      * 
      * @param stream
      *            The source text to read.
-     * @param  charsetName
-     *         The name of a supported charset.
+     * @param charsetName
+     *            The name of a supported charset.
      */
     public InputStreamReader(InputStream stream, String charsetName) {
         this(stream.getText());
@@ -92,7 +92,7 @@ public class InputStreamReader extends Reader {
      * @return The next character or -1 if end of text is reached.
      */
     @Override
-    public int read() throws IOException  {
+    public int read() throws IOException {
         return (this.position == this.text.length()) ? -1 : this.text
                 .charAt(this.position++);
     }

@@ -60,10 +60,11 @@ public class OwnProviderTest extends JaxRsTestCase {
             public Set<Object> getSingletons() {
                 return (Set) TestUtils.createSet(new TextCrazyPersonProvider());
             }
-    
+
             @Override
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(OwnProviderTestService.class);
+                return (Set) Collections
+                        .singleton(OwnProviderTestService.class);
             }
         };
         return appConfig;

@@ -69,7 +69,7 @@ public class ExcMapperTest extends JaxRsTestCase {
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(ExcMapperTestResource.class);
             }
-    
+
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Object> getSingletons() {

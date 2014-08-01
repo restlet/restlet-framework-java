@@ -87,12 +87,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws IllegalArgumentException
-     *                 if the annotated method is null
+     *             if the annotated method is null
      * @throws MissingAnnotationException
      * @throws IllegalMethodParamTypeException
-     *                 if one of the parameters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;
-     *                 {@link Context}.
+     *             if one of the parameters annotated with &#64;{@link Context}
+     *             has a type that must not be annotated with &#64;
+     *             {@link Context}.
      * @throws IllegalPathParamTypeException
      */
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,

@@ -81,7 +81,7 @@ public class HttpServerHelper extends NetServerHelper {
         setEphemeralPort(server.getAddress().getPort());
         super.start();
     }
-    
+
     @Override
     public synchronized void stop() throws Exception {
         super.stop();

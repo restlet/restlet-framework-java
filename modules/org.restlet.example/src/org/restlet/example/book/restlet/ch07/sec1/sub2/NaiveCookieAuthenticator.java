@@ -58,12 +58,13 @@ import org.restlet.security.Verifier;
  */
 public class NaiveCookieAuthenticator extends ChallengeAuthenticator {
 
-    public NaiveCookieAuthenticator(Context context, boolean optional, String realm) {
+    public NaiveCookieAuthenticator(Context context, boolean optional,
+            String realm) {
         super(context, optional, ChallengeScheme.HTTP_COOKIE, realm);
     }
 
-    public NaiveCookieAuthenticator(Context context, boolean optional, String realm,
-            Verifier verifier) {
+    public NaiveCookieAuthenticator(Context context, boolean optional,
+            String realm, Verifier verifier) {
         super(context, optional, ChallengeScheme.HTTP_COOKIE, realm, verifier);
     }
 

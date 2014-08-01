@@ -105,8 +105,8 @@ public class S3Bucket extends S3Authorized {
 
         // Make the request and parse the document.
         final Response response = authorizedGet(uri.toString());
-        final DomRepresentation document = new DomRepresentation(response
-                .getEntity());
+        final DomRepresentation document = new DomRepresentation(
+                response.getEntity());
 
         // Update the truncated flag
         this.truncated = document.getNodes("//IsTruncated").get(0)

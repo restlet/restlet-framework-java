@@ -36,7 +36,8 @@ public class Main extends Application {
         private final String path;
 
         @Inject
-        DefaultResource(@Named(PATH_QUALIFIER) String path) {
+        DefaultResource(@Named(PATH_QUALIFIER)
+        String path) {
             this.path = path;
         }
 
@@ -54,7 +55,8 @@ public class Main extends Application {
         private final String msg;
 
         @Inject
-        public HelloServerResource(@Named(MSG_QUALIFIER) String msg) {
+        public HelloServerResource(@Named(MSG_QUALIFIER)
+        String msg) {
             this.msg = msg;
         }
 

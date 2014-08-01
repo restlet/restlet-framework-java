@@ -48,15 +48,15 @@ public class ListUtils {
      * not available in GWT 1.5 and was removed on purpose.
      * 
      * @param list
-     *                The source List
+     *            The source List
      * @param fromIndex
-     *                Starting index in the source List
+     *            Starting index in the source List
      * @param toIndex
-     *                Ending index in the source List
+     *            Ending index in the source List
      * @throws IndexOutOfBoundsException
-     *                 Call exceeds the bounds of the source List
+     *             Call exceeds the bounds of the source List
      * @throws IllegalArgumentException
-     *                 fromIndex and toIndex are not in sequence
+     *             fromIndex and toIndex are not in sequence
      * @return a copy of the selected range
      */
     public static <T> List<T> copySubList(List<T> list, int fromIndex,

@@ -59,7 +59,7 @@ public class ResponseImpl extends Response {
      * Creates a new Response Instance.
      * 
      * @param status
-     *                the status code for the new response.
+     *            the status code for the new response.
      */
     public ResponseImpl(int status) {
         this.status = status;

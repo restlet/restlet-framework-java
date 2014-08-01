@@ -64,10 +64,10 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
         request.setMethod(Method.GET);
         request.getClientInfo().setAgent("msie/1.1");
         request.setResourceRef(URL);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_XML));
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_XML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
 
         return request;
     }

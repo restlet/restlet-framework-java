@@ -184,8 +184,9 @@ public class ZipClientHelper extends LocalClientHelper {
                     }
                 } else {
                     // Return the file content
-                    output = entity.getRepresentation(metadataService
-                            .getDefaultMediaType(), getTimeToLive());
+                    output = entity.getRepresentation(
+                            metadataService.getDefaultMediaType(),
+                            getTimeToLive());
                     output.setLocationRef(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());
@@ -269,9 +270,8 @@ public class ZipClientHelper extends LocalClientHelper {
                 response.setStatus(Status.SUCCESS_CREATED);
             } else {
                 if (wrongReplace) {
-                    response
-                            .setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                                    "Directory cannot be replaced by a file or file by a directory.");
+                    response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                            "Directory cannot be replaced by a file or file by a directory.");
                 } else {
                     File writeTo = null;
                     ZipFile zipFile = null;
@@ -290,8 +290,9 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                IoUtils.copy(new BufferedInputStream(zipFile
-                                        .getInputStream(e)), zipOut);
+                                IoUtils.copy(
+                                        new BufferedInputStream(zipFile
+                                                .getInputStream(e)), zipOut);
                                 zipOut.closeEntry();
                             }
                         }

@@ -60,7 +60,7 @@ public class FirstResourceApplication extends WadlApplication {
         // Defines a route for the resource "list of items"
         router.attach("/items", ItemsResource.class);
         // Defines a route for the resource "item"
-        //router.attach("/items/{itemName}", ItemResource.class);
+        // router.attach("/items/{itemName}", ItemResource.class);
 
         return router;
     }

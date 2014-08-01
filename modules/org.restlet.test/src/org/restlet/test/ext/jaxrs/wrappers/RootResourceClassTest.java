@@ -66,8 +66,8 @@ public class RootResourceClassTest extends TestCase {
 
     public void testEncodePath() throws Exception {
         final ResourceClasses resourceClasses = new ResourceClasses(
-                new ThreadLocalizedContext(), null, null, Engine
-                        .getAnonymousLogger());
+                new ThreadLocalizedContext(), null, null,
+                Engine.getAnonymousLogger());
         try {
             getPerRequestRootClassWrapper(resourceClasses,
                     IllegalPathService1.class);

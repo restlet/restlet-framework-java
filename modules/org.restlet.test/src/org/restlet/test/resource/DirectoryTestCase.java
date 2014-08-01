@@ -212,7 +212,7 @@ public class DirectoryTestCase extends RestletTestCase {
         this.testDir.mkdirs();
         application.setTestDirectory(testDir);
         testUserPreferences(application, application.getDirectory());
-        
+
         IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests2" + new Date().getTime());

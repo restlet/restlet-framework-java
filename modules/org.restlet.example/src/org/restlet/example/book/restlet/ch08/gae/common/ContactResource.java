@@ -40,7 +40,7 @@ import org.restlet.resource.Get;
  */
 public interface ContactResource {
 
-	@Get
-	public ContactRepresentation retrieve();
+    @Get
+    public ContactRepresentation retrieve();
 
 }

@@ -50,9 +50,9 @@ import org.restlet.test.ext.jaxrs.services.tests.RecursiveTest;
 public class RecursiveTestService {
 
     private final RecursiveTestService parent;
-    
+
     public RecursiveTestService() {
-       this.parent = null; 
+        this.parent = null;
     }
 
     public RecursiveTestService(RecursiveTestService parent) {

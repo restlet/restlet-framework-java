@@ -6,9 +6,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Customer {
 
     private String firstName;
-    
+
     private String lastName;
-    
+
     private List<Invoice> invoices = new CopyOnWriteArrayList<Invoice>();
 
     public String getFirstName() {
@@ -30,5 +30,5 @@ public class Customer {
     public List<Invoice> getInvoices() {
         return invoices;
     }
-    
+
 }

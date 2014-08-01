@@ -120,8 +120,8 @@ public class ExceptionMappersTest extends TestCase {
         super.setUp();
         final IllegalArgExcMapper illegalArgExcMapper = new IllegalArgExcMapper();
         illegalArgExcMapper.httpHeaders = new TestHttpHeaders();
-        this.exceptionMappers = new JaxRsProviders(null, null, null, Engine
-                .getAnonymousLogger());
+        this.exceptionMappers = new JaxRsProviders(null, null, null,
+                Engine.getAnonymousLogger());
         this.exceptionMappers.addSingleton(illegalArgExcMapper, false);
     }
 
