@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.2.2 (08/05/2014)
     - Bug fixed
       - Fixed generation of Android edition.
