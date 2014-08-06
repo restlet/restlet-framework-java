@@ -33,17 +33,23 @@
 
 package org.restlet.ext.raml.internal;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.raml.model.Action;
+import org.raml.model.ActionType;
 import org.raml.model.Raml;
-import org.raml.parser.loader.ClassPathResourceLoader;
-import org.raml.parser.rule.ValidationResult;
+import org.raml.model.parameter.UriParameter;
 import org.raml.parser.visitor.RamlDocumentBuilder;
-import org.raml.parser.visitor.RamlValidationService;
 import org.restlet.ext.raml.internal.model.Contract;
 import org.restlet.ext.raml.internal.model.Definition;
+import org.restlet.ext.raml.internal.model.Operation;
+import org.restlet.ext.raml.internal.model.PathVariable;
 import org.restlet.ext.raml.internal.model.Representation;
+import org.restlet.ext.raml.internal.model.Resource;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Raml
@@ -57,9 +63,6 @@ public abstract class RamlConverter {
 	protected static Logger LOGGER = Logger.getLogger(RamlConverter.class
 			.getName());
 
-	/** Supported version of Raml. */
-	private static final String RAML_VERSION = "0.8";
-
 	/**
 	 * Converts a Raml documentation to a Restlet definition.
 	 * 
@@ -70,8 +73,114 @@ public abstract class RamlConverter {
 	 */
 	public static Definition convert(Raml raml) throws RamlConversionException {
 		Definition def = new Definition();
-		validate(raml);
+		if (raml.getVersion() != null) {
+			def.setVersion(raml.getVersion().substring(1));
+			def.setEndpoint(raml.getBaseUri().replace("{version}",
+					raml.getVersion()));
+		} else {
+			def.setEndpoint(raml.getBaseUri());
+		}
+		def.setContract(new Contract());
+		def.getContract().setName(raml.getTitle());
+		// TODO String defaultMediaType = raml.getMediaType();
+		List<PathVariable> rootPathVariables = new ArrayList<PathVariable>();
+		for (Entry<String, UriParameter> entry : raml.getBaseUriParameters()
+				.entrySet()) {
+			rootPathVariables.add(getPathVariable(entry.getKey(),
+					entry.getValue()));
+		}
+
+		for (Map<String, String> schema : raml.getSchemas()) {
+			for (Entry<String, String> entry : schema.entrySet()) {
+				Representation representation = new Representation();
+				representation.setName(entry.getKey());
+				representation.setDescription(entry.getValue());
+				// TODO get the schema !!!
+				def.getContract().getRepresentations().add(representation);
+			}
+		}
+
+		// Resources
+		for (Entry<String, org.raml.model.Resource> entry : raml.getResources()
+				.entrySet()) {
+			org.raml.model.Resource resource = entry.getValue();
+			def.getContract()
+					.getResources()
+					.addAll(getResource(processResourceName(resource.getUri()),
+							resource, rootPathVariables));
+		}
+
 		return def;
+	}
+
+	private static List<Resource> getResource(String resourceName,
+			org.raml.model.Resource resource,
+			List<PathVariable> rootPathVariables) {
+		List<Resource> rwadResources = new ArrayList<Resource>();
+
+		// Create one resource
+		Resource rwadResource = new Resource();
+		rwadResource.setDescription(resource.getDescription());
+		rwadResource.setName(resourceName);
+		rwadResource.setResourcePath(resource.getUri());
+
+		// Path Variables
+		rwadResource.setPathVariables(getPathVariables(resource));
+		rwadResource.getPathVariables().addAll(rootPathVariables);
+
+		// Operations
+		for (Entry<ActionType, Action> entry : resource.getActions().entrySet()) {
+			Action action = entry.getValue();
+			Operation operation = new Operation();
+			operation.setDescription(action.getDescription());
+			operation.setMethod(entry.getKey().name().toString());
+		}
+
+		rwadResources.add(rwadResource);
+
+		// Nested resources
+		for (Entry<String, org.raml.model.Resource> entry : resource
+				.getResources().entrySet()) {
+			rwadResources
+					.addAll(getResource(processResourceName(entry.getValue()
+							.getUri()), entry.getValue(), rootPathVariables));
+		}
+
+		return rwadResources;
+	}
+
+	private static String processResourceName(String uri) {
+		String processedUri = "";
+		String[] split = uri.replaceAll("\\{", "").replaceAll("\\}", "").split("/");
+		for (String str : split) {
+			processedUri.concat(RamlUtils.capFirst(str));
+		}
+		return processedUri;
+	}
+
+	private static PathVariable getPathVariable(String paramName,
+			UriParameter uriParameter) {
+		PathVariable pathVariable = new PathVariable();
+		pathVariable.setName(paramName);
+		pathVariable.setDescription(uriParameter.getDescription());
+		pathVariable.setType(uriParameter.getType().toString().toLowerCase());
+		pathVariable.setArray(uriParameter.isRepeat());
+		return pathVariable;
+	}
+
+	private static List<PathVariable> getPathVariables(
+			org.raml.model.Resource resource) {
+		List<PathVariable> pathVariables = new ArrayList<PathVariable>();
+		for (Entry<String, UriParameter> entry : resource.getUriParameters()
+				.entrySet()) {
+			pathVariables
+					.add(getPathVariable(entry.getKey(), entry.getValue()));
+		}
+		if (resource.getParentResource() != null) {
+			pathVariables
+					.addAll(getPathVariables(resource.getParentResource()));
+		}
+		return pathVariables;
 	}
 
 	/**
@@ -84,7 +193,10 @@ public abstract class RamlConverter {
 	 */
 	public static Raml getRaml(Definition definition) {
 		Raml raml = new Raml();
-		raml = new RamlDocumentBuilder().build("file:///home/cyp/Bureau/hello_world2.raml");
+		raml = new RamlDocumentBuilder()
+				.build("file:///home/cyp/Bureau/hello_world.raml");
+		org.raml.model.Resource resource = raml.getResource("/products");
+		System.out.println(resource.getActions().get(ActionType.POST));
 		return raml;
 	}
 
@@ -131,38 +243,6 @@ public abstract class RamlConverter {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Returns the primitive types as Raml expects them
-	 * 
-	 * @param type
-	 *            The type name to Ramlize
-	 * @return The Ramlized type
-	 */
-	private static String toRamlType(String type) {
-		if ("Integer".equals(type)) {
-			return "int";
-		} else if ("String".equals(type)) {
-			return "string";
-		} else if ("Boolean".equals(type)) {
-			return "boolean";
-		} else {
-			return type;
-		}
-	}
-
-	/**
-	 * Indicates if the given Raml definition is valid according to specs.
-	 * 
-	 * @param raml
-	 *            The Raml definition.
-	 * @throws RamlConversionException
-	 */
-	private static List<ValidationResult> validate(Raml raml)
-			throws RamlConversionException {
-		return RamlValidationService.createDefault().validate(
-				new ClassPathResourceLoader().fetchResource("raml"));
 	}
 
 	/**
