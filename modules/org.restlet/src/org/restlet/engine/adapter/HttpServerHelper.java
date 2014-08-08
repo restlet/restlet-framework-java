@@ -153,9 +153,6 @@ public class HttpServerHelper extends ServerHelper {
             getAdapter().commit(response);
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
-                    "Error while handling an HTTP server call: ",
-                    e.getMessage());
-            getLogger().log(Level.INFO,
                     "Error while handling an HTTP server call", e);
         } finally {
             Engine.clearThreadLocalVariables();

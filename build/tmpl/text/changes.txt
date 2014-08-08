@@ -30,11 +30,13 @@ Changes log
         to set the proper code.
  
     - Bugs fixed
-      - Fixed potential NPE in odata extension when schema ComplexType in a 
-        document does not declare a schema attribute (issue #932).
       - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
       - ServerResource#doCatch() method wasn't invoking StatusService to set the error
         representation if empty.
+      - Fixed potential NPE in odata extension when schema ComplexType in a 
+        document does not declare a schema attribute (issue #932).
+      - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
+        Issue #931. Reported and contributed by Tal Liron.
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features
