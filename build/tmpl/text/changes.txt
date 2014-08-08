@@ -8,7 +8,8 @@ Changes log
       - 
 
     - Enhancements
-      - Added targetRef support to templates.
+      - Added targetRef support to templates, allow reference variables to 
+        resolve to the full reference (issue #935).
         Contributed by Jeremy Gustie.
       - Updated agent.properties file with recent Opera user agent signature.
       - Added Resource#toRepresentation(Object, MediaType) convenience method.

@@ -102,6 +102,8 @@ public class CallResolver extends Resolver<Object> {
                 result = reference.getQuery();
             } else if (partName.equals("r")) {
                 result = reference.getRemainingPart();
+            } else if (partName.isEmpty()) {
+                result = reference.toString(false, false);
             }
         }
 
