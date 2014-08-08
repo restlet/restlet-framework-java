@@ -99,12 +99,17 @@ public class LogFilter extends Filter {
      */
     @Override
     protected void afterHandle(Request request, Response response) {
-        if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
-            long startTime = (Long) request.getAttributes().get(
-                    "org.restlet.startTime");
-            int duration = (int) (System.currentTimeMillis() - startTime);
-            this.logLogger.log(Level.INFO,
-                    this.logService.getResponseLogMessage(response, duration));
+        try {
+            if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
+                long startTime = (Long) request.getAttributes().get(
+                        "org.restlet.startTime");
+                int duration = (int) (System.currentTimeMillis() - startTime);
+                this.logLogger.log(Level.INFO,
+                        this.logService.getResponseLogMessage(response, duration));
+            }
+        } catch (Throwable e) {
+            // Error while logging the call, cf issue #931
+            getLogger().log(Level.SEVERE, "Cannot log call", e);
         }
     }
 

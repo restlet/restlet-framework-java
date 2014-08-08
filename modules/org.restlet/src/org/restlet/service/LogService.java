@@ -33,6 +33,7 @@
 
 package org.restlet.service;
 
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 import org.restlet.Context;
@@ -41,6 +42,7 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.log.LogFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -237,11 +239,18 @@ public class LogService extends Service {
             // Append the received size
             sb.append('\t');
 
-            if (request.getEntity() == null) {
-                sb.append('0');
-            } else {
-                sb.append((request.getEntity().getSize() == -1) ? "-" : Long
-                        .toString(request.getEntity().getSize()));
+            try {
+                if (request.getEntity() == null) {
+                    sb.append('0');
+                } else {
+                    sb.append((request.getEntity().getSize() == -1) ? "-"
+                            : Long.toString(request.getEntity().getSize()));
+                }
+            } catch (Throwable t) {
+                // Error while getting the request's entity, cf issue #931
+                Engine.getLogger(LogService.class).log(Level.SEVERE,
+                        "Cannot retrieve size of request's entity", t);
+                sb.append("-");
             }
 
             // Append the duration
