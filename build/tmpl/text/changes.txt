@@ -4,19 +4,23 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - Fixed potential NPE in odata extension when schema ComplexType in a 
+        document does not declare a schema attribute (issue #932).
+
     - Enhancements
       - Added targetRef support to templates, allow reference variables to 
         resolve to the full reference (issue #935).
         Contributed by Jeremy Gustie.
 
 - 2.2.2 (08/05/2014)
-    - Bug fixed
+    - Bugs fixed
       - Fixed generation of Android edition.
     - Enhancements
       - Updated agent.properties file with recent Opera user agent signature.
 
 - 2.2.1 (05/06/2014)
-    - Bug fixed
+    - Bugs fixed
       - Fixed missing internal FTP client connector registration.
       - Fixed missing internal HTTPS server isn't properly registered.
         Reported by Roy Olsen.
@@ -36,7 +40,7 @@ Changes log
         Reported and contributed by Tim Peierls.
       - Reverted Swagger extension to version 2.9,
         supporting only JAX-RS API. Issue #827.
-    - Bug fixed
+    - Bugs fixed
       - Fixed user agent product parsing. Issues #878 and 879.
         Contributed by Jeremy Gustie.
       - Fixed usage of client connector in GAE edition, issue #876.
@@ -48,7 +52,7 @@ Changes log
 - 2.2 Release Candidate 4 (03/18/2014)
     - Enhancements
       - Updated Swagger extension based on Swagger 2.10 version, issue #827.
-    - Bug fixed
+    - Bugs fixed
       - ServerResource doesn't throw away empty response entities anymore, issue #848.
         Reported by Arjohn Kampman and Marcel Hellkamp.
       - DefaultSslContextFactory doesn't handle
@@ -67,7 +71,7 @@ Changes log
       - Add JSON media types. Reported and contributed by Jack Jones.
       - Moved all the remaining NIO logic from previous internal HTTP connector to the
         org.restlet.ext.nio. This will help reduce the org.restlet.jar file size.
-    - Bug fixed
+    - Bugs fixed
       - Issue #818: Call.isBroken does not detect Tomcat ClientAbortException.
         Reported and contributed by Jeremy Gustie.
       - Issue #847: DELETE responses send 200 status without any entity, whereas it 
@@ -115,7 +119,7 @@ Changes log
       - Deprecated MediaType#APPLICATION_RDF_TURTLE and added TEXT_TURTLE constant.
         Suggested by Peter Ansell. Issue #730.
 
-    - Bug fixed
+    - Bugs fixed
       - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
         Reported by Ioan Lupu.
       - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
@@ -165,12 +169,12 @@ Changes log
       - Added client support for HTTP OAuth MAC authentication.
       - Added support of nowrap "deflater" (support of GZIP compatible compression), issue #786.
         Reported and contributed by Tal Liron.
-    - Bug fixed
+    - Bugs fixed
       - Fixed issue #789, declaration of gson's maven artifact identifier.
         Reported by mafuba.
 
 - 2.2 Milestone 5 (09/07/2013)
-    - Bug fixed
+    - Bugs fixed
        - Fixed issues #774, #778 - Removed default support of JavaBeans XML-deserialization, 
          binary-deserialization on ObjectRepresentation class.
          Reported by David Jorm.
@@ -180,7 +184,7 @@ Changes log
        - Added GSON extension (#586). Contributed by Neal Mi.
        - OAuth extension has been upgraded to support final OAuth 2.0 specification.
          Contributed by Shotaro Uchida.
-    - Bug fixed
+    - Bugs fixed
        - Fixed issue #739 - Copy extension headers from JAX-RS API to Restlet response.
          Reported by Mark Kharitonov.
        - Fixed issue #774 - Removed default support of JavaBeans XML-serialization.
@@ -189,7 +193,7 @@ Changes log
          Reported by David Jorm.
 
 - 2.2 Milestone 3 (03/07/2013)
-    - Bug fixed
+    - Bugs fixed
        - Fixed issue #737 - ExecutorService not set when calling WriterRepresentation#write.
          Reported by Tim Peierls.
        - Fixed issue #734 - Implementations of XmlHttpRequest in IE versions prior to IE10 turn 
@@ -245,7 +249,7 @@ Changes log
        - Added Context.executorService property to be able to invoke the parent task
          service without actually being able to control it (start/stop).
        - Added JaxRsApplication(Context, Application) constructor.
-    - Bug fixed
+    - Bugs fixed
        - The same ones as in version 2.1.2.
     - Misc
        - Updated the links to the user guide in the wiki.
@@ -281,7 +285,7 @@ Changes log
          draft for "application/json-patch" media type.
        - Added ChallengeScheme.HTTP_OAUTH_BEARER and HTTP_OAUTH_MAC constants
          to support the final OAuth 2.0 RFC.
-    - Bug fixed
+    - Bugs fixed
        - The same ones as in version 2.1.1.
     - Misc
        - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
