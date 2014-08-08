@@ -8,6 +8,8 @@ Changes log
       - 
 
     - Enhancements
+      - Added targetRef support to templates.
+        Contributed by Jeremy Gustie.
       - Updated agent.properties file with recent Opera user agent signature.
       - Added Resource#toRepresentation(Object, MediaType) convenience method.
       - Added ConverterService#toRepresentation(Object, MediaType) convenience method.
