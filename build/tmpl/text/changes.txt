@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Added targetRef support to templates.
+        Contributed by Jeremy Gustie.
 
 - 2.2.2 (08/05/2014)
     - Bug fixed

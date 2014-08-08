@@ -246,6 +246,11 @@ import org.restlet.engine.util.MapResolver;
  * <td>Reference</td>
  * </tr>
  * <tr>
+ * <td>targetRef</td>
+ * <td>t*</td>
+ * <td>Reference</td>
+ * </tr>
+ * <tr>
  * <td>relativePart</td>
  * <td>e</td>
  * <td>String</td>
