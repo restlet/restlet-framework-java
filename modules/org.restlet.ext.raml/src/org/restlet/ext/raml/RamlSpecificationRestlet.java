@@ -189,28 +189,11 @@ public class RamlSpecificationRestlet extends Restlet {
 		return ramlVersion;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(Request request, Response response) {
 		if (!Method.GET.equals(request.getMethod())) {
 			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 		}
-
-		// // CORS support
-		// Series<Header> headers = new Series<Header>(Header.class);
-		// headers.set(
-		// "Access-Control-Expose-Headers",
-		// "Authorization, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-OAuth-Scopes, X-Accepted-OAuth-Scopes");
-		// headers.set("Access-Control-Allow-Headers", "Authorization,");
-		// headers.set("Access-Control-Allow-Credentials", "true");
-		// headers.set("Access-Control-Allow-Methods", "GET");
-		// Series<Header> reqHeaders = (Series<Header>) request.getAttributes()
-		// .get(HeaderConstants.ATTRIBUTE_HEADERS);
-		// String requestOrigin = reqHeaders.getFirstValue("Origin", "*");
-		// headers.set("Access-Control-Allow-Origin", requestOrigin);
-		// response.getAttributes()
-		// .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
-
 		response.setEntity(getRaml());
 	}
 

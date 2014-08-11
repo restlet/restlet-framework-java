@@ -34,6 +34,7 @@
 package org.restlet.ext.raml.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,15 +42,24 @@ import java.util.logging.Logger;
 
 import org.raml.model.Action;
 import org.raml.model.ActionType;
+import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.parameter.UriParameter;
-import org.raml.parser.visitor.RamlDocumentBuilder;
+import org.restlet.data.Status;
 import org.restlet.ext.raml.internal.model.Contract;
 import org.restlet.ext.raml.internal.model.Definition;
 import org.restlet.ext.raml.internal.model.Operation;
 import org.restlet.ext.raml.internal.model.PathVariable;
+import org.restlet.ext.raml.internal.model.Property;
+import org.restlet.ext.raml.internal.model.QueryParameter;
 import org.restlet.ext.raml.internal.model.Representation;
 import org.restlet.ext.raml.internal.model.Resource;
+import org.restlet.ext.raml.internal.model.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
+import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Raml
@@ -106,13 +116,25 @@ public abstract class RamlConverter {
 			org.raml.model.Resource resource = entry.getValue();
 			def.getContract()
 					.getResources()
-					.addAll(getResource(processResourceName(resource.getUri()),
+					.addAll(getResource(
+							RamlUtils.processResourceName(resource.getUri()),
 							resource, rootPathVariables));
 		}
 
 		return def;
 	}
 
+	/**
+	 * Returns the list of Resources nested under a given Resource
+	 * 
+	 * @param resourceName
+	 *            The name of the generated resource, extracted from its path.
+	 * @param resource
+	 *            The RAML Resource from which the list is extracted.
+	 * @param rootPathVariables
+	 *            The path variables contained in the base URI.
+	 * @return The list of Resources nested under resource
+	 */
 	private static List<Resource> getResource(String resourceName,
 			org.raml.model.Resource resource,
 			List<PathVariable> rootPathVariables) {
@@ -141,21 +163,12 @@ public abstract class RamlConverter {
 		// Nested resources
 		for (Entry<String, org.raml.model.Resource> entry : resource
 				.getResources().entrySet()) {
-			rwadResources
-					.addAll(getResource(processResourceName(entry.getValue()
-							.getUri()), entry.getValue(), rootPathVariables));
+			rwadResources.addAll(getResource(
+					RamlUtils.processResourceName(entry.getValue().getUri()),
+					entry.getValue(), rootPathVariables));
 		}
 
 		return rwadResources;
-	}
-
-	private static String processResourceName(String uri) {
-		String processedUri = "";
-		String[] split = uri.replaceAll("\\{", "").replaceAll("\\}", "").split("/");
-		for (String str : split) {
-			processedUri.concat(RamlUtils.capFirst(str));
-		}
-		return processedUri;
 	}
 
 	private static PathVariable getPathVariable(String paramName,
@@ -193,56 +206,214 @@ public abstract class RamlConverter {
 	 */
 	public static Raml getRaml(Definition definition) {
 		Raml raml = new Raml();
-		raml = new RamlDocumentBuilder()
-				.build("file:///home/cyp/Bureau/hello_world.raml");
-		org.raml.model.Resource resource = raml.getResource("/products");
-		System.out.println(resource.getActions().get(ActionType.POST));
+		ObjectMapper m = new ObjectMapper();
+		// TODO see how to translate it (1.0.0 to v1 ???)
+		if (definition.getVersion() != null) {
+			raml.setVersion("v" + definition.getVersion());
+		}
+		raml.setBaseUri(definition.getEndpoint() == null ? "http://introspected.com"
+				: definition.getEndpoint());
+		// raml.setBaseUriParameters(new HashMap<String, UriParameter>());
+		// raml.getBaseUriParameters().put("version", new
+		// UriParameter("version"));
+		raml.setTitle(definition.getContract().getName());
+
+		raml.setResources(new HashMap<String, org.raml.model.Resource>());
+		org.raml.model.Resource ramlResource;
+		org.raml.model.Resource parentResource;
+		List<String> paths = new ArrayList<String>();
+		for (Resource resource : definition.getContract().getResources()) {
+			ramlResource = new org.raml.model.Resource();
+			if (resource.getName() != null) {
+				ramlResource.setDisplayName(resource.getName());
+			} else {
+				ramlResource.setDisplayName(RamlUtils
+						.processResourceName(resource.getResourcePath()));
+			}
+			ramlResource.setDescription(resource.getDescription());
+
+			// Parent resource
+			parentResource = RamlUtils.getParentResource(paths,
+					resource.getResourcePath(), raml);
+			if (parentResource != null) {
+				ramlResource.setParentResource(parentResource);
+				ramlResource.setParentUri(parentResource.getParentUri()
+						+ parentResource.getRelativeUri());
+				ramlResource
+						.setRelativeUri(RamlUtils.cutBasePath(
+								ramlResource.getParentUri(),
+								resource.getResourcePath()));
+				if (parentResource.getResources() == null) {
+					parentResource
+							.setResources(new HashMap<String, org.raml.model.Resource>());
+				}
+				parentResource.getResources().put(
+						ramlResource.getRelativeUri(), ramlResource);
+			} else {
+				ramlResource.setParentUri("");
+				ramlResource.setRelativeUri(resource.getResourcePath());
+			}
+
+			// Path variables
+			UriParameter uiParam = new UriParameter();
+			ramlResource.setUriParameters(new HashMap<String, UriParameter>());
+			for (PathVariable pathVariable : resource.getPathVariables()) {
+				uiParam.setDisplayName(pathVariable.getName());
+				uiParam.setDescription(pathVariable.getDescription());
+				uiParam.setRepeat(pathVariable.isArray());
+				uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
+				ramlResource.getUriParameters().put(pathVariable.getName(),
+						uiParam);
+			}
+
+			// Operations
+			Action action = new Action();
+			ramlResource.setActions(new HashMap<ActionType, Action>());
+			MimeType mimeType;
+			for (Operation operation : resource.getOperations()) {
+				action.setDescription(operation.getDescription());
+				action.setResource(ramlResource);
+
+				// In representation
+				mimeType = new MimeType();
+				if (operation.getInRepresentation() != null) {
+					mimeType.setType(operation.getInRepresentation()
+							.getRepresentation());
+					SimpleTypeSchema inRepresentationSchema = null;
+					if (RamlUtils.isPrimitiveType(operation
+							.getInRepresentation().getRepresentation())) {
+						Property inRepresentationPrimitive = new Property();
+						inRepresentationPrimitive.setName("");
+						inRepresentationPrimitive.setType(operation
+								.getInRepresentation().getRepresentation());
+						inRepresentationSchema = RamlUtils
+								.generatePrimitiveSchema(inRepresentationPrimitive);
+					} else {
+						inRepresentationSchema = new ObjectSchema();
+						inRepresentationSchema.set$ref(operation
+								.getInRepresentation().getRepresentation());
+					}
+					try {
+						mimeType.setSchema(m
+								.writeValueAsString(inRepresentationSchema));
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
+					action.setBody(new HashMap<String, MimeType>());
+					for (String mediaType : operation.getConsumes()) {
+						action.getBody().put(mediaType, mimeType);
+					}
+				}
+
+				// Query parameters
+				org.raml.model.parameter.QueryParameter ramlQueryParameter;
+				action.setQueryParameters(new HashMap<String, org.raml.model.parameter.QueryParameter>());
+				for (QueryParameter queryParameter : operation
+						.getQueryParameters()) {
+					ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
+					ramlQueryParameter.setDisplayName(queryParameter.getName());
+					ramlQueryParameter.setType(RamlUtils
+							.getParamType(queryParameter.getType()));
+					ramlQueryParameter.setDescription(queryParameter
+							.getDescription());
+					ramlQueryParameter.setRequired(queryParameter.isRequired());
+					// TODO when enumerations have been added in RWADef
+					// ramlQueryParameter.setEnumeration(queryParameter.getEnumeration());
+					ramlQueryParameter.setDefaultValue(queryParameter
+							.getDefaultValue());
+					ramlQueryParameter.setRepeat(queryParameter
+							.isAllowMultiple());
+					action.getQueryParameters().put(queryParameter.getName(),
+							ramlQueryParameter);
+				}
+
+				// Responses + out representation
+				org.raml.model.Response ramlResponse = new org.raml.model.Response();
+				action.setResponses(new HashMap<String, org.raml.model.Response>());
+				for (Response response : operation.getResponses()) {
+					ramlResponse.setDescription(response.getDescription());
+					ramlResponse.setBody(new HashMap<String, MimeType>());
+					mimeType.setType(response.getBody().getRepresentation());
+					if (Status.isSuccess(response.getCode())
+							&& operation.getOutRepresentation() != null
+							&& operation.getOutRepresentation()
+									.getRepresentation() != null) {
+						SimpleTypeSchema outRepresentationSchema = null;
+						if (RamlUtils.isPrimitiveType(operation
+								.getOutRepresentation().getRepresentation())) {
+							Property outRepresentationPrimitive = new Property();
+							outRepresentationPrimitive.setName("");
+							outRepresentationPrimitive
+									.setType(operation.getOutRepresentation()
+											.getRepresentation());
+							outRepresentationSchema = RamlUtils
+									.generatePrimitiveSchema(outRepresentationPrimitive);
+						} else {
+							outRepresentationSchema = new ObjectSchema();
+							outRepresentationSchema
+									.set$ref(operation.getOutRepresentation()
+											.getRepresentation());
+						}
+						try {
+							mimeType.setSchema(m
+									.writeValueAsString(outRepresentationSchema));
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+					}
+					for (String mediaType : operation.getProduces()) {
+						ramlResponse.getBody().put(mediaType, mimeType);
+					}
+					action.getResponses().put("" + response.getCode(),
+							ramlResponse);
+				}
+
+				ramlResource.getActions().put(
+						RamlUtils.getActionType(operation.getMethod()), action);
+			}
+			paths.add(resource.getResourcePath());
+
+			raml.getResources()
+					.put(ramlResource.getRelativeUri(), ramlResource);
+		}
+
+		// Representations
+		raml.setSchemas(new ArrayList<Map<String, String>>());
+		Map<String, String> schemas = new HashMap<String, String>();
+		raml.getSchemas().add(schemas);
+		for (Representation representation : definition.getContract()
+				.getRepresentations()) {
+			try {
+				schemas.put(representation.getName(), m
+						.writeValueAsString(RamlUtils
+								.generateSchema(representation)));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
 		return raml;
 	}
 
 	/**
-	 * Returns the representation given its name from the list of
-	 * representations of the given contract.
+	 * Returns the representation given its name from the given list of
+	 * representations.
 	 * 
-	 * @param contract
-	 *            The contract.
+	 * @param representations
+	 *            The list of representations.
 	 * @param name
 	 *            The name of the representation.
 	 * @return A representation.
 	 */
-	private static Representation getRepresentationByName(Contract contract,
-			String name) {
+	public static Representation getRepresentationByName(
+			List<Representation> representations, String name) {
 		if (name != null) {
-			for (Representation repr : contract.getRepresentations()) {
+			for (Representation repr : representations) {
 				if (name.equals(repr.getName())) {
 					return repr;
 				}
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Indicates if the given type is a primitive type.
-	 * 
-	 * @param type
-	 *            The type to be analysed
-	 * @return A boolean of value true if the given type is primitive, false
-	 *         otherwise.
-	 */
-	private static boolean isPrimitiveType(String type) {
-		if ("string".equals(type.toLowerCase())
-				|| "int".equals(type.toLowerCase())
-				|| "integer".equals(type.toLowerCase())
-				|| "long".equals(type.toLowerCase())
-				|| "float".equals(type.toLowerCase())
-				|| "double".equals(type.toLowerCase())
-				|| "date".equals(type.toLowerCase())
-				|| "boolean".equals(type.toLowerCase())
-				|| "bool".equals(type.toLowerCase())) {
-			return true;
-		}
-		return false;
 	}
 
 	/**

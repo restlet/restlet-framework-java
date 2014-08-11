@@ -12,6 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry kind="lib" path="/home/cyp/Téléchargements/commons-beanutils-1.9.2/commons-beanutils-1.9.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.logging"/>
-	<classpathentry kind="lib" path="/home/cyp/Téléchargements/json-schema-validator-1.4.9.jar"/>
+	<classpathentry kind="lib" path="/home/cyp/Téléchargements/jackson-module-jsonSchema-2.4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
