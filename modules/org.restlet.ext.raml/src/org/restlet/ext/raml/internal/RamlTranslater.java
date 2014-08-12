@@ -58,7 +58,6 @@ import org.restlet.ext.raml.internal.model.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 
 /**
@@ -220,7 +219,6 @@ public abstract class RamlTranslater {
 
 		raml.setResources(new HashMap<String, org.raml.model.Resource>());
 		org.raml.model.Resource ramlResource;
-		org.raml.model.Resource parentResource;
 		List<String> paths = new ArrayList<String>();
 		for (Resource resource : definition.getContract().getResources()) {
 			ramlResource = new org.raml.model.Resource();
@@ -232,27 +230,8 @@ public abstract class RamlTranslater {
 			}
 			ramlResource.setDescription(resource.getDescription());
 
-			// Parent resource
-			parentResource = RamlUtils.getParentResource(paths,
-					resource.getResourcePath(), raml);
-			if (parentResource != null) {
-				ramlResource.setParentResource(parentResource);
-				ramlResource.setParentUri(parentResource.getParentUri()
-						+ parentResource.getRelativeUri());
-				ramlResource
-						.setRelativeUri(RamlUtils.cutBasePath(
-								ramlResource.getParentUri(),
-								resource.getResourcePath()));
-				if (parentResource.getResources() == null) {
-					parentResource
-							.setResources(new HashMap<String, org.raml.model.Resource>());
-				}
-				parentResource.getResources().put(
-						ramlResource.getRelativeUri(), ramlResource);
-			} else {
-				ramlResource.setParentUri("");
-				ramlResource.setRelativeUri(resource.getResourcePath());
-			}
+			ramlResource.setParentUri("");
+			ramlResource.setRelativeUri(resource.getResourcePath());
 
 			// Path variables
 			UriParameter uiParam = new UriParameter();
