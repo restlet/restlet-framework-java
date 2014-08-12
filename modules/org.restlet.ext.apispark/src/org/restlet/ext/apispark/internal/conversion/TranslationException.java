@@ -1,13 +1,13 @@
-package org.restlet.ext.raml.internal;
+package org.restlet.ext.apispark.internal.conversion;
 
 @SuppressWarnings("serial")
-public class RamlConversionException extends Exception {
+public class TranslationException extends Exception {
 
     private String type;
 
     private String message;
 
-    public RamlConversionException(String type, String message) {
+    public TranslationException(String type, String message) {
         super();
         this.type = type;
         this.message = message;

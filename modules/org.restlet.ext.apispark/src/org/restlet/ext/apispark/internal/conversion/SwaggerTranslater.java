@@ -78,10 +78,10 @@ import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
  * 
  * @author Cyprien Quilici
  */
-public abstract class SwaggerConverter {
+public abstract class SwaggerTranslater {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(SwaggerConverter.class
+    protected static Logger LOGGER = Logger.getLogger(SwaggerTranslater.class
             .getName());
 
     /** Supported version of Swagger. */
@@ -95,11 +95,11 @@ public abstract class SwaggerConverter {
      * @param apiDeclarations
      *            The list of Swagger API declarations.
      * @return The Restlet definition.
-     * @throws SwaggerConversionException
+     * @throws TranslationException
      */
     public static Definition convert(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
-            throws SwaggerConversionException {
+            throws TranslationException {
 
         validate(resourceListing, apiDeclarations);
 
@@ -299,10 +299,10 @@ public abstract class SwaggerConverter {
             return definition;
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
-                throw new SwaggerConversionException("file",
+                throw new TranslationException("file",
                         ((FileNotFoundException) e).getMessage());
             } else {
-                throw new SwaggerConversionException("compliance",
+                throw new TranslationException("compliance",
                         "Impossible to read your API definition, check your Swagger specs compliance");
             }
         }
@@ -733,18 +733,18 @@ public abstract class SwaggerConverter {
      *            The Swagger resource listing.
      * @param apiDeclarations
      *            The list of Swagger API declarations.
-     * @throws SwaggerConversionException
+     * @throws TranslationException
      */
     private static void validate(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
-            throws SwaggerConversionException {
+            throws TranslationException {
         int rlSize = resourceListing.getApis().size();
         int adSize = apiDeclarations.size();
         if (rlSize < adSize) {
-            throw new SwaggerConversionException("file",
+            throw new TranslationException("file",
                     "One of your API declarations is not mapped in your resource listing");
         } else if (rlSize > adSize) {
-            throw new SwaggerConversionException("file",
+            throw new TranslationException("file",
                     "Some API declarations are missing");
         }
     }
@@ -753,6 +753,6 @@ public abstract class SwaggerConverter {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private SwaggerConverter() {
+    private SwaggerTranslater() {
     }
 }

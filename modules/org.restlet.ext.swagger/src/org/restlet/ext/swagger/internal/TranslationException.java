@@ -1,13 +1,13 @@
-package org.restlet.ext.apispark.internal.conversion;
+package org.restlet.ext.swagger.internal;
 
 @SuppressWarnings("serial")
-public class SwaggerConversionException extends Exception {
+public class TranslationException extends Exception {
 
     private String type;
 
     private String message;
 
-    public SwaggerConversionException(String type, String message) {
+    public TranslationException(String type, String message) {
         super();
         this.type = type;
         this.message = message;

@@ -83,14 +83,14 @@ public abstract class SwaggerUtils {
      * @param password
      *            The paswword for service authentication.
      * @return A {@link Definition}.
-     * @throws SwaggerConversionException
+     * @throws TranslationException
      */
     public static Definition getDefinition(String swaggerUrl, String userName,
-            String password) throws SwaggerConversionException {
+            String password) throws TranslationException {
 
         // Check that URL is non empty and well formed
         if (swaggerUrl == null) {
-            throw new SwaggerConversionException("url",
+            throw new TranslationException("url",
                     "You did not provide any URL");
         }
         Pattern p = Pattern
@@ -126,10 +126,10 @@ public abstract class SwaggerUtils {
                             + api.getPath()), ApiDeclaration.class));
                 }
             } catch (IOException e) {
-                throw new SwaggerConversionException("file", e.getMessage());
+                throw new TranslationException("file", e.getMessage());
             }
         }
-        return SwaggerConverter.convert(resourceListing, apis);
+        return SwaggerTranslater.convert(resourceListing, apis);
     }
 
     /**

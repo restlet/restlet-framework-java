@@ -48,8 +48,8 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionConverter;
-import org.restlet.ext.apispark.internal.conversion.SwaggerConversionException;
+import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslater;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
@@ -445,9 +445,9 @@ public class Introspector extends IntrospectionUtils {
      * Main class, invoke this class without argument to get help instructions.
      * 
      * @param args
-     * @throws SwaggerConversionException
+     * @throws TranslationException
      */
-    public static void main(String[] args) throws SwaggerConversionException {
+    public static void main(String[] args) throws TranslationException {
         Engine.register();
         String ulogin = null;
         String upwd = null;
@@ -597,7 +597,7 @@ public class Introspector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public Introspector(Component component, Application application) {
-        definition = IntrospectionConverter.toDefinition(
+        definition = IntrospectionTranslater.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
         if (component != null && definition != null) {

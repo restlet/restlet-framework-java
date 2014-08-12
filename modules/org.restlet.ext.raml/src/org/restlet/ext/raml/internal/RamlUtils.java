@@ -99,10 +99,10 @@ public class RamlUtils {
 	 * 
 	 * @param raml
 	 *            The Raml definition.
-	 * @throws RamlConversionException
+	 * @throws TranslationException
 	 */
 	public static List<ValidationResult> validate(String location)
-			throws RamlConversionException {
+			throws TranslationException {
 		// requires lots of dependencies => see if needed
 		return RamlValidationService.createDefault().validate(location);
 	}

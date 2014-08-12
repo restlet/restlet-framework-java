@@ -43,7 +43,7 @@ import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
  * 
  * @author Cyprien Quilici
  */
-public class IntrospectionConverter {
+public class IntrospectionTranslater {
 
     /**
      * Completes a map of representations with a list of representations.
@@ -566,7 +566,7 @@ public class IntrospectionConverter {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private IntrospectionConverter() {
+    private IntrospectionTranslater() {
     }
 
 }

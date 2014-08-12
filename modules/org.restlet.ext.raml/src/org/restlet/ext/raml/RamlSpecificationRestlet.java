@@ -42,7 +42,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.ext.raml.internal.RamlConverter;
+import org.restlet.ext.raml.internal.RamlTranslater;
 import org.restlet.ext.raml.internal.model.Definition;
 import org.restlet.ext.raml.internal.reflect.Introspector;
 import org.restlet.representation.Representation;
@@ -176,7 +176,7 @@ public class RamlSpecificationRestlet extends Restlet {
 	 *         Application.
 	 */
 	public Representation getRaml() {
-		return new StringRepresentation(new RamlEmitter().dump(RamlConverter
+		return new StringRepresentation(new RamlEmitter().dump(RamlTranslater
 				.getRaml(getDefinition())), MediaType.TEXT_PLAIN);
 	}
 

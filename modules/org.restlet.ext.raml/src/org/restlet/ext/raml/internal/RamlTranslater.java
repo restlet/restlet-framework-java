@@ -67,10 +67,10 @@ import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
  * 
  * @author Cyprien Quilici
  */
-public abstract class RamlConverter {
+public abstract class RamlTranslater {
 
 	/** Internal logger. */
-	protected static Logger LOGGER = Logger.getLogger(RamlConverter.class
+	protected static Logger LOGGER = Logger.getLogger(RamlTranslater.class
 			.getName());
 
 	/**
@@ -79,9 +79,9 @@ public abstract class RamlConverter {
 	 * @param raml
 	 *            The Raml resource listing.
 	 * @return The Restlet definition.
-	 * @throws RamlConversionException
+	 * @throws TranslationException
 	 */
-	public static Definition convert(Raml raml) throws RamlConversionException {
+	public static Definition convert(Raml raml) throws TranslationException {
 		Definition def = new Definition();
 		if (raml.getVersion() != null) {
 			def.setVersion(raml.getVersion().substring(1));
@@ -420,6 +420,6 @@ public abstract class RamlConverter {
 	 * Private constructor to ensure that the class acts as a true utility class
 	 * i.e. it isn't instantiable and extensible.
 	 */
-	private RamlConverter() {
+	private RamlTranslater() {
 	}
 }

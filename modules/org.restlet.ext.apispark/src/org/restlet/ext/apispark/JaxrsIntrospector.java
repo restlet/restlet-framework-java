@@ -69,7 +69,7 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionConverter;
+import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslater;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
 import org.restlet.ext.apispark.internal.info.ParameterInfo;
@@ -755,7 +755,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public JaxrsIntrospector(javax.ws.rs.core.Application application) {
-        definition = IntrospectionConverter.toDefinition(
+        definition = IntrospectionTranslater.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
         if (definition != null) {
