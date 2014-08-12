@@ -35,7 +35,7 @@ package org.restlet.ext.apispark.internal.model;
 
 /**
  * 
- * @author Cyprien Quilici
+ * @author
  */
 public class Definition {
 
@@ -57,8 +57,15 @@ public class Definition {
 
     /** Current version of the API. */
     private String version;
+    
+    /** RWADef version of the definition */
+    private final String rwadefVersion = "1.0";
 
-    public String getContact() {
+    public String getRwadefVersion() {
+		return rwadefVersion;
+	}
+
+	public String getContact() {
         return contact;
     }
 
