@@ -187,11 +187,12 @@ public class RamlUtils {
 			return ParamType.NUMBER;
 		} else if ("boolean".equals(type)) {
 			return ParamType.BOOLEAN;
+		} else if ("date".equals(type)) {
+			return ParamType.DATE;
 		}
-		// TODO add dates and files
+
+		// TODO add files
 		// else if () {
-		// return ParamType.DATE;
-		// } else if () {
 		// return ParamType.FILE;
 		// }
 		return ParamType.STRING;
@@ -325,6 +326,12 @@ public class RamlUtils {
 				if (property.getMaxOccurs() != 1) {
 					ArraySchema array = new ArraySchema();
 					array.setTitle(property.getName());
+					if (property.getMinOccurs() > 0) {
+						array.setRequired(true);
+					}
+					if (property.isUniqueItems()) {
+						array.setUniqueItems(true);
+					}
 					if (isPrimitiveType(property.getType())) {
 						Property prop = new Property();
 						prop.setName(property.getName());
@@ -332,7 +339,7 @@ public class RamlUtils {
 						array.setItemsSchema(generatePrimitiveSchema(prop));
 					} else {
 						SimpleTypeSchema reference = new ObjectSchema();
-						reference.set$ref(property.getType());
+						reference.set$ref("#/schemas/" + property.getType());
 						array.setItemsSchema(reference);
 						// array.setItemsSchema(generateSchema(RamlConverter
 						// .getRepresentationByName(representations,
@@ -342,10 +349,16 @@ public class RamlUtils {
 				} else if (!isPrimitiveType(property.getType())) {
 					propertySchema = new ObjectSchema();
 					propertySchema.setTitle(property.getName());
+					if (property.getMinOccurs() > 0) {
+						propertySchema.setRequired(true);
+					}
 					objectSchema.getProperties().put(propertySchema.getTitle(),
 							propertySchema);
 				} else {
 					SimpleTypeSchema primitive = generatePrimitiveSchema(property);
+					if (property.getMinOccurs() > 0) {
+						primitive.setRequired(true);
+					}
 					if (property.getDefaultValue() != null) {
 						primitive.setDefault(property.getDefaultValue());
 					}
@@ -394,7 +407,8 @@ public class RamlUtils {
 			BooleanSchema booleanSchema = new BooleanSchema();
 			booleanSchema.setTitle(name);
 			result = booleanSchema;
-		} else if ("string".equals(type.toLowerCase())) {
+		} else if ("string".equals(type.toLowerCase())
+				|| "date".equals(type.toLowerCase())) {
 			StringSchema stringSchema = new StringSchema();
 			stringSchema.setTitle(name);
 			result = stringSchema;

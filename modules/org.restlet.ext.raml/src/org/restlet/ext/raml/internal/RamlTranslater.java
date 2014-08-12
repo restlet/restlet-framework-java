@@ -288,16 +288,15 @@ public abstract class RamlTranslater {
 								.getInRepresentation().getRepresentation());
 						inRepresentationSchema = RamlUtils
 								.generatePrimitiveSchema(inRepresentationPrimitive);
+						try {
+							mimeType.setSchema(m
+									.writeValueAsString(inRepresentationSchema));
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
 					} else {
-						inRepresentationSchema = new ObjectSchema();
-						inRepresentationSchema.set$ref(operation
-								.getInRepresentation().getRepresentation());
-					}
-					try {
-						mimeType.setSchema(m
-								.writeValueAsString(inRepresentationSchema));
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+						mimeType.setSchema(operation.getInRepresentation()
+								.getRepresentation());
 					}
 					action.setBody(new HashMap<String, MimeType>());
 					for (String mediaType : operation.getConsumes()) {
@@ -348,17 +347,15 @@ public abstract class RamlTranslater {
 											.getRepresentation());
 							outRepresentationSchema = RamlUtils
 									.generatePrimitiveSchema(outRepresentationPrimitive);
+							try {
+								mimeType.setSchema(m
+										.writeValueAsString(outRepresentationSchema));
+							} catch (JsonProcessingException e) {
+								e.printStackTrace();
+							}
 						} else {
-							outRepresentationSchema = new ObjectSchema();
-							outRepresentationSchema
-									.set$ref(operation.getOutRepresentation()
-											.getRepresentation());
-						}
-						try {
-							mimeType.setSchema(m
-									.writeValueAsString(outRepresentationSchema));
-						} catch (JsonProcessingException e) {
-							e.printStackTrace();
+							mimeType.setSchema(operation.getOutRepresentation()
+									.getRepresentation());
 						}
 					}
 					for (String mediaType : operation.getProduces()) {
@@ -383,6 +380,9 @@ public abstract class RamlTranslater {
 		raml.getSchemas().add(schemas);
 		for (Representation representation : definition.getContract()
 				.getRepresentations()) {
+			if (RamlUtils.isPrimitiveType(representation.getName())) {
+				continue;
+			}
 			try {
 				schemas.put(representation.getName(), m
 						.writeValueAsString(RamlUtils
