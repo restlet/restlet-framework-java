@@ -69,8 +69,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
 
         component
                 .getDefaultHost()
-                .attach(
-                        "/CafeCustoFeeds.svc",
+                .attach("/CafeCustoFeeds.svc",
                         new org.restlet.test.ext.odata.cafecustofeeds.CafeCustoFeedsApplication());
 
         component.start();

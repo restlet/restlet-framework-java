@@ -59,14 +59,17 @@ public class RepresentationTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(RepresentationTestService.class);
+                return (Set) Collections
+                        .singleton(RepresentationTestService.class);
             }
         };
         return appConfig;
     }
 
-    /** @throws IOException 
-     *  @see RepresentationTestService#post(Representation) */
+    /**
+     * @throws IOException
+     * @see RepresentationTestService#post(Representation)
+     */
     public void testDecodePost() throws IOException {
         final Representation repr = new StringRepresentation("abcde");
         final Response response = post("reprDecode", repr);
@@ -75,8 +78,10 @@ public class RepresentationTest extends JaxRsTestCase {
         assertEquals("abcde", response.getEntity().getText());
     }
 
-    /** @throws IOException 
-     *  @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
+    /**
+     * @throws IOException
+     * @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation)
+     */
     public void testJaxbPost() throws IOException {
         final Response response = post("jaxb", (Representation) null);
         sysOutEntityIfError(response);
@@ -91,12 +96,14 @@ public class RepresentationTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
-    /** @throws IOException 
-     *  @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
+    /**
+     * @throws IOException
+     * @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation)
+     */
     public void testReprPost() throws IOException {
         Response response = post("jaxb", new StringRepresentation("abcdef"));
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                response.getStatus());
 
         response = post("jaxb", new StringRepresentation(
                 "<person firstname=\"Angela\" lastname=\"Merkel\"/>",

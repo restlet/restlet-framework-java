@@ -51,7 +51,8 @@ public class Part05_RestletComponents extends ServerResource {
         component.getServers().add(Protocol.HTTP, 8111);
 
         // Then attach it to the local host
-        component.getDefaultHost().attach("/trace", Part05_RestletComponents.class);
+        component.getDefaultHost().attach("/trace",
+                Part05_RestletComponents.class);
 
         // Now, let's start the component!
         // Note that the HTTP server connector is also automatically started.

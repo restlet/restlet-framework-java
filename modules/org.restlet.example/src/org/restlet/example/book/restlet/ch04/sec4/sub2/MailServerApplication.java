@@ -65,8 +65,7 @@ public class MailServerApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach(
-                "/accounts/{accountId}/mails/{mailId}",
+        router.attach("/accounts/{accountId}/mails/{mailId}",
                 MailServerResource.class);
         return router;
     }

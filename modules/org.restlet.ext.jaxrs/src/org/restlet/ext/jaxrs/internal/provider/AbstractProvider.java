@@ -52,7 +52,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the type that can be read and written
+ *            the type that can be read and written
  * @see MessageBodyReader
  * @see MessageBodyWriter
  */
@@ -80,7 +80,7 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      * Returns the size of the given objects.
      * 
      * @param object
-     *                the object to check the size
+     *            the object to check the size
      * @return the size of the object, or -1, if it is not direct readable from
      *         the object.
      * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
@@ -102,9 +102,9 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
 
     /**
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.InputStream)

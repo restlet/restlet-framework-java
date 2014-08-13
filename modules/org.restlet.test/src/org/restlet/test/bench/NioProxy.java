@@ -100,7 +100,7 @@ public class NioProxy {
             }
 
         });
-        
+
         System.out.println("NIO PROXY");
         server.start();
 

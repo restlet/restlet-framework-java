@@ -123,7 +123,6 @@ public class VariantInfo extends Variant {
     public MethodAnnotationInfo getAnnotationInfo() {
         return annotationInfo;
     }
-    
 
     /**
      * Returns the affinity between this variant and an incoming representation.

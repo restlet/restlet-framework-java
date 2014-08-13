@@ -57,7 +57,8 @@ public class ResponseBuilderTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(ResponseBuilderService.class);
+                return (Set) Collections
+                        .singleton(ResponseBuilderService.class);
             }
         };
         return appConfig;
@@ -67,20 +68,20 @@ public class ResponseBuilderTest extends JaxRsTestCase {
         final Response response = get("1");
         final Set<Dimension> dimensions = response.getDimensions();
 
-        assertTrue("dimension must contain MediaType", dimensions
-                .contains(Dimension.MEDIA_TYPE));
-        assertTrue("dimension must contain Encoding", dimensions
-                .contains(Dimension.ENCODING));
+        assertTrue("dimension must contain MediaType",
+                dimensions.contains(Dimension.MEDIA_TYPE));
+        assertTrue("dimension must contain Encoding",
+                dimensions.contains(Dimension.ENCODING));
     }
 
     public void test2() {
         final Response response = get("2");
         final Set<Dimension> dimensions = response.getDimensions();
 
-        assertTrue("dimension must contain Language", dimensions
-                .contains(Dimension.LANGUAGE));
-        assertTrue("dimension must contain CharacterSet", dimensions
-                .contains(Dimension.CHARACTER_SET));
+        assertTrue("dimension must contain Language",
+                dimensions.contains(Dimension.LANGUAGE));
+        assertTrue("dimension must contain CharacterSet",
+                dimensions.contains(Dimension.CHARACTER_SET));
     }
 
     public void testDelete() {

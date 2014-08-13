@@ -67,7 +67,8 @@ public class HttpHeaderTestService {
     @GET
     @Path("accMediaTypes")
     @Produces("text/plain")
-    public String getAccMediaTypes(@Context HttpHeaders headers) {
+    public String getAccMediaTypes(@Context
+    HttpHeaders headers) {
         final List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
         return mediaTypes.toString();
     }
@@ -75,20 +76,21 @@ public class HttpHeaderTestService {
     @GET
     @Path("cookies/{cookieName}")
     @Produces("text/plain")
-    public String getCookies(@Context HttpHeaders headers,
-            @PathParam("cookieName") String cookieName) {
+    public String getCookies(@Context
+    HttpHeaders headers, @PathParam("cookieName")
+    String cookieName) {
         final Map<String, Cookie> cookies = headers.getCookies();
         try {
             cookies.put("notAllowed", new Cookie("notAllowed", "value"));
-            throw new WebApplicationException(Response.serverError().entity(
-                    "could add cookie notAllowed").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("could add cookie notAllowed").build());
         } catch (UnsupportedOperationException uoe) {
             // not allowed
         }
         try {
             cookies.put("xyz", new Cookie("notAllowed", "value"));
-            throw new WebApplicationException(Response.serverError().entity(
-                    "could add xyz").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("could add xyz").build());
         } catch (UnsupportedOperationException uoe) {
             // not allowed
         }
@@ -102,8 +104,9 @@ public class HttpHeaderTestService {
     @GET
     @Path("header/{headername}")
     @Produces("text/plain")
-    public String getHeader(@Context HttpHeaders headers,
-            @PathParam("headername") String headername) {
+    public String getHeader(@Context
+    HttpHeaders headers, @PathParam("headername")
+    String headername) {
         final MultivaluedMap<String, String> requestHeaders = headers
                 .getRequestHeaders();
         final String headerValue = requestHeaders.getFirst(headername);
@@ -120,9 +123,10 @@ public class HttpHeaderTestService {
     @GET
     @Path("header2")
     @Produces("text/plain")
-    public Object getHeader2(@HeaderParam("host") String hostLower,
-            @HeaderParam("HOST") String hostUpper,
-            @HeaderParam("Host") String hostMixed) {
+    public Object getHeader2(@HeaderParam("host")
+    String hostLower, @HeaderParam("HOST")
+    String hostUpper, @HeaderParam("Host")
+    String hostMixed) {
         if (hostLower.equals(hostUpper) && hostLower.equals(hostMixed)) {
             return hostMixed;
         }
@@ -134,23 +138,25 @@ public class HttpHeaderTestService {
     @GET
     @Path("HeaderParam")
     @Produces("text/plain")
-    public String getHeaderParam(
-            @HeaderParam(TEST_HEADER_NAME) String testHeaderValue) {
+    public String getHeaderParam(@HeaderParam(TEST_HEADER_NAME)
+    String testHeaderValue) {
         return testHeaderValue;
     }
 
     @GET
     @Path("headerWithDefault")
     @Produces("text/plain")
-    public String getHeaderWithDefault(
-            @HeaderParam(TEST_HEADER_NAME) @DefaultValue("default") String testHeader) {
+    public String getHeaderWithDefault(@HeaderParam(TEST_HEADER_NAME)
+    @DefaultValue("default")
+    String testHeader) {
         return testHeader;
     }
 
     @POST
     @Path("language")
-    @Produces( { "text/plain", "text/html" })
-    public String getLanguage(@Context HttpHeaders headers) {
+    @Produces({ "text/plain", "text/html" })
+    public String getLanguage(@Context
+    HttpHeaders headers) {
         return headers.getLanguage().toString();
     }
 
@@ -161,7 +167,7 @@ public class HttpHeaderTestService {
     }
 
     @GET
-    @Produces( { "text/xml", MediaType.APPLICATION_XML })
+    @Produces({ "text/xml", MediaType.APPLICATION_XML })
     public String getXML() {
         return "<text>the media types text/xml and application/xml are supported</text>\n";
     }

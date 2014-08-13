@@ -85,7 +85,8 @@ public class ContextsTestService {
     @GET
     @Produces("text/plain")
     @Path("lastPathSegm")
-    public String getPathSegm(@Context PathSegment lastPathSegment) {
+    public String getPathSegm(@Context
+    PathSegment lastPathSegment) {
         final StringBuilder stb = new StringBuilder();
         for (String key : lastPathSegment.getMatrixParameters().keySet()) {
             stb.append(key + " : "
@@ -97,8 +98,9 @@ public class ContextsTestService {
     @GET
     @Produces("text/plain")
     @Path("params")
-    public String getResources(@Context UriInfo uriInfo,
-            @Context Providers providers) {
+    public String getResources(@Context
+    UriInfo uriInfo, @Context
+    Providers providers) {
         final StringBuilder stb = new StringBuilder();
         if (providers != null) {
             stb.append("providers\n");

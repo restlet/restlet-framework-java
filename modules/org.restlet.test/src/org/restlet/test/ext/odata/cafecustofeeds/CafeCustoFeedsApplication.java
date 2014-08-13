@@ -64,8 +64,8 @@ public class CafeCustoFeedsApplication extends Application {
             if (Method.GET.equals(request.getMethod())) {
                 Form form = request.getResourceRef().getQueryAsForm();
                 String uri = "/"
-                        + this.getClass().getPackage().getName().replace(".",
-                                "/") + "/" + file;
+                        + this.getClass().getPackage().getName()
+                                .replace(".", "/") + "/" + file;
                 if (form.getFirstValue("$expand") != null) {
                     uri += form.getFirstValue("$expand");
                 }
@@ -88,9 +88,7 @@ public class CafeCustoFeedsApplication extends Application {
         Router router = new Router(getContext());
         router.attach("/$metadata", new MyClapRestlet(getContext(), "metadata",
                 false));
-        router
-                .attach("/Cafes", new MyClapRestlet(getContext(), "cafes",
-                        false));
+        router.attach("/Cafes", new MyClapRestlet(getContext(), "cafes", false));
         router.attach("/Contacts('1')", new MyClapRestlet(getContext(),
                 "contact1", false));
         return router;

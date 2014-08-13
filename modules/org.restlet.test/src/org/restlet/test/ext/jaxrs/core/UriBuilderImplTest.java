@@ -128,8 +128,8 @@ public class UriBuilderImplTest extends TestCase {
             String expectedPath, String expectedQuery,
             UriBuilder actualUriBuilder, boolean compareResult)
             throws Exception {
-        if (actualUriBuilder.getClass().getPackage().getName().startsWith(
-                "org.restlet.ext.jaxrs")) {
+        if (actualUriBuilder.getClass().getPackage().getName()
+                .startsWith("org.restlet.ext.jaxrs")) {
             assertEquals(expectedScheme, getScheme(actualUriBuilder));
             assertEquals(expectedUserInfo, getUserInfo(actualUriBuilder));
             assertEquals(expectedHost, getHost(actualUriBuilder));
@@ -359,8 +359,8 @@ public class UriBuilderImplTest extends TestCase {
         URI uri = this.uriBuilderWithVars.build("123", "456");
         assertEqualsURI("http://localhost/abc/123/def/456", uri);
         final UriBuilder uriBuilder2 = this.uriBuilderWithVars.clone();
-        assertEqualsURI("http://localhost/abc/123/def/456", uriBuilder2.build(
-                "123", "456"));
+        assertEqualsURI("http://localhost/abc/123/def/456",
+                uriBuilder2.build("123", "456"));
         assertEquals(this.uriBuilderWithVars.toString(), uriBuilder2.toString());
         uriBuilder2.path("{var3}");
         uri = this.uriBuilderWithVars.build("123", "456");

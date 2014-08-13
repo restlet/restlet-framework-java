@@ -120,8 +120,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
                     public void handle(Request request, Response response) {
                         response.setEntity(new FileRepresentation(file,
                                 MediaType.TEXT_PLAIN));
-                        response.getEntity().getDisposition().setType(
-                                Disposition.TYPE_ATTACHMENT);
+                        response.getEntity().getDisposition()
+                                .setType(Disposition.TYPE_ATTACHMENT);
                     }
                 };
             }

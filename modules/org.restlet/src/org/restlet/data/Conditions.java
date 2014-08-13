@@ -308,7 +308,8 @@ public final class Conditions {
                         boolean isModifiedSince = (modifiedSince != null)
                                 && (DateUtils.after(new Date(), modifiedSince)
                                         || (modificationDate == null) || DateUtils
-                                        .after(modifiedSince, modificationDate));
+                                            .after(modifiedSince,
+                                                    modificationDate));
                         matched = !isModifiedSince;
                     }
                 } else {

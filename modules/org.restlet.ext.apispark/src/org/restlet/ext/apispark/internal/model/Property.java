@@ -87,11 +87,6 @@ public class Property {
      * possible values.
      */
     private List<String> possibleValues;
-    
-    /**
-     * Specifies whether the property is required in all representations or not.
-     */
-    private boolean required;
 
     // TODO review comment
     /**
@@ -181,13 +176,5 @@ public class Property {
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
     }
 }

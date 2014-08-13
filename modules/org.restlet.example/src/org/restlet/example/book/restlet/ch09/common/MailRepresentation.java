@@ -40,46 +40,46 @@ import java.io.Serializable;
  */
 public class MailRepresentation implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String status;
+    private String status;
 
-	private String subject;
+    private String subject;
 
-	private String content;
+    private String content;
 
-	private String accountRef;
+    private String accountRef;
 
-	public String getAccountRef() {
-		return accountRef;
-	}
+    public String getAccountRef() {
+        return accountRef;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
+    public String getSubject() {
+        return subject;
+    }
 
-	public void setAccountRef(String accountRef) {
-		this.accountRef = accountRef;
-	}
+    public void setAccountRef(String accountRef) {
+        this.accountRef = accountRef;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
 }

@@ -48,7 +48,7 @@ public class OldServerResource extends ServerResource {
 
         System.out.println("Redirecting client to new location...");
 
-        // Add explanation message entity 
+        // Add explanation message entity
         return "Resource moved... \n";
     }
 }

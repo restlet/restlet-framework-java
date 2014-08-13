@@ -58,6 +58,7 @@ public class MatchedTest extends JaxRsTestCase {
             }
         };
     }
+
     public void testGet() throws Exception {
         final Response response = get();
         sysOutEntityIfError(response);

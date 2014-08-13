@@ -225,8 +225,8 @@ public class ResponseInfo extends DocumentedInfo {
                 }
             }
 
-            attributes.addAttribute("", "status", null, "xs:string", builder
-                    .toString());
+            attributes.addAttribute("", "status", null, "xs:string",
+                    builder.toString());
         }
 
         if (getDocumentations().isEmpty() && getParameters().isEmpty()

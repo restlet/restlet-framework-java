@@ -56,7 +56,8 @@ public class MatrixParamTest2 extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(MatrixParamTestService2.class);
+                return (Set) Collections
+                        .singleton(MatrixParamTestService2.class);
             }
         };
     }

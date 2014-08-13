@@ -50,48 +50,53 @@ import org.restlet.test.ext.jaxrs.services.tests.Issue594Test;
 @Path("admin")
 public class Issue594Resources {
 
-   /**
-    * Provides both static and dynamic, per-request information, about the
-    * components of a request URI.
-    */
-   @Context
-   UriInfo uriInfo;
+    /**
+     * Provides both static and dynamic, per-request information, about the
+     * components of a request URI.
+     */
+    @Context
+    UriInfo uriInfo;
 
-   @GET
-   @Produces("text/plain")
-   public String root() {
-       return "root";
-   }
+    @GET
+    @Produces("text/plain")
+    public String root() {
+        return "root";
+    }
 
-   @GET
-   @Path("{project}")
-   @Produces("text/plain")
-   public String project(@PathParam("project") String project) {
-       return "project="+project;
-   }
+    @GET
+    @Path("{project}")
+    @Produces("text/plain")
+    public String project(@PathParam("project")
+    String project) {
+        return "project=" + project;
+    }
 
-   @GET
-   @Path("{project}/{repository}")
-   @Produces("text/plain")
-   public String repository(@PathParam("project") String project,
-           @PathParam("repository") String repository) {
-       return "project="+project+"\nrepository="+repository;
-   }
+    @GET
+    @Path("{project}/{repository}")
+    @Produces("text/plain")
+    public String repository(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository) {
+        return "project=" + project + "\nrepository=" + repository;
+    }
 
-   @GET
-   @Path("{project}/{repository}/schema")
-   @Produces("text/plain")
-   public String schemaDir(@PathParam("project") String project,
-           @PathParam("repository") String repository) {
-       return "project="+project+"\nrepository="+repository+"\nschema";
-   }
+    @GET
+    @Path("{project}/{repository}/schema")
+    @Produces("text/plain")
+    public String schemaDir(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository) {
+        return "project=" + project + "\nrepository=" + repository + "\nschema";
+    }
 
-   @GET
-   @Path("{project}/{repository}/schema/{schema}")
-   @Produces("text/plain")
-   public String schema(@PathParam("project") String project,
-           @PathParam("repository") String repository,
-           @PathParam("schema") String schema) {
-       return "project="+project+"\nrepository="+repository+"\nschema\nschema="+schema;
-   }
+    @GET
+    @Path("{project}/{repository}/schema/{schema}")
+    @Produces("text/plain")
+    public String schema(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository, @PathParam("schema")
+    String schema) {
+        return "project=" + project + "\nrepository=" + repository
+                + "\nschema\nschema=" + schema;
+    }
 }

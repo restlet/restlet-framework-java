@@ -254,8 +254,8 @@ public class Metadata extends SaxRepresentation {
                         Method getter = entity.getClass().getDeclaredMethod(
                                 getterName, (Class[]) null);
                         Object value = getter.invoke(entity, (Object[]) null);
-                        String strValue = TypeUtils.toEdmKey(value, key
-                                .getType());
+                        String strValue = TypeUtils.toEdmKey(value,
+                                key.getType());
                         if (strValue != null) {
                             result.append(strValue);
                         } else {

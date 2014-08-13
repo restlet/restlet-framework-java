@@ -39,10 +39,9 @@ package org.restlet.example.ext.rdf.foaf.objects;
 public class Contact extends User {
     /** FOAF URI of the contact. */
     private String foafUri;
-    
+
     /** Name of the contact. */
     private String nickname;
-
 
     public String getFoafUri() {
         return foafUri;

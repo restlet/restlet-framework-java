@@ -149,7 +149,8 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
         result = AwsUtils.getS3Signature(putRequest, ACCESS_KEY.toCharArray());
         Assert.assertEquals("hcicpDDvL9SsO6AkvxqmIWkmOuQ=", result);
 
-        result = AwsUtils.getS3Signature(uploadRequest, ACCESS_KEY.toCharArray());
+        result = AwsUtils.getS3Signature(uploadRequest,
+                ACCESS_KEY.toCharArray());
         Assert.assertEquals("C0FlOtU8Ylb9KDTpZqYkZPX91iI=", result);
     }
 

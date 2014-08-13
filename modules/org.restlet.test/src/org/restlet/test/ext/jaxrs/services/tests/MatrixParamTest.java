@@ -78,11 +78,13 @@ public class MatrixParamTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(MatrixParamTestService.class);
+                return (Set) Collections
+                        .singleton(MatrixParamTestService.class);
             }
         };
         return appConfig;
     }
+
     public void testA() throws IOException {
         checkBothGiven("a");
         checkOneGiven("a");

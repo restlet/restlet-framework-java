@@ -52,13 +52,13 @@ public class User extends BaseObject {
 
     /** Last name of the user. */
     private String lastName;
-    
+
     public User() {
         super();
     }
 
     public List<Contact> getContacts() {
-        if(contacts == null){
+        if (contacts == null) {
             contacts = new ArrayList<Contact>();
         }
         return contacts;

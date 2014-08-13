@@ -201,8 +201,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     ReferenceList rl = new ReferenceList(entities.size());
                     String scheme = request.getResourceRef().getScheme();
                     String path = request.getResourceRef().getPath();
-                    String encodedParentDirectoryURI = path.substring(0, path
-                            .lastIndexOf("/"));
+                    String encodedParentDirectoryURI = path.substring(0,
+                            path.lastIndexOf("/"));
                     String encodedEntityName = path.substring(path
                             .lastIndexOf("/") + 1);
 

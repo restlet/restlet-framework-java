@@ -59,8 +59,7 @@ public abstract class LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public LexicalUnit(RdfTurtleReader contentReader,
-            Context context) {
+    public LexicalUnit(RdfTurtleReader contentReader, Context context) {
         super();
         this.contentReader = contentReader;
         this.context = context;

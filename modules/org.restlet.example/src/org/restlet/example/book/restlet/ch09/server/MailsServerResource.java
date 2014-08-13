@@ -45,26 +45,26 @@ import org.restlet.ext.wadl.WadlServerResource;
  * Mails server resource implementing the {@link MailsResource} interface.
  */
 public class MailsServerResource extends WadlServerResource implements
-		MailsResource {
+        MailsResource {
 
-	public List<MailRepresentation> retrieve() {
-		List<MailRepresentation> mails = new ArrayList<MailRepresentation>();
-		MailRepresentation mail = new MailRepresentation();
-		mail.setStatus("received");
-		mail.setSubject("Message to self");
-		mail.setContent("Doh!");
-		mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
-				.toString());
-		mails.add(mail);
-		return mails;
-	}
+    public List<MailRepresentation> retrieve() {
+        List<MailRepresentation> mails = new ArrayList<MailRepresentation>();
+        MailRepresentation mail = new MailRepresentation();
+        mail.setStatus("received");
+        mail.setSubject("Message to self");
+        mail.setContent("Doh!");
+        mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
+                .toString());
+        mails.add(mail);
+        return mails;
+    }
 
-	public void add(MailRepresentation mail) {
-		System.out.println("Status: " + mail.getStatus());
-		System.out.println("Subject: " + mail.getSubject());
-		System.out.println("Content: " + mail.getContent());
-		System.out.println("Account URI: " + mail.getAccountRef());
-		System.out.println();
-	}
+    public void add(MailRepresentation mail) {
+        System.out.println("Status: " + mail.getStatus());
+        System.out.println("Subject: " + mail.getSubject());
+        System.out.println("Content: " + mail.getContent());
+        System.out.println("Account URI: " + mail.getAccountRef());
+        System.out.println();
+    }
 
 }

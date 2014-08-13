@@ -65,7 +65,8 @@ public class Issue971Test extends JaxRsTestCase {
             }
         };
     }
-    /** 
+
+    /**
      * @see Issue971Resource#getIssue971()
      */
     public void testGet() throws Exception {
@@ -78,4 +79,3 @@ public class Issue971Test extends JaxRsTestCase {
     }
 
 }
-

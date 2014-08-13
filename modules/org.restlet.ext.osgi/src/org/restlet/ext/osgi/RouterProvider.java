@@ -35,10 +35,10 @@ package org.restlet.ext.osgi;
 
 /**
  * This is an OSGi service interface for registering Restlet filters with an
- * application. Users are expected to register an instance as an OSGi
- * service. It is recommended that you use the {@link BaseRouterProvider}
- * implementation. You may extend it if necessary, or for complete control, provide
- * your own implementation of {@link RouterProvider}.
+ * application. Users are expected to register an instance as an OSGi service.
+ * It is recommended that you use the {@link BaseRouterProvider} implementation.
+ * You may extend it if necessary, or for complete control, provide your own
+ * implementation of {@link RouterProvider}.
  * 
  * @author Bryan Hunt
  * 

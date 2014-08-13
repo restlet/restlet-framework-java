@@ -50,7 +50,7 @@ public class DateHeaderDelegate implements HeaderDelegate<Date> {
 
     // TODO DateHeaderDelegate
     // TODO use headerDelegates, if one is available
-    
+
     /**
      * Obtain an instance of a HeaderDelegate for the MediTape class.
      * 
@@ -63,10 +63,10 @@ public class DateHeaderDelegate implements HeaderDelegate<Date> {
      * Parse the supplied value and create an instance of <code>T</code>.
      * 
      * @param contentType
-     *                the contentType
+     *            the contentType
      * @return the newly created instance of <code>T</code>
      * @throws IllegalArgumentException
-     *                 if the supplied string cannot be parsed
+     *             if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public Date fromString(String date) throws IllegalArgumentException {
@@ -79,10 +79,10 @@ public class DateHeaderDelegate implements HeaderDelegate<Date> {
      * Convert the supplied value to a String.
      * 
      * @param value
-     *                the value of type <code>T</code>
+     *            the value of type <code>T</code>
      * @return a String representation of the value
      * @throws IllegalArgumentException
-     *                 if the supplied object cannot be serialized
+     *             if the supplied object cannot be serialized
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(Date date) {

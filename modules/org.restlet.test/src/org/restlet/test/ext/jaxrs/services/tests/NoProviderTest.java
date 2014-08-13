@@ -59,6 +59,7 @@ public class NoProviderTest extends JaxRsTestCase {
             }
         };
     }
+
     public void testNoMediaType() throws Exception {
         final Response response = get("no-mbw");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());

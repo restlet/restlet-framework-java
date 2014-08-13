@@ -119,8 +119,8 @@ public class HttpsServerHelper extends NetServerHelper {
         }
 
         // Complete initialization
-        this.server = HttpsServer.create(new InetSocketAddress(
-                getHelped().getPort()), 0);
+        this.server = HttpsServer.create(new InetSocketAddress(getHelped()
+                .getPort()), 0);
         final SSLParameters sslParams = sslContext.getDefaultSSLParameters();
         server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             public void configure(HttpsParameters params) {

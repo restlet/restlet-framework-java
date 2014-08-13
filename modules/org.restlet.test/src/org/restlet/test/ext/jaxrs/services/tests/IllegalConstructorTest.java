@@ -60,8 +60,7 @@ public class IllegalConstructorTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
-                return Util.createSet(
-                        IllegalConstructorResource.class,
+                return Util.createSet(IllegalConstructorResource.class,
                         ParamConstructorProvider.class,
                         EntityConstructorProvider.class);
             }

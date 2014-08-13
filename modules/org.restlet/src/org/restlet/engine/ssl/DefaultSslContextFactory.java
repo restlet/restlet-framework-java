@@ -237,8 +237,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
             .getProperty("javax.net.ssl.keyStoreProvider");
 
     /** The keyStore type of the keystore. */
-    private volatile String keyStoreType = System
-            .getProperty("javax.net.ssl.keyStoreType", "JKS");
+    private volatile String keyStoreType = System.getProperty(
+            "javax.net.ssl.keyStoreType", "JKS");
 
     /** Indicates if we require client certificate authentication. */
     private volatile boolean needClientAuthentication = false;

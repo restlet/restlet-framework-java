@@ -103,8 +103,8 @@ public class CookieParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final String entity = response.getEntity().getText();
-        final String entityWithoutBrackets = entity.substring(1, entity
-                .length() - 1);
+        final String entityWithoutBrackets = entity.substring(1,
+                entity.length() - 1);
         assertEquals("c1, c2", entityWithoutBrackets);
     }
 
@@ -117,8 +117,8 @@ public class CookieParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final String entity = response.getEntity().getText();
-        final String entityWithoutBrackets = entity.substring(1, entity
-                .length() - 1);
+        final String entityWithoutBrackets = entity.substring(1,
+                entity.length() - 1);
         try {
             assertEquals("c1, c2", entityWithoutBrackets);
         } catch (AssertionFailedError afe) {

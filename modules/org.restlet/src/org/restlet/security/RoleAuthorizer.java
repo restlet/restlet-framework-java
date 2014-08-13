@@ -95,16 +95,16 @@ public class RoleAuthorizer extends Authorizer {
         } else {
             for (Role authorizedRole : getAuthorizedRoles()) {
                 authorized = authorized
-                        || request.getClientInfo().getRoles().contains(
-                                authorizedRole);
+                        || request.getClientInfo().getRoles()
+                                .contains(authorizedRole);
             }
         }
 
         // Verify if the subject is in one of the forbidden roles
         for (Role forbiddenRole : getForbiddenRoles()) {
             forbidden = forbidden
-                    || request.getClientInfo().getRoles().contains(
-                            forbiddenRole);
+                    || request.getClientInfo().getRoles()
+                            .contains(forbiddenRole);
         }
 
         return authorized && !forbidden;

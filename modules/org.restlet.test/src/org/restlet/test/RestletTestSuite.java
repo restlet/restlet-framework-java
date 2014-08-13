@@ -94,93 +94,93 @@ import org.restlet.test.util.TemplateTestCase;
  */
 public class RestletTestSuite extends TestSuite {
 
-	/**
-	 * JUnit constructor.
-	 * 
-	 * @return The unit test.
-	 */
-	public static Test suite() {
-		return new RestletTestSuite();
-	}
+    /**
+     * JUnit constructor.
+     * 
+     * @return The unit test.
+     */
+    public static Test suite() {
+        return new RestletTestSuite();
+    }
 
-	/** Constructor. */
-	public RestletTestSuite() {
-		addTest(ServiceTestSuite.suite());
-		addTestSuite(AppendableRepresentationTestCase.class);
-		addTestSuite(AtomTestCase.class);
-		addTestSuite(AuthenticationInfoTestCase.class);
-		addTestSuite(CallTestCase.class);
-		addTestSuite(ComponentXmlConfigTestCase.class);
-		addTestSuite(CookieTestCase.class);
-		addTestSuite(ClientInfoTestCase.class);
-		addTestSuite(FileClientTestCase.class);
-		addTestSuite(FileReferenceTestCase.class);
-		addTestSuite(FilterTestCase.class);
-		addTestSuite(FormTestCase.class);
-		addTestSuite(FreeMarkerTestCase.class);
-		addTestSuite(GuiceSelfInjectingServerResourceModuleTestCase.class);
-		addTestSuite(GwtConverterTestCase.class);
-		addTestSuite(JacksonTestCase.class);
-		addTestSuite(JaxbBasicConverterTestCase.class);
-		addTestSuite(JaxbIntegrationConverterTestCase.class);
-		addTestSuite(LanguageTestCase.class);
-		addTestSuite(MediaTypeTestCase.class);
-		addTestSuite(ProductTokenTestCase.class);
-		addTestSuite(ReferenceTestCase.class);
-		addTestSuite(RestartTestCase.class);
-		addTestSuite(RiapTestCase.class);
-		addTestSuite(RouteListTestCase.class);
-		addTestSuite(DigestVerifierTestCase.class);
-		addTestSuite(RecipientInfoTestCase.class);
-		addTestSuite(RoleTestCase.class);
-		addTestSuite(StatusTestCase.class);
-		addTestSuite(TemplateTestCase.class);
-		addTestSuite(ValidatorTestCase.class);
-		addTestSuite(VelocityTestCase.class);
-		addTest(RegressionTestSuite.suite());
-		addTest(CryptoTestSuite.suite());
-		addTest(EmfTestSuite.suite());
-		addTest(HtmlTestSuite.suite());
+    /** Constructor. */
+    public RestletTestSuite() {
+        addTest(ServiceTestSuite.suite());
+        addTestSuite(AppendableRepresentationTestCase.class);
+        addTestSuite(AtomTestCase.class);
+        addTestSuite(AuthenticationInfoTestCase.class);
+        addTestSuite(CallTestCase.class);
+        addTestSuite(ComponentXmlConfigTestCase.class);
+        addTestSuite(CookieTestCase.class);
+        addTestSuite(ClientInfoTestCase.class);
+        addTestSuite(FileClientTestCase.class);
+        addTestSuite(FileReferenceTestCase.class);
+        addTestSuite(FilterTestCase.class);
+        addTestSuite(FormTestCase.class);
+        addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(GuiceSelfInjectingServerResourceModuleTestCase.class);
+        addTestSuite(GwtConverterTestCase.class);
+        addTestSuite(JacksonTestCase.class);
+        addTestSuite(JaxbBasicConverterTestCase.class);
+        addTestSuite(JaxbIntegrationConverterTestCase.class);
+        addTestSuite(LanguageTestCase.class);
+        addTestSuite(MediaTypeTestCase.class);
+        addTestSuite(ProductTokenTestCase.class);
+        addTestSuite(ReferenceTestCase.class);
+        addTestSuite(RestartTestCase.class);
+        addTestSuite(RiapTestCase.class);
+        addTestSuite(RouteListTestCase.class);
+        addTestSuite(DigestVerifierTestCase.class);
+        addTestSuite(RecipientInfoTestCase.class);
+        addTestSuite(RoleTestCase.class);
+        addTestSuite(StatusTestCase.class);
+        addTestSuite(TemplateTestCase.class);
+        addTestSuite(ValidatorTestCase.class);
+        addTestSuite(VelocityTestCase.class);
+        addTest(RegressionTestSuite.suite());
+        addTest(CryptoTestSuite.suite());
+        addTest(EmfTestSuite.suite());
+        addTest(HtmlTestSuite.suite());
 
-		// TODO: temporarily removed jaxrs test suite, cf issue #811
-		// addTest(JaxRsTestSuite.suite());
-		addTest(ODataTestSuite.suite());
-		addTest(WadlTestSuite.suite());
-		addTest(XmlTestSuite.suite());
-		addTest(JsonTestSuite.suite());
+        // TODO: temporarily removed jaxrs test suite, cf issue #811
+        // addTest(JaxRsTestSuite.suite());
+        addTest(ODataTestSuite.suite());
+        addTest(WadlTestSuite.suite());
+        addTest(XmlTestSuite.suite());
+        addTest(JsonTestSuite.suite());
 
-		// [ifdef jse]
-		addTest(org.restlet.test.resource.ResourceTestSuite.suite());
-		// [enddef]
+        // [ifdef jse]
+        addTest(org.restlet.test.resource.ResourceTestSuite.suite());
+        // [enddef]
 
-		// Tests based on extension only supported by the JEE edition.
-		// [ifdef jee]
-		addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
-		addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
-		addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
-		// [enddef]
+        // Tests based on extension only supported by the JEE edition.
+        // [ifdef jee]
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
+        // [enddef]
 
-		// TODO Fix Zip client test case
-		// addTestSuite(ZipClientTestCase.class);
+        // TODO Fix Zip client test case
+        // addTestSuite(ZipClientTestCase.class);
 
-		// Tests based on HTTP client connectors are not supported by the GAE
-		// edition.
-		// [ifndef gae]
-		addTestSuite(ComponentXmlTestCase.class);
-		addTestSuite(DigesterRepresentationTestCase.class);
-		addTestSuite(HeaderTestCase.class);
-		addTestSuite(HttpBasicTestCase.class);
-		addTestSuite(HttpDigestTestCase.class);
-		addTestSuite(RangeTestCase.class);
-		addTestSuite(RangeRepresentationTestCase.class);
-		addTestSuite(RedirectTestCase.class);
-		addTestSuite(SecurityTestCase.class);
-		addTestSuite(TemplateFilterTestCase.class);
+        // Tests based on HTTP client connectors are not supported by the GAE
+        // edition.
+        // [ifndef gae]
+        addTestSuite(ComponentXmlTestCase.class);
+        addTestSuite(DigesterRepresentationTestCase.class);
+        addTestSuite(HeaderTestCase.class);
+        addTestSuite(HttpBasicTestCase.class);
+        addTestSuite(HttpDigestTestCase.class);
+        addTestSuite(RangeTestCase.class);
+        addTestSuite(RangeRepresentationTestCase.class);
+        addTestSuite(RedirectTestCase.class);
+        addTestSuite(SecurityTestCase.class);
+        addTestSuite(TemplateFilterTestCase.class);
 
-		addTest(SipTestSuite.suite());
-		addTest(SpringTestSuite.suite());
-		addTest(EngineTestSuite.suite());
-		// [enddef]
-	}
+        addTest(SipTestSuite.suite());
+        addTest(SpringTestSuite.suite());
+        addTest(EngineTestSuite.suite());
+        // [enddef]
+    }
 
 }

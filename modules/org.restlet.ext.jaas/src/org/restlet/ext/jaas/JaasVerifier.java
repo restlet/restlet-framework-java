@@ -189,10 +189,10 @@ public class JaasVerifier implements Verifier {
              */
             for (Principal principal : subject.getPrincipals()) {
                 if ((!principal.equals(request.getClientInfo().getUser()))
-                        && (!request.getClientInfo().getRoles().contains(
-                                principal))
-                        && (!request.getClientInfo().getPrincipals().contains(
-                                principal))) {
+                        && (!request.getClientInfo().getRoles()
+                                .contains(principal))
+                        && (!request.getClientInfo().getPrincipals()
+                                .contains(principal))) {
                     request.getClientInfo().getPrincipals().add(principal);
                 }
                 /*

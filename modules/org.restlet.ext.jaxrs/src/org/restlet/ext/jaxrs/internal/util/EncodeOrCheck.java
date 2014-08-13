@@ -519,8 +519,8 @@ public class EncodeOrCheck {
             return;
         }
         if (uriPart.length() <= i + 2) {
-            final CharSequence hexDigits = uriPart.subSequence(i, uriPart
-                    .length());
+            final CharSequence hexDigits = uriPart.subSequence(i,
+                    uriPart.length());
             throw new IllegalArgumentException(
                     "A percent encoding must have two charachters, so "
                             + hexDigits + " is not allowed");

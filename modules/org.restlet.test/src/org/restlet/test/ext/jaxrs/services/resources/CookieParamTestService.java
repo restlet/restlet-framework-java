@@ -58,7 +58,8 @@ public class CookieParamTestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("array")
-    public String array(@CookieParam("c") Cookie[] cc) {
+    public String array(@CookieParam("c")
+    Cookie[] cc) {
         String result = "[";
         for (final Cookie c : cc) {
             result += c.getValue() + ", ";
@@ -68,14 +69,16 @@ public class CookieParamTestService {
 
     @GET
     @Produces("text/plain")
-    public String get(@CookieParam("c") String cookieValue) {
+    public String get(@CookieParam("c")
+    String cookieValue) {
         return cookieValue;
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("Set")
-    public String set(@CookieParam("c") Set<Cookie> cc) {
+    public String set(@CookieParam("c")
+    Set<Cookie> cc) {
         String result = "{";
         for (final Cookie c : cc) {
             result += c.getValue() + ", ";
@@ -86,7 +89,8 @@ public class CookieParamTestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("SortedSet")
-    public String sortedSet(@CookieParam("c") SortedSet<String> cc) {
+    public String sortedSet(@CookieParam("c")
+    SortedSet<String> cc) {
         return cc.toString();
     }
 
@@ -94,8 +98,9 @@ public class CookieParamTestService {
     @Produces("text/plain")
     @Path("withDefault")
     @Encoded
-    public String withDefault(
-            @CookieParam("c") @DefaultValue("default") String cookieValue) {
+    public String withDefault(@CookieParam("c")
+    @DefaultValue("default")
+    String cookieValue) {
         return cookieValue;
     }
 }

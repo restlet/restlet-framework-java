@@ -47,16 +47,17 @@ public class NioClient {
         // TraceHandler.register();
 
         ConnectorHelper<Client> helper;
-         helper = new org.restlet.ext.nio.HttpClientHelper(null);
+        helper = new org.restlet.ext.nio.HttpClientHelper(null);
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
-        //helper = new org.restlet.ext.net.HttpClientHelper(null);
+        // helper = new org.restlet.ext.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
         // [ifdef jse] instruction
         // Engine.setLogLevel(Level.FINE);
 
         final Client client = new Client(new Context(), Protocol.HTTP);
         // client.getContext().getParameters().add("tracing", "true");
-        // client.getContext().getParameters().add("persistingConnections", "false");
+        // client.getContext().getParameters().add("persistingConnections",
+        // "false");
         // client.getContext().getParameters().add("minThreads", "1");
         // client.getContext().getParameters().add("lowThreads", "30");
         // client.getContext().getParameters().add("maxThreads", "40");

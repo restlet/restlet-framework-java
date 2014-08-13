@@ -36,7 +36,6 @@ package org.restlet.ext.xdb.internal;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 // [excludes gwt]
 /**
  * Input stream based on a source stream that must only be partially read.

@@ -92,7 +92,8 @@ public class MatchedTestService {
 
     @GET
     @Produces("text/plain")
-    public String get(@Context UriInfo uriInfo) {
+    public String get(@Context
+    UriInfo uriInfo) {
         final int uriSize = uriInfo.getMatchedURIs().size();
         final int resourcesSize = uriInfo.getMatchedResources().size();
         return uriSize + "\n" + resourcesSize;
@@ -101,7 +102,8 @@ public class MatchedTestService {
     @GET
     @Produces("text/plain")
     @Path("resourceClassNames")
-    public String getResources(@Context UriInfo uriInfo) {
+    public String getResources(@Context
+    UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
         final List<Object> resources = uriInfo.getMatchedResources();
         stb.append(resources.size());
@@ -127,8 +129,9 @@ public class MatchedTestService {
     @GET
     @Produces("text/plain")
     @Path("uriInfo/{attribute}")
-    public String getUriInfoAttribute(@Context UriInfo subUriInfo,
-            @PathParam("attribute") String attribute) {
+    public String getUriInfoAttribute(@Context
+    UriInfo subUriInfo, @PathParam("attribute")
+    String attribute) {
         final Object mainAttrValue = getAttribute(this.mainUriInfo, attribute);
         final Object subAttrValue = getAttribute(subUriInfo, attribute);
         return mainAttrValue + "\n" + subAttrValue;
@@ -137,7 +140,8 @@ public class MatchedTestService {
     @GET
     @Produces("text/plain")
     @Path("uris")
-    public String getUris(@Context UriInfo uriInfo) {
+    public String getUris(@Context
+    UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
         final List<String> uris = uriInfo.getMatchedURIs();
         stb.append(uris.size());

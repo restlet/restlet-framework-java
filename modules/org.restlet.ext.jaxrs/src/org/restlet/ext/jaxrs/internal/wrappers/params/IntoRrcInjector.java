@@ -73,7 +73,7 @@ public class IntoRrcInjector extends ContextInjector {
      * @param tlContext
      * @param leaveClassEncoded
      * @param allProviders
-     *                all entity providers.
+     *            all entity providers.
      * @param extensionBackwardMapping
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
@@ -119,7 +119,7 @@ public class IntoRrcInjector extends ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param lcEnc
-     *                leave class encoded
+     *            leave class encoded
      * @throws IllegalPathParamTypeException
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
@@ -158,9 +158,9 @@ public class IntoRrcInjector extends ContextInjector {
     private CookieParamGetter newCookieParamGetter(
             AccessibleObject fieldOrBeanSetter,
             ThreadLocalizedContext tlContext, boolean annoSaysLeaveClassEncoded) {
-        return new CookieParamGetter(fieldOrBeanSetter
-                .getAnnotation(CookieParam.class), fieldOrBeanSetter
-                .getAnnotation(DefaultValue.class),
+        return new CookieParamGetter(
+                fieldOrBeanSetter.getAnnotation(CookieParam.class),
+                fieldOrBeanSetter.getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
                 tlContext, annoSaysLeaveClassEncoded);
     }
@@ -168,9 +168,9 @@ public class IntoRrcInjector extends ContextInjector {
     private HeaderParamGetter newHeaderParamGetter(
             AccessibleObject fieldOrBeanSetter,
             ThreadLocalizedContext tlContext, boolean annoSaysLeaveClassEncoded) {
-        return new HeaderParamGetter(fieldOrBeanSetter
-                .getAnnotation(HeaderParam.class), fieldOrBeanSetter
-                .getAnnotation(DefaultValue.class),
+        return new HeaderParamGetter(
+                fieldOrBeanSetter.getAnnotation(HeaderParam.class),
+                fieldOrBeanSetter.getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
                 tlContext, annoSaysLeaveClassEncoded);
     }
@@ -178,9 +178,9 @@ public class IntoRrcInjector extends ContextInjector {
     private MatrixParamGetter newMatrixParamGetter(
             AccessibleObject fieldOrBeanSetter,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
-        return new MatrixParamGetter(fieldOrBeanSetter
-                .getAnnotation(MatrixParam.class), fieldOrBeanSetter
-                .getAnnotation(DefaultValue.class),
+        return new MatrixParamGetter(
+                fieldOrBeanSetter.getAnnotation(MatrixParam.class),
+                fieldOrBeanSetter.getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
                 tlContext, leaveClassEncoded
                         || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));
@@ -190,9 +190,9 @@ public class IntoRrcInjector extends ContextInjector {
             AccessibleObject fieldOrBeanSetter,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded)
             throws IllegalPathParamTypeException {
-        return new PathParamGetter(fieldOrBeanSetter
-                .getAnnotation(PathParam.class), fieldOrBeanSetter
-                .getAnnotation(DefaultValue.class),
+        return new PathParamGetter(
+                fieldOrBeanSetter.getAnnotation(PathParam.class),
+                fieldOrBeanSetter.getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
                 tlContext, leaveClassEncoded
                         || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));
@@ -201,9 +201,9 @@ public class IntoRrcInjector extends ContextInjector {
     private QueryParamGetter newQueryParamGetter(
             AccessibleObject fieldOrBeanSetter,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
-        return new QueryParamGetter(fieldOrBeanSetter
-                .getAnnotation(QueryParam.class), fieldOrBeanSetter
-                .getAnnotation(DefaultValue.class),
+        return new QueryParamGetter(
+                fieldOrBeanSetter.getAnnotation(QueryParam.class),
+                fieldOrBeanSetter.getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
                 tlContext, leaveClassEncoded
                         || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));

@@ -60,7 +60,8 @@ public class Issue593Test extends JaxRsTestCase {
             }
         };
     }
-    /** 
+
+    /**
      * @see Issue593Resource#getPath(javax.ws.rs.core.UriInfo)
      */
     public void testGet() throws Exception {

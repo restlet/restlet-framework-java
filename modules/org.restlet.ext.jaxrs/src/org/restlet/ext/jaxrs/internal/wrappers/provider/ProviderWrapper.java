@@ -70,9 +70,10 @@ public interface ProviderWrapper {
 
     /**
      * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
-     * @throws ProviderNotInitializableException  
+     * @throws ProviderNotInitializableException
      */
-    abstract ContextResolver getInitializedCtxResolver() throws ProviderNotInitializableException;
+    abstract ContextResolver getInitializedCtxResolver()
+            throws ProviderNotInitializableException;
 
     /**
      * Beispiele:
@@ -88,15 +89,17 @@ public interface ProviderWrapper {
 
     /**
      * @return the initialized exception mapper
-     * @throws ProviderNotInitializableException 
+     * @throws ProviderNotInitializableException
      */
-    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper() throws ProviderNotInitializableException;
+    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper()
+            throws ProviderNotInitializableException;
 
     /**
      * @return an initialized reader
-     * @throws ProviderNotInitializableException 
+     * @throws ProviderNotInitializableException
      */
-    abstract MessageBodyReader getInitializedReader() throws ProviderNotInitializableException;
+    abstract MessageBodyReader getInitializedReader()
+            throws ProviderNotInitializableException;
 
     // LATER before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
@@ -105,7 +108,8 @@ public interface ProviderWrapper {
      * @return an initialized writer
      * @throws ProviderNotInitializableException
      */
-    abstract MessageBodyWriter getInitializedWriter() throws ProviderNotInitializableException;
+    abstract MessageBodyWriter getInitializedWriter()
+            throws ProviderNotInitializableException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped

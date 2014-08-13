@@ -65,15 +65,19 @@ public class MatrixParamTestService2 {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("encodedWithDefault")
-    public String encodedList(
-            @Encoded @DefaultValue("default") @MatrixParam("m") List<String> cc) {
+    public String encodedList(@Encoded
+    @DefaultValue("default")
+    @MatrixParam("m")
+    List<String> cc) {
         return cc.toString();
     }
 
     @GET
     @Produces("text/plain")
-    public String get(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname, @Context UriInfo uriInfo) {
+    public String get(@MatrixParam("firstname")
+    String firstname, @MatrixParam("lastname")
+    String lastname, @Context
+    UriInfo uriInfo) {
         final List<PathSegment> pathSegents = uriInfo.getPathSegments();
         final PathSegment lastPathSegm = pathSegents.get(0);
         final MultivaluedMap<String, String> mp = lastPathSegm

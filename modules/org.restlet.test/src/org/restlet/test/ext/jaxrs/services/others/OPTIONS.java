@@ -51,7 +51,7 @@ import org.restlet.test.ext.jaxrs.services.resources.RequestService;
  * @see RequestService
  * @see HeadOptionsTestService
  */
-@Target( { ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @javax.ws.rs.HttpMethod("OPTIONS")
 public @interface OPTIONS {

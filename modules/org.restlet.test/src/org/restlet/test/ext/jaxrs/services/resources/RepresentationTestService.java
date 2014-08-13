@@ -50,7 +50,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.test.ext.jaxrs.services.others.Person;
 import org.restlet.test.ext.jaxrs.services.tests.RepresentationTest;
 
-
 /**
  * This tests ensures, that it is also working with a Restlet
  * {@link Representation} and subclasses.
@@ -62,7 +61,7 @@ import org.restlet.test.ext.jaxrs.services.tests.RepresentationTest;
 @Path("representationTest")
 public class RepresentationTestService {
 
-    /**@return*/
+    /** @return */
     @GET
     @Path("repr")
     @Produces("text/plain")
@@ -70,7 +69,7 @@ public class RepresentationTestService {
         return getString();
     }
 
-    /**@return*/
+    /** @return */
     @GET
     @Path("reprString")
     @Produces("text/plain")
@@ -78,9 +77,11 @@ public class RepresentationTestService {
         return new StringRepresentation("jgkghkg");
     }
 
-    /**@return
+    /**
+     * @return
      * @param representation
-     * @throws IOException */
+     * @throws IOException
+     */
     @POST
     @Path("repr")
     public Response post(Representation representation) throws IOException {
@@ -89,9 +90,11 @@ public class RepresentationTestService {
         return Response.ok(entity).type(type).build();
     }
 
-    /**@return
+    /**
+     * @return
      * @param representation
-     * @throws IOException */
+     * @throws IOException
+     */
     @POST
     @Path("reprDecode")
     public Response postDecode(DecodeRepresentation representation)
@@ -101,12 +104,14 @@ public class RepresentationTestService {
         return Response.ok(entity).type(type).build();
     }
 
-    /**@return
+    /**
+     * @return
      * @param personRepr
-     * @throws IOException */
+     * @throws IOException
+     */
     @POST
     @Path("jaxb")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public String postJaxb(JaxbRepresentation<Person> personRepr)
             throws IOException {
         if (personRepr == null) {

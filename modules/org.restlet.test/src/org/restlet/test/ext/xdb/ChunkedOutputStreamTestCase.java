@@ -40,7 +40,6 @@ import java.io.OutputStream;
 import org.restlet.ext.xdb.internal.ChunkedOutputStream;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Test cases for the chunked encoding.
  * 

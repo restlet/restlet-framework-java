@@ -45,6 +45,7 @@ import org.restlet.Context;
  * register this class as an OSGi declarative service. The service declaration
  * should look like:
  * <p>
+ * 
  * <pre>
  * {@code
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -58,20 +59,24 @@ import org.restlet.Context;
  * </scr:component>
  * }
  * </pre>
- * </p><p>
+ * 
+ * </p>
+ * <p>
  * The service properties are:
  * <ul>
- *   <li>alias - the application alias registered with the http service</li>
+ * <li>alias - the application alias registered with the http service</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * The referenced services are:
  * <ul>
- *   <li>RouterProvider - policy="static" cardinality="1..1"</li>
+ * <li>RouterProvider - policy="static" cardinality="1..1"</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * The provided services are:
  * <ul>
- *   <li>ApplicationProvider</li>
+ * <li>ApplicationProvider</li>
  * </ul>
  * </p>
  * 
@@ -86,9 +91,11 @@ public class BaseApplicationProvider implements ApplicationProvider {
     private RouterProvider routerProvider;
 
     /**
-     * Called by OSGi DS to activate the service after the router provider has been bound
+     * Called by OSGi DS to activate the service after the router provider has
+     * been bound
      * 
-     * @param context the OSGi component context
+     * @param context
+     *            the OSGi component context
      */
     public void activate(ComponentContext context) {
         @SuppressWarnings("unchecked")
@@ -99,7 +106,8 @@ public class BaseApplicationProvider implements ApplicationProvider {
     /**
      * Called by OSGi DS to inject the router provider service
      * 
-     * @param routerProvider the router provider service
+     * @param routerProvider
+     *            the router provider service
      */
     public void bindRouterProvider(RouterProvider routerProvider) {
         this.routerProvider = routerProvider;
@@ -120,10 +128,11 @@ public class BaseApplicationProvider implements ApplicationProvider {
     }
 
     /**
-     * Called to construct the actual application instance.  Extenders
-     * will generally override this method.
+     * Called to construct the actual application instance. Extenders will
+     * generally override this method.
      * 
-     * @param context the Restlet application context
+     * @param context
+     *            the Restlet application context
      * @return the newly constructed application instance
      */
     protected Application doCreateApplication(Context context) {
@@ -163,7 +172,8 @@ public class BaseApplicationProvider implements ApplicationProvider {
     /**
      * Called by OSGi DS to un-inject the router provider service
      * 
-     * @param routerProvider the router provider service
+     * @param routerProvider
+     *            the router provider service
      */
     public void unbindRouterProvider(RouterProvider routerProvider) {
         if (this.routerProvider == routerProvider)

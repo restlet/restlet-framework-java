@@ -88,8 +88,7 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.addSegment("root");
         assertEquals("http://restlet.org/root?abc=123&def", ref.toString());
         ref.addSegment("dir");
-        assertEquals("http://restlet.org/root/dir?abc=123&def",
-                ref.toString());
+        assertEquals("http://restlet.org/root/dir?abc=123&def", ref.toString());
     }
 
     public void testEmptyRef() {

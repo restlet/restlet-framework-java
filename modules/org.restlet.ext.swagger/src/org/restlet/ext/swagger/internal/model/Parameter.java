@@ -62,7 +62,7 @@ public class Parameter {
      * possible values for it.
      */
     private List<String> possibleValues;
-    
+
     /**
      * The expected type of the parameter. By default, string
      */

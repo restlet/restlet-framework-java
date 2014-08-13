@@ -58,11 +58,11 @@ public class HttpCallTestCase extends RestletTestCase {
         disposition = new Disposition(Disposition.TYPE_ATTACHMENT);
         assertEquals("attachment", DispositionWriter.write(disposition));
         disposition.setFilename("");
-        assertEquals("attachment; filename=", DispositionWriter
-                .write(disposition));
+        assertEquals("attachment; filename=",
+                DispositionWriter.write(disposition));
         disposition.setFilename("test.txt");
-        assertEquals("attachment; filename=test.txt", DispositionWriter
-                .write(disposition));
+        assertEquals("attachment; filename=test.txt",
+                DispositionWriter.write(disposition));
         disposition.setFilename("file with space.txt");
         assertEquals("attachment; filename=\"file with space.txt\"",
                 DispositionWriter.write(disposition));
@@ -91,13 +91,13 @@ public class HttpCallTestCase extends RestletTestCase {
     public void testParseContentDisposition() throws IOException {
         Disposition disposition = new DispositionReader(
                 "attachment; fileName=\"file.txt\"").readValue();
-        assertEquals("file.txt", disposition.getParameters().getFirstValue(
-                "fileName"));
+        assertEquals("file.txt",
+                disposition.getParameters().getFirstValue("fileName"));
 
         disposition = new DispositionReader("attachment; fileName=file.txt")
                 .readValue();
-        assertEquals("file.txt", disposition.getParameters().getFirstValue(
-                "fileName"));
+        assertEquals("file.txt",
+                disposition.getParameters().getFirstValue("fileName"));
 
         disposition = new DispositionReader(
                 "attachment; filename=\"file with space.txt\"").readValue();

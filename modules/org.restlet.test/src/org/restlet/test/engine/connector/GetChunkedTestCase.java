@@ -71,8 +71,7 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
                     MediaType.APPLICATION_XML);
 
             final StringBuilder builder = new StringBuilder();
-            builder
-                    .append("<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">");
+            builder.append("<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">");
             builder.append("<xsl:output method=\"text\"/>");
             builder.append("<xsl:template match=\"/\">");
             builder.append("<xsl:apply-templates />");
@@ -97,8 +96,8 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
         final Request request = new Request(Method.GET, uri);
         Client c = new Client(Protocol.HTTP);
         final Response r = c.handle(request);
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
+                r.getStatus());
         assertEquals("Hello world", r.getEntity().getText());
         c.stop();
     }

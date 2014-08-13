@@ -53,7 +53,7 @@ public interface ContextResolver {
      * {@link MediaType}.
      * 
      * @param mediaType
-     *                the {@link MediaType} to check for support.
+     *            the {@link MediaType} to check for support.
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */

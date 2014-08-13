@@ -78,7 +78,8 @@ public class RequestService {
     @GET
     @Path("date")
     @Produces("text/plain")
-    public Response get(@Context Request request) {
+    public Response get(@Context
+    Request request) {
         final Date modificDate = getLastModificationDateFromDatastore();
         final EntityTag entityTag = getEntityTagFromDatastore();
         final ResponseBuilder resp = request.evaluatePreconditions(modificDate,
@@ -96,17 +97,15 @@ public class RequestService {
 
     @GET
     @Path("selectVariants")
-    public Response getSelectVariants(@Context Request request) {
+    public Response getSelectVariants(@Context
+    Request request) {
         // TEST VariantListBuilder
         final List<Variant> variants = new ArrayList<Variant>();
-        variants
-                .add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.ENGLISH, null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.ENGLISH, null));
         variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, Locale.ENGLISH,
                 null));
-        variants
-                .add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.GERMAN, null));
-        variants
-                .add(new Variant(MediaType.TEXT_PLAIN_TYPE, Locale.GERMAN, null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.GERMAN, null));
+        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, Locale.GERMAN, null));
         final Variant variant = request.selectVariant(variants);
         if (variant == null) {
             return Response.notAcceptable(variants).build();
@@ -128,7 +127,8 @@ public class RequestService {
 
     @PUT
     @Path("date")
-    public Response put(@Context Request request) {
+    public Response put(@Context
+    Request request) {
         final Date modificDate = getLastModificationDateFromDatastore();
         final EntityTag entityTag = getEntityTagFromDatastore();
         final ResponseBuilder resp = request.evaluatePreconditions(modificDate,

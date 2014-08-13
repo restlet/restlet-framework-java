@@ -58,7 +58,7 @@ public interface ObjectFactory {
      * 
      * @param <T>
      * @param jaxRsClass
-     *                the root resource class or provider class.
+     *            the root resource class or provider class.
      * @return The created instance.
      * @throws InstantiateException
      */

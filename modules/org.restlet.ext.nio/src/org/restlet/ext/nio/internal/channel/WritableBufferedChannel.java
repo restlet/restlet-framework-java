@@ -39,7 +39,6 @@ import java.nio.ByteBuffer;
 import org.restlet.engine.io.WakeupListener;
 import org.restlet.ext.nio.internal.buffer.Buffer;
 
-
 // [excludes gwt]
 /**
  * Writable byte channel based on a target socket channel. It is capable of

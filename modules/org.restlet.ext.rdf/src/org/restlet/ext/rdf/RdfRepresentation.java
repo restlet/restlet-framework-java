@@ -248,8 +248,8 @@ public class RdfRepresentation extends WriterRepresentation {
             } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
                     .getMediaType())) {
                 new RdfNTriplesReader(rdfRepresentation, graphHandler).parse();
-            } else if (MediaType.TEXT_TURTLE
-                    .equals(rdfRepresentation.getMediaType())) {
+            } else if (MediaType.TEXT_TURTLE.equals(rdfRepresentation
+                    .getMediaType())) {
                 new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
             } else if (MediaType.valueOf("text/rdf+n3").equals(
                     rdfRepresentation.getMediaType())) {

@@ -117,9 +117,11 @@ public class SimpleTrainTest extends JaxRsTestCase {
 
     public void testGetTextMultiple1() throws Exception {
         if (!ONLY_M2 && !ONLY_TEXT_ALL) {
-            final Response response = accessServer(Method.GET,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR }));
+            final Response response = accessServer(
+                    Method.GET,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_CALENDAR }));
             sysOutEntityIfError(response);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             final Representation entity = response.getEntity();
@@ -132,7 +134,9 @@ public class SimpleTrainTest extends JaxRsTestCase {
         if (ONLY_TEXT_ALL) {
             return;
         }
-        final Response response = accessServer(Method.GET, SimpleTrain.class,
+        final Response response = accessServer(
+                Method.GET,
+                SimpleTrain.class,
                 TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         sysOutEntityIfError(response);
@@ -144,12 +148,16 @@ public class SimpleTrainTest extends JaxRsTestCase {
 
     public void testHead() throws Exception {
         if (!ONLY_M2 && !ONLY_TEXT_ALL) {
-            final Response responseHead = accessServer(Method.HEAD,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
-            final Response responseGett = accessServer(Method.GET,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
+            final Response responseHead = accessServer(
+                    Method.HEAD,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_HTML }));
+            final Response responseGett = accessServer(
+                    Method.GET,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_HTML }));
             assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
             assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
             final Representation entityHead = responseHead.getEntity();

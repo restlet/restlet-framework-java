@@ -55,7 +55,8 @@ public class MatchedUriTestResource {
 
     @GET
     @Produces("text/plain")
-    public String get(@Context UriInfo uriInfo) {
+    public String get(@Context
+    UriInfo uriInfo) {
         final int uriSize = uriInfo.getMatchedURIs().size();
         final int resourcesSize = uriInfo.getMatchedResources().size();
         return uriSize + "\n" + resourcesSize;
@@ -64,7 +65,8 @@ public class MatchedUriTestResource {
     @GET
     @Produces("text/plain")
     @Path("sub")
-    public String getResources(@Context UriInfo uriInfo) {
+    public String getResources(@Context
+    UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
         final List<Object> resources = uriInfo.getMatchedResources();
         stb.append(resources.size());

@@ -45,6 +45,7 @@ import org.restlet.resource.Directory;
  * register this class as an OSGi declarative service. The service declaration
  * should look like:
  * <p>
+ * 
  * <pre>
  * {@code
  * <?xml version="1.0" encoding="UTF-8"?>
@@ -58,25 +59,33 @@ import org.restlet.resource.Directory;
  * </scr:component>
  * }
  * </pre>
- * </p><p>
+ * 
+ * </p>
+ * <p>
  * The service properties are:
  * <ul>
- *   <li>path - the path to the resource relative to the application - required - must not be null</li>
- *   <li>rootUri - the URI to the directory - required - must not be null</li>
- *   <li>indexName - the index name - optional - defaults to "index"</li>
- *   <li>deeplyAccessible - Indicates if the sub-directories are deeply accessible - optional - defaults to true</li>
- *   <li>modifiable - Indicates if modifications to local resources are allowed - optional - defaults to false</li>
- *   <li>negotiatingContent - Indicates if the best content is automatically negotiated - optional - defaults to true</li>
+ * <li>path - the path to the resource relative to the application - required -
+ * must not be null</li>
+ * <li>rootUri - the URI to the directory - required - must not be null</li>
+ * <li>indexName - the index name - optional - defaults to "index"</li>
+ * <li>deeplyAccessible - Indicates if the sub-directories are deeply accessible
+ * - optional - defaults to true</li>
+ * <li>modifiable - Indicates if modifications to local resources are allowed -
+ * optional - defaults to false</li>
+ * <li>negotiatingContent - Indicates if the best content is automatically
+ * negotiated - optional - defaults to true</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * The referenced services are:
  * <ul>
- *   <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
+ * <li>FilterProvider - optional - policy="static" cardinality="1..1"</li>
  * </ul>
- * </p><p>
+ * </p>
+ * <p>
  * The provided services are:
  * <ul>
- *   <li>DirectoryProvider</li>
+ * <li>DirectoryProvider</li>
  * </ul>
  * </p>
  * 
@@ -102,7 +111,8 @@ public class BaseDirectoryProvider extends BaseRestletProvider implements
     /**
      * Called by OSGi DS to activate the service
      * 
-     * @param context the OSGi service context
+     * @param context
+     *            the OSGi service context
      */
     public void activate(ComponentContext context) {
         @SuppressWarnings("unchecked")
@@ -134,10 +144,11 @@ public class BaseDirectoryProvider extends BaseRestletProvider implements
     }
 
     /**
-     * Creates the Restlet Directory instance using the rootUri, indexName, 
+     * Creates the Restlet Directory instance using the rootUri, indexName,
      * deeplyAccessible, modifiable, and negotiatingContent service properties
      * 
-     * @param context the Restlet application context
+     * @param context
+     *            the Restlet application context
      * @return the configured Restlet Directory
      */
     protected Directory createDirectory(Context context) {

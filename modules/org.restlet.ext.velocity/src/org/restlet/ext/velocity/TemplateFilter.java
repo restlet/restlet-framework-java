@@ -136,8 +136,8 @@ public class TemplateFilter extends Filter {
     @Override
     protected void afterHandle(Request request, Response response) {
         if (response.isEntityAvailable()
-                && response.getEntity().getEncodings().contains(
-                        Encoding.VELOCITY)) {
+                && response.getEntity().getEncodings()
+                        .contains(Encoding.VELOCITY)) {
             try {
                 final TemplateRepresentation representation = new TemplateRepresentation(
                         response.getEntity(), response.getEntity()

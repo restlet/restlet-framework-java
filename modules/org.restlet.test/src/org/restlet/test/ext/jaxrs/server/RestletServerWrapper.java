@@ -53,7 +53,7 @@ public class RestletServerWrapper implements ServerWrapper {
 
     /**
      * @author Stephan
-     *
+     * 
      */
     private final class ClientConnector extends Client {
         /**
@@ -99,7 +99,7 @@ public class RestletServerWrapper implements ServerWrapper {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
-                // 
+                //
             }
             port = server.getEphemeralPort();
             if (port > 0) {

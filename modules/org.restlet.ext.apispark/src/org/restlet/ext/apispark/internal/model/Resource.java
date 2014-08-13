@@ -57,12 +57,6 @@ public class Resource {
     /** Relative path from the endpoint to this resource */
     private String resourcePath;
 
-    /**
-     * Name of the section under which the resource should appear in
-     * documentation
-     */
-    private String section;
-
     public String getDescription() {
         return description;
     }
@@ -107,13 +101,5 @@ public class Resource {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
     }
 }

@@ -228,17 +228,17 @@ public class EncodeOrCheckTests extends RestletTestCase {
     public void testNameOrValue() {
         checkNoEncode(NAME_OR_VALUE, "");
         checkNoEncode(NAME_OR_VALUE, "sdf");
-        assertEquals("sdf%20hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
-                false, "guj"));
-        assertEquals("sdf%2520hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
-                true, "guj"));
+        assertEquals("sdf%20hfdf",
+                EncodeOrCheck.nameOrValue("sdf%20hfdf", false, "guj"));
+        assertEquals("sdf%2520hfdf",
+                EncodeOrCheck.nameOrValue("sdf%20hfdf", true, "guj"));
         checkEncoding(NAME_OR_VALUE, "abc def", "abc%20def");
         final StringBuilder reservedEnc = new StringBuilder();
         for (int i = 0; i < EncodeOrCheck.RESERVED.length(); i++) {
             EncodeOrCheck.toHex(EncodeOrCheck.RESERVED.charAt(i), reservedEnc);
         }
-        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED, reservedEnc
-                .toString());
+        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED,
+                reservedEnc.toString());
     }
 
     public void testPathSegmentWithMatrix() {

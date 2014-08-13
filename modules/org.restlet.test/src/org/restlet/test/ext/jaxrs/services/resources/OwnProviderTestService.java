@@ -51,7 +51,7 @@ import org.restlet.test.ext.jaxrs.services.tests.OwnProviderTest;
 public class OwnProviderTestService {
 
     @GET
-    @Produces( { "text/crazy-person", "application/crazy-person" })
+    @Produces({ "text/crazy-person", "application/crazy-person" })
     public Response get() {
         final Person person = new Person("abc", "def");
         return Response.ok(person).header("h1", "h1v").build();

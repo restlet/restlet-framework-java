@@ -68,28 +68,33 @@ public class AnnotatedResource14TestCase extends RestletTestCase {
 
     public void testQuery() throws IOException {
         Representation rep = null;
-        
-        rep = clientResource.put(new StringRepresentation("test", MediaType.APPLICATION_JSON), MediaType.APPLICATION_JSON);
+
+        rep = clientResource.put(new StringRepresentation("test",
+                MediaType.APPLICATION_JSON), MediaType.APPLICATION_JSON);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
         assertEquals("json", rep.getText());
 
-        rep = clientResource.put(new StringRepresentation("test", MediaType.APPLICATION_XML), MediaType.APPLICATION_JSON);
+        rep = clientResource.put(new StringRepresentation("test",
+                MediaType.APPLICATION_XML), MediaType.APPLICATION_JSON);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
         assertEquals("xml:json", rep.getText());
 
-        rep = clientResource.put(new StringRepresentation("test", MediaType.APPLICATION_XML), MediaType.APPLICATION_XML);
+        rep = clientResource.put(new StringRepresentation("test",
+                MediaType.APPLICATION_XML), MediaType.APPLICATION_XML);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_XML, rep.getMediaType());
         assertEquals("xml", rep.getText());
 
-        rep = clientResource.put(new StringRepresentation("test", MediaType.TEXT_PLAIN));
+        rep = clientResource.put(new StringRepresentation("test",
+                MediaType.TEXT_PLAIN));
         assertNotNull(rep);
         assertEquals(MediaType.TEXT_PLAIN, rep.getMediaType());
         assertEquals("*", rep.getText());
 
-        rep = clientResource.put(new StringRepresentation("test", MediaType.TEXT_PLAIN), MediaType.TEXT_PLAIN);
+        rep = clientResource.put(new StringRepresentation("test",
+                MediaType.TEXT_PLAIN), MediaType.TEXT_PLAIN);
         assertNotNull(rep);
         assertEquals(MediaType.TEXT_PLAIN, rep.getMediaType());
         assertEquals("*", rep.getText());

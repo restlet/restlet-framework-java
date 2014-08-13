@@ -47,7 +47,7 @@ public class PathVariable {
 
     /** Name of this variable. */
     private String name;
-    
+
     /**
      * The expected type of the parameter. By default, string
      */

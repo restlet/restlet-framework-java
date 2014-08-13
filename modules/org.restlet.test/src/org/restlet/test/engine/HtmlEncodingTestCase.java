@@ -51,7 +51,7 @@ public class HtmlEncodingTestCase extends RestletTestCase {
 
         String str = "<test>azertyéè@à&%ù€®&#174;&reg;</test>&&&;&testest";
         String strEncoded = "&lt;test&gt;azerty&eacute;&egrave;@&agrave;&amp;%&ugrave;&euro;&reg;&amp;#174;&amp;reg;&lt;/test&gt;&amp;&amp;&amp;;&amp;testest";
-        String strDecoded = "<test>azertyéè@à&%ù€®®®</test>&&&;&testest"; 
+        String strDecoded = "<test>azertyéè@à&%ù€®®®</test>&&&;&testest";
 
         assertEquals(strEncoded, StringUtils.htmlEscape(str));
         assertEquals(strDecoded, StringUtils.htmlUnescape(str));
@@ -59,6 +59,7 @@ public class HtmlEncodingTestCase extends RestletTestCase {
         // Test encoding/decoding as identity tranformation
         assertEquals(str, StringUtils.htmlUnescape(StringUtils.htmlEscape(str)));
         // Test decoding twice
-        assertEquals(strDecoded, StringUtils.htmlUnescape(StringUtils.htmlUnescape(str)));
+        assertEquals(strDecoded,
+                StringUtils.htmlUnescape(StringUtils.htmlUnescape(str)));
     }
 }

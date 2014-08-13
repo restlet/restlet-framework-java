@@ -48,7 +48,7 @@ import org.restlet.test.ext.jaxrs.services.others.Person;
 @Path("appPlusXml")
 public class AppPlusXmlResource {
     @GET
-    @Produces( { "application/Person+xml", APPLICATION_XML, TEXT_XML })
+    @Produces({ "application/Person+xml", APPLICATION_XML, TEXT_XML })
     public Person getPerson() {
         return new Person("Angela", "Merkel");
     }

@@ -43,10 +43,10 @@ import org.restlet.resource.Post;
  */
 public interface ContactsResource {
 
-	@Get
-	public ArrayList<ContactRepresentation> retrieve();
+    @Get
+    public ArrayList<ContactRepresentation> retrieve();
 
-	@Post
-	public void add(ContactRepresentation contact);
+    @Post
+    public void add(ContactRepresentation contact);
 
 }

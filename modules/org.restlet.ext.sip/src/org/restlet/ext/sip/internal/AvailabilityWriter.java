@@ -78,13 +78,13 @@ public class AvailabilityWriter extends HeaderWriter<Availability> {
                 appendComment(availability.getComment());
                 appendSpace();
             }
-            
+
             if (availability.getDuration() > 0) {
                 appendParameterSeparator();
                 append("duration=");
                 append(availability.getDuration());
             }
-            
+
             for (Parameter param : availability.getParameters()) {
                 appendParameterSeparator();
                 appendExtension(param);

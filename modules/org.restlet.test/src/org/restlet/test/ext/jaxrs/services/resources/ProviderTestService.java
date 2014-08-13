@@ -299,8 +299,8 @@ public class ProviderTestService {
     @POST
     @Path("multipart/form-data")
     @Consumes("multipart/form-data")
-    public Object multipartPost(@QueryParam("attrNo") int attrNo,
-            Multipart multipart) throws MessagingException, IOException {
+    public Object multipartPost(@QueryParam("attrNo")
+    int attrNo, Multipart multipart) throws MessagingException, IOException {
         final BodyPart bodyPart = multipart.getBodyPart(attrNo);
         return bodyPart.getInputStream();
     }
@@ -356,8 +356,9 @@ public class ProviderTestService {
     @GET
     @Path("String/substring")
     @Produces("text/plain")
-    public String subStringGet(@MatrixParam("start") int start,
-            @MatrixParam("end") int end) {
+    public String subStringGet(@MatrixParam("start")
+    int start, @MatrixParam("end")
+    int end) {
         if (end >= ALPHABET.length()) {
             return ALPHABET.substring(start);
         }

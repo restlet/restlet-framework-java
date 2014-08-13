@@ -11,7 +11,6 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
@@ -25,13 +24,6 @@ public class IntrospectionUtils {
     public static void sendDefinition(Definition definition,
             String definitionId, String ulogin, String upwd, String serviceUrl,
             Logger LOGGER) {
-        JacksonRepresentation<Definition> jr = new JacksonRepresentation<Definition>(
-                definition);
-        try {
-            jr.write(System.out);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
 
         Collections.sort(definition.getContract().getRepresentations(),
                 new Comparator<Representation>() {

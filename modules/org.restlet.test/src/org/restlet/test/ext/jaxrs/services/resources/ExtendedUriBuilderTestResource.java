@@ -54,14 +54,14 @@ public class ExtendedUriBuilderTestResource {
 
     @GET
     @Path("absolute")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getAbsoluteUriBuilder() {
         return this.uriInfo.getAbsolutePathBuilder().build().toString();
     }
 
     @GET
     @Path("base")
-    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getBaseUriBuilder() {
         return this.uriInfo.getBaseUriBuilder().build().toString();
     }

@@ -55,14 +55,14 @@ public class FoafExample {
 
         // Linked Simpson resources
         Reference homerRef = new Reference(
-        "http://www.rmep.org/accounts/chunkylover53/");
+                "http://www.rmep.org/accounts/chunkylover53/");
         Reference margeRef = new Reference(
-        "http://www.rmep.org/accounts/bretzels34/");
+                "http://www.rmep.org/accounts/bretzels34/");
         Reference bartRef = new Reference(
-        "http://www.rmep.org/accounts/jojo10/");
+                "http://www.rmep.org/accounts/jojo10/");
         Reference lisaRef = new Reference(
-        "http://www.rmep.org/accounts/lisa1984/");
-        
+                "http://www.rmep.org/accounts/lisa1984/");
+
         // Example RDF graph
         Graph example = new Graph();
         example.add(homerRef, firstName, new Literal("Homer"));

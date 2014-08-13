@@ -97,8 +97,8 @@ public class WrapperClassesTests extends TestCase {
     }
 
     private static final ResourceClasses resourceClasses = new ResourceClasses(
-            new ThreadLocalizedContext(), null, null, Engine
-                    .getAnonymousLogger());
+            new ThreadLocalizedContext(), null, null,
+            Engine.getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {
         final RootResourceClass rrc = RootResourceClassTest

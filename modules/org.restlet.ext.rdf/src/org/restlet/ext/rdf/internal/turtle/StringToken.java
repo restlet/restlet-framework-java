@@ -78,8 +78,8 @@ public class StringToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public StringToken(RdfTurtleReader contentHandler,
-            Context context) throws IOException {
+    public StringToken(RdfTurtleReader contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
         multiLines = false;
         this.parse();
@@ -115,7 +115,7 @@ public class StringToken extends LexicalUnit {
     public void setMultiLines(boolean multiLines) {
         this.multiLines = multiLines;
     }
-    
+
     @Override
     public String toString() {
         return getValue();

@@ -48,7 +48,7 @@ public class DeterminingMediaTypeTestService {
 
     @GET
     @Path("htmlPlainGif")
-    @Produces( { "text/html", "text/plain", "image/gif" })
+    @Produces({ "text/html", "text/plain", "image/gif" })
     public byte[] getHtmlPlainGif() {
         return "gkjlgk".getBytes();
     }

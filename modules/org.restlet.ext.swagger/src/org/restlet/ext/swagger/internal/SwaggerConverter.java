@@ -548,7 +548,8 @@ public abstract class SwaggerConverter {
             for (Resource resource : definition.getContract().getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
-                rd.setPath(ReflectUtils.getFirstSegment(resource.getResourcePath()));
+                rd.setPath(ReflectUtils.getFirstSegment(resource
+                        .getResourcePath()));
                 if (!addedApis.contains(rd.getPath())) {
                     addedApis.add(rd.getPath());
                     result.getApis().add(rd);

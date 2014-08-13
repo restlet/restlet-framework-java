@@ -210,10 +210,8 @@ public class DocumentationInfo {
                 // Restore the SAX writer's dataFormat
                 writer.setDataFormat(isDataFormat);
             } catch (IOException e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.SEVERE,
+                Context.getCurrentLogger()
+                        .log(Level.SEVERE,
                                 "Error when writing the text content of the current \"doc\" tag.",
                                 e);
             }
@@ -268,8 +266,8 @@ public class DocumentationInfo {
                     Node attribute = node.getAttributes().item(i);
                     // NB : the type of the attribute is set to null.
                     attributes.addAttribute(attribute.getNamespaceURI(),
-                            attribute.getLocalName(), "", null, attribute
-                                    .getNodeValue());
+                            attribute.getLocalName(), "", null,
+                            attribute.getNodeValue());
                 }
             }
 
@@ -277,11 +275,11 @@ public class DocumentationInfo {
                     && node.getChildNodes().getLength() > 0) {
                 // This node contains children nodes.
                 if (attributes == null) {
-                    writer.startElement(node.getNamespaceURI(), node
-                            .getLocalName());
+                    writer.startElement(node.getNamespaceURI(),
+                            node.getLocalName());
                 } else {
-                    writer.startElement(node.getNamespaceURI(), node
-                            .getLocalName(), node.getPrefix(), attributes);
+                    writer.startElement(node.getNamespaceURI(),
+                            node.getLocalName(), node.getPrefix(), attributes);
                 }
                 // Add the children nodes.
                 for (int i = 0; i < node.getChildNodes().getLength(); i++) {
@@ -291,11 +289,11 @@ public class DocumentationInfo {
             } else {
                 // This node is empty.
                 if (attributes == null) {
-                    writer.emptyElement(node.getNamespaceURI(), node
-                            .getLocalName());
+                    writer.emptyElement(node.getNamespaceURI(),
+                            node.getLocalName());
                 } else {
-                    writer.emptyElement(node.getNamespaceURI(), node
-                            .getLocalName(), node.getPrefix(), attributes);
+                    writer.emptyElement(node.getNamespaceURI(),
+                            node.getLocalName(), node.getPrefix(), attributes);
                 }
             }
         }

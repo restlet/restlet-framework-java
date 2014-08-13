@@ -73,8 +73,8 @@ public class ItemsResource extends BaseResource {
             Representation rep = new StringRepresentation("Item created",
                     MediaType.TEXT_PLAIN);
             // Indicates where is located the new resource.
-            rep.setLocationRef(getRequest().getResourceRef().getIdentifier() + "/"
-                    + itemName);
+            rep.setLocationRef(getRequest().getResourceRef().getIdentifier()
+                    + "/" + itemName);
             result = rep;
         } else { // Item is already registered.
             setStatus(Status.CLIENT_ERROR_NOT_FOUND);

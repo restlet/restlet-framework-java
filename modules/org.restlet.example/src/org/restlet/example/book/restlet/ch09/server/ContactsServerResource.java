@@ -43,27 +43,28 @@ import org.restlet.ext.wadl.WadlServerResource;
  * Contacts server resource implementing the {@link ContactsResource} interface.
  */
 public class ContactsServerResource extends WadlServerResource implements
-		ContactsResource {
+        ContactsResource {
 
-	public ArrayList<ContactRepresentation> retrieve() {
-		ArrayList<ContactRepresentation> contacts = new ArrayList<ContactRepresentation>();
-		ContactRepresentation contact = new ContactRepresentation("Homer",
-				"Simpson", "homer@simpson.org", "chunkylover53", null, "Homer Simpson");
-		contacts.add(contact);
-		contact = new ContactRepresentation("Bartholomew", "Simpson",
-				"bart@simpson.org", "jojo10", null, "Bart Simpson");
-		contacts.add(contact);
-		return contacts;
-	}
+    public ArrayList<ContactRepresentation> retrieve() {
+        ArrayList<ContactRepresentation> contacts = new ArrayList<ContactRepresentation>();
+        ContactRepresentation contact = new ContactRepresentation("Homer",
+                "Simpson", "homer@simpson.org", "chunkylover53", null,
+                "Homer Simpson");
+        contacts.add(contact);
+        contact = new ContactRepresentation("Bartholomew", "Simpson",
+                "bart@simpson.org", "jojo10", null, "Bart Simpson");
+        contacts.add(contact);
+        return contacts;
+    }
 
-	public void add(ContactRepresentation contact) {
-		System.out.println("Email: " + contact.getEmail());
-		System.out.println("First name: " + contact.getFirstName());
-		System.out.println("Last name: " + contact.getLastName());
-		System.out.println("Login: " + contact.getLogin());
-		System.out.println("Nick name: " + contact.getNickName());
-		System.out.println("Sender name: " + contact.getSenderName());
-		System.out.println();
-	}
+    public void add(ContactRepresentation contact) {
+        System.out.println("Email: " + contact.getEmail());
+        System.out.println("First name: " + contact.getFirstName());
+        System.out.println("Last name: " + contact.getLastName());
+        System.out.println("Login: " + contact.getLogin());
+        System.out.println("Nick name: " + contact.getNickName());
+        System.out.println("Sender name: " + contact.getSenderName());
+        System.out.println();
+    }
 
 }

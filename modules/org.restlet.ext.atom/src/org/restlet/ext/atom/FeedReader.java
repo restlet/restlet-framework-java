@@ -310,7 +310,8 @@ public class FeedReader extends DefaultHandler {
             String systemId, String notationName) throws SAXException {
         // Send the event to the extra handler.
         if (this.feedReader != null) {
-            this.feedReader.unparsedEntityDecl(name, publicId, systemId, notationName);
+            this.feedReader.unparsedEntityDecl(name, publicId, systemId,
+                    notationName);
         }
     }
 
