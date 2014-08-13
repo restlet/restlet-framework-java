@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.osgi_4.0/org.osgi.compendium.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.osgi_4.0/org.osgi.core.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JDK 1.7.0_55"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.osgi"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

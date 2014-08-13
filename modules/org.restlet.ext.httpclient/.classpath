@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/net.jcip.annotations_1.0/net.jcip.annotations.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.commons.codec_1.5/org.apache.commons.codec.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.commons.logging_1.1/org.apache.commons.logging.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.httpclient_4.3/org.apache.httpclient.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.httpcore_4.3/org.apache.httpcore.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.httpmime_4.3/org.apache.httpmime.jar"/>
-	<classpathentry kind="lib" path="E:/WorkSpaces/restlet/restlet-framework-lgc-2.2/libraries/org.apache.james.mime4j_0.7/org.apache.james.mime4j.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JDK 1.7.0_55"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpclient"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpcore"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpmime"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/net.jcip.annotations"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.codec"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.logging"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.james.mime4j"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
