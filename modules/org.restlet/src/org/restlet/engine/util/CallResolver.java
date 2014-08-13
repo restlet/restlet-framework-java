@@ -79,12 +79,15 @@ public class CallResolver extends Resolver<Object> {
     private String getReferenceContent(String partName, Reference reference) {
         String result = null;
 
-        if (reference != null) {
+        if (reference != null && partName != null) {
             if (partName.equals("a")) {
                 result = reference.getAuthority();
             } else if (partName.startsWith("b")) {
                 result = getReferenceContent(partName.substring(1),
                         reference.getBaseRef());
+            } else if (partName.startsWith("t")) {
+                result = getReferenceContent(partName.substring(1),
+                        reference.getTargetRef());
             } else if (partName.equals("e")) {
                 result = reference.getRelativePart();
             } else if (partName.equals("f")) {
@@ -99,6 +102,8 @@ public class CallResolver extends Resolver<Object> {
                 result = reference.getQuery();
             } else if (partName.equals("r")) {
                 result = reference.getRemainingPart();
+            } else if (partName.isEmpty()) {
+                result = reference.toString(false, false);
             }
         }
 
@@ -123,7 +128,7 @@ public class CallResolver extends Resolver<Object> {
 
         // Check for a matching request or response property
         if (result == null) {
-            if (this.request != null) {
+            if (this.request != null && variableName != null) {
                 if (variableName.equals("c")) {
                     result = Boolean.toString(this.request.isConfidential());
                 } else if (variableName.equals("cia")) {

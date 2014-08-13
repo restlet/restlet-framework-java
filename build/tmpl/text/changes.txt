@@ -8,6 +8,9 @@ Changes log
       - 
 
     - Enhancements
+      - Added targetRef support to templates, allow reference variables to 
+        resolve to the full reference (issue #935).
+        Contributed by Jeremy Gustie.
       - Updated agent.properties file with recent Opera user agent signature.
       - Added Resource#toRepresentation(Object, MediaType) convenience method.
       - Added ConverterService#toRepresentation(Object, MediaType) convenience method.
@@ -26,10 +29,14 @@ Changes log
       - StatusService.toStatus(Throwable, ...) methods now support @Status annotations
         to set the proper code.
  
-    - Bug fixed
+    - Bugs fixed
       - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
       - ServerResource#doCatch() method wasn't invoking StatusService to set the error
         representation if empty.
+      - Fixed potential NPE in odata extension when schema ComplexType in a 
+        document does not declare a schema attribute (issue #932).
+      - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
+        Issue #931. Reported and contributed by Tal Liron.
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features
@@ -47,7 +54,7 @@ Changes log
       - ServletWarEntity is limited to file system modification dates. Issue #868.
         Reported and contributed by Jeremy Gustie.
       
-    - Bug fixed
+    - Bugs fixed
       - Added copy of Servlet request parameters to the Restlet request attributes. Issue #741.
         Reported by Steve Rowe and contributed by Jeremy Gustie.
       - Stripped Servlet container generated "jsessionid" matrix parameter. Issue #770
