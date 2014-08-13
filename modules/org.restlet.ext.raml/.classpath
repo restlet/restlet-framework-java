@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.raml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jackson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.scala"/>
@@ -11,6 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.io"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.logging"/>
-	<classpathentry kind="lib" path="/home/cyp/Téléchargements/jackson-module-jsonSchema-2.4.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.fasterxml.jackson"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

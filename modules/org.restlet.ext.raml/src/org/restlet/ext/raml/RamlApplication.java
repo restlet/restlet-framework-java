@@ -41,10 +41,9 @@ import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 
 /**
- * Raml enabled application. This subclass of {@link Application} can
- * describe itself in the format described by the <a
- * href="http://raml.org/spec.html">Raml specification
- * project</a>. <br>
+ * Raml enabled application. This subclass of {@link Application} can describe
+ * itself in the format described by the <a
+ * href="http://raml.org/spec.html">Raml specification project</a>. <br>
  * <br>
  * It requires you to set up a specific end point that serves the Raml
  * definition.<br>
@@ -62,113 +61,118 @@ import org.restlet.routing.Router;
  */
 public class RamlApplication extends Application {
 
-    /**
-     * Returns the next router available.
-     * 
-     * @param current
-     *            The current Restlet to inspect.
-     * @return The first router available.
-     */
-    private static Router getNextRouter(Restlet current) {
-        Router result = null;
-        if (current instanceof Router) {
-            result = (Router) current;
-        } else if (current instanceof Filter) {
-            result = getNextRouter(((Filter) current).getNext());
-        }
-        return result;
-    }
+	/**
+	 * Returns the next router available.
+	 * 
+	 * @param current
+	 *            The current Restlet to inspect.
+	 * @return The first router available.
+	 */
+	private static Router getNextRouter(Restlet current) {
+		Router result = null;
+		if (current instanceof Router) {
+			result = (Router) current;
+		} else if (current instanceof Filter) {
+			result = getNextRouter(((Filter) current).getNext());
+		}
+		return result;
+	}
 
-    /**
-     * Returns the next router available.
-     * 
-     * @param current
-     *            The current Restlet to inspect.
-     * @return The first router available.
-     */
-    private static boolean isDocumented(Restlet current) {
-        boolean documented = false;
+	/**
+	 * Returns the next router available.
+	 * 
+	 * @param current
+	 *            The current Restlet to inspect.
+	 * @return The first router available.
+	 */
+	private static boolean isDocumented(Restlet current) {
+		boolean documented = false;
 
-        Router router = null;
-        if (current instanceof Router) {
-            router = (Router) current;
-            for (Route route : router.getRoutes()) {
-                if (isDocumented(route.getNext())) {
-                    documented = true;
-                    break;
-                }
-            }
-        } else if (current instanceof Filter) {
-            documented = isDocumented(((Filter) current).getNext());
-        } else if (current instanceof RamlSpecificationRestlet) {
-            documented = true;
-        }
+		Router router = null;
+		if (current instanceof Router) {
+			router = (Router) current;
+			for (Route route : router.getRoutes()) {
+				if (isDocumented(route.getNext())) {
+					documented = true;
+					break;
+				}
+			}
+		} else if (current instanceof Filter) {
+			documented = isDocumented(((Filter) current).getNext());
+		} else if (current instanceof RamlSpecificationRestlet) {
+			documented = true;
+		}
 
-        return documented;
-    }
+		return documented;
+	}
 
-    /** Indicates if this application can document herself. */
-    private boolean documented;
+	/** Indicates if this application can document herself. */
+	private boolean documented;
 
-    /**
-     * Defines the route on which the Raml definition will be provided.
-     * @param router
-     *            The router on which defining the new route.
-     * @param ramlPath
-     *            The path to which attach the Restlet that serves the Raml definition.
-     * @param ramlRestlet
-     *            The Restlet that serves the Raml definition.
-     */
-    public void attachRamlDocumentationRestlet(Router router,
-            String ramlPath, Restlet ramlRestlet) {
-        router.attach(ramlPath, ramlRestlet);
-    }
+	/**
+	 * Defines the route on which the Raml definition will be provided.
+	 * 
+	 * @param router
+	 *            The router on which defining the new route.
+	 * @param ramlPath
+	 *            The path to which attach the Restlet that serves the Raml
+	 *            definition.
+	 * @param ramlRestlet
+	 *            The Restlet that serves the Raml definition.
+	 */
+	public void attachRamlDocumentationRestlet(Router router, String ramlPath,
+			Restlet ramlRestlet) {
+		router.attach(ramlPath, ramlRestlet);
+	}
 
-    /**
-     * Defines the route on which the Raml definition will be provided
-     * (by default, "/raml").
-     * 
-     * @param router
-     *            The router on which defining the new route.
-     */
-    public void attachRamlSpecificationRestlet(Router router) {
-        Restlet restlet = getRamlSpecificationRestlet(getContext());
-        attachRamlDocumentationRestlet(router, "/raml", restlet);
-    }
+	/**
+	 * Defines the route on which the Raml definition will be provided (by
+	 * default, "/raml").
+	 * 
+	 * @param router
+	 *            The router on which defining the new route.
+	 */
+	public void attachRamlSpecificationRestlet(Router router) {
+		Restlet restlet = getRamlSpecificationRestlet(getContext());
+		attachRamlDocumentationRestlet(router, "/raml", restlet);
+	}
 
-    /**
-     * Overrides the current implementation. It checks that the application has
-     * been documented using a {@link RamlSpecificationRestlet}. By default,
-     * the documentation is attached to the high level router, with the
-     * "/raml" path.
-     */
-    @Override
-    public Restlet getInboundRoot() {
-        Restlet inboundRoot = super.getInboundRoot();
-        if (!documented) {
-            Router rootRouter = getNextRouter(inboundRoot);
+	/**
+	 * Overrides the current implementation. It checks that the application has
+	 * been documented using a {@link RamlSpecificationRestlet}. By default, the
+	 * documentation is attached to the high level router, with the "/raml"
+	 * path.
+	 */
+	@Override
+	public Restlet getInboundRoot() {
+		Restlet inboundRoot = super.getInboundRoot();
+		if (!documented) {
+			synchronized (this) {
+				if (!documented) {
+					Router rootRouter = getNextRouter(inboundRoot);
 
-            // Check that the application has been documented.
-            documented = isDocumented(rootRouter);
-            if (!documented) {
-                attachRamlSpecificationRestlet(rootRouter);
-            }
-        }
-        return inboundRoot;
-    }
+					// Check that the application has been documented.
+					documented = isDocumented(rootRouter);
+					if (!documented) {
+						attachRamlSpecificationRestlet(rootRouter);
+						documented = true;
+					}
+				}
+			}
+		}
+		return inboundRoot;
+	}
 
-    /**
-     * The dedicated {@link Restlet} able to generate the Raml specification
-     * formats.
-     * 
-     * @return The {@link Restlet} able to generate the Raml specification
-     *         formats.
-     */
-    public RamlSpecificationRestlet getRamlSpecificationRestlet(
-            Context context) {
-        RamlSpecificationRestlet result = new RamlSpecificationRestlet(
-                context);
-        result.setApiInboundRoot(this);
-        return result;
-    }
+	/**
+	 * The dedicated {@link Restlet} able to generate the Raml specification
+	 * formats.
+	 * 
+	 * @return The {@link Restlet} able to generate the Raml specification
+	 *         formats.
+	 */
+	public RamlSpecificationRestlet getRamlSpecificationRestlet(Context context) {
+		RamlSpecificationRestlet result = new RamlSpecificationRestlet(context);
+		result.setApiInboundRoot(this);
+		return result;
+	}
 }

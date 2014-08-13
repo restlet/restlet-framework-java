@@ -1,4 +1,5 @@
-<module id="raml" excludes="android,gwt" type="integration" package="org.restlet.ext.raml">
+<module id="raml" excludes="android,gwt" type="integration"
+	package="org.restlet.ext.raml">
 	<name>Restlet Extension - Raml</name>
 	<description>Integration with Simple framework.</description>
 	<distributions>
@@ -8,9 +9,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="scala" />
 		<dependency type="library" id="slf4j" />
-		<dependency type="library" id="e4" />
 		<dependency type="library" id="raml" />
 		<dependency type="library" id="jaxrs" />
 		<dependency type="library" id="jackson" />
@@ -18,10 +17,9 @@
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
-		<dependency type="module" id="e4" />
 	</dependencies>
 	<wikiUri>xx-tobedefined</wikiUri>
-<!-- Remove some classes to be refactored. -->
+	<!-- Remove some classes to be refactored. -->
 	<source edition="android">
 		<files-sets>
 <![CDATA[
@@ -62,7 +60,7 @@
 ]]>
 		</files-sets>
 	</source>
-		<source edition="osgi">
+	<source edition="osgi">
 		<files-sets>
 <![CDATA[
          <exclude name="src/org/restlet/ext/raml/RamlJaxRsResourceGenerator*" />
@@ -70,4 +68,4 @@
 ]]>
 		</files-sets>
 	</source>
-	</module>
+</module>

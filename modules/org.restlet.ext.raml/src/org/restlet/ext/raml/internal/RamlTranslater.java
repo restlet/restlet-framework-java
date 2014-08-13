@@ -257,8 +257,8 @@ public abstract class RamlTranslater {
 				// In representation
 				ramlInRepresentation = new MimeType();
 				if (operation.getInRepresentation() != null) {
-					ramlInRepresentation.setType(operation.getInRepresentation()
-							.getRepresentation());
+					ramlInRepresentation.setType(operation
+							.getInRepresentation().getRepresentation());
 					if (RamlUtils.isPrimitiveType(operation
 							.getInRepresentation().getRepresentation())) {
 						Property inRepresentationPrimitive = new Property();
@@ -268,14 +268,15 @@ public abstract class RamlTranslater {
 						SimpleTypeSchema inRepresentationSchema = RamlUtils
 								.generatePrimitiveSchema(inRepresentationPrimitive);
 						try {
-							ramlInRepresentation.setSchema(m
-									.writeValueAsString(inRepresentationSchema));
+							ramlInRepresentation
+									.setSchema(m
+											.writeValueAsString(inRepresentationSchema));
 						} catch (JsonProcessingException e) {
 							e.printStackTrace();
 						}
 					} else {
-						ramlInRepresentation.setSchema(operation.getInRepresentation()
-								.getRepresentation());
+						ramlInRepresentation.setSchema(operation
+								.getInRepresentation().getRepresentation());
 					}
 					action.setBody(new HashMap<String, MimeType>());
 					for (String mediaType : operation.getConsumes()) {
@@ -328,18 +329,21 @@ public abstract class RamlTranslater {
 							SimpleTypeSchema outRepresentationSchema = RamlUtils
 									.generatePrimitiveSchema(outRepresentationPrimitive);
 							try {
-								ramlOutRepresentation.setSchema(m
-										.writeValueAsString(outRepresentationSchema));
+								ramlOutRepresentation
+										.setSchema(m
+												.writeValueAsString(outRepresentationSchema));
 							} catch (JsonProcessingException e) {
 								e.printStackTrace();
 							}
 						} else {
-							ramlOutRepresentation.setSchema(operation.getOutRepresentation()
-									.getRepresentation());
+							ramlOutRepresentation
+									.setSchema(operation.getOutRepresentation()
+											.getRepresentation());
 						}
 					}
 					for (String mediaType : operation.getProduces()) {
-						ramlResponse.getBody().put(mediaType, ramlOutRepresentation);
+						ramlResponse.getBody().put(mediaType,
+								ramlOutRepresentation);
 					}
 					action.getResponses().put("" + response.getCode(),
 							ramlResponse);
