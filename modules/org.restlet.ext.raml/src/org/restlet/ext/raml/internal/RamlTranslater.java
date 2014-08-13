@@ -208,7 +208,7 @@ public abstract class RamlTranslater {
 		ObjectMapper m = new ObjectMapper();
 		// TODO see how to translate it (1.0.0 to v1 ???)
 		if (definition.getVersion() != null) {
-			raml.setVersion("v" + definition.getVersion());
+			raml.setVersion(definition.getVersion());
 		}
 		raml.setBaseUri(definition.getEndpoint() == null ? "http://introspected.com"
 				: definition.getEndpoint());
