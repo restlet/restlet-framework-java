@@ -1,0 +1,413 @@
+#%RAML 0.8
+title: "Swagger Sample App"
+version: "1.0.0"
+baseUri: "http://petstore.swagger.wordnik.com/api"
+schemas: 
+    - 
+        "User": '{"type":"object","title":"User","properties":{"id":{"type":"integer","title":"id"},"lastName":{"type":"string","title":"lastName"},"phone":{"type":"string","title":"phone"},"username":{"type":"string","title":"username"},"email":{"type":"string","title":"email"},"userStatus":{"type":"integer","title":"userStatus"},"firstName":{"type":"string","title":"firstName"},"password":{"type":"string","title":"password"}}}'
+        "Category": '{"type":"object","title":"Category","properties":{"id":{"type":"integer","title":"id"},"name":{"type":"string","title":"name"}}}'
+        "Pet": '{"type":"object","title":"Pet","properties":{"tags":{"type":"array","title":"tags","items":{"type":"object","$ref":"#/schemas/Tag"}},"id":{"type":"integer","required":true,"title":"id","maximum":100.0,"minimum":0.0},"category":{"type":"object","title":"category"},"status":{"type":"string","title":"status"},"name":{"type":"string","required":true,"title":"name"},"photoUrls":{"type":"array","title":"photoUrls","items":{"type":"string","title":"photoUrls"}}}}'
+        "Tag": '{"type":"object","title":"Tag","properties":{"id":{"type":"integer","title":"id"},"name":{"type":"string","title":"name"}}}'
+        "File": '{"type":"object","title":"File"}'
+        "Order": '{"type":"object","title":"Order","properties":{"id":{"type":"integer","title":"id"},"petId":{"type":"integer","title":"petId"},"status":{"type":"string","title":"status"},"quantity":{"type":"integer","title":"quantity"},"shipDate":{"type":"string","title":"shipDate"}}}'
+"/pet": 
+    displayName: "Pet"
+    put: 
+        description: "Update an existing pet"
+        responses: 
+            "405": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+            "404": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "void"
+                    "text/plain": 
+                        schema: "void"
+                    "application/json": 
+                        schema: "void"
+                    "text/html": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+    post: 
+        description: "Add a new pet to the store"
+        body: 
+            "application/xml": 
+                schema: "Pet"
+            "application/json": 
+                schema: "Pet"
+        responses: 
+            "405": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "void"
+                    "text/plain": 
+                        schema: "void"
+                    "application/json": 
+                        schema: "void"
+                    "text/html": 
+                        schema: "void"
+"/user/createWithList": 
+    displayName: "UserCreateWithList"
+    post: 
+        description: "Creates list of users with given list input"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+"/store/order/{orderId}": 
+    displayName: "StoreOrderOrderId"
+    uriParameters: 
+        "orderId": 
+            displayName: "orderId"
+            description: "ID of the order that needs to be deleted"
+            type: string
+            required: false
+            repeat: false
+    get: 
+        description: "Find purchase order by ID"
+        responses: 
+            "404": 
+                body: 
+                    "application/json": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "Order"
+            "400": 
+                body: 
+                    "application/json": 
+    delete: 
+        description: "Delete purchase order by ID"
+        responses: 
+            "404": 
+                body: 
+                    "application/json": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/json": 
+"/store/order": 
+    displayName: "StoreOrder"
+    post: 
+        description: "Place an order for a pet"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/json": 
+"/pet/findByTags": 
+    displayName: "PetFindByTags"
+    get: 
+        description: "Finds Pets by tags"
+        queryParameters: 
+            "tags": 
+                displayName: "tags"
+                description: "Tags to filter by"
+                type: string
+                required: true
+                repeat: true
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "Pet"
+                    "text/plain": 
+                        schema: "Pet"
+                    "application/json": 
+                        schema: "Pet"
+                    "text/html": 
+                        schema: "Pet"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+"/user": 
+    displayName: "User"
+    post: 
+        description: "Create user"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+"/user/logout": 
+    displayName: "UserLogout"
+    get: 
+        description: "Logs out current logged in user session"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+"/pet/{petId}": 
+    displayName: "PetPetId"
+    uriParameters: 
+        "petId": 
+            displayName: "petId"
+            description: "ID of pet that needs to be fetched"
+            type: string
+            required: false
+            repeat: false
+    patch: 
+        description: "partial updates to a pet"
+        body: 
+            "application/xml": 
+                schema: "Pet"
+            "application/json": 
+                schema: "Pet"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "Pet"
+                    "text/plain": 
+                        schema: "Pet"
+                    "application/json": 
+                        schema: "Pet"
+                    "text/html": 
+                        schema: "Pet"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+    get: 
+        description: "Find pet by ID"
+        responses: 
+            "404": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "Pet"
+                    "text/plain": 
+                        schema: "Pet"
+                    "application/json": 
+                        schema: "Pet"
+                    "text/html": 
+                        schema: "Pet"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+    delete: 
+        description: "Deletes a pet"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "void"
+                    "text/plain": 
+                        schema: "void"
+                    "application/json": 
+                        schema: "void"
+                    "text/html": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+    post: 
+        description: "Updates a pet in the store with form data"
+        responses: 
+            "405": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "void"
+                    "text/plain": 
+                        schema: "void"
+                    "application/json": 
+                        schema: "void"
+                    "text/html": 
+                        schema: "void"
+"/pet/uploadImage": 
+    displayName: "PetUploadImage"
+    post: 
+        description: "uploads an image"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "void"
+                    "text/plain": 
+                        schema: "void"
+                    "application/json": 
+                        schema: "void"
+                    "text/html": 
+                        schema: "void"
+"/user/createWithArray": 
+    displayName: "UserCreateWithArray"
+    post: 
+        description: "Creates list of users with given input array"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+"/pet/findByStatus": 
+    displayName: "PetFindByStatus"
+    get: 
+        description: "Finds Pets by status"
+        queryParameters: 
+            "status": 
+                displayName: "status"
+                description: "Status values that need to be considered for filter"
+                type: string
+                required: true
+                repeat: true
+                default: "available"
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/xml": 
+                        schema: "Pet"
+                    "text/plain": 
+                        schema: "Pet"
+                    "application/json": 
+                        schema: "Pet"
+                    "text/html": 
+                        schema: "Pet"
+            "400": 
+                body: 
+                    "application/xml": 
+                    "text/plain": 
+                    "application/json": 
+                    "text/html": 
+"/user/{username}": 
+    displayName: "UserUsername"
+    uriParameters: 
+        "username": 
+            displayName: "username"
+            description: "name that need to be deleted"
+            type: string
+            required: false
+            repeat: false
+    get: 
+        description: "Get user by user name"
+        responses: 
+            "404": 
+                body: 
+                    "application/json": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "User"
+            "400": 
+                body: 
+                    "application/json": 
+    delete: 
+        description: "Delete user"
+        responses: 
+            "404": 
+                body: 
+                    "application/json": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/json": 
+    put: 
+        description: "Updated user"
+        responses: 
+            "404": 
+                body: 
+                    "application/json": 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: "void"
+            "400": 
+                body: 
+                    "application/json": 
+"/user/login": 
+    displayName: "UserLogin"
+    get: 
+        description: "Logs user into the system"
+        queryParameters: 
+            "username": 
+                displayName: "username"
+                description: "The user name for login"
+                type: string
+                required: true
+                repeat: false
+            "password": 
+                displayName: "password"
+                description: "The password for login in clear text"
+                type: string
+                required: true
+                repeat: false
+        responses: 
+            "200": 
+                description: "Success"
+                body: 
+                    "application/json": 
+                        schema: '{"type":"string"}'
+            "400": 
+                body: 
+                    "application/json": 

@@ -43,56 +43,74 @@ import java.util.List;
  */
 public class Contract {
 
-    /** Textual description of the API. */
-    private String description;
+	/** Textual description of the API. */
+	private String description;
 
-    /** Name of the API. */
-    private String name;
+	/** Name of the API. */
+	private String name;
 
-    /**
-     * Representations available with this API Note: their "name" is used as a
-     * reference further in this description.
-     */
-    private List<Representation> representations;
+	/**
+	 * Representations available with this API Note: their "name" is used as a
+	 * reference further in this description.
+	 */
+	private List<Representation> representations;
 
-    /** Resources provided by the API. */
-    private List<Resource> resources;
+	/** Resources provided by the API. */
+	private List<Resource> resources;
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public List<Representation> getRepresentations() {
-        if (representations == null) {
-            representations = new ArrayList<Representation>();
-        }
-        return representations;
-    }
+	public List<Representation> getRepresentations() {
+		if (representations == null) {
+			representations = new ArrayList<Representation>();
+		}
+		return representations;
+	}
 
-    public List<Resource> getResources() {
-        if (resources == null) {
-            resources = new ArrayList<Resource>();
-        }
-        return resources;
-    }
+	public List<Resource> getResources() {
+		if (resources == null) {
+			resources = new ArrayList<Resource>();
+		}
+		return resources;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setRepresentations(List<Representation> representations) {
-        this.representations = representations;
-    }
+	public void setRepresentations(List<Representation> representations) {
+		this.representations = representations;
+	}
 
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
-    }
+	public void setResources(List<Resource> resources) {
+		this.resources = resources;
+	}
+
+	public Resource getResource(String path) {
+		for (Resource result : getResources()) {
+			if (path.equals(result.getResourcePath())) {
+				return result;
+			}
+		}
+		return null;
+	}
+
+	public Representation getRepresentation(String name) {
+		for (Representation result : getRepresentations()) {
+			if (name.equals(result.getName())) {
+				return result;
+			}
+		}
+		return null;
+	}
 }

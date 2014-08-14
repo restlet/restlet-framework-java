@@ -36,5 +36,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.thymeleaf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.guice"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.apispark"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

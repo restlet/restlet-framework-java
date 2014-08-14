@@ -42,134 +42,152 @@ import java.util.List;
  */
 public class Operation {
 
-    /** Textual description of this operation. */
-    private String description;
+	/** Textual description of this operation. */
+	private String description;
 
-    /** Headers to use for this operation. */
-    private List<Header> headers;
+	/** Headers to use for this operation. */
+	private List<Header> headers;
 
-    /** Representation retrieved by this operation if any. */
-    private Body inRepresentation;
+	/** Representation retrieved by this operation if any. */
+	private Body inRepresentation;
 
-    /** HTTP method for this operation. */
-    private String method;
+	/** HTTP method for this operation. */
+	private String method;
 
-    /**
-     * Unique name for this operation<br>
-     * Note: will be used for client SDK generation in the future.
-     */
-    private String name;
+	/**
+	 * Unique name for this operation<br>
+	 * Note: will be used for client SDK generation in the future.
+	 */
+	private String name;
 
-    /**
-     * Representation to send in the body of your request for this operation if
-     * any.
-     */
-    private Body outRepresentation;
+	/**
+	 * Representation to send in the body of your request for this operation if
+	 * any.
+	 */
+	private Body outRepresentation;
 
-    /** Query parameters available for this operation. */
-    private List<QueryParameter> queryParameters;
+	/** Query parameters available for this operation. */
+	private List<QueryParameter> queryParameters;
 
-    /** Possible response messages you could encounter. */
-    private List<Response> responses;
+	/** Possible response messages you could encounter. */
+	private List<Response> responses;
 
-    /** Mediatypes produced by this operation */
-    private List<String> produces;
+	/** Mediatypes produced by this operation */
+	private List<String> produces;
 
-    /** Mediatypes consumed by this operation */
-    private List<String> consumes;
+	/** Mediatypes consumed by this operation */
+	private List<String> consumes;
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public List<Header> getHeaders() {
-        if (headers == null) {
-            headers = new ArrayList<Header>();
-        }
-        return headers;
-    }
+	public List<Header> getHeaders() {
+		if (headers == null) {
+			headers = new ArrayList<Header>();
+		}
+		return headers;
+	}
 
-    public Body getInRepresentation() {
-        return inRepresentation;
-    }
+	public Body getInRepresentation() {
+		return inRepresentation;
+	}
 
-    public String getMethod() {
-        return method;
-    }
+	public String getMethod() {
+		return method;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Body getOutRepresentation() {
-        return outRepresentation;
-    }
+	public Body getOutRepresentation() {
+		return outRepresentation;
+	}
 
-    public List<QueryParameter> getQueryParameters() {
-        if (queryParameters == null) {
-            queryParameters = new ArrayList<QueryParameter>();
-        }
-        return queryParameters;
-    }
+	public List<QueryParameter> getQueryParameters() {
+		if (queryParameters == null) {
+			queryParameters = new ArrayList<QueryParameter>();
+		}
+		return queryParameters;
+	}
 
-    public List<Response> getResponses() {
-        if (responses == null) {
-            responses = new ArrayList<Response>();
-        }
-        return responses;
-    }
+	public List<Response> getResponses() {
+		if (responses == null) {
+			responses = new ArrayList<Response>();
+		}
+		return responses;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setHeaders(List<Header> headers) {
-        this.headers = headers;
-    }
+	public void setHeaders(List<Header> headers) {
+		this.headers = headers;
+	}
 
-    public void setInRepresentation(Body inRepresentation) {
-        this.inRepresentation = inRepresentation;
-    }
+	public void setInRepresentation(Body inRepresentation) {
+		this.inRepresentation = inRepresentation;
+	}
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
+	public void setMethod(String method) {
+		this.method = method;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setOutRepresentation(Body outRepresentation) {
-        this.outRepresentation = outRepresentation;
-    }
+	public void setOutRepresentation(Body outRepresentation) {
+		this.outRepresentation = outRepresentation;
+	}
 
-    public void setQueryParameters(List<QueryParameter> queryParameters) {
-        this.queryParameters = queryParameters;
-    }
+	public void setQueryParameters(List<QueryParameter> queryParameters) {
+		this.queryParameters = queryParameters;
+	}
 
-    public void setResponses(List<Response> responses) {
-        this.responses = responses;
-    }
+	public void setResponses(List<Response> responses) {
+		this.responses = responses;
+	}
 
-    public List<String> getProduces() {
-        if (produces == null) {
-            produces = new ArrayList<String>();
-        }
-        return produces;
-    }
+	public List<String> getProduces() {
+		if (produces == null) {
+			produces = new ArrayList<String>();
+		}
+		return produces;
+	}
 
-    public void setProduces(List<String> produces) {
-        this.produces = produces;
-    }
+	public void setProduces(List<String> produces) {
+		this.produces = produces;
+	}
 
-    public List<String> getConsumes() {
-        if (consumes == null) {
-            consumes = new ArrayList<String>();
-        }
-        return consumes;
-    }
+	public List<String> getConsumes() {
+		if (consumes == null) {
+			consumes = new ArrayList<String>();
+		}
+		return consumes;
+	}
 
-    public void setConsumes(List<String> consumes) {
-        this.consumes = consumes;
-    }
+	public void setConsumes(List<String> consumes) {
+		this.consumes = consumes;
+	}
+
+	public Response getResponse(int code) {
+		for (Response result : getResponses()) {
+			if (code == result.getCode()) {
+				return result;
+			}
+		}
+		return null;
+	}
+
+	public QueryParameter getQueryParameter(String name) {
+		for (QueryParameter result : getQueryParameters()) {
+			if (name.equals(result.getName())) {
+				return result;
+			}
+		}
+		return null;
+	}
 }
