@@ -37,7 +37,7 @@ package org.restlet.ext.apispark.internal.model;
  * 
  * @author Cyprien Quilici
  */
-public class Body {
+public class Entity {
 
     /**
      * Indicates whether you should provide an array of [type] or just one
@@ -48,7 +48,7 @@ public class Body {
     /** Reference of the representation in the body of the message. */
     private String type;
 
-    public String getRepresentation() {
+    public String getType() {
         return type;
     }
 
@@ -60,7 +60,7 @@ public class Body {
         this.array = array;
     }
 
-    public void setRepresentation(String representation) {
+    public void setType(String representation) {
         this.type = representation;
     }
 }

@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.model.Body;
+import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Operation;
@@ -174,17 +174,17 @@ public abstract class SwaggerTranslater {
                         }
 
                         // Set response's entity
-                        Body rwadOutRepr = new Body();
+                        Entity rwadOutRepr = new Entity();
                         if ("array".equals(swagOperation.getType())) {
                             LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
                                     + " returns an array");
                             rwadOutRepr.setArray(true);
                             if (swagOperation.getItems().getType() != null) {
-                                rwadOutRepr.setRepresentation(swagOperation
+                                rwadOutRepr.setType(swagOperation
                                         .getItems().getType());
                             } else {
-                                rwadOutRepr.setRepresentation(swagOperation
+                                rwadOutRepr.setType(swagOperation
                                         .getItems().getRef());
                             }
                         } else {
@@ -193,10 +193,10 @@ public abstract class SwaggerTranslater {
                                     + " returns a single Representation");
                             rwadOutRepr.setArray(false);
                             if (swagOperation.getType() != null) {
-                                rwadOutRepr.setRepresentation(swagOperation
+                                rwadOutRepr.setType(swagOperation
                                         .getType());
                             } else {
-                                rwadOutRepr.setRepresentation(swagOperation
+                                rwadOutRepr.setType(swagOperation
                                         .getRef());
                             }
                         }
@@ -205,7 +205,7 @@ public abstract class SwaggerTranslater {
                         // Extract success response message
                         Response success = new Response();
                         success.setCode(Status.SUCCESS_OK.getCode());
-                        success.setBody(rwadOutRepr);
+                        success.setEntity(rwadOutRepr);
                         success.setDescription("Success");
                         success.setMessage(Status.SUCCESS_OK.getDescription());
                         success.setName("Success");
@@ -224,7 +224,7 @@ public abstract class SwaggerTranslater {
                                 }
                             } else if ("body".equals(param.getParamType())) {
                                 if (operation.getInRepresentation() == null) {
-                                    Body rwadInRepr = toBody(param);
+                                    Entity rwadInRepr = toEntity(param);
                                     operation.setInRepresentation(rwadInRepr);
                                 }
                             } else if ("query".equals(param.getParamType())) {
@@ -239,10 +239,10 @@ public abstract class SwaggerTranslater {
                             for (ResponseMessageDeclaration swagResponse : swagOperation
                                     .getResponseMessages()) {
                                 Response response = new Response();
-                                Body body = new Body();
-                                body.setRepresentation(swagResponse
+                                Entity entity = new Entity();
+                                entity.setType(swagResponse
                                         .getResponseModel());
-                                response.setBody(body);
+                                response.setEntity(entity);
                                 response.setName("Error "
                                         + swagResponse.getCode());
                                 response.setCode(swagResponse.getCode());
@@ -280,7 +280,7 @@ public abstract class SwaggerTranslater {
                             for (String subtypeOf : subtypesOf) {
                                 Representation repr = getRepresentationByName(
                                         contract, subtypeOf);
-                                repr.setParentType(subtypesPair.getKey());
+                                repr.setExtendedType(subtypesPair.getKey());
                             }
                         }
                     }
@@ -361,37 +361,37 @@ public abstract class SwaggerTranslater {
                 }
 
                 // Get in representation
-                Body inRepr = operation.getInRepresentation();
+                Entity inRepr = operation.getInRepresentation();
                 if (inRepr != null) {
                     ropd = new ResourceOperationParameterDeclaration();
                     ropd.setParamType("body");
                     ropd.setRequired(true);
-                    if ("Representation".equals(inRepr.getRepresentation())) {
+                    if ("Representation".equals(inRepr.getType())) {
                         ropd.setType("File");
                     } else {
-                        ropd.setType(toSwaggerType(inRepr.getRepresentation()));
+                        ropd.setType(toSwaggerType(inRepr.getType()));
                     }
-                    if (inRepr.getRepresentation() != null) {
-                        usedModels.add(inRepr.getRepresentation());
+                    if (inRepr.getType() != null) {
+                        usedModels.add(inRepr.getType());
                     }
                     rod.getParameters().add(ropd);
                 }
 
                 // Get out representation
-                Body outRepr = operation.getOutRepresentation();
-                if (outRepr != null && outRepr.getRepresentation() != null) {
+                Entity outRepr = operation.getOutRepresentation();
+                if (outRepr != null && outRepr.getType() != null) {
                     if (outRepr.isArray()) {
                         rod.setType("array");
-                        if (isPrimitiveType(outRepr.getRepresentation())) {
+                        if (isPrimitiveType(outRepr.getType())) {
                             rod.getItems().setType(
-                                    toSwaggerType(outRepr.getRepresentation()));
+                                    toSwaggerType(outRepr.getType()));
                         } else {
-                            rod.getItems().setRef(outRepr.getRepresentation());
+                            rod.getItems().setRef(outRepr.getType());
                         }
                     } else {
-                        rod.setType(toSwaggerType(outRepr.getRepresentation()));
+                        rod.setType(toSwaggerType(outRepr.getType()));
                     }
-                    usedModels.add(outRepr.getRepresentation());
+                    usedModels.add(outRepr.getType());
                 } else {
                     rod.setType("void");
                 }
@@ -404,7 +404,7 @@ public abstract class SwaggerTranslater {
                     ropd.setName(qp.getName());
                     ropd.setAllowMultiple(true);
                     ropd.setDescription(qp.getDescription());
-                    ropd.setEnum_(qp.getPossibleValues());
+                    ropd.setEnum_(qp.getEnumeration());
                     ropd.setDefaultValue(qp.getDefaultValue());
                     rod.getParameters().add(ropd);
                 }
@@ -417,9 +417,9 @@ public abstract class SwaggerTranslater {
                     ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
                     rmd.setCode(response.getCode());
                     rmd.setMessage(response.getMessage());
-                    if (response.getBody() != null) {
-                        rmd.setResponseModel(response.getBody()
-                                .getRepresentation());
+                    if (response.getEntity() != null) {
+                        rmd.setResponseModel(response.getEntity()
+                                .getType());
                     }
                     rod.getResponseMessages().add(rmd);
                 }
@@ -452,7 +452,7 @@ public abstract class SwaggerTranslater {
                 }
                 TypePropertyDeclaration tpd = new TypePropertyDeclaration();
                 tpd.setDescription(prop.getDescription());
-                tpd.setEnum_(prop.getPossibleValues());
+                tpd.setEnum_(prop.getEnumeration());
 
                 if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
                     tpd.setType("array");
@@ -591,25 +591,25 @@ public abstract class SwaggerTranslater {
     }
 
     /**
-     * Converts a Swagger parameter to an instance of {@link Body}.
+     * Converts a Swagger parameter to an instance of {@link Entity}.
      * 
      * @param parameter
      *            The Swagger parameter.
-     * @return An instance of {@link Body}.
+     * @return An instance of {@link Entity}.
      */
-    private static Body toBody(ResourceOperationParameterDeclaration parameter) {
-        Body result = new Body();
+    private static Entity toEntity(ResourceOperationParameterDeclaration parameter) {
+        Entity result = new Entity();
         if ("array".equals(parameter.getType())) {
             result.setArray(true);
             if (parameter.getItems() != null
                     && parameter.getItems().getType() != null) {
-                result.setRepresentation(parameter.getItems().getType());
+                result.setType(parameter.getItems().getType());
             } else if (parameter.getItems() != null) {
-                result.setRepresentation(parameter.getItems().getRef());
+                result.setType(parameter.getItems().getRef());
             }
         } else {
             result.setArray(false);
-            result.setRepresentation(parameter.getType());
+            result.setType(parameter.getType());
         }
         return result;
     }
@@ -646,9 +646,9 @@ public abstract class SwaggerTranslater {
         result.setAllowMultiple(parameter.isAllowMultiple());
         result.setDefaultValue(parameter.getDefaultValue());
         if (parameter.getEnum_() != null && !parameter.getEnum_().isEmpty()) {
-            result.setPossibleValues(new ArrayList<String>());
+            result.setEnumeration(new ArrayList<String>());
             for (String value : parameter.getEnum_()) {
-                result.getPossibleValues().add(value);
+                result.getEnumeration().add(value);
             }
         }
         return result;

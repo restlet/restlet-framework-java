@@ -49,7 +49,7 @@ public class Operation {
 	private List<Header> headers;
 
 	/** Representation retrieved by this operation if any. */
-	private Body inRepresentation;
+	private Entity inRepresentation;
 
 	/** HTTP method for this operation. */
 	private String method;
@@ -64,7 +64,7 @@ public class Operation {
 	 * Representation to send in the body of your request for this operation if
 	 * any.
 	 */
-	private Body outRepresentation;
+	private Entity outRepresentation;
 
 	/** Query parameters available for this operation. */
 	private List<QueryParameter> queryParameters;
@@ -89,7 +89,7 @@ public class Operation {
 		return headers;
 	}
 
-	public Body getInRepresentation() {
+	public Entity getInRepresentation() {
 		return inRepresentation;
 	}
 
@@ -101,7 +101,7 @@ public class Operation {
 		return name;
 	}
 
-	public Body getOutRepresentation() {
+	public Entity getOutRepresentation() {
 		return outRepresentation;
 	}
 
@@ -127,7 +127,7 @@ public class Operation {
 		this.headers = headers;
 	}
 
-	public void setInRepresentation(Body inRepresentation) {
+	public void setInRepresentation(Entity inRepresentation) {
 		this.inRepresentation = inRepresentation;
 	}
 
@@ -139,7 +139,7 @@ public class Operation {
 		this.name = name;
 	}
 
-	public void setOutRepresentation(Body outRepresentation) {
+	public void setOutRepresentation(Entity outRepresentation) {
 		this.outRepresentation = outRepresentation;
 	}
 

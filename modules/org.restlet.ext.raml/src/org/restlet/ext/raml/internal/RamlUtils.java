@@ -314,10 +314,10 @@ public class RamlUtils {
 		objectSchema.setTitle(representation.getName());
 		objectSchema.setDescription(representation.getDescription());
 		if (!representation.isRaw()) {
-			if (representation.getParentType() != null) {
+			if (representation.getExtendedType() != null) {
 				JsonSchema[] extended = new JsonSchema[1];
 				SimpleTypeSchema typeExtended = new ObjectSchema();
-				typeExtended.set$ref(representation.getParentType());
+				typeExtended.set$ref(representation.getExtendedType());
 				extended[0] = typeExtended;
 				objectSchema.setExtends(extended);
 			}

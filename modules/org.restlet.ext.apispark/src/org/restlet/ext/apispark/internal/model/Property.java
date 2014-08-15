@@ -86,7 +86,7 @@ public class Property {
      * A list of possible values for this property if it has a limited number of
      * possible values.
      */
-    private List<String> possibleValues;
+    private List<String> enumeration;
 
     // TODO review comment
     /**
@@ -123,11 +123,11 @@ public class Property {
         return name;
     }
 
-    public List<String> getPossibleValues() {
-        if (possibleValues == null) {
-            possibleValues = new ArrayList<String>();
+    public List<String> getEnumeration() {
+        if (enumeration == null) {
+            enumeration = new ArrayList<String>();
         }
-        return possibleValues;
+        return enumeration;
     }
 
     public String getType() {
@@ -166,8 +166,8 @@ public class Property {
         this.name = name;
     }
 
-    public void setPossibleValues(List<String> possibleValues) {
-        this.possibleValues = possibleValues;
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
     }
 
     public void setType(String type) {

@@ -49,7 +49,7 @@ public class Representation {
 	private String name;
 
 	/** Reference to its parent type if any. */
-	private String parentType;
+	private String extendedType;
 
 	/** List of this representation's properties. */
 	private List<Property> properties;
@@ -65,8 +65,8 @@ public class Representation {
 		return name;
 	}
 
-	public String getParentType() {
-		return parentType;
+	public String getExtendedType() {
+		return extendedType;
 	}
 
 	public List<Property> getProperties() {
@@ -88,8 +88,8 @@ public class Representation {
 		this.name = name;
 	}
 
-	public void setParentType(String parentType) {
-		this.parentType = parentType;
+	public void setExtendedType(String extendedType) {
+		this.extendedType = extendedType;
 	}
 
 	public void setProperties(List<Property> properties) {

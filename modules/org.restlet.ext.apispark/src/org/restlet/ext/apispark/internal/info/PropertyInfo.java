@@ -80,7 +80,7 @@ public class PropertyInfo {
      * A list of possible values for this property if it has a limited number of
      * possible values.
      */
-    private List<String> possibleValues;
+    private List<String> enumeration;
 
     /**
      * Type of this property, either a primitive type or a reference to a
@@ -123,8 +123,8 @@ public class PropertyInfo {
         return name;
     }
 
-    public List<String> getPossibleValues() {
-        return possibleValues;
+    public List<String> getEnumeration() {
+        return enumeration;
     }
 
     public Class<?> getType() {
@@ -163,8 +163,8 @@ public class PropertyInfo {
         this.name = name;
     }
 
-    public void setPossibleValues(List<String> possibleValues) {
-        this.possibleValues = possibleValues;
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
     }
 
     public void setType(Class<?> type) {

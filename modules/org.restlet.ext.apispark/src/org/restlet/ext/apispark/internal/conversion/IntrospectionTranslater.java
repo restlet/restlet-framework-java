@@ -24,7 +24,7 @@ import org.restlet.ext.apispark.internal.info.PropertyInfo;
 import org.restlet.ext.apispark.internal.info.RepresentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.info.ResponseInfo;
-import org.restlet.ext.apispark.internal.model.Body;
+import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Header;
@@ -170,7 +170,7 @@ public class IntrospectionTranslater {
                                     pi.getDocumentations(),
                                     pi.getDefaultValue()));
                             header.setName(pi.getName());
-                            header.setPossibleValues(new ArrayList<String>());
+                            header.setEnumeration(new ArrayList<String>());
                             header.setRequired(pi.isRequired());
 
                             operation.getHeaders().add(header);
@@ -184,7 +184,7 @@ public class IntrospectionTranslater {
                                     pi.getDefaultValue()));
                             queryParameter.setName(pi.getName());
                             queryParameter
-                                    .setPossibleValues(new ArrayList<String>());
+                                    .setEnumeration(new ArrayList<String>());
                             queryParameter.setRequired(pi.isRequired());
 
                             operation.getQueryParameters().add(queryParameter);
@@ -199,7 +199,7 @@ public class IntrospectionTranslater {
                         header.setDescription(toString(pi.getDocumentations(),
                                 pi.getDefaultValue()));
                         header.setName(pi.getName());
-                        header.setPossibleValues(new ArrayList<String>());
+                        header.setEnumeration(new ArrayList<String>());
                         header.setRequired(pi.isRequired());
 
                         operation.getHeaders().add(header);
@@ -211,7 +211,7 @@ public class IntrospectionTranslater {
                                 pi.getDocumentations(), pi.getDefaultValue()));
                         queryParameter.setName(pi.getName());
                         queryParameter
-                                .setPossibleValues(new ArrayList<String>());
+                                .setEnumeration(new ArrayList<String>());
                         queryParameter.setRequired(pi.isRequired());
 
                         operation.getQueryParameters().add(queryParameter);
@@ -224,35 +224,35 @@ public class IntrospectionTranslater {
                     addRepresentations(mapReps, mi.getRequest()
                             .getRepresentations());
 
-                    Body body = new Body();
+                    Entity entity = new Entity();
                     // TODO analyze
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for
                     // APIspark
-                    body.setRepresentation(mi.getRequest().getRepresentations()
+                    entity.setType(mi.getRequest().getRepresentations()
                             .get(0).getType().getSimpleName());
-                    body.setArray(mi.getRequest().getRepresentations().get(0)
+                    entity.setArray(mi.getRequest().getRepresentations().get(0)
                             .isCollection());
 
-                    operation.setInRepresentation(body);
+                    operation.setInRepresentation(entity);
                 }
 
                 if (mi.getResponses() != null && !mi.getResponses().isEmpty()) {
                     operation.setResponses(new ArrayList<Response>());
 
-                    Body body = new Body();
+                    Entity entity = new Entity();
                     // TODO analyze
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
-                        body.setRepresentation(mi.getResponse()
+                        entity.setType(mi.getResponse()
                                 .getRepresentations().get(0).getType()
                                 .getSimpleName());
-                        body.setArray(mi.getResponse().getRepresentations()
+                        entity.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
-                    operation.setOutRepresentation(body);
+                    operation.setOutRepresentation(entity);
 
                     for (ResponseInfo rio : mi.getResponses()) {
                         addRepresentations(mapReps, rio.getRepresentations());
@@ -267,7 +267,7 @@ public class IntrospectionTranslater {
                             // APIspark
 
                             Response response = new Response();
-                            response.setBody(body);
+                            response.setEntity(entity);
                             response.setCode(status.getCode());
                             response.setName(toString(rio.getDocumentations()));
                             response.setDescription(toString(rio
@@ -460,7 +460,7 @@ public class IntrospectionTranslater {
                     p.setMin(pi.getMin());
                     p.setMinOccurs(pi.getMinOccurs());
                     p.setName(pi.getName());
-                    p.setPossibleValues(pi.getPossibleValues());
+                    p.setEnumeration(pi.getEnumeration());
                     if (pi.getType() != null) {
                         // TODO: handle primitive type, etc
                         String type = pi.getType().getSimpleName();

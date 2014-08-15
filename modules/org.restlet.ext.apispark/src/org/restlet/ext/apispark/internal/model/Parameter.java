@@ -61,7 +61,7 @@ public class Parameter {
      * List of possible values of the parameter if there is a limited number of
      * possible values for it.
      */
-    private List<String> possibleValues;
+    private List<String> enumeration;
 
     /** Indicates whether the parameter is mandatory or not. */
     private boolean required;
@@ -78,11 +78,11 @@ public class Parameter {
         return name;
     }
 
-    public List<String> getPossibleValues() {
-        if (possibleValues == null) {
-            possibleValues = new ArrayList<String>();
+    public List<String> getEnumeration() {
+        if (enumeration == null) {
+            enumeration = new ArrayList<String>();
         }
-        return possibleValues;
+        return enumeration;
     }
 
     public boolean isAllowMultiple() {
@@ -109,8 +109,8 @@ public class Parameter {
         this.name = name;
     }
 
-    public void setPossibleValues(List<String> possibleValues) {
-        this.possibleValues = possibleValues;
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
     }
 
     public void setRequired(boolean required) {

@@ -42,7 +42,7 @@ import org.restlet.data.Status;
 public class Response {
 
     /** Custom content of the body if any. */
-    private Body body;
+    private Entity entity;
 
     /** Status code of the response */
     private int code;
@@ -64,8 +64,8 @@ public class Response {
         setMessage(Status.SUCCESS_OK.getDescription());
     }
 
-    public Body getBody() {
-        return body;
+    public Entity getEntity() {
+        return entity;
     }
 
     public int getCode() {
@@ -84,8 +84,8 @@ public class Response {
         return name;
     }
 
-    public void setBody(Body body) {
-        this.body = body;
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 
     public void setCode(int code) {

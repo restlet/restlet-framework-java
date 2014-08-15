@@ -258,13 +258,13 @@ public abstract class RamlTranslater {
 				ramlInRepresentation = new MimeType();
 				if (operation.getInRepresentation() != null) {
 					ramlInRepresentation.setType(operation
-							.getInRepresentation().getRepresentation());
+							.getInRepresentation().getType());
 					if (RamlUtils.isPrimitiveType(operation
-							.getInRepresentation().getRepresentation())) {
+							.getInRepresentation().getType())) {
 						Property inRepresentationPrimitive = new Property();
 						inRepresentationPrimitive.setName("");
 						inRepresentationPrimitive.setType(operation
-								.getInRepresentation().getRepresentation());
+								.getInRepresentation().getType());
 						SimpleTypeSchema inRepresentationSchema = RamlUtils
 								.generatePrimitiveSchema(inRepresentationPrimitive);
 						try {
@@ -276,7 +276,7 @@ public abstract class RamlTranslater {
 						}
 					} else {
 						ramlInRepresentation.setSchema(operation
-								.getInRepresentation().getRepresentation());
+								.getInRepresentation().getType());
 					}
 					action.setBody(new HashMap<String, MimeType>());
 					for (String mediaType : operation.getConsumes()) {
@@ -318,14 +318,14 @@ public abstract class RamlTranslater {
 					if (Status.isSuccess(response.getCode())
 							&& operation.getOutRepresentation() != null
 							&& operation.getOutRepresentation()
-									.getRepresentation() != null) {
+									.getType() != null) {
 						if (RamlUtils.isPrimitiveType(operation
-								.getOutRepresentation().getRepresentation())) {
+								.getOutRepresentation().getType())) {
 							Property outRepresentationPrimitive = new Property();
 							outRepresentationPrimitive.setName("");
 							outRepresentationPrimitive
 									.setType(operation.getOutRepresentation()
-											.getRepresentation());
+											.getType());
 							SimpleTypeSchema outRepresentationSchema = RamlUtils
 									.generatePrimitiveSchema(outRepresentationPrimitive);
 							try {
@@ -338,7 +338,7 @@ public abstract class RamlTranslater {
 						} else {
 							ramlOutRepresentation
 									.setSchema(operation.getOutRepresentation()
-											.getRepresentation());
+											.getType());
 						}
 					}
 					for (String mediaType : operation.getProduces()) {
