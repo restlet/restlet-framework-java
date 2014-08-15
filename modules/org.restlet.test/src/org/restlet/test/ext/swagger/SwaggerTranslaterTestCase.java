@@ -40,8 +40,8 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.SwaggerTranslater;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
-import org.restlet.ext.apispark.internal.model.Body;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -106,8 +106,8 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 				 translatedRepresentation.getDescription());
 				 assertEquals(savedRepresentation.getName(),
 				 translatedRepresentation.getName());
-				 assertEquals(savedRepresentation.getParentType(),
-				 translatedRepresentation.getParentType());
+				 assertEquals(savedRepresentation.getExtendedType(),
+				 translatedRepresentation.getExtendedType());
 				 assertEquals(savedRepresentation.isRaw(),
 				 translatedRepresentation.isRaw());
 				 
@@ -132,8 +132,8 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 						 translatedProperty.getMinOccurs());
 						 assertEquals(savedProperty.getName(),
 						 translatedProperty.getName());
-						 assertEquals(savedProperty.getPossibleValues(),
-						 translatedProperty.getPossibleValues());
+						 assertEquals(savedProperty.getEnumeration(),
+						 translatedProperty.getEnumeration());
 						 assertEquals(savedProperty.isUniqueItems(),
 						 translatedProperty.isUniqueItems());
 						 assertEquals(savedProperty.getType(),
@@ -199,9 +199,9 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 								translatedOperation.getProduces());
 
 						// In representation
-						Body savedInRepresentation = savedOperation
+						Entity savedInRepresentation = savedOperation
 								.getInRepresentation();
-						Body translatedInRepresentation = translatedOperation
+						Entity translatedInRepresentation = translatedOperation
 								.getInRepresentation();
 						assertEquals(
 								true,
@@ -211,15 +211,15 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 							assertEquals(savedInRepresentation.isArray(),
 									translatedInRepresentation.isArray());
 							assertEquals(
-									savedInRepresentation.getRepresentation(),
+									savedInRepresentation.getType(),
 									translatedInRepresentation
-											.getRepresentation());
+											.getType());
 						}
 
 						// Out representation
-						Body savedOutRepresentation = savedOperation
+						Entity savedOutRepresentation = savedOperation
 								.getOutRepresentation();
-						Body translatedOutRepresentation = translatedOperation
+						Entity translatedOutRepresentation = translatedOperation
 								.getOutRepresentation();
 						assertEquals(
 								true,
@@ -229,9 +229,9 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 							assertEquals(savedOutRepresentation.isArray(),
 									translatedOutRepresentation.isArray());
 							assertEquals(
-									savedOutRepresentation.getRepresentation(),
+									savedOutRepresentation.getType(),
 									translatedOutRepresentation
-											.getRepresentation());
+											.getType());
 						}
 
 						// Responses
@@ -253,10 +253,10 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 										translatedResponse.getName());
 
 								// Body
-								Body savedResponseBody = savedResponse
-										.getBody();
-								Body translatedResponseBody = translatedResponse
-										.getBody();
+								Entity savedResponseBody = savedResponse
+										.getEntity();
+								Entity translatedResponseBody = translatedResponse
+										.getEntity();
 								assertEquals(
 										true,
 										(savedResponseBody == null) == (translatedResponseBody == null));
@@ -266,9 +266,9 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 											translatedResponseBody.isArray());
 									assertEquals(
 											savedResponseBody
-													.getRepresentation(),
+													.getType(),
 											translatedResponseBody
-													.getRepresentation());
+													.getType());
 								}
 							}
 
@@ -299,9 +299,9 @@ public class SwaggerTranslaterTestCase extends RestletTestCase {
 								assertEquals(savedQueryParameter.getName(),
 										translatedQueryParameter.getName());
 								assertEquals(savedQueryParameter
-										.getPossibleValues(),
+										.getEnumeration(),
 										translatedQueryParameter
-												.getPossibleValues());
+												.getEnumeration());
 								assertEquals(savedQueryParameter.isRequired(),
 										translatedQueryParameter.isRequired());
 							}
