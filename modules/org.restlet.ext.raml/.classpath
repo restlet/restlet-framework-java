@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.fasterxml.jackson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.apispark"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

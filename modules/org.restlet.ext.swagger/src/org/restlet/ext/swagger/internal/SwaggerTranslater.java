@@ -50,16 +50,17 @@ import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.swagger.internal.model.Body;
-import org.restlet.ext.swagger.internal.model.Contract;
-import org.restlet.ext.swagger.internal.model.Definition;
-import org.restlet.ext.swagger.internal.model.Operation;
-import org.restlet.ext.swagger.internal.model.PathVariable;
-import org.restlet.ext.swagger.internal.model.Property;
-import org.restlet.ext.swagger.internal.model.QueryParameter;
-import org.restlet.ext.swagger.internal.model.Representation;
-import org.restlet.ext.swagger.internal.model.Resource;
-import org.restlet.ext.swagger.internal.model.Response;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.Body;
+import org.restlet.ext.apispark.internal.model.Contract;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.ApiInfo;
 import org.restlet.ext.swagger.internal.model.swagger.ItemsDeclaration;
@@ -71,6 +72,7 @@ import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameter
 import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
+
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
@@ -131,7 +133,6 @@ public abstract class SwaggerTranslater {
                     declaredPathVariables = new ArrayList<String>();
                     resource = new Resource();
                     resource.setResourcePath(api.getPath());
-                    resource.setSection(entry.getKey());
 
                     // Operations listing
                     Operation operation;
@@ -443,7 +444,7 @@ public abstract class SwaggerTranslater {
             md.setId(model);
             md.setDescription(repr.getDescription());
             for (Property prop : repr.getProperties()) {
-                if (prop.isRequired()) {
+                if (prop.getMinOccurs() > 0) {
                     md.getRequired().add(prop.getName());
                 }
                 if (!isPrimitiveType(prop.getType())

@@ -45,8 +45,8 @@ import org.raml.model.Raml;
 import org.raml.model.Resource;
 import org.raml.parser.rule.ValidationResult;
 import org.raml.parser.visitor.RamlValidationService;
-import org.restlet.ext.raml.internal.model.Property;
-import org.restlet.ext.raml.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.Representation;
 
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;

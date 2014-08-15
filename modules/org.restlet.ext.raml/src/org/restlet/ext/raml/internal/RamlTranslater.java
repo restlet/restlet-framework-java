@@ -46,15 +46,15 @@ import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.parameter.UriParameter;
 import org.restlet.data.Status;
-import org.restlet.ext.raml.internal.model.Contract;
-import org.restlet.ext.raml.internal.model.Definition;
-import org.restlet.ext.raml.internal.model.Operation;
-import org.restlet.ext.raml.internal.model.PathVariable;
-import org.restlet.ext.raml.internal.model.Property;
-import org.restlet.ext.raml.internal.model.QueryParameter;
-import org.restlet.ext.raml.internal.model.Representation;
-import org.restlet.ext.raml.internal.model.Resource;
-import org.restlet.ext.raml.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Contract;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -175,7 +175,7 @@ public abstract class RamlTranslater {
 		PathVariable pathVariable = new PathVariable();
 		pathVariable.setName(paramName);
 		pathVariable.setDescription(uriParameter.getDescription());
-		pathVariable.setType(uriParameter.getType().toString().toLowerCase());
+//		pathVariable.setType(uriParameter.getType().toString().toLowerCase());
 		pathVariable.setArray(uriParameter.isRepeat());
 		return pathVariable;
 	}
@@ -240,7 +240,7 @@ public abstract class RamlTranslater {
 				uiParam.setDisplayName(pathVariable.getName());
 				uiParam.setDescription(pathVariable.getDescription());
 				uiParam.setRepeat(pathVariable.isArray());
-				uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
+//				uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
 				ramlResource.getUriParameters().put(pathVariable.getName(),
 						uiParam);
 			}
@@ -291,8 +291,8 @@ public abstract class RamlTranslater {
 						.getQueryParameters()) {
 					ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
 					ramlQueryParameter.setDisplayName(queryParameter.getName());
-					ramlQueryParameter.setType(RamlUtils
-							.getParamType(queryParameter.getType()));
+//					ramlQueryParameter.setType(RamlUtils
+//							.getParamType(queryParameter.getType()));
 					ramlQueryParameter.setDescription(queryParameter
 							.getDescription());
 					ramlQueryParameter.setRequired(queryParameter.isRequired());
