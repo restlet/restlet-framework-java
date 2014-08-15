@@ -73,14 +73,14 @@ public abstract class RamlTranslater {
 			.getName());
 
 	/**
-	 * Converts a Raml documentation to a Restlet definition.
+	 * Translates a Raml documentation to a Restlet definition.
 	 * 
 	 * @param raml
 	 *            The Raml resource listing.
 	 * @return The Restlet definition.
 	 * @throws TranslationException
 	 */
-	public static Definition convert(Raml raml) throws TranslationException {
+	public static Definition translate(Raml raml) throws TranslationException {
 		Definition def = new Definition();
 		if (raml.getVersion() != null) {
 			def.setVersion(raml.getVersion().substring(1));

@@ -88,7 +88,7 @@ public abstract class SwaggerTranslater {
     private static final String SWAGGER_VERSION = "1.2";
 
     /**
-     * Converts a Swagger documentation to a Restlet definition.
+     * Translates a Swagger documentation to a Restlet definition.
      * 
      * @param resourceListing
      *            The Swagger resource listing.
@@ -97,7 +97,7 @@ public abstract class SwaggerTranslater {
      * @return The Restlet definition.
      * @throws TranslationException
      */
-    public static Definition convert(ResourceListing resourceListing,
+    public static Definition translate(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws TranslationException {
 
@@ -514,7 +514,7 @@ public abstract class SwaggerTranslater {
     }
 
     /**
-     * Converts a Restlet Web API Definition to a Swagger resource listing.
+     * Translates a Restlet Web API Definition to a Swagger resource listing.
      * 
      * @param definition
      *            The Restlet Web API Definition.

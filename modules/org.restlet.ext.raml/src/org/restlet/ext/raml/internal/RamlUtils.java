@@ -341,7 +341,7 @@ public class RamlUtils {
 						SimpleTypeSchema reference = new ObjectSchema();
 						reference.set$ref("#/schemas/" + property.getType());
 						array.setItemsSchema(reference);
-						// array.setItemsSchema(generateSchema(RamlConverter
+						// array.setItemsSchema(generateSchema(RamlTranslater
 						// .getRepresentationByName(representations,
 						// property.getType()), representations));
 					}

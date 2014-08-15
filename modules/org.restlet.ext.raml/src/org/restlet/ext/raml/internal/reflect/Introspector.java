@@ -571,7 +571,7 @@ public class Introspector {
     }
 
     /**
-     * Converts a ApplicationInfo to a {@link Definition} object.
+     * Translates a ApplicationInfo to a {@link Definition} object.
      * 
      * @param application
      *            The {@link ApplicationInfo} instance.

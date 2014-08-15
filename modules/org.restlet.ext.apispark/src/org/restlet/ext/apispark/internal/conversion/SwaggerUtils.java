@@ -129,7 +129,7 @@ public abstract class SwaggerUtils {
                 throw new TranslationException("file", e.getMessage());
             }
         }
-        return SwaggerTranslater.convert(resourceListing, apis);
+        return SwaggerTranslater.translate(resourceListing, apis);
     }
 
     /**
