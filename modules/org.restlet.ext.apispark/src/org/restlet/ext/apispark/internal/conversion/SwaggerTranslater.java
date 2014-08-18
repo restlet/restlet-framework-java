@@ -50,16 +50,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.model.Entity;
-import org.restlet.ext.apispark.internal.model.Contract;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.PathVariable;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ApiInfo;
 import org.restlet.ext.apispark.internal.model.swagger.ItemsDeclaration;
@@ -71,6 +61,16 @@ import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParamete
 import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.apispark.model.Contract;
+import org.restlet.ext.apispark.model.Definition;
+import org.restlet.ext.apispark.model.Entity;
+import org.restlet.ext.apispark.model.Operation;
+import org.restlet.ext.apispark.model.PathVariable;
+import org.restlet.ext.apispark.model.Property;
+import org.restlet.ext.apispark.model.QueryParameter;
+import org.restlet.ext.apispark.model.Representation;
+import org.restlet.ext.apispark.model.Resource;
+import org.restlet.ext.apispark.model.Response;
 
 /**
  * Tools library for converting Restlet Web API Definition to and from Swagger
