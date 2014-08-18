@@ -175,7 +175,7 @@ public abstract class RamlTranslater {
 		PathVariable pathVariable = new PathVariable();
 		pathVariable.setName(paramName);
 		pathVariable.setDescription(uriParameter.getDescription());
-//		pathVariable.setType(uriParameter.getType().toString().toLowerCase());
+		// pathVariable.setType(uriParameter.getType().toString().toLowerCase());
 		pathVariable.setArray(uriParameter.isRepeat());
 		return pathVariable;
 	}
@@ -240,7 +240,7 @@ public abstract class RamlTranslater {
 				uiParam.setDisplayName(pathVariable.getName());
 				uiParam.setDescription(pathVariable.getDescription());
 				uiParam.setRepeat(pathVariable.isArray());
-//				uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
+				uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
 				ramlResource.getUriParameters().put(pathVariable.getName(),
 						uiParam);
 			}
@@ -291,8 +291,8 @@ public abstract class RamlTranslater {
 						.getQueryParameters()) {
 					ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
 					ramlQueryParameter.setDisplayName(queryParameter.getName());
-//					ramlQueryParameter.setType(RamlUtils
-//							.getParamType(queryParameter.getType()));
+					// ramlQueryParameter.setType(RamlUtils
+					// .getParamType(queryParameter.getType()));
 					ramlQueryParameter.setDescription(queryParameter
 							.getDescription());
 					ramlQueryParameter.setRequired(queryParameter.isRequired());
@@ -317,15 +317,13 @@ public abstract class RamlTranslater {
 					ramlOutRepresentation = new MimeType();
 					if (Status.isSuccess(response.getCode())
 							&& operation.getOutRepresentation() != null
-							&& operation.getOutRepresentation()
-									.getType() != null) {
+							&& operation.getOutRepresentation().getType() != null) {
 						if (RamlUtils.isPrimitiveType(operation
 								.getOutRepresentation().getType())) {
 							Property outRepresentationPrimitive = new Property();
 							outRepresentationPrimitive.setName("");
-							outRepresentationPrimitive
-									.setType(operation.getOutRepresentation()
-											.getType());
+							outRepresentationPrimitive.setType(operation
+									.getOutRepresentation().getType());
 							SimpleTypeSchema outRepresentationSchema = RamlUtils
 									.generatePrimitiveSchema(outRepresentationPrimitive);
 							try {
@@ -336,9 +334,8 @@ public abstract class RamlTranslater {
 								e.printStackTrace();
 							}
 						} else {
-							ramlOutRepresentation
-									.setSchema(operation.getOutRepresentation()
-											.getType());
+							ramlOutRepresentation.setSchema(operation
+									.getOutRepresentation().getType());
 						}
 					}
 					for (String mediaType : operation.getProduces()) {
