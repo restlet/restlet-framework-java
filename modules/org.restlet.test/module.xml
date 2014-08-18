@@ -43,6 +43,9 @@
 		<dependency type="module" id="xdb" includes="jee" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="xstream" />
+		<dependency type="module" id="apispark" />
+		<dependency type="module" id="raml" />
+		<dependency type="module" id="swagger" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>

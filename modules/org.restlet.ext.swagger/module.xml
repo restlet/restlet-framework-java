@@ -19,6 +19,7 @@
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="e4" />
+		<dependency type="module" id="apispark" />
 	</dependencies>
 	<wikiUri>xx-tobedefined</wikiUri>
 <!-- Remove some classes to be refactored. -->
