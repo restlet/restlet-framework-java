@@ -475,7 +475,7 @@ public class Introspector extends IntrospectionUtils {
             } else if ("-l".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
             } else if ("-v".equals(args[i])) {
-                // [ifndef jee] instruction
+                // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
             } else {
                 defSource = args[i];
