@@ -349,6 +349,7 @@ public class RamlUtils {
 				} else if (!isPrimitiveType(property.getType())) {
 					propertySchema = new ObjectSchema();
 					propertySchema.setTitle(property.getName());
+					propertySchema.set$ref("#/schemas/" + property.getType());
 					if (property.getMinOccurs() > 0) {
 						propertySchema.setRequired(true);
 					}

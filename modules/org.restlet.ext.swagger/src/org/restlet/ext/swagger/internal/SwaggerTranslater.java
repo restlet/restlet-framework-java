@@ -61,16 +61,16 @@ import org.restlet.ext.apispark.model.QueryParameter;
 import org.restlet.ext.apispark.model.Representation;
 import org.restlet.ext.apispark.model.Resource;
 import org.restlet.ext.apispark.model.Response;
-import org.restlet.ext.swagger.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ApiInfo;
-import org.restlet.ext.swagger.internal.model.swagger.ItemsDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ModelDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ResourceDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ResourceListing;
-import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ResourceOperationParameterDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.ResponseMessageDeclaration;
-import org.restlet.ext.swagger.internal.model.swagger.TypePropertyDeclaration;
+import org.restlet.ext.swagger.internal.model.ApiDeclaration;
+import org.restlet.ext.swagger.internal.model.ApiInfo;
+import org.restlet.ext.swagger.internal.model.ItemsDeclaration;
+import org.restlet.ext.swagger.internal.model.ModelDeclaration;
+import org.restlet.ext.swagger.internal.model.ResourceDeclaration;
+import org.restlet.ext.swagger.internal.model.ResourceListing;
+import org.restlet.ext.swagger.internal.model.ResourceOperationDeclaration;
+import org.restlet.ext.swagger.internal.model.ResourceOperationParameterDeclaration;
+import org.restlet.ext.swagger.internal.model.ResponseMessageDeclaration;
+import org.restlet.ext.swagger.internal.model.TypePropertyDeclaration;
 import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
 
 /**
