@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -51,10 +51,13 @@ import org.restlet.resource.Resource;
 
 /**
  * Application service converting between representation and regular Java
- * objects. The conversion can work in both directions.<br>
+ * objects. The conversion can work in both directions. Actual converters can be
+ * plugged into the engine to support this service.<br>
  * <br>
- * By default, the following conversions are supported. Additional ones can be
- * plugged into the engine.
+ * Root object classes used for conversion shouldn't be generic classes
+ * otherwise important contextual type information will be missing at runtime
+ * due to Java type erasure mechanism. If needed, create a fully resolved
+ * subclasses and/or a container classes.
  * 
  * @author Jerome Louvel
  */
@@ -75,6 +78,42 @@ public class ConverterService extends Service {
      */
     public ConverterService(boolean enabled) {
         super(enabled);
+    }
+
+    /**
+     * Applies a patch representation to an initial representation in order to
+     * obtain a modified one. The patch must have a recognized media type in
+     * order for the {@link ConverterService} to be able to process it.
+     * 
+     * @param initial
+     *            The initial representation on which the patch must be applied.
+     * @param patch
+     *            The patch representation to apply.
+     * @return The modified representation.
+     * @throws IOException
+     */
+    public Representation applyPatch(Representation initial,
+            Representation patch) throws IOException {
+
+        return null;
+    }
+
+    /**
+     * Creates a patch representation by calculating a diff between initial and
+     * modified representations.
+     * 
+     * @param initial
+     *            The initial representation.
+     * @param modified
+     *            The modified representation.
+     * @return The patch representation able to convert the initial
+     *         representation into the modified representation.
+     * @throws IOException
+     */
+    public Representation createPatch(Representation initial,
+            Representation modified) throws IOException {
+
+        return null;
     }
 
     /**
@@ -106,6 +145,19 @@ public class ConverterService extends Service {
     }
 
     /**
+     * Returns the list of patch media types available for the given
+     * representation types.
+     * 
+     * @param representationType
+     *            The representation media type or null for all supported patch
+     *            types.
+     * @return The list of patch media types available.
+     */
+    public List<MediaType> getPatchTypes(MediaType representationType) {
+        return null;
+    }
+
+    /**
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
@@ -114,9 +166,30 @@ public class ConverterService extends Service {
      * @param target
      *            The expected representation metadata.
      * @return The list of variants that can be converted.
+     * @throws IOException
      */
-    public List<? extends Variant> getVariants(Class<?> source, Variant target) {
+    public List<? extends Variant> getVariants(Class<?> source, Variant target)
+            throws IOException {
         return ConverterUtils.getVariants(source, target);
+    }
+
+    /**
+     * Reverts a patch representation from a modified representation in order to
+     * obtain the initial one. The patch must have a recognized media type in
+     * order for the {@link ConverterService} to be able to process it.
+     * 
+     * @param modified
+     *            The modified representation from which the patch must be
+     *            reverted.
+     * @param patch
+     *            The patch representation to revert.
+     * @return The initial representation.
+     * @throws IOException
+     */
+    public Representation revertPatch(Representation modified,
+            Representation patch) throws IOException {
+
+        return null;
     }
 
     /**
@@ -155,40 +228,26 @@ public class ConverterService extends Service {
                     resource);
 
             if (ch != null) {
-                try {
-                    if (loggable
-                            && Context.getCurrentLogger()
-                                    .isLoggable(Level.FINE)) {
-                        Context.getCurrentLogger().fine(
-                                "The following converter was selected for the "
-                                        + source + " representation: " + ch);
-                    }
+                if (loggable
+                        && Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                    Context.getCurrentLogger().fine(
+                            "The following converter was selected for the "
+                                    + source + " representation: " + ch);
+                }
 
-                    result = ch.toObject(source, target, resource);
+                result = ch.toObject(source, target, resource);
 
-                    if (result instanceof Representation) {
-                        Representation resultRepresentation = (Representation) result;
+                if (result instanceof Representation) {
+                    Representation resultRepresentation = (Representation) result;
 
-                        // Copy the variant metadata
-                        resultRepresentation.setCharacterSet(source
-                                .getCharacterSet());
-                        resultRepresentation
-                                .setMediaType(source.getMediaType());
-                        resultRepresentation.getEncodings().addAll(
-                                source.getEncodings());
-                        resultRepresentation.getLanguages().addAll(
-                                source.getLanguages());
-                    }
-                } catch (Exception exception) {
-                    if (loggable) {
-                        Context.getCurrentLogger()
-                                .log(Level.WARNING,
-                                        "Unable to convert a "
-                                                + source
-                                                + " representation into an object of class "
-                                                + target.getCanonicalName(),
-                                        exception);
-                    }
+                    // Copy the variant metadata
+                    resultRepresentation.setCharacterSet(source
+                            .getCharacterSet());
+                    resultRepresentation.setMediaType(source.getMediaType());
+                    resultRepresentation.getEncodings().addAll(
+                            source.getEncodings());
+                    resultRepresentation.getLanguages().addAll(
+                            source.getLanguages());
                 }
             } else {
                 if (loggable) {
@@ -209,9 +268,40 @@ public class ConverterService extends Service {
      * @param source
      *            The source object to convert.
      * @return The converted representation.
+     * @throws IOException
      */
-    public Representation toRepresentation(Object source) {
+    public Representation toRepresentation(Object source) throws IOException {
         return toRepresentation(source, null, null);
+    }
+
+    /**
+     * Converts a regular Java object into a Representation.
+     * 
+     * @param source
+     *            The source object to convert.
+     * @param target
+     *            The target representation media type.
+     * @return The converted representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, MediaType target)
+            throws IOException {
+        return toRepresentation(source, new Variant(target));
+    }
+
+    /**
+     * Converts a regular Java object into a Representation.
+     * 
+     * @param source
+     *            The source object to convert.
+     * @param target
+     *            The target representation variant.
+     * @return The converted representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, Variant target)
+            throws IOException {
+        return toRepresentation(source, target, null);
     }
 
     /**
@@ -224,78 +314,67 @@ public class ConverterService extends Service {
      * @param resource
      *            The parent resource.
      * @return The converted representation.
+     * @throws IOException
      */
     public Representation toRepresentation(Object source, Variant target,
-            Resource resource) {
+            Resource resource) throws IOException {
         Representation result = null;
         boolean loggable = (resource == null) ? true : resource.isLoggable();
         ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                 resource);
 
         if (ch != null) {
-            try {
-                if (loggable
-                        && Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                    Context.getCurrentLogger().fine(
-                            "Converter selected for "
-                                    + source.getClass().getSimpleName() + ": "
-                                    + ch.getClass().getSimpleName());
-                }
+            if (loggable && Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().fine(
+                        "Converter selected for "
+                                + source.getClass().getSimpleName() + ": "
+                                + ch.getClass().getSimpleName());
+            }
 
-                if (target == null) {
-                    List<VariantInfo> variants = ch.getVariants(source
-                            .getClass());
+            if (target == null) {
+                List<VariantInfo> variants = ch.getVariants(source.getClass());
 
-                    if ((variants != null) && !variants.isEmpty()) {
-                        if (resource != null) {
-                            target = resource.getConnegService()
-                                    .getPreferredVariant(variants,
-                                            resource.getRequest(),
-                                            resource.getMetadataService());
-                        } else {
-                            target = variants.get(0);
-                        }
+                if ((variants != null) && !variants.isEmpty()) {
+                    if (resource != null) {
+                        target = resource.getConnegService()
+                                .getPreferredVariant(variants,
+                                        resource.getRequest(),
+                                        resource.getMetadataService());
                     } else {
-                        target = new Variant();
+                        target = variants.get(0);
+                    }
+                } else {
+                    target = new Variant();
+                }
+            }
+
+            result = ch.toRepresentation(source, target, resource);
+
+            if (result != null) {
+                // Copy the variant metadata if necessary
+                if (result.getCharacterSet() == null) {
+                    result.setCharacterSet(target.getCharacterSet());
+                }
+
+                if ((result.getMediaType() == null)
+                        || !result.getMediaType().isConcrete()) {
+                    if ((target.getMediaType() != null)
+                            && target.getMediaType().isConcrete()) {
+                        result.setMediaType(target.getMediaType());
+                    } else if (resource != null) {
+                        result.setMediaType(resource.getMetadataService()
+                                .getDefaultMediaType());
+                    } else {
+                        result.setMediaType(MediaType.APPLICATION_OCTET_STREAM);
                     }
                 }
 
-                result = ch.toRepresentation(source, target, resource);
-
-                if (result != null) {
-                    // Copy the variant metadata if necessary
-                    if (result.getCharacterSet() == null) {
-                        result.setCharacterSet(target.getCharacterSet());
-                    }
-
-                    if ((result.getMediaType() == null)
-                            || !result.getMediaType().isConcrete()) {
-                        if ((target.getMediaType() != null)
-                                && target.getMediaType().isConcrete()) {
-                            result.setMediaType(target.getMediaType());
-                        } else if (resource != null) {
-                            result.setMediaType(resource.getMetadataService()
-                                    .getDefaultMediaType());
-                        } else {
-                            result.setMediaType(MediaType.APPLICATION_OCTET_STREAM);
-                        }
-                    }
-
-                    if (result.getEncodings().isEmpty()) {
-                        result.getEncodings().addAll(target.getEncodings());
-                    }
-
-                    if (result.getLanguages().isEmpty()) {
-                        result.getLanguages().addAll(target.getLanguages());
-                    }
+                if (result.getEncodings().isEmpty()) {
+                    result.getEncodings().addAll(target.getEncodings());
                 }
-            } catch (Exception e) {
-                if (loggable) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Unable to convert object " + source
-                                    + " to this representation variant: "
-                                    + target, e);
+
+                if (result.getLanguages().isEmpty()) {
+                    result.getLanguages().addAll(target.getLanguages());
                 }
             }
         } else {

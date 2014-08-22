@@ -1,6 +1,6 @@
 <module id="jaxrs" excludes="android,gwt" type="standard" package="org.restlet.ext.jaxrs">
 	<name>Restlet Extension - JAX-RS</name>
-	<description>Implementation of JAX-RS (JSR-311)</description>
+	<description>Support for JAX-RS 2.0</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
@@ -14,6 +14,7 @@
 		<dependency type="library" id="jaxrs" primary="true" />
 		<dependency type="library" id="json" />
 		<dependency type="library" id="lang" />
+		<dependency type="library" id="resteasy" />
 		<dependency type="library" id="servlet" />
 		<dependency type="module" id="core" />
 	</dependencies>

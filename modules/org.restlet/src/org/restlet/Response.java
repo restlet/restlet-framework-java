@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,13 +26,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -175,10 +176,31 @@ public class Response extends Message {
     /**
      * Asks the server connector to immediately commit the given response,
      * making it ready to be sent back to the client. Note that all server
-     * connectors don't necessarily support this feature.
+     * connectors don't necessarily support this feature.<br>
+     * <br>
+     * When the response is in autoCommit mode (see related property), then
+     * calling this method isn't necessary. Also, be aware that committing the
+     * response doesn't necessarily means that is will be immediately be written
+     * on the network as some buffering can occurs. If you want to ensure that
+     * response buffers are flushed,<br>
+     * <br>
+     * Note that this calls back {@link Request#commit(Response)} on the parent
+     * request which holds the link with the underlying network connection.
      */
     public void commit() {
         getRequest().commit(this);
+    }
+
+    /**
+     * Asks the server connector to immediately flush the network buffers. Note
+     * that this calls back {@link Request#flushBuffers()} on the parent request
+     * which holds the link with the underlying network connection.
+     * 
+     * @throws IOException
+     */
+    @Override
+    public void flushBuffers() throws IOException {
+        getRequest().flushBuffers();
     }
 
     /**

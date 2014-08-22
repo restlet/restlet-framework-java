@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -78,13 +78,13 @@ import org.restlet.util.ServiceList;
  * the WADL Restlet extension for details).<br>
  * <br>
  * The XML Schema of the configuration files is available both <a
- * href="http://www.restlet.org/schemas/2.0/Component">online</a> and inside the
- * API JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
+ * href="http://restlet.org/schemas/2.0/Component">online</a> and inside the API
+ * JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
  * configuration:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;component xmlns=&quot;http://www.restlet.org/schemas/2.0/Component&quot;&gt;
+ * &lt;component xmlns=&quot;http://restlet.org/schemas/2.0/Component&quot;&gt;
  *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;
@@ -105,6 +105,7 @@ import org.restlet.util.ServiceList;
  * <ul>
  * <li>"logService" to configure access logging.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"taskService" to run tasks asynchronously.</li>
  * </ul>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
@@ -185,6 +186,10 @@ public class Component extends Restlet {
         this.services = new ServiceList(getContext());
 
         if (Engine.getInstance() != null) {
+            // [ifndef gae] instruction
+            // To be done before setting the helper...
+            this.services.add(new org.restlet.service.TaskService());
+
             this.helper = new ComponentHelper(this);
             Context childContext = getContext().createChildContext();
             this.defaultHost = new VirtualHost(childContext);
@@ -384,6 +389,17 @@ public class Component extends Restlet {
         return getServices().get(StatusService.class);
     }
 
+    /**
+     * Returns a task service to run concurrent tasks. The service is enabled by
+     * default.
+     * 
+     * @return A task service.
+     */
+    // [ifndef gae] method
+    public org.restlet.service.TaskService getTaskService() {
+        return getServices().get(org.restlet.service.TaskService.class);
+    }
+
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
@@ -517,6 +533,17 @@ public class Component extends Restlet {
      */
     public void setStatusService(StatusService statusService) {
         getServices().set(statusService);
+    }
+
+    /**
+     * Sets the task service.
+     * 
+     * @param taskService
+     *            The task service.
+     */
+    // [ifndef gae] method
+    public void setTaskService(org.restlet.service.TaskService taskService) {
+        getServices().set(taskService);
     }
 
     /**

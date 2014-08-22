@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -180,8 +180,8 @@ public class GwtClientCall extends ClientCall {
 	 * @return The modifiable list of response headers.
 	 */
 	@Override
-	public Series<org.restlet.engine.header.Header> getResponseHeaders() {
-		final Series<org.restlet.engine.header.Header> result = super
+	public Series<org.restlet.data.Header> getResponseHeaders() {
+		final Series<org.restlet.data.Header> result = super
 				.getResponseHeaders();
 
 		if (!this.responseHeadersAdded && (getResponse() != null)) {
@@ -206,8 +206,16 @@ public class GwtClientCall extends ClientCall {
 
 	@Override
 	public int getStatusCode() {
-		return (getResponse() == null) ? getErrorStatusCode() : getResponse()
-				.getStatusCode();
+		int result = -1;
+		if (getResponse() == null) {
+			result = getErrorStatusCode();
+		} else if (1223 == getResponse().getStatusCode()) {
+			//  IE XMLHTTP implementations turn 204 response code into bogus 1223 status code
+			result = 204;
+		} else {
+			result = getResponse().getStatusCode();
+		}
+		return result;
 	}
 
 	@Override
@@ -224,7 +232,7 @@ public class GwtClientCall extends ClientCall {
 		}
 
 		// Set the request headers
-		for (final org.restlet.engine.header.Header header : getRequestHeaders()) {
+		for (final org.restlet.data.Header header : getRequestHeaders()) {
 			getRequestBuilder().setHeader(header.getName(),
 					getRequestHeaders().getValues(header.getName()));
 		}

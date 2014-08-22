@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,7 +39,7 @@ import java.io.Writer;
 
 import junit.framework.TestCase;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.AppendableRepresentation;
 
 /**
@@ -63,14 +63,14 @@ public class AppendableTestCase extends TestCase {
         ar.write(System.out);
 
         // Copy its content as an input stream to the console
-        BioUtils.copy(ar.getStream(), System.out);
+        IoUtils.copy(ar.getStream(), System.out);
 
         // Write its content to the console's writer
         Writer writer = new OutputStreamWriter(System.out);
         ar.write(writer);
 
         // Copy its content as a reader to the console
-        BioUtils.copy(ar.getReader(), writer);
+        IoUtils.copy(ar.getReader(), writer);
     }
 
 }

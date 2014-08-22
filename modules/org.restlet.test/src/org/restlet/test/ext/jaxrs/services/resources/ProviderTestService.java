@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -299,8 +299,8 @@ public class ProviderTestService {
     @POST
     @Path("multipart/form-data")
     @Consumes("multipart/form-data")
-    public Object multipartPost(@QueryParam("attrNo") int attrNo,
-            Multipart multipart) throws MessagingException, IOException {
+    public Object multipartPost(@QueryParam("attrNo")
+    int attrNo, Multipart multipart) throws MessagingException, IOException {
         final BodyPart bodyPart = multipart.getBodyPart(attrNo);
         return bodyPart.getInputStream();
     }
@@ -356,8 +356,9 @@ public class ProviderTestService {
     @GET
     @Path("String/substring")
     @Produces("text/plain")
-    public String subStringGet(@MatrixParam("start") int start,
-            @MatrixParam("end") int end) {
+    public String subStringGet(@MatrixParam("start")
+    int start, @MatrixParam("end")
+    int end) {
         if (end >= ALPHABET.length()) {
             return ALPHABET.substring(start);
         }

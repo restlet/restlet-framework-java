@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -72,7 +72,7 @@ import org.restlet.util.RouteList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/376-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/376-restlet.html">User Guide -
  *      Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
@@ -665,6 +665,62 @@ public class Router extends Restlet {
                 getLogger().fine("Selected route: " + route);
             }
         }
+    }
+
+    /**
+     * Attaches a permanent redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+    public TemplateRoute redirectPermanent(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_PERMANENT));
+    }
+
+    /**
+     * Attaches a redirection to this router based on a given URI pattern. It
+     * redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectSeeOther(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_SEE_OTHER));
+    }
+
+    /**
+     * Attaches a temporary redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectTemporary(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_TEMPORARY));
     }
 
     /**

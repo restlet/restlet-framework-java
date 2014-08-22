@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,7 +40,7 @@ import java.io.Writer;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a BIO character stream.
@@ -63,19 +63,19 @@ public abstract class CharacterRepresentation extends Representation {
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
-        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     // [ifndef gwt] method
     @Override
     public InputStream getStream() throws IOException {
-        return BioUtils.getInputStream(getReader(), getCharacterSet());
+        return IoUtils.getStream(getReader(), getCharacterSet());
     }
 
     // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        Writer writer = BioUtils.getWriter(outputStream, getCharacterSet());
+        Writer writer = IoUtils.getWriter(outputStream, getCharacterSet());
         write(writer);
         writer.flush();
     }
@@ -84,8 +84,7 @@ public abstract class CharacterRepresentation extends Representation {
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
-        OutputStream os = org.restlet.engine.io.NioUtils
-                .getStream(writableChannel);
+        OutputStream os = IoUtils.getStream(writableChannel);
         write(os);
         os.flush();
     }

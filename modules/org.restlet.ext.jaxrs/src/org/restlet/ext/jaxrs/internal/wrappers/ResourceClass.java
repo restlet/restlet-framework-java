@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
@@ -113,14 +114,14 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
-     *                all entity providers
+     *            all entity providers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                The logger to log warnings, if the class is not valid.
+     *            The logger to log warnings, if the class is not valid.
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      * @see ResourceClasses#getResourceClass(Class)
@@ -142,17 +143,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param jaxRsProviders
-     *                all entity providers
+     *            all entity providers
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @throws IllegalArgumentException
      * @throws IllegalPathOnClassException
      * @throws MissingAnnotationException
-     *                 if &#64;{@link Path} is missing on the jaxRsClass
+     *             if &#64;{@link Path} is missing on the jaxRsClass
      * @see ResourceClasses#getResourceClass(Class)
      */
     protected ResourceClass(Class<?> jaxRsClass, JaxRsProviders jaxRsProviders,
@@ -179,8 +180,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             if (paramType.isPrimitive()) {
                 logger.config("The method " + execMethod
                         + " contains a primitive parameter " + paramType + ".");
-                logger
-                        .config("It is recommended to use it's wrapper class. If no value could be read from the request, now you would got the default value. If you use the wrapper class, you would get null.");
+                logger.config("It is recommended to use it's wrapper class. If no value could be read from the request, now you would got the default value. If you use the wrapper class, you would get null.");
                 break;
             }
         }
@@ -236,7 +236,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * found one. This would be returned.
      * 
      * @param javaMethod
-     *                The java method to look for annotations
+     *            The java method to look for annotations
      * @return the founded method, or null, if no method with annotations was
      *         found. Returns also null, if null was given.
      */
@@ -278,9 +278,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * given class.
      * 
      * @param clazz
-     *                The Class to look for the method.
+     *            The Class to look for the method.
      * @param subClassMethod
-     *                the Method to look for it's signature in the given class.
+     *            the Method to look for it's signature in the given class.
      * @return the method in the given class, with the same signature as given
      *         method, or null if such method is not available. Returns also
      *         null, if the given class is null.
@@ -303,9 +303,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * consumed or produced mimes and so on.
      * 
      * @param resourceObject
-     *                The resource object
+     *            The resource object
      * @param remainingPath
-     *                the path
+     *            the path
      * @return The ist of ResourceMethods
      */
     public Collection<ResourceMethod> getMethodsForPath(
@@ -358,7 +358,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     @Override
     public int hashCode() {
-        return this.jaxRsClass.hashCode();
+        return SystemUtils.hashCode(this.jaxRsClass);
     }
 
     /**

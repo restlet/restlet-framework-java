@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -70,6 +70,13 @@ public class Range {
     private volatile long size;
 
     /**
+     * Specifies the unit of the range. The HTTP/1.1 protocol specifies only
+     * 'bytes', but other ranges are allowed {@link http
+     * ://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12}
+     */
+    private volatile String unitName;
+
+    /**
      * Default constructor defining a range starting on the first byte and with
      * a maximum size, i.e. covering the whole entity.
      */
@@ -89,7 +96,7 @@ public class Range {
     }
 
     /**
-     * Constructor.
+     * Constructor. Sets the name of the range unit as "bytes" by default.
      * 
      * @param index
      *            Index from which to start the range
@@ -99,6 +106,7 @@ public class Range {
     public Range(long index, long size) {
         this.index = index;
         this.size = size;
+        this.unitName = "bytes";
     }
 
     @Override
@@ -130,6 +138,15 @@ public class Range {
      */
     public long getSize() {
         return size;
+    }
+
+    /**
+     * Returns the name of the range unit.
+     * 
+     * @return The name of the range unit.
+     */
+    public String getUnitName() {
+        return unitName;
     }
 
     /**
@@ -186,5 +203,15 @@ public class Range {
      */
     public void setSize(long size) {
         this.size = size;
+    }
+
+    /**
+     * Sets the name of the range unit.
+     * 
+     * @param unitName
+     *            The name of the range unit.
+     */
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
     }
 }

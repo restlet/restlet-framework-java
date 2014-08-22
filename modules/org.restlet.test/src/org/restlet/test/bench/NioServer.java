@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,17 +40,17 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.resource.ClientResource;
 
 public class NioServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
+        helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.simple.HttpServerHelper(null);
-        helper = new org.restlet.engine.connector.HttpServerHelper(null);
+        // helper = new org.restlet.ext.nio.HttpServerHelper(null);
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);
@@ -84,15 +84,15 @@ public class NioServer {
                 try {
                     // fr.put(request.getEntity());
                     response.setEntity(fr.get());
-//                    response.setEntity(new WrapperRepresentation(fr.get()) {
-//                        public long getSize() {
-//                            return -1L;
-//                        }
-//
-//                        public long getAvailableSize() {
-//                            return BioUtils.getAvailableSize(this);
-//                        }
-//                    });
+                    // response.setEntity(new WrapperRepresentation(fr.get()) {
+                    // public long getSize() {
+                    // return -1L;
+                    // }
+                    //
+                    // public long getAvailableSize() {
+                    // return BioUtils.getAvailableSize(this);
+                    // }
+                    // });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -102,8 +102,8 @@ public class NioServer {
         });
 
         // Configure the log service
-//        comp.getLogService().setLogPropertiesRef(
-//                "clap://system/org/restlet/test/bench/log.properties");
+        // comp.getLogService().setLogPropertiesRef(
+        // "clap://system/org/restlet/test/bench/log.properties");
         comp.start();
     }
 }

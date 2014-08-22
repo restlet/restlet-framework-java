@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -73,9 +73,9 @@ public class AlgorithmUtil {
      * 
      * @param matchResult
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link Request} and the Restlet
+     *            {@link Response}.
      */
     public static void addPathVarsToMap(MatchingResult matchResult,
             CallContext callContext) {
@@ -194,13 +194,13 @@ public class AlgorithmUtil {
      * Never returns null.
      * 
      * @param unsortedResourceMethods
-     *                the resourceMethods that provide the required mediaType
+     *            the resourceMethods that provide the required mediaType
      * @param givenMediaType
-     *                The MediaType of the given entity.
+     *            The MediaType of the given entity.
      * @param accMediaTypes
-     *                The accepted MediaTypes
+     *            The accepted MediaTypes
      * @param requHttpMethod
-     *                The HTTP method of the request.
+     *            The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      */
@@ -209,7 +209,7 @@ public class AlgorithmUtil {
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
             Method requHttpMethod) {
         final Collection<ResourceMethod> resourceMethods;
-        resourceMethods = new SortedOrderedBag<ResourceMethod>(COMP, 
+        resourceMethods = new SortedOrderedBag<ResourceMethod>(COMP,
                 unsortedResourceMethods);
         // 3 b+c
         SortedMetadata<MediaType> givenMediaTypes;
@@ -302,8 +302,8 @@ public class AlgorithmUtil {
      * <ol>
      * <li>the number of literal characters in each member as the primary key
      * (descending order),</li>
-     * <li>the number of capturing groups as a secondary key (descending
-     * order),</li>
+     * <li>the number of capturing groups as a secondary key (descending order),
+     * </li>
      * <li>the number of capturing groups with non-default regular expressions
      * (i.e. not "([^/]+?)") as the tertiary key (descending order), and</li>
      * <li>the source of each member as quaternary key sorting those derived
@@ -313,8 +313,8 @@ public class AlgorithmUtil {
      * @param <R>
      * 
      * @param rrcOrRmls
-     *                Collection of Sub-ResourceMethods and SubResourceLocators
-     *                or root resource class wrappers.
+     *            Collection of Sub-ResourceMethods and SubResourceLocators or
+     *            root resource class wrappers.
      * @return the resource method or sub resource locator or root resource
      *         class, or null, if the Map is null or empty.
      */
@@ -382,13 +382,13 @@ public class AlgorithmUtil {
      * support the given HTTP method.
      * 
      * @param resourceMethods
-     *                the collection of {@link ResourceMethod}s.
+     *            the collection of {@link ResourceMethod}s.
      * @param httpMethod
-     *                the HTTP {@link Method}
+     *            the HTTP {@link Method}
      * @param alsoGet
-     *                if true, also methods suporting GET are included, also if
-     *                another HTTP method is required. It is intended to be used
-     *                for HEAD requests.
+     *            if true, also methods suporting GET are included, also if
+     *            another HTTP method is required. It is intended to be used for
+     *            HEAD requests.
      */
     public static void removeNotSupportedHttpMethod(
             Collection<ResourceMethod> resourceMethods,

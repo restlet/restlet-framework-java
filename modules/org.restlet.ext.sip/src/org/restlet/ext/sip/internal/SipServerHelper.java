@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,10 +40,10 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.OutboundWay;
-import org.restlet.engine.connector.ServerConnectionHelper;
-import org.restlet.engine.connector.ServerInboundWay;
+import org.restlet.ext.nio.ServerConnectionHelper;
+import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.way.OutboundWay;
+import org.restlet.ext.nio.internal.way.ServerInboundWay;
 
 /**
  * Standalone SIP server helper.
@@ -81,7 +81,7 @@ public class SipServerHelper extends ServerConnectionHelper {
     }
 
     @Override
-    protected Request createRequest(Connection<Server> connection,
+    public Request createRequest(Connection<Server> connection,
             String methodName, String resourceUri, String protocol) {
 
         SipInboundRequest request = new SipInboundRequest(getContext(),

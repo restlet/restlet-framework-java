@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,6 +34,7 @@
 package org.restlet.ext.odata.internal.edm;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -62,12 +63,12 @@ public class TypeUtils {
             .getNumberInstance(Locale.US);
 
     /** Formater for the EDM Double type. */
-    public static final NumberFormat doubleFormat = DecimalFormat
-            .getNumberInstance(Locale.US);
+    public static final NumberFormat doubleFormat = new DecimalFormat(
+            "0.###############", new DecimalFormatSymbols(Locale.US));
 
     /** Formater for the EDM Single type. */
-    public static final NumberFormat singleFormat = DecimalFormat
-            .getNumberInstance(Locale.US);
+    public static final NumberFormat singleFormat = new DecimalFormat(
+            "0.#######", new DecimalFormatSymbols(Locale.US));
 
     /** Formater for the EDM Time type. */
     public static final NumberFormat timeFormat = DecimalFormat

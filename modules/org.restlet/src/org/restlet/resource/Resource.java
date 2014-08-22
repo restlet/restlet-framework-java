@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -53,6 +53,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -72,9 +73,9 @@ import org.restlet.util.Series;
  * specific target resource.<br>
  * <br>
  * It also defines a precise life cycle. First, the instance is created and the
- * final {@link #init(Context, Request, Response)} method is invoked, with a
- * chance for the developer to do some additional initialization by overriding
- * the {@link #doInit()} method.<br>
+ * {@link #init(Context, Request, Response)} method is invoked. If you need to
+ * do some additional initialization, you should just override the
+ * {@link #doInit()} method.<br>
  * <br>
  * Then, the abstract {@link #handle()} method can be invoked. For concrete
  * behavior, see the {@link ClientResource} and {@link ServerResource}
@@ -109,6 +110,83 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class Resource {
+
+    /**
+     * Converts the given {@link String} value into a {@link Boolean} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Boolean} value or null.
+     */
+    public static Boolean toBoolean(String value) {
+        return (value != null) ? Boolean.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Byte} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Byte} value or null.
+     */
+    public static Byte toByte(String value) {
+        return (value != null) ? Byte.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Double} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Double} value or null.
+     */
+    public static Double toDouble(String value) {
+        return (value != null) ? Double.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Float} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Float} value or null.
+     */
+    public static Float toFloat(String value) {
+        return (value != null) ? Float.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Integer} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Integer} value or null.
+     */
+    public static Integer toInteger(String value) {
+        return (value != null) ? Integer.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into an {@link Long} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Long} value or null.
+     */
+    public static Long toLong(String value) {
+        return (value != null) ? Long.valueOf(value) : null;
+    }
+
+    /**
+     * Converts the given {@link String} value into a {@link Short} or null.
+     * 
+     * @param value
+     *            The value to convert or null.
+     * @return The converted {@link Short} value or null.
+     */
+    public static Short toShort(String value) {
+        return (value != null) ? Short.valueOf(value) : null;
+    }
 
     // [ifndef gwt] member
     /** The parent application. */
@@ -577,10 +655,8 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the request cache directives.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cache-Control" header.
+     * Returns the request cache directives. Note that when used with HTTP
+     * connectors, this property maps to the "Cache-Control" header.
      * 
      * @return The cache directives.
      */
@@ -617,10 +693,8 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the response cache directives.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cache-Control" header.
+     * Returns the response cache directives. Note that when used with HTTP
+     * connectors, this property maps to the "Cache-Control" header.
      * 
      * @return The cache directives.
      */
@@ -846,6 +920,34 @@ public abstract class Resource {
     }
 
     /**
+     * Converts an object into a representation based on the default converter
+     * service variant.
+     * 
+     * @param source
+     *            The object to convert.
+     * @return The wrapper representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source) throws IOException {
+        return toRepresentation(source, (Variant) null);
+    }
+
+    /**
+     * Converts an object into a representation based on a given media type.
+     * 
+     * @param source
+     *            The object to convert.
+     * @param target
+     *            The target representation media type.
+     * @return The wrapper representation.
+     * @throws IOException
+     */
+    public Representation toRepresentation(Object source, MediaType target)
+            throws IOException {
+        return toRepresentation(source, new Variant(target));
+    }
+
+    /**
      * Converts an object into a representation based on client preferences.
      * 
      * @param source
@@ -853,8 +955,10 @@ public abstract class Resource {
      * @param target
      *            The target representation variant.
      * @return The wrapper representation.
+     * @throws IOException
      */
-    public Representation toRepresentation(Object source, Variant target) {
+    public Representation toRepresentation(Object source, Variant target)
+            throws IOException {
         Representation result = null;
 
         if (source != null) {

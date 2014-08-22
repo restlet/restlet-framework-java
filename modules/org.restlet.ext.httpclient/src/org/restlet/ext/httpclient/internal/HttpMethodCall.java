@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -118,6 +118,11 @@ public class HttpMethodCall extends ClientCall {
                 this.httpRequest = new HttpHead(requestUri);
             } else if (method.equalsIgnoreCase(Method.DELETE.getName())) {
                 this.httpRequest = new HttpDelete(requestUri);
+                if (hasEntity) {
+                    getLogger()
+                            .warning(
+                                    "The current DELETE request provides an entity that may be not supported by the Apache HTTP Client library. If you face such issues, you can still move to another HTTP client connector.");
+                }
             } else if (method.equalsIgnoreCase(Method.OPTIONS.getName())) {
                 this.httpRequest = new HttpOptions(requestUri);
             } else if (method.equalsIgnoreCase(Method.TRACE.getName())) {
@@ -177,8 +182,11 @@ public class HttpMethodCall extends ClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        return (getHttpResponse() == null) ? null : getHttpResponse()
-                .getStatusLine().getReasonPhrase();
+        if ((getHttpResponse() != null)
+                && (getHttpResponse().getStatusLine() != null)) {
+            return getHttpResponse().getStatusLine().getReasonPhrase();
+        }
+        return null;
     }
 
     @Override
@@ -232,9 +240,8 @@ public class HttpMethodCall extends ClientCall {
      * @return The modifiable list of response headers.
      */
     @Override
-    public Series<org.restlet.engine.header.Header> getResponseHeaders() {
-        Series<org.restlet.engine.header.Header> result = super
-                .getResponseHeaders();
+    public Series<org.restlet.data.Header> getResponseHeaders() {
+        Series<org.restlet.data.Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             if ((getHttpResponse() != null)
@@ -268,8 +275,11 @@ public class HttpMethodCall extends ClientCall {
      */
     @Override
     public int getStatusCode() {
-        return (getHttpResponse() == null) ? null : getHttpResponse()
-                .getStatusLine().getStatusCode();
+        if (getHttpResponse() != null
+                && getHttpResponse().getStatusLine() != null) {
+            return getHttpResponse().getStatusLine().getStatusCode();
+        }
+        return Status.CONNECTOR_ERROR_COMMUNICATION.getCode();
     }
 
     /**
@@ -288,7 +298,7 @@ public class HttpMethodCall extends ClientCall {
             final Representation entity = request.getEntity();
 
             // Set the request headers
-            for (org.restlet.engine.header.Header header : getRequestHeaders()) {
+            for (org.restlet.data.Header header : getRequestHeaders()) {
                 if (!header.getName().equals(
                         HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     getHttpRequest().addHeader(header.getName(),

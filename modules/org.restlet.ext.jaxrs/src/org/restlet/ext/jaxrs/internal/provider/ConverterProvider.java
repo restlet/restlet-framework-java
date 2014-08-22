@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,15 +39,18 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import org.restlet.service.ConverterService;
 
 /**
@@ -88,12 +91,19 @@ public class ConverterProvider extends AbstractProvider<Object> {
     @Override
     public long getSize(Object object, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
+        Representation representation = null;
 
-        // Convert the object into a representation
-        Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                mediaType.toString()));
-        Representation representation = getConverterService().toRepresentation(
-                object, targetVariant, null);
+        try {
+            // Convert the object into a representation
+            Variant targetVariant = new Variant(new org.restlet.data.MediaType(
+                    mediaType.toString()));
+            representation = getConverterService().toRepresentation(object,
+                    targetVariant, null);
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.FINE,
+                    "Unable to get the size", e);
+        }
+
         return (representation == null) ? -1 : representation.getSize();
     }
 
@@ -118,10 +128,16 @@ public class ConverterProvider extends AbstractProvider<Object> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                mediaType.toString()));
-        List<? extends Variant> variants = getConverterService().getVariants(
-                type, targetVariant);
+        List<? extends Variant> variants;
+
+        try {
+            Variant targetVariant = new Variant(new org.restlet.data.MediaType(
+                    mediaType.toString()));
+            variants = getConverterService().getVariants(type, targetVariant);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+
         return (variants != null) && !variants.isEmpty();
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,26 +34,70 @@
 package org.restlet.ext.jackson;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 
 import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvFactory;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
- * automatically in JSON.
+ * automatically in JSON, JSON binary (Smile), XML, YAML and CSV. <br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack.
  * 
  * @see <a href="http://jackson.codehaus.org/">Jackson project</a>
+ * @see <a
+ *      href="https://github.com/restlet/restlet-framework-java/wiki/XEE-security-enhancements">XML
+ *      Entity Expansion injection attack</a>
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
  */
-public class JacksonRepresentation<T> extends WriterRepresentation {
+public class JacksonRepresentation<T> extends OutputRepresentation {
+    /**
+     * True for expanding entity references when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.expandingEntityRefs", false by default.
+     */
+    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+
+    /**
+     * True for validating DTD documents when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.validatingDtd", false by default.
+     */
+    public static boolean XML_VALIDATING_DTD = Boolean
+            .getBoolean("org.restlet.ext.xml.validatingDtd");
+
+    /** The modifiable Jackson CSV schema. */
+    private CsvSchema csvSchema;
+
+    /**
+     * Specifies that the parser will expand entity reference nodes. By default
+     * the value of this is set to false.
+     */
+    private volatile boolean expandingEntityRefs;
 
     /** The (parsed) object to format. */
     private T object;
@@ -61,11 +105,26 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     /** The object class to instantiate. */
     private Class<T> objectClass;
 
-    /** The JSON representation to parse. */
-    private Representation jsonRepresentation;
-
     /** The modifiable Jackson object mapper. */
     private ObjectMapper objectMapper;
+
+    /** The modifiable Jackson object reader. */
+    private ObjectReader objectReader;
+
+    /** The modifiable Jackson object writer. */
+    private ObjectWriter objectWriter;
+
+    /** The representation to parse. */
+    private Representation representation;
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against a DTD. Note that for XML schema or Relax NG validation, use the
+     * "schema" property instead.
+     * 
+     * @see DocumentBuilderFactory#setValidating(boolean)
+     */
+    private volatile boolean validatingDtd;
 
     /**
      * Constructor.
@@ -81,8 +140,13 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         this.object = object;
         this.objectClass = (Class<T>) ((object == null) ? null : object
                 .getClass());
-        this.jsonRepresentation = null;
+        this.representation = null;
         this.objectMapper = null;
+        this.objectReader = null;
+        this.objectWriter = null;
+        this.csvSchema = null;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+        this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
@@ -90,18 +154,25 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
      * 
      * @param representation
      *            The representation to parse.
+     * @param objectClass
+     *            The object class to instantiate.
      */
     public JacksonRepresentation(Representation representation,
             Class<T> objectClass) {
         super(representation.getMediaType());
         this.object = null;
         this.objectClass = objectClass;
-        this.jsonRepresentation = representation;
+        this.representation = representation;
         this.objectMapper = null;
+        this.objectReader = null;
+        this.objectWriter = null;
+        this.csvSchema = null;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+        this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
-     * Constructor.
+     * Constructor for the JSON media type.
      * 
      * @param object
      *            The object to format.
@@ -111,15 +182,115 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Creates a Jackson object mapper based on a media type. By default, it
-     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
+     * Creates a Jackson CSV schema based on a mapper and the current object
+     * class.
+     * 
+     * @param csvMapper
+     *            The source CSV mapper.
+     * @return A Jackson CSV schema
+     */
+    protected CsvSchema createCsvSchema(CsvMapper csvMapper) {
+        return csvMapper.schemaFor(getObjectClass());
+    }
+
+    /**
+     * Creates a Jackson object mapper based on a media type. It supports JSON,
+     * JSON Smile, XML, YAML and CSV.
      * 
      * @return The Jackson object mapper.
      */
     protected ObjectMapper createObjectMapper() {
-        JsonFactory jsonFactory = new JsonFactory();
-        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-        return new ObjectMapper(jsonFactory);
+        ObjectMapper result = null;
+        if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
+            JsonFactory jsonFactory = new JsonFactory();
+            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(jsonFactory);
+        } else if (MediaType.APPLICATION_JSON_SMILE
+                .isCompatible(getMediaType())) {
+            SmileFactory smileFactory = new SmileFactory();
+            smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(smileFactory);
+        } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
+                || MediaType.TEXT_XML.isCompatible(getMediaType())) {
+            XMLInputFactory xif = XMLInputFactory.newFactory();
+            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
+                    isExpandingEntityRefs());
+            xif.setProperty(XMLInputFactory.SUPPORT_DTD,
+                    isExpandingEntityRefs());
+            xif.setProperty(XMLInputFactory.IS_VALIDATING, isValidatingDtd());
+            XMLOutputFactory xof = XMLOutputFactory.newFactory();
+            XmlFactory xmlFactory = new XmlFactory(xif, xof);
+            xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new XmlMapper(xmlFactory);
+        } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())
+                || MediaType.TEXT_YAML.isCompatible(getMediaType())) {
+            YAMLFactory yamlFactory = new YAMLFactory();
+            yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(yamlFactory);
+        } else if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvFactory csvFactory = new CsvFactory();
+            csvFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new CsvMapper(csvFactory);
+        } else {
+            JsonFactory jsonFactory = new JsonFactory();
+            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(jsonFactory);
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates a Jackson object reader based on a mapper. Has a special handling
+     * for CSV media types.
+     * 
+     * @return The Jackson object reader.
+     */
+    protected ObjectReader createObjectReader() {
+        ObjectReader result = null;
+
+        if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvMapper csvMapper = (CsvMapper) getObjectMapper();
+            CsvSchema csvSchema = createCsvSchema(csvMapper);
+            result = csvMapper.reader(getObjectClass()).with(csvSchema);
+        } else {
+            result = getObjectMapper().reader(getObjectClass());
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates a Jackson object writer based on a mapper. Has a special handling
+     * for CSV media types.
+     * 
+     * @return The Jackson object writer.
+     */
+    protected ObjectWriter createObjectWriter() {
+        ObjectWriter result = null;
+
+        if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvMapper csvMapper = (CsvMapper) getObjectMapper();
+            CsvSchema csvSchema = createCsvSchema(csvMapper);
+            result = csvMapper.writer(csvSchema);
+        } else {
+            result = getObjectMapper().writerWithType(getObjectClass());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the modifiable Jackson CSV schema.
+     * 
+     * @return The modifiable Jackson CSV schema.
+     */
+    public CsvSchema getCsvSchema() {
+        if (this.csvSchema == null) {
+            this.csvSchema = createCsvSchema((CsvMapper) getObjectMapper());
+        }
+
+        return this.csvSchema;
     }
 
     /**
@@ -134,9 +305,9 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
 
         if (this.object != null) {
             result = this.object;
-        } else if (this.jsonRepresentation != null) {
-            result = getObjectMapper().readValue(
-                    this.jsonRepresentation.getStream(), this.objectClass);
+        } else if (this.representation != null) {
+            result = getObjectReader().readValue(
+                    this.representation.getStream());
         }
 
         return result;
@@ -163,6 +334,75 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         }
 
         return this.objectMapper;
+    }
+
+    /**
+     * Returns the modifiable Jackson object reader. Useful to customize
+     * deserialization.
+     * 
+     * @return The modifiable Jackson object reader.
+     */
+    public ObjectReader getObjectReader() {
+        if (this.objectReader == null) {
+            this.objectReader = createObjectReader();
+        }
+
+        return this.objectReader;
+    }
+
+    /**
+     * Returns the modifiable Jackson object writer. Useful to customize
+     * serialization.
+     * 
+     * @return The modifiable Jackson object writer.
+     */
+    public ObjectWriter getObjectWriter() {
+        if (this.objectWriter == null) {
+            this.objectWriter = createObjectWriter();
+        }
+
+        return this.objectWriter;
+    }
+
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @return True if the parser will expand entity reference nodes.
+     */
+    public boolean isExpandingEntityRefs() {
+        return expandingEntityRefs;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @return True if the schema-based validation is enabled.
+     */
+    public boolean isValidatingDtd() {
+        return validatingDtd;
+    }
+
+    /**
+     * Sets the Jackson CSV schema.
+     * 
+     * @param csvSchema
+     *            The Jackson CSV schema.
+     */
+    public void setCsvSchema(CsvSchema csvSchema) {
+        this.csvSchema = csvSchema;
+    }
+
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @param expandEntityRefs
+     *            True if the parser will expand entity reference nodes.
+     */
+    public void setExpandingEntityRefs(boolean expandEntityRefs) {
+        this.expandingEntityRefs = expandEntityRefs;
     }
 
     /**
@@ -195,12 +435,43 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Sets the Jackson object reader.
+     * 
+     * @param objectReader
+     *            The Jackson object reader.
+     */
+    public void setObjectReader(ObjectReader objectReader) {
+        this.objectReader = objectReader;
+    }
+
+    /**
+     * Sets the Jackson object writer.
+     * 
+     * @param objectWriter
+     *            The Jackson object writer.
+     */
+    public void setObjectWriter(ObjectWriter objectWriter) {
+        this.objectWriter = objectWriter;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @param validating
+     *            The new validation flag to set.
+     */
+    public void setValidatingDtd(boolean validating) {
+        this.validatingDtd = validating;
+    }
+
     @Override
-    public void write(Writer writer) throws IOException {
-        if (jsonRepresentation != null) {
-            jsonRepresentation.write(writer);
+    public void write(OutputStream outputStream) throws IOException {
+        if (representation != null) {
+            representation.write(outputStream);
         } else if (object != null) {
-            getObjectMapper().writeValue(writer, object);
+            getObjectWriter().writeValue(outputStream, object);
         }
     }
 }

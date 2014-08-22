@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -130,7 +130,7 @@ public class Query<T> implements Iterable<T> {
                     result = iterator.hasNext();
                 }
                 // Set the reference to the next page
-                nextPage = query.getNextPage();
+                nextPage = null;
             }
 
             return result;
@@ -527,7 +527,7 @@ public class Query<T> implements Iterable<T> {
      * 
      * @return The reference to the next page (used in server-paging mode).
      */
-    private Reference getNextPage() {
+    public Reference getNextPage() {
         return nextPage;
     }
 
@@ -651,16 +651,18 @@ public class Query<T> implements Iterable<T> {
             // result = new FeedParser<T>(getFeed(), this.entityClass,
             // ((Metadata) getService().getMetadata())).parse();
             // Detect server-paging mode.
-            nextPage = null;
+            setNextPage(null);
+
             for (Link link : getFeed().getLinks()) {
                 if (Relation.NEXT.equals(link.getRel())) {
-                    nextPage = link.getHref();
+                    setNextPage(link.getHref());
                     break;
                 }
             }
-            if (nextPage != null) {
-                result = new EntryIterator<T>(this.service, result, nextPage,
-                        entityClass);
+
+            if (getNextPage() != null) {
+                result = new EntryIterator<T>(this.service, result,
+                        getNextPage(), entityClass);
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
@@ -715,6 +717,16 @@ public class Query<T> implements Iterable<T> {
      */
     private void setFeed(Feed feed) {
         this.feed = feed;
+    }
+
+    /**
+     * Sets the reference to the next page (used in server-paging mode).
+     * 
+     * @param nextPage
+     *            The reference to the next page.
+     */
+    public void setNextPage(Reference nextPage) {
+        this.nextPage = nextPage;
     }
 
     /**

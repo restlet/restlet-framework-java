@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,14 +26,12 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.engine.header;
-
-import org.restlet.data.ClientInfo;
 
 /**
  * Constants related to the HTTP protocol.
@@ -87,6 +85,8 @@ public final class HeaderConstants {
     public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
 
     public static final String HEADER_ACCEPT_LANGUAGE = "Accept-Language";
+
+    public static final String HEADER_ACCEPT_PATCH = "Accept-Patch";
 
     public static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
@@ -197,18 +197,6 @@ public final class HeaderConstants {
     public static final String ATTRIBUTE_HEADERS = "org.restlet.http.headers";
 
     public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
-
-    /**
-     * @deprecated Use {@link ClientInfo#getCertificates()} instead.
-     */
-    @Deprecated
-    public static final String ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";
-
-    /**
-     * @deprecated Use {@link ClientInfo#getCipherSuite()} instead.
-     */
-    @Deprecated
-    public static final String ATTRIBUTE_HTTPS_CIPHER_SUITE = "org.restlet.https.cipherSuite";
 
     public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 

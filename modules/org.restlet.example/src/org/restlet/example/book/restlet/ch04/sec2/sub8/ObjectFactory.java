@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -35,27 +35,25 @@ package org.restlet.example.book.restlet.ch04.sec2.sub8;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the org.restlet.example.book.restlet.ch05.sec2.sub8 package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
- * provided in this class.
+ * This object contains factory methods for each Java content interface and Java
+ * element interface generated in the
+ * org.restlet.example.book.restlet.ch05.sec2.sub8 package.
+ * <p>
+ * An ObjectFactory allows you to programatically construct new instances of the
+ * Java representation for XML content. The Java representation of XML content
+ * can consist of schema derived interfaces and classes representing the binding
+ * of schema type definitions, element declarations and model groups. Factory
+ * methods for each of these are provided in this class.
  * 
  */
 @XmlRegistry
 public class ObjectFactory {
 
-
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.restlet.example.book.restlet.ch05.sec2.sub8
+     * Create a new ObjectFactory that can be used to create new instances of
+     * schema derived classes for package:
+     * org.restlet.example.book.restlet.ch05.sec2.sub8
      * 
      */
     public ObjectFactory() {

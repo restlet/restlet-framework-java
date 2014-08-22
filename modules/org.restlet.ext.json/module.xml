@@ -23,8 +23,11 @@
          <custom classname="selector.EditionFileSelector" classpathref="forge-path">
             <param name="edition" value="gwt"/>
          </custom>
+         <exclude name="src/org/restlet/ext/json/JsonpFilter.java" />
+         <exclude name="src/org/restlet/ext/json/JsonpRepresentation.java" /> 
          <exclude name="src/org/restlet/ext/json/JsonRepresentation.java" />
          <exclude name="src/org/restlet/ext/json/JsonConverter.java" />
+         <exclude name="src/META-INF/**" />
 ]]>
 		</files-sets>
 	</source>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.junit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.atom"/>
@@ -18,18 +18,23 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jetty"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.json"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.lucene"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.net"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.oauth"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.odata"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rdf"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.velocity"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.wadl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.hamcrest"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.nio"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rome"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.thymeleaf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.guice"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

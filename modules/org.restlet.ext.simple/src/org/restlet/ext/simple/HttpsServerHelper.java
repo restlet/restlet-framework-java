@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,11 +40,11 @@ import javax.net.ssl.SSLContext;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.simple.internal.SimpleContainer;
 import org.restlet.ext.simple.internal.SimpleServer;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
-import org.restlet.ext.ssl.internal.SslUtils;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.connect.Connection;
@@ -64,7 +64,7 @@ import org.simpleframework.transport.connect.SocketConnection;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>

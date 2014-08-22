@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -48,15 +48,15 @@ public class ListUtils {
      * not available in GWT 1.5 and was removed on purpose.
      * 
      * @param list
-     *                The source List
+     *            The source List
      * @param fromIndex
-     *                Starting index in the source List
+     *            Starting index in the source List
      * @param toIndex
-     *                Ending index in the source List
+     *            Ending index in the source List
      * @throws IndexOutOfBoundsException
-     *                 Call exceeds the bounds of the source List
+     *             Call exceeds the bounds of the source List
      * @throws IllegalArgumentException
-     *                 fromIndex and toIndex are not in sequence
+     *             fromIndex and toIndex are not in sequence
      * @return a copy of the selected range
      */
     public static <T> List<T> copySubList(List<T> list, int fromIndex,

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,26 +45,26 @@ import org.restlet.ext.wadl.WadlServerResource;
  * Mails server resource implementing the {@link MailsResource} interface.
  */
 public class MailsServerResource extends WadlServerResource implements
-		MailsResource {
+        MailsResource {
 
-	public List<MailRepresentation> retrieve() {
-		List<MailRepresentation> mails = new ArrayList<MailRepresentation>();
-		MailRepresentation mail = new MailRepresentation();
-		mail.setStatus("received");
-		mail.setSubject("Message to self");
-		mail.setContent("Doh!");
-		mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
-				.toString());
-		mails.add(mail);
-		return mails;
-	}
+    public List<MailRepresentation> retrieve() {
+        List<MailRepresentation> mails = new ArrayList<MailRepresentation>();
+        MailRepresentation mail = new MailRepresentation();
+        mail.setStatus("received");
+        mail.setSubject("Message to self");
+        mail.setContent("Doh!");
+        mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
+                .toString());
+        mails.add(mail);
+        return mails;
+    }
 
-	public void add(MailRepresentation mail) {
-		System.out.println("Status: " + mail.getStatus());
-		System.out.println("Subject: " + mail.getSubject());
-		System.out.println("Content: " + mail.getContent());
-		System.out.println("Account URI: " + mail.getAccountRef());
-		System.out.println();
-	}
+    public void add(MailRepresentation mail) {
+        System.out.println("Status: " + mail.getStatus());
+        System.out.println("Subject: " + mail.getSubject());
+        System.out.println("Content: " + mail.getContent());
+        System.out.println("Account URI: " + mail.getAccountRef());
+        System.out.println();
+    }
 
 }

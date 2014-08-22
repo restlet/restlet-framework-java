@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -68,6 +68,8 @@ public class PreferenceReader<T extends Metadata> extends
     public static final int TYPE_LANGUAGE = 3;
 
     public static final int TYPE_MEDIA_TYPE = 4;
+
+    public static final int TYPE_PATCH = 5;
 
     /**
      * Parses character set preferences from a header.
@@ -161,6 +163,24 @@ public class PreferenceReader<T extends Metadata> extends
     }
 
     /**
+     * Parses patch preferences from a header.
+     * 
+     * @param acceptPatchHeader
+     *            The header to parse.
+     * @param clientInfo
+     *            The client info to update.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static void addPatches(String acceptPatchHeader,
+            ClientInfo clientInfo) {
+        if (acceptPatchHeader != null) {
+            PreferenceReader pr = new PreferenceReader(
+                    PreferenceReader.TYPE_PATCH, acceptPatchHeader);
+            pr.addValues(clientInfo.getAcceptedPatches());
+        }
+    }
+
+    /**
      * Parses a quality value.<br>
      * If the quality is invalid, an IllegalArgumentException is thrown.
      * 
@@ -231,6 +251,7 @@ public class PreferenceReader<T extends Metadata> extends
                 break;
 
             case TYPE_MEDIA_TYPE:
+            case TYPE_PATCH:
                 result.setMetadata((T) MediaType.valueOf(metadata.toString()));
                 break;
             }
@@ -253,6 +274,7 @@ public class PreferenceReader<T extends Metadata> extends
                 break;
 
             case TYPE_MEDIA_TYPE:
+            case TYPE_PATCH:
                 result.setMetadata((T) new MediaType(metadata.toString(),
                         mediaParams));
                 break;
@@ -280,7 +302,7 @@ public class PreferenceReader<T extends Metadata> extends
             result = new Series<Parameter>(Parameter.class);
             // [ifdef gwt] instruction uncomment
             // result = new org.restlet.engine.util.ParameterSeries();
-            
+
             for (final Iterator<Parameter> iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
                 param = iter.next();
@@ -370,7 +392,8 @@ public class PreferenceReader<T extends Metadata> extends
                         // [ifndef gwt] instruction
                         parameters = new Series<Parameter>(Parameter.class);
                         // [ifdef gwt] instruction uncomment
-                        // parameters = new org.restlet.engine.util.ParameterSeries();
+                        // parameters = new
+                        // org.restlet.engine.util.ParameterSeries();
                     } else {
                         throw new IOException("Empty metadata name detected.");
                     }

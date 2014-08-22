@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,13 +26,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,15 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CacheDirective;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.util.Series;
 
 /**
  * Generic message exchanged between components.
@@ -104,6 +109,36 @@ public abstract class Message {
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * If the entity is transient or its size unknown in advance but available,
+     * then the entity is wrapped with a
+     * {@link org.restlet.representation.BufferingRepresentation}.<br>
+     * <br>
+     * Be careful as this method could create potentially very large byte
+     * buffers in memory that could impact your application performance.
+     * 
+     * @see org.restlet.representation.BufferingRepresentation
+     * @see ClientResource#setRequestEntityBuffering(boolean)
+     * @see ClientResource#setResponseEntityBuffering(boolean)
+     */
+    public void bufferEntity() {
+        if ((getEntity() != null)
+                && (getEntity().isTransient() || (getEntity().getSize() == Representation.UNKNOWN_SIZE))
+                && getEntity().isAvailable()) {
+            setEntity(new org.restlet.representation.BufferingRepresentation(
+                    getEntity()));
+        }
+    }
+
+    /**
+     * Asks the underlying connector to immediately flush the network buffers.
+     * 
+     * @throws IOException
+     */
+    public void flushBuffers() throws IOException {
     }
 
     /**
@@ -225,6 +260,20 @@ public abstract class Message {
         }
 
         return this.entityText;
+    }
+
+    /**
+     * Returns the series of lower-level HTTP headers. Please not that this
+     * method should rarely be used as most HTTP headers are already surfaced by
+     * the Restlet API. The result series can be used to deal with HTTP
+     * extension headers.
+     * 
+     * @return The HTTP headers.
+     */
+    @SuppressWarnings("unchecked")
+    public Series<Header> getHeaders() {
+        return (Series<Header>) getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,11 +39,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -63,31 +65,27 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "status",
-    "subject",
-    "content",
-    "accountRef"
-})
+@XmlType(name = "", propOrder = { "status", "subject", "content", "accountRef" })
 @XmlRootElement(name = "mail", namespace = "http://www.rmep.org/namespaces/1.0")
 public class Mail {
 
     @XmlElement(namespace = "http://www.rmep.org/namespaces/1.0", required = true)
     protected String status;
+
     @XmlElement(namespace = "http://www.rmep.org/namespaces/1.0", required = true)
     protected String subject;
+
     @XmlElement(namespace = "http://www.rmep.org/namespaces/1.0", required = true)
     protected String content;
+
     @XmlElement(namespace = "http://www.rmep.org/namespaces/1.0", required = true)
     protected String accountRef;
 
     /**
      * Gets the value of the status property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getStatus() {
         return status;
@@ -97,9 +95,8 @@ public class Mail {
      * Sets the value of the status property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setStatus(String value) {
         this.status = value;
@@ -108,10 +105,8 @@ public class Mail {
     /**
      * Gets the value of the subject property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getSubject() {
         return subject;
@@ -121,9 +116,8 @@ public class Mail {
      * Sets the value of the subject property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setSubject(String value) {
         this.subject = value;
@@ -132,10 +126,8 @@ public class Mail {
     /**
      * Gets the value of the content property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getContent() {
         return content;
@@ -145,9 +137,8 @@ public class Mail {
      * Sets the value of the content property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setContent(String value) {
         this.content = value;
@@ -156,10 +147,8 @@ public class Mail {
     /**
      * Gets the value of the accountRef property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
+     * 
      */
     public String getAccountRef() {
         return accountRef;
@@ -169,9 +158,8 @@ public class Mail {
      * Sets the value of the accountRef property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is {@link String }
+     * 
      */
     public void setAccountRef(String value) {
         this.accountRef = value;

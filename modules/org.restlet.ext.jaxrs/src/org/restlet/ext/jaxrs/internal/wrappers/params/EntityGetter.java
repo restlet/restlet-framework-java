@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -91,7 +91,8 @@ public class EntityGetter implements ParamGetter {
      * @throws NoMessageBodyReaderException
      * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue(String)
      */
-    public Object getValue() throws ConvertRepresentationException, InvocationTargetException {
+    public Object getValue() throws ConvertRepresentationException,
+            InvocationTargetException {
         final Request request = this.tlContext.get().getRequest();
         final Representation entity = request.getEntity();
         if (entity == null) {
@@ -107,8 +108,8 @@ public class EntityGetter implements ParamGetter {
                 .getJaxRsHttpHeaders(request);
         try {
             return mbr.readFrom(this.convToCl, this.convToGen,
-                    this.annotations, mediaType, entity.getCharacterSet(), httpHeaders, entity
-                            .getStream());
+                    this.annotations, mediaType, entity.getCharacterSet(),
+                    httpHeaders, entity.getStream());
         } catch (WebApplicationException wae) {
             throw wae;
         } catch (IOException e) {

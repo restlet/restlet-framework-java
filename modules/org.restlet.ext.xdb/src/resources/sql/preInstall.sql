@@ -34,7 +34,7 @@ begin
   -- uncomment this if you need remote debugging
   -- dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','localhost:4000', 'connect,resolve' );
   -- required grants for some examples
-  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','www.restlet.org', 'connect,resolve' );
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','restlet.org', 'connect,resolve' );
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','s3.amazonaws.com', 'connect,resolve' );
   commit;
 end;

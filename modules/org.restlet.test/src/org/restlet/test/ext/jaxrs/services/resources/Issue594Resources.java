@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -50,48 +50,53 @@ import org.restlet.test.ext.jaxrs.services.tests.Issue594Test;
 @Path("admin")
 public class Issue594Resources {
 
-   /**
-    * Provides both static and dynamic, per-request information, about the
-    * components of a request URI.
-    */
-   @Context
-   UriInfo uriInfo;
+    /**
+     * Provides both static and dynamic, per-request information, about the
+     * components of a request URI.
+     */
+    @Context
+    UriInfo uriInfo;
 
-   @GET
-   @Produces("text/plain")
-   public String root() {
-       return "root";
-   }
+    @GET
+    @Produces("text/plain")
+    public String root() {
+        return "root";
+    }
 
-   @GET
-   @Path("{project}")
-   @Produces("text/plain")
-   public String project(@PathParam("project") String project) {
-       return "project="+project;
-   }
+    @GET
+    @Path("{project}")
+    @Produces("text/plain")
+    public String project(@PathParam("project")
+    String project) {
+        return "project=" + project;
+    }
 
-   @GET
-   @Path("{project}/{repository}")
-   @Produces("text/plain")
-   public String repository(@PathParam("project") String project,
-           @PathParam("repository") String repository) {
-       return "project="+project+"\nrepository="+repository;
-   }
+    @GET
+    @Path("{project}/{repository}")
+    @Produces("text/plain")
+    public String repository(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository) {
+        return "project=" + project + "\nrepository=" + repository;
+    }
 
-   @GET
-   @Path("{project}/{repository}/schema")
-   @Produces("text/plain")
-   public String schemaDir(@PathParam("project") String project,
-           @PathParam("repository") String repository) {
-       return "project="+project+"\nrepository="+repository+"\nschema";
-   }
+    @GET
+    @Path("{project}/{repository}/schema")
+    @Produces("text/plain")
+    public String schemaDir(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository) {
+        return "project=" + project + "\nrepository=" + repository + "\nschema";
+    }
 
-   @GET
-   @Path("{project}/{repository}/schema/{schema}")
-   @Produces("text/plain")
-   public String schema(@PathParam("project") String project,
-           @PathParam("repository") String repository,
-           @PathParam("schema") String schema) {
-       return "project="+project+"\nrepository="+repository+"\nschema\nschema="+schema;
-   }
+    @GET
+    @Path("{project}/{repository}/schema/{schema}")
+    @Produces("text/plain")
+    public String schema(@PathParam("project")
+    String project, @PathParam("repository")
+    String repository, @PathParam("schema")
+    String schema) {
+        return "project=" + project + "\nrepository=" + repository
+                + "\nschema\nschema=" + schema;
+    }
 }

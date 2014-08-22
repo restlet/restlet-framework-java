@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -41,8 +41,8 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.request.SolrQueryRequest;
-import org.apache.solr.request.SolrQueryResponse;
 import org.apache.solr.request.SolrRequestHandler;
+import org.apache.solr.response.SolrQueryResponse;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -50,7 +50,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 import org.restlet.ext.lucene.internal.SolrRepresentation;
 import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
 
@@ -160,8 +160,8 @@ public class SolrClientHelper extends ClientHelper {
             core.execute(handler, solrReq, solrResp);
 
             if (solrResp.getException() != null) {
-                response.setStatus(Status.SERVER_ERROR_INTERNAL, solrResp
-                        .getException());
+                response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                        solrResp.getException());
             } else {
                 response.setEntity(new SolrRepresentation(
                         MediaType.APPLICATION_XML, solrReq, solrResp));
@@ -193,7 +193,8 @@ public class SolrClientHelper extends ClientHelper {
                     if (!config.exists()) {
                         config = new File(new URI(configFile));
                     }
-                    coreContainer = new CoreContainer(directory, config);
+                    coreContainer = CoreContainer.createAndLoad(directory,
+                            config);
                 }
             }
 

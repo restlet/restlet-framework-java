@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -62,11 +62,26 @@ import org.xml.sax.XMLReader;
  * <br>
  * Subclasses only need to override the ContentHandler methods required for the
  * reading and also the write(XmlWriter writer) method when serialization is
- * requested.
+ * requested. <br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack, see
+ * https://github.com/restlet/restlet-
+ * framework-java/wiki/XEE-injection-security-fix.
  * 
  * @author Jerome Louvel
  */
 public class SaxRepresentation extends XmlRepresentation {
+
+    /**
+     * True for turning on secure parsing XML representations; default value
+     * provided by system property "org.restlet.ext.xml.secureProcessing", true
+     * by default.
+     */
+    public static final boolean XML_SECURE_PROCESSING = (System
+            .getProperty("org.restlet.ext.xml.secureProcessing") == null) ? true
+            : Boolean.getBoolean("org.restlet.ext.xml.secureProcessing");
 
     /** Limits potential XML overflow attacks. */
     private boolean secureProcessing;
@@ -92,7 +107,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
     }
 
     /**
@@ -105,7 +120,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = new SAXSource(
                 SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
     }
@@ -120,7 +135,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = new SAXSource(xmlSource);
     }
 
@@ -134,7 +149,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = xmlSource;
     }
 
@@ -147,7 +162,7 @@ public class SaxRepresentation extends XmlRepresentation {
     public SaxRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.xmlRepresentation = xmlRepresentation;
     }
 

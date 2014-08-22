@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,9 +39,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
@@ -235,7 +235,6 @@ public class ServerAdapter extends Adapter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
-    @SuppressWarnings("deprecation")
     public HttpRequest toRequest(ServerCall httpCall) {
         HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
@@ -250,18 +249,12 @@ public class ServerAdapter extends Adapter {
             List<Certificate> clientCertificates = httpCall.getCertificates();
 
             if (clientCertificates != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
-                        clientCertificates);
                 result.getClientInfo().setCertificates(clientCertificates);
             }
 
             String cipherSuite = httpCall.getCipherSuite();
 
             if (cipherSuite != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
-                        cipherSuite);
                 result.getClientInfo().setCipherSuite(cipherSuite);
             }
 

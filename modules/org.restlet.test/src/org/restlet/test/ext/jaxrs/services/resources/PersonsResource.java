@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -57,11 +57,11 @@ public class PersonsResource {
     UriInfo uris;
 
     @POST
-    @Produces( { "application/xml", "text/xml" })
+    @Produces({ "application/xml", "text/xml" })
     public Response addPerson(Person person) {
         final int id = createPerson(person);
-        final URI location = this.uris.getBaseUriBuilder().path(
-                PersonResource.class).build(String.valueOf(id));
+        final URI location = this.uris.getBaseUriBuilder()
+                .path(PersonResource.class).build(String.valueOf(id));
         return Response.created(location).build();
     }
 
@@ -70,14 +70,14 @@ public class PersonsResource {
      * @return
      */
     private int createPerson(Person person) {
-        // create person in database 
+        // create person in database
         person.toString();
-        
+
         return 5;
     }
 
     @GET
-    @Produces( { "application/xml", "text/xml" })
+    @Produces({ "application/xml", "text/xml" })
     public PersonList getPersons() {
         final PersonList list = new PersonList();
         list.add(new Person("Angela", "Merkel"));

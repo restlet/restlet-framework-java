@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -175,6 +175,18 @@ public final class Method implements Comparable<Method> {
             "OPTIONS",
             "Requests for information about the communication options available on the request/response chain identified by the URI",
             BASE_HTTP + "#sec9.2", true, true);
+
+    /**
+     * Requests that the origin server applies partial modifications contained
+     * in the entity enclosed in the request to the resource identified by the
+     * request URI.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH RFC 5789</a>
+     */
+    public static final Method PATCH = new Method(
+            "PATCH",
+            "Requests that the origin server applies partial modifications to the resource identified by the request URI",
+            "http://tools.ietf.org/html/rfc5789", false, false);
 
     /**
      * Requests that the origin server accepts the entity enclosed in the

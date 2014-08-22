@@ -33,21 +33,22 @@ public class CoOpApplication extends Application {
                         + this.getClass().getPackage().getName()
                                 .replace(".", "/") + "/" + file;
                 if (form.getFirstValue("$expand") != null) {
-                    uri += " expand " + form.getFirstValue("$expand")
-                    .replace(",", ", ")
-                    .replace('/', '-');
+                    uri += " expand "
+                            + form.getFirstValue("$expand").replace(",", ", ")
+                                    .replace('/', '-');
                 }
                 if (form.getFirstValue("$skiptoken") != null) {
                     uri += form.getFirstValue("$skiptoken");
                 }
-                
+
                 Response r = getContext().getClientDispatcher().handle(
                         new Request(Method.GET, LocalReference
                                 .createClapReference(LocalReference.CLAP_CLASS,
                                         uri + ".xml")));
-                
-                r.getEntity().setCharacterSet(getMetadataService().getDefaultCharacterSet());
-                
+
+                r.getEntity().setCharacterSet(
+                        getMetadataService().getDefaultCharacterSet());
+
                 response.setEntity(r.getEntity());
                 response.setStatus(r.getStatus());
             } else if (!updatable) {
@@ -58,46 +59,25 @@ public class CoOpApplication extends Application {
 
     @Override
     public Restlet createInboundRoot() {
-        
+
         getMetadataService().setDefaultCharacterSet(CharacterSet.UTF_8);
         getConnectorService().getClientProtocols().add(Protocol.CLAP);
         Router router = new Router(getContext());
 
-        router.attach(
-                "/$metadata", 
-                new MyClapRestlet(
-                        getContext(), 
-                        "metadata",
-                        false));
-        
-        router.attach(
-                "/JobPosting", 
-                new MyClapRestlet(
-                        getContext(), 
-                        "JobPosting", 
-                        false));
-        
-        router.attach(
-                "/Job", 
-                new MyClapRestlet(
-                        getContext(), 
-                        "Job", 
-                        false));
-        
-        router.attach(
-                "/Language", 
-                new MyClapRestlet(
-                        getContext(), 
-                        "Language", 
-                        false));
-        
-        router.attach(
-                "/University", 
-                new MyClapRestlet(
-                        getContext(), 
-                        "University", 
-                        false));
-        
+        router.attach("/$metadata", new MyClapRestlet(getContext(), "metadata",
+                false));
+
+        router.attach("/JobPosting", new MyClapRestlet(getContext(),
+                "JobPosting", false));
+
+        router.attach("/Job", new MyClapRestlet(getContext(), "Job", false));
+
+        router.attach("/Language", new MyClapRestlet(getContext(), "Language",
+                false));
+
+        router.attach("/University", new MyClapRestlet(getContext(),
+                "University", false));
+
         return router;
     }
 

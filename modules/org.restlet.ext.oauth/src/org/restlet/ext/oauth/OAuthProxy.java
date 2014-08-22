@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,28 +34,27 @@
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.UUID;
+import java.util.logging.Level;
+import org.json.JSONException;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CacheDirective;
-import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
-import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.Scopes;
-import org.restlet.representation.EmptyRepresentation;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 
 /**
@@ -66,42 +65,32 @@ import org.restlet.routing.Filter;
  * recommended to put a ServerResource after this filter to display to the end
  * user on successful service setup.
  * 
- * The following example shows how to gain an accesstoken that will be available
- * for "DummyResource" to use to access some remote protected resource
+ * The following example shows how to gain an access token that will be
+ * available for "DummyResource" to use to access some remote protected resource
  * 
  * <pre>
  * {
  *     &#064;code
- *     OAuthParameter params = new OAuthParameters(&quot;clientId&quot;, &quot;clientSecret&quot;,
- *             oauthURL, &quot;scope1 scope2&quot;);
- *     OAuthProxy proxy = new OauthProxy(params, getContext(), true);
+ *     OAuthProxy proxy = new OauthProxy(getContext(), true);
+ *     proxy.setClientId(&quot;clientId&quot;);
+ *     proxy.setClientSecret(&quot;clientSecret&quot;);
+ *     proxy.setRedirectURI(&quot;callbackURI&quot;);
+ *     proxy.setAuthorizationURI(&quot;authURI&quot;);
+ *     proxy.setTokenURI(&quot;tokenURI&quot;);
  *     proxy.setNext(DummyResource.class);
  *     router.attach(&quot;/write&quot;, write);
- *     
- *     //A Slightly more advanced example that also sets some SSL client parameters
- *     Client client = new Client(Protocol.HTTPS);
- *     Context c = new Context();
- *     client.setContext(c);
- *     c.getParameters().add(&quot;truststorePath&quot;, &quot;pathToKeyStoreFile&quot;);
- *        c.getParameters(0.add(&quot;truststorePassword&quot;, &quot;password&quot;);
- *     OAuthParameter params = new OAuthParameters(&quot;clientId&quot;, &quot;clientSecret&quot;,
- *             oauthURL, &quot;scope1 scope2&quot;);
- *     OAuthProxy proxy = new OauthProxy(params, getContext(), true, client);
- *     proxy.setNext(DummyResource.class);
- *     router.attach(&quot;/write&quot;, write);
- *     
- *     
  * }
  * </pre>
  * 
  * @author Kristoffer Gronowski
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  * @see org.restlet.ext.oauth.OAuthParameters
  */
-public class OAuthProxy extends Filter {
+public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
     private final static List<CacheDirective> no = new ArrayList<CacheDirective>();
 
-    private final static String VERSION = "DRAFT-10";
+    private final static String VERSION = "RFC6749"; // Final spec.
 
     /**
      * Returns the current proxy's version.
@@ -112,46 +101,51 @@ public class OAuthProxy extends Filter {
         return VERSION;
     }
 
-    private final OAuthParameters params;
-
     private final boolean basicSecret;
 
     private final org.restlet.Client cc;
+
+    private final SecureRandom random;
+
+    private String clientId;
+
+    private String clientSecret;
+
+    private String redirectURI;
+
+    private String[] scope;
+
+    private String authorizationURI;
+
+    private String tokenURI;
 
     /**
      * Sets up an OauthProxy. Defaults to form based authentication and not http
      * basic.
      * 
-     * @param params
-     *            The OAuth parameters.
      * @param ctx
      *            The Restlet context.
      */
-    public OAuthProxy(OAuthParameters params, Context ctx) {
-        this(params, ctx, false);
+    public OAuthProxy(Context ctx) {
+        this(ctx, true); // Use BASIC method as default.
     }
 
     /**
      * Sets up an OAuthProxy.
      * 
-     * @param params
-     *            The OAuth parameters.
      * @param useBasicSecret
      *            If true use http basic authentication otherwise use form
      *            based.
      * @param ctx
      *            The Restlet context.
      */
-    public OAuthProxy(OAuthParameters params, Context ctx,
-            boolean useBasicSecret) {
-        this(params, ctx, useBasicSecret, null);
+    public OAuthProxy(Context ctx, boolean useBasicSecret) {
+        this(ctx, useBasicSecret, null);
     }
 
     /**
      * Sets up an OAuthProxy.
      * 
-     * @param params
-     *            The OAuth parameters.
      * @param useBasicSecret
      *            If true use http basic authentication otherwise use form
      *            based.
@@ -162,216 +156,264 @@ public class OAuthProxy extends Filter {
      *            request. Useful when you need to set e.g. SSL initialization
      *            parameters
      */
-    public OAuthProxy(OAuthParameters params, Context ctx,
-            boolean useBasicSecret, org.restlet.Client requestClient) {
+    public OAuthProxy(Context ctx, boolean useBasicSecret,
+            org.restlet.Client requestClient) {
         this.basicSecret = useBasicSecret;
         setContext(ctx);
-        this.params = params;
         no.add(CacheDirective.noStore());
         this.cc = requestClient;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private String setupState(Response response) {
+        String sessionId = UUID.randomUUID().toString();
+
+        byte[] secret = new byte[20];
+        random.nextBytes(secret);
+        String state = Base64.encode(secret, false);
+
+        CookieSetting cs = new CookieSetting("_state", sessionId);
+        response.getCookieSettings().add(cs);
+
+        getContext().getAttributes().put(sessionId, state);
+
+        return state;
+    }
+
+    private void validateState(Request request, Form params) throws Exception {
+        String sessionId = request.getCookies().getFirstValue("_state");
+        String state = (String) getContext().getAttributes().get(sessionId);
+        if (state != null && state.equals(params.getFirstValue(STATE))) {
+            return;
+        }
+        // CSRF detected
+        throw new Exception("The state does not match.");
+    }
+
+    protected OAuthParameters createAuthorizationRequest() {
+        OAuthParameters parameters = new OAuthParameters().responseType(
+                ResponseType.code).add(CLIENT_ID, getClientId());
+        if (redirectURI != null) {
+            parameters.redirectURI(redirectURI);
+        }
+        if (scope != null) {
+            parameters.scope(scope);
+        }
+        return parameters;
+    }
+
+    protected OAuthParameters createTokenRequest(String code) {
+        OAuthParameters parameters = new OAuthParameters().grantType(
+                GrantType.authorization_code).code(code);
+        if (redirectURI != null) {
+            parameters.redirectURI(redirectURI);
+        }
+        return parameters;
+    }
+
+    protected Representation getErrorPage(Exception ex) {
+        // Failed in initial auth resource request
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><pre>");
+        if (ex instanceof OAuthException) {
+            OAuthException oex = (OAuthException) ex;
+            sb.append("OAuth2 error detected.\n");
+
+            sb.append("Error : ").append(oex.getError());
+            if (oex.getErrorDescription() != null) {
+                sb.append("Error description : ").append(
+                        oex.getErrorDescription());
+            }
+
+            if (oex.getErrorURI() != null) {
+                sb.append("<a href=\"");
+                sb.append(oex.getErrorURI());
+                sb.append("\">Error Description</a>");
+            }
+        } else {
+            sb.append("General error detected.\n");
+            sb.append("Error : ").append(ex.getMessage());
+        }
+
+        sb.append("</pre></body></html>");
+
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    private Token requestToken(String code) throws OAuthException, IOException,
+            JSONException {
+        getLogger().fine("Came back after authorization code = " + code);
+
+        final AccessTokenClientResource tokenResource;
+        String endpoint = getTokenURI();
+        if (endpoint.contains("graph.facebook.com")) {
+            // We should use Facebook implementation. (Old draft spec.)
+            tokenResource = new FacebookAccessTokenClientResource(
+                    new Reference(endpoint));
+        } else {
+            tokenResource = new AccessTokenClientResource(new Reference(
+                    endpoint));
+            tokenResource
+                    .setAuthenticationMethod(basicSecret ? ChallengeScheme.HTTP_BASIC
+                            : null);
+        }
+        tokenResource.setClientCredentials(getClientId(), getClientSecret());
+
+        if (cc != null) {
+            tokenResource.setNext(cc);
+        }
+
+        OAuthParameters tokenRequest = createTokenRequest(code);
+
+        try {
+            getLogger().fine("Sending access form : " + tokenRequest);
+            return tokenResource.requestToken(tokenRequest);
+        } finally {
+            tokenResource.release();
+        }
+    }
+
+    private int sendErrorPage(Response response, Exception ex) {
+        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
+        response.setEntity(getErrorPage(ex));
+        return STOP;
     }
 
     @Override
     protected int beforeHandle(Request request, Response response) {
-        // StringBuilder response = new StringBuilder();
-        Boolean auth = false;
         // Sets the no-store Cache-Control header
         request.setCacheDirectives(no);
-        String redirectUri = request.getResourceRef().toUrl().toString();
 
-        Form query = new Form(request.getOriginalRef().getQuery());
+        Form params = new Form(request.getOriginalRef().getQuery());
+        getLogger().fine("Incomming request query = " + params);
 
-        String error = query.getFirstValue(OAuthServerResource.ERROR);
-
-        if ((error != null) && (error.length() > 0)) {
-            // Failed in initial auth resource request
-            Representation repr = new EmptyRepresentation();
-            String desc = query.getFirstValue(OAuthServerResource.ERROR_DESC);
-            String uri = query.getFirstValue(OAuthServerResource.ERROR_URI);
-
-            if ((desc != null) || (uri != null)) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("<html><body><pre>");
-                sb.append("OAuth2 error detected.\n");
-
-                if (desc != null) {
-                    sb.append("Error description : ").append(desc);
-                }
-
-                if (uri != null) {
-                    sb.append("<a href=\"");
-                    sb.append(uri);
-                    sb.append("\">Error Description</a>");
-                }
-
-                sb.append("</pre></body></html>");
-
-                repr = new StringRepresentation(sb.toString(),
-                        MediaType.TEXT_HTML);
+        try {
+            // Check if error is available.
+            String error = params.getFirstValue(ERROR);
+            if (error != null && !error.isEmpty()) {
+                validateState(request, params); // CSRF protection
+                return sendErrorPage(response,
+                        OAuthException.toOAuthException(params));
             }
-
-            OAuthError ec = OAuthError.valueOf(error);
-
-            switch (ec) {
-            case invalid_request:
-                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
-                response.setEntity(repr);
-                break;
-            case invalid_client:
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, error);
-                response.setEntity(repr);
-                break;
-            case unauthorized_client:
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-                response.setEntity(repr);
-                break;
-            case redirect_uri_mismatch:
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-                response.setEntity(repr);
-                break;
-            case access_denied:
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-                response.setEntity(repr);
-                break;
-            case unsupported_response_type:
-                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
-                response.setEntity(repr);
-                break;
-            case invalid_scope:
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-                response.setEntity(repr);
-                break;
-            default:
-                getLogger().warning(
-                        "Unhandled error response type. " + ec.name());
+            // Check if code is available.
+            String code = params.getFirstValue(CODE);
+            if (code != null && !code.isEmpty()) {
+                // Execute authorization_code grant
+                validateState(request, params); // CSRF protection
+                Token token = requestToken(code);
+                request.getAttributes().put(Token.class.getName(), token);
+                return CONTINUE;
             }
-            return STOP;
-            // return false;
+        } catch (Exception ex) {
+            if (!(ex instanceof OAuthException)) {
+                getLogger().log(Level.SEVERE, "OAuthProxy error", ex);
+            }
+            return sendErrorPage(response, ex);
         }
 
-        String code = query.getFirstValue(OAuthServerResource.CODE);
-        getLogger().fine("Incomming request query = " + query);
-
-        if (code == null) {
-            Form form = new Form();
-            form.add(OAuthServerResource.RESPONSE_TYPE,
-                    ResponseType.code.name());
-            form.add(OAuthServerResource.CLIENT_ID, this.params.getClientId());
-            form.add(OAuthServerResource.REDIR_URI, redirectUri);
-            // OLD form.add(OAuthServerResource.SCOPE, params.getScope());
-            form.add(OAuthServerResource.SCOPE,
-                    Scopes.toScope(this.params.getRoles()));
-
-            // if( params.getOwner() != null && params.getOwner().length() > 0 )
-            // {
-            // form.add(OAuthResource.OWNER,params.getOwner());
-            // }
-            try {
-                form.encode();
-            } catch (IOException ioe) {
-                getLogger().warning(ioe.getMessage());
-            }
-
-            String q = form.getQueryString();
-
-            Reference redirRef = new Reference(this.params.getBaseRef(),
-                    this.params.getAuthorizePath(), q, null);
-            getLogger().fine("Redirecting to : " + redirRef.toUri());
-            response.setCacheDirectives(no);
-            response.redirectTemporary(redirRef);
-            getLogger().fine("After Redirecting to : " + redirRef.toUri());
-        } else {
-            getLogger().fine("Came back after SNS code = " + code);
-            ClientResource tokenResource = new CookieCopyClientResource(
-                    this.params.getBaseRef() + this.params.getAccessTokenPath());
-            if (this.cc != null) {
-                tokenResource.setNext(this.cc);
-            }
-            Form form = new Form();
-            form.add(OAuthServerResource.GRANT_TYPE,
-                    GrantType.authorization_code.name());
-            String redir = request.getResourceRef().getHostIdentifier()
-                    + request.getResourceRef().getPath();
-            form.add(OAuthServerResource.REDIR_URI, redir);
-
-            if (this.basicSecret) {
-                ChallengeResponse authentication = new ChallengeResponse(
-                        ChallengeScheme.HTTP_BASIC);
-                authentication.setDigestAlgorithm("NONE");
-                String basic = this.params.getClientId() + ':'
-                        + this.params.getClientSecret();
-                authentication.setRawValue(Base64.encode(basic.getBytes(),
-                        false));
-                tokenResource.setChallengeResponse(authentication);
-            } else {
-                form.add(OAuthServerResource.CLIENT_ID,
-                        this.params.getClientId());
-                form.add(OAuthServerResource.CLIENT_SECRET,
-                        this.params.getClientSecret());
-            }
-
-            form.add(OAuthServerResource.CODE, code);
-            getLogger().fine(
-                    "Sending access form : " + form.getQueryString() + " to : "
-                            + tokenResource.getReference());
-
-            try {
-                Representation input = form.getWebRepresentation();
-                tokenResource.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
-                Representation body = tokenResource.post(input);
-
-                if (tokenResource.getStatus().isSuccess()) {
-                    // Store away the user
-                    OAuthUser authUser = OAuthUser.createJson(request.getClientInfo().getUser(), body);
-
-                    if (authUser != null) {
-                        request.getClientInfo().setUser(authUser);
-                        request.getClientInfo().setAuthenticated(true);
-                        getLogger().fine(
-                                "storing to context = : " + getContext());
-                        // continue in the filter chain
-                        auth = true;
-                    }
-                }
-                getLogger().fine("Before sns release");
-                body.release();
-            } catch (ResourceException re) {
-                getLogger().warning("Could not find token resource.");
-            }
-            tokenResource.release();
-        }
-        if (auth) {
-            return CONTINUE;
-        } else {
-            if (response.getStatus().isSuccess()
-                    || response.getStatus().isServerError()) {
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            }
-            return STOP;
-        }
+        // Redirect to authorization uri
+        OAuthParameters authRequest = createAuthorizationRequest();
+        authRequest.state(setupState(response)); // CSRF protection
+        Reference redirRef = authRequest.toReference(getAuthorizationURI());
+        getLogger().fine("Redirecting to : " + redirRef.toUri());
+        response.setCacheDirectives(no);
+        response.redirectTemporary(redirRef);
+        getLogger().fine("After Redirecting to : " + redirRef.toUri());
+        return STOP;
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        // tokenResource = new CookieCopyClientResource(params.getBaseRef()
-        // + params.getAccessTokenPath());
-    }
-
-    /*
-     * @Override protected int unauthorized(Request request, Response response)
-     * { if (response.getStatus().isSuccess() ||
-     * response.getStatus().isServerError()) { return
-     * super.unauthorized(request, response); }
-     * 
-     * // If redirect or a specific client error just propaget it on return
-     * STOP; }
+    /**
+     * @return the clientId
      */
+    public String getClientId() {
+        return clientId;
+    }
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        // tokenResource.release();
+    /**
+     * @param clientId
+     *            the clientId to set
+     */
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    /**
+     * @return the clientSecret
+     */
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    /**
+     * @param clientSecret
+     *            the clientSecret to set
+     */
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    /**
+     * @return the redirectURI
+     */
+    public String getRedirectURI() {
+        return redirectURI;
+    }
+
+    /**
+     * @param redirectURI
+     *            the redirectURI to set
+     */
+    public void setRedirectURI(String redirectURI) {
+        this.redirectURI = redirectURI;
+    }
+
+    /**
+     * @return the scope
+     */
+    public String[] getScope() {
+        return scope;
+    }
+
+    /**
+     * @param scope
+     *            the scope to set
+     */
+    public void setScope(String[] scope) {
+        this.scope = scope;
+    }
+
+    /**
+     * @return the authorizationURI
+     */
+    public String getAuthorizationURI() {
+        return authorizationURI;
+    }
+
+    /**
+     * @param authorizationURI
+     *            the authorizationURI to set
+     */
+    public void setAuthorizationURI(String authorizationURI) {
+        this.authorizationURI = authorizationURI;
+    }
+
+    /**
+     * @return the tokenURI
+     */
+    public String getTokenURI() {
+        return tokenURI;
+    }
+
+    /**
+     * @param tokenURI
+     *            the tokenURI to set
+     */
+    public void setTokenURI(String tokenURI) {
+        this.tokenURI = tokenURI;
     }
 
 }

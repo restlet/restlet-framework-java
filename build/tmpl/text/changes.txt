@@ -4,24 +4,103 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-    - Bug fixed
+    - New features
       - 
+
     - Enhancements
-      - Upgraded Jetty to version 8.1.5.
-      - Upgraded JAX-RS to version 1.1.1.
-      - Upgraded Servlet API to version 3.0.
-      - Upgraded Jackson to version 2.0.
+      - Added targetRef support to templates, allow reference variables to 
+        resolve to the full reference (issue #935).
+        Contributed by Jeremy Gustie.
+      - Updated agent.properties file with recent Opera user agent signature.
+      - Added Resource#toRepresentation(Object, MediaType) convenience method.
+      - Added ConverterService#toRepresentation(Object, MediaType) convenience method.
+      - Added ConverterService#toRepresentation(Object, Variant) convenience method.
+      - Added static Resource#toInteger, toFloat, toByte, toLong, toDouble, toBoolean 
+        methods accepting 'null' string values to facilitate the processing of path 
+        variables and query parameters.
+      - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
+        toRepresentation(...) and toStatus(...), added additional parameters to allow
+        access to throwable and converter service if available.
+      - Aligned behavior of StatusService (underlying StatusFilter) with the behavior of
+        the ServerResource#doCatch() method in case a throwable is intercepted.
+      - Added org.restlet.resource.@Status annotation type to automatically convert
+        Throwable Java classes between HTTP statuses and error response entities.
+        NOTE: implementation is in progress.
+      - StatusService.toStatus(Throwable, ...) methods now support @Status annotations
+        to set the proper code.
+ 
+    - Bugs fixed
+      - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
+      - ServerResource#doCatch() method wasn't invoking StatusService to set the error
+        representation if empty.
+      - Fixed potential NPE in odata extension when schema ComplexType in a 
+        document does not declare a schema attribute (issue #932).
+      - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
+        Issue #931. Reported and contributed by Tal Liron.
+
+- 2.3 Milestone 2 (05/06/2014)
+    - New features
+      - APISpark extension now includes an Introspector service (see main method) that
+        can analyze a Restlet Application, introspect its web API definition and push
+        it to APISpark.com PaaS for online and intuive documentation. Added user guide
+        page to describe the process and parameters. API contract can be created or
+        updated (replaced) remotely.
+        
+    - Enhancements
+      - Added HTTPS support to Jetty connector. Issue #793.
+        Contributed by Tal Liron.
+      - ServletWarEntity and ZipEntryEntity ignore the timeToLive parameter. Issue #866.
+        Reported and contributed by Jeremy Gustie.
+      - ServletWarEntity is limited to file system modification dates. Issue #868.
+        Reported and contributed by Jeremy Gustie.
+      
+    - Bugs fixed
+      - Added copy of Servlet request parameters to the Restlet request attributes. Issue #741.
+        Reported by Steve Rowe and contributed by Jeremy Gustie.
+      - Stripped Servlet container generated "jsessionid" matrix parameter. Issue #770
+        Reported and contributed by Jeremy Gustie.
+      - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
+        Reported and contributed by Jeremy Gustie.
+      - Fixed missing internal FTP client connector registration.
+      - Fixed missing internal HTTPS server isn't properly registered.
+        Reported by Roy Olsen.
+      - Fixed forgotten traces to the console #911, #905, #904.
+        Reported by Emanuele Massara.
+      - Fixed missing default values for DefaultSslContextFactory attributes, issue #903.
+      - Prevented NPE in org.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
+        Reported by Claus Ibsen.
+      - Stabilized Swagger documentation for JAX-RS applications. Issue #827.
+
     - Misc
-      - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
-        build rather than PDE/OSGi (removed manifest.mf files) or 
-        Maven (removed pom.xml files)
-    - API changes
-      - Added a resource client to the JAX-RS extension.
-        Contributed by Shaun Elliott.
-      - Added an optional namespace prefix mapper for JAXB representations 
-        when marshalling Java content into XML.
-        Contributed by Emanuele Ziglioli.
-      - Added support of the Jackson Smile format.
-        Suggested by Tim Peierls.
-      - Added conveniency add(...) method signature without Reference 
-        parameters in RdfClientResource.
+      - Removed unecessary ".properties" files from the distributions, issue #892.
+      - Added mention of edition and version in Javadoc header.
+      - Lowered trace level from 'info' to 'fine' for OBAP pseudo client.
+
+- 2.3 Milestone 1 (03/27/2014)
+    - New features
+      - Added initial APISpark extension. Issue #875.
+      - Added Jetty client for HTTP and HTTPS. Issue #512.
+        Contributed by Tal Liron.
+        
+    - Enhancements
+      - Upgraded project to Java 7. Issue #874.
+      - Upgraded Jetty connector to version 9.1.3. Issue #793.
+        Contributed by Tal Liron.
+      - Upgraded Servlet API to version 3.1.
+      - Upgraded JAX-RS API to version 2.0.
+      - Added JBoss RESTEasy library version 3.0.6.
+      - Added Reference constructor taking two URI instances.
+      - Added Message#getHeaders() method to facilitate raw HTTP
+        headers manipulation. Issue #879.
+        Suggested by Robert Fischer, Jack Jones and others.
+      - Moved Header class to org.restlet.util package.
+      - Integration of new Guice extension, issue #489.
+        Reported and contributed by Tim Peierls.
+
+    - Misc
+      - Refactored test cases to test all combinations of connectors
+        including server (Internal, Jetty, NIO, Simple) and
+        client (Apache, Internal, Jetty, NIO)
+      - Started integration of Restlet JAX-RS extension with RESTEasy.
+      - Removed AJP (Tomcat protocol) support from the Jetty extension.
+        Not supported anymore by Eclipse Jetty 9.1.

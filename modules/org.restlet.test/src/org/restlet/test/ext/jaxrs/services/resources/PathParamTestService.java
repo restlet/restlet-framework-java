@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -57,11 +57,12 @@ public class PathParamTestService {
     @Path("checkUnmodifiable/{var1}")
     @GET
     @Produces("text/plain")
-    public Object checkUnmodifiable(@PathParam("var1") List<PathSegment> var1s) {
+    public Object checkUnmodifiable(@PathParam("var1")
+    List<PathSegment> var1s) {
         try {
             var1s.clear();
-            throw new WebApplicationException(Response.serverError().entity(
-                    "the List must be unmodifiable").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("the List must be unmodifiable").build());
         } catch (UnsupportedOperationException uoe) {
             return null;
         }
@@ -69,43 +70,49 @@ public class PathParamTestService {
 
     @GET
     @Produces("text/plain")
-    public String get(@PathParam("var1") String var1) {
+    public String get(@PathParam("var1")
+    String var1) {
         return var1;
     }
 
     @Path("abc/{var2}/def")
     @GET
     @Produces("text/plain")
-    public String get(@PathParam("var1") String var1,
-            @PathParam("var2") String var2) {
+    public String get(@PathParam("var1")
+    String var1, @PathParam("var2")
+    String var2) {
         return var1 + "\n" + var2;
     }
-    
+
     @GET
     @Path("regExp/{buchstabe:[a-zA-Z]}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getRegExpEinBuchstabe(@PathParam("buchstabe") String buchstabe) {
-        return "ein Buchstabe: "+buchstabe;
+    public String getRegExpEinBuchstabe(@PathParam("buchstabe")
+    String buchstabe) {
+        return "ein Buchstabe: " + buchstabe;
     }
-    
+
     @GET
     @Path("regExp/{string}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getRegExpSonstwas(@PathParam("string") String string) {
-        return "anderes: "+string;
+    public String getRegExpSonstwas(@PathParam("string")
+    String string) {
+        return "anderes: " + string;
     }
 
     @GET
     @Path("regExp/{zahl:[-]?[0-9]+}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getRegExpZahl(@PathParam("zahl") int zahl) {
-        return "Zahl: "+zahl;
+    public String getRegExpZahl(@PathParam("zahl")
+    int zahl) {
+        return "Zahl: " + zahl;
     }
 
     @Path("st/{var1}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String getVar1(@PathParam("var1") String var1) {
+    public String getVar1(@PathParam("var1")
+    String var1) {
         return var1;
     }
 }

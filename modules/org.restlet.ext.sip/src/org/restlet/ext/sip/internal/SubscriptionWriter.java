@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -52,29 +52,28 @@ public class SubscriptionWriter extends HeaderWriter<Subscription> {
      * @return The formatted subscription state.
      */
     public static String write(Subscription subscription) {
-        return new SubscriptionWriter().append(subscription)
-                .toString();
+        return new SubscriptionWriter().append(subscription).toString();
     }
 
     @Override
     public HeaderWriter<Subscription> append(Subscription value) {
         append(value.getValue());
-        
+
         if (value.getReason() != null) {
             appendParameterSeparator();
             appendExtension("reason", value.getReason());
         }
-        
+
         if (value.getExpires() > 0) {
             appendParameterSeparator();
             appendExtension("expires", Long.toString(value.getExpires()));
         }
-        
+
         if (value.getRetryAfter() > 0) {
             appendParameterSeparator();
             appendExtension("retry-after", Long.toString(value.getRetryAfter()));
         }
-        
+
         for (Parameter param : value.getParameters()) {
             appendParameterSeparator();
             appendExtension(param);

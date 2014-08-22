@@ -1,0 +1,15 @@
+<library id="slf4j" symbolicName="org.slf4j">
+	<name>SLF4J API</name>
+	<description>SLF4J API.</description>
+	<version>1.7</version>
+    <release>2</release>
+	<homeUri>http://www.slf4j.org/</homeUri>
+	<downloadUri>http://www.slf4j.org/download.html</downloadUri>
+	<provider>QOS.ch</provider>
+	
+	<package name="org.slf4j">
+		<maven>
+			<artifactId>slf4j-api</artifactId>
+		</maven>
+	</package>
+</library>

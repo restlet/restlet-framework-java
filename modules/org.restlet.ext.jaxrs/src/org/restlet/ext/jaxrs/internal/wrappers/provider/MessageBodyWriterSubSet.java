@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -62,15 +62,15 @@ public class MessageBodyWriterSubSet {
 
     /**
      * The class supported by the contained message body writers, given by the
-     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could
-     * be {@code null}.
+     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
+     * {@code null}.
      */
     private final Class<?> type;
 
     /**
      * The type supported by the contained message body writers, given by the
-     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could
-     * be {@code null}.
+     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
+     * {@code null}.
      */
     private final Type genericType;
 
@@ -88,8 +88,7 @@ public class MessageBodyWriterSubSet {
      * 
      * @return a list of all producible media types. If this set is not empty,
      *         this result is not empty. '*<!---->/*' is returned for a message
-     *         body writer with no &#64;{@link javax.ws.rs.Produces}
-     *         annotation.
+     *         body writer with no &#64;{@link javax.ws.rs.Produces} annotation.
      */
     public Collection<MediaType> getAllProducibleMediaTypes() {
         final List<MediaType> p = new ArrayList<MediaType>();
@@ -104,12 +103,12 @@ public class MessageBodyWriterSubSet {
      * types of the response method and of the accepted {@link MediaType}s.
      * 
      * @param determinedResponseMediaType
-     *                The {@link MediaType}s of the response, declared by the
-     *                resource methods or given by the
-     *                {@link javax.ws.rs.core.Response}.
+     *            The {@link MediaType}s of the response, declared by the
+     *            resource methods or given by the
+     *            {@link javax.ws.rs.core.Response}.
      * @param annotations
      * @param accMediaTypes
-     *                the accepted media types.
+     *            the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
@@ -120,8 +119,8 @@ public class MessageBodyWriterSubSet {
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (final MessageBodyWriter mbw : this.mbws) {
             if (mbw.supportsWrite(determinedResponseMediaType)) {
-                if (mbw.isWriteable(type, genericType, annotations, Converter
-                        .toJaxRsMediaType(determinedResponseMediaType))) {
+                if (mbw.isWriteable(type, genericType, annotations,
+                        Converter.toJaxRsMediaType(determinedResponseMediaType))) {
                     mbws.add(mbw);
                 }
             }

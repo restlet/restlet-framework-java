@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -147,7 +147,7 @@ public class RdfRepresentation extends WriterRepresentation {
             return new RdfNTriplesWriter(writer);
         } else if (MediaType.TEXT_RDF_NTRIPLES.equals(getMediaType())) {
             return new RdfNTriplesWriter(writer);
-        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
+        } else if (MediaType.TEXT_TURTLE.equals(getMediaType())) {
             return new RdfTurtleWriter(writer);
         }
 
@@ -248,12 +248,12 @@ public class RdfRepresentation extends WriterRepresentation {
             } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
                     .getMediaType())) {
                 new RdfNTriplesReader(rdfRepresentation, graphHandler).parse();
-            } else if (MediaType.APPLICATION_RDF_TURTLE
-                    .equals(rdfRepresentation.getMediaType())) {
+            } else if (MediaType.TEXT_TURTLE.equals(rdfRepresentation
+                    .getMediaType())) {
                 new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
             } else if (MediaType.valueOf("text/rdf+n3").equals(
                     rdfRepresentation.getMediaType())) {
-                // Deprecated media type still in usage
+                // Old media type still in usage
                 new RdfN3Reader(rdfRepresentation, graphHandler).parse();
             }
             // Parsing for other media types goes here.

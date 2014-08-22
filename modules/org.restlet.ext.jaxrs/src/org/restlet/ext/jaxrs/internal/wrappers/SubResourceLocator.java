@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -68,24 +68,24 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a new wrapper for the given sub resource locator.
      * 
      * @param javaMethod
-     *                The Java method which creats the sub resource
+     *            The Java method which creats the sub resource
      * @param annotatedMethod
-     *                the message containing the annotations for this sub
-     *                resource locator.
+     *            the message containing the annotations for this sub resource
+     *            locator.
      * @param resourceClass
-     *                the wrapped resource class.
+     *            the wrapped resource class.
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
-     *                all providers
+     *            all providers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
-     *                 if the annotated method is null
+     *             if the annotated method is null
      * @throws IllegalPathParamTypeException
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
@@ -103,11 +103,11 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a sub resource
      * 
      * @param resourceObject
-     *                the wrapped resource object.
+     *            the wrapped resource object.
      * @param resourceClasses
-     *                factory to create wrappers.
+     *            factory to create wrappers.
      * @param logger
-     *                The logger to use
+     *            The logger to use
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
      * @throws NoMessageBodyReaderException
@@ -137,8 +137,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new InstantiateException(this.executeMethod, e);
         }
         if (subResObj == null) {
-            logger
-                    .warning("The sub resource object is null. That is not allowed");
+            logger.warning("The sub resource object is null. That is not allowed");
             final ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity("The sub resource object is null. That is not allowed");
             throw new WebApplicationException(rb.build());

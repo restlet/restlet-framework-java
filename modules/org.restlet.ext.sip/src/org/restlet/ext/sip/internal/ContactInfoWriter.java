@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -78,20 +78,20 @@ public class ContactInfoWriter extends HeaderWriter<ContactInfo> {
                 append(contact.getReference().toString());
                 append("> ");
             }
-            
+
             if (!contact.getParameters().isEmpty()) {
                 if (contact.getQuality() < 1F) {
                     appendParameterSeparator();
                     append("q=");
                     appendQuality(contact.getQuality());
                 }
-                
+
                 if (contact.getExpires() != null) {
                     appendParameterSeparator();
                     append("expires=");
                     append(contact.getExpires());
                 }
-                
+
                 for (Parameter param : contact.getParameters()) {
                     appendParameterSeparator();
                     appendExtension(param);

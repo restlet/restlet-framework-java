@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,13 +26,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,8 +81,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public class ClientResource extends UniformResource {
+public class ClientResource extends Resource {
 
     // [ifndef gwt] method
     /**
@@ -137,6 +137,7 @@ public class ClientResource extends UniformResource {
         return create(null, new Reference(uri), resourceInterface);
     }
 
+    // [ifndef gwt] member
     /** Indicates if redirections should be automatically followed. */
     private volatile boolean followingRedirects;
 
@@ -191,13 +192,13 @@ public class ClientResource extends UniformResource {
         Request request = new Request(resource.getRequest());
         Response response = new Response(request);
         this.next = resource.getNext();
-        this.followingRedirects = resource.isFollowingRedirects();
         this.maxRedirects = resource.getMaxRedirects();
         this.retryOnError = resource.isRetryOnError();
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
 
         // [ifndef gwt]
+        this.followingRedirects = resource.isFollowingRedirects();
         this.requestEntityBuffering = resource.isRequestEntityBuffering();
         this.responseEntityBuffering = resource.isResponseEntityBuffering();
         setApplication(resource.getApplication());
@@ -304,12 +305,12 @@ public class ClientResource extends UniformResource {
         // See other constructor ClientResource(Context, Method, Reference)
         response.setRequest(request);
 
-        this.followingRedirects = true;
         this.maxRedirects = 10;
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
         // [ifndef gwt]
+        this.followingRedirects = true;
         this.requestEntityBuffering = false;
         this.responseEntityBuffering = false;
         // [enddef]
@@ -393,7 +394,7 @@ public class ClientResource extends UniformResource {
      *            The handled request.
      */
     public ClientResource(Request request) {
-        this(request, null);
+        this(request, new Response(request));
     }
 
     /**
@@ -536,7 +537,7 @@ public class ClientResource extends UniformResource {
 
             if (protocol != null) {
                 // [ifndef gwt]
-                org.restlet.engine.TemplateDispatcher dispatcher = new org.restlet.engine.TemplateDispatcher();
+                org.restlet.engine.util.TemplateDispatcher dispatcher = new org.restlet.engine.util.TemplateDispatcher();
                 dispatcher.setContext(getContext());
                 dispatcher.setNext(new Client(protocol));
                 result = dispatcher;
@@ -557,20 +558,7 @@ public class ClientResource extends UniformResource {
      * @see #getRequest()
      */
     public Request createRequest() {
-        return createRequest(getRequest());
-    }
-
-    /**
-     * Creates a new request by cloning the given one.
-     * 
-     * @param prototype
-     *            The prototype request.
-     * @return The new response.
-     * @deprecated Use {@link #createRequest()} instead
-     */
-    @Deprecated
-    public Request createRequest(Request prototype) {
-        return new Request(prototype);
+        return new Request(getRequest());
     }
 
     /**
@@ -730,17 +718,16 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Returns the attribute value by looking up the given name in the request
+     * Returns the attribute value by looking up the given name in the response
      * attributes maps. The toString() method is then invoked on the attribute
-     * value. This is typically used for variables that are declared in the URI
-     * template used to route the call to this resource.
+     * value.
      * 
      * @param name
      *            The attribute name.
-     * @return The request attribute value.
+     * @return The response attribute value.
      */
     public String getAttribute(String name) {
-        Object value = getRequestAttributes().get(name);
+        Object value = getResponseAttributes().get(name);
         return (value == null) ? null : value.toString();
     }
 
@@ -1046,12 +1033,16 @@ public class ClientResource extends UniformResource {
         request.setClientInfo(clientInfo);
 
         if (entity != null) {
-            List<? extends Variant> entityVariants = cs.getVariants(
-                    entity.getClass(), null);
-            request.setEntity(toRepresentation(
-                    entity,
-                    getConnegService().getPreferredVariant(entityVariants,
-                            request, getMetadataService())));
+            List<? extends Variant> entityVariants;
+            try {
+                entityVariants = cs.getVariants(entity.getClass(), null);
+                request.setEntity(toRepresentation(
+                        entity,
+                        getConnegService().getPreferredVariant(entityVariants,
+                                request, getMetadataService())));
+            } catch (IOException e) {
+                throw new ResourceException(e);
+            }
         } else {
             request.setEntity(null);
         }
@@ -1122,23 +1113,6 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Handles the call by invoking the next handler. Then a new response is
-     * created and the {@link #handle(Request, Response, List, int, Uniform)}
-     * method is invoked and the response set as the latest response with
-     * {@link #setResponse(Response)}.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The response created.
-     * @see #getNext()
-     * @deprecated Use the {@link #handleOutbound(Request)} method instead
-     */
-    @Deprecated
-    public Response handle(Request request) {
-        return handleOutbound(request);
-    }
-
-    /**
      * Handle the call and follow redirection for safe methods.
      * 
      * @param request
@@ -1158,22 +1132,25 @@ public class ClientResource extends UniformResource {
         if (next != null) {
             // [ifndef gwt]
             // Check if request entity buffering must be done
-            Representation entity = request.getEntity();
-
-            if (isRequestEntityBuffering()
-                    && (entity != null)
-                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
-                    && entity.isAvailable()) {
-                request.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        entity));
+            if (isRequestEntityBuffering()) {
+                request.bufferEntity();
             }
             // [enddef]
 
             // Actually handle the call
             next.handle(request, response);
 
-            // Check for redirections
-            if (isFollowingRedirects() && response.getStatus().isRedirection()
+            if (isRetryOnError()
+                    && response.getStatus().isRecoverableError()
+                    && request.getMethod().isIdempotent()
+                    && (retryAttempt < getRetryAttempts())
+                    && ((request.getEntity() == null) || request.getEntity()
+                            .isAvailable())) {
+                retry(request, response, references, retryAttempt, next);
+            }
+            // [ifndef gwt]
+            else if (isFollowingRedirects()
+                    && response.getStatus().isRedirection()
                     && (response.getLocationRef() != null)) {
                 boolean doRedirection = false;
 
@@ -1199,25 +1176,11 @@ public class ClientResource extends UniformResource {
                             "Unable to redirect the client call after a response"
                                     + response);
                 }
-            } else if (isRetryOnError()
-                    && response.getStatus().isRecoverableError()
-                    && request.getMethod().isIdempotent()
-                    && (retryAttempt < getRetryAttempts())
-                    && ((request.getEntity() == null) || request.getEntity()
-                            .isAvailable())) {
-                retry(request, response, references, retryAttempt, next);
             }
 
-            // [ifndef gwt]
             // Check if response entity buffering must be done
-            entity = response.getEntity();
-
-            if (isResponseEntityBuffering()
-                    && (entity != null)
-                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
-                    && entity.isAvailable()) {
-                response.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        entity));
+            if (isResponseEntityBuffering()) {
+                response.bufferEntity();
             }
             // [enddef]
         } else {
@@ -1328,6 +1291,7 @@ public class ClientResource extends UniformResource {
         return handle(Method.HEAD, mediaType);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
@@ -1426,6 +1390,80 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Object entity) throws ResourceException {
+        try {
+            return patch(toRepresentation(entity));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @param resultClass
+     *            The class of the response entity.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public <T> T patch(Object entity, Class<T> resultClass)
+            throws ResourceException {
+        return handle(Method.PATCH, entity, resultClass);
+    }
+
+    /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Object entity, MediaType mediaType)
+            throws ResourceException {
+        try {
+            return handle(Method.PATCH, toRepresentation(entity), mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Patches a resource with the given representation as delta state. If a
+     * success status is not returned, then a resource exception is thrown.
+     * 
+     * @param entity
+     *            The request entity containing the patch.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Representation entity) throws ResourceException {
+        return handle(Method.PATCH, entity);
+    }
+
+    /**
      * Posts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
      * 
@@ -1438,7 +1476,11 @@ public class ClientResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Object entity) throws ResourceException {
-        return post(toRepresentation(entity, null));
+        try {
+            return post(toRepresentation(entity));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     // [ifndef gwt] method
@@ -1477,7 +1519,11 @@ public class ClientResource extends UniformResource {
      */
     public Representation post(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.POST, toRepresentation(entity, null), mediaType);
+        try {
+            return handle(Method.POST, toRepresentation(entity), mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**
@@ -1509,7 +1555,11 @@ public class ClientResource extends UniformResource {
      *      PUT method</a>
      */
     public Representation put(Object entity) throws ResourceException {
-        return put(toRepresentation(entity, null));
+        try {
+            return put(toRepresentation(entity));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     // [ifndef gwt] method
@@ -1548,7 +1598,11 @@ public class ClientResource extends UniformResource {
      */
     public Representation put(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.PUT, toRepresentation(entity, null), mediaType);
+        try {
+            return handle(Method.PUT, toRepresentation(entity), mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**
@@ -1703,38 +1757,6 @@ public class ClientResource extends UniformResource {
         setChallengeResponse(new ChallengeResponse(scheme, identifier, secret));
     }
 
-    // [ifndef gwt] method
-    /**
-     * Sets the proxy authentication response sent by a client to an origin
-     * server.
-     * 
-     * @param challengeResponse
-     *            The proxy authentication response sent by a client to an
-     *            origin server.
-     * @see Request#setProxyChallengeResponse(ChallengeResponse)
-     */
-    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
-        getRequest().setProxyChallengeResponse(challengeResponse);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets the proxy authentication response sent by a client to an origin
-     * server given a scheme, identifier and secret.
-     * 
-     * @param scheme
-     *            The challenge scheme.
-     * @param identifier
-     *            The user identifier, such as a login name or an access key.
-     * @param secret
-     *            The user secret, such as a password or a secret key.
-     */
-    public void setProxyChallengeResponse(ChallengeScheme scheme,
-            final String identifier, String secret) {
-        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
-                secret));
-    }
-
     /**
      * Sets the client-specific information.
      * 
@@ -1783,6 +1805,7 @@ public class ClientResource extends UniformResource {
         setResponseEntityBuffering(entityBuffering);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
@@ -1914,6 +1937,38 @@ public class ClientResource extends UniformResource {
         getRequest().setProtocol(protocol);
     }
 
+    // [ifndef gwt] method
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server.
+     * 
+     * @param challengeResponse
+     *            The proxy authentication response sent by a client to an
+     *            origin server.
+     * @see Request#setProxyChallengeResponse(ChallengeResponse)
+     */
+    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
+        getRequest().setProxyChallengeResponse(challengeResponse);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server given a scheme, identifier and secret.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setProxyChallengeResponse(ChallengeScheme scheme,
+            final String identifier, String secret) {
+        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
+                secret));
+    }
+
     /**
      * Sets the ranges to return from the target resource's representation.
      * 
@@ -2037,15 +2092,34 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Wraps the client resource to proxy calls to the given Java interface into
-     * Restlet method calls.
+     * Restlet method calls. Use the {@link org.restlet.engine.Engine}
+     * classloader in order to generate the proxy.
      * 
      * @param <T>
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
      */
-    @SuppressWarnings("unchecked")
     public <T> T wrap(Class<? extends T> resourceInterface) {
+        return wrap(resourceInterface, org.restlet.engine.Engine.getInstance()
+                .getClassLoader());
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Wraps the client resource to proxy calls to the given Java interface into
+     * Restlet method calls.
+     * 
+     * @param <T>
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @param classLoader
+     *            The classloader used to instantiate the dynamic proxy.
+     * @return The proxy instance.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T wrap(Class<? extends T> resourceInterface,
+            ClassLoader classLoader) {
         T result = null;
 
         // Create the client resource proxy
@@ -2053,8 +2127,7 @@ public class ClientResource extends UniformResource {
                 this, resourceInterface);
 
         // Instantiate our dynamic proxy
-        result = (T) java.lang.reflect.Proxy.newProxyInstance(
-                org.restlet.engine.Engine.getInstance().getClassLoader(),
+        result = (T) java.lang.reflect.Proxy.newProxyInstance(classLoader,
                 new Class<?>[] { ClientProxy.class, resourceInterface }, h);
 
         return result;

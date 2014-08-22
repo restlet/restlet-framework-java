@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -48,7 +48,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -118,7 +118,7 @@ public class StrictConneg extends Conneg {
      *            The annotation descriptor to score.
      * @return The annotation descriptor score.
      */
-    protected float scoreAnnotation(AnnotationInfo annotation) {
+    protected float scoreAnnotation(MethodAnnotationInfo annotation) {
         float result = -1.0F;
 
         if (annotation != null) {
@@ -249,7 +249,26 @@ public class StrictConneg extends Conneg {
      * @return The score.
      */
     public float scoreMediaType(MediaType mediaType) {
-        return scoreMetadata(mediaType, getMediaTypePrefs());
+        float result = -1.0F;
+        float current;
+
+        if (mediaType != null) {
+            for (Preference<MediaType> pref : getMediaTypePrefs()) {
+                if (pref.getMetadata().includes(mediaType, false)) {
+                    current = pref.getQuality();
+                } else {
+                    current = -1.0F;
+                }
+
+                if (current > result) {
+                    result = current;
+                }
+            }
+        } else {
+            result = 0.0F;
+        }
+
+        return result;
     }
 
     /**
@@ -349,7 +368,8 @@ public class StrictConneg extends Conneg {
                                     + (mediaTypeScore * 3.0F)
                                     + (characterSetScore * 2.0F)
                                     + (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
-                            // Take into account the affinity with the input entity
+                            // Take into account the affinity with the input
+                            // entity
                             result = result
                                     * ((VariantInfo) variant).getInputScore();
                         } else {

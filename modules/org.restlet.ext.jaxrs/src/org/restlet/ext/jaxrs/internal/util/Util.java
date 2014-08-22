@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -74,11 +74,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DimensionWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
@@ -329,7 +329,8 @@ public class Util {
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
         HeaderUtils.extractEntityHeaders(headers, restletResponse.getEntity());
 
-        // Copy extension headers
+        // Copy extension headers, from jax-rs response attributes, and jax-rs
+        // api
         @SuppressWarnings("unchecked")
         Series<Header> extensionHeaders = (Series<Header>) jaxRsHeaders
                 .getFirst(HeaderConstants.ATTRIBUTE_HEADERS);
@@ -339,6 +340,7 @@ public class Util {
             attributes.put(HeaderConstants.ATTRIBUTE_HEADERS, extensionHeaders);
             restletResponse.setAttributes(attributes);
         }
+        HeaderUtils.copyExtensionHeaders(headers, restletResponse);
     }
 
     /**

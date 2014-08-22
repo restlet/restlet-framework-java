@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -270,12 +270,12 @@ public class RequestTest extends JaxRsTestCase {
         final Response response = options();
         final Set<Method> allowedMethods = response.getAllowedMethods();
         assertEquals(3, allowedMethods.size());
-        assertTrue("allowedOptions must contain ABC", allowedMethods
-                .contains(Method.valueOf("ABC")));
-        assertTrue("allowedOptions must contain DEF", allowedMethods
-                .contains(Method.valueOf("DEF")));
-        assertTrue("allowedOptions must contain GHI", allowedMethods
-                .contains(Method.valueOf("GHI")));
+        assertTrue("allowedOptions must contain ABC",
+                allowedMethods.contains(Method.valueOf("ABC")));
+        assertTrue("allowedOptions must contain DEF",
+                allowedMethods.contains(Method.valueOf("DEF")));
+        assertTrue("allowedOptions must contain GHI",
+                allowedMethods.contains(Method.valueOf("GHI")));
         assertEquals(3, allowedMethods.size());
     }
 
@@ -320,8 +320,8 @@ public class RequestTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
                 .getMediaType());
-        assertEquals(new Language("de"), TestUtils.getOnlyElement(response
-                .getEntity().getLanguages()));
+        assertEquals(new Language("de"),
+                TestUtils.getOnlyElement(response.getEntity().getLanguages()));
         assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
                 .getDimensions().contains(Dimension.MEDIA_TYPE));
         assertTrue("dimensions must contain " + Dimension.LANGUAGE, response
@@ -332,14 +332,14 @@ public class RequestTest extends JaxRsTestCase {
         response = get("selectVariants", clientInfo);
         assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
                 .getMediaType());
-        assertEquals(new Language("de"), TestUtils.getOnlyElement(response
-                .getEntity().getLanguages()));
+        assertEquals(new Language("de"),
+                TestUtils.getOnlyElement(response.getEntity().getLanguages()));
 
         accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
         response = get("selectVariants", clientInfo);
         assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
                 .getMediaType());
-        assertEquals(Language.ENGLISH, TestUtils.getOnlyElement(response
-                .getEntity().getLanguages()));
+        assertEquals(Language.ENGLISH,
+                TestUtils.getOnlyElement(response.getEntity().getLanguages()));
     }
 }

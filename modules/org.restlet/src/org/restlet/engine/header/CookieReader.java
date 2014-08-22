@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -163,9 +163,9 @@ public class CookieReader extends HeaderReader<Cookie> {
         Cookie result = null;
         Parameter pair = readPair(false);
 
-        if (this.globalVersion == -1) {
+        if (pair != null && this.globalVersion == -1) {
             // Cookies version not yet detected
-            if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
+            if (NAME_VERSION.equalsIgnoreCase(pair.getName())) {
                 if (pair.getValue() != null) {
                     this.globalVersion = Integer.parseInt(pair.getValue());
                 } else {
@@ -178,7 +178,8 @@ public class CookieReader extends HeaderReader<Cookie> {
             }
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
             // Unexpected special attribute
             // Silently ignore it as it may have been introduced by new
             // specifications
@@ -192,7 +193,8 @@ public class CookieReader extends HeaderReader<Cookie> {
             pair = readPair(true);
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
             if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
                 result.setPath(pair.getValue());
             } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {

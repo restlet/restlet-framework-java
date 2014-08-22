@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -53,7 +53,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
@@ -116,7 +116,7 @@ public class RangeTestCase extends RestletTestCase {
             Form form = request.getResourceRef().getQueryAsForm();
             List<Range> ranges = request.getRanges();
             boolean match = false;
-            
+
             for (Parameter parameter : form) {
                 long index = 0;
                 long length = 0;
@@ -321,7 +321,7 @@ public class RangeTestCase extends RestletTestCase {
             Request request;
             Response response;
 
-            BioUtils.delete(testDir, true);
+            IoUtils.delete(testDir, true);
             Client client = new Client(new Context(), Protocol.HTTP);
             client.getContext().getParameters().add("tracing", "true");
 
@@ -331,7 +331,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("1234567890"));
             request.setRanges(Arrays.asList(new Range(0, 10)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -344,9 +344,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("0000000000"));
             request.setRanges(Arrays.asList(new Range(1, 10)));
             response = client.handle(request);
-            System.out.println(response.getStatus() + " / "
-                    + response.getStatus().getThrowable());
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -359,7 +357,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("0000000000"));
             request.setRanges(Arrays.asList(new Range(1, 10)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             request.setMethod(Method.GET);
             response = client.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -371,7 +369,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("22"));
             request.setRanges(Arrays.asList(new Range(2, 2)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -384,7 +382,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("888"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -397,7 +395,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("888"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             request.setMethod(Method.GET);
             response = client.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -410,7 +408,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("99"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -423,7 +421,7 @@ public class RangeTestCase extends RestletTestCase {
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
             assertEquals("20000998", response.getEntity().getText());
 
-            BioUtils.delete(testDir, true);
+            IoUtils.delete(testDir, true);
             client.stop();
         }
     }

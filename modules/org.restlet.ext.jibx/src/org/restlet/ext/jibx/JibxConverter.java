@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -68,9 +68,7 @@ public class JibxConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, JibxRepresentation.class);
         }
 
@@ -89,6 +87,38 @@ public class JibxConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the given mediaType is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param mediaType
+     *            The mediaType.
+     * @return True if the given mediaType is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(MediaType mediaType) {
+        return (mediaType != null)
+                && (MediaType.APPLICATION_ALL_XML.isCompatible(mediaType)
+                        || MediaType.APPLICATION_XML.isCompatible(mediaType) || MediaType.TEXT_XML
+                            .isCompatible(mediaType));
+    }
+
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XML.isCompatible(variant) || VARIANT_TEXT_XML
+                            .isCompatible(variant));
     }
 
     /**
@@ -123,13 +153,7 @@ public class JibxConverter extends ConverterHelper {
                         .getClass()))) {
             if (target == null) {
                 result = 0.5F;
-            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
-                    .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(target
-                    .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
+            } else if (isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
                 // Allow for JiBX object to be used for JSON and other
@@ -161,34 +185,39 @@ public class JibxConverter extends ConverterHelper {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
+        JibxRepresentation<?> jibxSource = null;
+        if (source instanceof JibxRepresentation<?>) {
+            jibxSource = ((JibxRepresentation<?>) source);
+        } else {
+            jibxSource = new JibxRepresentation<T>(source, target);
+        }
 
-        if (JibxRepresentation.class.isAssignableFrom(target)) {
-            result = new JibxRepresentation<T>(source, target);
+        T result = null;
+        if (target == null) {
+            try {
+                result = (T) jibxSource.getObject();
+            } catch (JiBXException e) {
+                throw new IOException(
+                        "Cannot retrieve the wrapped object inside the JiBX representation due to "
+                                + e.getMessage());
+            }
+        } else if (JibxRepresentation.class.isAssignableFrom(target)) {
+            result = target.cast(jibxSource);
         } else if (isJibxBoundClass(target)) {
             try {
-                result = new JibxRepresentation<T>(source, target).getObject();
+                result = (T) jibxSource.getObject();
             } catch (JiBXException e) {
                 throw new IOException(
                         "Cannot convert the given representation to an object of this class using Jibx converter "
                                 + target + " due to " + e.getMessage());
             }
-        } else if (target == null) {
-            if (source instanceof JibxRepresentation<?>) {
-                try {
-                    result = ((JibxRepresentation<?>) source).getObject();
-                } catch (JiBXException e) {
-                    throw new IOException(
-                            "Cannot retrieve the wrapped object inside the JiBX representation due to "
-                                    + e.getMessage());
-                }
-            }
         }
 
-        return target.cast(result);
+        return result;
     }
 
     @Override

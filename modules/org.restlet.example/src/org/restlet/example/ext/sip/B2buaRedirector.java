@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -72,8 +72,8 @@ public class B2buaRedirector extends Redirector {
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "false");
-        client.getContext().getParameters().add("pipeliningConnections",
-                "false");
+        client.getContext().getParameters()
+                .add("pipeliningConnections", "false");
 
         c.getDefaultHost().attachDefault(
                 new B2buaRedirector(null, "sip:localhost:8111"));

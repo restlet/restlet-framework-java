@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,8 +40,7 @@ import java.io.Reader;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Range;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.io.RangeInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
@@ -87,14 +86,14 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public long getAvailableSize() {
-        return BioUtils.getAvailableSize(this);
+        return IoUtils.getAvailableSize(this);
     }
 
     // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
-        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     /**
@@ -110,7 +109,7 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public Reader getReader() throws IOException {
-        return BioUtils.getReader(getStream(), getCharacterSet());
+        return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
     @Override
@@ -120,7 +119,7 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public String getText() throws IOException {
-        return BioUtils.getText(this);
+        return IoUtils.getText(this);
     }
 
     /**
@@ -138,17 +137,21 @@ public class RangeRepresentation extends WrapperRepresentation {
     // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer, getCharacterSet()));
+        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
+        write(os);
+        os.flush();
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        IoUtils.copy(getStream(), outputStream);
     }
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        OutputStream os = IoUtils.getStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
 }

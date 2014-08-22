@@ -1,96 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-	<properties>
-		<lib-activation-version>1.1.1</lib-activation-version>
-		<lib-appengine-version>1.4.3</lib-appengine-version>
-		<lib-bloat-version>1.0</lib-bloat-version>
-		<lib-cglib-version>2.2</lib-cglib-version>
-		<lib-cli-version>1.2</lib-cli-version>
-		<lib-codec-version>1.5</lib-codec-version>
-		<lib-collections-version>3.2.1</lib-collections-version>
-		<lib-db4o-version>7.12.132</lib-db4o-version>
-		<lib-db4o-instrumentation-version>7.12.132</lib-db4o-instrumentation-version>
-		<lib-db4o-nativequery-version>7.12.132</lib-db4o-nativequery-version>
-		<lib-db4o-optional-version>7.12.132</lib-db4o-optional-version>
-		<lib-db4o-ta-version>7.12.132</lib-db4o-ta-version>
-		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
-		<lib-dbcp-version>1.3</lib-dbcp-version>
-		<lib-emf-common-version>2.6.0.v20100614-1136</lib-emf-common-version>
-		<lib-emf-ecore-version>2.6.0.v20100614-1136</lib-emf-ecore-version>
-		<lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
-		<lib-fileupload-version>1.2.2</lib-fileupload-version>
-		<lib-freemarker-version>2.3.19</lib-freemarker-version>
-		<lib-gcollections-version>1.0</lib-gcollections-version>
-		<lib-gdata-version>1.0</lib-gdata-version>
-		<lib-gdata-client-version>1.0</lib-gdata-client-version>
-		<lib-guice-version>2.0</lib-guice-version>
-		<lib-gwt-version>2.2.0</lib-gwt-version>
-		<lib-gwt-server-version>2.3.0</lib-gwt-server-version>
-		<lib-httpclient-version>4.1.1</lib-httpclient-version>
-		<lib-httpcore-version>4.1</lib-httpcore-version>
-		<lib-httpmime-version>4.1.1</lib-httpmime-version>
-		<lib-io-version>2.0.1</lib-io-version>
-		<lib-jackson-core-version>1.9.0</lib-jackson-core-version>
-		<lib-jackson-mapper-version>1.9.0</lib-jackson-mapper-version>
-		<lib-jackson-smile-version>1.9.0</lib-jackson-smile-version>
-		<lib-javamail-version>1.4.2</lib-javamail-version>
-		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
-		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
-		<lib-jaxrs-version>1.0</lib-jaxrs-version>
-		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
-		<lib-jdom-version>1.1</lib-jdom-version>
-		<lib-jettison-version>1.3</lib-jettison-version>
-		<lib-jetty-ajp-version>7.4.2.v20110526</lib-jetty-ajp-version>
-		<lib-jetty-continuation-version>7.4.2.v20110526</lib-jetty-continuation-version>
-		<lib-jetty-http-version>7.4.2.v20110526</lib-jetty-http-version>
-		<lib-jetty-io-version>7.4.2.v20110526</lib-jetty-io-version>
-		<lib-jetty-server-version>7.4.2.v20110526</lib-jetty-server-version>
-		<lib-jetty-util-version>7.4.2.v20110526</lib-jetty-util-version>
-		<lib-jibx-version>1.2.2</lib-jibx-version>
-		<lib-json-version>2.0</lib-json-version>
-		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
-		<lib-junit-version>4.8.1</lib-junit-version>
-		<lib-lang-version>2.6</lib-lang-version>
-		<lib-log4j-version>1.2.16</lib-log4j-version>
-		<lib-logging-version>1.1.1</lib-logging-version>
-		<lib-lucene-version>2.9.2</lib-lucene-version>
-		<lib-mime4j-version>0.6</lib-mime4j-version>
-		<lib-nekohtml-version>1.9.14</lib-nekohtml-version>
-		<lib-oauth-version>20090617</lib-oauth-version>
-		<lib-openid4java-version>0.9.6</lib-openid4java-version>
-		<lib-osgi-version>4.0.0</lib-osgi-version>
-		<lib-pool-version>1.5.6</lib-pool-version>
-		<lib-protobuf-version>2.2.0</lib-protobuf-version>
-		<lib-rome-version>1.0</lib-rome-version>
-		<lib-rowset-version>1.0</lib-rowset-version>
-		<lib-sdc-version>1.3.rc2</lib-sdc-version>
-		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.21</lib-simple-version>
-		<lib-slf4j-version>1.6.2</lib-slf4j-version>
-		<lib-solr-version>1.4.0</lib-solr-version>
-		<lib-solr-common-version>1.4.0</lib-solr-common-version>
-		<lib-spring-asm-version>3.0.1.RELEASE</lib-spring-asm-version>
-		<lib-spring-beans-version>3.0.1.RELEASE</lib-spring-beans-version>
-		<lib-spring-context-version>3.0.1.RELEASE</lib-spring-context-version>
-		<lib-spring-core-version>3.0.1.RELEASE</lib-spring-core-version>
-		<lib-spring-expression-version>3.0.1.RELEASE</lib-spring-expression-version>
-		<lib-spring-web-version>3.0.1.RELEASE</lib-spring-web-version>
-		<lib-spring-webmvc-version>3.0.1.RELEASE</lib-spring-webmvc-version>
-		<lib-spring-modules-db4o-version>0.9</lib-spring-modules-db4o-version>
-		<lib-stax-version>1.0-2</lib-stax-version>
-		<lib-tika-version>0.6</lib-tika-version>
-		<lib-tika-parsers-version>0.6</lib-tika-parsers-version>
-		<lib-velocity-version>1.6.3</lib-velocity-version>
-		<lib-wrapper-version>3.2.3</lib-wrapper-version>
-		<lib-xstream-version>1.4.1</lib-xstream-version>
-	</properties>
-
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.restlet.dev</groupId>
+
+	<groupId>org.restlet.osgi</groupId>
 	<artifactId>org.restlet.parent</artifactId>
-	<version>2.2-SNAPSHOT</version>
+	<version>2.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Restlet project</name>
@@ -106,24 +21,18 @@
 		<repository>
 			<id>maven-central</id>
 			<name>Central Maven repository</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
 			<id>maven2-java</id>
-			<name>Java.net repository (Maven 2)</name>
+			<name>Java.net repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</repository>
-		<repository>
-			<id>maven1-java</id>
-			<name>Java.net repository (Maven 1)</name>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
-		<repository>
-			<id>maven2-jboss</id>
-			<name>JBoss repository</name>
-			<url>http://repository.jboss.com/maven2</url>
-		</repository>
+        <repository>
+            <id>maven1-java</id>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </repository>
 		<repository>
 			<id>maven-restlet</id>
 			<name>Restlet repository</name>
@@ -136,47 +45,154 @@
 		</repository>
 	</repositories>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lib-jetty-ajp-version>8.1.14.v20131031</lib-jetty-ajp-version>
+		<lib-jetty-continuation-version>8.1.14.v20131031</lib-jetty-continuation-version>
+		<lib-jetty-http-version>8.1.14.v20131031</lib-jetty-http-version>
+		<lib-jetty-io-version>8.1.14.v20131031</lib-jetty-io-version>
+		<lib-jetty-server-version>8.1.14.v20131031</lib-jetty-server-version>
+		<lib-jetty-util-version>8.1.14.v20131031</lib-jetty-util-version>
+		<lib-servlet-version>3.0.1</lib-servlet-version>
+		<lib-codec-version>1.5</lib-codec-version>
+		<lib-httpclient-version>4.3.2</lib-httpclient-version>
+		<lib-httpcore-version>4.3.1</lib-httpcore-version>
+		<lib-httpmime-version>4.3</lib-httpmime-version>
+		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
+		<lib-logging-version>1.1.3</lib-logging-version>
+		<lib-mime4j-version>0.7.2</lib-mime4j-version>
+		<lib-fileupload-version>1.3</lib-fileupload-version>
+		<lib-openid4java-version>0.9.6</lib-openid4java-version>
+		<lib-nekohtml-version>1.9.19</lib-nekohtml-version>
+		<lib-json-version>2.0</lib-json-version>
+		<lib-freemarker-version>2.3.20</lib-freemarker-version>
+		<lib-osgi-version>4.0.0</lib-osgi-version>
+		<lib-osgi-version>4.0.0</lib-osgi-version>
+		<lib-emf-common-version>2.6.0.v20100614-1136</lib-emf-common-version>
+		<lib-emf-ecore-version>2.6.0.v20100614-1136</lib-emf-ecore-version>
+		<lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
+		<lib-scala-library-version>2.10.3</lib-scala-library-version>
+		<lib-scalap-version>2.10.3</lib-scalap-version>
+		<lib-scala-reflect-version>2.10.3</lib-scala-reflect-version>
+		<lib-slf4j-version>1.7.2</lib-slf4j-version>
+		<lib-e4-contexts-version>0.12.RC1</lib-e4-contexts-version>
+		<lib-e4-di-version>0.12.RC1</lib-e4-di-version>
+		<lib-swagger-annotations-version>1.3.2</lib-swagger-annotations-version>
+		<lib-swagger-core-version>1.3.2</lib-swagger-core-version>
+		<lib-jaxrs-version>1.1.1</lib-jaxrs-version>
+		<lib-jackson-annotations-version>2.2.3</lib-jackson-annotations-version>
+		<lib-jackson-core-version>2.2.3</lib-jackson-core-version>
+		<lib-jackson-csv-version>2.2.3</lib-jackson-csv-version>
+		<lib-jackson-databind-version>2.2.3</lib-jackson-databind-version>
+		<lib-jackson-jaxb-version>2.2.3</lib-jackson-jaxb-version>
+		<lib-jackson-smile-version>2.2.3</lib-jackson-smile-version>
+		<lib-jackson-xml-version>2.2.3</lib-jackson-xml-version>
+		<lib-jackson-yaml-version>2.2.3</lib-jackson-yaml-version>
+		<lib-snakeyaml-version>1.13</lib-snakeyaml-version>
+		<lib-stax2-version>3.1.3</lib-stax2-version>
+		<lib-woodstock-core-version>4.2.0</lib-woodstock-core-version>
+		<lib-json4s-ast-version>3.2.4</lib-json4s-ast-version>
+		<lib-json4s-core-version>3.2.4</lib-json4s-core-version>
+		<lib-json4s-ext-version>3.2.4</lib-json4s-ext-version>
+		<lib-json4s-jackson-version>3.2.4</lib-json4s-jackson-version>
+		<lib-json4s-native-version>3.2.4</lib-json4s-native-version>
+		<lib-cglib-version>2.2</lib-cglib-version>
+		<lib-spring-beans-version>3.2.6.RELEASE</lib-spring-beans-version>
+		<lib-spring-context-version>3.2.6.RELEASE</lib-spring-context-version>
+		<lib-spring-core-version>3.2.6.RELEASE</lib-spring-core-version>
+		<lib-spring-expression-version>3.2.6.RELEASE</lib-spring-expression-version>
+		<lib-spring-web-version>3.2.6.RELEASE</lib-spring-web-version>
+		<lib-spring-webmvc-version>3.2.6.RELEASE</lib-spring-webmvc-version>
+		<lib-dbcp-version>1.3</lib-dbcp-version>
+		<lib-pool-version>1.5.6</lib-pool-version>
+		<lib-thymeleaf-version>2.1.2.RELEASE</lib-thymeleaf-version>
+		<lib-ognl-version>3.0.8</lib-ognl-version>
+		<lib-javassist-version>3.18.1-GA</lib-javassist-version>
+		<lib-db4o-version>7.12.132</lib-db4o-version>
+		<lib-db4o-instrumentation-version>7.12.132</lib-db4o-instrumentation-version>
+		<lib-db4o-nativequery-version>7.12.132</lib-db4o-nativequery-version>
+		<lib-db4o-optional-version>7.12.132</lib-db4o-optional-version>
+		<lib-db4o-ta-version>7.12.132</lib-db4o-ta-version>
+		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
+		<lib-bloat-version>1.0</lib-bloat-version>
+		<lib-junit-version>4.11</lib-junit-version>
+		<lib-rome-version>1.0</lib-rome-version>
+		<lib-testng-version>6.8.7</lib-testng-version>
+		<lib-mongodb-version>2.11.3</lib-mongodb-version>
+		<lib-gwt-server-version>2.3.0</lib-gwt-server-version>
+		<lib-javamail-version>1.4.2</lib-javamail-version>
+		<lib-sdc-version>1.3.rc2</lib-sdc-version>
+		<lib-guice-version>3.0</lib-guice-version>
+		<lib-gdata-version>1.0</lib-gdata-version>
+		<lib-gdata-client-version>1.0</lib-gdata-client-version>
+		<lib-protobuf-version>2.2.0</lib-protobuf-version>
+		<lib-gcollections-version>1.0</lib-gcollections-version>
+		<lib-log4j-version>1.2.17</lib-log4j-version>
+		<lib-xstream-version>1.4.7</lib-xstream-version>
+		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
+		<lib-lang-version>2.6</lib-lang-version>
+		<lib-simple-version>5.1.6</lib-simple-version>
+		<lib-jettison-version>1.3.5</lib-jettison-version>
+		<lib-jibx-version>1.2.5</lib-jibx-version>
+		<lib-jdom-version>1.1</lib-jdom-version>
+		<lib-collections-version>3.2.1</lib-collections-version>
+		<lib-velocity-version>1.7</lib-velocity-version>
+		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
+		<lib-io-version>2.0.1</lib-io-version>
+		<lib-lucene-version>4.6.0</lib-lucene-version>
+		<lib-solr-version>4.6.0</lib-solr-version>
+		<lib-solr-common-version>4.6.0</lib-solr-common-version>
+		<lib-tika-version>1.4</lib-tika-version>
+		<lib-tika-parsers-version>1.4</lib-tika-parsers-version>
+		<lib-gson-version>2.2.4</lib-gson-version>
+		<lib-joda-time-version>2.3</lib-joda-time-version>
+		<lib-oauth-version>20100527</lib-oauth-version>
+	</properties>
+
 	<modules>
-		<module>org.restlet.ext.atom</module>
-		<module>org.restlet</module>
-		<module>org.restlet.test</module>
-		<module>org.restlet.ext.crypto</module>
-		<module>org.restlet.ext.emf</module>
-		<module>org.restlet.example</module>
-		<module>org.restlet.ext.fileupload</module>
-		<module>org.restlet.ext.freemarker</module>
-		<module>org.restlet.ext.gae</module>
-		<module>org.restlet.ext.gwt</module>
-		<module>org.restlet.ext.html</module>
-		<module>org.restlet.ext.httpclient</module>
-		<module>org.restlet.ext.jaas</module>
-		<module>org.restlet.ext.jackson</module>
-		<module>org.restlet.ext.javamail</module>
-		<module>org.restlet.ext.jaxb</module>
-		<module>org.restlet.ext.jaxrs</module>
-		<module>org.restlet.ext.jdbc</module>
-		<module>org.restlet.ext.jetty</module>
-		<module>org.restlet.ext.jibx</module>
-		<module>org.restlet.ext.json</module>
-		<module>org.restlet.ext.lucene</module>
-		<module>org.restlet.ext.net</module>
-		<module>org.restlet.ext.oauth</module>
-		<module>org.restlet.ext.odata</module>
-		<module>org.restlet.ext.openid</module>
 		<module>org.restlet.ext.rdf</module>
-		<module>org.restlet.ext.rome</module>
-		<module>org.restlet.ext.sdc</module>
-		<module>org.restlet.ext.servlet</module>
-		<module>org.restlet.ext.simple</module>
-		<module>org.restlet.ext.sip</module>
-		<module>org.restlet.ext.slf4j</module>
+		<module>org.restlet.ext.jetty</module>
+		<module>org.restlet.ext.jaas</module>
+		<module>org.restlet.ext.httpclient</module>
+		<module>org.restlet.ext.fileupload</module>
+		<module>org.restlet.ext.openid</module>
+		<module>org.restlet.ext.freemarker</module>
+		<module>org.restlet.ext.json</module>
+		<module>org.restlet</module>
+		<module>org.restlet.ext.emf</module>
+		<module>org.restlet.ext.odata</module>
+		<module>org.restlet.ext.swagger</module>
 		<module>org.restlet.ext.spring</module>
-		<module>org.restlet.ext.ssl</module>
-		<module>org.restlet.ext.velocity</module>
+		<module>org.restlet.ext.jdbc</module>
+		<module>org.restlet.ext.html</module>
+		<module>org.restlet.ext.thymeleaf</module>
 		<module>org.restlet.ext.wadl</module>
-		<module>org.restlet.ext.xdb</module>
+		<module>org.restlet.example</module>
+		<module>org.restlet.ext.gwt</module>
 		<module>org.restlet.ext.xml</module>
+		<module>org.restlet.ext.javamail</module>
+		<module>org.restlet.ext.nio</module>
+		<module>org.restlet.ext.sdc</module>
+		<module>org.restlet.ext.xdb</module>
+		<module>org.restlet.ext.jaxrs</module>
+		<module>org.restlet.ext.simple</module>
+		<module>org.restlet.ext.jackson</module>
 		<module>org.restlet.ext.xstream</module>
+		<module>org.restlet.ext.jibx</module>
+		<module>org.restlet.ext.rome</module>
+		<module>org.restlet.ext.atom</module>
+		<module>org.restlet.ext.velocity</module>
+		<module>org.restlet.ext.jsslutils</module>
+		<module>org.restlet.ext.lucene</module>
+		<module>org.restlet.ext.slf4j</module>
+		<module>org.restlet.ext.jaxb</module>
+		<module>org.restlet.ext.servlet</module>
+		<module>org.restlet.ext.gson</module>
+		<module>org.restlet.ext.sip</module>
+		<module>org.restlet.ext.e4</module>
+		<module>org.restlet.ext.crypto</module>
+		<module>org.restlet.ext.oauth</module>
+		<module>org.restlet.ext.osgi</module>
 	</modules>
 
 	<licenses>

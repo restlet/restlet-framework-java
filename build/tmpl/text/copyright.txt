@@ -4,7 +4,7 @@ Copyright notice
 ================
 
 
-Version 4.3, January 2012
+Version 4.4, March 2014
 
 This software distribution is covered by this copyright notice.
   
@@ -17,12 +17,12 @@ agreements. For questions, please contact the copyright holder:
     2 place de la Defense
     92053 Paris La Defense
     FRANCE
-	http://www.restlet.org/about/legal
+	http://restlet.com/legal
     mailto:legal@restlet.com
 
 ________________________________________________________________________________
 
-Copyright 2005-2012 Restlet S.A.S.
+Copyright 2005-2014 Restlet
 
 The contents of this file are subject to the terms of one of the following
 open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -49,9 +49,9 @@ limitations under the Licenses.
 
 Alternatively, you can obtain a royalty free commercial license with less
 limitations, transferable or non-transferable, directly at
-http://www.restlet.com/products/restlet-framework
+http://restlet.com/products/restlet-framework
 
-Restlet is a registered trademark of Restlet S.A.S.
+Restlet is a registered trademark of Restlet
 
 ________________________________________________________________________________
 

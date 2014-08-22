@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -83,7 +83,7 @@ import org.restlet.representation.Variant;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/374-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/374-restlet.html">User Guide -
  *      Serving static files</a>
  * @author Jerome Louvel
  */
@@ -178,7 +178,7 @@ public class Directory extends Finder {
      * implementation used a friendly alphanum sorting.
      * 
      * @return The reference comparator.
-     * @see #setAlphaNumComparator()
+     * @see AlphaNumericComparator
      */
     public Comparator<Reference> getComparator() {
         return this.comparator;
@@ -285,33 +285,6 @@ public class Directory extends Finder {
      */
     public boolean isNegotiatingContent() {
         return this.negotiatingContent;
-    }
-
-    /**
-     * Sets the reference comparator based on classic alphabetical order.
-     * 
-     * @see #setComparator(Comparator)
-     * @deprecated Call {@link #useAlphaComparator()} instead
-     */
-    @Deprecated
-    public void setAlphaComparator() {
-        useAlphaComparator();
-    }
-
-    /**
-     * Sets the reference comparator based on the more friendly "Alphanum
-     * Algorithm" created by David Koelle. The internal implementation used is
-     * based on an optimized public domain implementation provided by Rob
-     * Heittman from the Solertium Corporation.
-     * 
-     * @see <a href="http://www.davekoelle.com/alphanum.html">The original
-     *      Alphanum Algorithm from David Koelle</a>
-     * @see #setComparator(Comparator)
-     * @deprecated Call {@link #useAlphaComparator()} instead
-     */
-    @Deprecated
-    public void setAlphaNumComparator() {
-        useAlphaNumComparator();
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -47,10 +47,10 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.engine.adapter.ServerCall;
-import org.restlet.engine.header.Header;
-import org.restlet.ext.ssl.internal.SslUtils;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -63,9 +63,7 @@ import org.simpleframework.http.Response;
  */
 public class SimpleCall extends ServerCall {
 
-    /**
-     * Simple Request.
-     */
+    /** Simple Request. */
     private final Request request;
 
     /** Indicates if the request headers were parsed and added. */
@@ -104,9 +102,6 @@ public class SimpleCall extends ServerCall {
         this.requestHeadersAdded = false;
     }
 
-    /**
-     * Closes the socket.
-     */
     @Override
     public boolean abort() {
         try {
@@ -115,6 +110,11 @@ public class SimpleCall extends ServerCall {
         }
 
         return true;
+    }
+
+    @Override
+    public void flushBuffers() throws IOException {
+        this.response.commit();
     }
 
     @Override
@@ -181,11 +181,6 @@ public class SimpleCall extends ServerCall {
         return super.getHostDomain(); // FIXME
     }
 
-    /**
-     * Returns the request method.
-     * 
-     * @return The request method.
-     */
     @Override
     public String getMethod() {
         return this.request.getMethod();
@@ -200,11 +195,6 @@ public class SimpleCall extends ServerCall {
         }
     }
 
-    /**
-     * Returns the list of request headers.
-     * 
-     * @return The list of request headers.
-     */
     @Override
     public Series<Header> getRequestHeaders() {
         final Series<Header> result = super.getRequestHeaders();
@@ -231,11 +221,6 @@ public class SimpleCall extends ServerCall {
         return null;
     }
 
-    /**
-     * Returns the full request URI.
-     * 
-     * @return The full request URI.
-     */
     @Override
     public String getRequestUri() {
         return this.request.getTarget();
@@ -317,12 +302,12 @@ public class SimpleCall extends ServerCall {
             throws IOException {
         // this.response.clear();
         for (Header header : getResponseHeaders()) {
-            this.response.add(header.getName(), header.getValue());
+            this.response.addValue(header.getName(), header.getValue());
         }
 
         // Set the status
         this.response.setCode(getStatusCode());
-        this.response.setText(getReasonPhrase());
+        this.response.setDescription(getReasonPhrase());
 
         // Ensure the HEAD response sends back the right Content-length header.
         if (!Method.HEAD.equals(restletResponse.getRequest().getMethod())

@@ -1,4 +1,4 @@
-<module id="oauth" excludes="android,gwt" type="standard" package="org.restlet.ext.oauth">
+<module id="oauth" excludes="android,gae,gwt" type="standard" package="org.restlet.ext.oauth">
 	<name>Restlet Extension - OAuth</name>
 	<description>Support for OAuth HTTP authentication.</description>
 	<distributions>
@@ -15,6 +15,7 @@
 		<dependency type="library" id="oauth" primary="true" />
 		<dependency type="library" id="pool" />
 		<dependency type="module" id="core" />
+		<dependency type="module" id="crypto" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="json" />
 		<dependency type="module" id="wadl" />

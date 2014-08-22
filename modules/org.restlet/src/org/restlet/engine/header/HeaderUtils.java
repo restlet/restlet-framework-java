@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -54,6 +54,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
 import org.restlet.data.Disposition;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -83,6 +84,7 @@ public class HeaderUtils {
                     HeaderConstants.HEADER_ACCEPT_CHARSET,
                     HeaderConstants.HEADER_ACCEPT_ENCODING,
                     HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+                    HeaderConstants.HEADER_ACCEPT_PATCH,
                     HeaderConstants.HEADER_ACCEPT_RANGES,
                     HeaderConstants.HEADER_AGE, HeaderConstants.HEADER_ALLOW,
                     HeaderConstants.HEADER_AUTHENTICATION_INFO,
@@ -358,6 +360,12 @@ public class HeaderUtils {
                     headers);
         }
 
+        if (!clientInfo.getAcceptedPatches().isEmpty()) {
+            addHeader(HeaderConstants.HEADER_ACCEPT_PATCH,
+                    PreferenceWriter.write(clientInfo.getAcceptedPatches()),
+                    headers);
+        }
+
         // [ifndef gwt]
         if (!clientInfo.getExpectations().isEmpty()) {
             addHeader(HeaderConstants.HEADER_EXPECT,
@@ -436,9 +444,11 @@ public class HeaderUtils {
         if (request.getClientInfo().getAgent() != null) {
             addHeader(HeaderConstants.HEADER_USER_AGENT, request
                     .getClientInfo().getAgent(), headers);
+            // [ifndef gwt]
         } else {
             addHeader(HeaderConstants.HEADER_USER_AGENT, Engine.VERSION_HEADER,
                     headers);
+            // [enddef]
         }
 
         // [ifndef gwt]
@@ -603,6 +613,37 @@ public class HeaderUtils {
         Series<Header> additionalHeaders = (Series<Header>) response
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
+    }
+
+    /**
+     * Copies extension headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void copyExtensionHeaders(Series<Header> headers,
+            Response response) {
+        if (headers != null) {
+            Series<Header> extensionHeaders = (Series<Header>) response
+                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+            if (extensionHeaders == null) {
+                // [ifndef gwt] instruction
+                extensionHeaders = new Series<Header>(Header.class);
+                // [ifdef gwt] instruction uncomment
+                // extensionHeaders = new
+                // org.restlet.engine.util.HeaderSeries();
+                response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                        extensionHeaders);
+            }
+            for (Header header : headers) {
+                if (!STANDARD_HEADERS.contains(header.getName())) {
+                    extensionHeaders.add(header);
+                }
+            }
+        }
     }
 
     /**
@@ -814,10 +855,19 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_MD5)) {
                     // [ifndef gwt]
+                    // Since an MD5 hash is 128 bits long, its base64 encoding
+                    // is 22 bytes if unpadded, or 24 bytes if padded. If the
+                    // header value is unpadded, append two base64 padding
+                    // characters ("==") before passing the value to
+                    // Base64.decode(), which requires its input argument's
+                    // length to be a multiple of four.
+                    String base64hash = header.getValue();
+                    if (base64hash.length() == 22) {
+                        base64hash += "==";
+                    }
                     result.setDigest(new org.restlet.data.Digest(
                             org.restlet.data.Digest.ALGORITHM_MD5,
-                            org.restlet.engine.util.Base64.decode(header
-                                    .getValue())));
+                            org.restlet.engine.util.Base64.decode(base64hash)));
                     entityHeaderFound = true;
                     // [enddef]
                 }
@@ -1018,7 +1068,7 @@ public class HeaderUtils {
     public static boolean isLinearWhiteSpace(int character) {
         return (isCarriageReturn(character) || isSpace(character)
                 || isLineFeed(character) || HeaderUtils
-                .isHorizontalTab(character));
+                    .isHorizontalTab(character));
     }
 
     /**

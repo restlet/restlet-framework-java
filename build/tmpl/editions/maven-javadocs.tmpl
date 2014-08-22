@@ -1,0 +1,41 @@
+maven JAVADOC target -->
+	<#noparse>
+			<!-- generate javadocs for this module -->
+			<javadoc sourcepath="${mod}/${mod-@{name}-id}/src"
+		         packagenames="${mod-@{name}-maven-javadoc-package}.*"
+		         excludepackagenames="${exclude-packages}"
+		         destdir="${docs}/maven/${mod-@{name}-id}"
+		         classpathref="path-all"
+		         author="true"
+		         version="true"
+		         use="true"
+		         windowtitle="Restlet ${mod-@{name}-maven-javadoc-title} ${mod-@{name}-id} ${version-full} - ${edition-full-label}"
+		         doctitle="Restlet ${mod-@{name}-maven-javadoc-title} ${mod-@{name}-id} ${version-full} - ${edition-full-label}"
+		         overview="${temp}/javadocs-overviews/overview.html"
+		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+		         verbose="${verbose}">
+				<bottom>
+					<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
+				</bottom>
+	</#noparse>
+	<#list edition.javadocsLinks as link>
+				${link}
+	</#list>
+	<#list edition.modules?sort_by("id") as module>
+	   <#list module.neededLibraries as library>
+	      <#list library.library.javadocsLinks as link>
+				${link}
+	      </#list>
+	   </#list>
+	</#list>
+	<#noparse>
+			    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
+			    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+			</javadoc>
+			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-javadoc.jar" filesetmanifest="merge">
+				<fileset dir="${docs}/maven/${mod-@{name}-id}" includes="**/*" />
+			</jar>
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-javadoc.jar" algorithm="MD5" fileext=".md5" />
+			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-javadoc.jar" algorithm="SHA" fileext=".sha1" />
+	</#noparse>
+<!--

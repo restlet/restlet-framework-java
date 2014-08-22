@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,7 +45,7 @@ import org.restlet.representation.Variant;
 public class VariantInfo extends Variant {
 
     /** The optional annotation descriptor. */
-    private final AnnotationInfo annotationInfo;
+    private final MethodAnnotationInfo annotationInfo;
 
     /** Affinity between this variant and an incoming representation. */
     private float inputScore;
@@ -68,7 +68,7 @@ public class VariantInfo extends Variant {
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
+    public VariantInfo(MediaType mediaType, MethodAnnotationInfo annotationInfo) {
         super(mediaType);
         this.annotationInfo = annotationInfo;
         inputScore = 1.0f;
@@ -82,7 +82,7 @@ public class VariantInfo extends Variant {
      * @param annotationInfo
      *            The optional annotation descriptor.
      */
-    public VariantInfo(Variant variant, AnnotationInfo annotationInfo) {
+    public VariantInfo(Variant variant, MethodAnnotationInfo annotationInfo) {
         this(variant.getMediaType(), annotationInfo);
         setCharacterSet(variant.getCharacterSet());
         setEncodings(variant.getEncodings());
@@ -120,10 +120,9 @@ public class VariantInfo extends Variant {
      * 
      * @return The optional annotation descriptor.
      */
-    public AnnotationInfo getAnnotationInfo() {
+    public MethodAnnotationInfo getAnnotationInfo() {
         return annotationInfo;
     }
-    
 
     /**
      * Returns the affinity between this variant and an incoming representation.

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,14 +38,14 @@ import javax.servlet.ServletException;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.ext.osgi.IApplicationProvider;
+import org.restlet.ext.osgi.ApplicationProvider;
 
 /**
  * @author Bryan Hunt
  * @author Wolfgang Werner
  */
 public class ApplicationServlet extends ServerServlet {
-    public ApplicationServlet(IApplicationProvider applicationProvider) {
+    public ApplicationServlet(ApplicationProvider applicationProvider) {
         this.applicationProvider = applicationProvider;
     }
 
@@ -53,9 +53,9 @@ public class ApplicationServlet extends ServerServlet {
     protected Application createApplication(Context context) {
         Context childContext = context.createChildContext();
         childContext.getAttributes().put(
-                IApplicationProvider.SERVLET_CONFIG_ATTRIBUTE, servletConfig);
+                ApplicationProvider.SERVLET_CONFIG_ATTRIBUTE, servletConfig);
         childContext.getAttributes().put(
-                IApplicationProvider.SERVLET_CONTEXT_ATTRIBUTE,
+                ApplicationProvider.SERVLET_CONTEXT_ATTRIBUTE,
                 getServletContext());
         return applicationProvider.createApplication(childContext);
     }
@@ -68,7 +68,7 @@ public class ApplicationServlet extends ServerServlet {
 
     private static final long serialVersionUID = 5252087180467260130L;
 
-    private transient IApplicationProvider applicationProvider;
+    private transient ApplicationProvider applicationProvider;
 
     private ServletConfig servletConfig;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -141,7 +141,7 @@ public class StringUtils {
         /**
          * Returns the numeric value of an entity according to its name.
          * 
-         * @param value
+         * @param name
          *            The name of the entity.
          * @return The numeric value of an entity according to its name.
          */
@@ -578,7 +578,8 @@ public class StringUtils {
                                         entityValue = Integer.parseInt(
                                                 entityName.substring(1), 10);
                                     }
-                                    if(!Character.isValidCodePoint(entityValue)){
+                                    if (!Character
+                                            .isValidCodePoint(entityValue)) {
                                         // Invalid Unicode character
                                         entityValue = -1;
                                     }

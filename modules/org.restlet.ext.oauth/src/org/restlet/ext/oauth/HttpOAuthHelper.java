@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -41,9 +41,9 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.util.Series;
 
@@ -60,8 +60,8 @@ import org.restlet.util.Series;
  * }
  * </pre>
  * 
- * Here is the list of parameters that are supported. They should be set
- * before an OAuth2Server or Client is started:
+ * Here is the list of parameters that are supported. They should be set before
+ * an OAuth2Server or Client is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -126,6 +126,17 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     /**
+     * Returns the value of the "loginPage" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "loginPage" parameter.
+     */
+    public static String getLoginPage(Context c) {
+        return c.getParameters().getFirstValue("login", "/login");
+    }
+
+    /**
      * Returns the value of the "authPageTemplate" parameter.
      * 
      * @param c
@@ -151,16 +162,32 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
         return Boolean.parseBoolean(skip);
     }
 
+    public static String getErrorPageTemplate(Context c) {
+        return c.getParameters().getFirstValue("errorPageTemplate");
+    }
+
     /**
-     * Sets the value of the "authpage" parameter.
+     * Sets the value of the "authPage" parameter.
      * 
      * @param authPage
-     *            The value of the "authpage" parameter.
+     *            The value of the "authPage" parameter.
      * @param c
      *            The context to update.
      */
     public static void setAuthPage(String authPage, Context c) {
         c.getParameters().set("authPage", authPage);
+    }
+
+    /**
+     * Sets the value of the "loginPage" parameter.
+     * 
+     * @param loginPage
+     *            The value of the "loginPage" parameter.
+     * @param c
+     *            The context to update.
+     */
+    public static void setLoginPage(String loginPage, Context c) {
+        c.getParameters().set("loginPage", loginPage);
     }
 
     /**
@@ -187,6 +214,10 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
     }
 
+    public static void setErrorPageTemplate(String errorPageTemplate, Context c) {
+        c.getParameters().set("errorPageTemplate", errorPageTemplate);
+    }
+
     /**
      * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH} authentication
      * scheme.
@@ -196,9 +227,8 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRequest(ChallengeWriter cw,
-            ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
+    public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
+            Response response, Series<Header> httpHeaders) throws IOException {
         // Format the parameters WWW-Authenticate: OAuth realm='Example
         // Service', error='expired-token'
         cw.append("realm='");

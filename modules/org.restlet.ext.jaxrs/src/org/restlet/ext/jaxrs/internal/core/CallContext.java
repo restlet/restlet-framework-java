@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -79,6 +79,7 @@ import org.restlet.data.Language;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -88,6 +89,8 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.security.Role;
+import org.restlet.service.ConnegService;
+import org.restlet.service.MetadataService;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
@@ -1040,7 +1043,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<String> getRequestHeader(String headerName) {
         String[] values;
-        values = Util.getHttpHeaders(this.request).getValuesArray(headerName);
+        values = Util.getHttpHeaders(this.request).getValuesArray(headerName,
+                true);
         return Collections.unmodifiableList(Arrays.asList(values));
     }
 
@@ -1112,9 +1116,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     @Override
     public int hashCode() {
-        return this.getBaseUriStr().hashCode()
-                ^ this.getPathSegments().hashCode()
-                ^ this.getPathParameters().hashCode();
+        return SystemUtils.hashCode(getBaseUriStr(), getPathSegments(),
+                getPathParameters());
     }
 
     /**
@@ -1213,7 +1216,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
-    @SuppressWarnings("deprecation")
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
         if ((variants == null) || variants.isEmpty()) {
@@ -1222,8 +1224,22 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
         List<org.restlet.representation.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        org.restlet.representation.Variant bestRestlVar = this.request
-                .getClientInfo().getPreferredVariant(restletVariants);
+
+        ConnegService connegService = null;
+        MetadataService metadataService = null;
+        org.restlet.Application app = org.restlet.Application.getCurrent();
+
+        if (app == null) {
+            connegService = new org.restlet.service.ConnegService();
+            metadataService = new MetadataService();
+        } else {
+            connegService = app.getConnegService();
+            metadataService = app.getMetadataService();
+        }
+
+        org.restlet.representation.Variant bestRestlVar = connegService
+                .getPreferredVariant(restletVariants, this.request,
+                        metadataService);
         Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         Set<Dimension> dimensions = this.response.getDimensions();
 

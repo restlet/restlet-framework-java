@@ -1,4 +1,4 @@
-<module includes="jse,jee, osgi" id="example" package="org.restlet.example">
+<module includes="jse,jee, osgi" id="example"  type="misc" package="org.restlet.example">
 	<name>Restlet examples</name>
 	<description>Various examples including those from the tutorial
 	</description>
@@ -11,31 +11,33 @@
 	<dependencies>
 		<dependency type="library" id="db4o" />
 		<dependency type="library" id="junit" />
+		<dependency type="library" id="mongodb" />
 		<dependency type="library" id="rome" />
 		<dependency type="library" id="testng" />
-		<dependency type="module" id="core" />
 		<dependency type="module" id="atom" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="crypto" />
 		<dependency type="module" id="fileupload" />
 		<dependency type="module" id="freemarker" />
+		<dependency type="module" id="guice" />
+		<dependency type="module" id="jaas" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxb" />
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="jetty" includes="jse,osgi" />
 		<dependency type="module" id="jibx" />
 		<dependency type="module" id="json" />
+		<dependency type="module" id="oauth" />
+		<dependency type="module" id="openid" />
+		<dependency type="module" id="osgi" includes="osgi" />
 		<dependency type="module" id="rdf" />
+		<dependency type="module" id="sdc" />
 		<dependency type="module" id="sip" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="xstream" />
 		<dependency type="module" id="wadl" />
-		<dependency type="module" id="crypto" />
-		<dependency type="module" id="jaas" />
-		<dependency type="module" id="sdc" />
-		<dependency type="module" id="openid" />
-		<dependency type="module" id="oauth" />
-		<dependency type="module" id="osgi" includes="osgi" />
 	</dependencies>
 
 	<source edition="jee">

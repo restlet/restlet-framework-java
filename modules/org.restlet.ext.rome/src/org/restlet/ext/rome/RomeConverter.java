@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -108,17 +108,19 @@ public class RomeConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
-
-        if (SyndFeed.class.isAssignableFrom(target)) {
-            if (source instanceof SyndFeedRepresentation) {
-                result = ((SyndFeedRepresentation) source).getFeed();
-            } else {
-                result = new SyndFeedRepresentation(source).getFeed();
-            }
+        SyndFeedRepresentation syndFeedSource = null;
+        if (source instanceof SyndFeedRepresentation) {
+            syndFeedSource = (SyndFeedRepresentation) source;
+        } else {
+            syndFeedSource = new SyndFeedRepresentation(source);
         }
 
-        return target.cast(result);
+        T result = null;
+        if ((target != null) && SyndFeed.class.isAssignableFrom(target)) {
+            result = target.cast(syndFeedSource.getFeed());
+        }
+
+        return result;
     }
 
     @Override

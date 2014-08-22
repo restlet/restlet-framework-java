@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,13 +26,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.service;
 
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 import org.restlet.Context;
@@ -41,6 +42,7 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.log.LogFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -81,7 +83,7 @@ import org.restlet.routing.Template;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.routing.Template}. <br>
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/201-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/201-restlet.html">User Guide -
  *      Access logging</a>
  * @see <a
  *      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
@@ -237,11 +239,18 @@ public class LogService extends Service {
             // Append the received size
             sb.append('\t');
 
-            if (request.getEntity() == null) {
-                sb.append('0');
-            } else {
-                sb.append((request.getEntity().getSize() == -1) ? "-" : Long
-                        .toString(request.getEntity().getSize()));
+            try {
+                if (request.getEntity() == null) {
+                    sb.append('0');
+                } else {
+                    sb.append((request.getEntity().getSize() == -1) ? "-"
+                            : Long.toString(request.getEntity().getSize()));
+                }
+            } catch (Throwable t) {
+                // Error while getting the request's entity, cf issue #931
+                Engine.getLogger(LogService.class).log(Level.SEVERE,
+                        "Cannot retrieve size of request's entity", t);
+                sb.append("-");
             }
 
             // Append the duration
@@ -265,18 +274,6 @@ public class LogService extends Service {
         }
 
         return sb.toString();
-    }
-
-    /**
-     * Returns the format used.
-     * 
-     * @return The format used, or null if the default one is used.
-     * @see org.restlet.routing.Template for format syntax and variables.
-     * @deprecated Use the {@link #getResponseLogFormat()} method instead.
-     */
-    @Deprecated
-    public String getLogFormat() {
-        return getResponseLogFormat();
     }
 
     /**
@@ -401,20 +398,6 @@ public class LogService extends Service {
     }
 
     /**
-     * Sets the format to use when logging responses. The default format matches
-     * the one of IIS 6.
-     * 
-     * @param responseLogFormat
-     *            The format to use when logging responses.
-     * @see org.restlet.routing.Template for format syntax and variables.
-     * @deprecated Use {@link #setResponseLogFormat(String)} instead.
-     */
-    @Deprecated
-    public void setLogFormat(String responseLogFormat) {
-        setResponseLogFormat(responseLogFormat);
-    }
-
-    /**
      * Sets the URI template of loggable resource references.
      * 
      * @param loggableTemplateRef
@@ -489,8 +472,8 @@ public class LogService extends Service {
     public synchronized void start() throws Exception {
         super.start();
 
-        this.responseLogTemplate = (getLogFormat() == null) ? null
-                : new Template(getLogFormat());
+        this.responseLogTemplate = (getResponseLogFormat() == null) ? null
+                : new Template(getResponseLogFormat());
 
         if (getLogPropertiesRef() != null) {
             Representation logProperties = new ClientResource(getContext(),

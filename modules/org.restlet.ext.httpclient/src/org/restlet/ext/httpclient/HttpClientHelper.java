@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -51,6 +51,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.CookieSpecRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -62,13 +63,13 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
-import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
@@ -163,10 +164,19 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>
+ * </tr>
+ * <tr>
+ * <td>hostnameVerifier</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Class name of the hostname verifier to use instead of HTTP Client default
+ * behavior. The given class name must implement
+ * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
+ * constructor.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
@@ -280,7 +290,20 @@ public class HttpClientHelper extends
         } else {
             sslSocketFactory = SSLSocketFactory.getSocketFactory();
         }
-        
+
+        if (getHostnameVerifier() != null) {
+            try {
+                X509HostnameVerifier hostnameVerifier = (X509HostnameVerifier) Engine
+                        .loadClass(getHostnameVerifier()).newInstance();
+                sslSocketFactory.setHostnameVerifier(hostnameVerifier);
+            } catch (Exception e) {
+                getLogger()
+                        .log(Level.WARNING,
+                                "An error occurred during the instantiation of the hostname verifier.",
+                                e);
+            }
+        }
+
         schemeRegistry.register(new Scheme("https", 443, sslSocketFactory));
         // [enddef]
     }
@@ -321,6 +344,18 @@ public class HttpClientHelper extends
     protected ClientConnectionManager createClientConnectionManager(
             HttpParams params, SchemeRegistry schemeRegistry) {
         return new ThreadSafeClientConnManager(params, schemeRegistry);
+    }
+
+    /**
+     * Returns the class name of the hostname verifier to use instead of HTTP
+     * Client default behavior. The given class name must implement
+     * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
+     * constructor.
+     * 
+     * @return The class name of the hostname verifier.
+     */
+    public String getHostnameVerifier() {
+        return getHelpedParameters().getFirstValue("hostnameVerifier", null);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -87,12 +87,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws IllegalArgumentException
-     *                 if the annotated method is null
+     *             if the annotated method is null
      * @throws MissingAnnotationException
      * @throws IllegalMethodParamTypeException
-     *                 if one of the parameters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;
-     *                 {@link Context}.
+     *             if one of the parameters annotated with &#64;{@link Context}
+     *             has a type that must not be annotated with &#64;
+     *             {@link Context}.
      * @throws IllegalPathParamTypeException
      */
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,

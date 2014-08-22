@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -62,20 +62,21 @@ import org.restlet.util.ServiceList;
  * create the root Restlet and the actual Restlet that can be attached to one or
  * more VirtualHost instances.<br>
  * <br>
- * Applications also have many useful services associated. They are all enabled
- * by default and are available as properties that can be eventually overridden:
+ * Applications also have many useful services associated. Most are enabled by
+ * default and are available as properties that can be eventually overridden:
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and
  * representations.</li>
  * <li>"decoderService" to automatically decode or uncompress received entities.
  * </li>
- * <li>"encoderService" to automatically encode or compress sent entities.</li>
+ * <li>"encoderService" to automatically encode or compress sent entities
+ * (disabled by default).</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"rangeService" to automatically exposes ranges of response entities.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
- * <li>"taskService" to run tasks asynchronously.</li>
+ * <li>"taskService" to run tasks asynchronously (disabled by default).</li>
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
@@ -171,7 +172,7 @@ public class Application extends Restlet {
         this.services.add(new MetadataService());
 
         // [ifndef gae]
-        this.services.add(new org.restlet.service.TaskService());
+        this.services.add(new org.restlet.service.TaskService(false));
         // [enddef]
     }
 
@@ -361,8 +362,10 @@ public class Application extends Restlet {
      * default.
      * 
      * @return A task service.
+     * @deprecated
      */
     // [ifndef gae] method
+    @Deprecated
     public org.restlet.service.TaskService getTaskService() {
         return getServices().get(org.restlet.service.TaskService.class);
     }
@@ -383,19 +386,6 @@ public class Application extends Restlet {
         if (getHelper() != null) {
             getHelper().handle(request, response);
         }
-    }
-
-    /**
-     * Sets the client root Resource class.
-     * 
-     * @param clientRootClass
-     *            The client root {@link ServerResource} subclass.
-     * @deprecated Use {@link #setOutboundRoot(Class)} instead
-     */
-    @Deprecated
-    public synchronized void setClientRoot(
-            Class<? extends ServerResource> clientRootClass) {
-        setOutboundRoot(clientRootClass);
     }
 
     /**

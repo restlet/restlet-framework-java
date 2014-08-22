@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -69,13 +69,16 @@ public class Provider {
     }
 
     public static final String OPENID_MODE = "openid.mode";
+
     public static final String OPENID_RETURNTO = "openid.return_to";
+
     public static final String OPENID_REALM = "openid.realm";
 
     private final Map<String, UserSession> sessions = new HashMap<String, UserSession>();
 
     public Message fetchAttributes(ParameterList pl) throws Exception {
-        if(pl == null) return null;
+        if (pl == null)
+            return null;
         Message m = Message.createMessage(pl);
         if (m.hasExtension(AxMessage.OPENID_NS_AX)) {
             return m;
@@ -102,36 +105,41 @@ public class Provider {
 
         return result;
     }
-    
-    public Set <AttributeExchange> getOptionalAttributes(UserSession us) throws Exception{
+
+    public Set<AttributeExchange> getOptionalAttributes(UserSession us)
+            throws Exception {
         return getAttributes(us.getParameterList(), false);
     }
-    
-    public Set <AttributeExchange> getOptionalAttributes(ParameterList pl) throws Exception{
+
+    public Set<AttributeExchange> getOptionalAttributes(ParameterList pl)
+            throws Exception {
         return getAttributes(pl, false);
     }
-    
-    public Set <AttributeExchange> getRequiredAttributes(UserSession us) throws Exception{
+
+    public Set<AttributeExchange> getRequiredAttributes(UserSession us)
+            throws Exception {
         return getAttributes(us.getParameterList(), true);
     }
-    
-    public Set <AttributeExchange> getRequiredAttributes(ParameterList pl) throws Exception{
+
+    public Set<AttributeExchange> getRequiredAttributes(ParameterList pl)
+            throws Exception {
         return getAttributes(pl, true);
     }
-    
-    
-    public Set <AttributeExchange> getAttributes(ParameterList pl, boolean required) throws Exception{
+
+    public Set<AttributeExchange> getAttributes(ParameterList pl,
+            boolean required) throws Exception {
         Message m = fetchAttributes(pl);
-        if(m == null) return null;
+        if (m == null)
+            return null;
         MessageExtension me = m.getExtension(AxMessage.OPENID_NS_AX);
-        if(me instanceof FetchRequest){
+        if (me instanceof FetchRequest) {
             FetchRequest fr = (FetchRequest) me;
             Map<?, ?> attrs = fr.getAttributes(required);
-            Set <AttributeExchange> toRet = new TreeSet <AttributeExchange> ();
-            for(Object key : attrs.keySet()){
+            Set<AttributeExchange> toRet = new TreeSet<AttributeExchange>();
+            for (Object key : attrs.keySet()) {
                 String type = (String) attrs.get(key);
                 AttributeExchange ax = AttributeExchange.valueOfType(type);
-                if(ax != null)
+                if (ax != null)
                     toRet.add(ax);
             }
             return toRet;
@@ -183,8 +191,9 @@ public class Provider {
             return new ProviderResult(OPR.OK, response.keyValueFormEncoding());
         case checkid_setup:
         case checkid_immediate:
-            if (us == null || us.getUser() == null) { // this means no authorization
-                                                 // has taken place yet
+            if (us == null || us.getUser() == null) { // this means no
+                                                      // authorization
+                // has taken place yet
                 String session = UUID.randomUUID().toString();
                 this.sessions.put(session, new UserSession(pl));
                 return new ProviderResult(OPR.GET_USER, session);
@@ -195,9 +204,11 @@ public class Provider {
             // add any attributes:
 
             if (response instanceof DirectError) {
-                return new ProviderResult(OPR.OK, response.keyValueFormEncoding());
+                return new ProviderResult(OPR.OK,
+                        response.keyValueFormEncoding());
             }
-            if (us.getUser().attributes() != null && us.getUser().attributes().size() > 0) {
+            if (us.getUser().attributes() != null
+                    && us.getUser().attributes().size() > 0) {
                 FetchResponse fr = null;
                 fr = FetchResponse.createFetchResponse();
                 for (AttributeExchange attr : us.getUser().attributes()) {

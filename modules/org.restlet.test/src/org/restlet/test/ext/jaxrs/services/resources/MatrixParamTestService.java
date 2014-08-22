@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -61,15 +61,16 @@ public class MatrixParamTestService {
     private String encoded;
 
     private String decoded;
-    
+
     @GET
     @Produces("text/plain")
     @Path("checkUnmodifiable")
-    public Object checkUnmodifiable(@MatrixParam("mp") List<String> mps) {
+    public Object checkUnmodifiable(@MatrixParam("mp")
+    List<String> mps) {
         try {
             mps.clear();
-            throw new WebApplicationException(Response.serverError().entity(
-                    "the List must be unmodifiable").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("the List must be unmodifiable").build());
         } catch (UnsupportedOperationException use) {
             return null;
         }
@@ -79,37 +80,42 @@ public class MatrixParamTestService {
     @Produces("text/plain")
     @Path("encoded")
     @Encoded
-    public String encoded(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
+    public String encoded(@MatrixParam("firstname")
+    String firstname, @MatrixParam("lastname")
+    String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @Produces("text/plain")
-    public String get(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
+    public String get(@MatrixParam("firstname")
+    String firstname, @MatrixParam("lastname")
+    String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @Produces("text/plain")
     @Path("a")
-    public String getA(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
+    public String getA(@MatrixParam("firstname")
+    String firstname, @MatrixParam("lastname")
+    String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @Produces("text/plain")
     @Path("allNames")
-    public String getAllNames(@MatrixParam("name") List<String> name) {
+    public String getAllNames(@MatrixParam("name")
+    List<String> name) {
         return name.toString();
     }
 
     @GET
     @Produces("text/plain")
     @Path("b")
-    public String getB(@Context UriInfo uriInfo) {
+    public String getB(@Context
+    UriInfo uriInfo) {
         final PathSegment pSeg = TestUtils.getLastElement(uriInfo
                 .getPathSegments());
         final String vorname = pSeg.getMatrixParameters().getFirst("firstname");
@@ -120,7 +126,8 @@ public class MatrixParamTestService {
     @GET
     @Produces("text/plain")
     @Path("one")
-    public String getOne(@MatrixParam("name") String name) {
+    public String getOne(@MatrixParam("name")
+    String name) {
         if (name == null) {
             return "[null]";
         }
@@ -164,8 +171,9 @@ public class MatrixParamTestService {
     @Produces("text/plain")
     @Path("withDefault")
     @Encoded
-    public String withDefault(
-            @MatrixParam("mp") @DefaultValue("default") String mp) {
+    public String withDefault(@MatrixParam("mp")
+    @DefaultValue("default")
+    String mp) {
         return withoutDefault(mp);
     }
 
@@ -173,7 +181,8 @@ public class MatrixParamTestService {
     @Produces("text/plain")
     @Path("withoutDefault")
     @Encoded
-    public String withoutDefault(@MatrixParam("mp") String mp) {
+    public String withoutDefault(@MatrixParam("mp")
+    String mp) {
         if (mp == null) {
             return "[null]";
         }
@@ -186,8 +195,9 @@ public class MatrixParamTestService {
     @GET
     @Produces("text/plain")
     @Path("semicolon;mpA=")
-    public Response withSemicolon(@MatrixParam("mpA") String mpA,
-            @MatrixParam("mpB") String mpB) {
+    public Response withSemicolon(@MatrixParam("mpA")
+    String mpA, @MatrixParam("mpB")
+    String mpB) {
         final String entity = "this method must not be called\nmpA param is "
                 + mpA + "\nmpB param is " + mpB;
         return Response.serverError().entity(entity).build();

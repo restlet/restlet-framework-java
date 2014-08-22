@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -82,8 +82,9 @@ public class EmployeeResource {
     }
 
     @DELETE
-    public Object delete(@Context HttpHeaders httpHeaders,
-            @Context UriInfo uriInfo) {
+    public Object delete(@Context
+    HttpHeaders httpHeaders, @Context
+    UriInfo uriInfo) {
         this.employeeMgr.remove(this.staffNo);
         if (httpHeaders.getAcceptableMediaTypes().contains(
                 MediaType.TEXT_HTML_TYPE)) {
@@ -93,8 +94,9 @@ public class EmployeeResource {
     }
 
     @GET
-    @Consumes( { "application/xml", "text/xml", "application/json" })
-    public Employee get(@Context UriInfo uriInfo) {
+    @Consumes({ "application/xml", "text/xml", "application/json" })
+    public Employee get(@Context
+    UriInfo uriInfo) {
         // load employee with requested id
         final Employee employee = this.employeeMgr.getFull(this.staffNo);
 
@@ -109,7 +111,8 @@ public class EmployeeResource {
 
     @GET
     @Produces("text/html")
-    public StreamingOutput getHtml(@Context final UriInfo uriInfo) {
+    public StreamingOutput getHtml(@Context
+    final UriInfo uriInfo) {
         final Employee employee = get(uriInfo);
         final URI employeesUri = createEmployeesUri(uriInfo);
         return new StreamingOutput() {
@@ -150,8 +153,7 @@ public class EmployeeResource {
                 ps.print("<form action=\"");
                 ps.print(uriInfo.getAbsolutePath());
                 ps.println("?method=DELETE\" method=\"POST\">");
-                ps
-                        .println("<input type=\"submit\" value=\"Delete employee\" />");
+                ps.println("<input type=\"submit\" value=\"Delete employee\" />");
                 ps.println("</form>");
                 ps.print("<hr><a href=\"");
                 ps.print(employeesUri);
@@ -162,7 +164,7 @@ public class EmployeeResource {
     }
 
     @PUT
-    @Consumes( { "application/xml", "text/xml", "application/json" })
+    @Consumes({ "application/xml", "text/xml", "application/json" })
     public void update(Employee employee) {
         this.employeeMgr.update(this.staffNo, employee);
     }

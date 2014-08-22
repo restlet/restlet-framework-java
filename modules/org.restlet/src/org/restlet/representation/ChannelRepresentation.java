@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -41,8 +41,7 @@ import java.io.Writer;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a NIO byte channel.
@@ -62,23 +61,23 @@ public abstract class ChannelRepresentation extends Representation {
 
     @Override
     public Reader getReader() throws IOException {
-        return BioUtils.getReader(getStream(), getCharacterSet());
+        return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
     @Override
     public InputStream getStream() throws IOException {
-        return NioUtils.getStream(getChannel());
+        return IoUtils.getStream(getChannel());
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        WritableByteChannel wbc = NioUtils.getChannel(outputStream);
+        WritableByteChannel wbc = IoUtils.getChannel(outputStream);
         write(wbc);
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        OutputStream os = BioUtils.getOutputStream(writer, getCharacterSet());
+        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
         write(os);
         os.flush();
     }

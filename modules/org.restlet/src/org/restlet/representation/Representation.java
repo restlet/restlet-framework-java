@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -47,7 +47,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -248,7 +248,7 @@ public abstract class Representation extends RepresentationInfo {
         // [ifndef gwt]
         if (isAvailable()) {
             InputStream is = getStream();
-            result = BioUtils.exhaust(is);
+            result = IoUtils.exhaust(is);
             is.close();
         }
         // [enddef]
@@ -264,7 +264,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return The available size.
      */
     public long getAvailableSize() {
-        return BioUtils.getAvailableSize(this);
+        return IoUtils.getAvailableSize(this);
     }
 
     // [ifndef gwt] member
@@ -463,12 +463,12 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
-     * {@link org.restlet.engine.connector.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
+     * {@link org.restlet.ext.nio.internal.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
      * method can be called to be notified when new content is ready for
      * reading.
      * 
      * @return True if the representation content supports NIO selection.
-     * @see org.restlet.engine.connector.ConnectionController
+     * @see org.restlet.ext.nio.internal.ConnectionController
      */
     public boolean isSelectable() {
         try {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -106,6 +106,18 @@ public final class Protocol {
     /** JDBC protocol. */
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
             "Java DataBase Connectivity", UNKNOWN_PORT);
+
+    // [ifdef osgi] member
+    /**
+     * OBAP (OSGi Bundle Access Protocol) is a custom scheme to access to
+     * representations via bundles referenced using their symbolic name. Example
+     * URI: "obap://org.restlet/org/restlet/Restlet.class".<br>
+     * <br>
+     * In order to work, OBAP requires a client connector provided by the
+     * extension for the OSGi platform.
+     */
+    public static final Protocol OBAP = new Protocol("obap", "OBAP",
+            "OSGi Bundle Access Protocol", Protocol.UNKNOWN_PORT, true);
 
     /** POP protocol. */
     public static final Protocol POP = new Protocol("pop", "POP",

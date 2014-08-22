@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,8 +39,8 @@ import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -63,7 +63,7 @@ import org.restlet.resource.Resource;
  * Then, just create a instance of your class and set it on your Component or
  * Application via the setStatusService() methods.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/202-restlet.html">User
+ * @see <a href="http://wiki.restlet.org/docs_2.2/202-restlet.html">User
  *      Guide</a>
  * @author Jerome Louvel
  */
@@ -134,10 +134,16 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
+     *             instead.
      */
+    @Deprecated
     public Representation getRepresentation(Status status, Request request,
             Response response) {
-        return null;
+        // [ifndef gwt] instruction
+        return toRepresentation(status, null, request, response, null);
+        // [ifdef gwt] instruction uncomment
+        // return toRepresentation(status, null, request, response);
     }
 
     /**
@@ -155,25 +161,12 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
      */
+    @Deprecated
     public Status getStatus(Throwable throwable, Request request,
             Response response) {
-        Status result = null;
-
-        if (throwable instanceof ResourceException) {
-            ResourceException re = (ResourceException) throwable;
-
-            if (re.getCause() != null) {
-                // What is most interesting is the embedded cause
-                result = new Status(re.getStatus(), re.getCause());
-            } else {
-                result = re.getStatus();
-            }
-        } else {
-            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
-        }
-
-        return result;
+        return toStatus(throwable, request, response);
     }
 
     /**
@@ -187,11 +180,11 @@ public class StatusService extends Service {
      * @param resource
      *            The parent resource.
      * @return The representation of the given status.
+     * @deprecated Use {@link #toStatus(Throwable, Resource)} instead.
      */
+    @Deprecated
     public Status getStatus(Throwable throwable, Resource resource) {
-        return getStatus(throwable,
-                (resource == null) ? null : resource.getRequest(),
-                (resource == null) ? null : resource.getResponse());
+        return toStatus(throwable, resource);
     }
 
     /**
@@ -232,6 +225,155 @@ public class StatusService extends Service {
      */
     public void setOverwriting(boolean overwriting) {
         this.overwriting = overwriting;
+    }
+
+    /**
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overridden. By default it invokes
+     * {@link #toRepresentation(Status, Request, Response)}.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param throwable
+     *            The exception or error caught.
+     * @param resource
+     *            The parent resource.
+     * @return The representation of the given status.
+     */
+    public Representation toRepresentation(Status status, Throwable throwable,
+            Resource resource) {
+        // [ifndef gwt] instruction
+        return toRepresentation(status, throwable, resource.getRequest(),
+                resource.getResponse(), resource.getConverterService());
+        // [ifdef gwt] instruction uncomment
+        // return null;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns a representation for the given status. In order to customize the
+     * default representation, this method can be overridden. It returns null by
+     * default.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param throwable
+     *            The exception or error caught.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @param converterService
+     *            The converter service.
+     * @return The representation of the given status.
+     */
+    public Representation toRepresentation(Status status, Throwable throwable,
+            Request request, Response response,
+            ConverterService converterService) {
+        return null;
+    }
+
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Returns a representation for the given status. In order to customize
+    // the
+    // * default representation, this method can be overridden. It returns null
+    // by
+    // * default.
+    // *
+    // * @param status
+    // * The status to represent.
+    // * @param throwable
+    // * The exception or error caught.
+    // * @param request
+    // * The request handled.
+    // * @param response
+    // * The response updated.
+    // * @return The representation of the given status.
+    // */
+    // public Representation toRepresentation(Status status, Throwable
+    // throwable,
+    // Request request, Response response) {
+    // return null;
+    // }
+
+    /**
+     * Returns a status for a given exception or error. By default it unwraps
+     * the status of {@link ResourceException}. For other exceptions or errors,
+     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
+     * <br>
+     * In order to customize the default behavior, this method can be
+     * overridden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    public Status toStatus(Throwable throwable, Request request,
+            Response response) {
+        Status result = null;
+
+        if (throwable instanceof ResourceException) {
+            ResourceException re = (ResourceException) throwable;
+
+            if (re.getCause() != null) {
+                // What is most interesting is the embedded cause
+                result = new Status(re.getStatus(), re.getCause());
+            } else {
+                result = re.getStatus();
+            }
+        } else {
+            // [ifndef gwt]
+            org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                    .getInstance()
+                    .getStatusAnnotationInfo(throwable.getClass());
+
+            if (sai != null) {
+                result = new Status(sai.getStatus(), throwable);
+            } else {
+                result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+            }
+            // [enddef]
+            // [ifdef gwt] instruction uncomment
+            // result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a status for a given exception or error. By default it returns an
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+     * In order to customize the default behavior, this method can be
+     * overridden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param resource
+     *            The parent resource.
+     * @return The representation of the given status.
+     */
+    public Status toStatus(Throwable throwable, Resource resource) {
+        return toStatus(throwable,
+                (resource == null) ? null : resource.getRequest(),
+                (resource == null) ? null : resource.getResponse());
+    }
+
+    /**
+     * 
+     * @param status
+     * @param representation
+     * @return
+     */
+    public Throwable toThrowable(Status status, Representation representation) {
+        Throwable result = null;
+
+        return result;
     }
 
 }

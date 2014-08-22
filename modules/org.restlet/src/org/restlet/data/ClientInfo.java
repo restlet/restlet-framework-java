@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -42,11 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -243,6 +240,9 @@ public final class ClientInfo {
     /** The media preferences. */
     private volatile List<Preference<MediaType>> acceptedMediaTypes;
 
+    /** The patch preferences. */
+    private volatile List<Preference<MediaType>> acceptedPatches;
+
     /** The immediate IP addresses. */
     private volatile String address;
 
@@ -313,6 +313,7 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
+        this.acceptedPatches = null;
         this.forwardedAddresses = null;
         this.from = null;
         // [ifndef gwt]
@@ -486,6 +487,29 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the modifiable list of patch preferences. Creates a new instance
+     * if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Patch" header.
+     * 
+     * @return The patch preferences.
+     */
+    public List<Preference<MediaType>> getAcceptedPatches() {
+        // Lazy initialization with double-check.
+        List<Preference<MediaType>> a = this.acceptedPatches;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedPatches;
+                if (a == null) {
+                    this.acceptedPatches = a = new CopyOnWriteArrayList<Preference<MediaType>>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
      * Returns the immediate client's IP address. If the real client is
      * separated from the server by a proxy server, this will return the IP
      * address of the proxy.
@@ -545,7 +569,7 @@ public final class ClientInfo {
                 for (String string : ClientInfo.getUserAgentTemplates()) {
                     template = new org.restlet.routing.Template(string,
                             org.restlet.routing.Template.MODE_EQUALS);
-                    
+
                     // Update the predefined variables.
                     template.getVariables().put("agentName", agentName);
                     template.getVariables().put("agentVersion", agentVersion);
@@ -556,7 +580,7 @@ public final class ClientInfo {
                             agentCommentAttribute);
                     template.getVariables().put("facultativeData",
                             facultativeData);
-                    
+
                     // Parse the template
                     if (template.parse(getAgent(), map) > -1) {
                         for (String key : map.keySet()) {
@@ -801,85 +825,15 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings. A default language is provided in case the
-     * variants don't match the client preferences.
+     * Returns the preferred patch among a list of supported ones, based on the
+     * client preferences.
      * 
-     * Note that the {@link org.restlet.service.ConnegService} and
-     * {@link MetadataService} of the parent application are first looked up. If
-     * no parent application is found, a new instance of those services is
-     * created and the
-     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
-     * method is called.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use {@link org.restlet.service.ConnegService} instead.
+     * @param supported
+     *            The supported patches.
+     * @return The preferred patch.
      */
-    @Deprecated
-    public Variant getPreferredVariant(List<? extends Variant> variants) {
-        org.restlet.service.ConnegService connegService = null;
-        MetadataService metadataService = null;
-        org.restlet.Application app = org.restlet.Application.getCurrent();
-
-        if (app == null) {
-            connegService = new org.restlet.service.ConnegService();
-            metadataService = new MetadataService();
-        } else {
-            connegService = app.getConnegService();
-            metadataService = app.getMetadataService();
-        }
-
-        Request request = new Request();
-        request.setClientInfo(this);
-        return connegService.getPreferredVariant(variants, request,
-                metadataService);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings. A default language is provided in case the
-     * variants don't match the client preferences.
-     * 
-     * Note that the {@link org.restlet.service.ConnegService} of the parent
-     * application is first looked up. If no parent application is found, a new
-     * instance is created and the
-     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
-     * method is called.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @param metadataService
-     *            The metadata service.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use the {@link #getPreferredVariant(List)} method instead.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(List<? extends Variant> variants,
-            org.restlet.service.MetadataService metadataService) {
-        org.restlet.service.ConnegService connegService = null;
-        org.restlet.Application app = org.restlet.Application.getCurrent();
-
-        if (app == null) {
-            connegService = new org.restlet.service.ConnegService();
-        } else {
-            connegService = app.getConnegService();
-        }
-
-        Request request = new Request();
-        request.setClientInfo(this);
-        return connegService.getPreferredVariant(variants, request,
-                metadataService);
+    public MediaType getPreferredPatch(List<MediaType> supported) {
+        return getPreferredMetadata(supported, getAcceptedPatches());
     }
 
     // [ifndef gwt] method
@@ -1033,6 +987,21 @@ public final class ClientInfo {
             List<Preference<MediaType>> ac = getAcceptedMediaTypes();
             ac.clear();
             ac.addAll(acceptedMediaTypes);
+        }
+    }
+
+    /**
+     * Sets the patch preferences. Note that when used with HTTP connectors,
+     * this property maps to the "Accept-Patch" header.
+     * 
+     * @param acceptedPatches
+     *            The media type preferences.
+     */
+    public void setAcceptedPatches(List<Preference<MediaType>> acceptedPatches) {
+        synchronized (this) {
+            List<Preference<MediaType>> ac = getAcceptedPatches();
+            ac.clear();
+            ac.addAll(acceptedPatches);
         }
     }
 

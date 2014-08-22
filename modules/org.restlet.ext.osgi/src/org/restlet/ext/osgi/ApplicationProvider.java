@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -35,77 +35,64 @@ package org.restlet.ext.osgi;
 
 import java.util.Dictionary;
 
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpContext;
 import org.restlet.Application;
 import org.restlet.Context;
 
 /**
- * @author Bryan Hunt
+ * This is an OSGi service interface for registering Restlet applications with a
+ * server servlet. Users are expected to register an instance as an OSGi
+ * service. It is recommended that you use the {@link BaseApplicationProvider}
+ * implementation. You may extend it if necessary, or for complete control,
+ * provide your own implementation of {@link ApplicationProvider}. A server
+ * servlet will be created and registered with the web container at the
+ * specified alias. The application will then be registered with the servlet.
  * 
+ * @author Bryan Hunt
+ * @author Wolfgang Werner
  */
-public class ApplicationProvider implements IApplicationProvider {
-    private String alias;
+public interface ApplicationProvider {
+    /**
+     * The key constant that may be used to look up the
+     * {@link javax.servlet.ServletConfig} instance from the child context
+     */
+    String SERVLET_CONFIG_ATTRIBUTE = "javax.servlet.ServletConfig";
 
-    private Application application;
+    /**
+     * The key constant that may be used to look up the
+     * {@link javax.servlet.ServletContext} instance from the child context
+     */
+    String SERVLET_CONTEXT_ATTRIBUTE = "org.restlet.ext.servlet.ServletContext";
 
-    private IRouterProvider routerProvider;
+    /**
+     * @return the application to be register at the specified alias.
+     */
+    Application createApplication(Context context);
 
-    protected void activate(ComponentContext context) {
-        @SuppressWarnings("unchecked")
-        Dictionary<String, Object> properties = context.getProperties();
-        alias = (String) properties.get("alias");
-    }
+    /**
+     * The alias is passed to
+     * {@link org.osgi.service.http.HttpService#registerServlet(String alias, Servlet servlet, Dictionary initparams, HttpContext context)}
+     * when the servlet is registered.
+     * 
+     * @return the alias used to register with the server servlet.
+     */
+    String getAlias();
 
-    public void bindRouterProvider(IRouterProvider routerProvider) {
-        this.routerProvider = routerProvider;
+    /**
+     * The context is passed to
+     * {@link org.osgi.service.http.HttpService#registerServlet(String alias, Servlet servlet, Dictionary initparams, HttpContext context)}
+     * when the servlet is registered.
+     * 
+     * @return the context to use with the server servlet.
+     */
+    HttpContext getContext();
 
-        if (application != null)
-            application.setInboundRoot(routerProvider
-                    .getInboundRoot(application.getContext()));
-    }
-
-    @Override
-    public Application createApplication(Context context) {
-        application = doCreateApplication(context);
-
-        if (routerProvider != null)
-            application.setInboundRoot(routerProvider.getInboundRoot(context));
-
-        return application;
-    }
-
-    protected Application doCreateApplication(Context context) {
-        // FIXME Workaround for a bug in Restlet 2.1M7 - the context should be
-        // passed to the Application
-        // constructor.
-
-        Application app = new Application();
-        app.setContext(context);
-        return app;
-    }
-
-    @Override
-    public String getAlias() {
-        return alias;
-    }
-
-    public Application getApplication() {
-        return application;
-    }
-
-    @Override
-    public HttpContext getContext() {
-        return null;
-    }
-
-    @Override
-    public Dictionary<String, Object> getInitParms() {
-        return null;
-    }
-
-    public void unbindRouterProvider(IRouterProvider routerProvider) {
-        if (this.routerProvider == routerProvider)
-            this.routerProvider = null;
-    }
+    /**
+     * The parameters are passed to
+     * {@link org.osgi.service.http.HttpService#registerServlet(String alias, Servlet servlet, Dictionary initparams, HttpContext context)}
+     * when the servlet is registered.
+     * 
+     * @return the initialization parameters to use with the server servlet.
+     */
+    Dictionary<String, Object> getInitParms();
 }

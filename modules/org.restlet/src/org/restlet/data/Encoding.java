@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -50,6 +50,11 @@ public final class Encoding extends Metadata {
     /** The zlib format defined by RFC 1950 and 1951. */
     public static final Encoding DEFLATE = new Encoding("deflate",
             "Deflate compression using the zlib format");
+
+    /** The zlib format defined by RFC 1950 and 1951, without wrapping. */
+    public static final Encoding DEFLATE_NOWRAP = new Encoding(
+            "deflate-no-wrap",
+            "Deflate compression using the zlib format (without wrapping)");
 
     /** The FreeMarker encoding. */
     public static final Encoding FREEMARKER = new Encoding("freemarker",
@@ -91,6 +96,8 @@ public final class Encoding extends Metadata {
                 result = COMPRESS;
             } else if (name.equalsIgnoreCase(DEFLATE.getName())) {
                 result = DEFLATE;
+            } else if (name.equalsIgnoreCase(DEFLATE_NOWRAP.getName())) {
+                result = DEFLATE_NOWRAP;
             } else if (name.equalsIgnoreCase(IDENTITY.getName())) {
                 result = IDENTITY;
             } else if (name.equalsIgnoreCase(FREEMARKER.getName())) {

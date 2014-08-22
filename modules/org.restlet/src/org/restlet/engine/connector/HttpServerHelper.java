@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,19 +34,23 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.net.InetSocketAddress;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * Internal HTTP server connector.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends ServerConnectionHelper {
+public class HttpServerHelper extends NetServerHelper {
+    /** The underlying HTTP server. */
+    private volatile HttpServer server;
 
     /**
      * Constructor.
@@ -55,75 +59,32 @@ public class HttpServerHelper extends ServerConnectionHelper {
      *            The server to help.
      */
     public HttpServerHelper(Server server) {
-        this(server, Protocol.HTTP);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     * @param protocol
-     *            The protocol supported.
-     */
-    public HttpServerHelper(Server server, Protocol protocol) {
         super(server);
-        getProtocols().add(protocol);
+        getProtocols().add(Protocol.HTTP);
     }
 
     @Override
-    protected boolean canHandle(Connection<Server> connection, Response response)
-            throws IOException {
-        boolean result = false;
-
-        // Check if the response is indeed the next one to be written
-        // for this connection
-        HttpServerInboundWay inboundWay = (HttpServerInboundWay) connection
-                .getInboundWay();
-        Response nextResponse = inboundWay.getMessages().peek();
-
-        if (nextResponse != null) {
-            if (nextResponse.getRequest() == response.getRequest()) {
-                result = true;
-            } else {
-                boolean found = false;
-
-                for (Iterator<Response> iterator = inboundWay.getMessages()
-                        .iterator(); iterator.hasNext() && !found;) {
-                    Response next = iterator.next();
-                    found = next.getRequest() == response.getRequest();
-                }
-
-                if (!found) {
-                    throw new IOException(
-                            "Can't find the parent request in the list of inbound messages.");
-                }
+    public void start() throws Exception {
+        this.server = HttpServer.create(new InetSocketAddress(getHelped()
+                .getPort()), 0);
+        server.createContext("/", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange httpExchange) throws IOException {
+                HttpServerHelper.this.handle(new HttpExchangeCall(getHelped(),
+                        httpExchange));
             }
-        } else {
-            throw new IOException(
-                    "Can't find the parent request in the empty list of inbound messages.");
-        }
+        });
+        server.setExecutor(null); // creates a default executor
+        server.start();
 
-        return result;
+        setConfidential(false);
+        setEphemeralPort(server.getAddress().getPort());
+        super.start();
     }
 
     @Override
-    public InboundWay createInboundWay(Connection<Server> connection,
-            int bufferSize) {
-        return new HttpServerInboundWay(connection, bufferSize);
+    public synchronized void stop() throws Exception {
+        super.stop();
+        this.server.stop(0);
     }
-
-    @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection,
-            int bufferSize) {
-        return new HttpServerOutboundWay(connection, bufferSize);
-    }
-
-    @Override
-    protected Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String protocol) {
-        return new HttpInboundRequest(getContext(), connection, methodName,
-                resourceUri, protocol);
-    }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,13 +26,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.test.security;
 
+import org.restlet.Application;
 import org.restlet.security.Role;
 import org.restlet.test.RestletTestCase;
 
@@ -40,28 +41,39 @@ import org.restlet.test.RestletTestCase;
  * Suite of unit tests for the {@link Role} class.
  * 
  * @author Thierry Boileau
+ * @author Jerome Louvel
  */
 public class RoleTestCase extends RestletTestCase {
 
     public void testRoleEquality() {
-        Role role1 = new Role("role", "");
-        Role role2 = new Role("role", "");
-        assertNotSame(role1, role2);
+        Application app1 = new Application();
+        Application app2 = new Application();
 
-        Role role3 = new Role("role3", "");
-        Role role4 = new Role("role4", "");
+        Role role1 = new Role(app1, "role", "one description");
+        Role role2 = new Role(app1, "role", "another description");
+        Role role3 = new Role(app1, "role", null);
 
-        role1.getChildRoles().add(role3);
-        role1.getChildRoles().add(role4);
-        assertNotSame(role1, role2);
+        assertEquals(role1, role2);
+        assertEquals(role1, role3);
+        assertEquals(role2, role3);
 
-        role2.getChildRoles().add(role4);
-        role2.getChildRoles().add(role3);
-        assertNotSame(role1, role2);
+        Role role4 = new Role(app2, "role", "one description");
+        assertFalse(role1.equals(role4));
+
+        Role role10 = new Role(app1, "role10", "");
+        Role role11 = new Role(app1, "role11", "");
+
+        role1.getChildRoles().add(role10);
+        role1.getChildRoles().add(role11);
+        assertFalse(role1.equals(role2));
+
+        role2.getChildRoles().add(role11);
+        role2.getChildRoles().add(role10);
+        assertFalse(role1.equals(role2));
 
         role2.getChildRoles().clear();
-        role2.getChildRoles().add(role3);
-        role2.getChildRoles().add(role4);
-        assertNotSame(role1, role2);
+        role2.getChildRoles().add(role10);
+        role2.getChildRoles().add(role11);
+        assertEquals(role1, role2);
     }
 }

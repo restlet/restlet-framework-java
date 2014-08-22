@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,6 +39,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.engine.security.RoleMapping;
 
@@ -86,7 +89,8 @@ public class MemoryRealm extends Realm {
     private class DefaultVerifier extends SecretVerifier {
 
         @Override
-        protected User createUser(String identifier) {
+        protected User createUser(String identifier, Request request,
+                Response response) {
             User result = new User(identifier);
 
             // Find the reference user
@@ -213,6 +217,105 @@ public class MemoryRealm extends Realm {
     }
 
     /**
+     * Finds the roles mapped to a given user group.
+     * 
+     * @param application
+     *            The parent application. Can't be null.
+     * @param userGroup
+     *            The user group.
+     * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public Set<Role> findRoles(Application application, Group userGroup) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((userGroup != null) && userGroup.equals(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to given user groups.
+     * 
+     * @param application
+     *            The parent application. Can't be null.
+     * @param userGroups
+     *            The user groups.
+     * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public Set<Role> findRoles(Application application, Set<Group> userGroups) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((userGroups != null) && userGroups.contains(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to a given user, for a specific application.
+     * 
+     * @param application
+     *            The parent application. Can't be null.
+     * @param user
+     *            The user.
+     * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public Set<Role> findRoles(Application application, User user) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((user != null) && user.equals(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Finds the roles mapped to given user group.
      * 
      * @param userGroup
@@ -221,8 +324,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(Group userGroup) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -243,8 +346,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(Set<Group> userGroups) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -265,8 +368,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(User user) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -344,6 +447,22 @@ public class MemoryRealm extends Realm {
      * 
      * @param user
      *            The source user.
+     * @param application
+     *            The parent application. Can't be null.
+     * @param roleName
+     *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public void map(User user, Application application, String roleName) {
+        map(user, Role.get(application, roleName, null));
+    }
+
+    /**
+     * Maps a user defined in a component to a role defined in the application.
+     * 
+     * @param user
+     *            The source user.
      * @param role
      *            The target role.
      */
@@ -395,6 +514,23 @@ public class MemoryRealm extends Realm {
      * 
      * @param group
      *            The source group.
+     * @param application
+     *            The parent application. Can't be null.
+     * @param roleName
+     *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public void unmap(Group group, Application application, String roleName) {
+        unmap(group, Role.get(application, roleName, null));
+    }
+
+    /**
+     * Unmaps a group defined in a component from a role defined in the
+     * application.
+     * 
+     * @param group
+     *            The source group.
      * @param role
      *            The target role.
      */
@@ -413,6 +549,7 @@ public class MemoryRealm extends Realm {
      */
     private void unmap(Object source, Role role) {
         RoleMapping mapping;
+
         for (int i = getRoleMappings().size(); i >= 0; i--) {
             mapping = getRoleMappings().get(i);
 
@@ -421,6 +558,23 @@ public class MemoryRealm extends Realm {
                 getRoleMappings().remove(i);
             }
         }
+    }
+
+    /**
+     * Unmaps a user defined in a component from a role defined in the
+     * application.
+     * 
+     * @param user
+     *            The source user.
+     * @param application
+     *            The parent application. Can't be null.
+     * @param roleName
+     *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
+     */
+    public void unmap(User user, Application application, String roleName) {
+        unmap(user, Role.get(application, roleName, null));
     }
 
     /**

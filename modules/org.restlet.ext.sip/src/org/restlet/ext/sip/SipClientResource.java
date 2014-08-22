@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -52,13 +52,13 @@ import org.restlet.resource.Resource;
  * Client-side resource for the sip protocol. Acts like a proxy of a target
  * resource.<br>
  * <br>
- * This class changes the semantics of the {@link Resource#getRequest()}
- * and {@link Resource#getResponse()} methods. Since a clientResource may
- * receive severals responses for a single request (in case of interim
- * response), the {@link #getResponse()} method returns the last received
- * response object. The Request object returned by the {@link #getRequest()} is
- * actually a prototype which is cloned (except the representation) just before
- * the {@link #handle()} method is called.<br>
+ * This class changes the semantics of the {@link Resource#getRequest()} and
+ * {@link Resource#getResponse()} methods. Since a clientResource may receive
+ * severals responses for a single request (in case of interim response), the
+ * {@link #getResponse()} method returns the last received response object. The
+ * Request object returned by the {@link #getRequest()} is actually a prototype
+ * which is cloned (except the representation) just before the {@link #handle()}
+ * method is called.<br>
  * <br>
  * Users must be aware that by most representations can only be read or written
  * once. Some others, such as {@link StringRepresentation} stored the entity in
@@ -360,8 +360,8 @@ public class SipClientResource extends ClientResource {
     }
 
     @Override
-    public Request createRequest(Request prototype) {
-        return new SipRequest((SipRequest) prototype);
+    public Request createRequest() {
+        return new SipRequest(getRequest());
     }
 
     @Override

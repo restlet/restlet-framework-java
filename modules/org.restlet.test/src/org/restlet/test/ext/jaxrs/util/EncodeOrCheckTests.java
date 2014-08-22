@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -228,17 +228,17 @@ public class EncodeOrCheckTests extends RestletTestCase {
     public void testNameOrValue() {
         checkNoEncode(NAME_OR_VALUE, "");
         checkNoEncode(NAME_OR_VALUE, "sdf");
-        assertEquals("sdf%20hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
-                false, "guj"));
-        assertEquals("sdf%2520hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
-                true, "guj"));
+        assertEquals("sdf%20hfdf",
+                EncodeOrCheck.nameOrValue("sdf%20hfdf", false, "guj"));
+        assertEquals("sdf%2520hfdf",
+                EncodeOrCheck.nameOrValue("sdf%20hfdf", true, "guj"));
         checkEncoding(NAME_OR_VALUE, "abc def", "abc%20def");
         final StringBuilder reservedEnc = new StringBuilder();
         for (int i = 0; i < EncodeOrCheck.RESERVED.length(); i++) {
             EncodeOrCheck.toHex(EncodeOrCheck.RESERVED.charAt(i), reservedEnc);
         }
-        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED, reservedEnc
-                .toString());
+        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED,
+                reservedEnc.toString());
     }
 
     public void testPathSegmentWithMatrix() {

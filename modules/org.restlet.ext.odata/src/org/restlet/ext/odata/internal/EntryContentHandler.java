@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -77,17 +77,8 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The currently parsed association. */
     private AssociationEnd association;
 
-    /** The currently parsed inline entry. */
-    private Entry inlineEntry;
-
-    /** The currently parsed inline feed. */
-    private Feed inlineFeed;
-
-    /** The currently parsed inline link. */
-    private Link inlineLink;
-
     /** The path of the current XML element relatively to the Entry. */
-    List<String> eltPath;
+    private List<String> eltPath;
 
     /** The entity targeted by this entry. */
     private T entity;
@@ -98,11 +89,23 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The OData type of the parsed entity. */
     private EntityType entityType;
 
+    /** The currently parsed inline content. */
+    private Content inlineContent;
+
+    /** The currently parsed inline entry. */
+    private Entry inlineEntry;
+
     /** Used to parsed Atom link elements that contains entries. */
-    EntryContentHandler<T> inlineEntryHandler;
+    private EntryContentHandler<T> inlineEntryHandler;
+
+    /** The currently parsed inline feed. */
+    private Feed inlineFeed;
 
     /** Used to parsed Atom link elements that contains feeds. */
-    FeedContentHandler<T> inlineFeedHandler;
+    private FeedContentHandler<T> inlineFeedHandler;
+
+    /** The currently parsed inline link. */
+    private Link inlineLink;
 
     /** Internal logger. */
     private Logger logger;
@@ -120,10 +123,10 @@ public class EntryContentHandler<T> extends EntryReader {
     private List<String> propertyPath;
 
     /** Gleans text content. */
-    StringBuilder sb = null;
+    private StringBuilder sb = null;
 
     /** Heap of states. */
-    List<State> states;
+    private List<State> states;
 
     /**
      * Constructor.
@@ -179,6 +182,109 @@ public class EntryContentHandler<T> extends EntryReader {
         }
     }
 
+    /**
+     * Close the given entry, in case we really handle an entry (@see current
+     * {@link State}). Multiple levels expand fix start.
+     * 
+     * @param entry
+     *            The entry to close.
+     * @return True if the entry has been closed.
+     * @author Emmanuel Liossis
+     */
+    public boolean closeEntry(Entry entry) {
+        boolean result = false;
+        if (getState() == State.ENTRY) {
+            endEntry(entry);
+            result = true;
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles the end of a "link" element. Doesn't pop state if the link
+     * belongs to inner expanded associations!
+     * 
+     * @return True if the caller should not pop state.
+     * @author Emmanuel Liossis
+     */
+    public boolean closeLink() {
+        if (State.ASSOCIATION == getState() && inlineLink != null) {
+            String propertyName = ReflectUtils.normalize(inlineLink.getTitle());
+
+            if (association.isToMany()) {
+                if (inlineFeedHandler.closeLink()) {
+                    return true;
+                }
+
+                try {
+                    ReflectUtils.setProperty(entity, propertyName, association
+                            .isToMany(), inlineFeedHandler.getEntities()
+                            .iterator(), ReflectUtils.getSimpleClass(entity,
+                            propertyName));
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + propertyName + " property on "
+                                    + entity + " from link");
+                }
+                inlineFeedHandler = null;
+            } else {
+                if (inlineEntryHandler.closeLink()) {
+                    return true;
+                }
+
+                try {
+                    ReflectUtils.invokeSetter(entity, propertyName,
+                            inlineEntryHandler.getEntity());
+                } catch (Exception e) {
+                    getLogger().warning(
+                            "Cannot set " + propertyName + " property on "
+                                    + entity + " from link");
+                }
+                inlineEntryHandler = null;
+            }
+
+            popState();
+            association = null;
+
+            return true;
+        }
+
+        // Emmanuel Liossis: So, here we are not in ASSOCIATION state. Should
+        // we signal our callers to pop state? There are three cases. First,
+        // this can be the end of an inner reference link which doesn't open an
+        // association. The state in this case is typically ENTRY. In this case
+        // we should return true to inhibit our caller to pop state, because
+        // this isn't the association's end. Second, this might be a content of
+        // a non-expanded association. In this case the state is null because it
+        // hasn't found any 'entry' tag. The association state of the caller
+        // must be closed, so we return false. Third, this can be the end of an
+        // expanded, in-lined association. In this case the state is again null
+        // because because of previously handling the end of the 'entry' tag.
+        // So, all the above boils down to this simple rule:
+        return getState() != null;
+    }
+
+    @Override
+    public void endContent(Content content) {
+        if (State.ASSOCIATION == getState()) {
+            // Delegates to the inline content handler
+            if (association.isToMany()) {
+                inlineFeedHandler.endContent(content);
+            } else {
+                inlineEntryHandler.endContent(content);
+            }
+        } else {
+            // Emmanuel Liossis: Multiple levels expand: Design flaw makes
+            // O(d^2) calls to inner expansions, where d is expansion depth .
+            // Don't pop many times for a single content close.
+            if (State.CONTENT == getState()) {
+                popState();
+            }
+        }
+    }
+
+    // Emmanuel Liossis: Multiple levels expand fix.
     @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
@@ -186,24 +292,30 @@ public class EntryContentHandler<T> extends EntryReader {
             // Delegates to the inline content handler
             if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
                 if (localName.equals("feed")) {
-                    if (association.isToMany())
+                    if (association.isToMany()) {
                         inlineFeedHandler.endFeed(inlineFeed);
+                    }
                 } else if (localName.equals("link")) {
                     if (association.isToMany()) {
                         inlineFeedHandler.closeLink();
                     } else {
                         inlineEntryHandler.closeLink();
                     }
-                    /*
-                     * Don't propagate the endElement call, because it
-                     * would re-invoke closeLink if the expansion level is deep.
-                     */
+                    // Emmanuel Liossis: Don't propagate the endElement call,
+                    // because it would re-invoke closeLink if the expansion
+                    // level is deep.
                     return;
                 } else if (localName.equalsIgnoreCase("entry")) {
                     if (association.isToMany()) {
                         inlineFeedHandler.endEntry(inlineEntry);
                     } else {
                         inlineEntryHandler.closeEntry(inlineEntry);
+                    }
+                } else if (localName.equalsIgnoreCase("content")) {
+                    if (association.isToMany()) {
+                        inlineFeedHandler.endContent(inlineContent);
+                    } else {
+                        inlineEntryHandler.endContent(inlineContent);
                     }
                 }
             }
@@ -289,21 +401,9 @@ public class EntryContentHandler<T> extends EntryReader {
         }
     }
 
-    /**
-     * Close the 'entry' tag if this is the handler for
-     * the element which owns the 'entry' tag and return true, else return false.
-     */
-    public boolean closeEntry(Entry entry) {
-        if (getState() != State.ENTRY)
-            return false;
-
-        endEntry(entry);
-
-        return true;
-    }
-
     @Override
     public void endEntry(Entry entry) {
+
         this.states = new ArrayList<State>();
 
         // Handle Atom mapped values.
@@ -380,85 +480,8 @@ public class EntryContentHandler<T> extends EntryReader {
         }
     }
 
-    /**
-     * Handle the end of a "link" element. Doesn't pop state if the link belongs
-     * to inner expanded associations! Replaces endLink method.
-     * 
-     * @return Returns true if the caller should not pop state.
-     */
-    public boolean closeLink() {
-        if (State.ASSOCIATION == getState() && inlineLink != null) {
-            String propertyName = ReflectUtils.normalize(inlineLink.getTitle());
-
-            if (association.isToMany()) {
-                if (inlineFeedHandler.closeLink())
-                    return true;
-
-                try {
-                    ReflectUtils.setProperty(entity, propertyName, association
-                            .isToMany(), inlineFeedHandler.getEntities()
-                            .iterator(), ReflectUtils.getSimpleClass(entity,
-                            propertyName));
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot set " + propertyName + " property on "
-                                    + entity + " from link");
-                }
-                inlineFeedHandler = null;
-            } else {
-                if (inlineEntryHandler.closeLink())
-                    return true;
-
-                try {
-                    ReflectUtils.invokeSetter(entity, propertyName,
-                            inlineEntryHandler.getEntity());
-                } catch (Exception e) {
-                    getLogger().warning(
-                            "Cannot set " + propertyName + " property on "
-                                    + entity + " from link");
-                }
-                inlineEntryHandler = null;
-            }
-
-            popState();
-            association = null;
-
-            return true;
-        }
-        
-        /* 
-         * Pop the path leaf since now our caller will not propagate
-         * a call to the endElement which would normally pop the leaf.
-         * Propagation is inhibited because it would result into 
-         * multiple invocations of closeLink method disrupting the
-         * balance of the opening and closing of links.
-         */
-        if (eltPath != null) {
-            if (!eltPath.isEmpty()) eltPath.remove(eltPath.size() - 1);
-        }
-
-        /*
-         * So, here we are not in ASSOCIATION state. Should we signal our
-         * callers to pop state? There are three cases. First, this can be the
-         * end of an inner reference link which doesn't open an association. The
-         * state in this case is typically ENTRY. In this case we should return
-         * true to inhibit our caller from popping state, because this isn't the
-         * association's closing. Second, this might be a content of a non-expanded
-         * association. In this case the state is null because it hasn't found
-         * any 'entry' tag. The association state of the caller must be closed,
-         * so we return false. Third, this can be the end of an expanded,
-         * in-lined association. In this case the state is again null because
-         * because of previously handling the end of the 'entry' tag
-         * which pops all state and leaves null state. So, all
-         * the above boils down to this simple rule:
-         */
-        return getState() != null;
-    }
-
-    /*
-     * Fix for multiple level expansions: This method is replaced with the above
-     * one.
-     */
+    // Emmanuel Liossis: Fix for multiple level expansions: This method is
+    // replaced with the above one.
     @Override
     public void endLink(Link link) {
         if (State.ASSOCIATION == getState()) {
@@ -494,11 +517,9 @@ public class EntryContentHandler<T> extends EntryReader {
 
             // This works if the inline entries does not contain links as
             // well...
-            /*
-             * Indeed the above is true. It can sabotage expansions with depth
-             * more than 1. That's why this method is replaced by closeLink
-             * method.
-             */
+            // Emmanuel Liossis: Indeed the above is true. It can sabotage
+            // expansions with depth more than 1. That's why this method is
+            // replaced by closeLink method.
             popState();
             association = null;
         }
@@ -590,6 +611,7 @@ public class EntryContentHandler<T> extends EntryReader {
     public void startContent(Content content) {
         if (State.ENTRY == getState()) {
             pushState(State.CONTENT);
+            inlineContent = content;
             if (entityType != null && entityType.isBlob()
                     && entityType.getBlobValueRefProperty() != null) {
                 Reference ref = content.getExternalRef();
@@ -717,9 +739,12 @@ public class EntryContentHandler<T> extends EntryReader {
 
                 // Check if this path is mapped.
                 for (Mapping m : metadata.getMappings()) {
-                    if (entityType != null && entityType.equals(m.getType())
-                            && m.getNsUri() != null && m.getNsUri().equals(uri)
-                            && str.equals(m.getValueNodePath())) {
+                    if (entityType != null
+                            && entityType.equals(m.getType())
+                            && m.getNsUri() != null
+                            && m.getNsUri().equals(uri)
+                            && (str.equals(m.getValueNodePath()) || str
+                                    .equals("entry/" + m.getValueNodePath()))) {
                         if (m.isAttributeValue()) {
                             String value = attrs.getValue(m
                                     .getValueAttributeName());
@@ -742,10 +767,6 @@ public class EntryContentHandler<T> extends EntryReader {
                     }
                 }
             }
-        } else if (getState() == null && 
-                "entry".equals(localName) && 
-                "http://www.w3.org/2005/Atom".equals(uri)) {
-            pushState(State.ENTRY);
         }
     }
 
@@ -761,9 +782,20 @@ public class EntryContentHandler<T> extends EntryReader {
                 else
                     inlineEntryHandler.startEntry(entry);
                 break;
+            case CONTENT:
+                break;
+            case ENTRY:
+                break;
+            case PROPERTIES:
+                break;
+            case PROPERTY:
+                break;
+            default:
+                break;
             }
         } else {
             this.states = new ArrayList<State>();
+            pushState(State.ENTRY);
             eltPath = new ArrayList<String>();
             // Instantiate the entity
             try {
@@ -773,6 +805,15 @@ public class EntryContentHandler<T> extends EntryReader {
                         "Error when instantiating  class " + entityClass);
             }
 
+        }
+    }
+
+    public void startFeed(Feed feed) {
+        if (State.ASSOCIATION == getState()) {
+            if (association.isToMany())
+                inlineFeedHandler.startFeed(feed);
+            else
+                inlineEntryHandler.startFeed(feed);
         }
     }
 
@@ -803,19 +844,6 @@ public class EntryContentHandler<T> extends EntryReader {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Propagate the start of a "feed" element to the appropriate
-     * $expand level.
-     */
-    public void startFeed(Feed feed) {
-        if (State.ASSOCIATION == getState()) {
-            if (association.isToMany())
-                inlineFeedHandler.startFeed(feed);
-            else
-                inlineEntryHandler.startFeed(feed);
         }
     }
 }

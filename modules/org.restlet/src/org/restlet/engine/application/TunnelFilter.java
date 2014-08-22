@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -40,8 +40,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.restlet.Context;
 import org.restlet.Request;
@@ -50,6 +52,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -57,7 +60,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.io.IoUtils;
@@ -86,64 +88,100 @@ public class TunnelFilter extends Filter {
      * 
      * @author Thierry Boileau
      */
-    private static class AcceptReplacer {
+    private static class HeaderReplacer {
 
         static class Builder {
-            String acceptOld;
-
-            String acceptNew;
-
             Map<String, String> agentAttributes = new HashMap<String, String>();
 
-            void setAcceptOld(String acceptOld) {
-                this.acceptOld = acceptOld;
-            }
+            String newValue;
 
-            void setAcceptNew(String acceptNew) {
-                this.acceptNew = acceptNew;
+            String oldValue;
+
+            HeaderReplacer build() {
+                return new HeaderReplacer(oldValue, newValue, agentAttributes);
             }
 
             void putAgentAttribute(String key, String value) {
                 agentAttributes.put(key, value);
             }
 
-            AcceptReplacer build() {
-                return new AcceptReplacer(acceptOld, acceptNew, agentAttributes);
+            void setNewValue(String newValue) {
+                this.newValue = newValue;
+            }
+
+            void setOldValue(String oldValue) {
+                this.oldValue = oldValue;
             }
         }
-
-        AcceptReplacer(String acceptOld, String acceptNew,
-                Map<String, String> agentAttributes) {
-            this.acceptOld = acceptOld;
-            this.acceptNew = acceptNew;
-            this.agentAttributes = Collections.unmodifiableMap(agentAttributes);
-        }
-
-        /** New accept header value. */
-        private final String acceptNew;
-
-        /** Old accept header value. */
-        private final String acceptOld;
 
         /** Agent attributes that must be checked. */
         private final Map<String, String> agentAttributes;
 
-        public String getAcceptNew() {
-            return acceptNew;
-        }
+        /** New header value. */
+        private final String headerNew;
 
-        public String getAcceptOld() {
-            return acceptOld;
+        /** Old header value. */
+        private final String headerOld;
+
+        HeaderReplacer(String headerOld, String headerNew,
+                Map<String, String> agentAttributes) {
+            this.headerOld = headerOld;
+            this.headerNew = headerNew;
+            this.agentAttributes = Collections.unmodifiableMap(agentAttributes);
         }
 
         public Map<String, String> getAgentAttributes() {
             return agentAttributes;
         }
 
+        public String getHeaderNew() {
+            return headerNew;
+        }
+
+        public String getHeaderOld() {
+            return headerOld;
+        }
+
+        /**
+         * Indicates if the current header replacer matches the request
+         * attributes.
+         * 
+         * @param agentAttributes
+         *            The user agent attributes to match.
+         * @param headerOld
+         *            The facultative value of the current's request header to
+         *            match.
+         * @return true if the given request's attibutes match the current
+         *         header replacer.
+         */
+        public boolean matchesConditions(Map<String, String> agentAttributes,
+                String headerOld) {
+            // Check the conditions
+            boolean checked = true;
+            // Check that the agent properties match the properties
+            // set by the rule.
+            for (Iterator<Entry<String, String>> iterator = getAgentAttributes()
+                    .entrySet().iterator(); checked && iterator.hasNext();) {
+                Entry<String, String> entry = iterator.next();
+                String attribute = agentAttributes.get(entry.getKey());
+                checked = (attribute != null && attribute
+                        .equalsIgnoreCase(entry.getValue()));
+            }
+            if (checked && getHeaderOld() != null) {
+                // If the rule defines an old header value, check that it is the
+                // same than the user agent's header value.
+                checked = getHeaderOld().equals(headerOld);
+            }
+            return checked;
+        }
+
     }
 
+    /** Used to replace accept-encoding header values. */
+    private final List<HeaderReplacer> acceptEncodingReplacers = getAcceptEncodingReplacers();
+
     /** Used to replace accept header values. */
-    private final List<AcceptReplacer> acceptReplacers = getAcceptReplacers();
+    private final List<HeaderReplacer> acceptReplacers = getAcceptReplacers();
 
     /**
      * Constructor.
@@ -177,17 +215,54 @@ public class TunnelFilter extends Filter {
     }
 
     /**
+     * Returns the list of new accept-encoding header values. Each of them
+     * describe also a set of conditions required to set the new value. This
+     * method is used only to initialize the headerReplacers field.
+     * 
+     * @return The list of new accept-encoding header values.
+     */
+    private List<HeaderReplacer> getAcceptEncodingReplacers() {
+        // Load the accept.properties file.
+        return getheaderReplacers(
+                Engine.getResource("org/restlet/service/accept-encoding.properties"),
+                "acceptEncodingOld", "acceptEncodingNew");
+    }
+
+    /**
      * Returns the list of new accept header values. Each of them describe also
      * a set of conditions required to set the new value. This method is used
-     * only to initialize the acceptReplacers field.
+     * only to initialize the headerReplacers field.
      * 
      * @return The list of new accept header values.
      */
-    private List<AcceptReplacer> getAcceptReplacers() {
-        List<AcceptReplacer> acceptReplacers = new ArrayList<AcceptReplacer>();
+    private List<HeaderReplacer> getAcceptReplacers() {
         // Load the accept.properties file.
-        final URL userAgentPropertiesUrl = Engine
-                .getResource("org/restlet/service/accept.properties");
+        return getheaderReplacers(
+                Engine.getResource("org/restlet/service/accept.properties"),
+                "acceptOld", "acceptNew");
+    }
+
+    /**
+     * Returns the list of new header values. Each of them describe also a set
+     * of conditions required to set the new value. This method is used only to
+     * initialize the headerReplacers field.
+     * 
+     * @param userAgentPropertiesUrl
+     *            The URL of the properties file that describe replacement
+     *            values based on the user agent string.
+     * @param oldHeaderName
+     *            The name of the property that gives the value of the header to
+     *            be replaced (could be null - in that case, the new value is
+     *            unconditionnaly set.
+     * @param newHeaderName
+     *            The name of the property that gives the replacement value.
+     * @return
+     */
+    private List<HeaderReplacer> getheaderReplacers(
+            final URL userAgentPropertiesUrl, String oldHeaderName,
+            String newHeaderName) {
+        List<HeaderReplacer> headerReplacers = new ArrayList<HeaderReplacer>();
+
         if (userAgentPropertiesUrl != null) {
             BufferedReader reader;
             try {
@@ -195,7 +270,7 @@ public class TunnelFilter extends Filter {
                         userAgentPropertiesUrl.openStream(),
                         CharacterSet.UTF_8.getName()), IoUtils.BUFFER_SIZE);
 
-                AcceptReplacer.Builder acceptReplacerBuilder = new AcceptReplacer.Builder();
+                HeaderReplacer.Builder headerReplacerBuilder = new HeaderReplacer.Builder();
 
                 try {
                     // Read the entire file, excluding comment lines starting
@@ -207,17 +282,17 @@ public class TunnelFilter extends Filter {
                             if (keyValue.length == 2) {
                                 final String key = keyValue[0].trim();
                                 final String value = keyValue[1].trim();
-                                if ("acceptOld".equalsIgnoreCase(key)) {
-                                    acceptReplacerBuilder.setAcceptOld((""
+                                if (oldHeaderName.equalsIgnoreCase(key)) {
+                                    headerReplacerBuilder.setOldValue((""
                                             .equals(value)) ? null : value);
-                                } else if ("acceptNew".equalsIgnoreCase(key)) {
-                                    acceptReplacerBuilder.setAcceptNew(value);
-                                    acceptReplacers.add(acceptReplacerBuilder
+                                } else if (newHeaderName.equalsIgnoreCase(key)) {
+                                    headerReplacerBuilder.setNewValue(value);
+                                    headerReplacers.add(headerReplacerBuilder
                                             .build());
 
-                                    acceptReplacerBuilder = new AcceptReplacer.Builder();
+                                    headerReplacerBuilder = new HeaderReplacer.Builder();
                                 } else {
-                                    acceptReplacerBuilder.putAgentAttribute(
+                                    headerReplacerBuilder.putAgentAttribute(
                                             key, value);
                                 }
                             }
@@ -233,8 +308,7 @@ public class TunnelFilter extends Filter {
             }
         }
 
-        return acceptReplacers;
-
+        return headerReplacers;
     }
 
     /**
@@ -521,45 +595,40 @@ public class TunnelFilter extends Filter {
         final Map<String, String> agentAttributes = request.getClientInfo()
                 .getAgentAttributes();
         if (agentAttributes != null) {
-            if (!this.acceptReplacers.isEmpty()) {
+            if (!this.acceptReplacers.isEmpty()
+                    || !this.acceptEncodingReplacers.isEmpty()) {
                 // Get the old Accept header value
                 @SuppressWarnings("unchecked")
                 Series<Header> headers = (Series<Header>) request
                         .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+
                 String acceptOld = (headers != null) ? headers.getFirstValue(
                         HeaderConstants.HEADER_ACCEPT, true) : null;
-
                 // Check each replacer
-                for (AcceptReplacer acceptReplacer : this.acceptReplacers) {
-                    // Check the conditions
-                    boolean checked = true;
-
-                    for (String key : acceptReplacer.getAgentAttributes()
-                            .keySet()) {
-                        String attribute = agentAttributes.get(key);
-                        // Check that the agent properties match the properties
-                        // set by the rule.
-                        checked = checked
-                                && (attribute != null && attribute
-                                        .equalsIgnoreCase(acceptReplacer
-                                                .getAgentAttributes().get(key)));
+                for (HeaderReplacer headerReplacer : this.acceptReplacers) {
+                    if (headerReplacer.matchesConditions(agentAttributes,
+                            acceptOld)) {
+                        ClientInfo clientInfo = new ClientInfo();
+                        PreferenceReader.addMediaTypes(
+                                headerReplacer.getHeaderNew(), clientInfo);
+                        request.getClientInfo().setAcceptedMediaTypes(
+                                clientInfo.getAcceptedMediaTypes());
+                        break;
                     }
-                    if (checked) {
-                        // If the rule defines an acceptOld value, check that it
-                        // is the same than the user agent's "accept" header
-                        // value.
-                        if (acceptReplacer.getAcceptOld() != null) {
-                            checked = acceptReplacer.getAcceptOld().equals(
-                                    acceptOld);
-                        }
-                        if (checked) {
-                            ClientInfo clientInfo = new ClientInfo();
-                            PreferenceReader.addMediaTypes(
-                                    acceptReplacer.getAcceptNew(), clientInfo);
-                            request.getClientInfo().setAcceptedMediaTypes(
-                                    clientInfo.getAcceptedMediaTypes());
-                            break;
-                        }
+                }
+                String acceptEncodingOld = (headers != null) ? headers
+                        .getFirstValue(HeaderConstants.HEADER_ACCEPT_ENCODING,
+                                true) : null;
+                // Check each replacer
+                for (HeaderReplacer headerReplacer : this.acceptEncodingReplacers) {
+                    if (headerReplacer.matchesConditions(agentAttributes,
+                            acceptEncodingOld)) {
+                        ClientInfo clientInfo = new ClientInfo();
+                        PreferenceReader.addEncodings(
+                                headerReplacer.getHeaderNew(), clientInfo);
+                        request.getClientInfo().setAcceptedEncodings(
+                                clientInfo.getAcceptedEncodings());
+                        break;
                     }
                 }
             }

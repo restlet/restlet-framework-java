@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -50,8 +51,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperList;
 import org.restlet.util.WrapperRepresentation;
@@ -70,7 +70,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      */
     public static List<Encoding> getSupportedEncodings() {
         return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.ZIP, Encoding.IDENTITY);
+                Encoding.DEFLATE_NOWRAP, Encoding.ZIP, Encoding.IDENTITY);
     }
 
     /** Indicates if the encoding can happen. */
@@ -138,7 +138,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            return NioUtils.getChannel(this);
+            return IoUtils.getChannel(this);
         } else {
             return getWrappedRepresentation().getChannel();
         }
@@ -220,7 +220,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public Reader getReader() throws IOException {
         if (canEncode()) {
-            return BioUtils.getReader(getStream(), getCharacterSet());
+            return IoUtils.getReader(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getReader();
         }
@@ -250,7 +250,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
-            return BioUtils.getInputStream(this);
+            return IoUtils.getStream(this);
         } else {
             return getWrappedRepresentation().getStream();
         }
@@ -259,7 +259,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public String getText() throws IOException {
         if (canEncode()) {
-            return BioUtils.toString(getStream(), getCharacterSet());
+            return IoUtils.toString(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getText();
         }
@@ -274,11 +274,14 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 encoderOutputStream = new GZIPOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
+            } else if (this.encoding.equals(Encoding.DEFLATE_NOWRAP)) {
+                encoderOutputStream = new DeflaterOutputStream(outputStream,
+                        new Deflater(Deflater.DEFAULT_COMPRESSION, true));
             } else if (this.encoding.equals(Encoding.ZIP)) {
                 @SuppressWarnings("resource")
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
-                
+
                 if (getWrappedRepresentation().getDisposition() != null) {
                     name = getWrappedRepresentation()
                             .getDisposition()
@@ -286,7 +289,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                             .getFirstValue(Disposition.NAME_FILENAME, true,
                                     name);
                 }
-                
+
                 stream.putNextEntry(new ZipEntry(name));
                 encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {
@@ -308,7 +311,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            OutputStream os = NioUtils.getStream(writableChannel);
+            OutputStream os = IoUtils.getStream(writableChannel);
             write(os);
             os.flush();
         } else {
@@ -319,8 +322,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(java.io.Writer writer) throws IOException {
         if (canEncode()) {
-            OutputStream os = BioUtils.getOutputStream(writer,
-                    getCharacterSet());
+            OutputStream os = IoUtils.getStream(writer, getCharacterSet());
             write(os);
             os.flush();
         } else {

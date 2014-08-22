@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -42,30 +42,33 @@ import org.restlet.routing.Router;
  */
 public class MailServerApplication extends WadlApplication {
 
-	/**
-	 * Constructor.
-	 */
-	public MailServerApplication() {
-		setName("RESTful Mail API application");
-		setDescription("Example API for 'Restlet in Action' book");
-		setOwner("Restlet S.A.S.");
-		setAuthor("The Restlet Team");
-	}
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail API application");
+        setDescription("Example API for 'Restlet in Action' book");
+        setOwner("Restlet S.A.S.");
+        setAuthor("The Restlet Team");
+    }
 
-	/**
-	 * Creates a root Router to dispatch call to server resources.
-	 */
-	@Override
-	public Restlet createInboundRoot() {
-		Router router = new Router(getContext());
-		router.attach("/", RootServerResource.class);
-		router.attach("/accounts/", AccountsServerResource.class);
-		router.attach("/accounts/{accountId}", AccountServerResource.class);
-		router.attach("/accounts/{accountId}/mails/", MailsServerResource.class);
-		router.attach("/accounts/{accountId}/mails/{mailId}", MailServerResource.class);
-		router.attach("/accounts/{accountId}/contacts/", ContactsServerResource.class);
-		router.attach("/accounts/{accountId}/contacts/{contactId}", ContactServerResource.class);
-		return router;
-	}
+    /**
+     * Creates a root Router to dispatch call to server resources.
+     */
+    @Override
+    public Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
+        router.attach("/accounts/{accountId}/mails/", MailsServerResource.class);
+        router.attach("/accounts/{accountId}/mails/{mailId}",
+                MailServerResource.class);
+        router.attach("/accounts/{accountId}/contacts/",
+                ContactsServerResource.class);
+        router.attach("/accounts/{accountId}/contacts/{contactId}",
+                ContactServerResource.class);
+        return router;
+    }
 
 }

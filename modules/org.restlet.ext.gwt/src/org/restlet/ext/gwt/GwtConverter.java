@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -134,23 +134,23 @@ public class GwtConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        T result = null;
+        ObjectRepresentation<?> gwtSource = null;
+        if (source instanceof ObjectRepresentation<?>) {
+            gwtSource = (ObjectRepresentation<?>) source;
+        } else {
+            gwtSource = new ObjectRepresentation<T>(source.getText(), target);
+        }
 
-        if (target != null) {
-            if (ObjectRepresentation.class.isAssignableFrom(target)) {
-                if (source instanceof ObjectRepresentation<?>) {
-                    result = (T) source;
-                } else {
-                    result = (T) new ObjectRepresentation<T>(source.getText(),
-                            target);
-                }
+        T result = null;
+        if (gwtSource != null) {
+            if (target == null) {
+                result = (T) gwtSource.getObject();
+            } else if (ObjectRepresentation.class.isAssignableFrom(target)) {
+                result = (T) gwtSource;
             } else if (Serializable.class.isAssignableFrom(target)
                     || IsSerializable.class.isAssignableFrom(target)) {
-                result = new ObjectRepresentation<T>(source.getText(), target)
-                        .getObject();
+                result = (T) gwtSource.getObject();
             }
-        } else if (source instanceof ObjectRepresentation<?>) {
-            result = ((ObjectRepresentation<T>) source).getObject();
         }
 
         return result;

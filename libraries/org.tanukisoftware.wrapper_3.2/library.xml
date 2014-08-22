@@ -10,5 +10,6 @@
 	<package name="org.tanukisoftware.wrapper" />
 	<distributions>
 		<distribution id="classic" />
+		<distribution id="maven" />
 	</distributions>
 </library>

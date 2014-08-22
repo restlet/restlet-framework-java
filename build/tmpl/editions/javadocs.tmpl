@@ -20,8 +20,11 @@ JAVADOC target -->
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.restlet.com">Restlet S.A.S.</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 
 			<group title="Restlet API">
 				<package name="</#noparse>${edition.packageCore}*<#noparse>" />
@@ -47,8 +50,11 @@ JAVADOC target -->
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.restlet.com">Restlet S.A.S.</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 
 			<group title="Restlet Engine">
 				<package name="</#noparse>${edition.packageEngine}*<#noparse>" />
@@ -58,7 +64,7 @@ JAVADOC target -->
 			${link}
 </#list>
 <#noparse>
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
 		</javadoc>
 </#noparse>
 
@@ -84,8 +90,11 @@ JAVADOC target -->
                  stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                  verbose="${verbose}">
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.restlet.com">Restlet S.A.S.</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 </#noparse>
 			<group title="Standards support" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "standard")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
 			<group title="Pluggable connectors" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "connector")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
@@ -101,8 +110,8 @@ JAVADOC target -->
    </#list>
 </#list>
 <#noparse>
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+		    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 		</javadoc>
 </#noparse>
 </#if>

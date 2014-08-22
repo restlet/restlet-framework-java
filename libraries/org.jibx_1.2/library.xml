@@ -2,7 +2,7 @@
 	<name>JiBX: Binding XML to Java Code</name>
 	<description>JiBX: Binding XML to Java Code</description>
 	<version>1.2</version>
-	<release>2</release>
+	<release>5</release>
 	<homeUri>http://jibx.sourceforge.net/</homeUri>
 	<downloadUri>http://sourceforge.net/project/showfiles.php?group_id=69358</downloadUri>
 	<provider>Dennis M. Sosnoski</provider>

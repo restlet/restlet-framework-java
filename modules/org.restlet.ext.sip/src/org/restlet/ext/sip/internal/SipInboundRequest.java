@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -48,6 +48,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -55,12 +56,9 @@ import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.InboundRequest;
 import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.PreferenceReader;
@@ -69,6 +67,8 @@ import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.request.InboundRequest;
 import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.ContactInfo;
 import org.restlet.ext.sip.Event;
@@ -383,6 +383,8 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                         HeaderConstants.HEADER_ACCEPT_ENCODING);
                 String acceptLanguage = getHeaders().getValues(
                         HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+                String acceptPatch = getHeaders().getValues(
+                        HeaderConstants.HEADER_ACCEPT_PATCH);
                 String expect = getHeaders().getValues(
                         HeaderConstants.HEADER_EXPECT);
 
@@ -418,6 +420,12 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 }
 
                 try {
+                    PreferenceReader.addPatches(acceptPatch, result);
+                } catch (Exception e) {
+                    this.context.getLogger().log(Level.INFO, e.getMessage());
+                }
+
+                try {
                     ExpectationReader.addValues(expect, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
@@ -427,7 +435,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 result.setAgent(getHeaders().getValues(
                         HeaderConstants.HEADER_USER_AGENT));
                 result.setFrom(getHeaders().getFirstValue(
-                        HeaderConstants.HEADER_FROM));
+                        HeaderConstants.HEADER_FROM, true));
                 result.setAddress(getConnection().getAddress());
                 result.setPort(getConnection().getPort());
 
@@ -484,7 +492,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 Date ifModifiedSince = null;
                 Date ifUnmodifiedSince = null;
                 String ifRangeHeader = getHeaders().getFirstValue(
-                        HeaderConstants.HEADER_IF_RANGE);
+                        HeaderConstants.HEADER_IF_RANGE, true);
 
                 for (Header header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
@@ -665,17 +673,6 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         return super.getEvent();
     }
 
-    /**
-     * Returns the HTTP headers.
-     * 
-     * @return The HTTP headers.
-     */
-    @SuppressWarnings("unchecked")
-    public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
-    }
-
     @Override
     public List<String> getInReplyTo() {
         List<String> irt = super.getInReplyTo();
@@ -786,7 +783,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         if (!recipientsInfoAdded && (getHeaders() != null)) {
             for (String header : getHeaders().getValuesArray(
-                    HeaderConstants.HEADER_VIA)) {
+                    HeaderConstants.HEADER_VIA, true)) {
                 new RecipientInfoReader(header).addValues(result);
             }
 
@@ -1027,7 +1024,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         if (!this.warningsAdded) {
             if (getHeaders() != null) {
                 for (String warning : getHeaders().getValuesArray(
-                        HeaderConstants.HEADER_WARNING)) {
+                        HeaderConstants.HEADER_WARNING, true)) {
                     new WarningReader(warning).addValues(result);
                 }
             }
@@ -1160,7 +1157,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         // Set the request date
         String dateHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_DATE);
+                .getFirstValue(HeaderConstants.HEADER_DATE, true);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);
@@ -1174,7 +1171,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         // Set the max forwards
         String maxForwardsHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS);
+                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS, true);
         if (maxForwardsHeader != null) {
             try {
                 setMaxForwards(Integer.parseInt(maxForwardsHeader));
@@ -1187,21 +1184,21 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         // Set the "callId" property
         String callIdHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_CALL_ID);
+                .getFirstValue(SipConstants.HEADER_CALL_ID, true);
         if (callIdHeader != null) {
             setCallId(callIdHeader);
         }
 
         // Set the "callSeq" property
         String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_CALL_SEQ);
+                .getFirstValue(SipConstants.HEADER_CALL_SEQ, true);
         if (callSeqHeader != null) {
             setCommandSequence(callSeqHeader);
         }
 
         // Set the "to" property
         String toHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_TO);
+                .getFirstValue(SipConstants.HEADER_TO, true);
         if (toHeader != null) {
             try {
                 setTo(new AddressReader(toHeader).readValue());
@@ -1212,7 +1209,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         // Set the "from" property
         String fromHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_FROM);
+                .getFirstValue(HeaderConstants.HEADER_FROM, true);
         if (fromHeader != null) {
             try {
                 setFrom(new AddressReader(fromHeader).readValue());
@@ -1223,16 +1220,17 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
         // Set the "mime-version" property
         String mimeVersionHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_MIME_VERSION);
+                .getFirstValue(SipConstants.HEADER_MIME_VERSION, true);
         setMimeVersion(mimeVersionHeader);
 
         // Set the "mime-version" property
         String organizationHeader = (getHeaders() == null) ? null
-                : getHeaders().getFirstValue(SipConstants.HEADER_ORGANIZATION);
+                : getHeaders().getFirstValue(SipConstants.HEADER_ORGANIZATION,
+                        true);
         setOrganization(organizationHeader);
 
         String subjectHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_SUBJECT);
+                .getFirstValue(SipConstants.HEADER_SUBJECT, true);
         setSubject(subjectHeader);
     }
 

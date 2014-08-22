@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -117,9 +117,11 @@ public class SimpleTrainTest extends JaxRsTestCase {
 
     public void testGetTextMultiple1() throws Exception {
         if (!ONLY_M2 && !ONLY_TEXT_ALL) {
-            final Response response = accessServer(Method.GET,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR }));
+            final Response response = accessServer(
+                    Method.GET,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_CALENDAR }));
             sysOutEntityIfError(response);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             final Representation entity = response.getEntity();
@@ -132,7 +134,9 @@ public class SimpleTrainTest extends JaxRsTestCase {
         if (ONLY_TEXT_ALL) {
             return;
         }
-        final Response response = accessServer(Method.GET, SimpleTrain.class,
+        final Response response = accessServer(
+                Method.GET,
+                SimpleTrain.class,
                 TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         sysOutEntityIfError(response);
@@ -144,12 +148,16 @@ public class SimpleTrainTest extends JaxRsTestCase {
 
     public void testHead() throws Exception {
         if (!ONLY_M2 && !ONLY_TEXT_ALL) {
-            final Response responseHead = accessServer(Method.HEAD,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
-            final Response responseGett = accessServer(Method.GET,
-                    SimpleTrain.class, TestUtils.createList(new Object[] {
-                            PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
+            final Response responseHead = accessServer(
+                    Method.HEAD,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_HTML }));
+            final Response responseGett = accessServer(
+                    Method.GET,
+                    SimpleTrain.class,
+                    TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                            MediaType.TEXT_HTML }));
             assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
             assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
             final Representation entityHead = responseHead.getEntity();

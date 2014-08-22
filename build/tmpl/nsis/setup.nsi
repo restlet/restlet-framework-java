@@ -9,10 +9,10 @@ SetCompressor lzma
 !define RESTLETREGKEY "SOFTWARE\Restlet Framework"
 !define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
 !define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
-!define COMPANY "Restlet S.A.S."
-!define URL http://www.restlet.org
+!define COMPANY "Restlet"
+!define URL http://restlet.org
 
-Caption "Restlet Framework - Edition @edition-medium-label@ - Version @version-full@"
+Caption "Restlet Framework @version-compact@ - Edition @edition-medium-label@"
 BrandingText " "
 
 # MUI defines
@@ -143,12 +143,12 @@ Section -post SEC0001
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Uninstall.lnk" $INSTDIR\uninstall.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Home page.lnk" "http://www.restlet.org"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Home page.lnk" "http://restlet.org"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet API (javadocs).lnk" "$INSTDIR\docs\api\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Engine (javadocs).lnk" "$INSTDIR\docs\engine\index.html"
     !insertmacro MUI_STARTMENU_WRITE_END
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayName "Restlet Framework - @edition-medium-label@ - @version-full@"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayName "Restlet Framework @version-compact@ - Edition @edition-medium-label@"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" Publisher "${COMPANY}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" URLInfoAbout "${URL}"

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -101,9 +101,21 @@ public final class ChallengeScheme {
     public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme(
             "HTTP_NTLM", "NTLM", "Microsoft NTLM HTTP authentication");
 
-    /** OAuth HTTP scheme. */
+    /**
+     * OAuth 1.0 HTTP scheme. Removed in later drafts and final OAuth 2.0
+     * specification.
+     */
     public static final ChallengeScheme HTTP_OAUTH = new ChallengeScheme(
-            "HTTP_OAuth", "OAuth", "Open protocol for API authentication");
+            "HTTP_OAuth", "OAuth", "OAuth 1.0 authentication");
+
+    /** OAuth Bearer HTTP scheme. */
+    public static final ChallengeScheme HTTP_OAUTH_BEARER = new ChallengeScheme(
+            "HTTP_Bearer", "Bearer", "OAuth 2.0 bearer token authentication");
+
+    /** OAuth MAC HTTP scheme. */
+    public static final ChallengeScheme HTTP_OAUTH_MAC = new ChallengeScheme(
+            "HTTP_MAC", "Mac",
+            "OAuth 2.0 message authentication code authentication");
 
     /** Basic POP scheme. Based on the USER/PASS commands. */
     public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
@@ -130,6 +142,8 @@ public final class ChallengeScheme {
 
         schemes.put(CUSTOM.getName().toLowerCase(), CUSTOM);
         schemes.put(FTP_PLAIN.getName().toLowerCase(), FTP_PLAIN);
+        schemes.put(HTTP_AWS_IAM.getName().toLowerCase(), HTTP_AWS_S3);
+        schemes.put(HTTP_AWS_QUERY.getName().toLowerCase(), HTTP_AWS_S3);
         schemes.put(HTTP_AWS_S3.getName().toLowerCase(), HTTP_AWS_S3);
         schemes.put(HTTP_AZURE_SHAREDKEY.getName().toLowerCase(),
                 HTTP_AZURE_SHAREDKEY);
@@ -140,6 +154,8 @@ public final class ChallengeScheme {
         schemes.put(HTTP_DIGEST.getName().toLowerCase(), HTTP_DIGEST);
         schemes.put(HTTP_NTLM.getName().toLowerCase(), HTTP_NTLM);
         schemes.put(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH);
+        schemes.put(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH);
+        schemes.put(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH);
         schemes.put(POP_BASIC.getName().toLowerCase(), POP_BASIC);
         schemes.put(POP_DIGEST.getName().toLowerCase(), POP_DIGEST);
         schemes.put(SDC.getName().toLowerCase(), SDC);

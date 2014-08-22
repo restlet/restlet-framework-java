@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -54,13 +54,13 @@ public class ReferenceTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
-     * Returns a reference that is initialized with http://www.restlet.org.
+     * Returns a reference that is initialized with http://restlet.org.
      * 
      * @return Reference instance.
      */
     protected Reference getDefaultReference() {
         final Reference ref = getReference();
-        ref.setHostDomain("www.restlet.org");
+        ref.setHostDomain("restlet.org");
         return ref;
     }
 
@@ -80,16 +80,15 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test addition methods.
      */
     public void testAdditions() throws Exception {
-        final Reference ref = new Reference("http://www.restlet.org");
+        final Reference ref = new Reference("http://restlet.org");
         ref.addQueryParameter("abc", "123");
-        assertEquals("http://www.restlet.org?abc=123", ref.toString());
+        assertEquals("http://restlet.org?abc=123", ref.toString());
         ref.addQueryParameter("def", null);
-        assertEquals("http://www.restlet.org?abc=123&def", ref.toString());
+        assertEquals("http://restlet.org?abc=123&def", ref.toString());
         ref.addSegment("root");
-        assertEquals("http://www.restlet.org/root?abc=123&def", ref.toString());
+        assertEquals("http://restlet.org/root?abc=123&def", ref.toString());
         ref.addSegment("dir");
-        assertEquals("http://www.restlet.org/root/dir?abc=123&def",
-                ref.toString());
+        assertEquals("http://restlet.org/root/dir?abc=123&def", ref.toString());
     }
 
     public void testEmptyRef() {
@@ -139,19 +138,6 @@ public class ReferenceTestCase extends RestletTestCase {
         reference.setSegments(segments); // must not produce NPE
     }
 
-    public void testEncoding() {
-        // String uri1 = "/workspaces/W1​/content/Sin título.xml";
-        // String uri1rfe =
-        // "%2Fworkspaces%2FW1%E2%80%8B%2Fcontent%2FSin%20t%C3%ADtulo.xml";
-        // String uri1xxe =
-        // "/workspaces/W1​/content/Sin%20t%C3%83%C2%ADtulo.xml";
-        // String uri1msd = "/workspaces/W1/conte​nt/Sin%20t%EDtulo.xm​l";
-
-        // assertEquals(uri1, Reference.decode(uri1rfe));
-        // assertEquals(uri1, Reference.decode(uri1xxe));
-        // assertEquals(uri1, Reference.decode(uri1msd));
-    }
-
     /**
      * Equality tests.
      */
@@ -182,12 +168,14 @@ public class ReferenceTestCase extends RestletTestCase {
      */
     public void testHostName() throws Exception {
         final Reference ref = getReference();
-        String host = "www.restlet.org";
+        String host = "restlet.org";
         ref.setHostDomain(host);
         assertEquals(host, ref.getHostDomain());
         host = "restlet.org";
         ref.setHostDomain(host);
         assertEquals(host, ref.getHostDomain());
+        Reference ref2 = new Reference("http://[::1]:8182");
+        assertEquals("[::1]", ref2.getHostDomain());
     }
 
     public void testMatrix() {
@@ -477,13 +465,15 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test port getting/setting.
      */
     public void testPort() throws Exception {
-        final Reference ref = getDefaultReference();
+        Reference ref = getDefaultReference();
         int port = 8080;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
         port = 9090;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
+        ref = new Reference("http://[::1]:8182");
+        assertEquals(8182, ref.getHostPort());
     }
 
     public void testProtocolConstructors() {
@@ -634,10 +624,10 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test scheme specific part getting/setting.
      */
     public void testSchemeSpecificPart() throws Exception {
-        Reference ref = getDefaultReference();
-        String part = "//www.restlet.org";
+        final Reference ref = getDefaultReference();
+        String part = "//restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
-        part = "//www.restlet.net";
+        part = "//restlet.net";
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
     }
@@ -664,12 +654,24 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://localhost:1234/test/last", ref.toString());
     }
 
+    public void testTargetRef() {
+        Reference ref = new Reference(
+                "http://twitter.com?status=RT @gamasutra:  Devil May Cry : Born Again http://www.gamasutra.com/view/feature/177267/");
+        Reference targetRef = new Reference(
+                new Reference(
+                        "http://www.gamasutra.com/view/feature/177267/devil_may_cry_born_again.php"),
+                ref).getTargetRef();
+        assertEquals(
+                "http://twitter.com?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http:?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http://www.gamasutra.com/view/feature/177267/",
+                targetRef.toString());
+    }
+
     /**
      * Test references that are unequal.
      */
     public void testUnEquals() throws Exception {
-        final String uri1 = "http://www.restlet.org/";
-        final String uri2 = "http://www.restlet.net/";
+        final String uri1 = "http://restlet.org/";
+        final String uri2 = "http://restlet.net/";
         final Reference ref1 = new Reference(uri1);
         final Reference ref2 = new Reference(uri2);
         assertFalse(ref1.equals(ref2));
@@ -682,6 +684,12 @@ public class ReferenceTestCase extends RestletTestCase {
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setHostDomain("[::1]");
+        assertEquals("login:password@[::1]:81", reference.getAuthority());
+        assertEquals("[::1]", reference.getHostDomain());
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
 

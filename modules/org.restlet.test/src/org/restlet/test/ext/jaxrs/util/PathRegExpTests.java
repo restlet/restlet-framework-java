@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -98,7 +98,8 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchM1() {
         MatchingResult matchingResult = this.regExpMultipleSegments1
@@ -106,20 +107,21 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
 
         matchingResult = this.regExpMultipleSegments1.match(VALID_PATH_2_RP);
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchM2() {
         MatchingResult matchingResult = this.regExpMultipleSegments2
@@ -132,13 +134,14 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchM3() {
         final String rest = "/jkgjg";
@@ -147,7 +150,8 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchM4() {
         final String rest = "/qarear/iuguz/izu/";
@@ -156,7 +160,8 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchO1() {
         final MatchingResult matchingResult = this.regExpOneSegment1
@@ -164,20 +169,21 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
 
         this.regExpOneSegment1.match(VALID_PATH_2_RP);
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.internal.util.PathRegExp#match(java.lang.String)}
+     * .
      */
     public void testMatchO21() {
         MatchingResult matchingResult = this.regExpOneSegment2
@@ -190,8 +196,8 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(""), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""),
+                matchingResult.getFinalCapturingGroup());
     }
 
     /**
@@ -203,7 +209,7 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(new RemainingPath(rest), matchingResult
-                .getFinalCapturingGroup());
+        assertEquals(new RemainingPath(rest),
+                matchingResult.getFinalCapturingGroup());
     }
 }

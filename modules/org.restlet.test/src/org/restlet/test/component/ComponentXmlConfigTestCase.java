@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -65,14 +65,14 @@ import org.restlet.util.ServerList;
  * CONFIG: [ERROR] - Unexpected exception while parsing an instance of PUBLIC \
  *     [null], SYSTEM [null] - line #7, column #75: cvc-complex-type.2.4.a: \
  *     Invalid content was found starting with element 'illegal-element'. \
- *     One of '{&quot;http://www.restlet.org/schemas/2.0/Component&quot;:client, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:server, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:parameter, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:defaultHost, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:host, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:internalRouter, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:logService, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
+ *     One of '{&quot;http://restlet.org/schemas/2.0/Component&quot;:client, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:server, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:parameter, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:defaultHost, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:host, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:internalRouter, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:logService, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
  * </pre>
  */
 public class ComponentXmlConfigTestCase extends RestletTestCase {
@@ -119,7 +119,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
 
     /** Correct restlet.xml test instances. */
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
             + "<client protocol=\"HTTP\"" + " name=\""
             + RESTLET_NAME
             + "\""

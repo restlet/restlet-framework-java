@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -79,12 +79,14 @@ public class SimpleTrain {
         }
     }
 
-    public SimpleTrain(@HeaderParam("p") String p) {
+    public SimpleTrain(@HeaderParam("p")
+    String p) {
         "".equals(p);
         // this is a valid constructor
     }
 
-    public SimpleTrain(String x, @HeaderParam("p") String p) {
+    public SimpleTrain(String x, @HeaderParam("p")
+    String p) {
         "".equals(p);
         "".equals(x);
         if (checkForValidConstructor) {
@@ -116,7 +118,8 @@ public class SimpleTrain {
     @GET
     @Path("decode/{string}")
     @Produces("text/plain")
-    public String getTemplParamDecoded(@Context UriInfo uriInfo) {
+    public String getTemplParamDecoded(@Context
+    UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
@@ -129,7 +132,8 @@ public class SimpleTrain {
     @GET
     @Path("encode/{string}")
     @Produces("text/plain")
-    public String getTemplParamEncoded(@Context UriInfo uriInfo) {
+    public String getTemplParamEncoded(@Context
+    UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -48,7 +48,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
@@ -92,8 +92,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
     @Override
     public void tearDown() throws Exception {
         component.stop();
-        BioUtils.delete(this.file);
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.file);
+        IoUtils.delete(this.testDir, true);
         component = null;
         this.file = null;
         this.testDir = null;
@@ -120,8 +120,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
                     public void handle(Request request, Response response) {
                         response.setEntity(new FileRepresentation(file,
                                 MediaType.TEXT_PLAIN));
-                        response.getEntity().getDisposition().setType(
-                                Disposition.TYPE_ATTACHMENT);
+                        response.getEntity().getDisposition()
+                                .setType(Disposition.TYPE_ATTACHMENT);
                     }
                 };
             }

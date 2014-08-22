@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,7 +34,6 @@
 package org.restlet.ext.rdf;
 
 import org.restlet.data.Reference;
-import org.restlet.util.Triple;
 
 /**
  * Link between a source resource and a target resource or literal. This exactly
@@ -49,8 +48,16 @@ import org.restlet.util.Triple;
  * @author Jerome Louvel
  * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts</a>
  */
-@SuppressWarnings("deprecation")
-public class Link extends Triple<Object, Reference, Object> {
+public class Link {
+
+    /** The source object. */
+    private volatile Object source;
+
+    /** The type URI reference. */
+    private volatile Reference typeRef;
+
+    /** The target object. */
+    private volatile Object target;
 
     /**
      * Creates a reference to a blank node. In this API, we support RDF blank
@@ -188,7 +195,9 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The target node or object in RDF terminology.
      */
     private Link(Object source, Reference typeRef, Object target) {
-        super(source, typeRef, target);
+        this.source = source;
+        this.typeRef = typeRef;
+        this.target = target;
     }
 
     /**
@@ -254,7 +263,7 @@ public class Link extends Triple<Object, Reference, Object> {
      * @return The source.
      */
     public Object getSource() {
-        return getFirst();
+        return this.source;
     }
 
     /**
@@ -294,7 +303,7 @@ public class Link extends Triple<Object, Reference, Object> {
      * @return The target.
      */
     public Object getTarget() {
-        return getThird();
+        return this.target;
     }
 
     /**
@@ -344,7 +353,7 @@ public class Link extends Triple<Object, Reference, Object> {
      * @return The type reference.
      */
     public Reference getTypeRef() {
-        return getSecond();
+        return this.typeRef;
     }
 
     /**
@@ -418,7 +427,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The source graph.
      */
     public void setSource(Graph sourceGraph) {
-        setFirst(sourceGraph);
+        this.source = sourceGraph;
     }
 
     /**
@@ -429,7 +438,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The source link.
      */
     public void setSource(Link sourceLink) {
-        setFirst(sourceLink);
+        this.source = sourceLink;
     }
 
     /**
@@ -440,7 +449,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The source resource reference.
      */
     public void setSource(Reference sourceRef) {
-        setFirst(sourceRef);
+        this.source = sourceRef;
     }
 
     /**
@@ -451,7 +460,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The target graph.
      */
     public void setTarget(Graph targetGraph) {
-        setThird(targetGraph);
+        this.target = targetGraph;
     }
 
     /**
@@ -462,7 +471,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The target link.
      */
     public void setTarget(Link targetLink) {
-        setThird(targetLink);
+        this.target = targetLink;
     }
 
     /**
@@ -473,7 +482,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The target literal.
      */
     public void setTarget(Literal targetLit) {
-        setThird(targetLit);
+        this.target = targetLit;
     }
 
     /**
@@ -484,7 +493,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The target resource reference.
      */
     public void setTarget(Reference targetRef) {
-        setThird(targetRef);
+        this.target = targetRef;
     }
 
     /**
@@ -495,7 +504,7 @@ public class Link extends Triple<Object, Reference, Object> {
      *            The type reference.
      */
     public void setTypeRef(Reference typeRef) {
-        setSecond(typeRef);
+        this.typeRef = typeRef;
     }
 
 }

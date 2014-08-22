@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -46,30 +46,30 @@ import org.restlet.resource.ResourceException;
  * Root resource implementation.
  */
 public class RootServerResource extends WadlServerResource implements
-		RootResource {
+        RootResource {
 
-	@Override
-	protected RepresentationInfo describe(MethodInfo methodInfo,
-			Class<?> representationClass, Variant variant) {
-		RepresentationInfo result = new RepresentationInfo(MediaType.TEXT_PLAIN);
-		result.setIdentifier("root");
+    @Override
+    protected RepresentationInfo describe(MethodInfo methodInfo,
+            Class<?> representationClass, Variant variant) {
+        RepresentationInfo result = new RepresentationInfo(MediaType.TEXT_PLAIN);
+        result.setIdentifier("root");
 
-		DocumentationInfo doc = new DocumentationInfo();
-		doc.setTitle("Mail application");
-		doc.setTextContent("Simple string welcoming the user to the mail application");
-		result.getDocumentations().add(doc);
-		return result;
-	}
+        DocumentationInfo doc = new DocumentationInfo();
+        doc.setTitle("Mail application");
+        doc.setTextContent("Simple string welcoming the user to the mail application");
+        result.getDocumentations().add(doc);
+        return result;
+    }
 
-	@Override
-	protected void doInit() throws ResourceException {
-		setAutoDescribing(false);
-		setName("Root resource");
-		setDescription("The root resource of the mail server application");
-	}
+    @Override
+    protected void doInit() throws ResourceException {
+        setAutoDescribing(false);
+        setName("Root resource");
+        setDescription("The root resource of the mail server application");
+    }
 
-	public String represent() {
-		return "Welcome to the " + getApplication().getName() + " !";
-	}
+    public String represent() {
+        return "Welcome to the " + getApplication().getName() + " !";
+    }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -48,12 +49,24 @@ public class Scopes {
 
     public static String toScope(List<Role> roles)
             throws IllegalArgumentException {
+        if (roles == null || roles.isEmpty()) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         for (Role r : roles) {
             String scope = toScope(r);
             sb.append(' ');
             sb.append(scope);
 
+        }
+        return sb.substring(1);
+    }
+
+    public static String toString(String[] scopes) {
+        StringBuilder sb = new StringBuilder();
+        for (String scope : scopes) {
+            sb.append(' ');
+            sb.append(scope);
         }
         return sb.substring(1);
     }
@@ -70,16 +83,20 @@ public class Scopes {
         return rname;
     }
 
+    @SuppressWarnings("deprecation")
     public static Role toRole(String scope) {
         return new Role(scope, null);
     }
 
+    @SuppressWarnings("deprecation")
     public static List<Role> toRoles(String scopes) {
         String[] tmp = parseScope(scopes);
         List<Role> toRet = new ArrayList<Role>(tmp.length);
+
         for (String scope : tmp) {
             toRet.add(new Role(scope, null));
         }
+
         return toRet;
     }
 
@@ -92,5 +109,19 @@ public class Scopes {
             return scope;
         }
         return new String[0];
+    }
+
+    public static String[] parseScope(List<Role> roles) {
+        String[] scopes = new String[roles.size()];
+        for (int i = 0; i < roles.size(); i++) {
+            scopes[i] = roles.get(i).getName();
+        }
+        return scopes;
+    }
+
+    public static boolean isIdentical(String[] a, String[] b) {
+        List<String> al = Arrays.asList(a);
+        List<String> bl = Arrays.asList(b);
+        return al.containsAll(bl) && bl.containsAll(al);
     }
 }

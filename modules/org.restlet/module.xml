@@ -18,6 +18,9 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/connector/HttpServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/HttpsServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/NetServerHelper*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
 ]]>
 		</files-sets>
@@ -26,14 +29,26 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
-         <exclude name="src/org/restlet/engine/connector/**" />
+         <exclude name="src/org/restlet/engine/connector/HttpExchangeCall*" />
+         <exclude name="src/org/restlet/engine/connector/HttpServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/HttpsServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/NetServerHelper*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/io/*SocketChannel*.java" />
          <exclude name="src/org/restlet/engine/local/FileClientHelper.java" />
          <exclude name="src/org/restlet/engine/local/ZipClientHelper.java" />
          <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
+         <exclude name="src/org/restlet/engine/net/HttpsServerHelper.java" />
+         <exclude name="src/org/restlet/engine/net/HttpExchangeCall.java" />
+         <exclude name="src/org/restlet/engine/net/HttpServerHelper.java" />
+         <exclude name="src/org/restlet/engine/net/DefaultSslContext.java" />
+         <exclude name="src/org/restlet/engine/net/DefaultSslContextFactory.java" />
+         <exclude name="src/org/restlet/engine/net/WrapperSslContextSpi.java" />
+         <exclude name="src/org/restlet/engine/net/WrapperSslServerSocketFactory.java" />
+         <exclude name="src/org/restlet/engine/net/WrapperSslSocketFactory.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
+         <exclude name="src/org/restlet/engine/ssl/**" />
 ]]>
 		</files-sets>
 	</source>
@@ -64,14 +79,18 @@
          <exclude name="src/org/restlet/engine/ChainHelper.java" />
          <exclude name="src/org/restlet/engine/CompositeHelper.java" />
          <exclude name="src/org/restlet/engine/ServerHelper.java" />
-         <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/engine/adapter/HttpRequest.java" />
          <exclude name="src/org/restlet/engine/adapter/HttpResponse.java" />
          <exclude name="src/org/restlet/engine/adapter/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/adapter/Server*.java" />
          <exclude name="src/org/restlet/engine/application/*Conneg.java" />
          <exclude name="src/org/restlet/engine/component/**" />
-         <exclude name="src/org/restlet/engine/connector/**" />
+         <exclude name="src/org/restlet/engine/connector/ConnectionClosingRepresentation*" />
+         <exclude name="src/org/restlet/engine/connector/Ftp*" />
+         <exclude name="src/org/restlet/engine/connector/HttpClientHelper*" />
+         <exclude name="src/org/restlet/engine/connector/HttpExchangeCall*" />
+         <exclude name="src/org/restlet/engine/connector/HttpUrlConnectionCall*" />
+         <exclude name="src/org/restlet/engine/connector/*Server*" />
          <exclude name="src/org/restlet/engine/converter/**" />
          <exclude name="src/org/restlet/engine/header/ExpectationUtils.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationReader.java" />
@@ -94,12 +113,15 @@
          <exclude name="src/org/restlet/engine/log/LoggingThreadFactory.java" />
          <exclude name="src/org/restlet/engine/log/LogUtils.java" />
          <exclude name="src/org/restlet/engine/log/*Formatter.java" />
+         <exclude name="src/org/restlet/engine/net/**" />
          <exclude name="src/org/restlet/engine/security/**" />
+         <exclude name="src/org/restlet/engine/ssl/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/ChildClientDispatcher.java" />
          <exclude name="src/org/restlet/engine/util/ChildContext.java" />
+         <exclude name="src/org/restlet/engine/util/ContextualRunnable.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
          <exclude name="src/org/restlet/engine/util/CookieSeries.java" />
@@ -111,7 +133,10 @@
          <exclude name="src/org/restlet/engine/util/MapResolver.java" />
          <exclude name="src/org/restlet/engine/util/Pool.java" />
          <exclude name="src/org/restlet/engine/util/ReferenceUtils.java" />
+         <exclude name="src/org/restlet/engine/util/TemplateDispatcher.java" />
+         <exclude name="src/org/restlet/engine/util/WrapperScheduledExecutorService.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
+         <exclude name="src/org/restlet/representation/BufferingRepresentation.java" />
          <exclude name="src/org/restlet/representation/ByteArrayRepresentation.java" />
          <exclude name="src/org/restlet/representation/CachingRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />

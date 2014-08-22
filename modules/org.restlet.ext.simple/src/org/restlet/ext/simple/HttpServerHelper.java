@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -66,7 +66,8 @@ public class HttpServerHelper extends SimpleServerHelper {
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
-        final String addr = getHelped().getAddress();
+        String addr = getHelped().getAddress();
+
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
@@ -83,11 +84,12 @@ public class HttpServerHelper extends SimpleServerHelper {
                 setAddress(new InetSocketAddress(getHelped().getPort()));
             }
         }
-        final Container container = new SimpleContainer(this);
-        final ContainerServer server = new ContainerServer(container,
+
+        Container container = new SimpleContainer(this);
+        ContainerServer server = new ContainerServer(container,
                 getDefaultThreads());
-        final SimpleServer restletServer = new SimpleServer(server);
-        final Connection connection = new SocketConnection(restletServer);
+        SimpleServer restletServer = new SimpleServer(server);
+        Connection connection = new SocketConnection(restletServer);
 
         setConfidential(false);
         setContainerServer(server);

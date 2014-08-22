@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -36,6 +36,7 @@ package org.restlet.test.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -44,11 +45,12 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
@@ -77,8 +79,8 @@ public class DirectoryTestCase extends RestletTestCase {
          */
         public MyApplication(File testDirectory) {
             // Create a DirectoryHandler that manages a local Directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(testDirectory));
+            this.directory = new Directory(getContext(),
+                    LocalReference.createFileReference(testDirectory));
             this.directory.setNegotiatingContent(true);
         }
 
@@ -148,18 +150,40 @@ public class DirectoryTestCase extends RestletTestCase {
     private Response handle(Application application, String baseRef,
             String resourceRef, Method method, Representation entity,
             String testCode) {
+        return handle(application, baseRef, resourceRef, method, entity,
+                testCode, null);
+    }
+
+    /**
+     * Helper for the test
+     * 
+     * @param directory
+     * @param baseRef
+     * @param resourceRef
+     * @param method
+     * @param entity
+     * @param acceptedMetadata
+     * @return
+     */
+    private Response handle(Application application, String baseRef,
+            String resourceRef, Method method, Representation entity,
+            String testCode, Metadata acceptedMetadata) {
         final Request request = new Request();
         final Response response = new Response(request);
         request.setResourceRef(resourceRef);
         request.setOriginalRef(request.getResourceRef().getTargetRef());
         request.getResourceRef().setBaseRef(baseRef);
         request.setMethod(method);
+        if (acceptedMetadata != null) {
+            request.getClientInfo().accept(acceptedMetadata);
+        }
         if (Method.PUT.equals(method)) {
             request.setEntity(entity);
         }
         application.handle(request, response);
-        System.out.println("[test, status]=[" + testCode + ", "
-                + response.getStatus() + "]");
+        Logger.getLogger(DirectoryTestCase.class.getName()).info(
+                "[test, status]=[" + testCode + ", " + response.getStatus()
+                        + "]");
         return response;
     }
 
@@ -182,7 +206,14 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Allow extensions tunneling
         application.getTunnelService().setExtensionsTunnel(true);
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "DirectoryTestCase/testsUserPref" + new Date().getTime());
+        this.testDir.mkdirs();
+        application.setTestDirectory(testDir);
+        testUserPreferences(application, application.getDirectory());
+
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests2" + new Date().getTime());
         this.testDir.mkdirs();
@@ -190,7 +221,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with an index name
         testDirectory(application, application.getDirectory(), "index");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests3" + new Date().getTime());
         this.testDir.mkdirs();
@@ -201,7 +232,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Avoid extensions tunneling
         application.getTunnelService().setExtensionsTunnel(false);
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests4" + new Date().getTime());
         this.testDir.mkdirs();
@@ -209,7 +240,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with an index name
         testDirectory(application, application.getDirectory(), "index");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests5" + new Date().getTime());
         this.testDir.mkdirs();
@@ -217,7 +248,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with no index name
         testDirectory(application, application.getDirectory(), "");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests6" + new Date().getTime());
         this.testDir.mkdirs();
@@ -250,18 +281,21 @@ public class DirectoryTestCase extends RestletTestCase {
                 "deep access 1");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        response = handle(application, this.webSiteURL, this.webSiteURL.concat(
-                "dir/subDir/").concat(testFile.getName()), Method.GET, null,
+        response = handle(application, this.webSiteURL,
+                this.webSiteURL.concat("dir/subDir/")
+                        .concat(testFile.getName()), Method.GET, null,
                 "deep access 2");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
         directory.setDeeplyAccessible(false);
-        response = handle(application, this.webSiteURL, this.webSiteURL
-                .concat("dir/subDir/"), Method.GET, null, "deep access 3");
+        response = handle(application, this.webSiteURL,
+                this.webSiteURL.concat("dir/subDir/"), Method.GET, null,
+                "deep access 3");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
 
-        response = handle(application, this.webSiteURL, this.webSiteURL.concat(
-                "dir/subDir/").concat(testFile.getName()), Method.GET, null,
+        response = handle(application, this.webSiteURL,
+                this.webSiteURL.concat("dir/subDir/")
+                        .concat(testFile.getName()), Method.GET, null,
                 "deep access 4");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
@@ -312,7 +346,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         response = handle(application, this.webSiteURL, testFileUrl,
                 Method.HEAD, null, "2a");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
         // Test 2b : try to GET a file that does not exist
         response = handle(application, this.webSiteURL, this.webSiteURL
@@ -324,8 +358,8 @@ public class DirectoryTestCase extends RestletTestCase {
         directory.setModifiable(false);
         response = handle(application, this.webSiteURL, this.baseFileUrl,
                 Method.PUT, new StringRepresentation("this is test 3a"), "3a");
-        assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
+                response.getStatus());
 
         // Test 3b : try to put a new representation, the directory is no more
         // read only
@@ -410,7 +444,7 @@ public class DirectoryTestCase extends RestletTestCase {
         directory.setNegotiatingContent(false);
         response = handle(application, this.webSiteURL, this.baseFileUrlFrBis,
                 Method.PUT, new StringRepresentation("message de test"), "7b-1");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         // The 2 resources in French must be present (the same actually)
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.HEAD, null, "7b-2");
@@ -448,7 +482,7 @@ public class DirectoryTestCase extends RestletTestCase {
         response = handle(application, this.webSiteURL, this.baseFileUrlFrBis,
                 Method.PUT, new StringRepresentation("message de test Bis"),
                 "7d-2");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         // only one resource in French must be present
         response = handle(application, this.webSiteURL, this.baseFileUrlFr,
                 Method.HEAD, null, "7d-3");
@@ -551,7 +585,61 @@ public class DirectoryTestCase extends RestletTestCase {
                 Method.PUT, new StringRepresentation("file entity"), "10d");
         assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
-        BioUtils.delete(testDirectory, true);
+        IoUtils.delete(testDirectory, true);
         System.out.println("End of tests*********************");
     }
+
+    /**
+     * Test content negotiation based on client preferences.
+     * 
+     * @param application
+     * @param directory
+     * @throws IOException
+     */
+    private void testUserPreferences(MyApplication application,
+            Directory directory) throws IOException {
+
+        directory.setModifiable(true);
+
+        // Create a temporary directory
+        final File testDirectory = new File(this.testDir, "nego");
+        testDirectory.mkdir();
+
+        // Create a temporary file
+        final String testDirectoryUrl = this.webSiteURL.concat(testDirectory
+                .getName());
+        final String testFileUrl = testDirectoryUrl.concat("/test");
+        final String testTxtFileUrl = testDirectoryUrl.concat("/test.txt");
+        final String testFrTxtFileUrl = testDirectoryUrl.concat("/test.fr.txt");
+        final String testEsTxtFileUrl = testDirectoryUrl.concat("/test.es.txt");
+
+        // Create two files
+        Response response = handle(application, webSiteURL, testFrTxtFileUrl,
+                Method.PUT, new StringRepresentation("fr"), "nego-1");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
+        response = handle(application, webSiteURL, testEsTxtFileUrl,
+                Method.PUT, new StringRepresentation("es"), "nego-1");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
+
+        response = handle(application, webSiteURL, testFileUrl, Method.GET,
+                null, "nego-2", Language.SPANISH);
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals("es", response.getEntityAsText());
+
+        response = handle(application, webSiteURL, testFileUrl, Method.GET,
+                null, "nego-2", Language.FRENCH);
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals("fr", response.getEntityAsText());
+
+        response = handle(application, webSiteURL, testTxtFileUrl, Method.GET,
+                null, "nego-3", Language.SPANISH);
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals("es", response.getEntityAsText());
+
+        response = handle(application, webSiteURL, testTxtFileUrl, Method.GET,
+                null, "nego-3", Language.FRENCH);
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        assertEquals("fr", response.getEntityAsText());
+    }
+
 }

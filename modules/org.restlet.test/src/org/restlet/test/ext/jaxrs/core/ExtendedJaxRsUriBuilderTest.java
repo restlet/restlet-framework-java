@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -224,8 +224,8 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
 
     private URI buildFromTemplVarsWithStrings(ExtendedUriBuilder uriBuilder) {
         return uriBuilder.build("abc", "username:password", "www.secure.org",
-                "8080", "def", "ghi", "jkl", "mno", "pqr", "yz", "stu", "vwx", "ABC",
-                "DEF", "GHI", "JKL", "MNO");
+                "8080", "def", "ghi", "jkl", "mno", "pqr", "yz", "stu", "vwx",
+                "ABC", "DEF", "GHI", "JKL", "MNO");
     }
 
     private void changeWithTemplVars(ExtendedUriBuilder uriBuilder)
@@ -272,8 +272,8 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         URI uri = this.uriBuilderWithVars.build("123", "456", "");
         assertEqualsURI("http://localhost/abc/123/def/456.", uri);
         ExtendedUriBuilder uriBuilder2 = this.uriBuilderWithVars.clone();
-        assertEqualsURI("http://localhost/abc/123/def/456.html", uriBuilder2
-                .build("123", "456", "html"));
+        assertEqualsURI("http://localhost/abc/123/def/456.html",
+                uriBuilder2.build("123", "456", "html"));
         assertEquals(this.uriBuilderWithVars.toString(), uriBuilder2.toString());
         uriBuilder2.path("{var3}");
         uri = this.uriBuilderWithVars.build("123", "456", "pdf");
@@ -421,7 +421,8 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         this.uriBuilder.replaceMatrix(null);
         assertEquals(URI_NO_EXT, this.uriBuilder.build());
         this.uriBuilder.matrixParam("jkj$sdf", "ij a%20");
-        assertEqualsURI(URI_NO_EXT + ";jkj%24sdf=ij%20a%2520", this.uriBuilder, true);
+        assertEqualsURI(URI_NO_EXT + ";jkj%24sdf=ij%20a%2520", this.uriBuilder,
+                true);
     }
 
     /**
@@ -479,7 +480,8 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         assertEqualsURI(URI_NO_EXT + "/jjj/kkk/ll/mno", this.uriBuilder, true);
 
         this.uriBuilder.path(" ");
-        assertEqualsURI(URI_NO_EXT + "/jjj/kkk/ll/mno/%20", this.uriBuilder, true);
+        assertEqualsURI(URI_NO_EXT + "/jjj/kkk/ll/mno/%20", this.uriBuilder,
+                true);
     }
 
     /**
@@ -502,13 +504,15 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         this.uriBuilder.queryParam("qn", "qv2");
         assertEqualsURI(URI_NO_EXT + "?qn=qv&qn=qv2", this.uriBuilder, true);
         this.uriBuilder.queryParam("qn3", "qv3");
-        assertEqualsURI(URI_NO_EXT + "?qn=qv&qn=qv2&qn3=qv3", this.uriBuilder, true);
+        assertEqualsURI(URI_NO_EXT + "?qn=qv&qn=qv2&qn3=qv3", this.uriBuilder,
+                true);
         this.uriBuilder.replaceQuery("qnNew=qvNew");
         assertEqualsURI(URI_NO_EXT + "?qnNew=qvNew", this.uriBuilder, true);
 
         this.uriBuilder.replaceQuery(null);
         this.uriBuilder.queryParam("na$me", "George U.");
-        assertEqualsURI(URI_NO_EXT + "?na%24me=George%20U.", this.uriBuilder, true);
+        assertEqualsURI(URI_NO_EXT + "?na%24me=George%20U.", this.uriBuilder,
+                true);
     }
 
     public void testreplaceMatrix() throws Exception {
@@ -688,8 +692,8 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         final String id = "4711";
         final URI collectionUri = new URI(
                 "http://localhost:8181/SecurityContextTestService");
-        final URI location = ExtendedUriBuilder.fromUri(collectionUri).path(
-                "{id}").build(id);
+        final URI location = ExtendedUriBuilder.fromUri(collectionUri)
+                .path("{id}").build(id);
         assertEqualsURI(collectionUri + "/4711", location);
     }
 

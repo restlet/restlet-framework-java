@@ -11,5 +11,4 @@
 		<dependency type="library" id="emf" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<wikiUri>413-restlet</wikiUri>
 </module>

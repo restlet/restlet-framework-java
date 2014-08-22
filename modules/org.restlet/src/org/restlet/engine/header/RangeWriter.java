@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -46,7 +46,7 @@ import org.restlet.representation.Representation;
 public class RangeWriter extends HeaderWriter<Range> {
 
     /**
-     * Format {@code ranges} as a Range header value
+     * Formats {@code ranges} as a Range header value
      * 
      * @param ranges
      *            List of ranges to format
@@ -57,7 +57,7 @@ public class RangeWriter extends HeaderWriter<Range> {
     }
 
     /**
-     * Format {@code range} as a Content-Range header value
+     * Formats {@code range} as a Content-Range header value.
      * 
      * @param range
      *            Range to format
@@ -66,7 +66,7 @@ public class RangeWriter extends HeaderWriter<Range> {
      * @return {@code range} formatted
      */
     public static String write(Range range, long size) {
-        StringBuilder b = new StringBuilder("bytes ");
+        StringBuilder b = new StringBuilder(range.getUnitName() + " ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
@@ -116,7 +116,7 @@ public class RangeWriter extends HeaderWriter<Range> {
     }
 
     /**
-     * Format {@code ranges} as a Range header value
+     * Formats {@code ranges} as a Range header value
      * 
      * @param ranges
      *            List of ranges to format
@@ -127,7 +127,7 @@ public class RangeWriter extends HeaderWriter<Range> {
             return this;
         }
 
-        append("bytes=");
+        append(ranges.get(0).getUnitName() + "=");
 
         for (int i = 0; i < ranges.size(); i++) {
             if (i > 0) {

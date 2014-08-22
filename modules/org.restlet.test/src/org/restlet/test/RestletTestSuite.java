@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -60,24 +60,23 @@ import org.restlet.test.ext.crypto.DigestVerifierTestCase;
 import org.restlet.test.ext.crypto.HttpDigestTestCase;
 import org.restlet.test.ext.emf.EmfTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
+import org.restlet.test.ext.guice.GuiceSelfInjectingServerResourceModuleTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.html.HtmlTestSuite;
+import org.restlet.test.ext.jackson.JacksonTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
-import org.restlet.test.ext.jaxrs.JaxRsTestSuite;
+import org.restlet.test.ext.json.JsonTestSuite;
 import org.restlet.test.ext.odata.ODataTestSuite;
-import org.restlet.test.ext.sip.SipTests;
+import org.restlet.test.ext.sip.SipTestSuite;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestSuite;
-import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
-import org.restlet.test.ext.xml.RestletXmlTestCase;
-import org.restlet.test.ext.xml.TransformerTestCase;
+import org.restlet.test.ext.xml.XmlTestSuite;
 import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
 import org.restlet.test.representation.RangeRepresentationTestCase;
-import org.restlet.test.resource.ResourceTestSuite;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
@@ -106,7 +105,6 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-        addTest(ResourceTestSuite.suite());
         addTest(ServiceTestSuite.suite());
         addTestSuite(AppendableRepresentationTestCase.class);
         addTestSuite(AtomTestCase.class);
@@ -120,16 +118,16 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FilterTestCase.class);
         addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(GuiceSelfInjectingServerResourceModuleTestCase.class);
         addTestSuite(GwtConverterTestCase.class);
+        addTestSuite(JacksonTestCase.class);
         addTestSuite(JaxbBasicConverterTestCase.class);
         addTestSuite(JaxbIntegrationConverterTestCase.class);
         addTestSuite(LanguageTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
         addTestSuite(ReferenceTestCase.class);
-        addTestSuite(ResolvingTransformerTestCase.class);
         addTestSuite(RestartTestCase.class);
-        addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
@@ -137,15 +135,23 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RoleTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
-        addTestSuite(TransformerTestCase.class);
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTest(RegressionTestSuite.suite());
         addTest(CryptoTestSuite.suite());
         addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
+
+        // TODO: temporarily removed jaxrs test suite, cf issue #811
+        // addTest(JaxRsTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());
+        addTest(XmlTestSuite.suite());
+        addTest(JsonTestSuite.suite());
+
+        // [ifdef jse]
+        addTest(org.restlet.test.resource.ResourceTestSuite.suite());
+        // [enddef]
 
         // Tests based on extension only supported by the JEE edition.
         // [ifdef jee]
@@ -171,8 +177,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(SecurityTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
 
-        addTest(JaxRsTestSuite.suite());
-        addTest(SipTests.suite());
+        addTest(SipTestSuite.suite());
         addTest(SpringTestSuite.suite());
         addTest(EngineTestSuite.suite());
         // [enddef]

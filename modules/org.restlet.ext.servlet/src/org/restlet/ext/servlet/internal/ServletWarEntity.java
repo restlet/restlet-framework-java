@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,16 +26,17 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.servlet.internal;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -168,8 +169,8 @@ public class ServletWarEntity extends Entity {
         int index = this.fullName.lastIndexOf("/");
 
         if (index != -1) {
-            result = new ServletWarEntity(getServletContext(), this.fullName
-                    .substring(0, index + 1), getMetadataService());
+            result = new ServletWarEntity(getServletContext(),
+                    this.fullName.substring(0, index + 1), getMetadataService());
         }
 
         return result;
@@ -180,17 +181,28 @@ public class ServletWarEntity extends Entity {
             int timeToLive) {
         Representation result = null;
 
-        InputStream ris = getServletContext().getResourceAsStream(path);
-        if (ris != null) {
-            result = new InputRepresentation(ris, defaultMediaType);
-            // Sets the modification date
-            String realPath = getServletContext().getRealPath(path);
-            if (realPath != null) {
-                File file = new File(realPath);
-                if (file != null) {
-                    result.setModificationDate(new Date(file.lastModified()));
+        try {
+            URL resource = getServletContext().getResource(path);
+            if (resource != null) {
+                URLConnection connection = resource.openConnection();
+                result = new InputRepresentation(connection.getInputStream(),
+                        defaultMediaType);
+
+                // Sets the modification date
+                result.setModificationDate(new Date(connection
+                        .getLastModified()));
+
+                // Sets the expiration date
+                if (timeToLive == 0) {
+                    result.setExpirationDate(null);
+                } else if (timeToLive > 0) {
+                    result.setExpirationDate(new Date(System
+                            .currentTimeMillis() + (1000L * timeToLive)));
                 }
             }
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Error getting the WAR resource.", e);
         }
         return result;
     }

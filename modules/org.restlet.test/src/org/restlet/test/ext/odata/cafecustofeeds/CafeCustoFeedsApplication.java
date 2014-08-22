@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -64,8 +64,8 @@ public class CafeCustoFeedsApplication extends Application {
             if (Method.GET.equals(request.getMethod())) {
                 Form form = request.getResourceRef().getQueryAsForm();
                 String uri = "/"
-                        + this.getClass().getPackage().getName().replace(".",
-                                "/") + "/" + file;
+                        + this.getClass().getPackage().getName()
+                                .replace(".", "/") + "/" + file;
                 if (form.getFirstValue("$expand") != null) {
                     uri += form.getFirstValue("$expand");
                 }
@@ -88,9 +88,7 @@ public class CafeCustoFeedsApplication extends Application {
         Router router = new Router(getContext());
         router.attach("/$metadata", new MyClapRestlet(getContext(), "metadata",
                 false));
-        router
-                .attach("/Cafes", new MyClapRestlet(getContext(), "cafes",
-                        false));
+        router.attach("/Cafes", new MyClapRestlet(getContext(), "cafes", false));
         router.attach("/Contacts('1')", new MyClapRestlet(getContext(),
                 "contact1", false));
         return router;

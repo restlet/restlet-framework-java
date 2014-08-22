@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -35,6 +35,7 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -51,11 +52,10 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public class NbChannelInputStream extends InputStream implements
-        BufferProcessor {
+public class NbChannelInputStream extends InputStream {
 
     /** The internal byte buffer. */
-    private final Buffer buffer;
+    private final ByteBuffer byteBuffer;
 
     /** The channel to read from. */
     private final ReadableByteChannel channel;
@@ -63,14 +63,14 @@ public class NbChannelInputStream extends InputStream implements
     /** Indicates if further reads can be attempted. */
     private volatile boolean endReached;
 
+    /** The registered selection registration. */
+    private volatile SelectionRegistration selectionRegistration;
+
     /** The optional selectable channel to read from. */
     private final SelectableChannel selectableChannel;
 
     /** The optional selection channel to read from. */
     private final SelectionChannel selectionChannel;
-
-    /** The registered selection registration. */
-    private volatile SelectionRegistration selectionRegistration;
 
     /**
      * Constructor.
@@ -95,163 +95,154 @@ public class NbChannelInputStream extends InputStream implements
             this.selectableChannel = null;
         }
 
-        this.buffer = new Buffer(IoUtils.BUFFER_SIZE);
+        this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
+        this.byteBuffer.flip();
         this.endReached = false;
         this.selectionRegistration = null;
     }
 
-    /**
-     * Indicates if the processing loop can continue.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the processing loop can continue.
-     */
-    public boolean canLoop(Buffer buffer, Object... args) {
-        boolean result = true;
+    @Override
+    public int read() throws IOException {
+        int result = -1;
 
-        if (args.length == 1) {
-            result = (args[0] == null);
-        } else if (args.length == 2) {
-            result = true;
+        if (!this.endReached) {
+            if (!this.byteBuffer.hasRemaining()) {
+                // Let's refill
+                refill();
+            }
+
+            if (!this.endReached) {
+                // Let's return the next one
+                result = this.byteBuffer.get() & 0xff;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int result = -1;
+
+        if (!this.endReached) {
+            if (!this.byteBuffer.hasRemaining()) {
+                // Let's try to refill
+                refill();
+            }
+
+            if (!this.endReached) {
+                // Let's return the next ones
+                result = Math.min(len, this.byteBuffer.remaining());
+                this.byteBuffer.get(b, off, result);
+            }
         }
 
         return result;
     }
 
     /**
-     * Indicates if the buffer could be filled again.
+     * Reads the available bytes from the channel into the byte buffer.
      * 
-     * @param buffer
-     *            The IO buffer to fill.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the buffer could be filled again.
-     */
-    public boolean couldFill(Buffer buffer, Object... args) {
-        return !this.endReached;
-    }
-
-    /**
-     * Returns the internal byte buffer.
-     * 
-     * @return The internal byte buffer.
-     */
-    protected Buffer getBuffer() {
-        return buffer;
-    }
-
-    /**
-     * Drains the byte buffer by returning available bytes as
-     * {@link InputStream} bytes.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param maxDrained
-     *            The maximum number of bytes drained by this call.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return The number of bytes drained.
+     * @return The number of bytes read or -1 if the end of channel has been
+     *         reached.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, int maxDrained, Object... args)
-            throws IOException {
+    private int readChannel() throws IOException {
         int result = 0;
+        this.byteBuffer.clear();
+        result = this.channel.read(this.byteBuffer);
 
-        if (args.length == 1) {
-            // Let's return the next one
-            args[0] = getBuffer().drain();
-            result = 1;
-        } else if (args.length == 2) {
-            byte[] targetArray = (byte[]) args[0];
-            int offset = ((Integer) args[1]).intValue();
-            result = Math.min(maxDrained, getBuffer().remaining());
+        if (result > 0) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().log(
+                        Level.FINE,
+                        "NbChannelInputStream#readChannel : " + result
+                                + " bytes read");
+            }
 
-            // Let's return the next ones
-            getBuffer().drain(targetArray, offset, result);
+            this.byteBuffer.flip();
         }
 
         return result;
     }
 
     /**
-     * Fills the byte buffer by reading the source channel.
+     * Refill the byte buffer by attempting to read the channel.
      * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
      * @throws IOException
      */
-    public int onFill(Buffer buffer, Object... args) throws IOException {
-        int result = buffer.fill(this.channel);
+    private void refill() throws IOException {
+        int bytesRead = 0;
 
-        if (result == 0) {
-            // No bytes were read, try to register
-            // a select key to get more
-            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                Context.getCurrentLogger()
-                        .log(Level.FINER,
-                                "Couldn't fill the buffer immediately. Trying to register a select key to get more.");
-            }
+        while (bytesRead == 0) {
+            bytesRead = readChannel();
 
-            if (selectionChannel != null) {
-                if (this.selectionRegistration == null) {
-                    this.selectionRegistration = this.selectionChannel
-                            .getRegistration();
-                    this.selectionRegistration
-                            .setInterestOperations(SelectionKey.OP_READ);
-                    this.selectionRegistration
-                            .setSelectionListener(new SelectionListener() {
-                                public void onSelected(
-                                        SelectionRegistration selectionRegistration)
-                                        throws IOException {
-                                    if (Context.getCurrentLogger().isLoggable(
-                                            Level.FINER)) {
-                                        Context.getCurrentLogger()
-                                                .log(Level.FINER,
-                                                        "NbChannelInputStream selected");
-                                    }
+            if (bytesRead == 0) {
+                // No bytes were read, try to register
+                // a select key to get more
+                if (selectionChannel != null) {
+                    try {
+                        if (this.selectionRegistration == null) {
+                            this.selectionRegistration = this.selectionChannel
+                                    .getRegistration();
+                            this.selectionRegistration
+                                    .setInterestOperations(SelectionKey.OP_READ);
+                            this.selectionRegistration
+                                    .setSelectionListener(new SelectionListener() {
+                                        public void onSelected(
+                                                SelectionRegistration registration)
+                                                throws IOException {
+                                            if (Context.getCurrentLogger()
+                                                    .isLoggable(Level.FINER)) {
+                                                Context.getCurrentLogger()
+                                                        .log(Level.FINER,
+                                                                "NbChannelInputStream selected");
+                                            }
 
-                                    // Stop listening at this point
-                                    selectionRegistration.suspend();
+                                            // Stop listening at this point
+                                            selectionRegistration.suspend();
 
-                                    // Unblock the user thread
-                                    selectionRegistration.unblock();
-                                }
-                            });
-                } else {
-                    this.selectionRegistration.resume();
-                }
+                                            // Unblock the user thread
+                                            selectionRegistration.unblock();
+                                        }
+                                    });
+                        } else {
+                            this.selectionRegistration.resume();
+                        }
 
-                // Block until new content arrives or a timeout occurs
-                this.selectionRegistration.block();
+                        // Block until new content arrives or a timeout occurs
+                        this.selectionRegistration.block();
 
-                // Attempt to read more content
-                result = buffer.fill(this.channel);
-            } else if (selectableChannel != null) {
-                Selector selector = null;
-                SelectionKey selectionKey = null;
-
-                try {
-                    selector = SelectorFactory.getSelector();
-
-                    if (selector != null) {
-                        selectionKey = this.selectableChannel.register(
-                                selector, SelectionKey.OP_READ);
-                        selector.select(IoUtils.TIMEOUT_MS);
+                        // Attempt to read more content
+                        bytesRead = readChannel();
+                    } catch (Exception e) {
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
+                                        "Exception while registering or waiting for new content",
+                                        e);
                     }
-                } finally {
-                    NioUtils.release(selector, selectionKey);
-                }
+                } else if (selectableChannel != null) {
+                    Selector selector = null;
+                    SelectionKey selectionKey = null;
 
-                result = buffer.fill(this.channel);
+                    try {
+                        selector = SelectorFactory.getSelector();
+
+                        if (selector != null) {
+                            selectionKey = this.selectableChannel.register(
+                                    selector, SelectionKey.OP_READ);
+                            selector.select(IoUtils.TIMEOUT_MS);
+                        }
+                    } finally {
+                        IoUtils.release(selector, selectionKey);
+                    }
+
+                    bytesRead = readChannel();
+                }
             }
         }
 
-        if (result == -1) {
+        if (bytesRead == -1) {
             this.endReached = true;
 
             if (this.selectionRegistration != null) {
@@ -259,52 +250,5 @@ public class NbChannelInputStream extends InputStream implements
                 this.selectionRegistration.setSelectionListener(null);
             }
         }
-
-        return result;
     }
-
-    /**
-     * Called back when a fill operation returns with an EOF status.
-     */
-    public void onFillEof() {
-    }
-
-    /**
-     * Does nothing by default.
-     */
-    public void postProcess(int drained) throws IOException {
-    }
-
-    /**
-     * Does nothing by default.
-     */
-    public int preProcess(int maxDrained, Object... args) throws IOException {
-        return 0;
-    }
-
-    @Override
-    public int read() throws IOException {
-        int result = 0;
-        Object[] args = new Object[1];
-        int bytesDrained = getBuffer().process(this, 1, args);
-
-        if (bytesDrained == -1) {
-            result = -1;
-        } else if (bytesDrained == 1) {
-            result = ((Integer) args[0]).intValue();
-        } else {
-            Context.getCurrentLogger().warning(
-                    "Only one byte was needed but " + bytesDrained
-                            + " were drained.");
-        }
-
-        return result;
-    }
-
-    @Override
-    public int read(byte[] targetArray, int offset, int length)
-            throws IOException {
-        return getBuffer().process(this, length, targetArray, offset);
-    }
-
 }

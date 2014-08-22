@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -58,7 +58,8 @@ public class CookieParamTestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("array")
-    public String array(@CookieParam("c") Cookie[] cc) {
+    public String array(@CookieParam("c")
+    Cookie[] cc) {
         String result = "[";
         for (final Cookie c : cc) {
             result += c.getValue() + ", ";
@@ -68,14 +69,16 @@ public class CookieParamTestService {
 
     @GET
     @Produces("text/plain")
-    public String get(@CookieParam("c") String cookieValue) {
+    public String get(@CookieParam("c")
+    String cookieValue) {
         return cookieValue;
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("Set")
-    public String set(@CookieParam("c") Set<Cookie> cc) {
+    public String set(@CookieParam("c")
+    Set<Cookie> cc) {
         String result = "{";
         for (final Cookie c : cc) {
             result += c.getValue() + ", ";
@@ -86,7 +89,8 @@ public class CookieParamTestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("SortedSet")
-    public String sortedSet(@CookieParam("c") SortedSet<String> cc) {
+    public String sortedSet(@CookieParam("c")
+    SortedSet<String> cc) {
         return cc.toString();
     }
 
@@ -94,8 +98,9 @@ public class CookieParamTestService {
     @Produces("text/plain")
     @Path("withDefault")
     @Encoded
-    public String withDefault(
-            @CookieParam("c") @DefaultValue("default") String cookieValue) {
+    public String withDefault(@CookieParam("c")
+    @DefaultValue("default")
+    String cookieValue) {
         return cookieValue;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -278,13 +278,16 @@ public class MetadataReader extends DefaultHandler {
                     }
                 }
                 // entityType.baseType
-                entityType.setBaseType((EntityType) resolve(entityType
-                        .getBaseType(), registeredEntityTypes, schema));
+                entityType
+                        .setBaseType((EntityType) resolve(
+                                entityType.getBaseType(),
+                                registeredEntityTypes, schema));
             }
             for (ComplexType complexType : schema.getComplexTypes()) {
                 // complexType.baseType
-                complexType.setBaseType((ComplexType) resolve(complexType
-                        .getBaseType(), registeredComplexTypes, schema));
+                complexType.setBaseType((ComplexType) resolve(
+                        complexType.getBaseType(), registeredComplexTypes,
+                        schema));
             }
         }
         for (EntityContainer container : currentMetadata.getContainers()) {
@@ -316,9 +319,9 @@ public class MetadataReader extends DefaultHandler {
             }
             // - entityContainer.functionImport.entitySet
             for (FunctionImport functionImport : container.getFunctionImports()) {
-                functionImport.setEntitySet((EntitySet) resolve(functionImport
-                        .getEntitySet(), registeredEntitySets, container
-                        .getSchema()));
+                functionImport.setEntitySet((EntitySet) resolve(
+                        functionImport.getEntitySet(), registeredEntitySets,
+                        container.getSchema()));
             }
         }
 
@@ -327,8 +330,9 @@ public class MetadataReader extends DefaultHandler {
                 // entityType.complexTypes
                 for (ComplexProperty property : entityType
                         .getComplexProperties()) {
-                    ComplexType type = (ComplexType) resolve(property
-                            .getComplexType(), registeredComplexTypes, schema);
+                    ComplexType type = (ComplexType) resolve(
+                            property.getComplexType(), registeredComplexTypes,
+                            schema);
                     if (type != null) {
                         property.setComplexType(type);
                     }
@@ -338,8 +342,9 @@ public class MetadataReader extends DefaultHandler {
                 // entityType.complexTypes
                 for (ComplexProperty property : complexType
                         .getComplexProperties()) {
-                    ComplexType type = (ComplexType) resolve(property
-                            .getComplexType(), registeredComplexTypes, schema);
+                    ComplexType type = (ComplexType) resolve(
+                            property.getComplexType(), registeredComplexTypes,
+                            schema);
                     if (type != null) {
                         property.setComplexType(type);
                     }
@@ -563,8 +568,15 @@ public class MetadataReader extends DefaultHandler {
             }
 
             property.setDefaultValue(attrs.getValue("Default"));
-            property.setNullable(Boolean.parseBoolean(attrs
-                    .getValue("Nullable")));
+            // If no value is specified, the nullable facet defaults to true.
+            // cf
+            // http://www.odata.org/documentation/odata-v3-documentation/common-schema-definition-language-csdl/#531_The_edmNullable_Attribute
+            String nullable = attrs.getValue("Nullable");
+            if (nullable == null) {
+                property.setNullable(true);
+            } else {
+                property.setNullable(Boolean.parseBoolean(nullable));
+            }
             // ConcurrencyMode
             if ("fixed".equalsIgnoreCase(attrs.getValue("ConcurrencyMode"))) {
                 property.setConcurrent(true);
@@ -603,10 +615,9 @@ public class MetadataReader extends DefaultHandler {
                     attrs);
         } else if ("navigationProperty".equalsIgnoreCase(localName)) {
             pushState(State.NAVIGATION_PROPERTY);
-            NavigationProperty property = new NavigationProperty(attrs
-                    .getValue("Name"));
-            property
-                    .setFromRole(new AssociationEnd(attrs.getValue("FromRole")));
+            NavigationProperty property = new NavigationProperty(
+                    attrs.getValue("Name"));
+            property.setFromRole(new AssociationEnd(attrs.getValue("FromRole")));
             property.setRelationship(new Association(attrs
                     .getValue("Relationship")));
             property.setToRole(new AssociationEnd(attrs.getValue("ToRole")));
@@ -639,8 +650,8 @@ public class MetadataReader extends DefaultHandler {
                 currentAssociation.getEnds().add(end);
             } else {
                 pushState(State.ASSOCIATION_SET_END);
-                AssociationSetEnd end = new AssociationSetEnd(attrs
-                        .getValue("Role"));
+                AssociationSetEnd end = new AssociationSetEnd(
+                        attrs.getValue("Role"));
                 end.setType(new EntitySet(attrs.getValue("EntitySet")));
                 currentAssociationSet.getEnds().add(end);
             }

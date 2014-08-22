@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -43,13 +43,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
@@ -69,14 +70,14 @@ public class DecodeRepresentation extends WrapperRepresentation {
      */
     public static List<Encoding> getSupportedEncodings() {
         return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.ZIP, Encoding.IDENTITY);
+                Encoding.DEFLATE_NOWRAP, Encoding.ZIP, Encoding.IDENTITY);
     }
 
     /** Indicates if the decoding can happen. */
     private volatile boolean decoding;
 
     /** List of encodings still applied to the decodeRepresentation */
-    private volatile List<Encoding> wrappedEncodings;
+    private final List<Encoding> wrappedEncodings;
 
     /**
      * Constructor.
@@ -88,8 +89,8 @@ public class DecodeRepresentation extends WrapperRepresentation {
         super(wrappedRepresentation);
         this.decoding = getSupportedEncodings().containsAll(
                 wrappedRepresentation.getEncodings());
-        this.wrappedEncodings = new ArrayList<Encoding>();
-        this.wrappedEncodings.addAll(wrappedRepresentation.getEncodings());
+        this.wrappedEncodings = new CopyOnWriteArrayList<Encoding>(
+                wrappedRepresentation.getEncodings());
     }
 
     /**
@@ -101,7 +102,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (isDecoding()) {
-            return NioUtils.getChannel(getStream());
+            return IoUtils.getChannel(getStream());
         } else {
             return getWrappedRepresentation().getChannel();
         }
@@ -126,6 +127,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
                 result = new GZIPInputStream(encodedStream);
             } else if (encoding.equals(Encoding.DEFLATE)) {
                 result = new InflaterInputStream(encodedStream);
+            } else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
+                result = new InflaterInputStream(encodedStream, new Inflater(
+                        true));
             } else if (encoding.equals(Encoding.ZIP)) {
                 @SuppressWarnings("resource")
                 final ZipInputStream stream = new ZipInputStream(encodedStream);
@@ -158,7 +162,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public Reader getReader() throws IOException {
         if (isDecoding()) {
-            return BioUtils.getReader(getStream(), getCharacterSet());
+            return IoUtils.getReader(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getReader();
         }
@@ -221,7 +225,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public String getText() throws IOException {
         if (isDecoding()) {
-            return BioUtils.toString(getStream(), getCharacterSet());
+            return IoUtils.toString(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getText();
         }
@@ -245,7 +249,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (isDecoding()) {
-            BioUtils.copy(getStream(), outputStream);
+            IoUtils.copy(getStream(), outputStream);
         } else {
             getWrappedRepresentation().write(outputStream);
         }
@@ -260,7 +264,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (isDecoding()) {
-            write(NioUtils.getStream(writableChannel));
+            OutputStream os = IoUtils.getStream(writableChannel);
+            write(os);
+            os.flush();
         } else {
             getWrappedRepresentation().write(writableChannel);
         }

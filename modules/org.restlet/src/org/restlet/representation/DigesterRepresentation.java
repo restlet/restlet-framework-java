@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -48,8 +48,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.Digest;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -190,7 +189,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
                         .getInstance(algorithm);
                 java.security.DigestInputStream dis = new java.security.DigestInputStream(
                         getStream(), md);
-                org.restlet.engine.io.BioUtils.exhaust(dis);
+                org.restlet.engine.io.IoUtils.exhaust(dis);
                 result = new org.restlet.data.Digest(algorithm, md.digest());
             } catch (java.security.NoSuchAlgorithmException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -214,7 +213,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
         long result = -1L;
 
         if (isAvailable()) {
-            result = BioUtils.exhaust(getStream());
+            result = IoUtils.exhaust(getStream());
         }
 
         return result;
@@ -222,7 +221,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     /**
@@ -238,7 +237,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public Reader getReader() throws IOException {
-        return BioUtils.getReader(getStream(), getCharacterSet());
+        return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
     /**
@@ -288,11 +287,15 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        OutputStream os = IoUtils.getStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer, getCharacterSet()));
+        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
+        write(os);
+        os.flush();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -60,8 +60,9 @@ import org.restlet.engine.log.LoggerFacade;
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
  * {@link Helper} types: {@link org.restlet.engine.security.AuthenticatorHelper}
- * , {@link ClientHelper}, {@link org.restlet.engine.converter.ConverterHelper}
- * and {@link ServerHelper} classes.<br>
+ * , {@link org.restlet.engine.connector.ClientHelper},
+ * {@link org.restlet.engine.converter.ConverterHelper} and
+ * {@link org.restlet.engine.connector.ServerHelper} classes.<br>
  * <br>
  * Note that by default the JULI logging mechanism is used but it is possible to
  * replace it by providing an alternate {@link LoggerFacade} implementation. For
@@ -139,7 +140,50 @@ public class Engine {
      * Clears the current Restlet Engine altogether.
      */
     public static synchronized void clear() {
-        setInstance(null);
+        instance = null;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Creates a new standalone thread with local Restlet thread variable
+     * properly set.
+     * 
+     * @param runnable
+     *            The runnable task to execute.
+     * @param name
+     *            The thread name.
+     * @return The thread with proper variables ready to run the given runnable
+     *         task.
+     */
+    public static Thread createThreadWithLocalVariables(
+            final Runnable runnable, String name) {
+        // Save the thread local variables
+        final org.restlet.Application currentApplication = org.restlet.Application
+                .getCurrent();
+        final Context currentContext = Context.getCurrent();
+        final Integer currentVirtualHost = org.restlet.routing.VirtualHost
+                .getCurrent();
+        final Response currentResponse = Response.getCurrent();
+
+        return new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                // Copy the thread local variables
+                Response.setCurrent(currentResponse);
+                Context.setCurrent(currentContext);
+                org.restlet.routing.VirtualHost.setCurrent(currentVirtualHost);
+                org.restlet.Application.setCurrent(currentApplication);
+
+                try {
+                    // Run the user task
+                    runnable.run();
+                } finally {
+                    Engine.clearThreadLocalVariables();
+                }
+            }
+
+        }, name);
     }
 
     // [ifndef gwt] method
@@ -189,8 +233,8 @@ public class Engine {
             try {
                 LogManager.getLogManager().readConfiguration(
                         new ByteArrayInputStream(sb.toString().getBytes()));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
 
@@ -354,21 +398,8 @@ public class Engine {
         }
         // [enddef]
         Engine result = new Engine(discoverPlugins);
-        org.restlet.engine.Engine.setInstance(result);
+        instance = result;
         return result;
-    }
-
-    /**
-     * Sets the registered Restlet engine.
-     * 
-     * @param engine
-     *            The registered Restlet engine.
-     * @deprecated Use the {@link #register()} and {@link #register(boolean)}
-     *             methods instead.
-     */
-    @Deprecated
-    public static synchronized void setInstance(Engine engine) {
-        instance = engine;
     }
 
     // [ifdef jse,android,osgi] method
@@ -420,18 +451,18 @@ public class Engine {
     private final List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators;
 
     /** List of available client connectors. */
-    private final List<ConnectorHelper<Client>> registeredClients;
+    private final List<org.restlet.engine.connector.ConnectorHelper<Client>> registeredClients;
 
     // [ifndef gwt] member
     /** List of available converter helpers. */
     private final List<org.restlet.engine.converter.ConverterHelper> registeredConverters;
 
     /** List of available protocol helpers. */
-    private final List<org.restlet.engine.ProtocolHelper> registeredProtocols;
+    private final List<org.restlet.engine.connector.ProtocolHelper> registeredProtocols;
 
     // [ifndef gwt] member
     /** List of available server connectors. */
-    private final List<ConnectorHelper<org.restlet.Server>> registeredServers;
+    private final List<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>> registeredServers;
 
     // [ifndef gwt] member
     /** User class loader to use for dynamic class loading. */
@@ -452,7 +483,7 @@ public class Engine {
      */
     public Engine(boolean discoverHelpers) {
         // Prevent engine initialization code from recreating other engines
-        setInstance(this);
+        instance = this;
 
         // Instantiate the logger facade
         if (Edition.CURRENT == Edition.GWT) {
@@ -476,11 +507,11 @@ public class Engine {
             // [enddef]
         }
 
-        this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper<Client>>();
-        this.registeredProtocols = new CopyOnWriteArrayList<ProtocolHelper>();
+        this.registeredClients = new CopyOnWriteArrayList<org.restlet.engine.connector.ConnectorHelper<Client>>();
+        this.registeredProtocols = new CopyOnWriteArrayList<org.restlet.engine.connector.ProtocolHelper>();
 
         // [ifndef gwt]
-        this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper<org.restlet.Server>>();
+        this.registeredServers = new CopyOnWriteArrayList<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>>();
         this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
         this.registeredConverters = new CopyOnWriteArrayList<org.restlet.engine.converter.ConverterHelper>();
         // [enddef]
@@ -524,13 +555,13 @@ public class Engine {
      * @return The new helper.
      */
     @SuppressWarnings("unchecked")
-    public ConnectorHelper<Client> createHelper(Client client,
-            String helperClass) {
-        ConnectorHelper<Client> result = null;
+    public org.restlet.engine.connector.ConnectorHelper<Client> createHelper(
+            Client client, String helperClass) {
+        org.restlet.engine.connector.ConnectorHelper<Client> result = null;
 
-        if (client.getProtocols().size() > 0) {
-            ConnectorHelper<Client> connector = null;
-            for (final Iterator<ConnectorHelper<Client>> iter = getRegisteredClients()
+        if (!client.getProtocols().isEmpty()) {
+            org.restlet.engine.connector.ConnectorHelper<Client> connector = null;
+            for (final Iterator<org.restlet.engine.connector.ConnectorHelper<Client>> iter = getRegisteredClients()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -590,13 +621,13 @@ public class Engine {
      * @return The new helper.
      */
     @SuppressWarnings("unchecked")
-    public ConnectorHelper<org.restlet.Server> createHelper(
+    public org.restlet.engine.connector.ConnectorHelper<org.restlet.Server> createHelper(
             org.restlet.Server server, String helperClass) {
-        ConnectorHelper<org.restlet.Server> result = null;
+        org.restlet.engine.connector.ConnectorHelper<org.restlet.Server> result = null;
 
-        if (server.getProtocols().size() > 0) {
-            ConnectorHelper<org.restlet.Server> connector = null;
-            for (final Iterator<ConnectorHelper<org.restlet.Server>> iter = getRegisteredServers()
+        if (!server.getProtocols().isEmpty()) {
+            org.restlet.engine.connector.ConnectorHelper<org.restlet.Server> connector = null;
+            for (final Iterator<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>> iter = getRegisteredServers()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -791,7 +822,7 @@ public class Engine {
      * 
      * @return The list of available client connectors.
      */
-    public List<ConnectorHelper<Client>> getRegisteredClients() {
+    public List<org.restlet.engine.connector.ConnectorHelper<Client>> getRegisteredClients() {
         return this.registeredClients;
     }
 
@@ -810,7 +841,7 @@ public class Engine {
      * 
      * @return The list of available protocol connectors.
      */
-    public List<ProtocolHelper> getRegisteredProtocols() {
+    public List<org.restlet.engine.connector.ProtocolHelper> getRegisteredProtocols() {
         return this.registeredProtocols;
     }
 
@@ -820,7 +851,7 @@ public class Engine {
      * 
      * @return The list of available server connectors.
      */
-    public List<ConnectorHelper<org.restlet.Server>> getRegisteredServers() {
+    public List<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>> getRegisteredServers() {
         return this.registeredServers;
     }
 
@@ -852,9 +883,11 @@ public class Engine {
     public void registerDefaultConnectors() {
         // [ifndef gae, gwt]
         getRegisteredClients().add(
-                new org.restlet.engine.connector.HttpClientHelper(null));
+                new org.restlet.engine.connector.FtpClientHelper(null));
         // [enddef]
         // [ifndef gwt]
+        getRegisteredClients().add(
+                new org.restlet.engine.connector.HttpClientHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.ClapClientHelper(null));
         getRegisteredClients().add(
@@ -862,14 +895,21 @@ public class Engine {
         getRegisteredServers().add(
                 new org.restlet.engine.local.RiapServerHelper(null));
         // [enddef]
-        // [ifndef gae, gwt]
+
+        // [ifndef android, gae, gwt]
         getRegisteredServers().add(
                 new org.restlet.engine.connector.HttpServerHelper(null));
+        getRegisteredServers().add(
+                new org.restlet.engine.connector.HttpsServerHelper(null));
+        // [enddef]
+        
+        // [ifndef gae, gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.local.FileClientHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.ZipClientHelper(null));
         // [enddef]
+        
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(
         // new org.restlet.engine.adapter.GwtHttpClientHelper(null));
@@ -889,8 +929,10 @@ public class Engine {
      * Registers the default protocols.
      */
     public void registerDefaultProtocols() {
-        getRegisteredProtocols().add(new HttpProtocolHelper());
-        getRegisteredProtocols().add(new WebDavProtocolHelper());
+        getRegisteredProtocols().add(
+                new org.restlet.engine.connector.HttpProtocolHelper());
+        getRegisteredProtocols().add(
+                new org.restlet.engine.connector.WebDavProtocolHelper());
     }
 
     // [ifndef gwt] method
@@ -1110,7 +1152,7 @@ public class Engine {
      *            The list of available client helpers.
      */
     public void setRegisteredClients(
-            List<ConnectorHelper<Client>> registeredClients) {
+            List<org.restlet.engine.connector.ConnectorHelper<Client>> registeredClients) {
         synchronized (this.registeredClients) {
             if (registeredClients != this.registeredClients) {
                 this.registeredClients.clear();
@@ -1148,7 +1190,8 @@ public class Engine {
      * @param registeredProtocols
      *            The list of available protocol helpers.
      */
-    public void setRegisteredProtocols(List<ProtocolHelper> registeredProtocols) {
+    public void setRegisteredProtocols(
+            List<org.restlet.engine.connector.ProtocolHelper> registeredProtocols) {
         synchronized (this.registeredProtocols) {
             if (registeredProtocols != this.registeredProtocols) {
                 this.registeredProtocols.clear();
@@ -1168,7 +1211,7 @@ public class Engine {
      *            The list of available server helpers.
      */
     public void setRegisteredServers(
-            List<ConnectorHelper<org.restlet.Server>> registeredServers) {
+            List<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>> registeredServers) {
         synchronized (this.registeredServers) {
             if (registeredServers != this.registeredServers) {
                 this.registeredServers.clear();

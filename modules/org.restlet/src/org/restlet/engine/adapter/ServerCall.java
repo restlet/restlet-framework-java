@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,17 +45,17 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
-import org.restlet.engine.ConnectorHelper;
+import org.restlet.data.Header;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.EncodingReader;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.header.RangeReader;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -110,6 +110,15 @@ public abstract class ServerCall extends Call {
      */
     public void complete() {
 
+    }
+
+    /**
+     * Flushes the buffers onto the network so that for example you can force
+     * headers to be written before the entity is becoming available.
+     * 
+     * @throws IOException
+     */
+    public void flushBuffers() throws IOException {
     }
 
     /**
@@ -302,7 +311,7 @@ public abstract class ServerCall extends Call {
         byte[] byteArray = getSslSessionIdBytes();
 
         if (byteArray != null) {
-            return BioUtils.toHexString(byteArray);
+            return IoUtils.toHexString(byteArray);
         } else {
             return null;
         }
@@ -337,7 +346,8 @@ public abstract class ServerCall extends Call {
                 HeaderConstants.HEADER_HOST, true);
 
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            // Take care of IPV6 addresses
+            int colonIndex = host.indexOf(':', host.indexOf(']'));
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));

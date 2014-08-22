@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -104,9 +104,11 @@ public abstract class ConverterHelper extends Helper {
      *            The expected representation metadata.
      * @param variants
      *            The variants list to update.
+     * @throws IOException
      */
     public List<VariantInfo> addVariants(Class<?> sourceClass,
-            Variant targetVariant, List<VariantInfo> variants) {
+            Variant targetVariant, List<VariantInfo> variants)
+            throws IOException {
         // List of variants that can be converted from the source class
         List<VariantInfo> helperVariants = getVariants(sourceClass);
 
@@ -151,7 +153,8 @@ public abstract class ConverterHelper extends Helper {
      *            The source object class.
      * @return The list of variants that can be converted.
      */
-    public abstract List<VariantInfo> getVariants(Class<?> source);
+    public abstract List<VariantInfo> getVariants(Class<?> source)
+            throws IOException;
 
     /**
      * Returns the list of variants that can be converted from a given object
@@ -162,9 +165,10 @@ public abstract class ConverterHelper extends Helper {
      * @param targetVariant
      *            The expected representation metadata.
      * @return The list of variants that can be converted.
+     * @throws IOException
      */
     public List<VariantInfo> getVariants(Class<?> sourceClass,
-            Variant targetVariant) {
+            Variant targetVariant) throws IOException {
         return addVariants(sourceClass, targetVariant, null);
     }
 

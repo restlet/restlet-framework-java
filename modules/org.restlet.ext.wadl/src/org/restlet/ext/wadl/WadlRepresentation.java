@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -51,6 +51,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -876,13 +877,6 @@ public class WadlRepresentation extends SaxRepresentation {
         this.application = resource.createApplication();
     }
 
-    // [ifndef android] method
-    @Override
-    public Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception {
-        return null;
-    }
-
     /**
      * Returns the root element of the WADL document.
      * 
@@ -908,6 +902,13 @@ public class WadlRepresentation extends SaxRepresentation {
 
         if (wadl2htmlXsltUrl != null) {
             try {
+                // The SAX source is systematically generated:
+                // - when instantiated using an ApplicationInfo or a
+                // ResourceInfo the sax source is null.
+                // - when instantiated using an XML representation, the
+                // underlying sax source is exhausted, because we parse it in
+                // order to recover the WADL document.
+                setSaxSource(XmlRepresentation.getSaxSource(this));
                 InputRepresentation xslRep = new InputRepresentation(
                         wadl2htmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);

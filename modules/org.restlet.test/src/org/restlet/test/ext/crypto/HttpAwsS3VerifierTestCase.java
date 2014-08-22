@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,23 +26,22 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.test.ext.crypto;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.ext.crypto.internal.AwsVerifier;
@@ -61,8 +60,6 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
 
     private static final String ACCESS_KEY = "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o";
 
-    private static final String ATTRIBUTES_HEADERS = "org.restlet.http.headers";
-
     private AwsVerifier awsVerifier;
 
     private LocalVerifier localVerifier;
@@ -70,7 +67,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
     private Request createRequest() {
         Request request = new Request();
         Series<Header> headers = new Series<Header>(Header.class);
-        request.getAttributes().put(ATTRIBUTES_HEADERS, headers);
+        request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         request.setMethod(Method.GET);
         request.setResourceRef("http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
 
@@ -103,7 +100,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
         Request request = createRequest();
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                ATTRIBUTES_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
 
         // Test for missing due to no challenge response
         Assert.assertEquals(Verifier.RESULT_MISSING,
@@ -118,8 +115,8 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
                 awsVerifier.verify(request, null));
 
         // Test authentication with bad credentials
-        String sig = AwsUtils
-                .getS3Signature(request, "badpassword".toCharArray());
+        String sig = AwsUtils.getS3Signature(request,
+                "badpassword".toCharArray());
         cr.setRawValue(ACCESS_ID + ":" + sig);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));
@@ -131,7 +128,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
                 awsVerifier.verify(request, null));
 
         // Test invalid due to no date header
-        headers.removeAll(HeaderConstants.HEADER_DATE);
+        headers.removeAll(HeaderConstants.HEADER_DATE, true);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));
 

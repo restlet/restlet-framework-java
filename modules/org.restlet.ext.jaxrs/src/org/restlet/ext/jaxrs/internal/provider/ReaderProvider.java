@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -51,7 +51,7 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 
@@ -81,10 +81,10 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
         }
         try {
-            return BioUtils.getReader(entityStream, cs);
+            return IoUtils.getReader(entityStream, cs);
         } catch (UnsupportedEncodingException e) {
             try {
-                return BioUtils.getReader(entityStream, null);
+                return IoUtils.getReader(entityStream, null);
             } catch (UnsupportedEncodingException e2) {
                 throw new WebApplicationException(500);
             }
@@ -127,6 +127,6 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
-        BioUtils.copy(reader, BioUtils.getWriter(entityStream, cs));
+        IoUtils.copy(reader, IoUtils.getWriter(entityStream, cs));
     }
 }

@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 
-<!-- =========================================================
-     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
-     ========================================================= -->
+<!-- ============================================================
+     Restlet Framework build script - Copyright 2005-2014 Restlet
+     ============================================================ -->
 
 <project name="Restlet Framework - @edition@" default="rebuild">
 	<!-- ============================ -->
@@ -26,17 +26,8 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Restlet S.A.S." />
+	<property name="vendor" value="Restlet" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
-	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
-
-	<!-- Miscellaneous Maven properties -->
-	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
-	<property name="parent-maven-artifactId" value="org.restlet.parent" />
-	<property name="parent-maven-version" value="${version-maven}" />
-	<property name="dist-path" value="restlet-${edition}-${version-compact}" />
-	<property name="final-dist-path" value="restlet-${version-compact}" />
-	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<!-- Location properties -->
 	<property name="tools" location="../../tools" />
@@ -54,6 +45,23 @@
 	<property name="mod" location="modules" />
 	<property name="lib" location="libraries" />
 	<property name="poms" location="poms" />
+
+	<!-- Version properties -->
+	<loadproperties srcFile="${tmpl}/config/version.${meta.release-type}.properties">
+		<filterchain>
+			<expandproperties/>
+		</filterchain>
+	</loadproperties>
+
+	<!-- Miscellaneous Maven properties -->
+	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
+	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
+	<property name="parent-maven-artifactId" value="org.restlet.parent" />
+	<property name="parent-maven-version" value="${version-maven}" />
+
+	<property name="dist-path" value="restlet-${edition}-${version-compact}" />
+	<property name="final-dist-path" value="restlet-${version-compact}" />
+	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
@@ -74,7 +82,7 @@
 
 	<!-- Create the time stamp -->
 	<tstamp>
-		<format property="release-date" pattern="yyyy-MM-dd" />
+		<format property="release-date" pattern="MM/dd/yyyy" />
 	</tstamp>
 
 	<!-- Current year -->
@@ -106,8 +114,8 @@
 	<condition property="ant-old">
 		<not>
 			<or>
-				<contains string="${ant.version}" substring="Ant version 1.7" />
-				<contains string="${ant.version}" substring="Ant version 1.8" />
+				<contains string="${ant.version}" substring="version 1.8" />
+				<contains string="${ant.version}" substring="version 1.9" />
 			</or>
 		</not>
 	</condition>
@@ -176,7 +184,6 @@
 		</and>
 	</condition>
 
-
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
@@ -185,6 +192,14 @@
 		</and>
 	</condition>
 
+	<!-- Set the property that will enable the package target -->
+	<condition property="do-package-maven">
+		<and>
+			<istrue value="${do-maven}" />
+			<istrue value="${package}" />
+		</and>
+	</condition>
+	
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 	<condition property="exclude-packages" value="">
 		<isfalse value="${javadoc-hide}" />
@@ -298,11 +313,12 @@
 		</classpath>
 	</taskdef>
 	<!-- Gae Code checker -->
-	<taskdef name="gaeCodeChecker" classname="codeChecker.GaeCodeChecker">
+	<taskdef name="gaeCodeChecker" classname="checker.GaeCodeChecker">
 		<classpath>
 			<fileset dir="${tools}/forge" includes="**/*.jar" />
 		</classpath>
 	</taskdef>
+
 	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 
@@ -406,91 +422,57 @@
 			<!-- Create the Manifest -->
 			<mkdir dir="@{dir}/META-INF" />
 			<delete failonerror="false" file="@{dir}/META-INF/MANIFEST.MF" />
+			<manifest file="@{dir}/META-INF/MANIFEST.MF">
+				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="${vendor}" />
+				<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+				<section name="${mod-@{name}-id}">
+					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+					<attribute name="Implementation-Vendor" value="${vendor}" />
+				</section>
+			</manifest>
+			<if>
+				<isset property="mod-@{name}-activator" />
+				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+					</manifest>
+				</then>
+			</if>
+			<if>
+				<isset property="mod-@{name}-ds" />
+				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Service-Component" name="Service-Component" value="${mod-@{name}-ds}" />
+					</manifest>
+				</then>
+			</if>
+			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
+				<equals arg1="@{name}" arg2="core-test" />
+			</condition>
+			<condition property="include-@{name}-pattern" value="org/restlet/**">
+				<equals arg1="@{name}" arg2="core" />
+			</condition>
+			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
+			<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
+				<include name="${include-@{name}-pattern}" />
+				<!-- <exclude name="**/internal/**" /> -->
+			</dirset>
+			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
+				<map from="${mod}/${mod-@{name}-id}/src/" to='' />
+			</pathconvert>
+			<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+				<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+			</manifest>
 			<if>
 				<equals arg1="@{source}" arg2="true" />
 				<then>
-					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
-						<equals arg1="@{name}" arg2="core-test" />
-					</condition>
-					<condition property="include-@{name}-pattern" value="org/restlet/**">
-						<equals arg1="@{name}" arg2="core" />
-					</condition>
-					<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
-					<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
-						<include name="${include-@{name}-pattern}" />
-						<!-- <exclude name="**/internal/**" /> -->
-					</dirset>
-					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
-					</pathconvert>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+					</manifest>
 				</then>
-				<else>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
-				</else>
 			</if>
 		</sequential>
 	</macrodef>
@@ -504,9 +486,16 @@
 			<if>
 				<istrue value="${do-p2}" />
 				<then>
-					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
+					<pathconvert property="mod-@{name}-ds" dirsep="/" pathsep="," setonempty="false">
+						<map from="${mod}/${mod-@{name}-id}/" to=""/>
+						<fileset dir="${mod}/${mod-@{name}-id}/" includes="OSGI-INF/**" />
+					</pathconvert>
+					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}"/>
 				</then>
 			</if>
+			<copy todir="${temp}/jar-extras/@{name}" failonerror="false">
+				<fileset dir="${mod}/${mod-@{name}-id}/" includes="OSGI-INF/**" />
+			</copy>
 
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist-classic}/lib" />
@@ -567,6 +556,7 @@
 			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" filesetmanifest="merge">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
 			</jar>
+			<!-- @generate-mavenjavadocs@ -->
 
 			<copy file="${poms}/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" overwrite="true" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="MD5" fileext=".md5" />
@@ -575,6 +565,7 @@
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+
 		</sequential>
 	</macrodef>
 
@@ -794,7 +785,7 @@
 				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
-			<bottom>Copyright &#169; 2005-2012 Restlet S.A.S.</bottom>
+			<bottom>Copyright 2005-2014 Restlet</bottom>
 
 			<group title="Restlet API">
 				<package name="org.restlet*" />
@@ -826,7 +817,7 @@
 	<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
 
 	<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
-		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7 or higher." />
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.8 or higher." />
 		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
 		<echo message="Current version: ${ant.version}" />
 	</target>
@@ -835,7 +826,7 @@
 		<mkdir dir="${temp}/test" />
 
 		<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
-		<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
+		<junit printsummary="true" fork="true" haltonfailure="true" haltonerror="true" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
 			<classpath>
 				<path location="${mod}/${mod-core-test-id}/src" />
 				<path refid="mod-core-test-path" />
@@ -924,10 +915,11 @@
 		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
 		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
-		<!-- Copy the build properties files. -->
+		<!-- Copy the build properties files.
 		<copy todir="${dist-classic}/src">
 			<fileset dir="${basedir}" includes="*.properties" />
 		</copy>
+		-->
 
 		<!-- Packages libraries -->
 		<for param="library" delimiter=" " list="${libraries-classic}">
@@ -989,9 +981,11 @@
 	<!-- PACKAGE target -->
 	<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
-		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
-		<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
-		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
+		<move todir="${final-dist-base}">
+			<fileset dir="${dist-base}">
+				<include name="restlet-${edition}-${version-compact}.*"/>
+			</fileset>
+		</move>
 	</target>
 
 	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
@@ -1000,7 +994,7 @@
 		</move>
 	</target>
 
-	<target name="package-maven" if="do-package" description="Generate the maven distributions.">
+	<target name="package-maven" if="do-package-maven" description="Generate the maven distributions.">
 		<move todir="${final-dist-maven2}">
 			<fileset dir="${dist-maven2}" />
 		</move>

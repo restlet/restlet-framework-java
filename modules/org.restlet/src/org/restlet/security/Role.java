@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Application;
+import org.restlet.engine.util.SystemUtils;
 
 /**
  * Application specific role. Common examples are "administrator", "user",
@@ -45,21 +46,34 @@ import org.restlet.Application;
  * recommended that those role don't reflect an actual organization, but more
  * the functional requirements of your application.
  * 
- * Also, two roles are not considered equals if they have the same the name and
- * child roles, they need to be the same Java object. If you need to reuse the
- * same role, you should call {@link Application#getRole(String)} method
- * instead.
+ * Two roles are considered equals if they belong to the same parent application
+ * and have the same name and child roles. The description isn't used for
+ * equality assessment.
+ * 
+ * Since version 2.2, they don't need to be the same Java objects anymore. In
+ * order to prevent the multiplication of equivalent {@link Role} instances, you
+ * should try to call {@link Application#getRole(String)} method.
  * 
  * @author Jerome Louvel
+ * @author Tim Peierls
  */
 public class Role implements Principal {
 
     /**
      * Unmodifiable role that covers all existing roles. Its name is "*" by
      * convention.
+     * 
+     * @deprecated To be removed as it is ambiguous, roles being specific to a
+     *             given application.
      */
+    @Deprecated
     public static final Role ALL = new Role("*",
             "Role that covers all existing roles.") {
+        @Override
+        public void setApplication(Application application) {
+            throw new IllegalStateException("Unmodifiable role");
+        }
+
         @Override
         public void setDescription(String description) {
             throw new IllegalStateException("Unmodifiable role");
@@ -72,6 +86,40 @@ public class Role implements Principal {
 
     };
 
+    /**
+     * Finds an existing role or creates a new one if needed. Note that a null
+     * description will be set if the role has to be created.
+     * 
+     * @param application
+     *            The parent application.
+     * @param name
+     *            The role name to find or create.
+     * @return The role found or created.
+     */
+    public static Role get(Application application, String name) {
+        return get(application, name, null);
+    }
+
+    /**
+     * Finds an existing role or creates a new one if needed.
+     * 
+     * @param application
+     *            The parent application.
+     * @param name
+     *            The role name to find or create.
+     * @param description
+     *            The role description if one needs to be created.
+     * @return The role found or created.
+     */
+    public static Role get(Application application, String name,
+            String description) {
+        Role role = (application == null) ? null : application.getRole(name);
+        return (role == null) ? new Role(application, name, description) : role;
+    }
+
+    /** The parent application. */
+    private volatile Application application;
+
     /** The modifiable list of child roles. */
     private final List<Role> childRoles;
 
@@ -82,34 +130,87 @@ public class Role implements Principal {
     private volatile String name;
 
     /**
-     * Default constructor.
+     * Default constructor. Note that the parent application is retrieved using
+     * the {@link Application#getCurrent()} method if available or is null.
      */
     public Role() {
-        this(null, null);
+        this(Application.getCurrent(), null, null);
     }
 
     /**
      * Constructor.
      * 
+     * @param application
+     *            The parent application or null.
      * @param name
      *            The name.
      */
-    public Role(String name) {
-        this(name, null);
+    public Role(Application application, String name) {
+        this(application, name, null);
     }
 
     /**
      * Constructor.
      * 
+     * @param application
+     *            The parent application or null.
      * @param name
      *            The name.
      * @param description
      *            The description.
      */
-    public Role(String name, String description) {
+    public Role(Application application, String name, String description) {
+        this.application = application;
         this.name = name;
         this.description = description;
         this.childRoles = new CopyOnWriteArrayList<Role>();
+    }
+
+    /**
+     * Constructor. Note that the parent application is retrieved using the
+     * {@link Application#getCurrent()} method.
+     * 
+     * @param name
+     *            The name.
+     * @deprecated Use {@link Role#Role(Application, String)} instead.
+     */
+    @Deprecated
+    public Role(String name) {
+        this(Application.getCurrent(), name, null);
+    }
+
+    /**
+     * Constructor. Note that the parent application is retrieved using the
+     * {@link Application#getCurrent()} method.
+     * 
+     * @param name
+     *            The name.
+     * @param description
+     *            The description.
+     * @deprecated Use {@link Role#Role(Application, String, String)} instead.
+     */
+    @Deprecated
+    public Role(String name, String description) {
+        this(Application.getCurrent(), name, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Role))
+            return false;
+        Role role = (Role) o;
+        return SystemUtils.equals(role.getApplication(), getApplication())
+                && SystemUtils.equals(role.getName(), getName())
+                && SystemUtils.equals(role.getChildRoles(), getChildRoles());
+    }
+
+    /**
+     * Returns the parent application.
+     * 
+     * @return The parent application.
+     */
+    public Application getApplication() {
+        return application;
     }
 
     /**
@@ -141,20 +242,18 @@ public class Role implements Principal {
 
     @Override
     public int hashCode() {
-        int result;
-        if (name == null) {
-            result = super.hashCode();
-        } else if (getChildRoles().isEmpty()) {
-            result = name.hashCode();
-        } else {
-            StringBuilder sb = new StringBuilder(name).append("(");
-            for (Role role : getChildRoles()) {
-                sb.append(role.hashCode()).append("-");
-            }
-            sb.append(")");
-            result = sb.toString().hashCode();
-        }
-        return result;
+        return SystemUtils.hashCode(getApplication(), getName(),
+                getChildRoles());
+    }
+
+    /**
+     * Sets the parent application.
+     * 
+     * @param application
+     *            The parent application.
+     */
+    public void setApplication(Application application) {
+        this.application = application;
     }
 
     /**

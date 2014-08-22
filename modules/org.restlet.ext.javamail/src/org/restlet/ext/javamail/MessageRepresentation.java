@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -160,8 +160,9 @@ public class MessageRepresentation extends DomRepresentation {
                             mimeBodyPart.getContentType());
                     if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                             true)) {
-                        content = new InputRepresentation(mimeBodyPart
-                                .getInputStream(), MediaType.TEXT_PLAIN);
+                        content = new InputRepresentation(
+                                mimeBodyPart.getInputStream(),
+                                MediaType.TEXT_PLAIN);
                         break;
                     }
 
@@ -172,8 +173,8 @@ public class MessageRepresentation extends DomRepresentation {
         } else {
             // Add the email body
             if (message.getContentType() != null) {
-                final ContentType contentType = new ContentType(message
-                        .getContentType());
+                final ContentType contentType = new ContentType(
+                        message.getContentType());
                 if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                         true)) {
                     content = new InputRepresentation(message.getInputStream(),

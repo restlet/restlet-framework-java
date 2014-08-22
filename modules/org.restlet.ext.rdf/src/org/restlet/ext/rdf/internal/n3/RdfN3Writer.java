@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -92,8 +92,8 @@ public class RdfN3Writer extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.writer.append("@prefix ").append(prefixes.get(key)).append(
-                    ": <").append(key).append(">.\n");
+            this.writer.append("@prefix ").append(prefixes.get(key))
+                    .append(": <").append(key).append(">.\n");
         }
 
         this.writer.append("@keywords a, is, of, has.\n");
@@ -220,11 +220,11 @@ public class RdfN3Writer extends GraphHandler {
         for (Link link : linkset) {
             if (link.hasReferenceSource()) {
                 if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsReference());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsReference());
                 } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
                 } else if (link.hasLinkTarget()) {
                     // TODO Hande source as link.
                 } else {
@@ -236,11 +236,11 @@ public class RdfN3Writer extends GraphHandler {
             } else if (link.hasGraphSource()) {
                 this.writingExtraDot = false;
                 if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsReference());
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsReference());
                 } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
                 } else if (link.hasLinkTarget()) {
                     // TODO Handle source as link.
                 } else {

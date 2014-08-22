@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -60,24 +60,27 @@ public class ListParamService {
     @GET
     @Path("cookie")
     @Produces("text/plain")
-    public String getCookie(@CookieParam("c") String c,
-            @CookieParam("cc") List<String> cc) {
+    public String getCookie(@CookieParam("c")
+    String c, @CookieParam("cc")
+    List<String> cc) {
         return "c=" + c + "\ncc=" + cc;
     }
 
     @GET
     @Path("header")
     @Produces("text/plain")
-    public String getHeader(@HeaderParam("h") String h,
-            @HeaderParam("hh") Set<String> hh) {
+    public String getHeader(@HeaderParam("h")
+    String h, @HeaderParam("hh")
+    Set<String> hh) {
         return "h=" + h + "\nhh=" + hh;
     }
 
     @GET
     @Path("matrix")
     @Produces("text/plain")
-    public String getMatrix(@MatrixParam("m") String m,
-            @MatrixParam("mm") Collection<String> mm) {
+    public String getMatrix(@MatrixParam("m")
+    String m, @MatrixParam("mm")
+    Collection<String> mm) {
         return "m=" + m + "\nmm=" + mm;
     }
 
@@ -89,16 +92,18 @@ public class ListParamService {
     @GET
     @Path("path/{p}/{p}/{pp}/{pp}")
     @Produces("text/plain")
-    public String getPath(@PathParam("p") PathSegment p,
-            @PathParam("pp") SortedSet<PathSegment> pp) {
+    public String getPath(@PathParam("p")
+    PathSegment p, @PathParam("pp")
+    SortedSet<PathSegment> pp) {
         return "p=" + p + "\npp=" + pp;
     }
 
     @GET
     @Path("query")
     @Produces("text/plain")
-    public String getQuery(@QueryParam("q") String q,
-            @QueryParam("qq") List<String> qq) {
+    public String getQuery(@QueryParam("q")
+    String q, @QueryParam("qq")
+    List<String> qq) {
         return "q=" + q + "\nqq=" + qq;
     }
 }

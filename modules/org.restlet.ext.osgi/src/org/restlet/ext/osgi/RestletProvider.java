@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -37,32 +37,18 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 
 /**
- * @author Bryan Hunt
+ * This is a common interface for several of the providers. Users are not
+ * expected to implement this interface, but instead implement one of the
+ * specialized provider interfaces.
  * 
+ * @author Bryan Hunt
  */
-public abstract class RestletProvider implements IRestletProvider {
-    private IFilterProvider filterProvider;
-
-    public void bindFilterProvider(IFilterProvider filterProvider) {
-        this.filterProvider = filterProvider;
-    }
-
-    protected abstract Restlet getFilteredRestlet();
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        Restlet inboundRoot = null;
-
-        if (filterProvider != null) {
-            inboundRoot = filterProvider.getInboundRoot(context);
-            filterProvider.getFilter().setNext(getFilteredRestlet());
-        }
-
-        return inboundRoot;
-    }
-
-    public void unbindFilterProvider(IFilterProvider filterProvider) {
-        if (this.filterProvider == filterProvider)
-            this.filterProvider = null;
-    }
+public interface RestletProvider {
+    /**
+     * 
+     * @param context
+     *            the Restlet application context
+     * @return the node to be used as the inbound root of the handling chain
+     */
+    Restlet getInboundRoot(Context context);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,46 +26,28 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.jetty;
 
-import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.bio.SocketConnector;
-import org.eclipse.jetty.server.nio.BlockingChannelConnector;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Jetty HTTP server connector. Here is the list of additional parameters that
- * are supported. They should be set in the Server's context before it is
- * started:
- * <table>
- * <tr>
- * <th>Parameter name</th>
- * <th>Value type</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>1</td>
- * <td>The type of Jetty connector to use.<br>
- * 1 : Selecting NIO connector (Jetty's SelectChannelConnector class).<br>
- * 2 : Blocking NIO connector (Jetty's BlockingChannelConnector class).<br>
- * 3 : Blocking BIO connector (Jetty's SocketConnector class).</td>
- * </tr>
- * </table>
+ * Jetty HTTP server connector.
  * 
- * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
+ * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
  * @author Jerome Louvel
+ * @author Tal Liron
  */
 public class HttpServerHelper extends JettyServerHelper {
+
     /**
      * Constructor.
      * 
@@ -78,41 +60,16 @@ public class HttpServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Creates a new internal Jetty connector.
+     * Creates new internal Jetty connection factories.
      * 
-     * @return A new internal Jetty connector.
+     * @param configuration
+     *            The HTTP configuration.
+     * @return New internal Jetty connection factories.
      */
-    @Override
-    protected AbstractConnector createConnector() {
-        AbstractConnector result = null;
-
+    protected ConnectionFactory[] createConnectionFactories(
+            HttpConfiguration configuration) {
         // Create and configure the Jetty HTTP connector
-        switch (getType()) {
-        case 1:
-            // Selecting NIO connector
-            result = new SelectChannelConnector();
-            break;
-        case 2:
-            // Blocking NIO connector
-            result = new BlockingChannelConnector();
-            break;
-        case 3:
-            // Blocking BIO connector
-            result = new SocketConnector();
-            break;
-        }
-
-        return result;
+        return new ConnectionFactory[] { new HttpConnectionFactory(
+                configuration) };
     }
-
-    /**
-     * Returns the type of Jetty connector to use.
-     * 
-     * @return The type of Jetty connector to use.
-     */
-    public int getType() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("type", "1"));
-    }
-
 }

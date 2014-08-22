@@ -1,0 +1,14 @@
+<module id="nio" excludes="gae,gwt" type="connector" package="org.restlet.ext.nio">
+	<name>Restlet Extension - NIO</name>
+	<description>Integration with java.nio package.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>79-restlet</wikiUri>
+</module>

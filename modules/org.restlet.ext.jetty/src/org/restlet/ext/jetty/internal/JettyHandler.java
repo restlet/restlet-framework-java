@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,7 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.AbstractHttpConnection;
+import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
@@ -54,11 +54,9 @@ import org.restlet.ext.jetty.JettyServerHelper;
  * 
  * @author Valdis Rigdon
  * @author Jerome Louvel
+ * @author Tal Liron
  */
 public class JettyHandler extends AbstractHandler {
-
-    /** The Restlet server helper. */
-    private final JettyServerHelper helper;
 
     /**
      * Constructor for HTTP server connectors.
@@ -79,23 +77,10 @@ public class JettyHandler extends AbstractHandler {
      *            Indicates if the server supports HTTP or HTTPS.
      */
     public JettyHandler(Server server, boolean secure) {
-        if (secure) {
+        if (secure)
             this.helper = new HttpsServerHelper(server);
-        } else {
+        else
             this.helper = new HttpServerHelper(server);
-        }
-    }
-
-    @Override
-    protected void doStart() throws Exception {
-        super.doStart();
-        this.helper.start();
-    }
-
-    @Override
-    protected void doStop() throws Exception {
-        super.doStop();
-        this.helper.stop();
     }
 
     /**
@@ -115,11 +100,26 @@ public class JettyHandler extends AbstractHandler {
             HttpServletRequest servletRequest,
             HttpServletResponse servletResponse) throws IOException,
             ServletException {
+        final HttpChannel<?> channel = HttpChannel.getCurrentHttpChannel();
         final Request baseRequest = (servletRequest instanceof Request) ? (Request) servletRequest
-                : AbstractHttpConnection.getCurrentConnection().getRequest();
-        this.helper.handle(new JettyCall(this.helper.getHelped(),
-                AbstractHttpConnection.getCurrentConnection()));
+                : channel.getRequest();
+        this.helper
+                .handle(new JettyServerCall(this.helper.getHelped(), channel));
         baseRequest.setHandled(true);
     }
 
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
+        this.helper.start();
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        super.doStop();
+        this.helper.stop();
+    }
+
+    /** The Restlet server helper. */
+    private final JettyServerHelper helper;
 }

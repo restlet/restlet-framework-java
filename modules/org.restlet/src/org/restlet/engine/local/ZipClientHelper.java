@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -53,7 +53,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
 
@@ -184,8 +184,9 @@ public class ZipClientHelper extends LocalClientHelper {
                     }
                 } else {
                     // Return the file content
-                    output = entity.getRepresentation(metadataService
-                            .getDefaultMediaType(), getTimeToLive());
+                    output = entity.getRepresentation(
+                            metadataService.getDefaultMediaType(),
+                            getTimeToLive());
                     output.setLocationRef(request.getResourceRef());
                     Entity.updateMetadata(entity.getName(), output, true,
                             getMetadataService());
@@ -269,9 +270,8 @@ public class ZipClientHelper extends LocalClientHelper {
                 response.setStatus(Status.SUCCESS_CREATED);
             } else {
                 if (wrongReplace) {
-                    response
-                            .setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                                    "Directory cannot be replaced by a file or file by a directory.");
+                    response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                            "Directory cannot be replaced by a file or file by a directory.");
                 } else {
                     File writeTo = null;
                     ZipFile zipFile = null;
@@ -290,8 +290,9 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                BioUtils.copy(new BufferedInputStream(zipFile
-                                        .getInputStream(e)), zipOut);
+                                IoUtils.copy(
+                                        new BufferedInputStream(zipFile
+                                                .getInputStream(e)), zipOut);
                                 zipOut.closeEntry();
                             }
                         }
@@ -310,7 +311,7 @@ public class ZipClientHelper extends LocalClientHelper {
                         }
                     }
 
-                    if (!(BioUtils.delete(file) && writeTo.renameTo(file))) {
+                    if (!(IoUtils.delete(file) && writeTo.renameTo(file))) {
                         if (!file.exists())
                             file.createNewFile();
                         FileInputStream fis = null;
@@ -320,7 +321,7 @@ public class ZipClientHelper extends LocalClientHelper {
                             fos = new FileOutputStream(file);
                             // ByteUtils.write(fis.getChannel(),
                             // fos.getChannel());
-                            BioUtils.copy(fis, fos);
+                            IoUtils.copy(fis, fos);
                             response.setStatus(Status.SUCCESS_OK);
                         } finally {
                             try {
@@ -365,7 +366,7 @@ public class ZipClientHelper extends LocalClientHelper {
                 entry.setTime(System.currentTimeMillis());
             }
             out.putNextEntry(entry);
-            BioUtils.copy(new BufferedInputStream(entity.getStream()), out);
+            IoUtils.copy(new BufferedInputStream(entity.getStream()), out);
             out.closeEntry();
             return true;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -69,8 +69,8 @@ public class DateTestCase extends RestletTestCase {
     public void testRfc822() throws Exception {
         Date date1 = DateUtils.parse(DATE_RFC822_1, DateUtils.FORMAT_RFC_822);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_822
-                .get(0));
+        String dateFormat1 = DateUtils.format(date1,
+                DateUtils.FORMAT_RFC_822.get(0));
 
         assertEquals(DATE_RFC822_1, dateFormat1);
     }
@@ -81,8 +81,8 @@ public class DateTestCase extends RestletTestCase {
     public void testRfc1123() throws Exception {
         Date date1 = DateUtils.parse(DATE_RFC1123_1, DateUtils.FORMAT_RFC_1123);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_1123
-                .get(0));
+        String dateFormat1 = DateUtils.format(date1,
+                DateUtils.FORMAT_RFC_1123.get(0));
 
         assertEquals(DATE_RFC1123_1, dateFormat1);
     }
@@ -93,8 +93,8 @@ public class DateTestCase extends RestletTestCase {
     public void testRfc1036() throws Exception {
         Date date1 = DateUtils.parse(DATE_RFC1036_1, DateUtils.FORMAT_RFC_1036);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_1036
-                .get(0));
+        String dateFormat1 = DateUtils.format(date1,
+                DateUtils.FORMAT_RFC_1036.get(0));
 
         assertEquals(DATE_RFC1036_1, dateFormat1);
     }
@@ -105,8 +105,8 @@ public class DateTestCase extends RestletTestCase {
     public void testAsc() throws Exception {
         Date date1 = DateUtils.parse(DATE_ASC_1, DateUtils.FORMAT_ASC_TIME);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_ASC_TIME
-                .get(0));
+        String dateFormat1 = DateUtils.format(date1,
+                DateUtils.FORMAT_ASC_TIME.get(0));
 
         assertEquals(DATE_ASC_1, dateFormat1);
     }
@@ -121,16 +121,16 @@ public class DateTestCase extends RestletTestCase {
         Date date4 = DateUtils.parse(DATE_RFC3339_4, DateUtils.FORMAT_RFC_3339);
         Date date5 = DateUtils.parse(DATE_RFC3339_5, DateUtils.FORMAT_RFC_3339);
 
-        String dateFormat1 = DateUtils.format(date1, DateUtils.FORMAT_RFC_3339
-                .get(0));
-        String dateFormat2 = DateUtils.format(date2, DateUtils.FORMAT_RFC_3339
-                .get(0));
-        String dateFormat3 = DateUtils.format(date3, DateUtils.FORMAT_RFC_3339
-                .get(0));
-        String dateFormat4 = DateUtils.format(date4, DateUtils.FORMAT_RFC_3339
-                .get(0));
-        String dateFormat5 = DateUtils.format(date5, DateUtils.FORMAT_RFC_3339
-                .get(0));
+        String dateFormat1 = DateUtils.format(date1,
+                DateUtils.FORMAT_RFC_3339.get(0));
+        String dateFormat2 = DateUtils.format(date2,
+                DateUtils.FORMAT_RFC_3339.get(0));
+        String dateFormat3 = DateUtils.format(date3,
+                DateUtils.FORMAT_RFC_3339.get(0));
+        String dateFormat4 = DateUtils.format(date4,
+                DateUtils.FORMAT_RFC_3339.get(0));
+        String dateFormat5 = DateUtils.format(date5,
+                DateUtils.FORMAT_RFC_3339.get(0));
 
         assertEquals(DATE_RFC3339_1, dateFormat1);
         assertEquals("1996-12-20T00:39:57Z", dateFormat2);
