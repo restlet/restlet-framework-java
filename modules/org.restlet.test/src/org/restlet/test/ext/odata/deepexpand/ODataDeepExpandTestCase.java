@@ -152,6 +152,32 @@ public class ODataDeepExpandTestCase extends RestletTestCase {
     }
 
     /**
+     * This test performs expansion and checks parsing of 
+     * date forms with omitted seconds (Issue #946) in the expanded hierarchy.    
+     */
+    public void testJobExpansionAndParsingOfShortDates() {
+        
+    	Query<Job> query = service
+                .createJobQuery("/Job")
+                .expand("jobParts/description/literals/language,jobPosting/name/literals/language");
+
+        for (Job job : query) {
+        	Assert.assertNotNull("Failed to parse date, resulting to null value", job.getStartDate());
+        	Assert.assertNotNull("Failed to parse date, resulting to null value", job.getEndDate());
+            
+        	if (job.getJobParts() != null) {
+
+                for (JobPart jobPart : job.getJobParts()) {
+                	Assert.assertNotNull("Failed to parse date, resulting to null value", jobPart.getStartDate());
+                	Assert.assertNotNull("Failed to parse date, resulting to null value", jobPart.getEndDate());
+                }
+            }
+        }
+        
+    }
+
+
+    /**
      * This checks that a multilingual text field (containing texts for many
      * languages) has been fully expanded to contain all literals for every
      * language and to contain the language definitions themselves too.
