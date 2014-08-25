@@ -9,6 +9,7 @@ Changes log
         document does not declare a schema attribute. Issue #932.
       - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
         Issue #931. Reported and contributed by Tal Liron.
+      - The Restlet internal connector only serves from one thread. #937
 
     - Enhancements
       - Added targetRef support to templates, allow reference variables to 

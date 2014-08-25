@@ -74,7 +74,8 @@ public class HttpServerHelper extends NetServerHelper {
                         httpExchange));
             }
         });
-        server.setExecutor(null); // creates a default executor
+        // creates a default executor
+        server.setExecutor(createThreadPool());
         server.start();
 
         setConfidential(false);
