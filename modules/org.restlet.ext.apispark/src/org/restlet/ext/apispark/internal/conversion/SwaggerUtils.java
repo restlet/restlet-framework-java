@@ -43,10 +43,10 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
+import org.restlet.ext.apispark.model.Definition;
 import org.restlet.resource.ClientResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,14 +83,14 @@ public abstract class SwaggerUtils {
      * @param password
      *            The paswword for service authentication.
      * @return A {@link Definition}.
-     * @throws SwaggerConversionException
+     * @throws TranslationException
      */
     public static Definition getDefinition(String swaggerUrl, String userName,
-            String password) throws SwaggerConversionException {
+            String password) throws TranslationException {
 
         // Check that URL is non empty and well formed
         if (swaggerUrl == null) {
-            throw new SwaggerConversionException("url",
+            throw new TranslationException("url",
                     "You did not provide any URL");
         }
         Pattern p = Pattern
@@ -126,10 +126,10 @@ public abstract class SwaggerUtils {
                             + api.getPath()), ApiDeclaration.class));
                 }
             } catch (IOException e) {
-                throw new SwaggerConversionException("file", e.getMessage());
+                throw new TranslationException("file", e.getMessage());
             }
         }
-        return SwaggerConverter.convert(resourceListing, apis);
+        return SwaggerTranslater.translate(resourceListing, apis);
     }
 
     /**

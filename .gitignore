@@ -51,6 +51,7 @@
 /modules/org.restlet.ext.odata/bin
 /modules/org.restlet.ext.openid/bin
 /modules/org.restlet.ext.osgi/bin
+/modules/org.restlet.ext.raml/bin
 /modules/org.restlet.ext.rdf/bin
 /modules/org.restlet.ext.rome/bin
 /modules/org.restlet.ext.sdc/bin

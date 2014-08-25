@@ -1,4 +1,4 @@
-<module id="apispark" includes="jse,osgi" type="standard" package="org.restlet.ext.apispark">
+<module id="apispark" excludes="android,gwt" type="standard" package="org.restlet.ext.apispark">
    <name>Restlet Extension - APISpark</name>
    <description>Integration with APISpark cloud platform, by Restlet.</description>
 	<distributions>

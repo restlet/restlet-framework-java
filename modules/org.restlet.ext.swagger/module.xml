@@ -1,6 +1,6 @@
 <module id="swagger" excludes="android,gwt" type="integration" package="org.restlet.ext.swagger">
 	<name>Restlet Extension - Swagger</name>
-	<description>Integration with Simple framework.</description>
+	<description>Support for the Swagger specification.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
@@ -19,6 +19,7 @@
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="e4" />
+		<dependency type="module" id="apispark" />
 	</dependencies>
 	<wikiUri>xx-tobedefined</wikiUri>
 <!-- Remove some classes to be refactored. -->

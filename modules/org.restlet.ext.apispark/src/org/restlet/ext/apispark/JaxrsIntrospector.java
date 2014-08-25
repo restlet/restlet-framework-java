@@ -69,17 +69,17 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionConverter;
-import org.restlet.ext.apispark.internal.info.ApplicationInfo;
-import org.restlet.ext.apispark.internal.info.MethodInfo;
-import org.restlet.ext.apispark.internal.info.ParameterInfo;
-import org.restlet.ext.apispark.internal.info.ParameterStyle;
-import org.restlet.ext.apispark.internal.info.RepresentationInfo;
-import org.restlet.ext.apispark.internal.info.RequestInfo;
-import org.restlet.ext.apispark.internal.info.ResourceInfo;
-import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.info.ApplicationInfo;
+import org.restlet.ext.apispark.info.MethodInfo;
+import org.restlet.ext.apispark.info.ParameterInfo;
+import org.restlet.ext.apispark.info.ParameterStyle;
+import org.restlet.ext.apispark.info.RepresentationInfo;
+import org.restlet.ext.apispark.info.RequestInfo;
+import org.restlet.ext.apispark.info.ResourceInfo;
+import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslater;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
+import org.restlet.ext.apispark.model.Definition;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Template;
 
@@ -755,7 +755,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public JaxrsIntrospector(javax.ws.rs.core.Application application) {
-        definition = IntrospectionConverter.toDefinition(
+        definition = IntrospectionTranslater.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
         if (definition != null) {

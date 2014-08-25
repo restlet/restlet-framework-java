@@ -83,11 +83,15 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Returns the next router available.
+     * Indicates if the given {@link Restlet} provides a
+     * {@link SwaggerSpecificationRestlet} able to generate Swagger
+     * documentation.
      * 
      * @param current
      *            The current Restlet to inspect.
-     * @return The first router available.
+     * @return True if the given {@link Restlet} provides a
+     *         {@link SwaggerSpecificationRestlet} able to generate Swagger
+     *         documentation.
      */
     private static boolean isDocumented(Restlet current) {
         boolean documented = false;
@@ -170,7 +174,7 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Overrides the current implementation. It checks that the application has
+     * Overrides the parent's implementation. It checks that the application has
      * been documented using a {@link SwaggerSpecificationRestlet}. By default,
      * the documentation is attached to the high level router, with the
      * "/api-docs" path.
@@ -179,12 +183,17 @@ public class SwaggerApplication extends Application {
     public Restlet getInboundRoot() {
         Restlet inboundRoot = super.getInboundRoot();
         if (!documented) {
-            Router rootRouter = getNextRouter(inboundRoot);
+            synchronized (this) {
+                if (!documented) {
+                    Router rootRouter = getNextRouter(inboundRoot);
 
-            // Check that the application has been documented.
-            documented = isDocumented(rootRouter);
-            if (!documented) {
-                attachSwaggerSpecificationRestlet(rootRouter);
+                    // Check that the application has been documented.
+                    documented = isDocumented(rootRouter);
+                    if (!documented) {
+                        attachSwaggerSpecificationRestlet(rootRouter);
+                        documented = true;
+                    }
+                }
             }
         }
         return inboundRoot;
