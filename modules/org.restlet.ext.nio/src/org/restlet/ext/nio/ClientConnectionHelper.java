@@ -481,13 +481,13 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public void start() throws Exception {
-        getLogger().info("Starting the internal " + getProtocols() + " client");
+        getLogger().info("Starting the internal nio " + getProtocols() + " client");
         super.start();
     }
 
     @Override
     public void stop() throws Exception {
-        getLogger().info("Stopping the internal " + getProtocols() + " client");
+        getLogger().info("Stopping the internal nio " + getProtocols() + " client");
         super.stop();
     }
 

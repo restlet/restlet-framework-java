@@ -328,7 +328,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
         // Start the controller
         getLogger().info(
-                "Starting the internal " + getProtocols() + " server on port "
+                "Starting the internal nio " + getProtocols() + " server on port "
                         + getHelped().getActualPort());
         super.start();
 
@@ -347,7 +347,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the internal " + getProtocols() + " server");
+        getLogger().info("Stopping the internal nio " + getProtocols() + " server");
 
         // Stop the controller
         super.stop();
