@@ -210,7 +210,7 @@ public abstract class RamlTranslater {
 		if (definition.getVersion() != null) {
 			raml.setVersion(definition.getVersion());
 		}
-		raml.setBaseUri(definition.getEndpoint() == null ? "http://introspected.com"
+		raml.setBaseUri(definition.getEndpoint() == null ? "http://toBeSet.com"
 				: definition.getEndpoint());
 		// raml.setBaseUriParameters(new HashMap<String, UriParameter>());
 		// raml.getBaseUriParameters().put("version", new
