@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.SwaggerTranslater;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.model.Definition;
@@ -54,11 +53,11 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Unit test for the {@link SwaggerTranslater} class.
+ * Unit test for the {@link SwaggerTranslator} class.
  * 
  * @author Cyprien Quilici
  */
-public class SwaggerTranslaterTestCase extends RestletTestCase {
+public class SwaggerTranslatorTestCase extends RestletTestCase {
 
 	/**
 	 * Retrieves the Petstore from {@linkplain http
