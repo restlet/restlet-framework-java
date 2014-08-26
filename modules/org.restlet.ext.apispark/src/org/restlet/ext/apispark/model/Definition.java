@@ -55,17 +55,13 @@ public class Definition {
     /** URL of the description of the license used by the API. */
     private String license;
 
-    /** Current version of the API. */
-    private String version;
-    
     /** RWADef version of the definition */
     private final String rwadefVersion = "1.0";
 
-    public String getRwadefVersion() {
-		return rwadefVersion;
-	}
+    /** Current version of the API. */
+    private String version;
 
-	public String getContact() {
+    public String getContact() {
         return contact;
     }
 
@@ -79,6 +75,10 @@ public class Definition {
 
     public String getLicense() {
         return license;
+    }
+
+    public String getRwadefVersion() {
+        return rwadefVersion;
     }
 
     public String getVersion() {

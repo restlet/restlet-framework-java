@@ -42,89 +42,89 @@ import java.util.List;
  */
 public class Parameter {
 
-	/**
-	 * Indicates whether you can provide multiple values for this parameter or
-	 * not.
-	 */
-	private boolean allowMultiple;
+    /**
+     * Indicates whether you can provide multiple values for this parameter or
+     * not.
+     */
+    private boolean allowMultiple;
 
-	/** Default value of the parameter. */
-	private String defaultValue;
+    /** Default value of the parameter. */
+    private String defaultValue;
 
-	/** Textual description of this parameter. */
-	private String description;
+    /** Textual description of this parameter. */
+    private String description;
 
-	/** Name of the parameter. */
-	private String name;
+    /**
+     * List of accepted values of the parameter if there is a limited number of
+     * them.
+     */
+    private List<String> enumeration;
 
-	/**
-	 * List of accepted values of the parameter if there is a limited number of
-	 * them.
-	 */
-	private List<String> enumeration;
+    /** Name of the parameter. */
+    private String name;
 
-	/** The expected type of the parameter. By default, string */
-	private String type = "string";
+    /** Indicates whether the parameter is mandatory or not. */
+    private boolean required;
 
-	/** Indicates whether the parameter is mandatory or not. */
-	private boolean required;
+    /** The expected type of the parameter. By default, string */
+    private String type = "string";
 
-	public String getDefaultValue() {
-		return defaultValue;
-	}
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public List<String> getEnumeration() {
+        if (enumeration == null) {
+            enumeration = new ArrayList<String>();
+        }
+        return enumeration;
+    }
 
-	public List<String> getEnumeration() {
-		if (enumeration == null) {
-			enumeration = new ArrayList<String>();
-		}
-		return enumeration;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public boolean isAllowMultiple() {
-		return allowMultiple;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public boolean isRequired() {
-		return required;
-	}
+    public boolean isAllowMultiple() {
+        return allowMultiple;
+    }
 
-	public void setAllowMultiple(boolean allowMultiple) {
-		this.allowMultiple = allowMultiple;
-	}
+    public boolean isRequired() {
+        return required;
+    }
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setEnumeration(List<String> enumeration) {
-		this.enumeration = enumeration;
-	}
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
+    }
 
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 }

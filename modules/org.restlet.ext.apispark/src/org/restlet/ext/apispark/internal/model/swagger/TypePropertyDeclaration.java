@@ -9,89 +9,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 public class TypePropertyDeclaration {
-    private String type;
-
-    @JsonProperty("$ref")
-    private String ref;
-
-    private ItemsDeclaration items;
-
     private String description;
-
-    private String format;
-
-    private String minimum;
-
-    private String maximum;
-
-    private boolean uniqueItems;
 
     @JsonProperty("enum")
     @JsonInclude(Include.NON_EMPTY)
     private List<String> enum_;
 
-    public String getType() {
-        return type;
-    }
+    private String format;
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    private ItemsDeclaration items;
 
-    public String getFormat() {
-        return format;
-    }
+    private String maximum;
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+    private String minimum;
 
-    public String getMinimum() {
-        return minimum;
-    }
+    @JsonProperty("$ref")
+    private String ref;
 
-    public void setMinimum(String minimum) {
-        this.minimum = minimum;
-    }
+    private String type;
 
-    public String getMaximum() {
-        return maximum;
-    }
-
-    public void setMaximum(String maximum) {
-        this.maximum = maximum;
-    }
-
-    public boolean isUniqueItems() {
-        return uniqueItems;
-    }
-
-    public void setUniqueItems(boolean uniqueItems) {
-        this.uniqueItems = uniqueItems;
-    }
-
-    public ItemsDeclaration getItems() {
-        return items;
-    }
-
-    public void setItems(ItemsDeclaration items) {
-        this.items = items;
-    }
-
-    public String getRef() {
-        return ref;
-    }
-
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
+    private boolean uniqueItems;
 
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public List<String> getEnum_() {
@@ -101,8 +41,68 @@ public class TypePropertyDeclaration {
         return enum_;
     }
 
+    public String getFormat() {
+        return format;
+    }
+
+    public ItemsDeclaration getItems() {
+        return items;
+    }
+
+    public String getMaximum() {
+        return maximum;
+    }
+
+    public String getMinimum() {
+        return minimum;
+    }
+
+    public String getRef() {
+        return ref;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isUniqueItems() {
+        return uniqueItems;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setEnum_(List<String> enum_) {
         this.enum_ = enum_;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public void setItems(ItemsDeclaration items) {
+        this.items = items;
+    }
+
+    public void setMaximum(String maximum) {
+        this.maximum = maximum;
+    }
+
+    public void setMinimum(String minimum) {
+        this.minimum = minimum;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setUniqueItems(boolean uniqueItems) {
+        this.uniqueItems = uniqueItems;
     }
 
 }

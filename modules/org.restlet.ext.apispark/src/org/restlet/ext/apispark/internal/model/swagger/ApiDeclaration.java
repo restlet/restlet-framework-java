@@ -10,50 +10,26 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class ApiDeclaration {
-    private String apiVersion;
-
-    private String swaggerVersion;
-
-    private String basePath;
-
-    private String resourcePath;
-
-    private List<String> produces;
-
-    private List<String> consumes;
-
     // private String resourcePath";
     private List<ResourceDeclaration> apis;
 
-    private Map<String, ModelDeclaration> models;
+    private String apiVersion;
 
     private AuthorizationsDeclaration authorizations;
 
+    private String basePath;
+
+    private List<String> consumes;
+
     private ApiInfo info;
 
-    public String getApiVersion() {
-        return apiVersion;
-    }
+    private Map<String, ModelDeclaration> models;
 
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
+    private List<String> produces;
 
-    public String getSwaggerVersion() {
-        return swaggerVersion;
-    }
+    private String resourcePath;
 
-    public void setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
-    }
-
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
-    }
+    private String swaggerVersion;
 
     public List<ResourceDeclaration> getApis() {
         if (apis == null) {
@@ -62,46 +38,16 @@ public class ApiDeclaration {
         return apis;
     }
 
-    public void setApis(List<ResourceDeclaration> apis) {
-        this.apis = apis;
+    public String getApiVersion() {
+        return apiVersion;
     }
 
-    public ApiInfo getInfo() {
-        return info;
+    public AuthorizationsDeclaration getAuthorizations() {
+        return authorizations;
     }
 
-    public void setInfo(ApiInfo info) {
-        this.info = info;
-    }
-
-    public Map<String, ModelDeclaration> getModels() {
-        if (models == null) {
-            models = new HashMap<String, ModelDeclaration>();
-        }
-        return models;
-    }
-
-    public void setModels(Map<String, ModelDeclaration> models) {
-        this.models = models;
-    }
-
-    public String getResourcePath() {
-        return resourcePath;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public List<String> getProduces() {
-        if (produces == null) {
-            produces = new ArrayList<String>();
-        }
-        return produces;
-    }
-
-    public void setProduces(List<String> produces) {
-        this.produces = produces;
+    public String getBasePath() {
+        return basePath;
     }
 
     public List<String> getConsumes() {
@@ -111,15 +57,69 @@ public class ApiDeclaration {
         return consumes;
     }
 
-    public void setConsumes(List<String> consumes) {
-        this.consumes = consumes;
+    public ApiInfo getInfo() {
+        return info;
     }
 
-    public AuthorizationsDeclaration getAuthorizations() {
-        return authorizations;
+    public Map<String, ModelDeclaration> getModels() {
+        if (models == null) {
+            models = new HashMap<String, ModelDeclaration>();
+        }
+        return models;
+    }
+
+    public List<String> getProduces() {
+        if (produces == null) {
+            produces = new ArrayList<String>();
+        }
+        return produces;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public String getSwaggerVersion() {
+        return swaggerVersion;
+    }
+
+    public void setApis(List<ResourceDeclaration> apis) {
+        this.apis = apis;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
     }
 
     public void setAuthorizations(AuthorizationsDeclaration authorizations) {
         this.authorizations = authorizations;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public void setConsumes(List<String> consumes) {
+        this.consumes = consumes;
+    }
+
+    public void setInfo(ApiInfo info) {
+        this.info = info;
+    }
+
+    public void setModels(Map<String, ModelDeclaration> models) {
+        this.models = models;
+    }
+
+    public void setProduces(List<String> produces) {
+        this.produces = produces;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public void setSwaggerVersion(String swaggerVersion) {
+        this.swaggerVersion = swaggerVersion;
     }
 }

@@ -6,30 +6,30 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class AuthorizationsDeclaration {
 
-    private BasicAuthorizationDeclaration basicAuth;
-
     private ApiKeyAuthorizationDeclaration apiKey;
 
+    private BasicAuthorizationDeclaration basicAuth;
+
     private OAuth2AuthorizationDeclaration oauth2;
+
+    public ApiKeyAuthorizationDeclaration getApiKey() {
+        return apiKey;
+    }
 
     public BasicAuthorizationDeclaration getBasicAuth() {
         return basicAuth;
     }
 
-    public void setBasicAuth(BasicAuthorizationDeclaration basicAuth) {
-        this.basicAuth = basicAuth;
-    }
-
-    public ApiKeyAuthorizationDeclaration getApiKey() {
-        return apiKey;
+    public OAuth2AuthorizationDeclaration getOauth2() {
+        return oauth2;
     }
 
     public void setApiKey(ApiKeyAuthorizationDeclaration apiKey) {
         this.apiKey = apiKey;
     }
 
-    public OAuth2AuthorizationDeclaration getOauth2() {
-        return oauth2;
+    public void setBasicAuth(BasicAuthorizationDeclaration basicAuth) {
+        this.basicAuth = basicAuth;
     }
 
     public void setOauth2(OAuth2AuthorizationDeclaration oauth2) {

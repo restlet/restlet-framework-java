@@ -21,77 +21,6 @@ import org.restlet.resource.ResourceException;
  */
 public class IntrospectionUtils {
 
-    public static void sendDefinition(Definition definition,
-            String definitionId, String ulogin, String upwd, String serviceUrl,
-            Logger LOGGER) {
-
-        Collections.sort(definition.getContract().getRepresentations(),
-                new Comparator<Representation>() {
-
-                    @Override
-                    public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-
-                });
-        Collections.sort(definition.getContract().getResources(),
-                new Comparator<Resource>() {
-
-                    @Override
-                    public int compare(Resource o1, Resource o2) {
-                        return o1.getResourcePath().compareTo(
-                                o2.getResourcePath());
-                    }
-
-                });
-        try {
-            ClientResource cr = new ClientResource(serviceUrl);
-            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
-
-            if (definitionId == null) {
-                cr.addSegment("definitions");
-                LOGGER.info("Create a new documentation");
-                cr.post(definition, MediaType.APPLICATION_JSON);
-            } else {
-                cr.addSegment("apis").addSegment(definitionId)
-                        .addSegment("definitions");
-                LOGGER.info("Update the documentation of "
-                        + cr.getReference().toString());
-                cr.put(definition, MediaType.APPLICATION_JSON);
-            }
-
-            LOGGER.fine("Display result");
-            System.out.println("Process successfully achieved.");
-            // This is not printed by a logger which may be muted.
-            if (cr.getResponseEntity() != null
-                    && cr.getResponseEntity().isAvailable()) {
-                try {
-                    cr.getResponseEntity().write(System.out);
-                    System.out.println();
-                } catch (IOException e) {
-                    // [PENDING] analysis
-                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
-                }
-            }
-            if (cr.getLocationRef() != null) {
-                System.out
-                        .println("Your Web API documentation is accessible at this URL: "
-                                + cr.getLocationRef());
-            }
-        } catch (ResourceException e) {
-            // TODO Should we detail by status?
-            if (e.getStatus().isConnectorError()) {
-                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
-                LOGGER.severe("Could you check that the following service is up? "
-                        + serviceUrl);
-            } else if (e.getStatus().isClientError()) {
-                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
-            } else if (e.getStatus().isServerError()) {
-                LOGGER.severe("The server side encounters some issues, please try later.");
-            }
-        }
-    }
-
     /**
      * Indicates if the given velue is either null or empty.
      * 
@@ -201,6 +130,77 @@ public class IntrospectionUtils {
     public static void printSynopsis(PrintStream o, Class<?> clazz,
             String command) {
         printSentence(o, 7, clazz.getName(), command);
+    }
+
+    public static void sendDefinition(Definition definition,
+            String definitionId, String ulogin, String upwd, String serviceUrl,
+            Logger LOGGER) {
+
+        Collections.sort(definition.getContract().getRepresentations(),
+                new Comparator<Representation>() {
+
+                    @Override
+                    public int compare(Representation o1, Representation o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                });
+        Collections.sort(definition.getContract().getResources(),
+                new Comparator<Resource>() {
+
+                    @Override
+                    public int compare(Resource o1, Resource o2) {
+                        return o1.getResourcePath().compareTo(
+                                o2.getResourcePath());
+                    }
+
+                });
+        try {
+            ClientResource cr = new ClientResource(serviceUrl);
+            cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
+
+            if (definitionId == null) {
+                cr.addSegment("definitions");
+                LOGGER.info("Create a new documentation");
+                cr.post(definition, MediaType.APPLICATION_JSON);
+            } else {
+                cr.addSegment("apis").addSegment(definitionId)
+                        .addSegment("definitions");
+                LOGGER.info("Update the documentation of "
+                        + cr.getReference().toString());
+                cr.put(definition, MediaType.APPLICATION_JSON);
+            }
+
+            LOGGER.fine("Display result");
+            System.out.println("Process successfully achieved.");
+            // This is not printed by a logger which may be muted.
+            if (cr.getResponseEntity() != null
+                    && cr.getResponseEntity().isAvailable()) {
+                try {
+                    cr.getResponseEntity().write(System.out);
+                    System.out.println();
+                } catch (IOException e) {
+                    // [PENDING] analysis
+                    LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
+                }
+            }
+            if (cr.getLocationRef() != null) {
+                System.out
+                        .println("Your Web API documentation is accessible at this URL: "
+                                + cr.getLocationRef());
+            }
+        } catch (ResourceException e) {
+            // TODO Should we detail by status?
+            if (e.getStatus().isConnectorError()) {
+                LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
+                LOGGER.severe("Could you check that the following service is up? "
+                        + serviceUrl);
+            } else if (e.getStatus().isClientError()) {
+                LOGGER.severe("Check that you provide valid credentials, or valid service url.");
+            } else if (e.getStatus().isServerError()) {
+                LOGGER.severe("The server side encounters some issues, please try later.");
+            }
+        }
     }
 
 }

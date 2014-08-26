@@ -1,0 +1,18 @@
+<library id="guava" symbolicName="com.google.guava">
+	<name>Google Guava</name>
+	<description>Google Guava.</description>
+	<version>16.0</version>
+	<release>1</release>
+	<homeUri>http://code.google.com/p/guava/</homeUri>
+	<provider>Google Inc.</provider>
+
+	<package name="com.google.guava">
+		<maven>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

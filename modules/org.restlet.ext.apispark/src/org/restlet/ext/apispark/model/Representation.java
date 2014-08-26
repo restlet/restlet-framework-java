@@ -42,70 +42,70 @@ import java.util.List;
  */
 public class Representation {
 
-	/** Textual description of this representation. */
-	private String description;
+    /** Textual description of this representation. */
+    private String description;
 
-	/** Name of the representation. */
-	private String name;
+    /** Reference to its parent type if any. */
+    private String extendedType;
 
-	/** Reference to its parent type if any. */
-	private String extendedType;
+    /** Name of the representation. */
+    private String name;
 
-	/** List of this representation's properties. */
-	private List<Property> properties;
+    /** List of this representation's properties. */
+    private List<Property> properties;
 
-	/** Indicates if the representation is structured or not. */
-	private boolean raw;
+    /** Indicates if the representation is structured or not. */
+    private boolean raw;
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getExtendedType() {
+        return extendedType;
+    }
 
-	public String getExtendedType() {
-		return extendedType;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<Property> getProperties() {
-		if (properties == null) {
-			properties = new ArrayList<Property>();
-		}
-		return properties;
-	}
+    public List<Property> getProperties() {
+        if (properties == null) {
+            properties = new ArrayList<Property>();
+        }
+        return properties;
+    }
 
-	public boolean isRaw() {
-		return raw;
-	}
+    public Property getProperty(String name) {
+        for (Property result : getProperties()) {
+            if (name.equals(result.getName())) {
+                return result;
+            }
+        }
+        return null;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public boolean isRaw() {
+        return raw;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setExtendedType(String extendedType) {
-		this.extendedType = extendedType;
-	}
+    public void setExtendedType(String extendedType) {
+        this.extendedType = extendedType;
+    }
 
-	public void setProperties(List<Property> properties) {
-		this.properties = properties;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setRaw(boolean raw) {
-		this.raw = raw;
-	}
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
 
-	public Property getProperty(String name) {
-		for (Property result : getProperties()) {
-			if (name.equals(result.getName())) {
-				return result;
-			}
-		}
-		return null;
-	}
+    public void setRaw(boolean raw) {
+        this.raw = raw;
+    }
 }

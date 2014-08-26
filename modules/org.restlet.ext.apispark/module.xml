@@ -8,6 +8,7 @@
 	</distributions>
 	
    <dependencies>
+      <dependency type="library" id="guava" />
       <dependency type="library" id="jaxrs" />
       <dependency type="module" id="core" />
       <dependency type="module" id="jackson" />

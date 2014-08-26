@@ -5,63 +5,63 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class ApiInfo {
-    private String title;
+    private String contact;
 
     private String description;
-
-    private String termsOfServiceUrl;
-
-    private String contact;
 
     private String license;
 
     private String licenseUrl;
 
-    public String getTitle() {
-        return title;
-    }
+    private String termsOfServiceUrl;
 
-    public void setTitle(String title) {
-        this.title = title;
+    private String title;
+
+    public String getContact() {
+        return contact;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getTermsOfServiceUrl() {
-        return termsOfServiceUrl;
-    }
-
-    public void setTermsOfServiceUrl(String termsOfServiceUrl) {
-        this.termsOfServiceUrl = termsOfServiceUrl;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
     public String getLicense() {
         return license;
-    }
-
-    public void setLicense(String license) {
-        this.license = license;
     }
 
     public String getLicenseUrl() {
         return licenseUrl;
     }
 
+    public String getTermsOfServiceUrl() {
+        return termsOfServiceUrl;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
+    }
+
     public void setLicenseUrl(String licenseUrl) {
         this.licenseUrl = licenseUrl;
+    }
+
+    public void setTermsOfServiceUrl(String termsOfServiceUrl) {
+        this.termsOfServiceUrl = termsOfServiceUrl;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

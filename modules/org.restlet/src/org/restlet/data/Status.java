@@ -43,6 +43,8 @@ import org.restlet.service.StatusService;
  * @author Jerome Louvel
  */
 public final class Status {
+    private static final String BASE_ADDED_HTTP = "http://tools.ietf.org/html/rfc6585";
+
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
     private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
@@ -240,6 +242,15 @@ public final class Status {
      */
     public static final Status CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE = new Status(
             416);
+
+    /**
+     * The server refuses to accept the request because the user has sent too
+     * many requests in a given amount of time.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">HTTP RFC -
+     *      10.4.12 429 Too Many Requests</a>
+     */
+    public static final Status CLIENT_ERROR_TOO_MANY_REQUESTS = new Status(429);
 
     /**
      * The request requires user authentication.
@@ -897,6 +908,9 @@ public final class Status {
         case 424:
             result = CLIENT_ERROR_FAILED_DEPENDENCY;
             break;
+        case 429:
+            result = CLIENT_ERROR_TOO_MANY_REQUESTS;
+            break;
 
         case 500:
             result = SERVER_ERROR_INTERNAL;
@@ -1229,6 +1243,9 @@ public final class Status {
             case 424:
                 result = "The method could not be performed on the resource because the requested action depended on another action and that action failed";
                 break;
+            case 429:
+                result = "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
+                break;
 
             case 500:
                 result = "The server encountered an unexpected condition which prevented it from fulfilling the request";
@@ -1420,6 +1437,9 @@ public final class Status {
             case 424:
                 result = "Failed Dependency";
                 break;
+            case 429:
+                result = "Too Many Requests";
+                break;
 
             case 500:
                 result = "Internal Server Error";
@@ -1605,6 +1625,9 @@ public final class Status {
                 break;
             case 424:
                 result = BASE_WEBDAV + "#STATUS_424";
+                break;
+            case 429:
+                result = BASE_ADDED_HTTP + "#section-4";
                 break;
 
             case 500:

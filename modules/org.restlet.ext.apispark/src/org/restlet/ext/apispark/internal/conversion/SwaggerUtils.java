@@ -90,8 +90,7 @@ public abstract class SwaggerUtils {
 
         // Check that URL is non empty and well formed
         if (swaggerUrl == null) {
-            throw new TranslationException("url",
-                    "You did not provide any URL");
+            throw new TranslationException("url", "You did not provide any URL");
         }
         Pattern p = Pattern
                 .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");

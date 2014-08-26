@@ -9,9 +9,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class OAuth2AuthorizationDeclaration extends AuthorizationDeclaration {
 
+    private GrantTypesDeclaration grantTypes;
+
     private List<ScopeDeclaration> scopes;
 
-    private GrantTypesDeclaration grantTypes;
+    public GrantTypesDeclaration getGrantTypes() {
+        return grantTypes;
+    }
 
     public List<ScopeDeclaration> getScopes() {
         if (scopes == null) {
@@ -20,15 +24,11 @@ public class OAuth2AuthorizationDeclaration extends AuthorizationDeclaration {
         return scopes;
     }
 
-    public void setScopes(List<ScopeDeclaration> scopes) {
-        this.scopes = scopes;
-    }
-
-    public GrantTypesDeclaration getGrantTypes() {
-        return grantTypes;
-    }
-
     public void setGrantTypes(GrantTypesDeclaration grantTypes) {
         this.grantTypes = grantTypes;
+    }
+
+    public void setScopes(List<ScopeDeclaration> scopes) {
+        this.scopes = scopes;
     }
 }

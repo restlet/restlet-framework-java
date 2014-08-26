@@ -8,42 +8,18 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class ResourceListing {
-    private String apiVersion;
-
-    private String swaggerVersion;
-
-    private String basePath;
-
     // private String resourcePath";
     private List<ResourceDeclaration> apis;
 
-    private ApiInfo info;
+    private String apiVersion;
 
     private AuthorizationsDeclaration authorizations;
 
-    public String getApiVersion() {
-        return apiVersion;
-    }
+    private String basePath;
 
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
+    private ApiInfo info;
 
-    public String getSwaggerVersion() {
-        return swaggerVersion;
-    }
-
-    public void setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
-    }
-
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
-    }
+    private String swaggerVersion;
 
     public List<ResourceDeclaration> getApis() {
         if (apis == null) {
@@ -52,23 +28,47 @@ public class ResourceListing {
         return apis;
     }
 
-    public void setApis(List<ResourceDeclaration> apis) {
-        this.apis = apis;
-    }
-
-    public ApiInfo getInfo() {
-        return info;
-    }
-
-    public void setInfo(ApiInfo info) {
-        this.info = info;
+    public String getApiVersion() {
+        return apiVersion;
     }
 
     public AuthorizationsDeclaration getAuthorizations() {
         return authorizations;
     }
 
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public ApiInfo getInfo() {
+        return info;
+    }
+
+    public String getSwaggerVersion() {
+        return swaggerVersion;
+    }
+
+    public void setApis(List<ResourceDeclaration> apis) {
+        this.apis = apis;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
     public void setAuthorizations(AuthorizationsDeclaration authorizations) {
         this.authorizations = authorizations;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public void setInfo(ApiInfo info) {
+        this.info = info;
+    }
+
+    public void setSwaggerVersion(String swaggerVersion) {
+        this.swaggerVersion = swaggerVersion;
     }
 }

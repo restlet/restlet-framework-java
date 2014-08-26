@@ -14,12 +14,12 @@ public class ImplicitDeclaration {
         return loginEndpoint;
     }
 
-    public void setLoginEndpoint(LoginEndpointDeclaration loginEndpoint) {
-        this.loginEndpoint = loginEndpoint;
-    }
-
     public String getTokenName() {
         return tokenName;
+    }
+
+    public void setLoginEndpoint(LoginEndpointDeclaration loginEndpoint) {
+        this.loginEndpoint = loginEndpoint;
     }
 
     public void setTokenName(String tokenName) {

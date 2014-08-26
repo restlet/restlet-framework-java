@@ -42,12 +42,6 @@ import java.util.List;
  */
 public class Property {
 
-    /**
-     * Type of this property, either a primitive type or a reference to a
-     * representation.
-     */
-    private String type;
-
     // TODO review comment
     /**
      * Default value if this property is of a primitive type<br>
@@ -57,6 +51,13 @@ public class Property {
 
     /** Textual description of this property. */
     private String description;
+
+    // TODO review comment
+    /**
+     * A list of possible values for this property if it has a limited number of
+     * possible values.
+     */
+    private List<String> enumeration;
 
     // TODO review comment
     /**
@@ -81,12 +82,11 @@ public class Property {
     /** Name of this property. */
     private String name;
 
-    // TODO review comment
     /**
-     * A list of possible values for this property if it has a limited number of
-     * possible values.
+     * Type of this property, either a primitive type or a reference to a
+     * representation.
      */
-    private List<String> enumeration;
+    private String type;
 
     // TODO review comment
     /**
@@ -101,6 +101,13 @@ public class Property {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<String> getEnumeration() {
+        if (enumeration == null) {
+            enumeration = new ArrayList<String>();
+        }
+        return enumeration;
     }
 
     public String getMax() {
@@ -123,13 +130,6 @@ public class Property {
         return name;
     }
 
-    public List<String> getEnumeration() {
-        if (enumeration == null) {
-            enumeration = new ArrayList<String>();
-        }
-        return enumeration;
-    }
-
     public String getType() {
         return type;
     }
@@ -144,6 +144,10 @@ public class Property {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
     }
 
     public void setMax(String max) {
@@ -164,10 +168,6 @@ public class Property {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setEnumeration(List<String> enumeration) {
-        this.enumeration = enumeration;
     }
 
     public void setType(String type) {

@@ -6,23 +6,23 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ApiKeyAuthorizationDeclaration extends AuthorizationDeclaration {
 
-    private String passAs;
-
     private String keyname;
 
-    public String getPassAs() {
-        return passAs;
-    }
-
-    public void setPassAs(String passAs) {
-        this.passAs = passAs;
-    }
+    private String passAs;
 
     public String getKeyname() {
         return keyname;
     }
 
+    public String getPassAs() {
+        return passAs;
+    }
+
     public void setKeyname(String keyname) {
         this.keyname = keyname;
+    }
+
+    public void setPassAs(String passAs) {
+        this.passAs = passAs;
     }
 }

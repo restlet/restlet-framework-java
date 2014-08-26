@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - New features
-      - 
+      - Added Firewall feature.
+        Contributed by Guillaume Blondeau.
 
     - Enhancements
       - Added targetRef support to templates, allow reference variables to 

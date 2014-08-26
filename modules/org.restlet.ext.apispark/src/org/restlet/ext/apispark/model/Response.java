@@ -41,14 +41,14 @@ import org.restlet.data.Status;
  */
 public class Response {
 
-    /** Custom content of the body if any. */
-    private Entity entity;
-
     /** Status code of the response */
     private int code;
 
     /** Textual description of this response */
     private String description;
+
+    /** Custom content of the body if any. */
+    private Entity entity;
 
     /** Status message of the response. */
     private String message;
@@ -64,16 +64,16 @@ public class Response {
         setMessage(Status.SUCCESS_OK.getDescription());
     }
 
-    public Entity getEntity() {
-        return entity;
-    }
-
     public int getCode() {
         return code;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    public Entity getEntity() {
+        return entity;
     }
 
     public String getMessage() {
@@ -84,16 +84,16 @@ public class Response {
         return name;
     }
 
-    public void setEntity(Entity entity) {
-        this.entity = entity;
-    }
-
     public void setCode(int code) {
         this.code = code;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 
     public void setMessage(String message) {

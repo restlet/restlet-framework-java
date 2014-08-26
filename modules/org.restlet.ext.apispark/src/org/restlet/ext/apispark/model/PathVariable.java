@@ -39,47 +39,47 @@ package org.restlet.ext.apispark.model;
  */
 public class PathVariable {
 
-	/** Indicates whether you can provide a list of values or just a single one. */
-	private boolean array;
+    /** Indicates whether you can provide a list of values or just a single one. */
+    private boolean array;
 
-	/** Textual description of this variable. */
-	private String description;
+    /** Textual description of this variable. */
+    private String description;
 
-	/** Name of this variable. */
-	private String name;
+    /** Name of this variable. */
+    private String name;
 
-	/** The expected type of the parameter. By default, string */
-	private String type = "string";
+    /** The expected type of the parameter. By default, string */
+    private String type = "string";
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public boolean isArray() {
-		return array;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setArray(boolean array) {
-		this.array = array;
-	}
+    public boolean isArray() {
+        return array;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setArray(boolean array) {
+        this.array = array;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 }
