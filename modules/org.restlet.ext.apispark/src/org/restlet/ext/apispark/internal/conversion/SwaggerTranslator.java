@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.swagger.internal;
+package org.restlet.ext.apispark.internal.conversion;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -50,7 +50,17 @@ import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ApiInfo;
+import org.restlet.ext.apispark.internal.model.swagger.ItemsDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ModelDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
+import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParameterDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.model.Contract;
 import org.restlet.ext.apispark.model.Definition;
 import org.restlet.ext.apispark.model.Entity;
@@ -61,17 +71,6 @@ import org.restlet.ext.apispark.model.QueryParameter;
 import org.restlet.ext.apispark.model.Representation;
 import org.restlet.ext.apispark.model.Resource;
 import org.restlet.ext.apispark.model.Response;
-import org.restlet.ext.swagger.internal.model.ApiDeclaration;
-import org.restlet.ext.swagger.internal.model.ApiInfo;
-import org.restlet.ext.swagger.internal.model.ItemsDeclaration;
-import org.restlet.ext.swagger.internal.model.ModelDeclaration;
-import org.restlet.ext.swagger.internal.model.ResourceDeclaration;
-import org.restlet.ext.swagger.internal.model.ResourceListing;
-import org.restlet.ext.swagger.internal.model.ResourceOperationDeclaration;
-import org.restlet.ext.swagger.internal.model.ResourceOperationParameterDeclaration;
-import org.restlet.ext.swagger.internal.model.ResponseMessageDeclaration;
-import org.restlet.ext.swagger.internal.model.TypePropertyDeclaration;
-import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
@@ -79,10 +78,10 @@ import org.restlet.ext.swagger.internal.reflect.ReflectUtils;
  * 
  * @author Cyprien Quilici
  */
-public abstract class SwaggerTranslater {
+public abstract class SwaggerTranslator {
 
 	/** Internal logger. */
-	protected static Logger LOGGER = Logger.getLogger(SwaggerTranslater.class
+	protected static Logger LOGGER = Logger.getLogger(SwaggerTranslator.class
 			.getName());
 
 	/** Supported version of Swagger. */
@@ -771,6 +770,6 @@ public abstract class SwaggerTranslater {
 	 * Private constructor to ensure that the class acts as a true utility class
 	 * i.e. it isn't instantiable and extensible.
 	 */
-	private SwaggerTranslater() {
+	private SwaggerTranslator() {
 	}
 }

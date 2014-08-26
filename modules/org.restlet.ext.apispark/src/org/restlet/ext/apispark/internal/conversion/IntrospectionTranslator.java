@@ -43,7 +43,7 @@ import org.restlet.ext.apispark.model.Response;
  * 
  * @author Cyprien Quilici
  */
-public class IntrospectionTranslater {
+public class IntrospectionTranslator {
 
 	/**
 	 * Completes a map of representations with a list of representations.
@@ -564,7 +564,7 @@ public class IntrospectionTranslater {
 	 * Private constructor to ensure that the class acts as a true utility class
 	 * i.e. it isn't instantiable and extensible.
 	 */
-	private IntrospectionTranslater() {
+	private IntrospectionTranslator() {
 	}
 
 }

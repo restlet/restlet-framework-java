@@ -51,7 +51,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.apispark.info.ApplicationInfo;
 import org.restlet.ext.apispark.info.DocumentationInfo;
 import org.restlet.ext.apispark.info.ResourceInfo;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslater;
+import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
@@ -598,7 +598,7 @@ public class Introspector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public Introspector(Component component, Application application) {
-        definition = IntrospectionTranslater.toDefinition(
+        definition = IntrospectionTranslator.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
         if (component != null && definition != null) {

@@ -44,7 +44,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.apispark.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.ext.swagger.internal.SwaggerTranslater;
+import org.restlet.ext.swagger.internal.SwaggerTranslator;
 import org.restlet.ext.swagger.internal.model.ApiDeclaration;
 import org.restlet.ext.swagger.internal.model.ResourceListing;
 import org.restlet.ext.swagger.internal.reflect.Introspector;
@@ -122,7 +122,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public Representation getApiDeclaration(String category) {
         return new JacksonRepresentation<ApiDeclaration>(
-                SwaggerTranslater.getApiDeclaration(category, getDefinition()));
+                SwaggerTranslator.getApiDeclaration(category, getDefinition()));
     }
 
     /**
@@ -199,7 +199,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public Representation getResourceListing() {
         return new JacksonRepresentation<ResourceListing>(
-                SwaggerTranslater.getResourcelisting(getDefinition()));
+                SwaggerTranslator.getResourcelisting(getDefinition()));
     }
 
     /**

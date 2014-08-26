@@ -76,7 +76,7 @@ import org.restlet.ext.apispark.info.ParameterStyle;
 import org.restlet.ext.apispark.info.RepresentationInfo;
 import org.restlet.ext.apispark.info.RequestInfo;
 import org.restlet.ext.apispark.info.ResourceInfo;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslater;
+import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.ext.apispark.model.Definition;
@@ -755,7 +755,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public JaxrsIntrospector(javax.ws.rs.core.Application application) {
-        definition = IntrospectionTranslater.toDefinition(
+        definition = IntrospectionTranslator.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
         if (definition != null) {

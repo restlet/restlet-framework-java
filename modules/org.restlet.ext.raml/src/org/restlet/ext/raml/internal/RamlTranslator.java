@@ -67,10 +67,10 @@ import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
  * 
  * @author Cyprien Quilici
  */
-public abstract class RamlTranslater {
+public abstract class RamlTranslator {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(RamlTranslater.class
+    protected static Logger LOGGER = Logger.getLogger(RamlTranslator.class
             .getName());
 
     /**
@@ -428,6 +428,6 @@ public abstract class RamlTranslater {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private RamlTranslater() {
+    private RamlTranslator() {
     }
 }
