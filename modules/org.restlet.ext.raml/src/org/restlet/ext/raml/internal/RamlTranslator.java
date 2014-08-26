@@ -135,6 +135,8 @@ public abstract class RamlTranslator {
         }
         if (definition.getEndpoint() != null) {
             raml.setBaseUri(definition.getEndpoint());
+        } else {
+            raml.setBaseUri("http://example.com");
         }
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new

@@ -147,6 +147,9 @@ public class RamlSpecificationRestlet extends Restlet {
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
+                if (definition.getEndpoint() == null) {
+                    definition.setEndpoint("http://example.com");
+                }
             }
         }
 
