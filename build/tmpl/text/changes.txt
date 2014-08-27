@@ -15,6 +15,9 @@ Changes log
       - Added targetRef support to templates, allow reference variables to 
         resolve to the full reference (issue #935).
         Contributed by Jeremy Gustie.
+      - Added Firewall feature.
+        Contributed by Guillaume Blondeau.
+      - Added RAML support in dedicated extension.
 
 - 2.2.2 (08/05/2014)
     - Bugs fixed
