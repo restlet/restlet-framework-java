@@ -52,8 +52,8 @@ import org.restlet.ext.apispark.info.ApplicationInfo;
 import org.restlet.ext.apispark.info.DocumentationInfo;
 import org.restlet.ext.apispark.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
-import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.ext.apispark.model.Definition;
 import org.restlet.resource.Directory;
@@ -513,14 +513,32 @@ public class Introspector extends IntrospectionUtils {
         Application application = null;
         Component component = null;
         Definition definition = null;
+        javax.ws.rs.core.Application a = null;
         if (language == null) {
-            application = getApplication(defSource);
-            component = getComponent(compName);
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName(defSource);
+                if (Application.class.isAssignableFrom(clazz)) {
+                    application = getApplication(defSource);
+                    component = getComponent(compName);
+                } else if (clazz != null) {
+                    a = JaxrsIntrospector.getApplication(defSource);
+                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.log(Level.SEVERE,
+                        "Cannot locate the application class.", e);
+            }
         }
 
         if (application != null) {
             LOGGER.info("Instantiate introspector");
             Introspector i = new Introspector(component, application);
+
+            LOGGER.info("Generate documentation");
+            definition = i.getDefinition();
+        } else if (a != null) {
+            LOGGER.fine("Instantiate introspector");
+            JaxrsIntrospector i = new JaxrsIntrospector(a);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();

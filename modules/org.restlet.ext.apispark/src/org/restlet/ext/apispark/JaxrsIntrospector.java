@@ -138,7 +138,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            The name of the application class.
      * @return An instance of what must be a subclass of {@link Application}.
      */
-    private static javax.ws.rs.core.Application getApplication(String className) {
+    protected static javax.ws.rs.core.Application getApplication(String className) {
         javax.ws.rs.core.Application result = null;
 
         if (className == null) {
@@ -775,7 +775,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      * 
      * @return The current definition.
      */
-    private Definition getDefinition() {
+    protected Definition getDefinition() {
         return definition;
     }
 }
