@@ -2,7 +2,6 @@
 	<name>JAX-RS API</name>
 	<description>JAX-RS (JSR 339) API</description>
 	<version>2.0</version>
-    <release>0</release>
 	<homeUri>https://jax-rs-spec.java.net/</homeUri>
 	<downloadUri>http://download.java.net/maven/2/javax/ws/rs/jsr311-api/</downloadUri>
 	<provider>Oracle Inc.</provider>
