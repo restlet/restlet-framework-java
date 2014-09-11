@@ -70,7 +70,7 @@ public class BlockingHandler extends ThresholdHandler {
                         + counterResult.getCountedValue()
                         + "\" issued too many requests.");
 
-        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Too many calls");
+        response.setStatus(Status.CLIENT_ERROR_TOO_MANY_REQUESTS);
         return Filter.SKIP;
     }
 

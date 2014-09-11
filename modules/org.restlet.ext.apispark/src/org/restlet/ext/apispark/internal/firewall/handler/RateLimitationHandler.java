@@ -35,7 +35,7 @@ package org.restlet.ext.apispark.internal.firewall.handler;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.header.Header;
+import org.restlet.data.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.LimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;

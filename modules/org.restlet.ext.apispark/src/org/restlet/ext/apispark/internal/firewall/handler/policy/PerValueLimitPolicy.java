@@ -39,76 +39,72 @@ import java.util.Map;
 import org.restlet.Request;
 
 /**
- * Defines a limit to a sets of counted values.
+ * Defines a limit for known counted values.
  * 
  * @author Guillaume Blondeau
  */
-public class GroupLimitPolicy extends LimitPolicy {
+public class PerValueLimitPolicy extends LimitPolicy {
 
     /**
-     * The default limit applied when the counted value has not been found in
-     * any group.
+     * The default limit applies when the counted value has not been found in
+     * the list of known counted values.
      */
     public int defaultLimit;
 
-    /** Maps a counted value to a group. */
-    private Map<String, String> groups;
-
-    /** Maps a group name to a limit. */
-    private Map<String, Integer> limitsPerGroup;
+    /** Maps a counted value to a limit. */
+    private Map<String, Integer> limitsPerValue;
 
     /**
      * Constructor.<br>
-     * Defines only the {@link GroupLimitPolicy#defaultLimit} to 0.
+     * Defines only the {@link PerValueLimitPolicy#defaultLimit} to 0.
      */
-    public GroupLimitPolicy() {
+    public PerValueLimitPolicy() {
         this(0);
     }
 
     /**
      * Constructor.<br>
-     * Defines only the {@link GroupLimitPolicy#defaultLimit}.
+     * Defines only the {@link PerValueLimitPolicy#defaultLimit}.
      * 
      * @param defaultLimit
      *            The default limit.
      */
-    public GroupLimitPolicy(int defaultLimit) {
-        this.defaultLimit = defaultLimit;
-        this.limitsPerGroup = new HashMap<String, Integer>();
-        this.groups = new HashMap<String, String>();
+    public PerValueLimitPolicy(int defaultLimit) {
+        this(new HashMap<String, Integer>(), defaultLimit);
     }
 
     /**
-     * Associates a counted value with a group.
+     * Constructor.<br>
+     * 
+     * @param limitsPerValue
+     *            The map of limits per counted value.
+     * @param defaultLimit
+     *            The default limit.
+     */
+    public PerValueLimitPolicy(Map<String, Integer> limitsPerValue,
+            int defaultLimit) {
+        this.defaultLimit = defaultLimit;
+        this.limitsPerValue = limitsPerValue;
+    }
+
+    /**
+     * Associates a limit to a counted value.
      * 
      * @param countedValue
      *            The counted value.
-     * @param group
-     *            The name of the group.
-     */
-    public void addCountedValue(String countedValue, String group) {
-        groups.put(countedValue, group);
-    }
-
-    /**
-     * Specifies a limit for a group.
-     * 
-     * @param group
-     *            The name of the group.
      * @param limit
      *            The associated limit.
      */
-    public void addGroup(String group, int limit) {
-        limitsPerGroup.put(group, limit);
+    public void addCountedValue(String countedValue, int limit) {
+        limitsPerValue.put(countedValue, limit);
     }
 
     @Override
     public int getLimit(Request request, String countedValue) {
         int result = defaultLimit;
-        String group = groups.get(countedValue);
-        if (group != null) {
-            if (limitsPerGroup.containsKey(group)) {
-                result = limitsPerGroup.get(group);
+        if (countedValue != null) {
+            if (limitsPerValue.containsKey(countedValue)) {
+                result = limitsPerValue.get(countedValue);
             }
         }
 

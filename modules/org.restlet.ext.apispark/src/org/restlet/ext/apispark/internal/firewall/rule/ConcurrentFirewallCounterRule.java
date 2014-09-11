@@ -51,9 +51,7 @@ import com.google.common.cache.LoadingCache;
  */
 public class ConcurrentFirewallCounterRule extends FirewallCounterRule {
 
-    /**
-     * Cache which associates a countedValue to a {@link ConcurrentCounter}
-     **/
+    /** Cache of {@link ConcurrentCounter}. */
     private LoadingCache<String, ConcurrentCounter> cache;
 
     /**
@@ -69,7 +67,6 @@ public class ConcurrentFirewallCounterRule extends FirewallCounterRule {
 
     @Override
     protected void decrementCounter(String countedValue) {
-
         Context.getCurrentLogger().log(
                 Level.FINE,
                 "Counter " + this.getClass() + " decremented for value: "

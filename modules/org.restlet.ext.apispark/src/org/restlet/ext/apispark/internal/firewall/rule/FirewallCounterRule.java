@@ -46,10 +46,14 @@ import org.restlet.ext.apispark.internal.firewall.rule.policy.CountingPolicy;
 import org.restlet.routing.Filter;
 
 /**
- * A {@link FirewallCounterRule} associates a {@link CountingPolicy} to identify
- * requests through a custom policy, then a {@link Counter} which defines a
- * count to a request, and {@link ThresholdHandler} which defines a limit and a
- * custom action when the limit is reached.
+ * A {@link FirewallCounterRule} associates:
+ * <ul>
+ * <li>a {@link CountingPolicy} that identifies requests through a custom
+ * policy,</li>
+ * <li>a {@link Counter} that extracts a counted value from a request,</li>
+ * <li>and a {@link ThresholdHandler} that defines a limit and a custom action
+ * when the limit is reached.</li>/
+ * <ul>
  * 
  * @author Guillaume Blondeau
  */
@@ -133,9 +137,9 @@ public abstract class FirewallCounterRule extends FirewallRule {
     }
 
     /**
-     * Method called after processing. Determine the countedValue (value
-     * returned by the attached {@link CountingPolicy}), decrement the related
-     * {@link Counter} and calls attached {@link ThresholdHandler}.
+     * Method called after processing. Determines the countedValue (value
+     * returned by the attached {@link CountingPolicy}), decrements the related
+     * {@link Counter} and calls the attached {@link ThresholdHandler}.
      * 
      * @param request
      *            The request to handle.
@@ -186,7 +190,9 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Sets the counting policy.
-     * @param countingPolicy the counting policy.
+     * 
+     * @param countingPolicy
+     *            the counting policy.
      */
     public void setCountingPolicy(CountingPolicy countingPolicy) {
         this.countingPolicy = countingPolicy;
