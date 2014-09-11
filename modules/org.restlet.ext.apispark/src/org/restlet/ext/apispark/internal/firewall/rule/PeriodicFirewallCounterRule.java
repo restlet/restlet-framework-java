@@ -51,12 +51,10 @@ import com.google.common.cache.LoadingCache;
  */
 public class PeriodicFirewallCounterRule extends FirewallCounterRule {
 
-    /**
-     * Guava cache which associates a countedValue to a {@link PeriodicCounter}
-     **/
+    /** Cache of {@link PeriodicCounter}. */
     private LoadingCache<String, PeriodicCounter> cache;
 
-    /** Period associated to the {@link FirewallCounterRule} **/
+    /** Period associated to the {@link FirewallCounterRule} */
     private int period;
 
     /**
@@ -74,6 +72,9 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
         initializeCache();
     }
 
+    /**
+     * Does nothing.
+     */
     @Override
     protected void decrementCounter(String countedValue) {
     }

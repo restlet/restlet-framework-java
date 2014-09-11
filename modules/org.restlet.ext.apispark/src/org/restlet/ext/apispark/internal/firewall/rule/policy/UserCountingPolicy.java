@@ -36,8 +36,8 @@ package org.restlet.ext.apispark.internal.firewall.rule.policy;
 import org.restlet.Request;
 
 /**
- * Identifies request by the identifier of the authenticated user (if any) or by
- * the client's public IP address.
+ * Identifies requests by the identifier of the authenticated user (if any) or
+ * by the client's public IP address.
  * 
  * @author Guillaume Blondeau
  */

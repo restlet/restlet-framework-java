@@ -35,23 +35,16 @@ package org.restlet.ext.apispark;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.ext.apispark.internal.firewall.handler.BlockingHandler;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.RoleLimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.ConcurrentFirewallCounterRule;
-import org.restlet.ext.apispark.internal.firewall.rule.FirewallCounterRule;
 import org.restlet.ext.apispark.internal.firewall.rule.FirewallRule;
-import org.restlet.ext.apispark.internal.firewall.rule.PeriodicFirewallCounterRule;
-import org.restlet.ext.apispark.internal.firewall.rule.policy.UserCountingPolicy;
 import org.restlet.routing.Filter;
 
 /**
- * Filters that controls the incoming requests by applying a set of rules.
+ * Filter that controls the incoming requests by applying a set of rules.
  * 
  * @author Guillaume Blondeau
  */
@@ -91,73 +84,18 @@ public class FirewallFilter extends Filter {
     }
 
     /**
-     * Attach a period rate limiter to the Firewall. Default limit is set to 0.
+     * Adds a rule to the firewall.
      * 
-     * @param limitsPerRole
-     *            Limit assigned to users without role, or for roles with limit
+     * @param rule
+     *            The rule to add.
      */
-    public void addConcurrentRateLimit(Map<String, Integer> limitsPerRole) {
-        addConcurrentRateLimit(limitsPerRole, 0);
+    public void add(FirewallRule rule) {
+        rules.add(rule);
     }
 
     /**
-     * Attach a period rate limiter to the Firewall.
-     * 
-     * @param limitsPerRole
-     *            Limit assigned to users without role, or for roles with limit
-     * @param defaultLimit
-     *            Limit assigned to users without role, or for roles with limit
+     * Invokes each {@link FirewallRule#afterHandle(Request, Response)} method.
      */
-    public void addConcurrentRateLimit(Map<String, Integer> limitsPerRole,
-            int defaultLimit) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new UserCountingPolicy());
-        rule.addHandler(new BlockingHandler(new RoleLimitPolicy(limitsPerRole,
-                defaultLimit)));
-        this.addCounter(rule);
-    }
-
-    /**
-     * Attach a {@link FirewallCounterRule} to the {@link FirewallFilter}
-     * 
-     * @param module
-     */
-    public void addCounter(FirewallCounterRule module) {
-        rules.add(module);
-    }
-
-    /**
-     * Attach a rate limit to the Firewall. Default limit is set to 0.
-     * 
-     * @param period
-     *            Period of the rate limit in seconds
-     * @param limitsPerRole
-     *            Map containing the limits per given group
-     */
-    public void addOnPeriodRateLimit(int period,
-            Map<String, Integer> limitsPerRole) {
-        addOnPeriodRateLimit(period, limitsPerRole, 0);
-    }
-
-    /**
-     * Attach a period rate limiter to the Firewall.
-     * 
-     * @param period
-     *            Period Period of the rate limit in seconds
-     * @param limitsPerRole
-     *            Map containing the limits per given group
-     * @param defaultLimit
-     *            Limit assigned to users without role, or for roles with limit
-     */
-    public void addOnPeriodRateLimit(int period,
-            Map<String, Integer> limitsPerRole, int defaultLimit) {
-        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
-                new UserCountingPolicy());
-        rule.addHandler(new BlockingHandler(new RoleLimitPolicy(limitsPerRole,
-                defaultLimit)));
-        this.addCounter(rule);
-    }
-
     @Override
     protected void afterHandle(Request request, Response response) {
         for (FirewallRule rule : rules) {
@@ -165,6 +103,9 @@ public class FirewallFilter extends Filter {
         }
     }
 
+    /**
+     * Applies each rules to the incoming request.
+     */
     @Override
     public int beforeHandle(Request request, Response response) {
         int result = Filter.SKIP;
