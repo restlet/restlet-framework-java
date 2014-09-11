@@ -513,14 +513,33 @@ public class Introspector extends IntrospectionUtils {
         Application application = null;
         Component component = null;
         Definition definition = null;
+        javax.ws.rs.core.Application a = null;
+
         if (language == null) {
-            application = getApplication(defSource);
-            component = getComponent(compName);
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName(defSource);
+                if (Application.class.isAssignableFrom(clazz)) {
+                    application = getApplication(defSource);
+                    component = getComponent(compName);
+                } else if (clazz != null) {
+                    a = JaxrsIntrospector.getApplication(defSource);
+                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.log(Level.SEVERE,
+                        "Cannot locate the application class.", e);
+            }
         }
 
         if (application != null) {
             LOGGER.info("Instantiate introspector");
             Introspector i = new Introspector(component, application);
+
+            LOGGER.info("Generate documentation");
+            definition = i.getDefinition();
+        } else if (a != null) {
+            LOGGER.fine("Instantiate introspector");
+            JaxrsIntrospector i = new JaxrsIntrospector(a);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
