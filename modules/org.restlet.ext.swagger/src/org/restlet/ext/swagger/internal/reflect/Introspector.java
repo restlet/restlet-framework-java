@@ -61,6 +61,7 @@ import org.restlet.ext.apispark.info.PropertyInfo;
 import org.restlet.ext.apispark.info.RepresentationInfo;
 import org.restlet.ext.apispark.info.ResourceInfo;
 import org.restlet.ext.apispark.info.ResponseInfo;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.model.Contract;
 import org.restlet.ext.apispark.model.Definition;
 import org.restlet.ext.apispark.model.Entity;
