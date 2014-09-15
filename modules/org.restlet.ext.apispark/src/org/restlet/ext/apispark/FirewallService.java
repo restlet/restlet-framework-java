@@ -33,21 +33,10 @@
 
 package org.restlet.ext.apispark;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.restlet.Context;
-import org.restlet.ext.apispark.internal.firewall.handler.BlockingHandler;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.PerValueLimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.RoleLimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.UniqueLimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.ConcurrentFirewallCounterRule;
-import org.restlet.ext.apispark.internal.firewall.rule.FirewallCounterRule;
-import org.restlet.ext.apispark.internal.firewall.rule.PeriodicFirewallCounterRule;
-import org.restlet.ext.apispark.internal.firewall.rule.policy.HostDomainCountingPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.policy.IpAddressCountingPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.policy.UserCountingPolicy;
 import org.restlet.routing.Filter;
 import org.restlet.security.Role;
 import org.restlet.security.User;
@@ -72,10 +61,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addHostDomainConcurrencyCounter(int limit) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new HostDomainCountingPolicy());
-        rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
-        firewall.add(rule);
+        FirewallUtils.addHostDomainConcurrencyCounter(firewall, limit);
     }
 
     /**
@@ -90,10 +76,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addHostDomainPeriodicCounter(int period, int limit) {
-        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
-                new HostDomainCountingPolicy());
-        rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
-        firewall.add(rule);
+        FirewallUtils.addHostDomainPeriodicCounter(firewall, period, limit);
     }
 
     /**
@@ -104,15 +87,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addIpAddressesBlackList(List<String> blackList) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new IpAddressCountingPolicy());
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        for (String ip : blackList) {
-            map.put(ip, 0);
-        }
-        rule.addHandler(new BlockingHandler(new PerValueLimitPolicy(map,
-                Integer.MAX_VALUE)));
-        firewall.add(rule);
+        FirewallUtils.addIpAddressesBlackList(firewall, blackList);
     }
 
     /**
@@ -124,10 +99,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addIpAddressesConcurrencyCounter(int limit) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new IpAddressCountingPolicy());
-        rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
-        firewall.add(rule);
+        FirewallUtils.addIpAddressesConcurrencyCounter(firewall, limit);
     }
 
     /**
@@ -142,10 +114,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addIpAddressesPeriodicCounter(int period, int limit) {
-        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
-                new IpAddressCountingPolicy());
-        rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
-        firewall.add(rule);
+        FirewallUtils.addIpAddressesPeriodicCounter(firewall, period, limit);
     }
 
     /**
@@ -156,14 +125,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addIpAddressesWhiteList(List<String> whiteList) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new IpAddressCountingPolicy());
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        for (String ip : whiteList) {
-            map.put(ip, Integer.MAX_VALUE);
-        }
-        rule.addHandler(new BlockingHandler(new PerValueLimitPolicy(map, 0)));
-        firewall.add(rule);
+        FirewallUtils.addIpAddressesWhiteList(firewall, whiteList);
     }
 
     /**
@@ -177,7 +139,7 @@ public class FirewallService extends Service {
      * @return The associated rule.
      */
     public void addRolesConcurrencyCounter(Map<String, Integer> limitsPerRole) {
-        addRolesConcurrencyCounter(limitsPerRole, 0);
+        FirewallUtils.addRolesConcurrencyCounter(firewall, limitsPerRole);
     }
 
     /**
@@ -194,11 +156,7 @@ public class FirewallService extends Service {
      */
     public void addRolesConcurrencyCounter(Map<String, Integer> limitsPerRole,
             int defaultLimit) {
-        FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
-                new UserCountingPolicy());
-        rule.addHandler(new BlockingHandler(new RoleLimitPolicy(limitsPerRole,
-                defaultLimit)));
-        firewall.add(rule);
+        FirewallUtils.addRolesConcurrencyCounter(firewall, limitsPerRole, defaultLimit);
     }
 
     /**
@@ -215,7 +173,7 @@ public class FirewallService extends Service {
      */
     public void addRolesPeriodicCounter(int period,
             Map<String, Integer> limitsPerRole) {
-        addRolesPeriodicCounter(period, limitsPerRole, 0);
+        FirewallUtils.addRolesPeriodicCounter(firewall, period, limitsPerRole);
     }
 
     /**
@@ -234,11 +192,7 @@ public class FirewallService extends Service {
      */
     public void addRolesPeriodicCounter(int period,
             Map<String, Integer> limitsPerRole, int defaultLimit) {
-        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
-                new UserCountingPolicy());
-        rule.addHandler(new BlockingHandler(new RoleLimitPolicy(limitsPerRole,
-                defaultLimit)));
-        firewall.add(rule);
+        FirewallUtils.addRolesPeriodicCounter(firewall, period, limitsPerRole, defaultLimit);
     }
 
     @Override
