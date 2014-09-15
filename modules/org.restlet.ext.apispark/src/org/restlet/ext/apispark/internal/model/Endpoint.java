@@ -26,57 +26,52 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.raml.internal;
+package org.restlet.ext.apispark.internal.model;
 
-import org.raml.model.Raml;
-import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.data.Protocol;
 
 /**
- * Exception used when translating {@link Definition} objet to {@link Raml} and
- * vice-versa.
+ * TODO
  * 
  * @author Cyprien Quilici
  */
-@SuppressWarnings("serial")
-public class TranslationException extends Exception {
-    /** The type of the translation error. */
-    private String type;
+public class Endpoint {
 
-    /**
-     * Constructor.
-     * 
-     * @param message
-     *            The detailed message.
-     * @param type
-     *            The type of the translation error.
-     */
-    public TranslationException(String message, String type) {
-        super(message);
-        this.type = type;
+    /** The host's name. */
+    private String host;
+
+    /** The endpoint's port. */
+    private int port;
+
+    /** Protocol used for this endpoint. */
+    private Protocol protocol;
+
+    public String getHost() {
+        return host;
     }
 
-    /**
-     * Returns the type of the translation error.
-     * 
-     * @return The type of the translation error.
-     */
-    public String getType() {
-        return type;
+    public int getPort() {
+        return port;
     }
 
-    /**
-     * Sets the type of the translation error.
-     * 
-     * @param type
-     *            The type of the translation error.
-     */
-    public void setType(String type) {
-        this.type = type;
+    public Protocol getProtocol() {
+        return protocol;
     }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
 }

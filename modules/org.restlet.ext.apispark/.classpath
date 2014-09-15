@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.jackson"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.google.guava"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

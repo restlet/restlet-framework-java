@@ -9,6 +9,6 @@
 	<classpathentry exported="true" kind="lib" path="com.fasterxml.jackson.jaxb.jar"/>
 	<classpathentry exported="true" kind="lib" path="com.fasterxml.jackson.xml.jar"/>
 	<classpathentry exported="true" kind="lib" path="com.fasterxml.jackson.yaml.jar"/>
-	<classpathentry kind="lib" path="com.fasterxml.jackson.jsonschema.jar"/>
+	<classpathentry exported="true" kind="lib" path="com.fasterxml.jackson.jsonschema.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

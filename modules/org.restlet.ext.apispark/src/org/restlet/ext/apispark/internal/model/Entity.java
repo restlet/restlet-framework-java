@@ -31,47 +31,36 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.firewall.handler;
-
-import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.LimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;
-import org.restlet.routing.Filter;
+package org.restlet.ext.apispark.internal.model;
 
 /**
- * {@link ThresholdHandler} that updates the response's status to
- * {@link Status#CLIENT_ERROR_TOO_MANY_REQUESTS} when the limit is reached.
  * 
- * @author Guillaume Blondeau
+ * @author Cyprien Quilici
  */
-public class BlockingHandler extends ThresholdHandler {
+public class Entity {
 
     /**
-     * Constructor.
-     * 
-     * @param limitPolicy
-     *            The limit policy.
+     * Indicates whether you should provide an array of [type] or just one
+     * [type].
      */
-    public BlockingHandler(LimitPolicy limitPolicy) {
-        super(limitPolicy);
+    private boolean array;
+
+    /** Reference of the representation in the body of the message. */
+    private String type;
+
+    public String getType() {
+        return type;
     }
 
-    @Override
-    protected int thresholdReached(Request request, Response response,
-            CounterResult counterResult) {
-        Context.getCurrentLogger().log(
-                Level.INFO,
-                "The current request has been blocked because \""
-                        + counterResult.getCountedValue()
-                        + "\" issued too many requests.");
-
-        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        return Filter.SKIP;
+    public boolean isArray() {
+        return array;
     }
 
+    public void setArray(boolean array) {
+        this.array = array;
+    }
+
+    public void setType(String representation) {
+        this.type = representation;
+    }
 }

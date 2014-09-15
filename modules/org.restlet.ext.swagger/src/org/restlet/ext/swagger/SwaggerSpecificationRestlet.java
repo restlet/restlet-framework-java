@@ -42,7 +42,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.ext.apispark.model.Definition;
+import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.swagger.internal.SwaggerTranslator;
 import org.restlet.ext.swagger.internal.model.ApiDeclaration;

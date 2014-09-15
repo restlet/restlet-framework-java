@@ -31,47 +31,35 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.firewall.handler;
-
-import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.LimitPolicy;
-import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;
-import org.restlet.routing.Filter;
+package org.restlet.ext.apispark.internal.info;
 
 /**
- * {@link ThresholdHandler} that updates the response's status to
- * {@link Status#CLIENT_ERROR_TOO_MANY_REQUESTS} when the limit is reached.
+ * Enumerates the supported styles of parameters.
  * 
- * @author Guillaume Blondeau
+ * @author Jerome Louvel
  */
-public class BlockingHandler extends ThresholdHandler {
+public enum ParameterStyle {
 
-    /**
-     * Constructor.
-     * 
-     * @param limitPolicy
-     *            The limit policy.
-     */
-    public BlockingHandler(LimitPolicy limitPolicy) {
-        super(limitPolicy);
-    }
+    COOKIE, HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
 
     @Override
-    protected int thresholdReached(Request request, Response response,
-            CounterResult counterResult) {
-        Context.getCurrentLogger().log(
-                Level.INFO,
-                "The current request has been blocked because \""
-                        + counterResult.getCountedValue()
-                        + "\" issued too many requests.");
+    public String toString() {
+        String result = null;
+        if (equals(HEADER)) {
+            result = "header";
+        } else if (equals(MATRIX)) {
+            result = "matrix";
+        } else if (equals(PLAIN)) {
+            result = "plain";
+        } else if (equals(QUERY)) {
+            result = "query";
+        } else if (equals(TEMPLATE)) {
+            result = "template";
+        } else if (equals(COOKIE)) {
+            result = "cookie";
+        }
 
-        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        return Filter.SKIP;
+        return result;
     }
 
 }

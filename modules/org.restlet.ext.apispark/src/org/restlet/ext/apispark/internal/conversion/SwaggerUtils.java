@@ -43,10 +43,10 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
-import org.restlet.ext.apispark.model.Definition;
 import org.restlet.resource.ClientResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
