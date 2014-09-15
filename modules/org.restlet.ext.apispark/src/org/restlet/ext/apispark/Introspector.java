@@ -462,19 +462,19 @@ public class Introspector extends IntrospectionUtils {
             if ("-h".equals(args[i])) {
                 printHelp();
                 System.exit(0);
-            } else if ("-u".equals(args[i])) {
+            } else if ("-u".equals(args[i]) || "--username".equals(args[i])) {
                 ulogin = getParameter(args, ++i);
-            } else if ("-p".equals(args[i])) {
+            } else if ("-p".equals(args[i]) || "--password".equals(args[i])) {
                 upwd = getParameter(args, ++i);
-            } else if ("-s".equals(args[i])) {
+            } else if ("-s".equals(args[i]) || "--service".equals(args[i])) {
                 serviceUrl = getParameter(args, ++i);
-            } else if ("-c".equals(args[i])) {
+            } else if ("-c".equals(args[i]) || "--component".equals(args[i])) {
                 compName = getParameter(args, ++i);
-            } else if ("-d".equals(args[i])) {
+            } else if ("-d".equals(args[i]) || "--definition".equals(args[i])) {
                 definitionId = getParameter(args, ++i);
-            } else if ("-l".equals(args[i])) {
+            } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
-            } else if ("-v".equals(args[i])) {
+            } else if ("-v".equals(args[i]) || "--verbose".equals(args[i])) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
             } else {
@@ -574,23 +574,21 @@ public class Introspector extends IntrospectionUtils {
                 o,
                 "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
-        printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user name.");
-        printOption(o, "-p", "The mandatory APISpark user secret key.");
-        printOption(o, "-s",
-                "The optional APISpark platform URL (by default https://apispark.com).");
-        printOption(o, "-c",
+        printOption(o, "-h, --help", "Prints this help.");
+        printOption(o, "-u, --username", "The mandatory APISpark user name.");
+        printOption(o, "-p, --password", "The mandatory APISpark user secret key.");
+        printOption(o, "-c, --component",
                 "The optional full name of your Restlet Component class.",
                 "This allows to collect some other data, such as the endpoint.");
         printOption(
                 o,
-                "-d",
+                "-d, --definition",
                 "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
         printOption(
                 o,
-                "-l",
+                "-l, --language",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        printOption(o, "-v",
+        printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
     }
 
