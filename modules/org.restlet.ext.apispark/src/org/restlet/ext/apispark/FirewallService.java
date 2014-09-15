@@ -63,7 +63,7 @@ public class FirewallService extends Service {
     private FirewallFilter firewall;
     
     /**
-     * Returns a rule that limits the number of concurrent requests by request's
+     * Adds a rule that limits the number of concurrent requests by request's
      * host domain.
      * 
      * @param limit
@@ -79,7 +79,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that limits the number of requests for a given period of
+     * Adds a rule that limits the number of requests for a given period of
      * time by request's host domain.
      * 
      * @param period
@@ -97,7 +97,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that forbids access to the given set of IP addresses.
+     * Adds a rule that forbids access to the given set of IP addresses.
      * 
      * @param blackList
      *            The list of rejected IP adresses.
@@ -116,7 +116,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the IP address of the
+     * Adds a rule that restricts access according to the IP address of the
      * request's client. A unique limit is applied for all IP addresses.
      * 
      * @param limit
@@ -131,7 +131,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access by period of time according to the
+     * Adds a rule that restricts access by period of time according to the
      * IP address of the request's client. A unique limit is applied for all IP
      * addresses.
      * 
@@ -149,7 +149,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access to the given set of IP addresses.
+     * Adds a rule that restricts access to the given set of IP addresses.
      * 
      * @param whiteList
      *            The list of accepted IP adresses.
@@ -167,7 +167,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case the access is forbidden.
      * 
@@ -181,7 +181,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
      * 
@@ -202,7 +202,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of requests by period of time, in any other case the access is forbidden.
      * 
@@ -219,7 +219,7 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
      * 
