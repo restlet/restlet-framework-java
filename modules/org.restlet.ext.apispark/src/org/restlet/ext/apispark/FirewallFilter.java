@@ -119,23 +119,4 @@ public class FirewallFilter extends Filter {
         return result;
     }
 
-    /**
-     * Returns the associated set of {@link FirewallRule}.
-     * 
-     * @return The associated set of {@link FirewallRule}.
-     */
-    public List<FirewallRule> getRules() {
-        return rules;
-    }
-
-    /**
-     * Sets the set of {@link FirewallRule}.
-     * 
-     * @param rules
-     *            The set of rules.
-     */
-    public void setRules(List<FirewallRule> rules) {
-        this.rules = rules;
-    }
-
 }

@@ -26,57 +26,40 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.raml.internal;
-
-import org.raml.model.Raml;
-import org.restlet.ext.apispark.internal.model.Definition;
+package org.restlet.ext.apispark.internal.info;
 
 /**
- * Exception used when translating {@link Definition} objet to {@link Raml} and
- * vice-versa.
+ * Enumerates the supported styles of parameters.
  * 
- * @author Cyprien Quilici
+ * @author Jerome Louvel
  */
-@SuppressWarnings("serial")
-public class TranslationException extends Exception {
-    /** The type of the translation error. */
-    private String type;
+public enum ParameterStyle {
 
-    /**
-     * Constructor.
-     * 
-     * @param message
-     *            The detailed message.
-     * @param type
-     *            The type of the translation error.
-     */
-    public TranslationException(String message, String type) {
-        super(message);
-        this.type = type;
-    }
+    COOKIE, HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
 
-    /**
-     * Returns the type of the translation error.
-     * 
-     * @return The type of the translation error.
-     */
-    public String getType() {
-        return type;
-    }
+    @Override
+    public String toString() {
+        String result = null;
+        if (equals(HEADER)) {
+            result = "header";
+        } else if (equals(MATRIX)) {
+            result = "matrix";
+        } else if (equals(PLAIN)) {
+            result = "plain";
+        } else if (equals(QUERY)) {
+            result = "query";
+        } else if (equals(TEMPLATE)) {
+            result = "template";
+        } else if (equals(COOKIE)) {
+            result = "cookie";
+        }
 
-    /**
-     * Sets the type of the translation error.
-     * 
-     * @param type
-     *            The type of the translation error.
-     */
-    public void setType(String type) {
-        this.type = type;
+        return result;
     }
 
 }

@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.model.Definition;
-import org.restlet.ext.apispark.model.Representation;
-import org.restlet.ext.apispark.model.Resource;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 

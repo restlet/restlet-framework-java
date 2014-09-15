@@ -42,7 +42,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.model.Definition;
+import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.raml.internal.RamlTranslator;
 import org.restlet.ext.raml.internal.reflect.Introspector;
 import org.restlet.representation.Representation;

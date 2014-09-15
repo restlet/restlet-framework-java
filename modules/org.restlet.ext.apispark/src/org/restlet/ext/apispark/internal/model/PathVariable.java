@@ -26,57 +26,60 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.raml.internal;
-
-import org.raml.model.Raml;
-import org.restlet.ext.apispark.internal.model.Definition;
+package org.restlet.ext.apispark.internal.model;
 
 /**
- * Exception used when translating {@link Definition} objet to {@link Raml} and
- * vice-versa.
  * 
  * @author Cyprien Quilici
  */
-@SuppressWarnings("serial")
-public class TranslationException extends Exception {
-    /** The type of the translation error. */
-    private String type;
+public class PathVariable {
 
-    /**
-     * Constructor.
-     * 
-     * @param message
-     *            The detailed message.
-     * @param type
-     *            The type of the translation error.
-     */
-    public TranslationException(String message, String type) {
-        super(message);
-        this.type = type;
+    /** Indicates whether you can provide a list of values or just a single one. */
+    private boolean array;
+
+    /** Textual description of this variable. */
+    private String description;
+
+    /** Name of this variable. */
+    private String name;
+
+    /** The expected type of the parameter. By default, string */
+    private String type = "string";
+
+    public String getDescription() {
+        return description;
     }
 
-    /**
-     * Returns the type of the translation error.
-     * 
-     * @return The type of the translation error.
-     */
+    public String getName() {
+        return name;
+    }
+
     public String getType() {
         return type;
     }
 
-    /**
-     * Sets the type of the translation error.
-     * 
-     * @param type
-     *            The type of the translation error.
-     */
+    public boolean isArray() {
+        return array;
+    }
+
+    public void setArray(boolean array) {
+        this.array = array;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
-
 }
