@@ -38,6 +38,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,71 @@ public class JaxrsIntrospector extends IntrospectionUtils {
     }
 
     /**
+     * Returns a clean path (especially variables are cleaned from routing
+     * regexp).
+     * 
+     * @param path
+     *            The path to clean.
+     * @return The cleand path.
+     */
+    private static String cleanPath(String path) {
+        if (path != null) {
+            StringBuilder sb = new StringBuilder();
+            char next;
+            boolean inVariable = false;
+            boolean endVariable = false;
+            StringBuilder varBuffer = null;
+
+            for (int i = 0; i < path.length(); i++) {
+                next = path.charAt(i);
+
+                if (inVariable) {
+                    if (next == '}') {
+                        // End of variable detected
+                        if (varBuffer.length() == 0) {
+                            LOGGER.warning("Empty pattern variables are not allowed : "
+                                    + path);
+                        } else {
+                            sb.append(varBuffer.toString());
+
+                            // Reset the variable name buffer
+                            varBuffer = new StringBuilder();
+                        }
+
+                        endVariable = false;
+                        inVariable = false;
+                        sb.append(next);
+                    } else if (endVariable) {
+                        continue;
+                    } else if (Reference.isUnreserved(next)) {
+                        // Append to the variable name
+                        varBuffer.append(next);
+                    } else if (next == ':') {
+                        // In this case, the following is the regexp that helps
+                        // routing requests
+                        // TODO in the future, use the following as roles for
+                        // controlling the values of the variables.
+                        endVariable = true;
+                    }
+                } else {
+                    sb.append(next);
+                    if (next == '{') {
+                        inVariable = true;
+                        varBuffer = new StringBuilder();
+                    } else if (next == '}') {
+                        LOGGER.warning("An invalid character was detected inside a pattern variable : "
+                                + path);
+                    }
+                }
+            }
+
+            return sb.toString();
+        }
+
+        return null;
+    }
+
+    /**
      * Returns an instance of what must be a subclass of {@link Application}.
      * Returns null in case of errors.
      * 
@@ -138,7 +204,8 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            The name of the application class.
      * @return An instance of what must be a subclass of {@link Application}.
      */
-    protected static javax.ws.rs.core.Application getApplication(String className) {
+    protected static javax.ws.rs.core.Application getApplication(
+            String className) {
         javax.ws.rs.core.Application result = null;
 
         if (className == null) {
@@ -247,7 +314,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         if (rootPath == null) {
             rootPath = "/";
         } else if (!rootPath.startsWith("/")) {
-            rootPath += "/" + rootPath;
+            rootPath = "/" + rootPath;
         }
         if (relativePath == null) {
             result = rootPath;
@@ -265,7 +332,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
             }
         }
 
-        return result;
+        return cleanPath(result);
     }
 
     /**
@@ -501,9 +568,11 @@ public class JaxrsIntrospector extends IntrospectionUtils {
 
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
-            scan(method, info, path, c, p, cookieParams, formParams,
-                    headerParams, matrixParams, pathParams, queryParams,
-                    contextList);
+            if (Modifier.isPublic(method.getModifiers())) {
+                scan(method, info, path, c, p, cookieParams, formParams,
+                        headerParams, matrixParams, pathParams, queryParams,
+                        contextList);
+            }
         }
     }
 
