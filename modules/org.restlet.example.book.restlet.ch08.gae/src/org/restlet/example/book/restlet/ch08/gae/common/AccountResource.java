@@ -48,7 +48,7 @@ public interface AccountResource {
      * @return The account representation.
      */
     @Get
-    public AccountRepresentation represent();
+    AccountRepresentation represent();
 
     /**
      * Stores the new value for the identified account.
@@ -57,12 +57,12 @@ public interface AccountResource {
      *            The identified account.
      */
     @Put
-    public void store(AccountRepresentation account);
+    void store(AccountRepresentation account);
 
     /**
      * Deletes the identified account by setting its value to null.
      */
     @Delete
-    public void remove();
+    void remove();
 
 }

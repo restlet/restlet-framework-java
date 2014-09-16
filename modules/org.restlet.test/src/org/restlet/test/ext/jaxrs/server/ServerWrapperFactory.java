@@ -43,12 +43,12 @@ public interface ServerWrapperFactory {
      * 
      * @return Returns the new {@link ServerWrapper}.
      */
-    public ServerWrapper createServerWrapper();
+    ServerWrapper createServerWrapper();
 
     /**
      * Checks, if the Client connector ({@link #getClientConnector()}) accesses
      * the application via TCP (true) or directly without serializing and
      * deserialising.
      */
-    public boolean usesTcp();
+    boolean usesTcp();
 }

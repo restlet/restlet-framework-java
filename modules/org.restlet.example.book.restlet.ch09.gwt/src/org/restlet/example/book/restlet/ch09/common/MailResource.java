@@ -42,9 +42,9 @@ import org.restlet.resource.Put;
 public interface MailResource {
 
     @Get
-    public MailRepresentation retrieve();
+    MailRepresentation retrieve();
 
     @Put
-    public void store(MailRepresentation mail);
+    void store(MailRepresentation mail);
 
 }

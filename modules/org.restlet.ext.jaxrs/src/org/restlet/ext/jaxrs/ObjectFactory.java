@@ -62,7 +62,7 @@ public interface ObjectFactory {
      * @return The created instance.
      * @throws InstantiateException
      */
-    public <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
+    <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
     // LATER if a resource class is a singelton, it must be ensured, that it
     // has no @*Param on fields and perhaps bean setters.
 }

@@ -51,7 +51,7 @@ public interface ConcurrentMap<K, V> extends Map<K, V> {
      * @param value
      *            The value
      */
-    public void putIfAbsent(K key, V value);
+    void putIfAbsent(K key, V value);
 
     /**
      * Remove entry for key only if currently mapped to given value.
@@ -62,7 +62,7 @@ public interface ConcurrentMap<K, V> extends Map<K, V> {
      *            The value.
      * @return True if the value was removed, false otherwise
      */
-    public boolean remove(Object key, Object value);
+    boolean remove(Object key, Object value);
 
     /**
      * Replace entry for key only if currently mapped to some value.
@@ -75,7 +75,7 @@ public interface ConcurrentMap<K, V> extends Map<K, V> {
      *         map previously associated null with the specified key, if the
      *         implementation supports null values.
      */
-    public V replace(K key, V value);
+    V replace(K key, V value);
 
     /**
      * Replace entry for key only if currently mapped to given value.
@@ -88,6 +88,6 @@ public interface ConcurrentMap<K, V> extends Map<K, V> {
      *            The new value.
      * @return True if the value was replaced
      */
-    public boolean replace(K key, V oldValue, V newValue);
+    boolean replace(K key, V oldValue, V newValue);
 
 }

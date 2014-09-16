@@ -43,6 +43,6 @@ import org.restlet.resource.Get;
 public interface MyResource20 {
 
     @Get
-    public MyBean represent() throws MyException;
+    MyBean represent() throws MyException;
 
 }

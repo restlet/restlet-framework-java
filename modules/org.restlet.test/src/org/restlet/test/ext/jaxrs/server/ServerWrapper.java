@@ -53,13 +53,13 @@ public interface ServerWrapper {
      * 
      * @return the connector to access the application.
      */
-    public Restlet getClientConnector();
+    Restlet getClientConnector();
 
     /**
      * Returns the port the server is running on. throws an
      * {@link IllegalStateException}, if direct access is used.
      */
-    public int getServerPort();
+    int getServerPort();
 
     /**
      * Starts the server with the given protocol on the given port with the
@@ -71,7 +71,7 @@ public interface ServerWrapper {
      * @param appConfig
      * @throws Exception
      */
-    public void startServer(Application application, Protocol protocol)
+    void startServer(Application application, Protocol protocol)
             throws Exception;
 
     /**
@@ -81,5 +81,5 @@ public interface ServerWrapper {
      * @param component
      * @throws Exception
      */
-    public void stopServer() throws Exception;
+    void stopServer() throws Exception;
 }

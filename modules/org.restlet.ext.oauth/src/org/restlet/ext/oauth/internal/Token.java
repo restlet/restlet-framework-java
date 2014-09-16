@@ -47,34 +47,34 @@ public interface Token {
      * 
      * @return the actual token to be used for OAuth invocations.
      */
-    public String getAccessToken();
+    String getAccessToken();
 
     /**
      * The type of the token.
      * 
      * @return
      */
-    public String getTokenType();
+    String getTokenType();
 
     /**
      * The lifetime in seconds of the access token.
      * 
      * @return
      */
-    public int getExpirePeriod();
+    int getExpirePeriod();
 
     /**
      * The refresh token. (5.1. 'refresh_token')
      * 
      * @return null if refresh token was not issued.
      */
-    public String getRefreshToken();
+    String getRefreshToken();
 
     /**
      * The actual granted scope. Must not be null.
      * 
      * @return
      */
-    public String[] getScope();
+    String[] getScope();
 
 }

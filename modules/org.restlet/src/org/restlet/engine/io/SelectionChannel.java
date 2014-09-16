@@ -49,6 +49,6 @@ public interface SelectionChannel extends Channel, BlockableChannel {
      * 
      * @return The NIO registration.
      */
-    public SelectionRegistration getRegistration();
+    SelectionRegistration getRegistration();
 
 }

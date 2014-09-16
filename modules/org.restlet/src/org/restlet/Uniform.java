@@ -58,5 +58,5 @@ public interface Uniform {
      * @param response
      *            The associated response.
      */
-    public void handle(Request request, Response response);
+    void handle(Request request, Response response);
 }

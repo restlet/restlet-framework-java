@@ -47,6 +47,6 @@ public interface BlockableChannel extends Channel {
      * 
      * @return True if the channel is likely to block upon IO operations.
      */
-    public boolean isBlocking();
+    boolean isBlocking();
 
 }

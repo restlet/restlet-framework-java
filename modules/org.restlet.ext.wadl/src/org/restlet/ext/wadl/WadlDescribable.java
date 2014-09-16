@@ -54,6 +54,6 @@ public interface WadlDescribable {
      * 
      * @return A full documented {@link ResourceInfo} instance.
      */
-    public ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
+    ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
 
 }

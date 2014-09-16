@@ -64,7 +64,7 @@ public interface ExtendedUriInfo extends UriInfo {
      *             if called outside the scope of a request
      * @see UriInfo#getAbsolutePathBuilder()
      */
-    public ExtendedUriBuilder getAbsolutePathBuilder();
+    ExtendedUriBuilder getAbsolutePathBuilder();
 
     /**
      * Get the base URI of the application in the form of an
@@ -75,7 +75,7 @@ public interface ExtendedUriInfo extends UriInfo {
      *         an extension according to the current chosen media type.
      * @see UriInfo#getBaseUriBuilder()
      */
-    public ExtendedUriBuilder getBaseUriBuilder();
+    ExtendedUriBuilder getBaseUriBuilder();
 
     /**
      * Get the absolute request URI in the form of an {@link ExtendedUriBuilder}
@@ -86,5 +86,5 @@ public interface ExtendedUriInfo extends UriInfo {
      * @throws java.lang.IllegalStateException
      *             if called outside the scope of a request
      */
-    public ExtendedUriBuilder getRequestUriBuilder();
+    ExtendedUriBuilder getRequestUriBuilder();
 }

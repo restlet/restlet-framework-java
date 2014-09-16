@@ -42,9 +42,9 @@ import org.restlet.resource.Post;
 public interface ContactsResource {
 
     @Get
-    public ContactsRepresentation retrieve();
+    ContactsRepresentation retrieve();
 
     @Post
-    public void add(ContactRepresentation contact);
+    void add(ContactRepresentation contact);
 
 }

@@ -43,6 +43,6 @@ public interface TasksListener {
     /**
      * Callback method invoked upon delegated tasks completion.
      */
-    public void onCompleted();
+    void onCompleted();
 
 }

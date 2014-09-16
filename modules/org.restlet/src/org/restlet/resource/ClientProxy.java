@@ -48,6 +48,6 @@ public interface ClientProxy {
      * 
      * @return The wrapped client resource.
      */
-    public ClientResource getClientResource();
+    ClientResource getClientResource();
 
 }

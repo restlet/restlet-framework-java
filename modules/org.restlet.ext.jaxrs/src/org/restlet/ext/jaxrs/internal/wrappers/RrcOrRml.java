@@ -45,5 +45,5 @@ public interface RrcOrRml {
     /**
      * @return Returns the Regular Expression of the path.
      */
-    public PathRegExp getPathRegExp();
+    PathRegExp getPathRegExp();
 }

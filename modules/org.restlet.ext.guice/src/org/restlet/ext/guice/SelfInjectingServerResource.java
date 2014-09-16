@@ -18,7 +18,7 @@ public abstract class SelfInjectingServerResource extends ServerResource {
      * statically-injected MembersInjector just calls
      * {@code injector.injectMembers(object)}.
      */
-    public interface MembersInjector {
+    interface MembersInjector {
         void injectMembers(Object object);
     }
 

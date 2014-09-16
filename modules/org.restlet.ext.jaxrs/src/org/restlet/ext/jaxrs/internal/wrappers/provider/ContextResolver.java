@@ -46,7 +46,7 @@ public interface ContextResolver {
      * 
      * @return the wrapped ContextResolver
      */
-    public javax.ws.rs.ext.ContextResolver<?> getContextResolver();
+    javax.ws.rs.ext.ContextResolver<?> getContextResolver();
 
     /**
      * Checks, if the wrapped ContextResolver supports the given
@@ -57,5 +57,5 @@ public interface ContextResolver {
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */
-    public boolean supportsWrite(MediaType mediaType);
+    boolean supportsWrite(MediaType mediaType);
 }

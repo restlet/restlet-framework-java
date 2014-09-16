@@ -44,6 +44,6 @@ import org.restlet.resource.Post;
 public interface AnnotatedInterface02 {
 
     @Post
-    public String accept();
+    String accept();
 
 }

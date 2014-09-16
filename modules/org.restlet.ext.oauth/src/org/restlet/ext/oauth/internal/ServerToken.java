@@ -45,19 +45,19 @@ public interface ServerToken extends Token {
      * @return null if the resource owner is the client. (i.e.
      *         client_credentials grant.)
      */
-    public String getUsername();
+    String getUsername();
 
     /**
      * The client associated with this token.
      * 
      * @return
      */
-    public String getClientId();
+    String getClientId();
 
     /**
      * Check if the token is expired.
      * 
      * @return true if this token is expired.
      */
-    public boolean isExpired();
+    boolean isExpired();
 }

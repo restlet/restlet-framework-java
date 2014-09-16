@@ -46,6 +46,6 @@ public interface RootResource {
      * @return The root representation.
      */
     @Get
-    public String represent();
+    String represent();
 
 }

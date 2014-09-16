@@ -66,7 +66,7 @@ public interface ClientManager {
      * @param properties
      * @return
      */
-    public Client createClient(ClientType clientType, String[] redirectURIs,
+    Client createClient(ClientType clientType, String[] redirectURIs,
             Map<String, Object> properties);
 
     /**
@@ -76,7 +76,7 @@ public interface ClientManager {
      *            client_id of the client to remove
      */
 
-    public void deleteClient(String id);
+    void deleteClient(String id);
 
     /**
      * Search for a client_id if present in the database.
@@ -86,6 +86,6 @@ public interface ClientManager {
      * @return client POJO or null if not found.
      */
 
-    public Client findById(String id);
+    Client findById(String id);
 
 }

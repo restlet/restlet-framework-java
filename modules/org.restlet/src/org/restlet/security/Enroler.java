@@ -60,6 +60,6 @@ public interface Enroler {
      * @param clientInfo
      *            The clientInfo to update.
      */
-    public void enrole(ClientInfo clientInfo);
+    void enrole(ClientInfo clientInfo);
 
 }

@@ -45,14 +45,14 @@ public interface NamedValue<V> {
      * 
      * @return The name of this parameter.
      */
-    public abstract String getName();
+    abstract String getName();
 
     /**
      * Returns the value.
      * 
      * @return The value.
      */
-    public abstract V getValue();
+    abstract V getValue();
 
     /**
      * Sets the value.
@@ -60,6 +60,6 @@ public interface NamedValue<V> {
      * @param value
      *            The value.
      */
-    public abstract void setValue(V value);
+    abstract void setValue(V value);
 
 }

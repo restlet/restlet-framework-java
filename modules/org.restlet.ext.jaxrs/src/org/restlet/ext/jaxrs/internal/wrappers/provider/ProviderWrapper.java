@@ -53,7 +53,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableExcepti
  */
 public interface ProviderWrapper {
 
-    public abstract boolean equals(Object otherProvider);
+    abstract boolean equals(Object otherProvider);
 
     /**
      * @return the JAX-RS provider class name
@@ -85,7 +85,7 @@ public interface ProviderWrapper {
      * 
      * @return the type the wrapped exception mapper could map.
      */
-    public Class<?> getExcMapperType();
+    Class<?> getExcMapperType();
 
     /**
      * @return the initialized exception mapper
@@ -121,7 +121,7 @@ public interface ProviderWrapper {
      */
     List<MediaType> getProducedMimes();
 
-    public int hashCode();
+    int hashCode();
 
     /**
      * Initializes this entity provider at start up. If the life cycle is
@@ -134,7 +134,7 @@ public interface ProviderWrapper {
      * @throws InvocationTargetException
      * @throws IllegalTypeException
      */
-    public void initAtAppStartUp(ThreadLocalizedContext tlContext,
+    void initAtAppStartUp(ThreadLocalizedContext tlContext,
             Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException,
@@ -182,7 +182,7 @@ public interface ProviderWrapper {
      * @return true, if the wrapped {@link javax.ws.rs.ext.MessageBodyReader}
      *         supports the read for the given media type.
      */
-    public boolean supportsRead(MediaType mediaType);
+    boolean supportsRead(MediaType mediaType);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -193,7 +193,7 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(Iterable<MediaType> mediaTypes);
+    boolean supportsWrite(Iterable<MediaType> mediaTypes);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -204,7 +204,7 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(javax.ws.rs.core.MediaType requested);
+    boolean supportsWrite(javax.ws.rs.core.MediaType requested);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -215,5 +215,5 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(MediaType requested);
+    boolean supportsWrite(MediaType requested);
 }

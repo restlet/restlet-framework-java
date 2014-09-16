@@ -47,7 +47,7 @@ public interface AccountResource {
      * @return The FOAF profile as a RDF graph.
      */
     @Get("rdf")
-    public Graph getFoafProfile();
+    Graph getFoafProfile();
 
     /**
      * Represents the account as a simple string with the owner name for now.
@@ -55,6 +55,6 @@ public interface AccountResource {
      * @return The account representation.
      */
     @Get
-    public AccountRepresentation represent();
+    AccountRepresentation represent();
 
 }

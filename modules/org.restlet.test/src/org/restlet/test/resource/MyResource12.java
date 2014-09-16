@@ -45,9 +45,9 @@ import org.restlet.resource.Put;
 public interface MyResource12 {
 
     @Get
-    public Form represent();
+    Form represent();
 
     @Put
-    public void store(Form form);
+    void store(Form form);
 
 }

@@ -65,7 +65,7 @@ public interface MessageBodyWriter {
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */
-    public boolean isWriteable(Class<?> type, Type genericType,
+    boolean isWriteable(Class<?> type, Type genericType,
             Annotation annotations[], javax.ws.rs.core.MediaType mediaType);
 
     /**
@@ -85,7 +85,7 @@ public interface MessageBodyWriter {
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(Object, Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    public long getSize(Object t, Class<?> type, Type genericType,
+    long getSize(Object t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType);
 
     /**
@@ -103,7 +103,7 @@ public interface MessageBodyWriter {
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(Object object, Class<?> type, Type genericType,
+    void writeTo(Object object, Class<?> type, Type genericType,
             Annotation annotations[], MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
@@ -114,7 +114,7 @@ public interface MessageBodyWriter {
      * 
      * @return the JAX-RS MessageBodyWriter
      */
-    public javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
+    javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -124,7 +124,7 @@ public interface MessageBodyWriter {
      *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
      *         , '*<!---->/*' is returned.
      */
-    public List<MediaType> getProducedMimes();
+    List<MediaType> getProducedMimes();
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -135,7 +135,7 @@ public interface MessageBodyWriter {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(Iterable<MediaType> mediaTypes);
+    boolean supportsWrite(Iterable<MediaType> mediaTypes);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports the given
@@ -146,7 +146,7 @@ public interface MessageBodyWriter {
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */
-    public boolean supportsWrite(MediaType mediaType);
+    boolean supportsWrite(MediaType mediaType);
 
     /**
      * Checks, if this message body writer supports the given type (by the type
@@ -159,5 +159,5 @@ public interface MessageBodyWriter {
      * @return true, if this MessageBodyWriter supports the given type, false,
      *         if not.
      */
-    public boolean supportsWrite(Class<?> entityClass, Type genericType);
+    boolean supportsWrite(Class<?> entityClass, Type genericType);
 }

@@ -44,12 +44,12 @@ import org.restlet.resource.Get;
 public interface MyResource13 {
 
     @Get("?shallow")
-    public LightContact retrieveLight();
+    LightContact retrieveLight();
 
     @Get
-    public Contact retrieve();
+    Contact retrieve();
 
     @Get("?deep")
-    public FullContact retrieveFull();
+    FullContact retrieveFull();
 
 }

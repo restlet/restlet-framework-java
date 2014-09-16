@@ -51,7 +51,7 @@ public interface WakeupListener {
      * @param selectionRegistration
      *            The selected registration.
      */
-    public void onWokeup(SelectionRegistration selectionRegistration)
+    void onWokeup(SelectionRegistration selectionRegistration)
             throws IOException;
 
 }

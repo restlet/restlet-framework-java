@@ -53,7 +53,7 @@ public interface TokenManager {
      * @return
      * @throws OAuthException
      */
-    public Token generateToken(Client client, String username, String[] scope)
+    Token generateToken(Client client, String username, String[] scope)
             throws OAuthException;
 
     /**
@@ -66,17 +66,17 @@ public interface TokenManager {
      * @return
      * @throws OAuthException
      */
-    public Token generateToken(Client client, String[] scope)
+    Token generateToken(Client client, String[] scope)
             throws OAuthException;
 
-    public Token refreshToken(Client client, String refreshToken, String[] scope)
+    Token refreshToken(Client client, String refreshToken, String[] scope)
             throws OAuthException;
 
-    public String storeSession(AuthSession session) throws OAuthException;
+    String storeSession(AuthSession session) throws OAuthException;
 
-    public AuthSession restoreSession(String code) throws OAuthException;
+    AuthSession restoreSession(String code) throws OAuthException;
 
-    public Token validateToken(String accessToken) throws OAuthException;
+    Token validateToken(String accessToken) throws OAuthException;
 
     /**
      * Find a token issued for the client and the username. For those tokens
@@ -89,7 +89,7 @@ public interface TokenManager {
      *            for the client itself.
      * @return null if not found.
      */
-    public Token findToken(Client client, String username);
+    Token findToken(Client client, String username);
 
     /**
      * Call
@@ -100,7 +100,7 @@ public interface TokenManager {
      *            the client that bound to token.
      * @return null if not found.
      */
-    public Token findToken(Client client);
+    Token findToken(Client client);
 
     /**
      * Find all tokens bound to the username.
@@ -109,7 +109,7 @@ public interface TokenManager {
      *            the username that bound to tokens.
      * @return 0 length if not found.
      */
-    public Token[] findTokens(String username);
+    Token[] findTokens(String username);
 
     /**
      * Find all tokens bound to the client.
@@ -118,7 +118,7 @@ public interface TokenManager {
      *            the client that bound to tokens.
      * @return 0 length if not found.
      */
-    public Token[] findTokens(Client client);
+    Token[] findTokens(Client client);
 
     /**
      * Revoke a token issued for the client and the username. For those tokens
@@ -130,7 +130,7 @@ public interface TokenManager {
      *            the username that bound to token. null if the token was issued
      *            for the client itself.
      */
-    public void revokeToken(Client client, String username);
+    void revokeToken(Client client, String username);
 
     /**
      * Call
@@ -140,7 +140,7 @@ public interface TokenManager {
      * @param client
      *            the client that bound to token.
      */
-    public void revokeToken(Client client);
+    void revokeToken(Client client);
 
     /**
      * Revoke all tokens bound to the username.
@@ -149,7 +149,7 @@ public interface TokenManager {
      *            the username that bound to tokens.
      * @return 0 length if not found.
      */
-    public void revokeAllTokens(String username);
+    void revokeAllTokens(String username);
 
     /**
      * Revoke all tokens bound to the client.
@@ -158,5 +158,5 @@ public interface TokenManager {
      *            the client that bound to tokens.
      * @return 0 length if not found.
      */
-    public void revokeAllTokens(Client client);
+    void revokeAllTokens(Client client);
 }

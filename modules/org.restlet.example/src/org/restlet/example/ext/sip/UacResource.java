@@ -45,12 +45,12 @@ import org.restlet.ext.sip.Invite;
 public interface UacResource {
 
     @Ack
-    public abstract void acknowledge();
+    abstract void acknowledge();
 
     @Invite
-    public abstract void start();
+    abstract void start();
 
     @Bye
-    public abstract void stop();
+    abstract void stop();
 
 }

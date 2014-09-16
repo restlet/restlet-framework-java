@@ -47,18 +47,18 @@ import org.restlet.resource.Put;
 public interface MyResource01 {
 
     @Get
-    public MyBean represent();
+    MyBean represent();
 
     @Put
-    public String store(MyBean bean);
+    String store(MyBean bean);
 
     @Post
-    public boolean accept(MyBean bean);
+    boolean accept(MyBean bean);
 
     @Delete("txt")
-    public String remove();
+    String remove();
 
     @Options("txt")
-    public String describe();
+    String describe();
 
 }

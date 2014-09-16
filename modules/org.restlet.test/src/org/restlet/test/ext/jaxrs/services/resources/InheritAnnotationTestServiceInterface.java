@@ -48,5 +48,5 @@ public interface InheritAnnotationTestServiceInterface {
     @GET
     @Produces("text/plain")
     @Path("getText")
-    public Object getText();
+    Object getText();
 }

@@ -46,15 +46,15 @@ public interface ResourceMethodOrLocator extends RrcOrRml {
     /**
      * @return returns the name of the java method or sub resource locator
      */
-    public String getName();
+    String getName();
 
     /**
      * @return Returns the Regular Expression of the path.
      */
-    public PathRegExp getPathRegExp();
+    PathRegExp getPathRegExp();
 
     /**
      * @return Returns the wrapped resource class
      */
-    public ResourceClass getResourceClass();
+    ResourceClass getResourceClass();
 }

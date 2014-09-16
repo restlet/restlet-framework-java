@@ -47,7 +47,7 @@ public interface AccountsResource {
      * @return The list of accounts.
      */
     @Get
-    public String represent();
+    String represent();
 
     /**
      * Add the given account to the list and returns its position as an
@@ -58,6 +58,6 @@ public interface AccountsResource {
      * @return The account identifier.
      */
     @Post
-    public String add(String account);
+    String add(String account);
 
 }

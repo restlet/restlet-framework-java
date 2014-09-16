@@ -38,6 +38,6 @@ import org.restlet.resource.Post;
 public interface MyResource17<R> {
 
     @Post
-    public R add(R rep);
+    R add(R rep);
 
 }

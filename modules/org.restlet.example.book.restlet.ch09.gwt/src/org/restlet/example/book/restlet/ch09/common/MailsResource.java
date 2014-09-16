@@ -42,9 +42,9 @@ import org.restlet.resource.Post;
 public interface MailsResource {
 
     @Get
-    public MailsRepresentation retrieve();
+    MailsRepresentation retrieve();
 
     @Post
-    public void add(MailRepresentation mail);
+    void add(MailRepresentation mail);
 
 }

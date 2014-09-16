@@ -41,6 +41,6 @@ import javax.naming.AuthenticationException;
  */
 public interface ResourceOwnerManager {
 
-    public String authenticate(String username, char[] password)
+    String authenticate(String username, char[] password)
             throws AuthenticationException;
 }

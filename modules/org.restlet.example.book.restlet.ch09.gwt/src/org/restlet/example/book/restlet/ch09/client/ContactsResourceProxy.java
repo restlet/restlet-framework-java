@@ -46,9 +46,9 @@ import org.restlet.example.book.restlet.ch09.common.ContactsRepresentation;
 public interface ContactsResourceProxy extends ClientProxy {
 
     @Get
-    public void retrieve(Result<ContactsRepresentation> result);
+    void retrieve(Result<ContactsRepresentation> result);
 
     @Post
-    public void add(ContactRepresentation contact, Result<Void> result);
+    void add(ContactRepresentation contact, Result<Void> result);
 
 }

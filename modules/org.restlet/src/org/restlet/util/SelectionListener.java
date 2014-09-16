@@ -49,7 +49,7 @@ public interface SelectionListener {
      * @param selectionRegistration
      *            The selected registration.
      */
-    public void onSelected(SelectionRegistration selectionRegistration)
+    void onSelected(SelectionRegistration selectionRegistration)
             throws IOException;
 
 }

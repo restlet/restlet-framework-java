@@ -50,14 +50,14 @@ public interface InboundRequest {
      * 
      * @return The related connection.
      */
-    public Connection<Server> getConnection();
+    Connection<Server> getConnection();
 
     /**
      * Returns the headers.
      * 
      * @return The headers.
      */
-    public abstract Series<Header> getHeaders();
+    abstract Series<Header> getHeaders();
 
     /**
      * Put the headers in the request's attributes map.
@@ -65,6 +65,6 @@ public interface InboundRequest {
      * @param headers
      *            The headers.
      */
-    public abstract void setHeaders(Series<Header> headers);
+    abstract void setHeaders(Series<Header> headers);
 
 }

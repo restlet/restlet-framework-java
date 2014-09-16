@@ -42,9 +42,9 @@ import org.restlet.resource.Options;
 public interface RootResource {
 
     @Get("txt")
-    public String represent();
+    String represent();
 
     @Options("txt")
-    public String describe();
+    String describe();
 
 }

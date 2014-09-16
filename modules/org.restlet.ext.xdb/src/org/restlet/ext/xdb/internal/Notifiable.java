@@ -48,7 +48,7 @@ public interface Notifiable {
      * {@link org.restlet.engine.http.connector.Connection#setInboundBusy(boolean)}
      * ) .
      */
-    public void onEndReached();
+    void onEndReached();
 
     /**
      * To be called when there is an error when handling the stream. By default
@@ -56,6 +56,6 @@ public interface Notifiable {
      * {@link org.restlet.engine.http.connector.ConnectionState#CLOSING} in
      * order to release this stream.
      */
-    public void onError();
+    void onError();
 
 }

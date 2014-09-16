@@ -71,6 +71,6 @@ public interface Verifier {
      *            The response to update.
      * @return Result of the verification based on the RESULT_* constants.
      */
-    public int verify(Request request, Response response);
+    int verify(Request request, Response response);
 
 }

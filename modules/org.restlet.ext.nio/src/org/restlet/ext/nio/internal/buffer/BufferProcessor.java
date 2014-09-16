@@ -52,7 +52,7 @@ public interface BufferProcessor {
      *            The optional arguments to pass back to the callbacks.
      * @return True if the processing loop can continue.
      */
-    public boolean canLoop(Buffer buffer, Object... args);
+    boolean canLoop(Buffer buffer, Object... args);
 
     /**
      * Indicates if the buffer could be filled again.
@@ -63,7 +63,7 @@ public interface BufferProcessor {
      *            The optional arguments to pass back to the callbacks.
      * @return True if the buffer could be filled again.
      */
-    public boolean couldFill(Buffer buffer, Object... args);
+    boolean couldFill(Buffer buffer, Object... args);
 
     /**
      * Drains the byte buffer.
@@ -77,7 +77,7 @@ public interface BufferProcessor {
      * @return The number of bytes drained.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+    int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException;
 
     /**
@@ -90,12 +90,12 @@ public interface BufferProcessor {
      * @return The number of bytes filled.
      * @throws IOException
      */
-    public int onFill(Buffer buffer, Object... args) throws IOException;
+    int onFill(Buffer buffer, Object... args) throws IOException;
 
     /**
      * Called back when a fill operation returns with an EOF status.
      */
-    public void onFillEof();
+    void onFillEof();
 
     /**
      * Called back after a complete processing pass.
@@ -104,7 +104,7 @@ public interface BufferProcessor {
      *            The number of bytes drained or -1 if the filling source has
      *            ended.
      */
-    public void postProcess(int drained) throws IOException;
+    void postProcess(int drained) throws IOException;
 
     /**
      * Called back before a processing pass.
@@ -117,6 +117,6 @@ public interface BufferProcessor {
      * @return The number of bytes drained or -1 if the filling source has
      *         ended.
      */
-    public int preProcess(int maxDrained, Object... args) throws IOException;
+    int preProcess(int maxDrained, Object... args) throws IOException;
 
 }
