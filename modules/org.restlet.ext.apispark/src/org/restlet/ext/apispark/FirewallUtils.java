@@ -31,13 +31,12 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.utils;
+package org.restlet.ext.apispark;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.ext.apispark.FirewallFilter;
 import org.restlet.ext.apispark.internal.firewall.handler.BlockingHandler;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.PerValueLimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.RoleLimitPolicy;
