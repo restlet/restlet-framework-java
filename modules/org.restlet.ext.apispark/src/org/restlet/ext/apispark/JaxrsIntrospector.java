@@ -332,7 +332,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
             }
         }
 
-        return cleanPath(result);
+        return result;
     }
 
     /**
@@ -638,10 +638,11 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         // "Path" decides on which resource to put this method
         Path path = method.getAnnotation(Path.class);
         String fullPath = getPath(cPath, path);
+        String cleanPath = cleanPath(fullPath);
 
         ResourceInfo resource = null;
         for (ResourceInfo ri : info.getResources().getResources()) {
-            if (fullPath.equals(ri.getPath())) {
+            if (cleanPath.equals(ri.getPath())) {
                 resource = ri;
                 break;
             }
@@ -649,8 +650,8 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         if (resource == null) {
             resource = new ResourceInfo();
             // TODO how to set the identifier?
-            resource.setIdentifier(fullPath);
-            resource.setPath(fullPath);
+            resource.setIdentifier(cleanPath);
+            resource.setPath(cleanPath);
             info.getResources().getResources().add(resource);
         }
         resource.getMethods().add(mi);
@@ -665,7 +666,9 @@ public class JaxrsIntrospector extends IntrospectionUtils {
             resource.getParameters().add(pi);
         } else {
             // let's check that parameters are rightly specified
-            Template template = new Template(fullPath);
+            // TODO in the future, don't use the clean path as the full path
+            // shows more variables attributes.
+            Template template = new Template(cleanPath);
             for (String var : template.getVariableNames()) {
                 boolean found = false;
                 for (ParameterInfo pi : resource.getParameters()) {
