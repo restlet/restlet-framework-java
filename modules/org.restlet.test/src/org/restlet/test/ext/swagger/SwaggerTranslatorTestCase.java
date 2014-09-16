@@ -39,15 +39,15 @@ import java.io.IOException;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
-import org.restlet.ext.apispark.model.Definition;
-import org.restlet.ext.apispark.model.Entity;
-import org.restlet.ext.apispark.model.Operation;
-import org.restlet.ext.apispark.model.PathVariable;
-import org.restlet.ext.apispark.model.Property;
-import org.restlet.ext.apispark.model.QueryParameter;
-import org.restlet.ext.apispark.model.Representation;
-import org.restlet.ext.apispark.model.Resource;
-import org.restlet.ext.apispark.model.Response;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Entity;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
@@ -59,255 +59,251 @@ import org.restlet.test.RestletTestCase;
  */
 public class SwaggerTranslatorTestCase extends RestletTestCase {
 
-	/**
-	 * Retrieves the Petstore from {@linkplain http
-	 * ://petstore.swagger.wordnik.com/api/api-docs}, and translates it to
-	 * RWADef using SwaggerTranslater.
-	 * 
-	 * @throws TranslationException
-	 * @throws IOException
-	 */
-	public void testPetstoreSwaggerToRwadef() throws TranslationException, IOException {
-		Definition savedDefinition = new JacksonRepresentation<Definition>(
-				new FileRepresentation(new File(
-						"src/org/restlet/test/ext/raml/Petstore.rwadef"),
-						MediaType.APPLICATION_JSON), Definition.class)
-				.getObject();
-		Definition translatedDefinition = SwaggerUtils.getDefinition(
-				"http://petstore.swagger.wordnik.com/api/api-docs", "", "");
+    /**
+     * Retrieves the Petstore from {@linkplain http
+     * ://petstore.swagger.wordnik.com/api/api-docs}, and translates it to
+     * RWADef using SwaggerTranslater.
+     * 
+     * @throws TranslationException
+     * @throws IOException
+     */
+    public void testPetstoreSwaggerToRwadef() throws TranslationException,
+            IOException {
+        Definition savedDefinition = new JacksonRepresentation<Definition>(
+                new FileRepresentation(new File(
+                        "src/org/restlet/test/ext/raml/Petstore.rwadef"),
+                        MediaType.APPLICATION_JSON), Definition.class)
+                .getObject();
+        Definition translatedDefinition = SwaggerUtils.getDefinition(
+                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
 
-		// Api Info
-		assertEquals(savedDefinition.getContact(),
-				translatedDefinition.getContact());
-		assertEquals(savedDefinition.getEndpoint(),
-				translatedDefinition.getEndpoint());
-		assertEquals(savedDefinition.getLicense(),
-				translatedDefinition.getLicense());
-		assertEquals(savedDefinition.getVersion(),
-				translatedDefinition.getVersion());
+        // Api Info
+        assertEquals(savedDefinition.getContact(),
+                translatedDefinition.getContact());
+        assertEquals(savedDefinition.getEndpoint(),
+                translatedDefinition.getEndpoint());
+        assertEquals(savedDefinition.getLicense(),
+                translatedDefinition.getLicense());
+        assertEquals(savedDefinition.getVersion(),
+                translatedDefinition.getVersion());
 
-		// Contract info
-		assertEquals(savedDefinition.getContract().getDescription(),
-				translatedDefinition.getContract().getDescription());
-		assertEquals(savedDefinition.getContract().getName(),
-				translatedDefinition.getContract().getName());
+        // Contract info
+        assertEquals(savedDefinition.getContract().getDescription(),
+                translatedDefinition.getContract().getDescription());
+        assertEquals(savedDefinition.getContract().getName(),
+                translatedDefinition.getContract().getName());
 
-		// Representations
-		Representation savedRepresentation;
-		for (Representation translatedRepresentation : translatedDefinition
-				.getContract().getRepresentations()) {
-			savedRepresentation = savedDefinition.getContract()
-					.getRepresentation(translatedRepresentation.getName());
-			assertEquals(true, savedRepresentation != null);
-			
-			if (savedRepresentation != null) {
-				 assertEquals(savedRepresentation.getDescription(),
-				 translatedRepresentation.getDescription());
-				 assertEquals(savedRepresentation.getName(),
-				 translatedRepresentation.getName());
-				 assertEquals(savedRepresentation.getExtendedType(),
-				 translatedRepresentation.getExtendedType());
-				 assertEquals(savedRepresentation.isRaw(),
-				 translatedRepresentation.isRaw());
-				 
-				 // Properties
-				Property savedProperty;
-				for (Property translatedProperty: translatedRepresentation.getProperties()) {
-					savedProperty = savedRepresentation.getProperty(translatedProperty.getName());
-					assertEquals(true, savedProperty != null);
-					
-					if (savedProperty != null) {
-						 assertEquals(savedProperty.getDefaultValue(),
-						 translatedProperty.getDefaultValue());
-						 assertEquals(savedProperty.getDescription(),
-						 translatedProperty.getDescription());
-						 assertEquals(savedProperty.getMax(),
-						 translatedProperty.getMax());
-						 assertEquals(savedProperty.getMaxOccurs(),
-						 translatedProperty.getMaxOccurs());
-						 assertEquals(savedProperty.getMin(),
-						 translatedProperty.getMin());
-						 assertEquals(savedProperty.getMinOccurs(),
-						 translatedProperty.getMinOccurs());
-						 assertEquals(savedProperty.getName(),
-						 translatedProperty.getName());
-						 assertEquals(savedProperty.getEnumeration(),
-						 translatedProperty.getEnumeration());
-						 assertEquals(savedProperty.isUniqueItems(),
-						 translatedProperty.isUniqueItems());
-						 assertEquals(savedProperty.getType(),
-						 translatedProperty.getType());
-					}
-				}
-			}
-			
-		}
+        // Representations
+        Representation savedRepresentation;
+        for (Representation translatedRepresentation : translatedDefinition
+                .getContract().getRepresentations()) {
+            savedRepresentation = savedDefinition.getContract()
+                    .getRepresentation(translatedRepresentation.getName());
+            assertEquals(true, savedRepresentation != null);
 
-		// Resources
-		Resource savedResource;
-		for (Resource translatedResource : translatedDefinition.getContract()
-				.getResources()) {
-			savedResource = savedDefinition.getContract().getResource(
-					translatedResource.getResourcePath());
-			assertEquals(true, savedResource != null);
+            if (savedRepresentation != null) {
+                assertEquals(savedRepresentation.getDescription(),
+                        translatedRepresentation.getDescription());
+                assertEquals(savedRepresentation.getName(),
+                        translatedRepresentation.getName());
+                assertEquals(savedRepresentation.getExtendedType(),
+                        translatedRepresentation.getExtendedType());
+                assertEquals(savedRepresentation.isRaw(),
+                        translatedRepresentation.isRaw());
 
-			if (savedResource != null) {
-				assertEquals(translatedResource.getDescription(),
-						savedResource.getDescription());
-				assertEquals(translatedResource.getName(),
-						savedResource.getName());
-				assertEquals(translatedResource.getResourcePath(),
-						savedResource.getResourcePath());
+                // Properties
+                Property savedProperty;
+                for (Property translatedProperty : translatedRepresentation
+                        .getProperties()) {
+                    savedProperty = savedRepresentation
+                            .getProperty(translatedProperty.getName());
+                    assertEquals(true, savedProperty != null);
 
-				// Path Variables
-				PathVariable savedPathVariable;
-				for (PathVariable translatedPathVariable : translatedResource
-						.getPathVariables()) {
-					savedPathVariable = savedResource
-							.getPathVariable(translatedPathVariable.getName());
-					assertEquals(true, savedPathVariable != null);
+                    if (savedProperty != null) {
+                        assertEquals(savedProperty.getDefaultValue(),
+                                translatedProperty.getDefaultValue());
+                        assertEquals(savedProperty.getDescription(),
+                                translatedProperty.getDescription());
+                        assertEquals(savedProperty.getMax(),
+                                translatedProperty.getMax());
+                        assertEquals(savedProperty.getMaxOccurs(),
+                                translatedProperty.getMaxOccurs());
+                        assertEquals(savedProperty.getMin(),
+                                translatedProperty.getMin());
+                        assertEquals(savedProperty.getMinOccurs(),
+                                translatedProperty.getMinOccurs());
+                        assertEquals(savedProperty.getName(),
+                                translatedProperty.getName());
+                        assertEquals(savedProperty.getEnumeration(),
+                                translatedProperty.getEnumeration());
+                        assertEquals(savedProperty.isUniqueItems(),
+                                translatedProperty.isUniqueItems());
+                        assertEquals(savedProperty.getType(),
+                                translatedProperty.getType());
+                    }
+                }
+            }
 
-					if (savedPathVariable != null) {
-						assertEquals(savedPathVariable.getName(),
-								translatedPathVariable.getName());
-						assertEquals(savedPathVariable.getDescription(),
-								translatedPathVariable.getDescription());
-						assertEquals(savedPathVariable.isArray(),
-								translatedPathVariable.isArray());
-					}
-				}
+        }
 
-				// Operations
-				Operation savedOperation;
-				for (Operation translatedOperation : translatedResource
-						.getOperations()) {
-					savedOperation = savedResource
-							.getOperation(translatedOperation.getName());
-					assertEquals(true, savedOperation != null);
+        // Resources
+        Resource savedResource;
+        for (Resource translatedResource : translatedDefinition.getContract()
+                .getResources()) {
+            savedResource = savedDefinition.getContract().getResource(
+                    translatedResource.getResourcePath());
+            assertEquals(true, savedResource != null);
 
-					if (savedOperation != null) {
-						assertEquals(savedOperation.getDescription(),
-								translatedOperation.getDescription());
-						assertEquals(savedOperation.getMethod(),
-								translatedOperation.getMethod());
-						assertEquals(savedOperation.getName(),
-								translatedOperation.getName());
-						assertEquals(savedOperation.getConsumes(),
-								translatedOperation.getConsumes());
-						assertEquals(savedOperation.getProduces(),
-								translatedOperation.getProduces());
+            if (savedResource != null) {
+                assertEquals(translatedResource.getDescription(),
+                        savedResource.getDescription());
+                assertEquals(translatedResource.getName(),
+                        savedResource.getName());
+                assertEquals(translatedResource.getResourcePath(),
+                        savedResource.getResourcePath());
 
-						// In representation
-						Entity savedInRepresentation = savedOperation
-								.getInRepresentation();
-						Entity translatedInRepresentation = translatedOperation
-								.getInRepresentation();
-						assertEquals(
-								true,
-								(savedInRepresentation == null) == (translatedInRepresentation == null));
+                // Path Variables
+                PathVariable savedPathVariable;
+                for (PathVariable translatedPathVariable : translatedResource
+                        .getPathVariables()) {
+                    savedPathVariable = savedResource
+                            .getPathVariable(translatedPathVariable.getName());
+                    assertEquals(true, savedPathVariable != null);
 
-						if (translatedInRepresentation != null) {
-							assertEquals(savedInRepresentation.isArray(),
-									translatedInRepresentation.isArray());
-							assertEquals(
-									savedInRepresentation.getType(),
-									translatedInRepresentation
-											.getType());
-						}
+                    if (savedPathVariable != null) {
+                        assertEquals(savedPathVariable.getName(),
+                                translatedPathVariable.getName());
+                        assertEquals(savedPathVariable.getDescription(),
+                                translatedPathVariable.getDescription());
+                        assertEquals(savedPathVariable.isArray(),
+                                translatedPathVariable.isArray());
+                    }
+                }
 
-						// Out representation
-						Entity savedOutRepresentation = savedOperation
-								.getOutRepresentation();
-						Entity translatedOutRepresentation = translatedOperation
-								.getOutRepresentation();
-						assertEquals(
-								true,
-								(savedOutRepresentation == null) == (translatedOutRepresentation == null));
+                // Operations
+                Operation savedOperation;
+                for (Operation translatedOperation : translatedResource
+                        .getOperations()) {
+                    savedOperation = savedResource
+                            .getOperation(translatedOperation.getName());
+                    assertEquals(true, savedOperation != null);
 
-						if (translatedOutRepresentation != null) {
-							assertEquals(savedOutRepresentation.isArray(),
-									translatedOutRepresentation.isArray());
-							assertEquals(
-									savedOutRepresentation.getType(),
-									translatedOutRepresentation
-											.getType());
-						}
+                    if (savedOperation != null) {
+                        assertEquals(savedOperation.getDescription(),
+                                translatedOperation.getDescription());
+                        assertEquals(savedOperation.getMethod(),
+                                translatedOperation.getMethod());
+                        assertEquals(savedOperation.getName(),
+                                translatedOperation.getName());
+                        assertEquals(savedOperation.getConsumes(),
+                                translatedOperation.getConsumes());
+                        assertEquals(savedOperation.getProduces(),
+                                translatedOperation.getProduces());
 
-						// Responses
-						Response savedResponse;
-						for (Response translatedResponse : translatedOperation
-								.getResponses()) {
-							savedResponse = savedOperation
-									.getResponse(translatedResponse.getCode());
-							assertEquals(true, savedResponse != null);
+                        // In representation
+                        Entity savedInRepresentation = savedOperation
+                                .getInRepresentation();
+                        Entity translatedInRepresentation = translatedOperation
+                                .getInRepresentation();
+                        assertEquals(
+                                true,
+                                (savedInRepresentation == null) == (translatedInRepresentation == null));
 
-							if (savedResponse != null) {
-								assertEquals(savedResponse.getCode(),
-										translatedResponse.getCode());
-								assertEquals(savedResponse.getDescription(),
-										translatedResponse.getDescription());
-								assertEquals(savedResponse.getMessage(),
-										translatedResponse.getMessage());
-								assertEquals(savedResponse.getName(),
-										translatedResponse.getName());
+                        if (translatedInRepresentation != null) {
+                            assertEquals(savedInRepresentation.isArray(),
+                                    translatedInRepresentation.isArray());
+                            assertEquals(savedInRepresentation.getType(),
+                                    translatedInRepresentation.getType());
+                        }
 
-								// Body
-								Entity savedResponseBody = savedResponse
-										.getEntity();
-								Entity translatedResponseBody = translatedResponse
-										.getEntity();
-								assertEquals(
-										true,
-										(savedResponseBody == null) == (translatedResponseBody == null));
+                        // Out representation
+                        Entity savedOutRepresentation = savedOperation
+                                .getOutRepresentation();
+                        Entity translatedOutRepresentation = translatedOperation
+                                .getOutRepresentation();
+                        assertEquals(
+                                true,
+                                (savedOutRepresentation == null) == (translatedOutRepresentation == null));
 
-								if (translatedResponseBody != null) {
-									assertEquals(savedResponseBody.isArray(),
-											translatedResponseBody.isArray());
-									assertEquals(
-											savedResponseBody
-													.getType(),
-											translatedResponseBody
-													.getType());
-								}
-							}
+                        if (translatedOutRepresentation != null) {
+                            assertEquals(savedOutRepresentation.isArray(),
+                                    translatedOutRepresentation.isArray());
+                            assertEquals(savedOutRepresentation.getType(),
+                                    translatedOutRepresentation.getType());
+                        }
 
-						}
+                        // Responses
+                        Response savedResponse;
+                        for (Response translatedResponse : translatedOperation
+                                .getResponses()) {
+                            savedResponse = savedOperation
+                                    .getResponse(translatedResponse.getCode());
+                            assertEquals(true, savedResponse != null);
 
-						// Query Parameters
-						QueryParameter savedQueryParameter;
-						for (QueryParameter translatedQueryParameter : translatedOperation
-								.getQueryParameters()) {
-							savedQueryParameter = savedOperation
-									.getQueryParameter(translatedQueryParameter
-											.getName());
-							assertEquals(true, savedQueryParameter != null);
+                            if (savedResponse != null) {
+                                assertEquals(savedResponse.getCode(),
+                                        translatedResponse.getCode());
+                                assertEquals(savedResponse.getDescription(),
+                                        translatedResponse.getDescription());
+                                assertEquals(savedResponse.getMessage(),
+                                        translatedResponse.getMessage());
+                                assertEquals(savedResponse.getName(),
+                                        translatedResponse.getName());
 
-							if (savedQueryParameter != null) {
-								assertEquals(
-										savedQueryParameter.isAllowMultiple(),
-										translatedQueryParameter
-												.isAllowMultiple());
-								assertEquals(
-										savedQueryParameter.getDefaultValue(),
-										translatedQueryParameter
-												.getDefaultValue());
-								assertEquals(
-										savedQueryParameter.getDescription(),
-										translatedQueryParameter
-												.getDescription());
-								assertEquals(savedQueryParameter.getName(),
-										translatedQueryParameter.getName());
-								assertEquals(savedQueryParameter
-										.getEnumeration(),
-										translatedQueryParameter
-												.getEnumeration());
-								assertEquals(savedQueryParameter.isRequired(),
-										translatedQueryParameter.isRequired());
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+                                // Body
+                                Entity savedResponseBody = savedResponse
+                                        .getEntity();
+                                Entity translatedResponseBody = translatedResponse
+                                        .getEntity();
+                                assertEquals(
+                                        true,
+                                        (savedResponseBody == null) == (translatedResponseBody == null));
+
+                                if (translatedResponseBody != null) {
+                                    assertEquals(savedResponseBody.isArray(),
+                                            translatedResponseBody.isArray());
+                                    assertEquals(savedResponseBody.getType(),
+                                            translatedResponseBody.getType());
+                                }
+                            }
+
+                        }
+
+                        // Query Parameters
+                        QueryParameter savedQueryParameter;
+                        for (QueryParameter translatedQueryParameter : translatedOperation
+                                .getQueryParameters()) {
+                            savedQueryParameter = savedOperation
+                                    .getQueryParameter(translatedQueryParameter
+                                            .getName());
+                            assertEquals(true, savedQueryParameter != null);
+
+                            if (savedQueryParameter != null) {
+                                assertEquals(
+                                        savedQueryParameter.isAllowMultiple(),
+                                        translatedQueryParameter
+                                                .isAllowMultiple());
+                                assertEquals(
+                                        savedQueryParameter.getDefaultValue(),
+                                        translatedQueryParameter
+                                                .getDefaultValue());
+                                assertEquals(
+                                        savedQueryParameter.getDescription(),
+                                        translatedQueryParameter
+                                                .getDescription());
+                                assertEquals(savedQueryParameter.getName(),
+                                        translatedQueryParameter.getName());
+                                assertEquals(
+                                        savedQueryParameter.getEnumeration(),
+                                        translatedQueryParameter
+                                                .getEnumeration());
+                                assertEquals(savedQueryParameter.isRequired(),
+                                        translatedQueryParameter.isRequired());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
