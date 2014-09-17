@@ -72,13 +72,14 @@ public class DocumentedServerResource extends ServerResource {
      * "http://restlet.com:8444/learn/guide/2.3/extensions/apispark/introspector"
      * >here</a>).
      * 
-     * Fields retrieved in mi:
+     * Fields retrieved by Introspector in mi:
      * 
      * mi#name, mi#description, mi#parameters
      * 
-     * Fields retrieved in mi#parameters:
+     * Fields retrieved by Introspector in mi#parameters:
      * 
-     * parameter#name, parameter#description
+     * parameter#name, parameter#description, parameter#defaultValue,
+     * parameter#required, parameter#repeating
      * 
      * @param mi
      *            Object representing the operation
