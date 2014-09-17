@@ -171,7 +171,7 @@ public class MethodInfo extends DocumentedInfo {
 
                     if (info.getResponse().getStatuses().isEmpty()) {
                         info.getResponse().getStatuses().add(Status.SUCCESS_OK);
-                        info.getResponse().setDocumentation("Success");
+                        info.getResponse().setName("Success");
                     }
                 } catch (IOException e) {
                     throw new ResourceException(e);
@@ -208,35 +208,11 @@ public class MethodInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public MethodInfo(DocumentationInfo documentation) {
-        super(documentation);
+
+    public MethodInfo(String description, String name) {
+        super(description, name);
     }
 
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public MethodInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public MethodInfo(String documentation) {
-        super(documentation);
-    }
 
     /**
      * Returns the associated annotation, if any.

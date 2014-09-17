@@ -90,6 +90,11 @@ public class ResourceInfo extends DocumentedInfo {
             ServerResource sr = (ServerResource) resource;
             sr.updateAllowedMethods();
             methodsList.addAll(sr.getAllowedMethods());
+            if (sr instanceof DocumentedServerResouce) {
+                // Call method to describe describe
+                info.setDescription(sr.getDescription());
+                info.setName(sr.getName());
+            }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
             methodsList.add(Method.GET);
@@ -121,6 +126,9 @@ public class ResourceInfo extends DocumentedInfo {
                             methods.add(methodInfo);
                             methodInfo.setMethod(method);
                             MethodInfo.describeAnnotation(methodInfo, mai, sr);
+                        }
+                        if (sr instanceof DocumentedServerResouce) {
+                            // Call method to describe describe
                         }
                     }
                 }
@@ -160,35 +168,14 @@ public class ResourceInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(DocumentationInfo documentation) {
-        super(documentation);
+    
+
+    public ResourceInfo(String description, String name) {
+        super(description, name);
+        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ResourceInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(String documentation) {
-        super(documentation);
-    }
 
     /**
      * Creates an application descriptor that wraps this resource descriptor.
@@ -200,23 +187,6 @@ public class ResourceInfo extends DocumentedInfo {
      */
     public ApplicationInfo createApplication() {
         ApplicationInfo result = new ApplicationInfo();
-
-        if (!getDocumentations().isEmpty()) {
-            String titleResource = getDocumentations().get(0).getTitle();
-            if (titleResource != null && !titleResource.isEmpty()) {
-                DocumentationInfo doc = null;
-
-                if (result.getDocumentations().isEmpty()) {
-                    doc = new DocumentationInfo();
-                    result.getDocumentations().add(doc);
-                } else {
-                    doc = result.getDocumentations().get(0);
-                }
-
-                doc.setTitle(titleResource);
-            }
-        }
-
         ResourcesInfo resources = new ResourcesInfo();
         result.setResources(resources);
         resources.getResources().add(this);

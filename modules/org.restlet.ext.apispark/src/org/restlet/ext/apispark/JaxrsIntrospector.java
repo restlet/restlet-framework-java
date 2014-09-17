@@ -729,7 +729,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         }
         if (mi.getResponse().getStatuses().isEmpty()) {
             mi.getResponse().getStatuses().add(Status.SUCCESS_OK);
-            mi.getResponse().setDocumentation("Success");
+            mi.getResponse().setName("Success");
         }
 
         // Introduced by Jax-rs 2.0,

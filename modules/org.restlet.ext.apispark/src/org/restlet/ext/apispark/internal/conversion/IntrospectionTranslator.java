@@ -16,7 +16,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
-import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
 import org.restlet.ext.apispark.internal.info.ParameterInfo;
 import org.restlet.ext.apispark.internal.info.ParameterStyle;
@@ -84,7 +83,7 @@ public class IntrospectionTranslator {
             Map<String, RepresentationInfo> mapReps, Logger logger) {
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
-            resource.setDescription(toString(ri.getDocumentations()));
+            resource.setDescription(ri.getDescription());
             resource.setName(ri.getIdentifier());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
@@ -101,8 +100,7 @@ public class IntrospectionTranslator {
                 if (ParameterStyle.TEMPLATE.equals(pi.getStyle())) {
                     PathVariable pathVariable = new PathVariable();
 
-                    pathVariable
-                            .setDescription(toString(pi.getDocumentations()));
+                    pathVariable.setDescription(pi.getDescription());
                     pathVariable.setName(pi.getName());
 
                     resource.getPathVariables().add(pathVariable);
@@ -130,7 +128,7 @@ public class IntrospectionTranslator {
                 }
                 logger.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
-                operation.setDescription(toString(mi.getDocumentations()));
+                operation.setDescription(mi.getDescription());
                 operation.setName(methodName);
                 // TODO complete Method class with mi.getName()
                 operation.setMethod(mi.getMethod().getName());
@@ -167,7 +165,7 @@ public class IntrospectionTranslator {
                             header.setAllowMultiple(pi.isRepeating());
                             header.setDefaultValue(pi.getDefaultValue());
                             header.setDescription(toString(
-                                    pi.getDocumentations(),
+                                    pi.getDescription(),
                                     pi.getDefaultValue()));
                             header.setName(pi.getName());
                             header.setEnumeration(new ArrayList<String>());
@@ -180,7 +178,7 @@ public class IntrospectionTranslator {
                             queryParameter
                                     .setDefaultValue(pi.getDefaultValue());
                             queryParameter.setDescription(toString(
-                                    pi.getDocumentations(),
+                                    pi.getDescription(),
                                     pi.getDefaultValue()));
                             queryParameter.setName(pi.getName());
                             queryParameter
@@ -196,7 +194,7 @@ public class IntrospectionTranslator {
                         Header header = new Header();
                         header.setAllowMultiple(pi.isRepeating());
                         header.setDefaultValue(pi.getDefaultValue());
-                        header.setDescription(toString(pi.getDocumentations(),
+                        header.setDescription(toString(pi.getDescription(),
                                 pi.getDefaultValue()));
                         header.setName(pi.getName());
                         header.setEnumeration(new ArrayList<String>());
@@ -208,7 +206,7 @@ public class IntrospectionTranslator {
                         queryParameter.setAllowMultiple(pi.isRepeating());
                         queryParameter.setDefaultValue(pi.getDefaultValue());
                         queryParameter.setDescription(toString(
-                                pi.getDocumentations(), pi.getDefaultValue()));
+                                pi.getDescription(), pi.getDefaultValue()));
                         queryParameter.setName(pi.getName());
                         queryParameter.setEnumeration(new ArrayList<String>());
                         queryParameter.setRequired(pi.isRequired());
@@ -267,9 +265,9 @@ public class IntrospectionTranslator {
                             Response response = new Response();
                             response.setEntity(entity);
                             response.setCode(status.getCode());
-                            response.setName(toString(rio.getDocumentations()));
+                            response.setName(toString(rio.getDescription()));
                             response.setDescription(toString(rio
-                                    .getDocumentations()));
+                                    .getDescription()));
                             response.setMessage(status.getDescription());
                             // response.setName();
 
@@ -328,7 +326,7 @@ public class IntrospectionTranslator {
 
             Contract contract = new Contract();
             result.setContract(contract);
-            contract.setDescription(toString(application.getDocumentations()));
+            contract.setDescription(toString(application.getDescription()));
             contract.setName(application.getName());
             if (contract.getName() == null || contract.getName().isEmpty()) {
                 contract.setName(application.getClass().getName());
@@ -467,7 +465,7 @@ public class IntrospectionTranslator {
                 // The models differ : one representation / one variant for
                 // Restlet
                 // one representation / several variants for APIspark
-                rep.setDescription(toString(ri.getDocumentations()));
+                rep.setDescription(toString(ri.getDescription()));
                 rep.setName(ri.getName());
 
                 rep.setProperties(new ArrayList<Property>());
@@ -532,8 +530,8 @@ public class IntrospectionTranslator {
      *            The list of {@link DocumentationInfo} instances.
      * @return A String value.
      */
-    private static String toString(List<DocumentationInfo> dis) {
-        return toString(dis, "");
+    private static String toString(String description) {
+        return toString(description, "");
     }
 
     /**
@@ -543,18 +541,9 @@ public class IntrospectionTranslator {
      *            The list of {@link DocumentationInfo} instances.
      * @return A String value.
      */
-    private static String toString(List<DocumentationInfo> dis,
-            String defaultValue) {
-        if (dis != null && !dis.isEmpty()) {
-            StringBuilder d = new StringBuilder();
-            for (DocumentationInfo doc : dis) {
-                if (doc.getTextContent() != null) {
-                    d.append(doc.getTextContent());
-                }
-            }
-            if (d.length() > 0) {
-                return d.toString();
-            }
+    private static String toString(String description, String defaultValue) {
+        if (description != null && !description.isEmpty()) {
+            return description;
         }
 
         return defaultValue;

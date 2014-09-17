@@ -63,34 +63,8 @@ public class ResponseInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResponseInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ResponseInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResponseInfo(String documentation) {
-        super(documentation);
+    public ResponseInfo(String description, String name) {
+        super(description, name);
     }
 
     /**

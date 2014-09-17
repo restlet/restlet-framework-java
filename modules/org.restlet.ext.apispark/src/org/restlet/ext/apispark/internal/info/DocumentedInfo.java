@@ -33,8 +33,6 @@
 
 package org.restlet.ext.apispark.internal.info;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Superclass of APISpark elements that supports documentation.
@@ -44,7 +42,9 @@ import java.util.List;
 public abstract class DocumentedInfo {
 
     /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+    private String description;
+    /** Doc elements used to document that element. */
+    private String name;
 
     /**
      * Constructor.
@@ -53,85 +53,27 @@ public abstract class DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public DocumentedInfo(DocumentationInfo documentation) {
-        getDocumentations().add(documentation);
+    public DocumentedInfo(String description, String name) {
+        super();
+        this.description = description;
+        this.name = name;
     }
 
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public DocumentedInfo(List<DocumentationInfo> documentations) {
-        this.documentations = documentations;
+    public String getDescription() {
+        return description;
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public DocumentedInfo(String documentation) {
-        this(new DocumentationInfo(documentation));
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
+    public String getName() {
+        return name;
     }
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentationInfo
-     *            A single documentation element.
-     */
-    public void setDocumentation(DocumentationInfo documentationInfo) {
-        getDocumentations().clear();
-        getDocumentations().add(documentationInfo);
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentation(String documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(new DocumentationInfo(documentation));
-    }
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
 }

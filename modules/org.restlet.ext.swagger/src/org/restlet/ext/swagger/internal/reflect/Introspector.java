@@ -53,7 +53,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
-import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
 import org.restlet.ext.apispark.internal.info.ParameterInfo;
 import org.restlet.ext.apispark.internal.info.ParameterStyle;
@@ -133,7 +132,7 @@ public class Introspector {
             Map<String, RepresentationInfo> mapReps) {
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
-            resource.setDescription(toString(ri.getDocumentations()));
+            resource.setDescription(ri.getDescription());
             resource.setName(ri.getIdentifier());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
@@ -148,8 +147,7 @@ public class Introspector {
                 if (ParameterStyle.TEMPLATE.equals(pi.getStyle())) {
                     PathVariable pathVariable = new PathVariable();
 
-                    pathVariable
-                            .setDescription(toString(pi.getDocumentations()));
+                    pathVariable.setDescription(pi.getDescription());
                     pathVariable.setName(pi.getName());
 
                     resource.getPathVariables().add(pathVariable);
@@ -177,7 +175,7 @@ public class Introspector {
                 }
                 LOGGER.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
-                operation.setDescription(toString(mi.getDocumentations()));
+                operation.setDescription(mi.getDescription());
                 operation.setName(methodName);
                 // TODO complete Method class with mi.getName()
                 operation.setMethod(mi.getMethod().getName());
@@ -213,8 +211,7 @@ public class Introspector {
                             Header header = new Header();
                             header.setAllowMultiple(pi.isRepeating());
                             header.setDefaultValue(pi.getDefaultValue());
-                            header.setDescription(toString(
-                                    pi.getDocumentations(),
+                            header.setDescription(toString(pi.getDescription(),
                                     pi.getDefaultValue()));
                             header.setName(pi.getName());
                             header.setEnumeration(new ArrayList<String>());
@@ -227,8 +224,7 @@ public class Introspector {
                             queryParameter
                                     .setDefaultValue(pi.getDefaultValue());
                             queryParameter.setDescription(toString(
-                                    pi.getDocumentations(),
-                                    pi.getDefaultValue()));
+                                    pi.getDescription(), pi.getDefaultValue()));
                             queryParameter.setName(pi.getName());
                             queryParameter
                                     .setEnumeration(new ArrayList<String>());
@@ -243,7 +239,7 @@ public class Introspector {
                         Header header = new Header();
                         header.setAllowMultiple(pi.isRepeating());
                         header.setDefaultValue(pi.getDefaultValue());
-                        header.setDescription(toString(pi.getDocumentations(),
+                        header.setDescription(toString(pi.getDescription(),
                                 pi.getDefaultValue()));
                         header.setName(pi.getName());
                         header.setEnumeration(new ArrayList<String>());
@@ -255,10 +251,9 @@ public class Introspector {
                         queryParameter.setAllowMultiple(pi.isRepeating());
                         queryParameter.setDefaultValue(pi.getDefaultValue());
                         queryParameter.setDescription(toString(
-                                pi.getDocumentations(), pi.getDefaultValue()));
+                                pi.getDescription(), pi.getDefaultValue()));
                         queryParameter.setName(pi.getName());
-                        queryParameter
-                                .setEnumeration(new ArrayList<String>());
+                        queryParameter.setEnumeration(new ArrayList<String>());
                         queryParameter.setRequired(pi.isRequired());
 
                         operation.getQueryParameters().add(queryParameter);
@@ -276,8 +271,8 @@ public class Introspector {
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for
                     // APIspark
-                    entity.setType(mi.getRequest().getRepresentations()
-                            .get(0).getType().getSimpleName());
+                    entity.setType(mi.getRequest().getRepresentations().get(0)
+                            .getType().getSimpleName());
                     entity.setArray(mi.getRequest().getRepresentations().get(0)
                             .isCollection());
 
@@ -293,9 +288,8 @@ public class Introspector {
                     // for Restlet one representation / several variants for
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
-                        entity.setType(mi.getResponse()
-                                .getRepresentations().get(0).getType()
-                                .getSimpleName());
+                        entity.setType(mi.getResponse().getRepresentations()
+                                .get(0).getType().getSimpleName());
                         entity.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
@@ -316,9 +310,8 @@ public class Introspector {
                             Response response = new Response();
                             response.setEntity(entity);
                             response.setCode(status.getCode());
-                            response.setName(toString(rio.getDocumentations()));
-                            response.setDescription(toString(rio
-                                    .getDocumentations()));
+                            response.setName(rio.getDescription());
+                            response.setDescription(rio.getDescription());
                             response.setMessage(status.getDescription());
                             // response.setName();
 
@@ -348,17 +341,6 @@ public class Introspector {
     protected static ApplicationInfo getApplicationInfo(
             Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
-        if ((application.getName() != null) && !application.getName().isEmpty()) {
-            DocumentationInfo doc = null;
-            if (applicationInfo.getDocumentations().isEmpty()) {
-                doc = new DocumentationInfo();
-                applicationInfo.getDocumentations().add(doc);
-            } else {
-                doc = applicationInfo.getDocumentations().get(0);
-            }
-            applicationInfo.setName(application.getName());
-            doc.setTitle(application.getName());
-        }
         applicationInfo.getResources().setBaseRef(baseRef);
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,
@@ -590,7 +572,7 @@ public class Introspector {
 
             Contract contract = new Contract();
             result.setContract(contract);
-            contract.setDescription(toString(application.getDocumentations()));
+            contract.setDescription(application.getDescription());
             contract.setName(application.getName());
             if (contract.getName() == null || contract.getName().isEmpty()) {
                 contract.setName(application.getClass().getName());
@@ -729,7 +711,7 @@ public class Introspector {
                 // The models differ : one representation / one variant for
                 // Restlet
                 // one representation / several variants for APIspark
-                rep.setDescription(toString(ri.getDocumentations()));
+                rep.setDescription(ri.getDescription());
                 rep.setName(ri.getName());
 
                 rep.setProperties(new ArrayList<Property>());
@@ -788,29 +770,9 @@ public class Introspector {
      *            The list of {@link DocumentationInfo} instances.
      * @return A String value.
      */
-    private static String toString(List<DocumentationInfo> dis) {
-        return toString(dis, "");
-    }
-
-    /**
-     * Concats a list of {@link DocumentationInfo} instances as a single String.
-     * 
-     * @param dis
-     *            The list of {@link DocumentationInfo} instances.
-     * @return A String value.
-     */
-    private static String toString(List<DocumentationInfo> dis,
-            String defaultValue) {
-        if (dis != null && !dis.isEmpty()) {
-            StringBuilder d = new StringBuilder();
-            for (DocumentationInfo doc : dis) {
-                if (doc.getTextContent() != null) {
-                    d.append(doc.getTextContent());
-                }
-            }
-            if (d.length() > 0) {
-                return d.toString();
-            }
+    private static String toString(String description, String defaultValue) {
+        if (description != null && !description.isEmpty()) {
+            return description;
         }
 
         return defaultValue;

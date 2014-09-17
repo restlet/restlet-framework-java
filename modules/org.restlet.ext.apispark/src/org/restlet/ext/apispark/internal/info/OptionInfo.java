@@ -52,34 +52,8 @@ public class OptionInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public OptionInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public OptionInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public OptionInfo(String documentation) {
-        super(documentation);
+    public OptionInfo(String description, String name) {
+        super(description, name);
     }
 
     /**

@@ -166,24 +166,8 @@ public class RepresentationInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public RepresentationInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public RepresentationInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
+    public RepresentationInfo(String description, String name) {
+        super(description, name);
     }
 
     /**
@@ -194,16 +178,6 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public RepresentationInfo(MediaType mediaType) {
         setMediaType(mediaType);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public RepresentationInfo(String documentation) {
-        super(documentation);
     }
 
     /**
