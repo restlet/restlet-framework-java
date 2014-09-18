@@ -45,9 +45,9 @@ import org.raml.model.Action;
 import org.raml.model.ActionType;
 import org.raml.model.MimeType;
 import org.raml.model.Raml;
+import org.raml.model.SecurityScheme;
 import org.raml.model.parameter.UriParameter;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -136,12 +136,45 @@ public abstract class RamlTranslator {
         if (definition.getVersion() != null) {
             raml.setVersion(definition.getVersion());
         }
+        Endpoint endpoint = definition.getEndpoints().get(0);
         if (!definition.getEndpoints().isEmpty()) {
-            raml.setBaseUri(definition.getEndpoints().get(0).getUrl());
+            raml.setBaseUri(endpoint.getUrl());
         } else {
-            raml.setBaseUri(new Endpoint("example.com", 80, Protocol.HTTP,
-                    "/v1", ChallengeScheme.HTTP_BASIC).getUrl());
+            raml.setBaseUri("http://example.com/v1");
         }
+
+        // Authentication
+        raml.setSecuritySchemes(new ArrayList<Map<String, SecurityScheme>>());
+        Map<String, SecurityScheme> securitySchemes = new HashMap<String, SecurityScheme>();
+        SecurityScheme securityScheme = new SecurityScheme();
+        if (endpoint != null) {
+            if (ChallengeScheme.HTTP_BASIC.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.HTTP_BASIC.getName());
+                securitySchemes.put(ChallengeScheme.HTTP_BASIC.getName(),
+                        securityScheme);
+            } else if (ChallengeScheme.HTTP_OAUTH.equals(endpoint
+                    .getAuthenticationProtocol())
+                    || ChallengeScheme.HTTP_OAUTH_BEARER.equals(endpoint
+                            .getAuthenticationProtocol())
+                    || ChallengeScheme.HTTP_OAUTH_MAC.equals(endpoint
+                            .getAuthenticationProtocol())) {
+                securityScheme.setType("Oauth 2.0");
+                securitySchemes.put("oauth_2_0", securityScheme);
+            } else if (ChallengeScheme.HTTP_DIGEST.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.HTTP_DIGEST.getName());
+                securitySchemes.put(ChallengeScheme.HTTP_DIGEST.getName(),
+                        securityScheme);
+            } else if (ChallengeScheme.CUSTOM.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.CUSTOM.getName());
+                securitySchemes.put(ChallengeScheme.CUSTOM.getName(),
+                        securityScheme);
+            }
+            raml.getSecuritySchemes().add(securitySchemes);
+        }
+
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
         // UriParameter("version"));
