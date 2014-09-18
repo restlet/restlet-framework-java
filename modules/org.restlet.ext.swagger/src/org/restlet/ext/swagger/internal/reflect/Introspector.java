@@ -340,6 +340,8 @@ public class Introspector {
     protected static ApplicationInfo getApplicationInfo(
             Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
+        applicationInfo.setName(application.getName());
+        applicationInfo.setDescription(application.getDescription());
         applicationInfo.getResources().setBaseRef(baseRef);
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,

@@ -176,8 +176,7 @@ public class Introspector {
                 LOGGER.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(mi.getDescription());
-                operation.setName(methodName);
-                // TODO complete Method class with mi.getName()
+                operation.setName(mi.getName());
                 operation.setMethod(mi.getMethod().getName());
 
                 // Fill fields produces/consumes
@@ -341,6 +340,8 @@ public class Introspector {
     protected static ApplicationInfo getApplicationInfo(
             Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
+        applicationInfo.setName(application.getName());
+        applicationInfo.setDescription(application.getDescription());
         applicationInfo.getResources().setBaseRef(baseRef);
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,
