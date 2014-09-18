@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark;
 
-import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -334,107 +333,6 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         }
 
         return result;
-    }
-
-    /**
-     * Main class, invoke this class without argument to get help instructions.
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        String ulogin = null;
-        String upwd = null;
-        String serviceUrl = null;
-        String appName = null;
-        String definitionId = null;
-
-        LOGGER.fine("Get parameters");
-        for (int i = 0; i < (args.length); i++) {
-            if ("-h".equals(args[i])) {
-                printHelp();
-                System.exit(0);
-            } else if ("-u".equals(args[i])) {
-                ulogin = getParameter(args, ++i);
-            } else if ("-p".equals(args[i])) {
-                upwd = getParameter(args, ++i);
-            } else if ("-s".equals(args[i])) {
-                serviceUrl = getParameter(args, ++i);
-            } else if ("-d".equals(args[i])) {
-                definitionId = getParameter(args, ++i);
-            } else {
-                appName = args[i];
-            }
-        }
-
-        LOGGER.fine("Check parameters");
-        if (isEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/";
-        }
-        if (!serviceUrl.endsWith("/")) {
-            serviceUrl += "/";
-        }
-
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(appName)) {
-            printHelp();
-            System.exit(1);
-        }
-
-        // Validate the application class name
-        javax.ws.rs.core.Application application = getApplication(appName);
-
-        Definition definition = null;
-        if (application != null) {
-            LOGGER.fine("Instantiate introspector");
-            JaxrsIntrospector i = new JaxrsIntrospector(application);
-
-            LOGGER.info("Generate documentation");
-            definition = i.getDefinition();
-        }
-
-        if (definition != null) {
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl,
-                    LOGGER);
-        } else {
-            LOGGER.severe("Please provide a valid application class name.");
-        }
-    }
-
-    /**
-     * Prints the instructions necessary to launch this tool.
-     */
-    private static void printHelp() {
-        PrintStream o = System.out;
-
-        o.println("SYNOPSIS");
-        printSynopsis(o, JaxrsIntrospector.class, "[options] APPLICATION");
-        o.println("DESCRIPTION");
-        printSentence(
-                o,
-                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class.");
-        printSentence(
-                o,
-                "If the whole process is successfull, it displays the url of the corresponding documentation.");
-        o.println("OPTIONS");
-        printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user name.");
-        printOption(o, "-p", "The mandatory APISpark user secret key.");
-        printOption(o, "-s",
-                "The optional APISpark platform URL (by default https://apispark.com).");
-        printOption(o, "-c",
-                "The optional full name of your Restlet Component class.",
-                "This allows to collect some other data, such as the endpoint.");
-        printOption(
-                o,
-                "-d",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
-        o.println("LOGGING");
-        printSentence(
-                o,
-                "You can get a detailled log of the process using the JDK's API.",
-                "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
-                "Here is the name of the used Logger: "
-                        + JaxrsIntrospector.class.getName());
     }
 
     private static void scan(Annotation[] annotations, Class<?> parameterClass,

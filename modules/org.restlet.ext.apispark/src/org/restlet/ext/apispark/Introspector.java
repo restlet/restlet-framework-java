@@ -586,21 +586,16 @@ public class Introspector extends IntrospectionUtils {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class, "[options] APPLICATION");
-        printSynopsis(o, Introspector.class, "--create [options] APPLICATION");
-        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] APPLICATION");
-        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] APPLICATION");
-        printSynopsis(o, Introspector.class, "[options] --language swagger SWAGGER DEFINITION URL/PATH");
-        printSynopsis(o, Introspector.class, "--create [options] --language swagger SWAGGER DEFINITION URL/PATH");
-        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] --language swagger SWAGGER DEFINITION URL/PATH");
-        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] --language swagger SWAGGER DEFINITION URL/PATH");
-        printSynopsis(o, Introspector.class,
-                "-l swagger [options] SWAGGER DEFINITION URL/PATH");
+        printSynopsis(o, Introspector.class, "[options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(o, Introspector.class, "--create [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+
         o.println("DESCRIPTION");
         printSentence(
                 o,
                 "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class or by the swagger definition available on the ",
+                "the full name of your Restlet or JAX-RS application class or by the swagger definition available on the ",
                 "URL/PATH");
         printSentence(
                 o,
