@@ -63,6 +63,7 @@ import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
@@ -257,8 +258,7 @@ public class Introspector {
                         queryParameter.setDescription(toString(
                                 pi.getDocumentations(), pi.getDefaultValue()));
                         queryParameter.setName(pi.getName());
-                        queryParameter
-                                .setEnumeration(new ArrayList<String>());
+                        queryParameter.setEnumeration(new ArrayList<String>());
                         queryParameter.setRequired(pi.isRequired());
 
                         operation.getQueryParameters().add(queryParameter);
@@ -276,8 +276,8 @@ public class Introspector {
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for
                     // APIspark
-                    entity.setType(mi.getRequest().getRepresentations()
-                            .get(0).getType().getSimpleName());
+                    entity.setType(mi.getRequest().getRepresentations().get(0)
+                            .getType().getSimpleName());
                     entity.setArray(mi.getRequest().getRepresentations().get(0)
                             .isCollection());
 
@@ -293,9 +293,8 @@ public class Introspector {
                     // for Restlet one representation / several variants for
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
-                        entity.setType(mi.getResponse()
-                                .getRepresentations().get(0).getType()
-                                .getSimpleName());
+                        entity.setType(mi.getResponse().getRepresentations()
+                                .get(0).getType().getSimpleName());
                         entity.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
@@ -583,9 +582,11 @@ public class Introspector {
         if (application != null) {
             result = new Definition();
             result.setVersion(application.getVersion());
-            if (application.getResources().getBaseRef() != null) {
-                result.setEndpoint(application.getResources().getBaseRef()
-                        .toString());
+            Reference ref = application.getResources().getBaseRef();
+            if (ref != null) {
+                result.getEndpoints().add(
+                        new Endpoint(ref.getHostDomain(), ref.getHostPort(),
+                                ref.getSchemeProtocol(), ref.getPath(), null));
             }
 
             Contract contract = new Contract();
@@ -604,7 +605,7 @@ public class Introspector {
             contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
-                    .getResources(), result.getEndpoint(), mapReps);
+                    .getResources(), result.getEndpoints().get(0).getUrl(), mapReps);
 
             java.util.List<String> protocols = new ArrayList<String>();
             for (ConnectorHelper<Server> helper : Engine.getInstance()
@@ -843,7 +844,7 @@ public class Introspector {
 
         if (component != null && definition != null) {
             LOGGER.fine("Look for the endpoint.");
-            String endpoint = null;
+            Endpoint endpoint = null;
             // TODO What if the application is attached to several endpoints?
             // Look for the endpoint to which this application is attached.
             endpoint = getEndpoint(component.getDefaultHost(), application);
@@ -851,7 +852,7 @@ public class Introspector {
                 VirtualHost virtualHost = component.getHosts().get(i);
                 endpoint = getEndpoint(virtualHost, application);
             }
-            definition.setEndpoint(endpoint);
+            definition.getEndpoints().add(endpoint);
         }
     }
 
@@ -873,8 +874,8 @@ public class Introspector {
      *            The application.
      * @return The endpoint.
      */
-    private String getEndpoint(VirtualHost virtualHost, Application application) {
-        String result = null;
+    private Endpoint getEndpoint(VirtualHost virtualHost, Application application) {
+        Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
             if (route.getNext() != null) {
@@ -913,7 +914,8 @@ public class Introspector {
                             // Nothing
                         }
                         // Concatenate in order to get the endpoint
-                        result = ref.toString();
+                        result = new Endpoint(ref.getHostDomain(), ref.getHostPort(),
+                                ref.getSchemeProtocol(), ref.getPath(), null);
                     }
                 }
             }

@@ -55,6 +55,7 @@ import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -620,7 +621,7 @@ public class Introspector extends IntrospectionUtils {
 
         if (component != null && definition != null) {
             LOGGER.fine("Look for the endpoint.");
-            String endpoint = null;
+            Endpoint endpoint = null;
             // TODO What if the application is attached to several endpoints?
             // Look for the endpoint to which this application is attached.
             endpoint = getEndpoint(component.getDefaultHost(), application);
@@ -628,7 +629,7 @@ public class Introspector extends IntrospectionUtils {
                 VirtualHost virtualHost = component.getHosts().get(i);
                 endpoint = getEndpoint(virtualHost, application);
             }
-            definition.setEndpoint(endpoint);
+            definition.getEndpoints().add(endpoint);
         }
     }
 
@@ -650,8 +651,8 @@ public class Introspector extends IntrospectionUtils {
      *            The application.
      * @return The endpoint.
      */
-    private String getEndpoint(VirtualHost virtualHost, Application application) {
-        String result = null;
+    private Endpoint getEndpoint(VirtualHost virtualHost, Application application) {
+        Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
             if (route.getNext() != null) {
@@ -690,7 +691,8 @@ public class Introspector extends IntrospectionUtils {
                             // Nothing
                         }
                         // Concatenate in order to get the endpoint
-                        result = ref.toString();
+                        result = new Endpoint(ref.getHostDomain(), ref.getHostPort(),
+                                ref.getSchemeProtocol(), ref.getPath(), null);
                     }
                 }
             }

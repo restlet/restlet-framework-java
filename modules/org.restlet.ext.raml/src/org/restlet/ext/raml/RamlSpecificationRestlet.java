@@ -39,10 +39,13 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.raml.internal.RamlTranslator;
 import org.restlet.ext.raml.internal.reflect.Introspector;
 import org.restlet.representation.Representation;
@@ -147,8 +150,10 @@ public class RamlSpecificationRestlet extends Restlet {
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
-                if (definition.getEndpoint() == null) {
-                    definition.setEndpoint("http://example.com");
+                if (definition.getEndpoints().isEmpty()) {
+                    definition.getEndpoints().add(
+                            new Endpoint("localhost", 9000, Protocol.HTTP,
+                                    "/v1", ChallengeScheme.HTTP_BASIC));
                 }
             }
         }

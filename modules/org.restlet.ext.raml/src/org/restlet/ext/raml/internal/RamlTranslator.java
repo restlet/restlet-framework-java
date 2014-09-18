@@ -46,9 +46,12 @@ import org.raml.model.ActionType;
 import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.parameter.UriParameter;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -133,10 +136,11 @@ public abstract class RamlTranslator {
         if (definition.getVersion() != null) {
             raml.setVersion(definition.getVersion());
         }
-        if (definition.getEndpoint() != null) {
-            raml.setBaseUri(definition.getEndpoint());
+        if (!definition.getEndpoints().isEmpty()) {
+            raml.setBaseUri(definition.getEndpoints().get(0).getUrl());
         } else {
-            raml.setBaseUri("http://example.com");
+            raml.setBaseUri(new Endpoint("example.com", 80, Protocol.HTTP,
+                    "/v1", ChallengeScheme.HTTP_BASIC).getUrl());
         }
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
@@ -387,10 +391,10 @@ public abstract class RamlTranslator {
         Definition def = new Definition();
         if (raml.getVersion() != null) {
             def.setVersion(raml.getVersion().substring(1));
-            def.setEndpoint(raml.getBaseUri().replace("{version}",
-                    raml.getVersion()));
+            // def.setEndpoint(raml.getBaseUri().replace("{version}",
+            // raml.getVersion()));
         } else {
-            def.setEndpoint(raml.getBaseUri());
+            // def.setEndpoint(raml.getBaseUri());
         }
         def.setContract(new Contract());
         def.getContract().setName(raml.getTitle());

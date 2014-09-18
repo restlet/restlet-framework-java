@@ -33,6 +33,9 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author
@@ -46,11 +49,9 @@ public class Definition {
     private Contract contract;
 
     /**
-     * Base URL on which you can access the API<br>
-     * Note: will enable multiple endpoints and protocols in the future (use
-     * class Endpoint in a list).
+     * Endpoints on which one can access the Web API.
      */
-    private String endpoint;
+    private List<Endpoint> endpoints;
 
     /** URL of the description of the license used by the API. */
     private String license;
@@ -67,10 +68,6 @@ public class Definition {
 
     public Contract getContract() {
         return contract;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
     }
 
     public String getLicense() {
@@ -93,15 +90,22 @@ public class Definition {
         this.contract = contract;
     }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
-
     public void setLicense(String license) {
         this.license = license;
     }
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public List<Endpoint> getEndpoints() {
+        if (endpoints == null) {
+            endpoints = new ArrayList<Endpoint>();
+        }
+        return endpoints;
+    }
+
+    public void setEndpoints(List<Endpoint> endpoints) {
+        this.endpoints = endpoints;
     }
 }

@@ -1343,7 +1343,14 @@
       }
     ]
   },
-  "endpoint": "http://petstore.swagger.wordnik.com/api",
+  "endpoints": [
+	  {
+	  	"domain": "petstore.swagger.wordnik.com",
+	  	"port": 80,
+	  	"protocol": "http",
+	  	"basePath": "/api"  	
+	  }
+	],
   "license": "http://www.apache.org/licenses/LICENSE-2.0.html",
   "version": "1.0.0"
 }

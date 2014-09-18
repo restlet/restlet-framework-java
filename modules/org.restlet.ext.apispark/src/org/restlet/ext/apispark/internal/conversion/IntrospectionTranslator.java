@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
@@ -26,6 +27,7 @@ import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
@@ -321,9 +323,11 @@ public class IntrospectionTranslator {
         if (application != null) {
             result = new Definition();
             result.setVersion(application.getVersion());
-            if (application.getResources().getBaseRef() != null) {
-                result.setEndpoint(application.getResources().getBaseRef()
-                        .toString());
+            Reference ref = application.getResources().getBaseRef();
+            if (ref != null) {
+                result.getEndpoints().add(
+                        new Endpoint(ref.getHostDomain(), ref.getHostPort(),
+                                ref.getSchemeProtocol(), ref.getPath(), null));
             }
 
             Contract contract = new Contract();
@@ -342,7 +346,8 @@ public class IntrospectionTranslator {
             contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
-                    .getResources(), result.getEndpoint(), mapReps, logger);
+                    .getResources(), result.getEndpoints().get(0).getUrl(),
+                    mapReps, logger);
 
             java.util.List<String> protocols = new ArrayList<String>();
             for (ConnectorHelper<Server> helper : Engine.getInstance()

@@ -37,9 +37,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -80,8 +82,20 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         // Api Info
         assertEquals(savedDefinition.getContact(),
                 translatedDefinition.getContact());
-        assertEquals(savedDefinition.getEndpoint(),
-                translatedDefinition.getEndpoint());
+
+        Endpoint savedEndpoint = savedDefinition.getEndpoints().get(0);
+        Endpoint translatedEndpoint = translatedDefinition.getEndpoints()
+                .get(0);
+
+        assertEquals(savedEndpoint.getPort(),
+                translatedEndpoint.getPort());
+        assertEquals(savedEndpoint.getProtocol(),
+                translatedEndpoint.getProtocol());
+        assertEquals(savedEndpoint.getDomain(),
+                translatedEndpoint.getDomain());
+        assertEquals(savedEndpoint.getBasePath(),
+                translatedEndpoint.getBasePath());
+        
         assertEquals(savedDefinition.getLicense(),
                 translatedDefinition.getLicense());
         assertEquals(savedDefinition.getVersion(),

@@ -79,6 +79,7 @@ import org.restlet.ext.apispark.internal.info.RepresentationInfo;
 import org.restlet.ext.apispark.internal.info.RequestInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.representation.Variant;
@@ -838,7 +839,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
             if (ap != null) {
                 endpoint = ap.value();
             }
-            definition.setEndpoint(endpoint);
+            definition.getEndpoints().add(new Endpoint(endpoint));
         }
     }
 

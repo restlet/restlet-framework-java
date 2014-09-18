@@ -33,6 +33,10 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 /**
@@ -42,8 +46,8 @@ import org.restlet.data.Protocol;
  */
 public class Endpoint {
 
-    /** The host's name. */
-    private String host;
+    /** The domain's name. */
+    private String domain;
 
     /** The endpoint's port. */
     private int port;
@@ -51,8 +55,50 @@ public class Endpoint {
     /** Protocol used for this endpoint. */
     private Protocol protocol;
 
-    public String getHost() {
-        return host;
+    /**
+     * Base path for this endpoint.
+     * 
+     * Ex: http://example.com:8555/v1/admin => basePath = /v1/admin
+     */
+    private String basePath;
+
+    /** Authentication protocol used for this endpoint */
+    private ChallengeScheme authenticationProtocol;
+
+    public Endpoint(String domain, int port, Protocol protocol,
+            String basePath, ChallengeScheme authenticationProtocol) {
+        super();
+        this.domain = domain;
+        this.port = port;
+        this.protocol = protocol;
+        this.basePath = basePath;
+        this.authenticationProtocol = authenticationProtocol;
+    }
+
+    public Endpoint(String url) {
+        Pattern p = Pattern
+                .compile("([a-z]*)://([^:^/]*)(:([0-9]*))?([a-zA-Z0-9+&@#/%=~_|]*)");
+        Matcher m = p.matcher(url);
+        if (m.matches()) {
+            domain = m.group(2);
+            protocol = new Protocol(m.group(1));
+            basePath = m.group(5);
+            if (m.group(4) != null) {
+                port = Integer.parseInt(m.group(4));
+            } else {
+                port = 80;
+            }
+        }
+
+    }
+
+    public String getUrl() {
+        return protocol.toString().toLowerCase() + "://" + domain
+                + (port != 80 ? ":" + port : "") + basePath;
+    }
+
+    public String getDomain() {
+        return domain;
     }
 
     public int getPort() {
@@ -63,8 +109,8 @@ public class Endpoint {
         return protocol;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public void setPort(int port) {
@@ -73,5 +119,21 @@ public class Endpoint {
 
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
+    public ChallengeScheme getAuthenticationProtocol() {
+        return authenticationProtocol;
+    }
+
+    public void setAuthenticationProtocol(ChallengeScheme authenticationProtocol) {
+        this.authenticationProtocol = authenticationProtocol;
     }
 }

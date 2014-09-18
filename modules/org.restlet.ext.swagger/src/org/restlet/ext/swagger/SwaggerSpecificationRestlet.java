@@ -38,12 +38,15 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -172,8 +175,10 @@ public class SwaggerSpecificationRestlet extends Restlet {
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
-                if (definition.getEndpoint() == null) {
-                    definition.setEndpoint("http://localhost:9000/v1");
+                if (definition.getEndpoints().isEmpty()) {
+                    definition.getEndpoints().add(
+                            new Endpoint("localhost", 9000, Protocol.HTTP,
+                                    "/v1", ChallengeScheme.HTTP_BASIC));
                 }
             }
         }

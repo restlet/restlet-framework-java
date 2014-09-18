@@ -52,6 +52,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -101,7 +102,7 @@ public abstract class SwaggerTranslator {
             Definition definition) {
         ApiDeclaration result = new ApiDeclaration();
         result.setApiVersion(definition.getVersion());
-        result.setBasePath(definition.getEndpoint());
+        result.setBasePath(definition.getEndpoints().get(0).getUrl());
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         result.setResourcePath("/" + category);
@@ -724,8 +725,9 @@ public abstract class SwaggerTranslator {
                             + " added.");
                 }
 
-                if (definition.getEndpoint() == null) {
-                    definition.setEndpoint(swagApiDeclaration.getBasePath());
+                if (definition.getEndpoints().isEmpty()) {
+                    definition.getEndpoints().add(
+                            new Endpoint(swagApiDeclaration.getBasePath()));
                 }
             }
             LOGGER.log(Level.FINE,
