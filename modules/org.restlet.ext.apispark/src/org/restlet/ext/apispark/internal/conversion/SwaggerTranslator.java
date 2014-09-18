@@ -48,6 +48,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -63,8 +64,11 @@ import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ApiInfo;
+import org.restlet.ext.apispark.internal.model.swagger.AuthorizationsDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.BasicAuthorizationDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ItemsDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ModelDeclaration;
+import org.restlet.ext.apispark.internal.model.swagger.OAuth2AuthorizationDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationDeclaration;
@@ -102,7 +106,24 @@ public abstract class SwaggerTranslator {
             Definition definition) {
         ApiDeclaration result = new ApiDeclaration();
         result.setApiVersion(definition.getVersion());
-        result.setBasePath(definition.getEndpoints().get(0).getUrl());
+        Endpoint endpoint = definition.getEndpoints().get(0);
+        result.setBasePath(endpoint.getUrl());
+
+        // Authentication
+        // TODO deal with API key authentication
+        AuthorizationsDeclaration authorizations = new AuthorizationsDeclaration();
+        if (ChallengeScheme.HTTP_BASIC.equals((endpoint
+                .getAuthenticationProtocol()))) {
+            authorizations.setBasicAuth(new BasicAuthorizationDeclaration());
+        } else if (ChallengeScheme.HTTP_OAUTH.equals((endpoint
+                .getAuthenticationProtocol()))
+                || ChallengeScheme.HTTP_OAUTH_BEARER.equals((endpoint
+                        .getAuthenticationProtocol()))
+                || ChallengeScheme.HTTP_OAUTH_MAC.equals((endpoint
+                        .getAuthenticationProtocol()))) {
+            authorizations.setOauth2(new OAuth2AuthorizationDeclaration());
+        }
+
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         result.setResourcePath("/" + category);
@@ -551,6 +572,18 @@ public abstract class SwaggerTranslator {
             definition.setVersion(resourceListing.getApiVersion());
             definition.setContact(resourceListing.getInfo().getContact());
             definition.setLicense(resourceListing.getInfo().getLicenseUrl());
+
+            // TODO verify how to deal with API key auth + oauth
+            Endpoint endpoint = new Endpoint(resourceListing.getBasePath());
+            definition.getEndpoints().add(endpoint);
+            if (resourceListing.getAuthorizations().getBasicAuth() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC);
+            } else if (resourceListing.getAuthorizations().getOauth2() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH);
+            } else if (resourceListing.getAuthorizations().getApiKey() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM);
+            }
+
             Contract contract = new Contract();
             contract.setName(resourceListing.getInfo().getTitle());
             LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
