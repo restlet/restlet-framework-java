@@ -1,0 +1,19 @@
+<library id="mimepull" symbolicName="org.jvnet.mimepull">
+	<name>MimePull Library</name>
+	<description>Mimepull Library used by restlet for batch operations</description>
+	<version>1.9.3</version>
+    <release>1</release>
+	<homeUri>http://mimepull.java.net/</homeUri>
+	<downloadUri>http://mvnrepository.com/artifact/org.jvnet.mimepull/mimepull/1.9.3</downloadUri>
+	<provider>Oracle Inc.</provider>
+
+	<package id="mimepull" name="org.jvnet.mimepull">
+		<maven>
+			<groupId>org.jvnet.mimepull</groupId>
+			<artifactId>mimepull</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

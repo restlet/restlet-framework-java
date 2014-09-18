@@ -33,6 +33,9 @@
 
 package org.restlet.ext.odata.internal.edm;
 
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -45,6 +48,7 @@ import org.restlet.Context;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
+import org.restlet.ext.odata.streaming.StreamReference;
 
 /**
  * Handle type operations.
@@ -102,11 +106,11 @@ public class TypeUtils {
             } else if (adoNetType.endsWith("Time")) {
                 result = timeFormat.parseObject(value);
             } else if (adoNetType.endsWith("Decimal")) {
-                result = decimalFormat.parseObject(value);
+                result = BigDecimal.valueOf((Long) decimalFormat.parseObject(value));
             } else if (adoNetType.endsWith("Single")) {
-                result = singleFormat.parseObject(value);
+                result = Float.valueOf(singleFormat.parseObject(value).toString());
             } else if (adoNetType.endsWith("Double")) {
-                result = doubleFormat.parseObject(value);
+                result = Double.valueOf(doubleFormat.parseObject(value).toString());
             } else if (adoNetType.endsWith("Guid")) {
                 result = value;
             } else if (adoNetType.endsWith("Int16")) {
@@ -206,6 +210,9 @@ public class TypeUtils {
                 result = "guid'" + value + "'";
             } else if (adoNetType.endsWith("String")) {
                 result = "'" + value + "'";
+            }else if (adoNetType.endsWith("Double") || adoNetType.endsWith("Float")
+               || adoNetType.endsWith("Integer") || adoNetType.endsWith("Long")) {
+                result = value ;
             }
         } catch (Exception e) {
             Context.getCurrentLogger().warning(
@@ -288,6 +295,8 @@ public class TypeUtils {
         } else if (adoNetType.endsWith("Decimal")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDecimal((Double) value);
+            }else if ((BigDecimal.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDecimal((BigDecimal) value);
             }
         } else if (adoNetType.endsWith("Single")) {
             if ((Float.class).isAssignableFrom(value.getClass())) {
@@ -386,6 +395,18 @@ public class TypeUtils {
     public static String toEdmDecimal(double value) {
         return decimalFormat.format(value);
     }
+    
+    /**
+     * Convert the given value to the String representation of a EDM Decimal
+     * value.
+     * 
+     * @param value
+     *            The value to convert.
+     * @return The value converted as String object.
+     */
+    public static String toEdmDecimal(BigDecimal value) {
+        return decimalFormat.format(value);
+    }
 
     /**
      * Convert the given value to the String representation of a EDM Double
@@ -475,6 +496,8 @@ public class TypeUtils {
         } else if (adoNetType.endsWith("Decimal")) {
             if ((Double.class).isAssignableFrom(value.getClass())) {
                 result = toEdmDecimal((Double) value);
+            } else if ((BigDecimal.class).isAssignableFrom(value.getClass())) {
+                result = toEdmDecimal((BigDecimal) value);
             }
         } else if (adoNetType.endsWith("Single")) {
             if ((Float.class).isAssignableFrom(value.getClass())) {
@@ -570,9 +593,9 @@ public class TypeUtils {
         } else if (edmTypeName.endsWith("Time")) {
             result = Long.class;
         } else if (edmTypeName.endsWith("Decimal")) {
-            result = Double.class;
+            result = BigDecimal.class;
         } else if (edmTypeName.endsWith("Single")) {
-            result = Double.class;
+            result = Float.class;
         } else if (edmTypeName.endsWith("Double")) {
             result = Double.class;
         } else if (edmTypeName.endsWith("Guid")) {
@@ -587,6 +610,40 @@ public class TypeUtils {
             result = Byte.class;
         } else if (edmTypeName.endsWith("String")) {
             result = String.class;
+        } else if (edmTypeName.startsWith("List")) {
+            result = List.class;
+		} else if (edmTypeName.endsWith("Stream")) {
+			result = StreamReference.class;
+        }
+
+        return result;
+    }
+    
+    public static String toEdmType(String edmTypeName) {
+        String result = "Object";
+        edmTypeName = edmTypeName.toLowerCase();
+        if (edmTypeName.endsWith("byte")) {
+            result = "Edm.Byte";
+        } else if (edmTypeName.endsWith("boolean")) {
+            result = "Edm.Boolean";
+        } else if (edmTypeName.endsWith("date")) {
+            result = "Edm.DateTime";
+        } else if (edmTypeName.endsWith("bigdecimal")) {
+            result = "Edm.Decimal";
+        } else if (edmTypeName.endsWith("float")) {
+            result = "Edm.Single";
+        } else if (edmTypeName.endsWith("double")) {
+            result = "Edm.Double";
+        } else if (edmTypeName.endsWith("short")) {
+            result = "Edm.Int16";
+        } else if (edmTypeName.endsWith("integer")) {
+            result = "Edm.Int32";
+        } else if (edmTypeName.endsWith("long")) {
+            result = "Edm.Int64";
+        } else if (edmTypeName.endsWith("string")) {
+            result = "Edm.String";
+		} else if (edmTypeName.endsWith("streamreference")) {
+			result = "Edm.Stream";
         }
 
         return result;
@@ -604,7 +661,7 @@ public class TypeUtils {
         if (edmTypeName.endsWith("Binary")) {
             result = "byte[]";
         } else if (edmTypeName.endsWith("Boolean")) {
-            result = "boolean";
+            result = "Boolean";
         } else if (edmTypeName.endsWith("DateTime")) {
             result = "Date";
         } else if (edmTypeName.endsWith("DateTimeOffset")) {
@@ -612,26 +669,86 @@ public class TypeUtils {
         } else if (edmTypeName.endsWith("Time")) {
             result = "long";
         } else if (edmTypeName.endsWith("Decimal")) {
-            result = "double";
+            result = "java.math.BigDecimal";
         } else if (edmTypeName.endsWith("Single")) {
-            result = "double";
+            result = "Float";
         } else if (edmTypeName.endsWith("Double")) {
-            result = "double";
+            result = "Double";
         } else if (edmTypeName.endsWith("Guid")) {
             result = "String";
         } else if (edmTypeName.endsWith("Int16")) {
-            result = "short";
+            result = "Short";
         } else if (edmTypeName.endsWith("Int32")) {
-            result = "int";
+            result = "Integer";
         } else if (edmTypeName.endsWith("Int64")) {
-            result = "long";
+            result = "Long";
         } else if (edmTypeName.endsWith("Byte")) {
-            result = "byte";
+            result = "Byte";
         } else if (edmTypeName.endsWith("String")) {
             result = "String";
+		} else if (edmTypeName.endsWith("Stream")) {
+			result = "StreamReference";
         }
 
         return result;
+    }
+    
+	/**
+	 * Gets the class type.
+	 *
+	 * @param Edm Type. For e.g. Edm.Double
+	 * @return the respective java class. For e.g. java.lang.Double in case of Edm.Double
+	 */
+	public static String getClassType(String type) {
+		try {
+			String edmType = TypeUtils.getCollectionType(type);
+			if (edmType == null){
+				return null;
+			}
+			if (edmType.toLowerCase().startsWith("edm.")) {
+				Class<?> javaClass = TypeUtils.toJavaClass(edmType);
+				return javaClass.getName();
+			} else {
+				String[] split = edmType.split("\\.");
+				StringBuilder sb = new StringBuilder();
+				for (int i = 1; i < split.length; i++) {
+					sb.append(split[i]);
+				}
+				return sb.toString();
+			}
+		} catch (Exception e) {
+			return null;
+		}
+	}
+    
+    /**
+     * Gets the collection type.
+     *
+     * @param String as per metadata. For e.g. Collection(Edm.Double)
+     * @return the respective edm type. For e.g. Edm.Double in case of Collection(Edm.Double)
+     */
+    public static String getCollectionType(String type){
+    	if(type != null && type.length()>11){
+    		return type.substring(11, type.length() - 1);
+    	}
+    	return null;
+    }
+    
+    /**
+     * Convert the String value to primitive class type. 
+     *
+     * @param targetType the target type
+     * @param text the text
+     * @return the object
+     */
+    public static Object convert(Class<?> targetType, String text) {
+    	try {
+            PropertyEditor editor = PropertyEditorManager.findEditor(targetType);
+            editor.setAsText(text);
+            return editor.getValue();
+		} catch (Exception e) {
+			return text;
+		}
     }
 
 }

@@ -335,6 +335,14 @@ public class Metadata extends SaxRepresentation {
                         break;
                     }
                 }
+                for(ComplexProperty property : et.getComplexProperties()){
+                	if (property.getName().equals(propertyName)
+                            || property.getNormalizedName()
+                                    .equals(propertyName)) {
+                        result = property;
+                        break;
+                    }
+                }
             } else {
                 ComplexType ct = getComplexType(entity.getClass());
                 if (ct != null) {
@@ -342,6 +350,14 @@ public class Metadata extends SaxRepresentation {
                         if (property.getName().equals(propertyName)
                                 || property.getNormalizedName().equals(
                                         propertyName)) {
+                            result = property;
+                            break;
+                        }
+                    }
+                    for(ComplexProperty property : ct.getComplexProperties()){
+                    	if (property.getName().equals(propertyName)
+                                || property.getNormalizedName()
+                                        .equals(propertyName)) {
                             result = property;
                             break;
                         }

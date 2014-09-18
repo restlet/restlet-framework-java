@@ -832,9 +832,17 @@
 				<path refid="mod-core-test-path" />
 			</classpath>
 			<formatter type="plain" />
+			<formatter type="xml" />
 			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
 		</junit>
-
+		<mkdir dir="${temp}/test/report/html" />
+        <junitreport todir="${temp}/test/report">
+            <fileset dir="${temp}/test/">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report todir="${temp}/test/report/html" />
+        </junitreport>
+		<echo message="${line.separator}Tests browsable at:${line.separator}${temp}/test/report/html/index.html"/>
 		<fail if="failprop" message="At least one failure during junit tests." taskname="verify-tests" />
 		<fail if="errorprop" message="At least one error during junit tests." taskname="verify-tests" />
 	</target>

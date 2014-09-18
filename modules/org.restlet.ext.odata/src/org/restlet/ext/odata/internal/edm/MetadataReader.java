@@ -41,6 +41,8 @@ import java.util.Map;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.ext.odata.Service;
+import org.restlet.ext.odata.internal.reflect.ReflectUtils;
+import org.restlet.ext.xml.format.XmlFormatParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -561,13 +563,19 @@ public class MetadataReader extends DefaultHandler {
             if (type.toLowerCase().startsWith("edm.")) {
                 property = new Property(attrs.getValue("Name"));
                 property.setType(new Type(attrs.getValue("Type")));
+                property.setDefaultValue(attrs.getValue("Default"));
+            } else if (type.toLowerCase().startsWith("collection")) { 
+            	ComplexProperty p = new ComplexProperty(attrs.getValue("Name"));
+            	String edmType = TypeUtils.getClassType(type);
+                p.setComplexType(new ComplexType("List<"+edmType+">"));
+                property = p;
+                property.setDefaultValue("new ArrayList<"+edmType+">()");
             } else {
                 ComplexProperty p = new ComplexProperty(attrs.getValue("Name"));
                 p.setComplexType(new ComplexType(attrs.getValue("Type")));
                 property = p;
+                property.setDefaultValue(attrs.getValue("Default"));
             }
-
-            property.setDefaultValue(attrs.getValue("Default"));
             // If no value is specified, the nullable facet defaults to true.
             // cf
             // http://www.odata.org/documentation/odata-v3-documentation/common-schema-definition-language-csdl/#531_The_edmNullable_Attribute
@@ -575,7 +583,11 @@ public class MetadataReader extends DefaultHandler {
             if (nullable == null) {
                 property.setNullable(true);
             } else {
-                property.setNullable(Boolean.parseBoolean(nullable));
+            	boolean isNullable = Boolean.parseBoolean(nullable);
+                property.setNullable(isNullable);
+                if(!isNullable){
+                	property.getAnnotations().add("NotNull");
+                }
             }
             // ConcurrencyMode
             if ("fixed".equalsIgnoreCase(attrs.getValue("ConcurrencyMode"))) {
@@ -591,8 +603,32 @@ public class MetadataReader extends DefaultHandler {
             if (str != null) {
                 property.setMediaType(MediaType.valueOf(str));
             }
-
-            if (getState() == State.ENTITY_TYPE) {
+            
+            String systemGenerated = attrs.getValue(
+            		XmlFormatParser.NS_CUSTOM_EDMANNOTATION, "IsSystemGenerated");
+            if (systemGenerated != null) {
+            	boolean isSystemGenerated = Boolean.parseBoolean(systemGenerated);
+            	if(isSystemGenerated){
+            		property.getAnnotations().add("SystemGenerated");
+                }
+            }
+            
+            String propName = attrs.getValue("Name");
+            //add annotation to the property if it property name is same as java reserved key word.
+            if(propName!=null&&ReflectUtils.isReservedWord(propName.toLowerCase())){
+            	property.getAnnotations().add("JavaReservedKeyWord");
+            }
+            
+            if(currentEntityType!=null){
+	            List<Property> keys = currentEntityType.getKeys();
+	            for(Property prop : keys){
+	            	if(prop.getName().equalsIgnoreCase(attrs.getValue("Name"))){
+	            		property.getAnnotations().add("PrimaryKey");
+	            	}
+	            }
+            }
+            
+           if (getState() == State.ENTITY_TYPE) {
                 pushState(State.ENTITY_TYPE_PROPERTY);
                 if (property instanceof ComplexProperty) {
                     this.currentEntityType.getComplexProperties().add(
@@ -667,11 +703,45 @@ public class MetadataReader extends DefaultHandler {
             currentFunctionImport.setMethodAccess(attrs
                     .getValue("MethodAccess"));
             currentFunctionImport.setMetadata(currentMetadata);
+            String elementType = attrs.getValue(XmlFormatParser.NS_CUSTOM_EDMANNOTATION, "elementType");
+			if (elementType != null) {
+				String[] split = elementType.split("\\.");
+				String className = ReflectUtils.normalize(split[1]);
+				className = className.substring(0, 1).toUpperCase() + className.substring(1);
+				currentFunctionImport.setJavaReturnType(className);
+				currentFunctionImport.setComplex(true);
+			} else if (attrs.getValue("ReturnType") != null) {
+				if (attrs.getValue("ReturnType").startsWith("Collection")) {
+					String type = TypeUtils.getClassType(attrs.getValue("ReturnType"));
+					currentFunctionImport.setJavaReturnType("List<"+type+">");
+					currentFunctionImport.setReturnType(type);
+					currentFunctionImport.setCollection(true);
+				}else {
+					currentFunctionImport.setSimple(true);
+					currentFunctionImport.setJavaReturnType(TypeUtils
+							.toJavaTypeName(attrs.getValue("ReturnType")));
+				}
+			}else {				
+				currentFunctionImport.setComplex(true);
+				currentFunctionImport.setJavaReturnType("void");
+			}	
+            
 
-            String str = attrs.getValue(
+            String httpMethod = attrs.getValue(
                     Service.WCF_DATASERVICES_METADATA_NAMESPACE, "HttpMethod");
-            if (str != null) {
-                currentFunctionImport.setMethod(Method.valueOf(str));
+            if (httpMethod != null) {
+                currentFunctionImport.setMethod(Method.valueOf(httpMethod));
+            }
+            else{
+            	//Default to POST if isSideEffecting="true" and no Http method provided            	
+            	Boolean isSideEffecting = Boolean.parseBoolean(attrs.getValue("IsSideEffecting"));
+                if(isSideEffecting){
+                 currentFunctionImport.setMethod(Method.valueOf("POST"));
+                } 
+                else{
+                //Default to GET is isSideEffecting="false" and no Http method provided
+                 currentFunctionImport.setMethod(Method.valueOf("GET"));
+                }
             }
 
             if (State.ENTITY_CONTAINER == getState()) {
@@ -684,6 +754,12 @@ public class MetadataReader extends DefaultHandler {
             if (State.FUNCTION_IMPORT == getState()) {
                 Parameter parameter = new Parameter(attrs.getValue("Name"));
                 parameter.setType(attrs.getValue("Type"));
+                if(attrs.getValue("Type").startsWith("Collection")){
+                	String edmType = TypeUtils.getClassType(attrs.getValue("Type"));
+					parameter.setJavaType("List<"+edmType+">");
+                }else{
+                	parameter.setJavaType(TypeUtils.toJavaTypeName(attrs.getValue("Type")));
+                }
                 parameter.setMode(attrs.getValue("Mode"));
                 String str = attrs.getValue("MaxLength");
                 if (str != null) {

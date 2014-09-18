@@ -1,0 +1,19 @@
+<library id="core4j" symbolicName="org.core4j">
+	<name>Core 4J</name>
+	<description>Core 4j Library used by odata4j</description>
+	<version>0.5</version>
+        <release>1</release>
+	<homeUri>http://code.google.com/p/core4j/source/browse/</homeUri>
+	<downloadUri>http://mvnrepository.com/artifact/org.core4j/core4j/0.5</downloadUri>
+	<provider>Google Inc.</provider>
+
+	<package id="core4j" name="org.core4j">
+		<maven>
+			<groupId>org.core4j</groupId>
+			<artifactId>core4j</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

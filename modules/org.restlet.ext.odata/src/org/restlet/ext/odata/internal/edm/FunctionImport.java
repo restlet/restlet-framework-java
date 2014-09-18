@@ -68,6 +68,32 @@ public class FunctionImport extends NamedObject {
 
     /** The return type of this function. */
     private String returnType;
+    
+    /** The java return type of this function. */
+    private String javaReturnType;
+    
+    /** The is complex. */
+    private boolean complex;
+    
+    /** The is collection. */
+    private boolean collection;
+    
+    /** The is simple. */
+    private boolean simple;
+
+    /**
+	 * @return the javaReturnType
+	 */
+	public String getJavaReturnType() {
+		return javaReturnType;
+	}
+
+	/**
+	 * @param javaReturnType the javaReturnType to set
+	 */
+	public void setJavaReturnType(String javaReturnType) {
+		this.javaReturnType = javaReturnType;
+	}
 
     /**
      * Constructor.
@@ -298,4 +324,47 @@ public class FunctionImport extends NamedObject {
         this.returnType = returnType;
     }
 
+	/**
+	 * @return the isComplex
+	 */
+	public boolean isComplex() {
+		return complex;
+	}
+
+	/**
+	 * @param isComplex the isComplex to set
+	 */
+	public void setComplex(boolean isComplex) {
+		this.complex = isComplex;
+	}
+
+	/**
+	 * @return the isCollection
+	 */
+	public boolean isCollection() {
+		return collection;
+	}
+
+	/**
+	 * @param isCollection the isCollection to set
+	 */
+	public void setCollection(boolean isCollection) {
+		this.collection = isCollection;
+	}
+
+	/**
+	 * @return the isSimple
+	 */
+	public boolean isSimple() {
+		return simple;
+	}
+
+	/**
+	 * @param isSimple the isSimple to set
+	 */
+	public void setSimple(boolean isSimple) {
+		this.simple = isSimple;
+	}
+    
+    
 }

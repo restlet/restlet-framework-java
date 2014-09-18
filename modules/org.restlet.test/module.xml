@@ -12,6 +12,7 @@
 	<dependencies>
 		<dependency type="library" id="junit" />
 		<dependency type="library" id="hamcrest" />
+		<dependency type="library" id="gson" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="crypto" />

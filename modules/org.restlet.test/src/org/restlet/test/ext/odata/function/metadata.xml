@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<edmx:Edmx Version="1.0"
+	xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices>
+		<Schema Namespace="org.restlet.test.ext.odata.crudActionAndFunction"
+			xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+			xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+			xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+			<ComplexType Name="nextval_t">
+				<Property Name="SysGenId" Nullable="true" Type="Edm.Int32" />
+			</ComplexType>
+			<EntityContainer Name="UnitServiceDataModel"
+				m:IsDefaultEntityContainer="true">
+
+				<FunctionImport Name="convertDoubleArray"
+					m:IsAlwaysBindable="false" IsSideEffecting="true" IsBindable="true"
+					ReturnType="Collection(Edm.Double)">
+					<Documentation>
+						<Summary>Convert float[] or double[] between 2 units.</Summary>
+						<LongDescription>It will return converted value back
+						</LongDescription>
+					</Documentation>
+					<Parameter Name="from" Nullable="false" Mode="In" Type="Edm.String">
+						<Documentation>
+							<Summary>the unit to be converted from</Summary>
+							<LongDescription>it can be unit id or unit name.
+							</LongDescription>
+						</Documentation>
+					</Parameter>
+					<Parameter Name="to" Nullable="false" Mode="In" Type="Edm.String">
+						<Documentation>
+							<Summary>the unit to be converted to</Summary>
+							<LongDescription>it can be unit id or unit name.
+							</LongDescription>
+						</Documentation>
+					</Parameter>
+					<Parameter Name="value" Nullable="false" Mode="In"
+						Type="Collection(Edm.Double)">
+						<Documentation>
+							<Summary>the value to be converted</Summary>
+							<LongDescription>It can be float[] or doulble[].
+							</LongDescription>
+						</Documentation>
+					</Parameter>
+					<Parameter Name="nullValue" Nullable="true" Mode="In"
+						Type="Edm.Double">
+						<Documentation>
+							<Summary>Defines the number that will be treated as null value
+							</Summary>
+							<LongDescription>Optional. If it is defined, then any element in
+								the
+								value array whose value equals to it will not be converted.
+							</LongDescription>
+						</Documentation>
+					</Parameter>
+				</FunctionImport>
+
+				<FunctionImport	Name="nextval" ReturnType="Edm.String" m:HttpMethod="GET">
+					<Parameter Name="tableName" Type="Edm.String" Mode="In"
+						Nullable="false" />
+				</FunctionImport>
+				
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

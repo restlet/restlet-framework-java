@@ -33,6 +33,8 @@
 
 package org.restlet.test.ext.odata.deepexpand.model;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.test.ext.odata.deepexpand.model.ActivitySector;
@@ -54,11 +56,8 @@ public class ActivitySector {
     private String description;
 
     private int id;
-
-    private List<ActivitySector> childActivitySectors;
-
-    private List<Company> companies;
-
+    private List<ActivitySector> childActivitySectors = new ArrayList<ActivitySector>();
+    private List<Company> companies = new ArrayList<Company>();
     private ActivitySector parentActivitySector;
 
     /**

@@ -145,12 +145,20 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
         }
 
         for (ComplexProperty property : getComplexProperties()) {
-            if (property.getComplexType() != null
-                    && property.getComplexType().getSchema() != null) {
-                if (!property.getComplexType().getSchema().equals(getSchema())) {
-                    result.add(property.getComplexType().getFullClassName());
-                }
-            }
+			if (property.getComplexType() != null) {
+				if (property.getComplexType().getSchema() != null) {
+					if (!property.getComplexType().getSchema()
+							.equals(getSchema())) {
+						result.add(property.getComplexType().getFullClassName());
+					}
+				} else {
+					String propertyType = property.getComplexType().getName();
+					if (propertyType.toLowerCase().startsWith("list")) { 
+						result.add("java.util.List");
+						result.add("java.util.ArrayList");
+					}
+				}
+			}
         }
 
         return result;

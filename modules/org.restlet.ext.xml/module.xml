@@ -9,6 +9,7 @@
 
 	<dependencies>
 		<dependency type="module" id="core" />
+		<dependency type="library" id="core4j" />
 	</dependencies>
 	<source edition="android">
 		<files-mappers>

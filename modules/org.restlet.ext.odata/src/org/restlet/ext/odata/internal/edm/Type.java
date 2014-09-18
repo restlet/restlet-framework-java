@@ -76,6 +76,8 @@ public class Type extends NamedObject {
             result.add(getJavaClass().getName());
         } else if (getName().endsWith("DateTimeOffset")) {
             result.add(getJavaClass().getName());
+		} else if (getName().endsWith("Stream")) {
+			result.add(getJavaClass().getName());
         }
 
         return result;

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<edmx:Edmx Version="1.0"
+	xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices>
+		<Schema Namespace="org.restlet.test.ext.odata.complexcrud"
+			xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+			xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+			xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+         <EntityType Name="Cafe">
+				<Key>
+					<PropertyRef Name="ID" />
+				</Key>
+			<Property Name="ID" Type="Edm.String" Nullable="false" />
+			<Property Name="Name" Type="Edm.String" Nullable="true" />
+			<Property Name="ZipCode" Type="Edm.Int32" Nullable="false" />
+			<Property Name="City" Type="Edm.String" Nullable="true" />
+			 <Property Name="spatial" Type="Point" Nullable="true" />
+         </EntityType>
+		 <EntityContainer Name="CafeServiceDataModel"
+				m:IsDefaultEntityContainer="true">
+				<EntitySet Name="Cafes" EntityType="org.restlet.test.ext.odata.complexcrud.Cafe" />
+			</EntityContainer>
+			<ComplexType Name="StructAny">
+				<Property Name="name" Nullable="true" Type="Edm.String"/>
+				<Property Name="type" Nullable="true" Type="Edm.String"/>
+				<Property Name="unit" Nullable="true" Type="Edm.String"/>
+				<Property Name="unitType" Nullable="true" Type="Edm.String"/>
+				<Property Name="values" Nullable="true" Type="Edm.String"/>
+			</ComplexType>
+			<ComplexType Name="Point">
+				<Property Name="geo_type" Nullable="true" Type="Edm.String"/>
+				<Property Name="geo_name" Nullable="true" Type="Edm.String"/>
+				<Property Name="x" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="y" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="z" Nullable="true" Type="Collection(Edm.Double)"/>
+				<Property Name="properties" Nullable="true" Type="Collection(StructAny)"/>
+			</ComplexType>
+      </Schema>
+   </edmx:DataServices>
+</edmx:Edmx>

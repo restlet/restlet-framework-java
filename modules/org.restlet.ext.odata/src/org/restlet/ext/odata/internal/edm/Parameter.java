@@ -57,6 +57,9 @@ public class Parameter extends NamedObject {
 
     /** The type of the parameter. */
     private String type;
+    
+    /** The type of the parameter. */
+    private String javaType;
 
     /**
      * Constructor.
@@ -163,4 +166,18 @@ public class Parameter extends NamedObject {
         this.type = type;
     }
 
+	/**
+	 * @return the javaType
+	 */
+	public String getJavaType() {
+		return javaType;
+	}
+
+	/**
+	 * @param javaType the javaType to set
+	 */
+	public void setJavaType(String javaType) {
+		this.javaType = javaType;
+	}
+    
 }
