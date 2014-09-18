@@ -1,9 +1,0 @@
-<module excludes="*" id="example-ch09-gwt" package="org.restlet.example.book.restlet.ch09.gwt">
-   <name>Restlet examples</name>
-   <description>Book examples (ch09-gwt)</description>
-   <distributions />
-
-   <dependencies>
-      <dependency type="module" id="core" />
-   </dependencies>
-</module>

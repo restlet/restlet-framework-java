@@ -13,7 +13,6 @@
 		<dependency type="library" id="servlet" maven-scope="provided" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="servlet" />
-		<dependency type="module" id="xml" />
 	</dependencies>
 	<wikiUri>84-restlet</wikiUri>
 </module>

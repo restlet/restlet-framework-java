@@ -10,15 +10,12 @@
 	<dependencies>
 		<dependency type="library" id="scala" />
 		<dependency type="library" id="slf4j" />
-		<dependency type="library" id="e4" />
 		<dependency type="library" id="swagger" />
 		<dependency type="library" id="jaxrs" />
 		<dependency type="library" id="jackson" />
-		<dependency type="library" id="json4s" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
-		<dependency type="module" id="e4" />
 		<dependency type="module" id="apispark" />
 	</dependencies>
 	<wikiUri>xx-tobedefined</wikiUri>
