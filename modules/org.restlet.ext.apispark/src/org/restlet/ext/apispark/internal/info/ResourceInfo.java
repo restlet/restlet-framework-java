@@ -126,6 +126,7 @@ public class ResourceInfo extends DocumentedInfo {
                             methodInfo = new MethodInfo();
                             methods.add(methodInfo);
                             methodInfo.setMethod(method);
+                            methodInfo.setAnnotation(annotationInfo);
                             MethodInfo.describeAnnotation(methodInfo, mai, sr);
                             if (sr instanceof DocumentedServerResource) {
                                 ((DocumentedServerResource) sr).describe(

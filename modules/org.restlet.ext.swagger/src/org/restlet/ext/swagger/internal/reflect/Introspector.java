@@ -176,7 +176,12 @@ public class Introspector {
                 LOGGER.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(mi.getDescription());
-                operation.setName(mi.getName());
+                if (mi.getName() != null && !"".equals(mi.getName())) {
+                    operation.setName(mi.getName());
+                } else {
+                    operation.setName(mi.getAnnotation().getJavaMethod()
+                            .getName());
+                }
                 operation.setMethod(mi.getMethod().getName());
 
                 // Fill fields produces/consumes
