@@ -2,6 +2,7 @@ package org.restlet.ext.apispark.internal.utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
@@ -20,6 +21,15 @@ import org.restlet.resource.ResourceException;
  * @author Thierry Boileau
  */
 public class IntrospectionUtils {
+
+    static ArrayList<String> STRATEGIES = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
+
+        {
+            add("add");
+            add("reset");
+        }
+    };
 
     /**
      * Indicates if the given velue is either null or empty.
@@ -62,7 +72,7 @@ public class IntrospectionUtils {
      */
     public static void printSentence(PrintStream o, int shift,
             String... strings) {
-        int blockLength = 80 - shift - 1;
+        int blockLength = 800 - shift - 1;
         String tab = "";
         for (int i = 0; i < shift; i++) {
             tab = tab.concat(" ");
@@ -74,7 +84,7 @@ public class IntrospectionUtils {
             }
             sb.append(strings[i]);
         }
-        String sentence = sb.toString();
+        String sentence = sb.toString().replace("\n", "\n" + tab);
         // Cut in slices
         int index = 0;
         while (index < (sentence.length() - 1)) {
@@ -133,8 +143,9 @@ public class IntrospectionUtils {
     }
 
     public static void sendDefinition(Definition definition,
-            String definitionId, String ulogin, String upwd, String serviceUrl,
-            Logger LOGGER) {
+            String descriptorId, String versionId, String ulogin, String upwd,
+            String serviceUrl, String updateStrategy, boolean create,
+            boolean newVersion, Logger LOGGER) {
 
         Collections.sort(definition.getContract().getRepresentations(),
                 new Comparator<Representation>() {
@@ -159,16 +170,31 @@ public class IntrospectionUtils {
             ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
 
-            if (definitionId == null) {
-                cr.addSegment("definitions");
-                LOGGER.info("Create a new documentation");
+            if (create) {
+                cr.addSegment("apis");
+                LOGGER.info("Create a new descriptor");
                 cr.post(definition, MediaType.APPLICATION_JSON);
+            } else if (newVersion) {
+                cr.addSegment("apis").addSegment(descriptorId)
+                        .addSegment("versions");
+                LOGGER.info("Create a new version of the descriptor "
+                        + descriptorId);
+                cr.post(definition, MediaType.APPLICATION_JSON);
+            } else if (STRATEGIES.contains(updateStrategy)) {
+                // TODO confirm path
+                cr.addSegment("apis").addSegment(descriptorId)
+                        .addSegment("versions").addSegment(versionId);
+                LOGGER.info("Update version " + versionId
+                        + " of descriptor " + descriptorId
+                        + " with strategy " + updateStrategy);
+                cr.addQueryParameter("strategy", updateStrategy);
+                if ("add".equals(updateStrategy)) {
+                    cr.put(definition, MediaType.APPLICATION_JSON);
+                } else if ("reset".equals(updateStrategy)) {
+                    cr.put(definition, MediaType.APPLICATION_JSON);
+                }
             } else {
-                cr.addSegment("apis").addSegment(definitionId)
-                        .addSegment("definitions");
-                LOGGER.info("Update the documentation of "
-                        + cr.getReference().toString());
-                cr.put(definition, MediaType.APPLICATION_JSON);
+                LOGGER.severe("the information you gave is not understandable. Use parameter --help for help.");
             }
 
             LOGGER.fine("Display result");

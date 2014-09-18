@@ -455,8 +455,12 @@ public class Introspector extends IntrospectionUtils {
         String serviceUrl = null;
         String defSource = null;
         String compName = null;
-        String definitionId = null;
+        String descriptorId = null;
         String language = null;
+        String versionId = null;
+        String updateStrategy = null;
+        boolean newVersion = false;
+        boolean create = false;
 
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
@@ -471,17 +475,37 @@ public class Introspector extends IntrospectionUtils {
                 serviceUrl = getParameter(args, ++i);
             } else if ("-c".equals(args[i]) || "--component".equals(args[i])) {
                 compName = getParameter(args, ++i);
-            } else if ("-d".equals(args[i]) || "--definition".equals(args[i])) {
-                definitionId = getParameter(args, ++i);
+            } else if ("-d".equals(args[i]) || "--descriptor".equals(args[i])) {
+                descriptorId = getParameter(args, ++i);
+            } else if ("-v".equals(args[i]) || "--version".equals(args[i])) {
+                versionId = getParameter(args, ++i);
+            } else if ("-u".equals(args[i])
+                    || "--updateStrategy".equals(args[i])) {
+                updateStrategy = getParameter(args, ++i).toLowerCase();
+            } else if ("-n".equals(args[i]) || "--newVersion".equals(args[i])) {
+                newVersion = true;
+            } else if ("-C".equals(args[i]) || "--create".equals(args[i])) {
+                create = true;
             } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
-            } else if ("-v".equals(args[i]) || "--verbose".equals(args[i])) {
+            } else if ("-V".equals(args[i]) || "--verbose".equals(args[i])) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
             } else {
                 defSource = args[i];
             }
         }
+
+        if (newVersion && create) {
+            LOGGER.severe("You can't use newVersion and create at the same time. Use parameter --help for help.");
+        } else if (create && updateStrategy != null) {
+            LOGGER.severe("You can't use create and updateStrategy at the same time. Use parameter --help for help.");
+        } else if (newVersion && updateStrategy != null) {
+            LOGGER.severe("You can't use newVersion and updateStrategy at the same time. Use parameter --help for help.");
+        } else if (!newVersion && updateStrategy == null) {
+            create = true;
+        }
+
         Engine.getLogger("").getHandlers()[0]
                 .setFilter(new java.util.logging.Filter() {
                     public boolean isLoggable(LogRecord record) {
@@ -548,8 +572,8 @@ public class Introspector extends IntrospectionUtils {
             definition = SwaggerUtils.getDefinition(defSource, ulogin, upwd);
         }
         if (definition != null) {
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl,
-                    LOGGER);
+            sendDefinition(definition, descriptorId, versionId, ulogin, upwd,
+                    serviceUrl, updateStrategy, create, newVersion, LOGGER);
         } else {
             LOGGER.severe("Please provide a valid application class name or definition URL.");
         }
@@ -563,6 +587,13 @@ public class Introspector extends IntrospectionUtils {
 
         o.println("SYNOPSIS");
         printSynopsis(o, Introspector.class, "[options] APPLICATION");
+        printSynopsis(o, Introspector.class, "--create [options] APPLICATION");
+        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] APPLICATION");
+        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] APPLICATION");
+        printSynopsis(o, Introspector.class, "[options] --language swagger SWAGGER DEFINITION URL/PATH");
+        printSynopsis(o, Introspector.class, "--create [options] --language swagger SWAGGER DEFINITION URL/PATH");
+        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] --language swagger SWAGGER DEFINITION URL/PATH");
+        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] --language swagger SWAGGER DEFINITION URL/PATH");
         printSynopsis(o, Introspector.class,
                 "-l swagger [options] SWAGGER DEFINITION URL/PATH");
         o.println("DESCRIPTION");
@@ -576,18 +607,37 @@ public class Introspector extends IntrospectionUtils {
                 "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
         printOption(o, "-h, --help", "Prints this help.");
-        printOption(o, "-u, --username", "The mandatory APISpark user name.");
-        printOption(o, "-p, --password", "The mandatory APISpark user secret key.");
-        printOption(o, "-c, --component",
+        printOption(o, "-u, --username username",
+                "The mandatory APISpark user name.");
+        printOption(o, "-p, --password password",
+                "The mandatory APISpark user secret key.");
+        printOption(o, "-c, --component commponent class",
                 "The optional full name of your Restlet Component class.",
                 "This allows to collect some other data, such as the endpoint.");
+        printOption(o, "-C, --create",
+                "Creates a new descriptor from introspection.",
+                "Is set to true if neither newVersion nor updateStrategy are specified.");
+        printOption(o, "-n, --newVersion",
+                "Creates a new version of the descriptor identified by descriptor");
         printOption(
                 o,
-                "-d, --definition",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
+                "-d, --descriptor descriptorId",
+                "The optional identifier of an existing descriptor hosted by APISpark you want to update with this new documentation.",
+                "Required if updateStrategy or newVersion are specified.");
         printOption(
                 o,
-                "-l, --language",
+                "-u, --updateStrategy strategy",
+                "Updates the descriptor version specified by descriptor and version with given strategy.\n",
+                "Strategies available:\n",
+                "add: new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
+                "reset: deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
+        printOption(
+                o,
+                "-v, --version versionId",
+                "The version of the descriptor to be updated. Required if updateStrategy is specified.");
+        printOption(
+                o,
+                "-l, --language languageName",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
         printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
@@ -651,7 +701,8 @@ public class Introspector extends IntrospectionUtils {
      *            The application.
      * @return The endpoint.
      */
-    private Endpoint getEndpoint(VirtualHost virtualHost, Application application) {
+    private Endpoint getEndpoint(VirtualHost virtualHost,
+            Application application) {
         Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
@@ -691,8 +742,9 @@ public class Introspector extends IntrospectionUtils {
                             // Nothing
                         }
                         // Concatenate in order to get the endpoint
-                        result = new Endpoint(ref.getHostDomain(), ref.getHostPort(),
-                                ref.getSchemeProtocol(), ref.getPath(), null);
+                        result = new Endpoint(ref.getHostDomain(),
+                                ref.getHostPort(), ref.getSchemeProtocol(),
+                                ref.getPath(), null);
                     }
                 }
             }
