@@ -37,7 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * Represents the contract of a Web API. Contains the representations and
+ * resources.
  * 
  * @author Cyprien Quilici
  */

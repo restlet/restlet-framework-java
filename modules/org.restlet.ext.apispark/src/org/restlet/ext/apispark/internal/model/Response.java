@@ -36,6 +36,7 @@ package org.restlet.ext.apispark.internal.model;
 import org.restlet.data.Status;
 
 /**
+ * Represents a response sent by a Web API resource
  * 
  * @author Cyprien Quilici
  */

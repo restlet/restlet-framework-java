@@ -36,7 +36,10 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.ChallengeScheme;
+
 /**
+ * Represents a Web API resource
  * 
  * @author Cyprien Quilici
  */
@@ -56,6 +59,9 @@ public class Resource {
 
     /** Relative path from the endpoint to this resource */
     private String resourcePath;
+    
+    /** Authentication protocol used for this resource */
+    private ChallengeScheme authenticationProtocol;
 
     public String getDescription() {
         return description;
@@ -119,5 +125,13 @@ public class Resource {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    public ChallengeScheme getAuthenticationProtocol() {
+        return authenticationProtocol;
+    }
+
+    public void setAuthenticationProtocol(ChallengeScheme authenticationProtocol) {
+        this.authenticationProtocol = authenticationProtocol;
     }
 }

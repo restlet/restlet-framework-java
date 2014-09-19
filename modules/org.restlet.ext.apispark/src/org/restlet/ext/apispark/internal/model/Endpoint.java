@@ -40,7 +40,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 /**
- * TODO
+ * Represents a Web API endpoint.
+ * Declares the authentication protocol associated
  * 
  * @author Cyprien Quilici
  */

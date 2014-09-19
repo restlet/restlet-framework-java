@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents a property of a Web API representation
  * 
  * @author Cyprien Quilici
  */

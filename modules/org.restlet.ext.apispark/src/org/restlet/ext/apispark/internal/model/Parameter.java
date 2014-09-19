@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents a parameter, extended by Header and QueryParameter.
+ * 
  * 
  * @author Cyprien Quilici
  */

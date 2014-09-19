@@ -34,6 +34,7 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
+ * Represents a path variable. Associated to a Web API resource
  * 
  * @author Cyprien Quilici
  */

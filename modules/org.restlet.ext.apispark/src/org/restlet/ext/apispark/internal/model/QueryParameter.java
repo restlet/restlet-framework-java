@@ -34,6 +34,7 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
+ * Represents a query parameter. Associated to an operation.
  * 
  * @author Cyprien Quilici
  */

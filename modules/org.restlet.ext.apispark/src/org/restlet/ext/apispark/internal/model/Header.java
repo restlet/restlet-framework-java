@@ -34,6 +34,7 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
+ * Represents an HTTP header. 
  * 
  * @author Cyprien Quilici
  */

@@ -37,8 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents a Web API
  * 
- * @author
+ * @author Cyprien Quilici
  */
 public class Definition {
 

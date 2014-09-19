@@ -34,6 +34,7 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
+ * Represents the entity sent in HTTP request/response body
  * 
  * @author Cyprien Quilici
  */
