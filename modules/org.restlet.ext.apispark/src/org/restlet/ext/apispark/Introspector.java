@@ -145,6 +145,8 @@ public class Introspector extends IntrospectionUtils {
             Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
         applicationInfo.getResources().setBaseRef(baseRef);
+        applicationInfo.setName(application.getName());
+        applicationInfo.setDescription(application.getDescription());
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,
                         getNextRouter(application.getInboundRoot()), "/"));

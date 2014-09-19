@@ -52,18 +52,6 @@ public class DocumentedServerResource extends ServerResource {
     private String section;
 
     /**
-     * Textual description of the resource, used in documentation.
-     */
-    private String description;
-
-    /**
-     * Name of the resource. When generating Restlet Framework client SDKs on <a
-     * href="https://apispark.com">APISpark</a>, the annotated interface will be
-     * named [name]Resource and the ClientResource [name]ClientResource.
-     */
-    private String name;
-
-    /**
      * Method used to document the resource and its operations so that
      * introspection retrieves a more complete description of the API.
      * 
@@ -99,19 +87,28 @@ public class DocumentedServerResource extends ServerResource {
         this.section = section;
     }
 
+    /**
+     * Description of the resource, to be overriden. 
+     * 
+     * @return The description of the resource
+     */
     public String getDescription() {
-        return description;
+        return null;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
+    /**
+     * Name of the resource. When generating Restlet Framework client SDKs on <a
+     * href="https://apispark.com">APISpark</a>, the annotated interface will be
+     * named [name]Resource and the ClientResource [name]ClientResource.
+     * 
+     * Can be overriden.
+     */
     public String getName() {
+        String name = this.getClass().getSimpleName();
+        String suffix = "ServerResource";
+        if (name.endsWith(suffix) && name.length() > suffix.length()) {
+            return name.substring(0, name.length() - suffix.length());
+        }
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

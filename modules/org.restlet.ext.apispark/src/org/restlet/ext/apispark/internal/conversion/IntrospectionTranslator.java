@@ -84,7 +84,7 @@ public class IntrospectionTranslator {
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
             resource.setDescription(ri.getDescription());
-            resource.setName(ri.getIdentifier());
+            resource.setName(ri.getName());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
             } else {
@@ -114,7 +114,7 @@ public class IntrospectionTranslator {
             logger.fine("Resource " + ri.getPath() + " added.");
 
             if (ri.getMethods().isEmpty()) {
-                logger.warning("Resource " + ri.getIdentifier()
+                logger.warning("Resource " + ri.getName()
                         + " has no methods.");
                 continue;
             }
