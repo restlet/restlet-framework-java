@@ -36,6 +36,8 @@ package org.restlet.ext.apispark.internal.info;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.ChallengeScheme;
+
 /**
  * Root of a APISpark description document.
  * 
@@ -63,6 +65,9 @@ public class ApplicationInfo extends DocumentedInfo {
 
     /** The version of the Application. */
     private String version;
+
+    /** Authentication protocol for this resource */
+    private ChallengeScheme authenticationProtocol;
 
     /**
      * Constructor.
@@ -189,6 +194,15 @@ public class ApplicationInfo extends DocumentedInfo {
     public String getVersion() {
         return version;
     }
+    
+    /**
+     * Returns the authentication protocol of the application
+     * 
+     * @return The authentication protocol of the application
+     */
+    public ChallengeScheme getAuthenticationProtocol() {
+        return authenticationProtocol;
+    }
 
     /**
      * Sets the list of documentation elements.
@@ -242,6 +256,16 @@ public class ApplicationInfo extends DocumentedInfo {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * Sets the authentication protocol of the application
+     * 
+     * @param authenticationProtocol
+     *            The authentication protocol of the application
+     */
+    public void setAuthenticationProtocol(ChallengeScheme authenticationProtocol) {
+        this.authenticationProtocol = authenticationProtocol;
     }
 
 }

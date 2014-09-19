@@ -90,11 +90,10 @@ public class Endpoint {
                 port = 80;
             }
         }
-
     }
 
     public String getUrl() {
-        return protocol.toString().toLowerCase() + "://" + domain
+        return protocol.getSchemeName() + "://" + domain
                 + (port != 80 ? ":" + port : "") + basePath;
     }
 

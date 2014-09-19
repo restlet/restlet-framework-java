@@ -47,6 +47,7 @@ import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -82,6 +83,10 @@ import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
+import org.restlet.security.ChallengeAuthenticator;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -136,6 +141,7 @@ public class Introspector {
             Resource resource = new Resource();
             resource.setDescription(toString(ri.getDocumentations()));
             resource.setName(ri.getIdentifier());
+            resource.setAuthenticationProtocol(ri.getAuthenticationProtocol());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
             } else if (!ri.getPath().startsWith("/")) {
@@ -359,9 +365,11 @@ public class Introspector {
             doc.setTitle(application.getName());
         }
         applicationInfo.getResources().setBaseRef(baseRef);
-        applicationInfo.getResources().setResources(
-                getResourceInfos(applicationInfo,
-                        getNextRouter(application.getInboundRoot()), "/"));
+        applicationInfo.getResources()
+                .setResources(
+                        getResourceInfos(applicationInfo,
+                                getNextRouter(application.getInboundRoot()),
+                                "/", null));
 
         //
 
@@ -428,8 +436,13 @@ public class Introspector {
      * @return The resource description.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Filter filter, String path) {
-        return getResourceInfo(applicationInfo, filter.getNext(), path);
+            ApplicationInfo applicationInfo, Filter filter, String path,
+            ChallengeScheme scheme) {
+        if (filter instanceof ChallengeAuthenticator) {
+            scheme = ((ChallengeAuthenticator) filter).getScheme();
+            applicationInfo.setAuthenticationProtocol(scheme);
+        }
+        return getResourceInfo(applicationInfo, filter.getNext(), path, scheme);
     }
 
     /**
@@ -443,7 +456,8 @@ public class Introspector {
      *            The Finder instance to document.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Finder finder, String path) {
+            ApplicationInfo applicationInfo, Finder finder, String path,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
         Object resource = null;
 
@@ -468,6 +482,7 @@ public class Introspector {
             result = new ResourceInfo();
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
+        result.setAuthenticationProtocol(scheme);
 
         return result;
     }
@@ -483,18 +498,21 @@ public class Introspector {
      *            The Restlet instance to document.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Restlet restlet, String path) {
+            ApplicationInfo applicationInfo, Restlet restlet, String path,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
 
         if (restlet instanceof Finder) {
-            result = getResourceInfo(applicationInfo, (Finder) restlet, path);
+            result = getResourceInfo(applicationInfo, (Finder) restlet, path,
+                    scheme);
         } else if (restlet instanceof Router) {
             result = new ResourceInfo();
             result.setPath(path);
             result.setChildResources(getResourceInfos(applicationInfo,
-                    (Router) restlet, path));
+                    (Router) restlet, path, scheme));
         } else if (restlet instanceof Filter) {
-            result = getResourceInfo(applicationInfo, (Filter) restlet, path);
+            result = getResourceInfo(applicationInfo, (Filter) restlet, path,
+                    scheme);
         }
 
         return result;
@@ -512,7 +530,8 @@ public class Introspector {
      * @return The APISpark data about the given Route instance.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Route route, String basePath) {
+            ApplicationInfo applicationInfo, Route route, String basePath,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
 
         if (route instanceof TemplateRoute) {
@@ -526,7 +545,8 @@ public class Introspector {
                 path = basePath + path;
             }
 
-            result = getResourceInfo(applicationInfo, route.getNext(), path);
+            result = getResourceInfo(applicationInfo, route.getNext(), path,
+                    scheme);
         }
 
         return result;
@@ -545,13 +565,14 @@ public class Introspector {
      * @return The list of ResourceInfo instances to complete.
      */
     private static List<ResourceInfo> getResourceInfos(
-            ApplicationInfo applicationInfo, Router router, String path) {
+            ApplicationInfo applicationInfo, Router router, String path,
+            ChallengeScheme scheme) {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         if (router != null) {
             for (Route route : router.getRoutes()) {
                 ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
-                        route, path);
+                        route, path, scheme);
 
                 if (resourceInfo != null) {
                     result.add(resourceInfo);
@@ -560,7 +581,7 @@ public class Introspector {
 
             if (router.getDefaultRoute() != null) {
                 ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
-                        router.getDefaultRoute(), path);
+                        router.getDefaultRoute(), path, scheme);
                 if (resourceInfo != null) {
                     result.add(resourceInfo);
                 }
@@ -587,6 +608,10 @@ public class Introspector {
                 result.getEndpoints().add(
                         new Endpoint(ref.getHostDomain(), ref.getHostPort(),
                                 ref.getSchemeProtocol(), ref.getPath(), null));
+            } else {
+                result.getEndpoints().add(
+                        new Endpoint("", 80, Protocol.HTTP, "example.com",
+                                application.getAuthenticationProtocol()));
             }
 
             Contract contract = new Contract();
@@ -605,7 +630,8 @@ public class Introspector {
             contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
-                    .getResources(), result.getEndpoints().get(0).getUrl(), mapReps);
+                    .getResources(), (result.getEndpoints().isEmpty() ? ""
+                    : result.getEndpoints().get(0).getUrl()), mapReps);
 
             java.util.List<String> protocols = new ArrayList<String>();
             for (ConnectorHelper<Server> helper : Engine.getInstance()
@@ -779,6 +805,11 @@ public class Introspector {
                     }
 
                 });
+        try {
+            System.out.println(new ObjectMapper().writeValueAsString(result));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -874,7 +905,8 @@ public class Introspector {
      *            The application.
      * @return The endpoint.
      */
-    private Endpoint getEndpoint(VirtualHost virtualHost, Application application) {
+    private Endpoint getEndpoint(VirtualHost virtualHost,
+            Application application) {
         Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
@@ -914,8 +946,9 @@ public class Introspector {
                             // Nothing
                         }
                         // Concatenate in order to get the endpoint
-                        result = new Endpoint(ref.getHostDomain(), ref.getHostPort(),
-                                ref.getSchemeProtocol(), ref.getPath(), null);
+                        result = new Endpoint(ref.getHostDomain(),
+                                ref.getHostPort(), ref.getSchemeProtocol(),
+                                ref.getPath(), null);
                     }
                 }
             }

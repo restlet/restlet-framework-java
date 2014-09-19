@@ -45,12 +45,13 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
-import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
@@ -65,6 +66,7 @@ import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
+import org.restlet.security.ChallengeAuthenticator;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -158,9 +160,11 @@ public class Introspector extends IntrospectionUtils {
             doc.setTitle(application.getName());
         }
         applicationInfo.getResources().setBaseRef(baseRef);
-        applicationInfo.getResources().setResources(
-                getResourceInfos(applicationInfo,
-                        getNextRouter(application.getInboundRoot()), "/"));
+        applicationInfo.getResources()
+                .setResources(
+                        getResourceInfos(applicationInfo,
+                                getNextRouter(application.getInboundRoot()),
+                                "/", null));
 
         return applicationInfo;
     }
@@ -300,8 +304,13 @@ public class Introspector extends IntrospectionUtils {
      * @return The resource description.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Filter filter, String path) {
-        return getResourceInfo(applicationInfo, filter.getNext(), path);
+            ApplicationInfo applicationInfo, Filter filter, String path,
+            ChallengeScheme scheme) {
+        if (filter instanceof ChallengeAuthenticator) {
+            scheme = ((ChallengeAuthenticator) filter).getScheme();
+            applicationInfo.setAuthenticationProtocol(scheme);
+        }
+        return getResourceInfo(applicationInfo, filter.getNext(), path, scheme);
     }
 
     /**
@@ -315,7 +324,8 @@ public class Introspector extends IntrospectionUtils {
      *            The Finder instance to document.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Finder finder, String path) {
+            ApplicationInfo applicationInfo, Finder finder, String path,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
         Object resource = null;
 
@@ -340,6 +350,7 @@ public class Introspector extends IntrospectionUtils {
             result = new ResourceInfo();
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
+        result.setAuthenticationProtocol(scheme);
 
         return result;
     }
@@ -355,18 +366,21 @@ public class Introspector extends IntrospectionUtils {
      *            The Restlet instance to document.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Restlet restlet, String path) {
+            ApplicationInfo applicationInfo, Restlet restlet, String path,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
 
         if (restlet instanceof Finder) {
-            result = getResourceInfo(applicationInfo, (Finder) restlet, path);
+            result = getResourceInfo(applicationInfo, (Finder) restlet, path,
+                    scheme);
         } else if (restlet instanceof Router) {
             result = new ResourceInfo();
             result.setPath(path);
             result.setChildResources(getResourceInfos(applicationInfo,
-                    (Router) restlet, path));
+                    (Router) restlet, path, scheme));
         } else if (restlet instanceof Filter) {
-            result = getResourceInfo(applicationInfo, (Filter) restlet, path);
+            result = getResourceInfo(applicationInfo, (Filter) restlet, path,
+                    scheme);
         }
 
         return result;
@@ -384,7 +398,8 @@ public class Introspector extends IntrospectionUtils {
      * @return The APISpark data about the given Route instance.
      */
     private static ResourceInfo getResourceInfo(
-            ApplicationInfo applicationInfo, Route route, String basePath) {
+            ApplicationInfo applicationInfo, Route route, String basePath,
+            ChallengeScheme scheme) {
         ResourceInfo result = null;
 
         if (route instanceof TemplateRoute) {
@@ -398,7 +413,8 @@ public class Introspector extends IntrospectionUtils {
                 path = basePath + path;
             }
 
-            result = getResourceInfo(applicationInfo, route.getNext(), path);
+            result = getResourceInfo(applicationInfo, route.getNext(), path,
+                    scheme);
         }
 
         return result;
@@ -417,13 +433,14 @@ public class Introspector extends IntrospectionUtils {
      * @return The list of ResourceInfo instances to complete.
      */
     private static List<ResourceInfo> getResourceInfos(
-            ApplicationInfo applicationInfo, Router router, String path) {
+            ApplicationInfo applicationInfo, Router router, String path,
+            ChallengeScheme scheme) {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         if (router != null) {
             for (Route route : router.getRoutes()) {
                 ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
-                        route, path);
+                        route, path, scheme);
 
                 if (resourceInfo != null) {
                     result.add(resourceInfo);
@@ -432,7 +449,7 @@ public class Introspector extends IntrospectionUtils {
 
             if (router.getDefaultRoute() != null) {
                 ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
-                        router.getDefaultRoute(), path);
+                        router.getDefaultRoute(), path, scheme);
                 if (resourceInfo != null) {
                     result.add(resourceInfo);
                 }
@@ -586,10 +603,20 @@ public class Introspector extends IntrospectionUtils {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class, "[options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(o, Introspector.class, "--create [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(o, Introspector.class, "--newVersion --descriptor descriptorId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(o, Introspector.class, "--updateStrategy strategy --descriptor descriptorId --version versionId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(o, Introspector.class,
+                "[options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(
+                o,
+                Introspector.class,
+                "--create [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(
+                o,
+                Introspector.class,
+                "--newVersion --descriptor descriptorId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        printSynopsis(
+                o,
+                Introspector.class,
+                "--updateStrategy strategy --descriptor descriptorId --version versionId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
 
         o.println("DESCRIPTION");
         printSentence(

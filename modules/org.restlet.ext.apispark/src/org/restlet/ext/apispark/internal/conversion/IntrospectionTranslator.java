@@ -88,6 +88,7 @@ public class IntrospectionTranslator {
             Resource resource = new Resource();
             resource.setDescription(toString(ri.getDocumentations()));
             resource.setName(ri.getIdentifier());
+            resource.setAuthenticationProtocol(ri.getAuthenticationProtocol());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
             } else {
