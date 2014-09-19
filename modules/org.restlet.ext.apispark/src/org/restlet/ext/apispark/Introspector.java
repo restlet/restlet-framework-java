@@ -496,7 +496,7 @@ public class Introspector extends IntrospectionUtils {
                 descriptorId = getParameter(args, ++i);
             } else if ("-v".equals(args[i]) || "--version".equals(args[i])) {
                 versionId = getParameter(args, ++i);
-            } else if ("-u".equals(args[i])
+            } else if ("-U".equals(args[i])
                     || "--updateStrategy".equals(args[i])) {
                 updateStrategy = getParameter(args, ++i).toLowerCase();
             } else if ("-n".equals(args[i]) || "--newVersion".equals(args[i])) {
@@ -648,8 +648,8 @@ public class Introspector extends IntrospectionUtils {
                 "Required if updateStrategy or newVersion are specified.");
         printOption(
                 o,
-                "-u, --updateStrategy strategy",
-                "Updates the descriptor version specified by descriptor and version with given strategy.\n",
+                "-U, --updateStrategy strategy",
+                "Updates the descriptor version specified by descriptor and version with given strategy. If no strategy is specified, add strategy is selected by default. \n",
                 "Strategies available:\n",
                 "add: new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
                 "reset: deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
