@@ -171,30 +171,31 @@ public class IntrospectionUtils {
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
 
             if (create) {
-                cr.addSegment("apis");
+                cr.addSegment("apis").addSegment("");
                 LOGGER.info("Create a new descriptor");
                 cr.post(definition, MediaType.APPLICATION_JSON);
             } else if (newVersion) {
                 cr.addSegment("apis").addSegment(descriptorId)
-                        .addSegment("versions");
+                        .addSegment("versions").addSegment("");
                 LOGGER.info("Create a new version of the descriptor "
                         + descriptorId);
                 cr.post(definition, MediaType.APPLICATION_JSON);
             } else if (STRATEGIES.contains(updateStrategy)) {
-                // TODO confirm path
                 cr.addSegment("apis").addSegment(descriptorId)
-                        .addSegment("versions").addSegment(versionId);
-                LOGGER.info("Update version " + versionId
-                        + " of descriptor " + descriptorId
-                        + " with strategy " + updateStrategy);
+                        .addSegment("versions").addSegment(versionId)
+                        .addSegment("");
+                LOGGER.info("Update version " + versionId + " of descriptor "
+                        + descriptorId + " with strategy " + updateStrategy);
                 cr.addQueryParameter("strategy", updateStrategy);
-                if ("add".equals(updateStrategy)) {
+                if (STRATEGIES.contains(updateStrategy)) {
                     cr.put(definition, MediaType.APPLICATION_JSON);
-                } else if ("reset".equals(updateStrategy)) {
-                    cr.put(definition, MediaType.APPLICATION_JSON);
+                } else {
+                    LOGGER.severe("The strategy: "
+                            + updateStrategy
+                            + " is not available. Use parameter --help for help.");
                 }
             } else {
-                LOGGER.severe("the information you gave is not understandable. Use parameter --help for help.");
+                LOGGER.severe("The information you gave is not understandable. Use parameter --help for help.");
             }
 
             LOGGER.fine("Display result");
