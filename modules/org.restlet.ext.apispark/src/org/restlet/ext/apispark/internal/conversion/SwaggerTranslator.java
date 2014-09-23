@@ -106,8 +106,16 @@ public abstract class SwaggerTranslator {
             Definition definition) {
         ApiDeclaration result = new ApiDeclaration();
         result.setApiVersion(definition.getVersion());
-        Endpoint endpoint = definition.getEndpoints().get(0);
-        result.setBasePath(endpoint.getUrl());
+
+        // No way to specify multiple endpoints in Swagger so we take the first
+        // one
+        Endpoint endpoint;
+        if (!definition.getEndpoints().isEmpty()) {
+            endpoint = definition.getEndpoints().get(0);
+            result.setBasePath(endpoint.getUrl());
+        } else {
+            endpoint = new Endpoint("http://example.com");
+        }
 
         // Authentication
         // TODO deal with API key authentication
@@ -573,17 +581,6 @@ public abstract class SwaggerTranslator {
             definition.setContact(resourceListing.getInfo().getContact());
             definition.setLicense(resourceListing.getInfo().getLicenseUrl());
 
-            // TODO verify how to deal with API key auth + oauth
-            Endpoint endpoint = new Endpoint(resourceListing.getBasePath());
-            definition.getEndpoints().add(endpoint);
-            if (resourceListing.getAuthorizations().getBasicAuth() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC);
-            } else if (resourceListing.getAuthorizations().getOauth2() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH);
-            } else if (resourceListing.getAuthorizations().getApiKey() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM);
-            }
-
             Contract contract = new Contract();
             contract.setName(resourceListing.getInfo().getTitle());
             LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
@@ -759,8 +756,17 @@ public abstract class SwaggerTranslator {
                 }
 
                 if (definition.getEndpoints().isEmpty()) {
-                    definition.getEndpoints().add(
-                            new Endpoint(swagApiDeclaration.getBasePath()));
+                    // TODO verify how to deal with API key auth + oauth
+                    Endpoint endpoint = new Endpoint(
+                            swagApiDeclaration.getBasePath());
+                    definition.getEndpoints().add(endpoint);
+                    if (resourceListing.getAuthorizations().getBasicAuth() != null) {
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC);
+                    } else if (resourceListing.getAuthorizations().getOauth2() != null) {
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH);
+                    } else if (resourceListing.getAuthorizations().getApiKey() != null) {
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM);
+                    }
                 }
             }
             LOGGER.log(Level.FINE,

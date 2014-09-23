@@ -136,6 +136,8 @@ public abstract class RamlTranslator {
         if (definition.getVersion() != null) {
             raml.setVersion(definition.getVersion());
         }
+
+        // No way to specify multiple endpoints in RAML so we take the first one
         Endpoint endpoint = definition.getEndpoints().get(0);
         if (!definition.getEndpoints().isEmpty()) {
             raml.setBaseUri(endpoint.getUrl());

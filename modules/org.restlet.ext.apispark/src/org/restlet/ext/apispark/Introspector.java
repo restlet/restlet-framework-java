@@ -700,8 +700,10 @@ public class Introspector extends IntrospectionUtils {
             for (int i = 0; endpoint == null && i < component.getHosts().size(); i++) {
                 VirtualHost virtualHost = component.getHosts().get(i);
                 endpoint = getEndpoint(virtualHost, application);
+                if (endpoint != null) {
+                    definition.getEndpoints().add(endpoint);
+                }
             }
-            definition.getEndpoints().add(endpoint);
         }
     }
 

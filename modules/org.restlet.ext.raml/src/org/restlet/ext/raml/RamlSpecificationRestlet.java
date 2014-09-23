@@ -150,11 +150,6 @@ public class RamlSpecificationRestlet extends Restlet {
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
-                if (definition.getEndpoints().isEmpty()) {
-                    definition.getEndpoints().add(
-                            new Endpoint("localhost", 9000, Protocol.HTTP,
-                                    "/v1", ChallengeScheme.HTTP_BASIC));
-                }
             }
         }
 
