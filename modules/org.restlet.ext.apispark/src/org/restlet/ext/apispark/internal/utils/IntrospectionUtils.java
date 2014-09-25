@@ -169,6 +169,7 @@ public class IntrospectionUtils {
         try {
             ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
+            cr.addQueryParameter("type", "rwadef");
 
             if (create) {
                 cr.addSegment("apis").addSegment("");
