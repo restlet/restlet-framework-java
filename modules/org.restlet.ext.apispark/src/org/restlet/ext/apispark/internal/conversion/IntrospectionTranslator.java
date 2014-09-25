@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Server;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -329,6 +330,10 @@ public class IntrospectionTranslator {
                 result.getEndpoints().add(
                         new Endpoint(ref.getHostDomain(), ref.getHostPort(),
                                 ref.getSchemeProtocol(), ref.getPath(), null));
+            } else {
+                result.getEndpoints().add(
+                        new Endpoint("example.com", 80, Protocol.HTTP, "/v1",
+                                ChallengeScheme.HTTP_BASIC));
             }
 
             Contract contract = new Contract();
