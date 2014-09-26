@@ -112,7 +112,7 @@ public abstract class SwaggerTranslator {
         Endpoint endpoint;
         if (!definition.getEndpoints().isEmpty()) {
             endpoint = definition.getEndpoints().get(0);
-            result.setBasePath(endpoint.getUrl());
+            result.setBasePath(endpoint.computeUrl());
         } else {
             endpoint = new Endpoint("http://example.com");
         }
@@ -761,11 +761,11 @@ public abstract class SwaggerTranslator {
                             swagApiDeclaration.getBasePath());
                     definition.getEndpoints().add(endpoint);
                     if (resourceListing.getAuthorizations().getBasicAuth() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC);
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC.getTechnicalName());
                     } else if (resourceListing.getAuthorizations().getOauth2() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH);
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH.getTechnicalName());
                     } else if (resourceListing.getAuthorizations().getApiKey() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM);
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM.getTechnicalName());
                     }
                 }
             }

@@ -350,7 +350,9 @@ public class Introspector extends IntrospectionUtils {
             result = new ResourceInfo();
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
-        result.setAuthenticationProtocol(scheme);
+        if (scheme != null) {
+            result.setAuthenticationProtocol(scheme.getTechnicalName());
+        }
 
         return result;
     }
@@ -767,8 +769,8 @@ public class Introspector extends IntrospectionUtils {
                         }
                         // Concatenate in order to get the endpoint
                         result = new Endpoint(ref.getHostDomain(),
-                                ref.getHostPort(), ref.getSchemeProtocol(),
-                                ref.getPath(), null);
+                                ref.getHostPort(), ref.getSchemeProtocol()
+                                        .getSchemeName(), ref.getPath(), null);
                     }
                 }
             }

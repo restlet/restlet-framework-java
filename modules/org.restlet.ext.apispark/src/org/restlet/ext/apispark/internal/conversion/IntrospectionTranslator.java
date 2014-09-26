@@ -329,11 +329,13 @@ public class IntrospectionTranslator {
             if (ref != null) {
                 result.getEndpoints().add(
                         new Endpoint(ref.getHostDomain(), ref.getHostPort(),
-                                ref.getSchemeProtocol(), ref.getPath(), null));
+                                ref.getSchemeProtocol().getSchemeName(), ref
+                                        .getPath(), null));
             } else {
                 result.getEndpoints().add(
-                        new Endpoint("example.com", 80, Protocol.HTTP, "/v1",
-                                ChallengeScheme.HTTP_BASIC));
+                        new Endpoint("example.com", 80, Protocol.HTTP
+                                .getSchemeName(), "/v1",
+                                ChallengeScheme.HTTP_BASIC.getTechnicalName()));
             }
 
             Contract contract = new Contract();
@@ -352,7 +354,7 @@ public class IntrospectionTranslator {
             contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
-                    .getResources(), result.getEndpoints().get(0).getUrl(),
+                    .getResources(), result.getEndpoints().get(0).computeUrl(),
                     mapReps, logger);
 
             java.util.List<String> protocols = new ArrayList<String>();

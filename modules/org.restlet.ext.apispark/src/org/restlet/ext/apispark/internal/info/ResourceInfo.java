@@ -36,7 +36,6 @@ package org.restlet.ext.apispark.internal.info;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -155,7 +154,7 @@ public class ResourceInfo extends DocumentedInfo {
     private List<Reference> type;
 
     /** Authentication protocol for this resource */
-    private ChallengeScheme authenticationProtocol;
+    private String authenticationProtocol;
 
     /**
      * Constructor.
@@ -336,7 +335,7 @@ public class ResourceInfo extends DocumentedInfo {
      * 
      * @return The authentication protocol of the resource
      */
-    public ChallengeScheme getAuthenticationProtocol() {
+    public String getAuthenticationProtocol() {
         return authenticationProtocol;
     }
 
@@ -416,7 +415,7 @@ public class ResourceInfo extends DocumentedInfo {
      * @param authenticationProtocol
      *            The authentication protocol of the resource
      */
-    public void setAuthenticationProtocol(ChallengeScheme authenticationProtocol) {
+    public void setAuthenticationProtocol(String authenticationProtocol) {
         this.authenticationProtocol = authenticationProtocol;
     }
 

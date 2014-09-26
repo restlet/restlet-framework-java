@@ -36,12 +36,9 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Protocol;
-
 /**
- * Represents a Web API endpoint.
- * Declares the authentication protocol associated
+ * Represents a Web API endpoint. Declares the authentication protocol
+ * associated
  * 
  * @author Cyprien Quilici
  */
@@ -54,7 +51,7 @@ public class Endpoint {
     private int port;
 
     /** Protocol used for this endpoint. */
-    private Protocol protocol;
+    private String protocol;
 
     /**
      * Base path for this endpoint.
@@ -64,10 +61,10 @@ public class Endpoint {
     private String basePath;
 
     /** Authentication protocol used for this endpoint */
-    private ChallengeScheme authenticationProtocol;
+    private String authenticationProtocol;
 
-    public Endpoint(String domain, int port, Protocol protocol,
-            String basePath, ChallengeScheme authenticationProtocol) {
+    public Endpoint(String domain, int port, String protocol,
+            String basePath, String authenticationProtocol) {
         super();
         this.domain = domain;
         this.port = port;
@@ -82,7 +79,7 @@ public class Endpoint {
         Matcher m = p.matcher(url);
         if (m.matches()) {
             domain = m.group(2);
-            protocol = new Protocol(m.group(1));
+            protocol = m.group(1);
             basePath = m.group(5);
             if (m.group(4) != null) {
                 port = Integer.parseInt(m.group(4));
@@ -92,8 +89,12 @@ public class Endpoint {
         }
     }
 
-    public String getUrl() {
-        return protocol.getSchemeName() + "://" + domain
+    public Endpoint() {
+        super();
+    }
+
+    public String computeUrl() {
+        return protocol + "://" + domain
                 + (port != 80 ? ":" + port : "") + basePath;
     }
 
@@ -105,7 +106,7 @@ public class Endpoint {
         return port;
     }
 
-    public Protocol getProtocol() {
+    public String getProtocol() {
         return protocol;
     }
 
@@ -117,7 +118,7 @@ public class Endpoint {
         this.port = port;
     }
 
-    public void setProtocol(Protocol protocol) {
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
@@ -129,11 +130,11 @@ public class Endpoint {
         this.basePath = basePath;
     }
 
-    public ChallengeScheme getAuthenticationProtocol() {
+    public String getAuthenticationProtocol() {
         return authenticationProtocol;
     }
 
-    public void setAuthenticationProtocol(ChallengeScheme authenticationProtocol) {
+    public void setAuthenticationProtocol(String authenticationProtocol) {
         this.authenticationProtocol = authenticationProtocol;
     }
 }

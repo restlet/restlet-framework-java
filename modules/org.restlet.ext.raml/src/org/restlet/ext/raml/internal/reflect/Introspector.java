@@ -482,7 +482,9 @@ public class Introspector {
             result = new ResourceInfo();
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
-        result.setAuthenticationProtocol(scheme);
+        if (scheme != null) {
+            result.setAuthenticationProtocol(scheme.getTechnicalName());
+        }
 
         return result;
     }
@@ -607,11 +609,14 @@ public class Introspector {
             if (ref != null) {
                 result.getEndpoints().add(
                         new Endpoint(ref.getHostDomain(), ref.getHostPort(),
-                                ref.getSchemeProtocol(), ref.getPath(), null));
+                                ref.getSchemeProtocol().getSchemeName(), ref
+                                        .getPath(), null));
             } else {
                 result.getEndpoints().add(
-                        new Endpoint("", 80, Protocol.HTTP, "example.com",
-                                application.getAuthenticationProtocol()));
+                        new Endpoint("", 80, Protocol.HTTP.getSchemeName(),
+                                "example.com", application
+                                        .getAuthenticationProtocol()
+                                        .getTechnicalName()));
             }
 
             Contract contract = new Contract();
@@ -631,7 +636,7 @@ public class Introspector {
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
                     .getResources(), (result.getEndpoints().isEmpty() ? ""
-                    : result.getEndpoints().get(0).getUrl()), mapReps);
+                    : result.getEndpoints().get(0).computeUrl()), mapReps);
 
             java.util.List<String> protocols = new ArrayList<String>();
             for (ConnectorHelper<Server> helper : Engine.getInstance()
@@ -949,8 +954,8 @@ public class Introspector {
                         }
                         // Concatenate in order to get the endpoint
                         result = new Endpoint(ref.getHostDomain(),
-                                ref.getHostPort(), ref.getSchemeProtocol(),
-                                ref.getPath(), null);
+                                ref.getHostPort(), ref.getSchemeProtocol()
+                                        .getSchemeName(), ref.getPath(), null);
                     }
                 }
             }
