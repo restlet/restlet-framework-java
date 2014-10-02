@@ -33,15 +33,17 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents the contract of a Web API. Contains the representations and
- * resources sorted in sections.
+ * Represents a section of a Web API. A section is a logical part of the Web API
+ * and should be used to tidy it.
  * 
  * @author Cyprien Quilici
+ * 
  */
-public class Contract {
+public class Section {
 
     /** Textual description of the API. */
     private String description;
@@ -50,31 +52,68 @@ public class Contract {
     private String name;
 
     /**
-     * Sections containing the representations and resources of the API
+     * Representations available with this API Note: their "name" is used as a
+     * reference further in this description.
      */
-    private List<Section> sections;
+    private List<Representation> representations;
+
+    /** Resources provided by the API. */
+    private List<Resource> resources;
 
     public String getDescription() {
         return description;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Representation> getRepresentations() {
+        if (representations == null) {
+            representations = new ArrayList<Representation>();
+        }
+        return representations;
     }
 
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
+    public void setRepresentations(List<Representation> representations) {
+        this.representations = representations;
     }
+
+    public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+
+    public Resource getResource(String path) {
+        for (Resource result : getResources()) {
+            if (path.equals(result.getResourcePath())) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public Representation getRepresentation(String name) {
+        for (Representation result : getRepresentations()) {
+            if (name.equals(result.getName())) {
+                return result;
+            }
+        }
+        return null;
+    }
+
 }
