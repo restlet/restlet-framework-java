@@ -59,6 +59,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -185,7 +186,10 @@ public abstract class RamlTranslator {
         raml.setResources(new HashMap<String, org.raml.model.Resource>());
         org.raml.model.Resource ramlResource;
         List<String> paths = new ArrayList<String>();
-        for (Resource resource : definition.getContract().getResources()) {
+
+        // TODO deal with multiple sections
+        Section section = definition.getContract().getSection(Section.DEFAULT);
+        for (Resource resource : section.getResources()) {
             ramlResource = new org.raml.model.Resource();
             if (resource.getName() != null) {
                 ramlResource.setDisplayName(resource.getName());
@@ -327,8 +331,7 @@ public abstract class RamlTranslator {
         raml.setSchemas(new ArrayList<Map<String, String>>());
         Map<String, String> schemas = new HashMap<String, String>();
         raml.getSchemas().add(schemas);
-        for (Representation representation : definition.getContract()
-                .getRepresentations()) {
+        for (Representation representation : section.getRepresentations()) {
             if (RamlUtils.isPrimitiveType(representation.getName())) {
                 continue;
             }
@@ -433,6 +436,12 @@ public abstract class RamlTranslator {
         }
         def.setContract(new Contract());
         def.getContract().setName(raml.getTitle());
+
+        // TODO deal with multiple sections
+        Section section = new Section();
+        section.setName(Section.DEFAULT);
+        def.getContract().getSections().add(section);
+
         // TODO String defaultMediaType = raml.getMediaType();
         List<PathVariable> rootPathVariables = new ArrayList<PathVariable>();
         for (Entry<String, UriParameter> entry : raml.getBaseUriParameters()
@@ -447,7 +456,7 @@ public abstract class RamlTranslator {
                 representation.setName(entry.getKey());
                 representation.setDescription(entry.getValue());
                 // TODO get the schema !!!
-                def.getContract().getRepresentations().add(representation);
+                section.getRepresentations().add(representation);
             }
         }
 
@@ -455,9 +464,8 @@ public abstract class RamlTranslator {
         for (Entry<String, org.raml.model.Resource> entry : raml.getResources()
                 .entrySet()) {
             org.raml.model.Resource resource = entry.getValue();
-            def.getContract()
-                    .getResources()
-                    .addAll(getResource(
+            section.getResources().addAll(
+                    getResource(
                             RamlUtils.processResourceName(resource.getUri()),
                             resource, rootPathVariables));
         }

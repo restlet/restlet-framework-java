@@ -73,7 +73,9 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
@@ -136,6 +138,15 @@ public class Introspector {
     private static void addResources(ApplicationInfo application,
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps) {
+        // TODO add section sorting strategies
+        Section section = new Section();
+        if (contract.getSections().isEmpty()) {
+            section = new Section();
+            section.setName("All resources");
+            contract.getSections().add(section);
+        } else {
+            section = contract.getSections().get(0);
+        }
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
             resource.setDescription(ri.getDescription());
@@ -334,7 +345,7 @@ public class Introspector {
                 resource.getOperations().add(operation);
             }
 
-            contract.getResources().add(resource);
+            section.getResources().add(resource);
         }
     }
 
@@ -621,8 +632,18 @@ public class Introspector {
             }
             LOGGER.fine("Contract " + contract.getName() + " added.");
 
+            // TODO add section sorting strategies
+            Section section = new Section();
+            if (contract.getSections().isEmpty()) {
+                section = new Section();
+                section.setName("All resources");
+                contract.getSections().add(section);
+            } else {
+                section = contract.getSections().get(0);
+            }
+
             // List of resources.
-            contract.setResources(new ArrayList<Resource>());
+            section.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
                     .getResources(), (result.getEndpoints().isEmpty() ? ""
@@ -641,7 +662,7 @@ public class Introspector {
             }
 
             // List of representations.
-            contract.setRepresentations(new ArrayList<Representation>());
+            section.setRepresentations(new ArrayList<Representation>());
             for (RepresentationInfo ri : application.getRepresentations()) {
                 if (!mapReps.containsKey(ri.getIdentifier())) {
                     mapReps.put(ri.getIdentifier(), ri);
@@ -777,29 +798,11 @@ public class Introspector {
                 }
 
                 rep.setRaw(ri.isRaw() || ReflectUtils.isJdkClass(ri.getType()));
-                contract.getRepresentations().add(rep);
+                section.getRepresentations().add(rep);
             }
         }
 
-        Collections.sort(result.getContract().getRepresentations(),
-                new Comparator<Representation>() {
-
-                    @Override
-                    public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-
-                });
-        Collections.sort(result.getContract().getResources(),
-                new Comparator<Resource>() {
-
-                    @Override
-                    public int compare(Resource o1, Resource o2) {
-                        return o1.getResourcePath().compareTo(
-                                o2.getResourcePath());
-                    }
-
-                });
+        IntrospectionUtils.sortDefinition(result);
         try {
             System.out.println(new ObjectMapper().writeValueAsString(result));
         } catch (JsonProcessingException e) {

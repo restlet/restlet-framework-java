@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,10 +72,22 @@ public class Contract {
     }
 
     public List<Section> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<Section>();
+        }
         return sections;
     }
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public Section getSection(String name) {
+        for (Section section : sections) {
+            if (name.equals(section.getName())) {
+                return section;
+            }
+        }
+        return null;
     }
 }

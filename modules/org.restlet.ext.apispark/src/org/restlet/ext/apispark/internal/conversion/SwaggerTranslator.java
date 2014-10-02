@@ -62,6 +62,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ApiInfo;
 import org.restlet.ext.apispark.internal.model.swagger.AuthorizationsDeclaration;
@@ -96,13 +97,13 @@ public abstract class SwaggerTranslator {
      * Retrieves the Swagger API declaration corresponding to a category of the
      * given Restlet Web API Definition
      * 
-     * @param category
+     * @param sectionName
      *            The category of the API declaration
      * @param definition
      *            The Restlet Web API Definition
      * @return The Swagger API definition of the given category
      */
-    public static ApiDeclaration getApiDeclaration(String category,
+    public static ApiDeclaration getApiDeclaration(String sectionName,
             Definition definition) {
         ApiDeclaration result = new ApiDeclaration();
         result.setApiVersion(definition.getVersion());
@@ -134,13 +135,20 @@ public abstract class SwaggerTranslator {
 
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
-        result.setResourcePath("/" + category);
+        result.setResourcePath("/" + sectionName);
         Set<String> usedModels = new HashSet<String>();
 
+        // Get sections
+        Section section = definition.getContract().getSection(Section.DEFAULT);
+        if (section == null) {
+            // TODO deal with non-default sections
+            section = new Section();
+        }
+
         // Get resources
-        for (Resource resource : definition.getContract().getResources()) {
+        for (Resource resource : section.getResources()) {
             // Discriminate the resources of one category
-            if (!resource.getResourcePath().startsWith("/" + category)) {
+            if (!resource.getResourcePath().startsWith("/" + sectionName)) {
                 continue;
             }
             ResourceDeclaration rd = new ResourceDeclaration();
@@ -241,8 +249,7 @@ public abstract class SwaggerTranslator {
         Iterator<String> iterator = usedModels.iterator();
         while (iterator.hasNext()) {
             String model = iterator.next();
-            Representation repr = getRepresentationByName(
-                    definition.getContract(), model);
+            Representation repr = section.getRepresentation(model);
             if (repr == null || isPrimitiveType(model)) {
                 continue;
             }
@@ -299,28 +306,6 @@ public abstract class SwaggerTranslator {
     }
 
     /**
-     * Returns the representation given its name from the list of
-     * representations of the given contract.
-     * 
-     * @param contract
-     *            The contract.
-     * @param name
-     *            The name of the representation.
-     * @return A representation.
-     */
-    private static Representation getRepresentationByName(Contract contract,
-            String name) {
-        if (name != null) {
-            for (Representation repr : contract.getRepresentations()) {
-                if (name.equals(repr.getName())) {
-                    return repr;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Translates a Restlet Web API Definition to a Swagger resource listing.
      * 
      * @param definition
@@ -346,13 +331,20 @@ public abstract class SwaggerTranslator {
             result.getInfo().setDescription(
                     definition.getContract().getDescription());
         }
+
+        // Get sections
+        Section section = definition.getContract().getSection(Section.DEFAULT);
+        if (section == null) {
+            // TODO deal with non-default sections
+            section = new Section();
+        }
+
         // Resources
         List<String> addedApis = new ArrayList<String>();
-        if (definition.getContract() != null
-                && definition.getContract().getResources() != null) {
+        if (definition.getContract() != null && section.getResources() != null) {
             result.setApis(new ArrayList<ResourceDeclaration>());
 
-            for (Resource resource : definition.getContract().getResources()) {
+            for (Resource resource : section.getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
                 rd.setPath(ReflectUtils.getFirstSegment(resource
@@ -575,6 +567,10 @@ public abstract class SwaggerTranslator {
         List<String> declaredPathVariables;
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
 
+        // TODO deal with multiple sections
+        Section section = new Section();
+        section.setName(Section.DEFAULT);
+
         try {
             Definition definition = new Definition();
             definition.setVersion(resourceListing.getApiVersion());
@@ -585,6 +581,7 @@ public abstract class SwaggerTranslator {
             contract.setName(resourceListing.getInfo().getTitle());
             LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
             contract.setDescription(resourceListing.getInfo().getDescription());
+            contract.getSections().add(section);
             definition.setContract(contract);
 
             // Resource listing
@@ -621,8 +618,8 @@ public abstract class SwaggerTranslator {
                                 representation.setName("File");
                                 representation.setRaw(true);
                                 containsRawTypes = true;
-                                contract.getRepresentations().add(
-                                        representation);
+                                section.getRepresentations()
+                                        .add(representation);
                             }
                             operation.getProduces().add(produced);
                         }
@@ -635,8 +632,8 @@ public abstract class SwaggerTranslator {
                                 representation.setName("File");
                                 representation.setRaw(true);
                                 containsRawTypes = true;
-                                contract.getRepresentations().add(
-                                        representation);
+                                section.getRepresentations()
+                                        .add(representation);
                             }
                             operation.getConsumes().add(consumed);
                         }
@@ -732,7 +729,7 @@ public abstract class SwaggerTranslator {
                                 declaredTypes.add(modelEntry.getKey());
                                 Representation rwadRepr = toRepresentation(
                                         model, modelEntry.getKey());
-                                contract.getRepresentations().add(rwadRepr);
+                                section.getRepresentations().add(rwadRepr);
                                 LOGGER.log(Level.FINE, "Representation "
                                         + modelEntry.getKey() + " added.");
                             }
@@ -743,14 +740,14 @@ public abstract class SwaggerTranslator {
                                 .entrySet()) {
                             List<String> subtypesOf = subtypesPair.getValue();
                             for (String subtypeOf : subtypesOf) {
-                                Representation repr = getRepresentationByName(
-                                        contract, subtypeOf);
+                                Representation repr = section
+                                        .getRepresentation(subtypeOf);
                                 repr.setExtendedType(subtypesPair.getKey());
                             }
                         }
                     }
 
-                    definition.getContract().getResources().add(resource);
+                    section.getResources().add(resource);
                     LOGGER.log(Level.FINE, "Resource " + api.getPath()
                             + " added.");
                 }
@@ -761,11 +758,14 @@ public abstract class SwaggerTranslator {
                             swagApiDeclaration.getBasePath());
                     definition.getEndpoints().add(endpoint);
                     if (resourceListing.getAuthorizations().getBasicAuth() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC.getTechnicalName());
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
+                                .getTechnicalName());
                     } else if (resourceListing.getAuthorizations().getOauth2() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH.getTechnicalName());
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
+                                .getTechnicalName());
                     } else if (resourceListing.getAuthorizations().getApiKey() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM.getTechnicalName());
+                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
+                                .getTechnicalName());
                     }
                 }
             }

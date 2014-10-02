@@ -9,9 +9,11 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
@@ -147,25 +149,7 @@ public class IntrospectionUtils {
             String serviceUrl, String updateStrategy, boolean create,
             boolean newVersion, Logger LOGGER) {
 
-        Collections.sort(definition.getContract().getRepresentations(),
-                new Comparator<Representation>() {
-
-                    @Override
-                    public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-
-                });
-        Collections.sort(definition.getContract().getResources(),
-                new Comparator<Resource>() {
-
-                    @Override
-                    public int compare(Resource o1, Resource o2) {
-                        return o1.getResourcePath().compareTo(
-                                o2.getResourcePath());
-                    }
-
-                });
+        sortDefinition(definition);
         try {
             ClientResource cr = new ClientResource(serviceUrl);
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
@@ -231,4 +215,43 @@ public class IntrospectionUtils {
         }
     }
 
+    /**
+     * Sorts the sections, representations and resources alphabetically in the
+     * given RWADef definition
+     * 
+     * @param definition
+     *            The RWADef definition
+     */
+    public static void sortDefinition(Definition definition) {
+        Collections.sort(definition.getContract().getSections(),
+                new Comparator<Section>() {
+
+                    @Override
+                    public int compare(Section o1, Section o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                });
+        for (Section section : definition.getContract().getSections()) {
+            Collections.sort(section.getRepresentations(),
+                    new Comparator<Representation>() {
+
+                        @Override
+                        public int compare(Representation o1, Representation o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+
+                    });
+            Collections.sort(section.getResources(),
+                    new Comparator<Resource>() {
+
+                        @Override
+                        public int compare(Resource o1, Resource o2) {
+                            return o1.getResourcePath().compareTo(
+                                    o2.getResourcePath());
+                        }
+
+                    });
+        }
+    }
 }

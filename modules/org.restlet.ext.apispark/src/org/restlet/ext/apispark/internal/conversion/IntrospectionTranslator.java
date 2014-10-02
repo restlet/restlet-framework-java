@@ -37,7 +37,9 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 /**
  * Tools library for converting the model used for introspection to Restlet Web
@@ -84,6 +86,15 @@ public class IntrospectionTranslator {
     private static void addResources(ApplicationInfo application,
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps, Logger logger) {
+        // TODO add section sorting strategies
+        Section section = new Section();
+        if (contract.getSections().isEmpty()) {
+            section = new Section();
+            section.setName("All resources");
+            contract.getSections().add(section);
+        } else {
+            section = contract.getSections().get(0);
+        }
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
             resource.setDescription(ri.getDescription());
@@ -279,7 +290,7 @@ public class IntrospectionTranslator {
                 resource.getOperations().add(operation);
             }
 
-            contract.getResources().add(resource);
+            section.getResources().add(resource);
         }
     }
 
@@ -345,7 +356,6 @@ public class IntrospectionTranslator {
             logger.fine("Contract " + contract.getName() + " added.");
 
             // List of resources.
-            contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
                     .getResources(), result.getEndpoints().get(0).computeUrl(),
@@ -364,7 +374,6 @@ public class IntrospectionTranslator {
             }
 
             // List of representations.
-            contract.setRepresentations(new ArrayList<Representation>());
             for (RepresentationInfo ri : application.getRepresentations()) {
                 if (!mapReps.containsKey(ri.getIdentifier())) {
                     mapReps.put(ri.getIdentifier(), ri);
@@ -463,6 +472,15 @@ public class IntrospectionTranslator {
                 }
             }
 
+            // TODO add section sorting strategies
+            Section section = new Section();
+            if (contract.getSections().isEmpty()) {
+                section = new Section();
+                section.setName("All resources");
+                contract.getSections().add(section);
+            } else {
+                section = contract.getSections().get(0);
+            }
             for (RepresentationInfo ri : mapReps.values()) {
                 if (ri.isCollection()) {
                     continue;
@@ -506,29 +524,10 @@ public class IntrospectionTranslator {
                 }
 
                 rep.setRaw(ri.isRaw() || ReflectUtils.isJdkClass(ri.getType()));
-                contract.getRepresentations().add(rep);
+                section.getRepresentations().add(rep);
             }
         }
-
-        Collections.sort(result.getContract().getRepresentations(),
-                new Comparator<Representation>() {
-
-                    @Override
-                    public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-
-                });
-        Collections.sort(result.getContract().getResources(),
-                new Comparator<Resource>() {
-
-                    @Override
-                    public int compare(Resource o1, Resource o2) {
-                        return o1.getResourcePath().compareTo(
-                                o2.getResourcePath());
-                    }
-
-                });
+        IntrospectionUtils.sortDefinition(result);
         return result;
     }
 
