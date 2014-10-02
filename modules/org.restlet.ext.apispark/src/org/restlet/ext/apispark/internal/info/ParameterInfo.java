@@ -57,9 +57,6 @@ public class ParameterInfo extends DocumentedInfo {
     /** Link element. */
     private LinkInfo link;
 
-    /** Name of this element. */
-    private String name;
-
     /** List of option elements for that element. */
     private List<OptionInfo> options;
 
@@ -98,18 +95,17 @@ public class ParameterInfo extends DocumentedInfo {
      * @param name
      *            The name of the parameter.
      * @param required
-     *            True if thes parameter is required.
+     *            True if this parameter is required.
      * @param type
      *            The type of the parameter.
      * @param style
      *            The style of the parameter.
-     * @param documentation
+     * @param description
      *            A single documentation element.
      */
     public ParameterInfo(String name, boolean required, String type,
-            ParameterStyle style, String documentation) {
-        super(documentation);
-        this.name = name;
+            ParameterStyle style, String description) {
+        super(description, name);
         this.required = required;
         this.style = style;
         this.type = type;
@@ -122,46 +118,11 @@ public class ParameterInfo extends DocumentedInfo {
      *            The required name of the parameter.
      * @param style
      *            The required style of the parameter.
-     * @param documentation
+     * @param description
      *            A single documentation element.
      */
-    public ParameterInfo(String name, ParameterStyle style,
-            DocumentationInfo documentation) {
-        super(documentation);
-        this.name = name;
-        this.style = style;
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param name
-     *            The required name of the parameter.
-     * @param style
-     *            The required style of the parameter.
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ParameterInfo(String name, ParameterStyle style,
-            List<DocumentationInfo> documentations) {
-        super(documentations);
-        this.name = name;
-        this.style = style;
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param name
-     *            The required name of the parameter.
-     * @param style
-     *            The required style of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ParameterInfo(String name, ParameterStyle style, String documentation) {
-        super(documentation);
-        this.name = name;
+    public ParameterInfo(String name, ParameterStyle style, String description) {
+        super(description, name);
         this.style = style;
     }
 
@@ -201,16 +162,6 @@ public class ParameterInfo extends DocumentedInfo {
 
     public LinkInfo getLink() {
         return this.link;
-    }
-
-    /**
-     * Returns the name of this element.
-     * 
-     * @return The name of this element.
-     */
-
-    public String getName() {
-        return this.name;
     }
 
     /**
@@ -323,16 +274,6 @@ public class ParameterInfo extends DocumentedInfo {
      */
     public void setLink(LinkInfo link) {
         this.link = link;
-    }
-
-    /**
-     * Sets the name of this element.
-     * 
-     * @param name
-     *            The name of this element.
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

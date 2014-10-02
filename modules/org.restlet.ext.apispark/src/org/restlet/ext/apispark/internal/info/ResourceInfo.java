@@ -42,6 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.ext.apispark.DocumentedServerResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
@@ -90,6 +91,11 @@ public class ResourceInfo extends DocumentedInfo {
             ServerResource sr = (ServerResource) resource;
             sr.updateAllowedMethods();
             methodsList.addAll(sr.getAllowedMethods());
+            if (sr instanceof DocumentedServerResource) {
+                info.setDescription(((DocumentedServerResource) sr)
+                        .getDescription());
+                info.setName(((DocumentedServerResource) sr).getName());
+            }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
             methodsList.add(Method.GET);
@@ -120,7 +126,12 @@ public class ResourceInfo extends DocumentedInfo {
                             methodInfo = new MethodInfo();
                             methods.add(methodInfo);
                             methodInfo.setMethod(method);
+                            methodInfo.setAnnotation(annotationInfo);
                             MethodInfo.describeAnnotation(methodInfo, mai, sr);
+                            if (sr instanceof DocumentedServerResource) {
+                                ((DocumentedServerResource) sr).describe(
+                                        methodInfo, mai);
+                            }
                         }
                     }
                 }
@@ -163,34 +174,9 @@ public class ResourceInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ResourceInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(String documentation) {
-        super(documentation);
+    public ResourceInfo(String description, String name) {
+        super(description, name);
+        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -203,23 +189,6 @@ public class ResourceInfo extends DocumentedInfo {
      */
     public ApplicationInfo createApplication() {
         ApplicationInfo result = new ApplicationInfo();
-
-        if (!getDocumentations().isEmpty()) {
-            String titleResource = getDocumentations().get(0).getTitle();
-            if (titleResource != null && !titleResource.isEmpty()) {
-                DocumentationInfo doc = null;
-
-                if (result.getDocumentations().isEmpty()) {
-                    doc = new DocumentationInfo();
-                    result.getDocumentations().add(doc);
-                } else {
-                    doc = result.getDocumentations().get(0);
-                }
-
-                doc.setTitle(titleResource);
-            }
-        }
-
         ResourcesInfo resources = new ResourcesInfo();
         result.setResources(resources);
         resources.getResources().add(this);

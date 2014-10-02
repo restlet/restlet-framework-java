@@ -56,34 +56,8 @@ public class RequestInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public RequestInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public RequestInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public RequestInfo(String documentation) {
-        super(documentation);
+    public RequestInfo(String description, String name) {
+        super(description, name);
     }
 
     /**

@@ -36,6 +36,7 @@ package org.restlet.ext.swagger;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.ext.apispark.DocumentedApplication;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
@@ -62,7 +63,7 @@ import org.restlet.routing.Router;
  * @author Thierry Boileau
  * 
  */
-public class SwaggerApplication extends Application {
+public class SwaggerApplication extends DocumentedApplication {
 
     /**
      * Returns the next router available.

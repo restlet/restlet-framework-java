@@ -53,7 +53,6 @@ import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
-import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -148,18 +147,9 @@ public class Introspector extends IntrospectionUtils {
     protected static ApplicationInfo getApplicationInfo(
             Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
-        if ((application.getName() != null) && !application.getName().isEmpty()) {
-            DocumentationInfo doc = null;
-            if (applicationInfo.getDocumentations().isEmpty()) {
-                doc = new DocumentationInfo();
-                applicationInfo.getDocumentations().add(doc);
-            } else {
-                doc = applicationInfo.getDocumentations().get(0);
-            }
-            applicationInfo.setName(application.getName());
-            doc.setTitle(application.getName());
-        }
         applicationInfo.getResources().setBaseRef(baseRef);
+        applicationInfo.setName(application.getName());
+        applicationInfo.setDescription(application.getDescription());
         applicationInfo.getResources()
                 .setResources(
                         getResourceInfos(applicationInfo,

@@ -57,34 +57,8 @@ public class ResourcesInfo extends DocumentedInfo {
         super();
     }
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourcesInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
-
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ResourcesInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourcesInfo(String documentation) {
-        super(documentation);
+    public ResourcesInfo(String description, String name) {
+        super(description, name);
     }
 
     /**

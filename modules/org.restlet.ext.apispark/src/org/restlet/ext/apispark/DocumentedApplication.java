@@ -26,54 +26,33 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * http://www.restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.info;
+package org.restlet.ext.apispark;
 
+import org.restlet.Application;
 
 /**
- * Superclass of APISpark elements that supports documentation.
+ * Describes the sections of a Web API for documentation purpose.
  * 
- * @author Thierry Boileau.
+ * @author Cyprien Quilici
+ * 
  */
-public abstract class DocumentedInfo {
-
-    /** Doc elements used to document that element. */
-    private String description;
-    /** Doc elements used to document that element. */
-    private String name;
+public class DocumentedApplication extends Application {
 
     /**
-     * Constructor.
+     * Describes a section of the Web API given its name.
+     * To be overriden.
+     * 
+     * @param section
+     *            The section's name
+     * @return The section's description
      */
-    public DocumentedInfo() {
-        super();
+    public String getSectionDescription(String section) {
+        // to be overriden
+        return null;
     }
-
-    public DocumentedInfo(String description, String name) {
-        super();
-        this.description = description;
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
 }
