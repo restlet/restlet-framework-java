@@ -195,7 +195,12 @@ public abstract class SwaggerTranslator {
                 }
 
                 // Get out representation
-                Entity outRepr = operation.getOutRepresentation();
+                Entity outRepr = null;
+                for (Response response : operation.getResponses()) {
+                    if (Status.isSuccess(response.getCode())) {
+                        outRepr = response.getEntity();
+                    }
+                }
                 if (outRepr != null && outRepr.getType() != null) {
                     if (outRepr.isArray()) {
                         rod.setType("array");
@@ -663,7 +668,6 @@ public abstract class SwaggerTranslator {
                                 rwadOutRepr.setType(swagOperation.getRef());
                             }
                         }
-                        operation.setOutRepresentation(rwadOutRepr);
 
                         // Extract success response message
                         Response success = new Response();

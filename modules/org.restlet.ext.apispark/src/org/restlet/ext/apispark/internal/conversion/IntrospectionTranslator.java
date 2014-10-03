@@ -2,8 +2,6 @@ package org.restlet.ext.apispark.internal.conversion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,7 +257,6 @@ public class IntrospectionTranslator {
                         entity.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
-                    operation.setOutRepresentation(entity);
 
                     for (ResponseInfo rio : mi.getResponses()) {
                         addRepresentations(mapReps, rio.getRepresentations());

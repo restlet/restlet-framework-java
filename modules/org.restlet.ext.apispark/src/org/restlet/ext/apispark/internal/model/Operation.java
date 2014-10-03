@@ -64,12 +64,6 @@ public class Operation {
      */
     private String name;
 
-    /**
-     * Representation to send in the body of your request for this operation if
-     * any.
-     */
-    private Entity outRepresentation;
-
     /** Mediatypes produced by this operation */
     private List<String> produces;
 
@@ -107,10 +101,6 @@ public class Operation {
 
     public String getName() {
         return name;
-    }
-
-    public Entity getOutRepresentation() {
-        return outRepresentation;
     }
 
     public List<String> getProduces() {
@@ -174,10 +164,6 @@ public class Operation {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setOutRepresentation(Entity outRepresentation) {
-        this.outRepresentation = outRepresentation;
     }
 
     public void setProduces(List<String> produces) {

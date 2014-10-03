@@ -286,14 +286,14 @@ public abstract class RamlTranslator {
                     ramlResponse.setBody(new HashMap<String, MimeType>());
                     ramlOutRepresentation = new MimeType();
                     if (Status.isSuccess(response.getCode())
-                            && operation.getOutRepresentation() != null
-                            && operation.getOutRepresentation().getType() != null) {
-                        if (RamlUtils.isPrimitiveType(operation
-                                .getOutRepresentation().getType())) {
+                            && response.getEntity() != null
+                            && response.getEntity().getType() != null) {
+                        if (RamlUtils.isPrimitiveType(response.getEntity()
+                                .getType())) {
                             Property outRepresentationPrimitive = new Property();
                             outRepresentationPrimitive.setName("");
-                            outRepresentationPrimitive.setType(operation
-                                    .getOutRepresentation().getType());
+                            outRepresentationPrimitive.setType(response
+                                    .getEntity().getType());
                             SimpleTypeSchema outRepresentationSchema = RamlUtils
                                     .generatePrimitiveSchema(outRepresentationPrimitive);
                             try {
@@ -306,8 +306,8 @@ public abstract class RamlTranslator {
                                         e);
                             }
                         } else {
-                            ramlOutRepresentation.setSchema(operation
-                                    .getOutRepresentation().getType());
+                            ramlOutRepresentation.setSchema(response
+                                    .getEntity().getType());
                         }
                     }
                     for (String mediaType : operation.getProduces()) {

@@ -313,7 +313,6 @@ public class Introspector {
                         entity.setArray(mi.getResponse().getRepresentations()
                                 .get(0).isCollection());
                     }
-                    operation.setOutRepresentation(entity);
 
                     for (ResponseInfo rio : mi.getResponses()) {
                         addRepresentations(mapReps, rio.getRepresentations());
