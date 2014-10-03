@@ -56,8 +56,7 @@ public class Swagger2Translator {
         // fill swagger.definitions
         fillDefinitions(definition, swagger);
 
-		/* Authorization -> SecurityDefinition */
-        // TODO
+        // TODO add authorization attribute
 
         return swagger;
     }
