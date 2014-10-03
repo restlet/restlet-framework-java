@@ -201,6 +201,7 @@ public class Swagger_2_0_TranslatorTestCase extends RestletTestCase {
 		assertEquals("version", infoSwagger.getVersion());
 		Contact contactSwagger = infoSwagger.getContact();
 		assertEquals("contact",contactSwagger.getName());
+        //TODO uncomment license assertion when translator will handle it
 		License license = infoSwagger.getLicense();
 		assertEquals("license", license.getUrl());
 		assertEquals("contract.name", infoSwagger.getTitle());
