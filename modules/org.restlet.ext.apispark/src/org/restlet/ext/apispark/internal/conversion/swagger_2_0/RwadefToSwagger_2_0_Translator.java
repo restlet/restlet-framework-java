@@ -70,7 +70,7 @@ public class RwadefToSwagger_2_0_Translator {
 		// basePath
 		if (!definition.getEndpoints().isEmpty()) {
 			Endpoint endpoint = definition.getEndpoints().get(0);
-			swagger.setBasePath(endpoint.computeUrl());
+			swagger.setBasePath(endpoint.getBasePath());
 		} else {
 			// TODO Log : no base path
 		}
@@ -93,9 +93,7 @@ public class RwadefToSwagger_2_0_Translator {
 						operationSwagger.setOperationId(operationRwadef.getName());
 						operationSwagger.setProduces(operationRwadef.getProduces());
 						operationSwagger.setConsumes(operationRwadef.getConsumes());
-						operationSwagger.setSummary(operationRwadef.getDescription());
 						operationSwagger.setDescription(operationRwadef.getDescription());
-						operationSwagger.setProduces(operationRwadef.getProduces());
 
 						/* PathVariable -> PathParameter */
 						if(resourceRwadef.getPathVariables() != null) {
@@ -188,13 +186,18 @@ public class RwadefToSwagger_2_0_Translator {
 						com.wordnik.swagger.models.properties.Property propertySwagger;
 
 						// property type
-						if ((propertyRwadef.getMaxOccurs() > 1) || (propertyRwadef.getMaxOccurs() == -1)) {
+						if ((propertyRwadef.getMaxOccurs() != null)
+								&& ((propertyRwadef.getMaxOccurs() > 1) || (propertyRwadef.getMaxOccurs() == -1))) {
 							ArrayProperty arrayProperty = new ArrayProperty();
 							arrayProperty.setItems(newPropertyForType(propertyRwadef.getType()));
 							propertySwagger = arrayProperty;
 						} else {
 							propertySwagger = newPropertyForType(propertyRwadef.getType());
 						}
+
+						modelSwagger.property(propertyRwadef.getName(), propertySwagger);
+
+						propertySwagger.setName(propertyRwadef.getName());
 
 						// min and max
 						if(propertySwagger instanceof AbstractNumericProperty) {
@@ -212,8 +215,6 @@ public class RwadefToSwagger_2_0_Translator {
 						}
 
 						propertySwagger.setDescription(propertyRwadef.getDescription());
-
-						modelSwagger.addProperty(propertyRwadef.getName(), propertySwagger);
 					}
 				}
 
