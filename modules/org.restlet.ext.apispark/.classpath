@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.google.guava"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.model"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
