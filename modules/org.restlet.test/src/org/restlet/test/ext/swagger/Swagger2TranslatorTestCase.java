@@ -3,7 +3,7 @@ package org.restlet.test.ext.swagger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.ext.apispark.internal.conversion.swagger_2_0.RwadefToSwagger_2_0_Translator;
+import org.restlet.ext.apispark.internal.conversion.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -30,9 +30,9 @@ import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
 
-public class Swagger_2_0_TranslatorTestCase extends RestletTestCase {
+public class Swagger2TranslatorTestCase extends RestletTestCase {
 
-	private RwadefToSwagger_2_0_Translator rwadefToSwagger_2_0_Translator = new RwadefToSwagger_2_0_Translator();
+	private Swagger2Translator swagger2Translator = new Swagger2Translator();
 
 	/**
 	 * Conversion Rwadef -> Swagger 2.0.
@@ -191,7 +191,7 @@ public class Swagger_2_0_TranslatorTestCase extends RestletTestCase {
 
 
 		// When
-		Swagger swagger = rwadefToSwagger_2_0_Translator.getSwaggerFromRoadef(definition);
+		Swagger swagger = swagger2Translator.getSwaggerFromRoadef(definition);
 
 
 		// Then

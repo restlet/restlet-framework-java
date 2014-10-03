@@ -48,7 +48,7 @@ public class SwaggerTestSuite extends TestCase {
 		TestSuite result = new TestSuite();
 		result.setName("Swagger extension");
 		result.addTestSuite(SwaggerTranslatorTestCase.class);
-		result.addTestSuite(Swagger_2_0_TranslatorTestCase.class);
+		result.addTestSuite(Swagger2TranslatorTestCase.class);
 		return result;
 	}
 

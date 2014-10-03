@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.conversion.swagger_2_0;
+package org.restlet.ext.apispark.internal.conversion;
 
 import com.wordnik.swagger.models.*;
 import com.wordnik.swagger.models.parameters.BodyParameter;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Translator : RWADEF <-> Swagger 2.0.
  */
-public class RwadefToSwagger_2_0_Translator {
+public class Swagger2Translator {
 
 
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
