@@ -49,12 +49,13 @@ public class RwadefToSwagger_2_0_Translator {
 
 		/* Info -> Swagger */
 		Info infoSwagger = new Info();
+		swagger.setInfo(infoSwagger);
+
+		infoSwagger.setVersion(definition.getVersion());
 
 		Contact contact = new Contact();
 		contact.setName(definition.getContact());
 		infoSwagger.setContact(contact);
-
-		infoSwagger.setVersion(definition.getVersion());
 
 		License license = new License();
 		license.setUrl(definition.getLicense());
@@ -79,7 +80,7 @@ public class RwadefToSwagger_2_0_Translator {
 			for(Resource resourceRwadef : definition.getContract().getResources()) {
 
 				Path pathSwagger = new Path();
-				swagger.getPaths().put(resourceRwadef.getResourcePath(), pathSwagger);
+				swagger.path(resourceRwadef.getResourcePath(), pathSwagger);
 
 				/* Operation -> Operation */
 				if(resourceRwadef.getOperations() != null) {
