@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth.internal;
 
 import java.util.Map;
+
 import org.restlet.ext.oauth.GrantType;
 import org.restlet.ext.oauth.ResponseType;
 

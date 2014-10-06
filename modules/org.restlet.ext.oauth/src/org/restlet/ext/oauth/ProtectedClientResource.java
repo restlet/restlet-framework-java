@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth;
 
 import java.net.URI;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;

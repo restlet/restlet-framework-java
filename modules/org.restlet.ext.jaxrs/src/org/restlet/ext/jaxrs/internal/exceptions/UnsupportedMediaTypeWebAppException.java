@@ -36,8 +36,8 @@ package org.restlet.ext.jaxrs.internal.exceptions;
 import java.util.Collection;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Variant;
 
 /**
  * The server is refusing to service the request because the entity of the

@@ -33,8 +33,6 @@
 
 package org.restlet.ext.apispark.internal.info;
 
-import java.util.List;
-
 import org.restlet.data.Reference;
 
 /**

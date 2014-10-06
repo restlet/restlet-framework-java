@@ -34,6 +34,7 @@
 package org.restlet.ext.xdb.internal;
 
 import java.io.InputStream;
+import java.sql.Connection;
 
 /**
  * Input stream that synchronizes the state of a connection instance and an

@@ -35,6 +35,7 @@ package org.restlet.ext.oauth.internal;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import org.restlet.ext.oauth.OAuthException;
 
 /**

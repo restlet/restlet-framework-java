@@ -40,6 +40,7 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
@@ -87,25 +88,24 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         Endpoint translatedEndpoint = translatedDefinition.getEndpoints()
                 .get(0);
 
-        assertEquals(savedEndpoint.getPort(),
-                translatedEndpoint.getPort());
+        assertEquals(savedEndpoint.getPort(), translatedEndpoint.getPort());
         assertEquals(savedEndpoint.getProtocol(),
                 translatedEndpoint.getProtocol());
-        assertEquals(savedEndpoint.getDomain(),
-                translatedEndpoint.getDomain());
+        assertEquals(savedEndpoint.getDomain(), translatedEndpoint.getDomain());
         assertEquals(savedEndpoint.getBasePath(),
                 translatedEndpoint.getBasePath());
-        
+
         assertEquals(savedDefinition.getLicense(),
                 translatedDefinition.getLicense());
         assertEquals(savedDefinition.getVersion(),
                 translatedDefinition.getVersion());
 
         // Contract info
-        assertEquals(savedDefinition.getContract().getDescription(),
-                translatedDefinition.getContract().getDescription());
-        assertEquals(savedDefinition.getContract().getName(),
-                translatedDefinition.getContract().getName());
+        Contract savedContract = savedDefinition.getContract();
+        Contract translatedContract = translatedDefinition.getContract();
+        assertEquals(savedContract.getDescription(),
+                translatedContract.getDescription());
+        assertEquals(savedContract.getName(), translatedContract.getName());
 
         // Representations
         Representation savedRepresentation;
@@ -231,10 +231,16 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                         }
 
                         // Out representation
-                        Entity savedOutRepresentation = savedOperation
-                                .getOutRepresentation();
-                        Entity translatedOutRepresentation = translatedOperation
-                                .getOutRepresentation();
+                        Entity savedOutRepresentation = null;
+                        if (savedOperation.getResponse(200) != null) {
+                            savedOutRepresentation = savedOperation
+                                    .getResponse(200).getEntity();
+                        }
+                        Entity translatedOutRepresentation = null;
+                        if (translatedOperation.getResponse(200) != null) {
+                            translatedOutRepresentation = translatedOperation
+                                    .getResponse(200).getEntity();
+                        }
                         assertEquals(
                                 true,
                                 (savedOutRepresentation == null) == (translatedOutRepresentation == null));

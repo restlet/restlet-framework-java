@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark.internal.info;
 
-import java.util.List;
 
 /**
  * Defines a potential value for a parent parameter description.

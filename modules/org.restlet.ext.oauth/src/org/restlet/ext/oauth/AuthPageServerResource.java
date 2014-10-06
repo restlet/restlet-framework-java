@@ -33,24 +33,24 @@
 
 package org.restlet.ext.oauth;
 
-import org.restlet.ext.oauth.internal.Client;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
 import freemarker.template.Configuration;
-import org.restlet.data.CacheDirective;
-import org.restlet.ext.oauth.internal.Token;
 
 /**
  * Helper class to the AuhorizationResource Handles Authorization requests. By

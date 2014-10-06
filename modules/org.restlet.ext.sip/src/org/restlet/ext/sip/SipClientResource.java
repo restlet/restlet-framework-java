@@ -45,8 +45,8 @@ import org.restlet.ext.sip.internal.SipInboundRequest;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 
 /**
  * Client-side resource for the sip protocol. Acts like a proxy of a target
