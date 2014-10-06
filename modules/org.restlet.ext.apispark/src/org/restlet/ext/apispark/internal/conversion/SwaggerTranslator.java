@@ -51,10 +51,12 @@ import java.util.logging.Logger;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Entity;
+import org.restlet.ext.apispark.internal.model.License;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -77,6 +79,8 @@ import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParamete
 import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+
+import com.sun.org.apache.bcel.internal.generic.L2D;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
@@ -327,10 +331,10 @@ public abstract class SwaggerTranslator {
         result.setInfo(new ApiInfo());
         result.setSwaggerVersion(SWAGGER_VERSION);
         if (definition.getContact() != null) {
-            result.getInfo().setContact(definition.getContact());
+            result.getInfo().setContact(definition.getContact().getEmail());
         }
         if (definition.getLicense() != null) {
-            result.getInfo().setLicenseUrl(definition.getLicense());
+            result.getInfo().setLicenseUrl(definition.getLicense().getUrl());
         }
         if (definition.getContract() != null) {
             result.getInfo().setTitle(definition.getContract().getName());
@@ -581,8 +585,12 @@ public abstract class SwaggerTranslator {
         try {
             Definition definition = new Definition();
             definition.setVersion(resourceListing.getApiVersion());
-            definition.setContact(resourceListing.getInfo().getContact());
-            definition.setLicense(resourceListing.getInfo().getLicenseUrl());
+            Contact contact = new Contact();
+            contact.setEmail(resourceListing.getInfo().getContact());
+            definition.setContact(contact);
+            License license = new License();
+            license.setUrl(resourceListing.getInfo().getLicenseUrl());
+            definition.setLicense(license);
 
             Contract contract = new Contract();
             contract.setName(resourceListing.getInfo().getTitle());

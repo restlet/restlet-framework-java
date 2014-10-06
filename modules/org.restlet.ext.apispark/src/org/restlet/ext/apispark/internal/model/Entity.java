@@ -49,6 +49,9 @@ public class Entity {
     /** Reference of the representation in the body of the message. */
     private String type;
 
+    /** Textual description of this entity. */
+    private String description;
+
     public String getType() {
         return type;
     }
@@ -63,5 +66,13 @@ public class Entity {
 
     public void setType(String representation) {
         this.type = representation;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
