@@ -51,7 +51,7 @@ public class Response {
     private String description;
 
     /** Custom content of the body if any. */
-    private Entity entity;
+    private PayLoad entity;
 
     /** Status message of the response. */
     private String message;
@@ -78,7 +78,7 @@ public class Response {
         return description;
     }
 
-    public Entity getEntity() {
+    public PayLoad getEntity() {
         return entity;
     }
 
@@ -98,7 +98,7 @@ public class Response {
         this.description = description;
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(PayLoad entity) {
         this.entity = entity;
     }
 

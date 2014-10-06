@@ -43,7 +43,7 @@ import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Entity;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -215,10 +215,10 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                                 translatedOperation.getProduces());
 
                         // In representation
-                        Entity savedInRepresentation = savedOperation
-                                .getInRepresentation();
-                        Entity translatedInRepresentation = translatedOperation
-                                .getInRepresentation();
+                        PayLoad savedInRepresentation = savedOperation
+                                .getInputPayLoad();
+                        PayLoad translatedInRepresentation = translatedOperation
+                                .getInputPayLoad();
                         assertEquals(
                                 true,
                                 (savedInRepresentation == null) == (translatedInRepresentation == null));
@@ -231,12 +231,12 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                         }
 
                         // Out representation
-                        Entity savedOutRepresentation = null;
+                        PayLoad savedOutRepresentation = null;
                         if (savedOperation.getResponse(200) != null) {
                             savedOutRepresentation = savedOperation
                                     .getResponse(200).getEntity();
                         }
-                        Entity translatedOutRepresentation = null;
+                        PayLoad translatedOutRepresentation = null;
                         if (translatedOperation.getResponse(200) != null) {
                             translatedOutRepresentation = translatedOperation
                                     .getResponse(200).getEntity();
@@ -271,9 +271,9 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                                         translatedResponse.getName());
 
                                 // Body
-                                Entity savedResponseBody = savedResponse
+                                PayLoad savedResponseBody = savedResponse
                                         .getEntity();
-                                Entity translatedResponseBody = translatedResponse
+                                PayLoad translatedResponseBody = translatedResponse
                                         .getEntity();
                                 assertEquals(
                                         true,

@@ -55,7 +55,7 @@ import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Entity;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.License;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -181,7 +181,7 @@ public abstract class SwaggerTranslator {
                 }
 
                 // Get in representation
-                Entity inRepr = operation.getInRepresentation();
+                PayLoad inRepr = operation.getInputPayLoad();
                 if (inRepr != null) {
                     ropd = new ResourceOperationParameterDeclaration();
                     ropd.setParamType("body");
@@ -198,7 +198,7 @@ public abstract class SwaggerTranslator {
                 }
 
                 // Get out representation
-                Entity outRepr = null;
+                PayLoad outRepr = null;
                 for (Response response : operation.getResponses()) {
                     if (Status.isSuccess(response.getCode())) {
                         outRepr = response.getEntity();
@@ -400,15 +400,15 @@ public abstract class SwaggerTranslator {
     }
 
     /**
-     * Converts a Swagger parameter to an instance of {@link Entity}.
+     * Converts a Swagger parameter to an instance of {@link PayLoad}.
      * 
      * @param parameter
      *            The Swagger parameter.
-     * @return An instance of {@link Entity}.
+     * @return An instance of {@link PayLoad}.
      */
-    private static Entity toEntity(
+    private static PayLoad toEntity(
             ResourceOperationParameterDeclaration parameter) {
-        Entity result = new Entity();
+        PayLoad result = new PayLoad();
         if ("array".equals(parameter.getType())) {
             result.setArray(true);
             if (parameter.getItems() != null
@@ -656,7 +656,7 @@ public abstract class SwaggerTranslator {
                         }
 
                         // Set response's entity
-                        Entity rwadOutRepr = new Entity();
+                        PayLoad rwadOutRepr = new PayLoad();
                         if ("array".equals(swagOperation.getType())) {
                             LOGGER.log(Level.FINER, "Operation: "
                                     + swagOperation.getNickname()
@@ -702,9 +702,9 @@ public abstract class SwaggerTranslator {
                                             pathVariable);
                                 }
                             } else if ("body".equals(param.getParamType())) {
-                                if (operation.getInRepresentation() == null) {
-                                    Entity rwadInRepr = toEntity(param);
-                                    operation.setInRepresentation(rwadInRepr);
+                                if (operation.getInputPayLoad() == null) {
+                                    PayLoad rwadInRepr = toEntity(param);
+                                    operation.setInputPayLoad(rwadInRepr);
                                 }
                             } else if ("query".equals(param.getParamType())) {
                                 QueryParameter rwadQueryParam = toQueryParameter(param);
@@ -718,7 +718,7 @@ public abstract class SwaggerTranslator {
                             for (ResponseMessageDeclaration swagResponse : swagOperation
                                     .getResponseMessages()) {
                                 Response response = new Response();
-                                Entity entity = new Entity();
+                                PayLoad entity = new PayLoad();
                                 entity.setType(swagResponse.getResponseModel());
                                 response.setEntity(entity);
                                 response.setName("Error "

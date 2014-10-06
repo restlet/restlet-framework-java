@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an operation on a Web API resource. 
+ * Represents an operation on a Web API resource.
  * 
  * @author Cyprien Quilici
  */
@@ -52,8 +52,8 @@ public class Operation {
     /** Headers to use for this operation. */
     private List<Header> headers;
 
-    /** Representation retrieved by this operation if any. */
-    private Entity inRepresentation;
+    /** Request body for this operation if any. */
+    private PayLoad inputPayLoad;
 
     /** HTTP method for this operation. */
     private String method;
@@ -91,8 +91,8 @@ public class Operation {
         return headers;
     }
 
-    public Entity getInRepresentation() {
-        return inRepresentation;
+    public PayLoad getInputPayLoad() {
+        return inputPayLoad;
     }
 
     public String getMethod() {
@@ -154,8 +154,8 @@ public class Operation {
         this.headers = headers;
     }
 
-    public void setInRepresentation(Entity inRepresentation) {
-        this.inRepresentation = inRepresentation;
+    public void setInputPayLoad(PayLoad payLoad) {
+        this.inputPayLoad = payLoad;
     }
 
     public void setMethod(String method) {

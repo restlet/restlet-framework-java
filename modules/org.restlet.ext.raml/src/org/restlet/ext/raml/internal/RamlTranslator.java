@@ -225,15 +225,15 @@ public abstract class RamlTranslator {
 
                 // In representation
                 ramlInRepresentation = new MimeType();
-                if (operation.getInRepresentation() != null) {
+                if (operation.getInputPayLoad() != null) {
                     ramlInRepresentation.setType(operation
-                            .getInRepresentation().getType());
+                            .getInputPayLoad().getType());
                     if (RamlUtils.isPrimitiveType(operation
-                            .getInRepresentation().getType())) {
+                            .getInputPayLoad().getType())) {
                         Property inRepresentationPrimitive = new Property();
                         inRepresentationPrimitive.setName("");
                         inRepresentationPrimitive.setType(operation
-                                .getInRepresentation().getType());
+                                .getInputPayLoad().getType());
                         SimpleTypeSchema inRepresentationSchema = RamlUtils
                                 .generatePrimitiveSchema(inRepresentationPrimitive);
                         try {
@@ -246,7 +246,7 @@ public abstract class RamlTranslator {
                         }
                     } else {
                         ramlInRepresentation.setSchema(operation
-                                .getInRepresentation().getType());
+                                .getInputPayLoad().getType());
                     }
                     action.setBody(new HashMap<String, MimeType>());
                     for (String mediaType : operation.getConsumes()) {

@@ -62,7 +62,7 @@ import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Entity;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -286,7 +286,7 @@ public class Introspector {
                     addRepresentations(mapReps, mi.getRequest()
                             .getRepresentations());
 
-                    Entity entity = new Entity();
+                    PayLoad entity = new PayLoad();
                     // TODO analyze
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for
@@ -296,13 +296,13 @@ public class Introspector {
                     entity.setArray(mi.getRequest().getRepresentations().get(0)
                             .isCollection());
 
-                    operation.setInRepresentation(entity);
+                    operation.setInputPayLoad(entity);
                 }
 
                 if (mi.getResponses() != null && !mi.getResponses().isEmpty()) {
                     operation.setResponses(new ArrayList<Response>());
 
-                    Entity entity = new Entity();
+                    PayLoad entity = new PayLoad();
                     // TODO analyze
                     // The models differ : one representation / one variant
                     // for Restlet one representation / several variants for

@@ -38,7 +38,7 @@ package org.restlet.ext.apispark.internal.model;
  * 
  * @author Cyprien Quilici
  */
-public class Entity {
+public class PayLoad {
 
     /**
      * Indicates whether you should provide an array of [type] or just one
