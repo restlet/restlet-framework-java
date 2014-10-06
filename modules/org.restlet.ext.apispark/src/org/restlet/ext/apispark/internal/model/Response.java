@@ -48,7 +48,10 @@ public class Response {
     /** Textual description of this response */
     private String description;
 
-    /** Custom content of the body if any. */
+    /**
+     * Custom content of the body if any.
+     * Could be null if the response is of type "204 - No Content"
+     */
     private Entity entity;
 
     /** Status message of the response. */
