@@ -188,9 +188,6 @@ public abstract class RamlTranslator {
         org.raml.model.Resource ramlResource;
         List<String> paths = new ArrayList<String>();
 
-        // TODO deal with multiple sections
-        Section section = contract.getSection(Section.DEFAULT);
-
         // Resources
         for (Resource resource : contract.getResources()) {
             ramlResource = new org.raml.model.Resource();
