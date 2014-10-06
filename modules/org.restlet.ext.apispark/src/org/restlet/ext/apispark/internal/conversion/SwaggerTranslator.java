@@ -171,11 +171,15 @@ public abstract class SwaggerTranslator {
 
                 // Get in representation
                 Entity inRepr = operation.getInRepresentation();
+
                 if (inRepr != null) {
+                    Representation representation = definition.getContract().getRepresentation(inRepr.getType());
+
                     ropd = new ResourceOperationParameterDeclaration();
                     ropd.setParamType("body");
                     ropd.setRequired(true);
-                    if ("Representation".equals(inRepr.getType())) {
+
+                    if (representation != null && representation.isRaw()) {
                         ropd.setType("File");
                     } else {
                         ropd.setType(toSwaggerType(inRepr.getType()));
