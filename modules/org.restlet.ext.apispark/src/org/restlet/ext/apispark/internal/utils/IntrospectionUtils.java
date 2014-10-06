@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
@@ -232,26 +231,24 @@ public class IntrospectionUtils {
                     }
 
                 });
-        for (Section section : definition.getContract().getSections()) {
-            Collections.sort(section.getRepresentations(),
-                    new Comparator<Representation>() {
+        Collections.sort(definition.getContract().getRepresentations(),
+                new Comparator<Representation>() {
 
-                        @Override
-                        public int compare(Representation o1, Representation o2) {
-                            return o1.getName().compareTo(o2.getName());
-                        }
+                    @Override
+                    public int compare(Representation o1, Representation o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
 
-                    });
-            Collections.sort(section.getResources(),
-                    new Comparator<Resource>() {
+                });
+        Collections.sort(definition.getContract().getResources(),
+                new Comparator<Resource>() {
 
-                        @Override
-                        public int compare(Resource o1, Resource o2) {
-                            return o1.getResourcePath().compareTo(
-                                    o2.getResourcePath());
-                        }
+                    @Override
+                    public int compare(Resource o1, Resource o2) {
+                        return o1.getResourcePath().compareTo(
+                                o2.getResourcePath());
+                    }
 
-                    });
-        }
+                });
     }
 }

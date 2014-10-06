@@ -145,8 +145,9 @@ public abstract class SwaggerTranslator {
             section = new Section();
         }
 
+        Contract contract = definition.getContract();
         // Get resources
-        for (Resource resource : section.getResources()) {
+        for (Resource resource : contract.getResources()) {
             // Discriminate the resources of one category
             if (!resource.getResourcePath().startsWith("/" + sectionName)) {
                 continue;
@@ -254,7 +255,7 @@ public abstract class SwaggerTranslator {
         Iterator<String> iterator = usedModels.iterator();
         while (iterator.hasNext()) {
             String model = iterator.next();
-            Representation repr = section.getRepresentation(model);
+            Representation repr = contract.getRepresentation(model);
             if (repr == null || isPrimitiveType(model)) {
                 continue;
             }
@@ -344,12 +345,13 @@ public abstract class SwaggerTranslator {
             section = new Section();
         }
 
+        Contract contract = definition.getContract();
         // Resources
         List<String> addedApis = new ArrayList<String>();
-        if (definition.getContract() != null && section.getResources() != null) {
+        if (definition.getContract() != null && contract.getResources() != null) {
             result.setApis(new ArrayList<ResourceDeclaration>());
 
-            for (Resource resource : section.getResources()) {
+            for (Resource resource : contract.getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
                 rd.setDescription(resource.getDescription());
                 rd.setPath(ReflectUtils.getFirstSegment(resource
@@ -623,8 +625,10 @@ public abstract class SwaggerTranslator {
                                 representation.setName("File");
                                 representation.setRaw(true);
                                 containsRawTypes = true;
-                                section.getRepresentations()
-                                        .add(representation);
+                                representation.getSections().add(
+                                        section.getName());
+                                contract.getRepresentations().add(
+                                        representation);
                             }
                             operation.getProduces().add(produced);
                         }
@@ -637,8 +641,10 @@ public abstract class SwaggerTranslator {
                                 representation.setName("File");
                                 representation.setRaw(true);
                                 containsRawTypes = true;
-                                section.getRepresentations()
-                                        .add(representation);
+                                representation.getSections().add(
+                                        section.getName());
+                                contract.getRepresentations().add(
+                                        representation);
                             }
                             operation.getConsumes().add(consumed);
                         }
@@ -731,9 +737,12 @@ public abstract class SwaggerTranslator {
                             }
                             if (!declaredTypes.contains(modelEntry.getKey())) {
                                 declaredTypes.add(modelEntry.getKey());
-                                Representation rwadRepr = toRepresentation(
-                                        model, modelEntry.getKey());
-                                section.getRepresentations().add(rwadRepr);
+                                representation = toRepresentation(model,
+                                        modelEntry.getKey());
+                                representation.getSections().add(
+                                        section.getName());
+                                contract.getRepresentations().add(
+                                        representation);
                                 LOGGER.log(Level.FINE, "Representation "
                                         + modelEntry.getKey() + " added.");
                             }
@@ -744,14 +753,16 @@ public abstract class SwaggerTranslator {
                                 .entrySet()) {
                             List<String> subtypesOf = subtypesPair.getValue();
                             for (String subtypeOf : subtypesOf) {
-                                Representation repr = section
+                                representation = contract
                                         .getRepresentation(subtypeOf);
-                                repr.setExtendedType(subtypesPair.getKey());
+                                representation.setExtendedType(subtypesPair
+                                        .getKey());
                             }
                         }
                     }
 
-                    section.getResources().add(resource);
+                    resource.getSections().add(section.getName());
+                    contract.getResources().add(resource);
                     LOGGER.log(Level.FINE, "Resource " + api.getPath()
                             + " added.");
                 }

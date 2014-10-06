@@ -60,6 +60,9 @@ public class Resource {
     
     /** Authentication protocol used for this resource */
     private String authenticationProtocol;
+    
+    /** The list of Sections this Resource belongs to */
+    private List<String> sections;
 
     public String getDescription() {
         return description;
@@ -131,5 +134,13 @@ public class Resource {
 
     public void setAuthenticationProtocol(String authenticationProtocol) {
         this.authenticationProtocol = authenticationProtocol;
+    }
+
+    public List<String> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<String> sections) {
+        this.sections = sections;
     }
 }

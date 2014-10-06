@@ -57,6 +57,9 @@ public class Representation {
 
     /** Indicates if the representation is structured or not. */
     private boolean raw;
+    
+    /** The list of Sections this Representation belongs to */
+    private List<String> sections;
 
     public String getDescription() {
         return description;
@@ -108,5 +111,13 @@ public class Representation {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
+    }
+
+    public List<String> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<String> sections) {
+        this.sections = sections;
     }
 }

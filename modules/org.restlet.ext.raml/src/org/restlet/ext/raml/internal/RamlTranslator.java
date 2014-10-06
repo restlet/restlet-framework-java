@@ -137,6 +137,7 @@ public abstract class RamlTranslator {
         if (definition.getVersion() != null) {
             raml.setVersion(definition.getVersion());
         }
+        Contract contract = definition.getContract();
 
         // No way to specify multiple endpoints in RAML so we take the first one
         Endpoint endpoint = definition.getEndpoints().get(0);
@@ -181,15 +182,17 @@ public abstract class RamlTranslator {
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
         // UriParameter("version"));
-        raml.setTitle(definition.getContract().getName());
+        raml.setTitle(contract.getName());
 
         raml.setResources(new HashMap<String, org.raml.model.Resource>());
         org.raml.model.Resource ramlResource;
         List<String> paths = new ArrayList<String>();
 
         // TODO deal with multiple sections
-        Section section = definition.getContract().getSection(Section.DEFAULT);
-        for (Resource resource : section.getResources()) {
+        Section section = contract.getSection(Section.DEFAULT);
+
+        // Resources
+        for (Resource resource : contract.getResources()) {
             ramlResource = new org.raml.model.Resource();
             if (resource.getName() != null) {
                 ramlResource.setDisplayName(resource.getName());
@@ -331,7 +334,7 @@ public abstract class RamlTranslator {
         raml.setSchemas(new ArrayList<Map<String, String>>());
         Map<String, String> schemas = new HashMap<String, String>();
         raml.getSchemas().add(schemas);
-        for (Representation representation : section.getRepresentations()) {
+        for (Representation representation : contract.getRepresentations()) {
             if (RamlUtils.isPrimitiveType(representation.getName())) {
                 continue;
             }
@@ -426,21 +429,22 @@ public abstract class RamlTranslator {
      * @throws TranslationException
      */
     public static Definition translate(Raml raml) throws TranslationException {
-        Definition def = new Definition();
+        Definition definition = new Definition();
         if (raml.getVersion() != null) {
-            def.setVersion(raml.getVersion().substring(1));
+            definition.setVersion(raml.getVersion().substring(1));
             // def.setEndpoint(raml.getBaseUri().replace("{version}",
             // raml.getVersion()));
         } else {
             // def.setEndpoint(raml.getBaseUri());
         }
-        def.setContract(new Contract());
-        def.getContract().setName(raml.getTitle());
+        Contract contract = new Contract();
+        definition.setContract(contract);
+        contract.setName(raml.getTitle());
 
         // TODO deal with multiple sections
         Section section = new Section();
         section.setName(Section.DEFAULT);
-        def.getContract().getSections().add(section);
+        contract.getSections().add(section);
 
         // TODO String defaultMediaType = raml.getMediaType();
         List<PathVariable> rootPathVariables = new ArrayList<PathVariable>();
@@ -456,7 +460,8 @@ public abstract class RamlTranslator {
                 representation.setName(entry.getKey());
                 representation.setDescription(entry.getValue());
                 // TODO get the schema !!!
-                section.getRepresentations().add(representation);
+                representation.getSections().add(section.getName());
+                contract.getRepresentations().add(representation);
             }
         }
 
@@ -464,13 +469,13 @@ public abstract class RamlTranslator {
         for (Entry<String, org.raml.model.Resource> entry : raml.getResources()
                 .entrySet()) {
             org.raml.model.Resource resource = entry.getValue();
-            section.getResources().addAll(
+            contract.getResources().addAll(
                     getResource(
                             RamlUtils.processResourceName(resource.getUri()),
                             resource, rootPathVariables));
         }
 
-        return def;
+        return definition;
     }
 
     /**

@@ -342,7 +342,8 @@ public class Introspector {
                 resource.getOperations().add(operation);
             }
 
-            section.getResources().add(resource);
+            resource.getSections().add(section.getName());
+            contract.getResources().add(resource);
         }
     }
 
@@ -640,7 +641,7 @@ public class Introspector {
             }
 
             // List of resources.
-            section.setResources(new ArrayList<Resource>());
+            contract.setResources(new ArrayList<Resource>());
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
                     .getResources(), (result.getEndpoints().isEmpty() ? ""
@@ -659,7 +660,7 @@ public class Introspector {
             }
 
             // List of representations.
-            section.setRepresentations(new ArrayList<Representation>());
+            contract.setRepresentations(new ArrayList<Representation>());
             for (RepresentationInfo ri : application.getRepresentations()) {
                 if (!mapReps.containsKey(ri.getIdentifier())) {
                     mapReps.put(ri.getIdentifier(), ri);
@@ -763,16 +764,16 @@ public class Introspector {
                     continue;
                 }
                 LOGGER.fine("Representation " + ri.getName() + " added.");
-                Representation rep = new Representation();
+                Representation representation = new Representation();
 
                 // TODO analyze
                 // The models differ : one representation / one variant for
                 // Restlet
                 // one representation / several variants for APIspark
-                rep.setDescription(ri.getDescription());
-                rep.setName(ri.getName());
+                representation.setDescription(ri.getDescription());
+                representation.setName(ri.getName());
 
-                rep.setProperties(new ArrayList<Property>());
+                representation.setProperties(new ArrayList<Property>());
                 for (PropertyInfo pi : ri.getProperties()) {
                     LOGGER.fine("Property " + pi.getName() + " added.");
                     Property p = new Property();
@@ -791,11 +792,13 @@ public class Introspector {
 
                     p.setUniqueItems(pi.isUniqueItems());
 
-                    rep.getProperties().add(p);
+                    representation.getProperties().add(p);
                 }
 
-                rep.setRaw(ri.isRaw() || ReflectUtils.isJdkClass(ri.getType()));
-                section.getRepresentations().add(rep);
+                representation.setRaw(ri.isRaw()
+                        || ReflectUtils.isJdkClass(ri.getType()));
+                representation.getSections().add(section.getName());
+                contract.getRepresentations().add(representation);
             }
         }
 

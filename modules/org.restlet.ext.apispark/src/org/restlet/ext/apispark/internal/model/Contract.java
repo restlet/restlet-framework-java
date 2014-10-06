@@ -51,9 +51,18 @@ public class Contract {
     private String name;
 
     /**
-     * Sections containing the representations and resources of the API
+     * Sections referenced by the API's Representations and Resources.
      */
     private List<Section> sections;
+
+    /**
+     * Representations available with this API Note: their "name" is used as a
+     * reference further in this description.
+     */
+    private List<Representation> representations;
+
+    /** Resources provided by the API. */
+    private List<Resource> resources;
 
     public String getDescription() {
         return description;
@@ -86,6 +95,40 @@ public class Contract {
         for (Section section : sections) {
             if (name.equals(section.getName())) {
                 return section;
+            }
+        }
+        return null;
+    }
+
+    public List<Representation> getRepresentations() {
+        return representations;
+    }
+
+    public void setRepresentations(List<Representation> representations) {
+        this.representations = representations;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+
+    public Resource getResource(String path) {
+        for (Resource result : getResources()) {
+            if (path.equals(result.getResourcePath())) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public Representation getRepresentation(String name) {
+        for (Representation result : getRepresentations()) {
+            if (name.equals(result.getName())) {
+                return result;
             }
         }
         return null;
