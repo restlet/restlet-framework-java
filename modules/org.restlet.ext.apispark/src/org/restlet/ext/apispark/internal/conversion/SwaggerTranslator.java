@@ -80,8 +80,6 @@ import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaratio
 import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
-import com.sun.org.apache.bcel.internal.generic.L2D;
-
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
  * documentation.
