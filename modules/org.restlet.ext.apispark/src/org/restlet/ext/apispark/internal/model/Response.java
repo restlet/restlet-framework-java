@@ -33,6 +33,8 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.List;
+
 import org.restlet.data.Status;
 
 /**
@@ -42,10 +44,10 @@ import org.restlet.data.Status;
  */
 public class Response {
 
-    /** Status code of the response */
+    /** Status code of the response. */
     private int code;
 
-    /** Textual description of this response */
+    /** Textual description of this response. */
     private String description;
 
     /** Custom content of the body if any. */
@@ -54,8 +56,11 @@ public class Response {
     /** Status message of the response. */
     private String message;
 
-    /** Name of this response */
+    /** Name of this response. */
     private String name;
+
+    /** The list of Headers associated with this response. */
+    private List<Header> headers;
 
     /**
      * Constructor. The default status code is {@link Status#SUCCESS_OK}.
@@ -103,5 +108,13 @@ public class Response {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<Header> headers) {
+        this.headers = headers;
     }
 }

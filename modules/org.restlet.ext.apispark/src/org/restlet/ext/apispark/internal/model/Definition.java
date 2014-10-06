@@ -44,7 +44,7 @@ import java.util.List;
 public class Definition {
 
     /** Any useful information for a user that plans to access to the API. */
-    private String contact;
+    private Contact contact;
 
     /** Contract of this API. */
     private Contract contract;
@@ -55,7 +55,7 @@ public class Definition {
     private List<Endpoint> endpoints;
 
     /** URL of the description of the license used by the API. */
-    private String license;
+    private License license;
 
     /** RWADef version of the definition */
     private final String rwadefVersion = "1.0";
@@ -63,7 +63,10 @@ public class Definition {
     /** Current version of the API. */
     private String version;
 
-    public String getContact() {
+    /** A textual description of the terms of service of the Web API */
+    private String termsOfService;
+
+    public Contact getContact() {
         return contact;
     }
 
@@ -71,7 +74,7 @@ public class Definition {
         return contract;
     }
 
-    public String getLicense() {
+    public License getLicense() {
         return license;
     }
 
@@ -83,7 +86,7 @@ public class Definition {
         return version;
     }
 
-    public void setContact(String contact) {
+    public void setContact(Contact contact) {
         this.contact = contact;
     }
 
@@ -91,7 +94,7 @@ public class Definition {
         this.contract = contract;
     }
 
-    public void setLicense(String license) {
+    public void setLicense(License license) {
         this.license = license;
     }
 
@@ -108,5 +111,13 @@ public class Definition {
 
     public void setEndpoints(List<Endpoint> endpoints) {
         this.endpoints = endpoints;
+    }
+
+    public String getTermsOfService() {
+        return termsOfService;
+    }
+
+    public void setTermsOfService(String termsOfService) {
+        this.termsOfService = termsOfService;
     }
 }

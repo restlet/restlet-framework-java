@@ -34,24 +34,31 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
- * Represents a query parameter. Associated to an operation.
+ * Represents the contact of the person responsible for the Web API
  * 
  * @author Cyprien Quilici
  */
-public class QueryParameter extends Parameter {
+public class Contact {
 
-    /**
-     * Indicates which character separates values when this parameter allows
-     * multiple values
-     */
-    private char separator;
+    /** The e-mail to use to join the contact of the Web API. */
+    private String email;
 
-    public char getSeparator() {
-        return separator;
+    /** The URL on which information about the Web API is. */
+    private String url;
+
+    public String getEmail() {
+        return email;
     }
 
-    public void setSeparator(char separator) {
-        this.separator = separator;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

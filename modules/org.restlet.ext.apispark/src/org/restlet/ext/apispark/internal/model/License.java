@@ -34,24 +34,32 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
- * Represents a query parameter. Associated to an operation.
+ * Represents the license of the Web API
  * 
  * @author Cyprien Quilici
+ * 
  */
-public class QueryParameter extends Parameter {
+public class License {
 
-    /**
-     * Indicates which character separates values when this parameter allows
-     * multiple values
-     */
-    private char separator;
+    /** The name of the license */
+    private String name;
 
-    public char getSeparator() {
-        return separator;
+    /** The URL on which to find an official description of the license */
+    private String url;
+
+    public String getName() {
+        return name;
     }
 
-    public void setSeparator(char separator) {
-        this.separator = separator;
+    public void setName(String name) {
+        this.name = name;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
