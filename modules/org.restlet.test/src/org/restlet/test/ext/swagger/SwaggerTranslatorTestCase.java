@@ -234,12 +234,12 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                         PayLoad savedOutRepresentation = null;
                         if (savedOperation.getResponse(200) != null) {
                             savedOutRepresentation = savedOperation
-                                    .getResponse(200).getEntity();
+                                    .getResponse(200).getOutputPayLoad();
                         }
                         PayLoad translatedOutRepresentation = null;
                         if (translatedOperation.getResponse(200) != null) {
                             translatedOutRepresentation = translatedOperation
-                                    .getResponse(200).getEntity();
+                                    .getResponse(200).getOutputPayLoad();
                         }
                         assertEquals(
                                 true,
@@ -272,9 +272,9 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
 
                                 // Body
                                 PayLoad savedResponseBody = savedResponse
-                                        .getEntity();
+                                        .getOutputPayLoad();
                                 PayLoad translatedResponseBody = translatedResponse
-                                        .getEntity();
+                                        .getOutputPayLoad();
                                 assertEquals(
                                         true,
                                         (savedResponseBody == null) == (translatedResponseBody == null));

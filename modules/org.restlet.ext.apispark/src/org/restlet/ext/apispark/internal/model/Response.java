@@ -50,8 +50,11 @@ public class Response {
     /** Textual description of this response. */
     private String description;
 
-    /** Custom content of the body if any. */
-    private PayLoad entity;
+    /**
+     * Custom content of the body if any. Could be null if the response is of
+     * type "204 - No Content"
+     */
+    private PayLoad outputPayLoad;
 
     /** Status message of the response. */
     private String message;
@@ -78,8 +81,8 @@ public class Response {
         return description;
     }
 
-    public PayLoad getEntity() {
-        return entity;
+    public PayLoad getOutputPayLoad() {
+        return outputPayLoad;
     }
 
     public String getMessage() {
@@ -98,8 +101,8 @@ public class Response {
         this.description = description;
     }
 
-    public void setEntity(PayLoad entity) {
-        this.entity = entity;
+    public void setOutputPayLoad(PayLoad outputPayLoad) {
+        this.outputPayLoad = outputPayLoad;
     }
 
     public void setMessage(String message) {

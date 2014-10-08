@@ -65,7 +65,6 @@ public class Endpoint {
 
     public Endpoint(String domain, int port, String protocol,
             String basePath, String authenticationProtocol) {
-        super();
         this.domain = domain;
         this.port = port;
         this.protocol = protocol;
@@ -86,11 +85,12 @@ public class Endpoint {
             } else {
                 port = 80;
             }
+        } else {
+            throw new RuntimeException("url does not match URL pattern: " + url);
         }
     }
 
     public Endpoint() {
-        super();
     }
 
     public String computeUrl() {

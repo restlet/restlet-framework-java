@@ -327,7 +327,7 @@ public class Introspector {
                             // APIspark
 
                             Response response = new Response();
-                            response.setEntity(entity);
+                            response.setOutputPayLoad(entity);
                             response.setCode(status.getCode());
                             response.setName(rio.getDescription());
                             response.setDescription(rio.getDescription());

@@ -271,7 +271,7 @@ public class IntrospectionTranslator {
                             // APIspark
 
                             Response response = new Response();
-                            response.setEntity(entity);
+                            response.setOutputPayLoad(entity);
                             response.setCode(status.getCode());
                             response.setName(toString(rio.getDescription()));
                             response.setDescription(toString(rio

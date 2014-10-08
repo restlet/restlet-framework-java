@@ -44,11 +44,12 @@ import junit.framework.TestSuite;
  */
 public class SwaggerTestSuite extends TestCase {
 
-    public static Test suite() {
-        TestSuite result = new TestSuite();
-        result.setName("Swagger extension");
-        result.addTestSuite(SwaggerTranslatorTestCase.class);
-        return result;
-    }
+	public static Test suite() {
+		TestSuite result = new TestSuite();
+		result.setName("Swagger extension");
+		result.addTestSuite(SwaggerTranslatorTestCase.class);
+		result.addTestSuite(Swagger2TranslatorTestCase.class);
+		return result;
+	}
 
 }

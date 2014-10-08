@@ -39,6 +39,9 @@ package org.restlet.ext.apispark.internal.model;
  * @author Cyprien Quilici
  */
 public class Contact {
+    
+    /** The name of the contact */
+    private String name;
 
     /** The e-mail to use to join the contact of the Web API. */
     private String email;
@@ -60,5 +63,13 @@ public class Contact {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

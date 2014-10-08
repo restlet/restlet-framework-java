@@ -183,10 +183,14 @@ public abstract class SwaggerTranslator {
                 // Get in representation
                 PayLoad inRepr = operation.getInputPayLoad();
                 if (inRepr != null) {
+                    Representation representation = definition.getContract()
+                            .getRepresentation(inRepr.getType());
+
                     ropd = new ResourceOperationParameterDeclaration();
                     ropd.setParamType("body");
                     ropd.setRequired(true);
-                    if ("Representation".equals(inRepr.getType())) {
+
+                    if (representation != null && representation.isRaw()) {
                         ropd.setType("File");
                     } else {
                         ropd.setType(toSwaggerType(inRepr.getType()));
@@ -201,7 +205,7 @@ public abstract class SwaggerTranslator {
                 PayLoad outRepr = null;
                 for (Response response : operation.getResponses()) {
                     if (Status.isSuccess(response.getCode())) {
-                        outRepr = response.getEntity();
+                        outRepr = response.getOutputPayLoad();
                     }
                 }
                 if (outRepr != null && outRepr.getType() != null) {
@@ -242,8 +246,9 @@ public abstract class SwaggerTranslator {
                     ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
                     rmd.setCode(response.getCode());
                     rmd.setMessage(response.getMessage());
-                    if (response.getEntity() != null) {
-                        rmd.setResponseModel(response.getEntity().getType());
+                    if (response.getOutputPayLoad() != null) {
+                        rmd.setResponseModel(response.getOutputPayLoad()
+                                .getType());
                     }
                     rod.getResponseMessages().add(rmd);
                 }
@@ -684,7 +689,7 @@ public abstract class SwaggerTranslator {
                         // Extract success response message
                         Response success = new Response();
                         success.setCode(Status.SUCCESS_OK.getCode());
-                        success.setEntity(rwadOutRepr);
+                        success.setOutputPayLoad(rwadOutRepr);
                         success.setDescription("Success");
                         success.setMessage(Status.SUCCESS_OK.getDescription());
                         success.setName("Success");
@@ -718,9 +723,9 @@ public abstract class SwaggerTranslator {
                             for (ResponseMessageDeclaration swagResponse : swagOperation
                                     .getResponseMessages()) {
                                 Response response = new Response();
-                                PayLoad entity = new PayLoad();
-                                entity.setType(swagResponse.getResponseModel());
-                                response.setEntity(entity);
+                                PayLoad outputPayLoad = new PayLoad();
+                                outputPayLoad.setType(swagResponse.getResponseModel());
+                                response.setOutputPayLoad(outputPayLoad);
                                 response.setName("Error "
                                         + swagResponse.getCode());
                                 response.setCode(swagResponse.getCode());
