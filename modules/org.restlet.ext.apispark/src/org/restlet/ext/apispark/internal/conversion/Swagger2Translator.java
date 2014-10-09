@@ -54,7 +54,7 @@ public class Swagger2Translator {
      *            The Restlet Web API definition
      * @return Swagger The translated Swagger 2.0 definition
      */
-    public Swagger getSwagger(Definition definition) {
+    public static Swagger getSwagger(Definition definition) {
 
         // conversion
         Swagger swagger = new Swagger();
@@ -85,7 +85,8 @@ public class Swagger2Translator {
      * @param swagger
      *            The Swagger 2.0 definition
      */
-    private void fillMainAttributes(Definition definition, Swagger swagger) {
+    private static void fillMainAttributes(Definition definition,
+            Swagger swagger) {
         // basePath
         Endpoint endpoint = definition.getEndpoints().get(0);
         swagger.setHost(endpoint.getDomain());
@@ -111,7 +112,7 @@ public class Swagger2Translator {
      * @param swagger
      *            swagger definition
      */
-    private void fillInfo(Definition definition, Swagger swagger) {
+    private static void fillInfo(Definition definition, Swagger swagger) {
         Info infoSwagger = new Info();
 
         infoSwagger.setTitle(definition.getContract().getName()); // required
@@ -141,7 +142,7 @@ public class Swagger2Translator {
      * @param swagger
      *            swagger definition
      */
-    private void fillPaths(Definition definition, Swagger swagger) {
+    private static void fillPaths(Definition definition, Swagger swagger) {
         Map<String, Path> paths = new LinkedHashMap<String, Path>();
 
         for (Resource resource : definition.getContract().getResources()) {
@@ -164,8 +165,8 @@ public class Swagger2Translator {
      * @param pathSwagger
      *            swagger.path definition
      */
-    private void fillPathOperations(Definition definition, Resource resource,
-            Path pathSwagger) {
+    private static void fillPathOperations(Definition definition,
+            Resource resource, Path pathSwagger) {
         for (Operation operation : resource.getOperations()) {
 
             com.wordnik.swagger.models.Operation operationSwagger = new com.wordnik.swagger.models.Operation();
@@ -196,14 +197,17 @@ public class Swagger2Translator {
         }
     }
 
-    private void fillOperationParameters(Definition definition,
+    private static void fillOperationParameters(Definition definition,
             Resource resource, Operation operation,
             com.wordnik.swagger.models.Operation operationSwagger) {
 
         // Path parameters
         for (PathVariable pathVariable : resource.getPathVariables()) {
             PathParameter pathParameterSwagger = new PathParameter();
-            pathParameterSwagger.setType(toSwaggerType(pathVariable.getType())); // required
+            pathParameterSwagger.setType(SwaggerUtils.toSwaggerType(
+                    pathVariable.getType()).getType()); // required
+            pathParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
+                    pathVariable.getType()).getFormat());
             pathParameterSwagger.setName(pathVariable.getName()); // required
             pathParameterSwagger.setDescription(pathVariable.getDescription());
             operationSwagger.addParameter(pathParameterSwagger);
@@ -237,7 +241,7 @@ public class Swagger2Translator {
                 } else {
                     if (isPrimitiveType(inRepr.getType())) {
                         ModelImpl modelImpl = new ModelImpl();
-                        modelImpl.setType(toSwaggerType(inRepr.getType()));
+                        modelImpl.setType(inRepr.getType());
                         bodyParameterSwagger.setSchema(modelImpl);
                     } else {
                         RefModel refModel = new RefModel();
@@ -260,8 +264,10 @@ public class Swagger2Translator {
                 // do not set "csv" as it's the default format
                 // queryParameterSwagger.setCollectionFormat("csv");
             } else {
-                queryParameterSwagger.setType(toSwaggerType(queryParameter
-                        .getType()));
+                queryParameterSwagger.setType(SwaggerUtils.toSwaggerType(
+                        queryParameter.getType()).getType());
+                queryParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
+                        queryParameter.getType()).getFormat());
             }
             queryParameterSwagger.setName(queryParameter.getName());
             queryParameterSwagger.setDescription(queryParameter
@@ -275,7 +281,10 @@ public class Swagger2Translator {
         for (Header header : operation.getHeaders()) {
             HeaderParameter headerParameterSwagger = new HeaderParameter();
             headerParameterSwagger.setRequired(header.isRequired());
-            headerParameterSwagger.setType(toSwaggerType(header.getType()));
+            headerParameterSwagger.setType(SwaggerUtils.toSwaggerType(
+                    header.getType()).getType());
+            headerParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
+                    header.getType()).getFormat());
             headerParameterSwagger.setName(header.getName());
             headerParameterSwagger.setDescription(header.getDescription());
             // TODO attributes above are not present in swagger bean
@@ -285,7 +294,7 @@ public class Swagger2Translator {
         }
     }
 
-    private void fillOperationResponses(Definition definition,
+    private static void fillOperationResponses(Definition definition,
             Operation operation,
             com.wordnik.swagger.models.Operation operationSwagger) {
         for (Response reponse : operation.getResponses()) {
@@ -335,7 +344,7 @@ public class Swagger2Translator {
      * @param swagger
      *            swagger definition
      */
-    private void fillDefinitions(Definition definition, Swagger swagger) {
+    private static void fillDefinitions(Definition definition, Swagger swagger) {
         for (Representation representation : definition.getContract()
                 .getRepresentations()) {
 
@@ -399,7 +408,7 @@ public class Swagger2Translator {
      * @return A boolean of value true if the given type is primitive, false
      *         otherwise.
      */
-    private boolean isPrimitiveType(String type) {
+    private static boolean isPrimitiveType(String type) {
         return "string".equals(type.toLowerCase())
                 || "int".equals(type.toLowerCase())
                 || "integer".equals(type.toLowerCase())
@@ -412,32 +421,13 @@ public class Swagger2Translator {
     }
 
     /**
-     * Returns the primitive types as Swagger expects them
-     * 
-     * @param type
-     *            The type name to Swaggerize
-     * @return The Swaggerized type
-     */
-    private String toSwaggerType(String type) {
-        if ("Integer".equals(type)) {
-            return "int";
-        } else if ("String".equals(type)) {
-            return "string";
-        } else if ("Boolean".equals(type)) {
-            return "boolean";
-        } else {
-            return type;
-        }
-    }
-
-    /**
      * Get new property for Swagger 2.0 for the primitive type of Rwadef.
      * 
      * @param type
      *            Type Rwadef
      * @return Type Swagger
      */
-    private com.wordnik.swagger.models.properties.Property newPropertyForType(
+    private static com.wordnik.swagger.models.properties.Property newPropertyForType(
             String type) {
         if ("string".equals(type.toLowerCase())) {
             return new StringProperty();
