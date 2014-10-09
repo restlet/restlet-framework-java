@@ -101,6 +101,9 @@ public class Contract {
     }
 
     public List<Representation> getRepresentations() {
+        if (representations == null) {
+            representations = new ArrayList<Representation>();
+        }
         return representations;
     }
 
@@ -109,6 +112,9 @@ public class Contract {
     }
 
     public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
         return resources;
     }
 

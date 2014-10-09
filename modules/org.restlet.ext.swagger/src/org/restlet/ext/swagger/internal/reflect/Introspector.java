@@ -603,10 +603,10 @@ public class Introspector {
                                 ref.getSchemeProtocol().getSchemeName(), ref
                                         .getPath(), null));
             } else {
-                result.getEndpoints().add(
-                        new Endpoint("", 80, Protocol.HTTP.getSchemeName(),
-                                "example.com", application
-                                        .getAuthenticationProtocol()
+                result.getEndpoints()
+                        .add(new Endpoint("", 80,
+                                Protocol.HTTP.getSchemeName(), "example.com",
+                                application.getAuthenticationProtocol()
                                         .getName()));
             }
 
@@ -858,6 +858,12 @@ public class Introspector {
      * @return The current definition.
      */
     public Definition getDefinition() {
+        try {
+            System.out.println(">>>>>>>"
+                    + new ObjectMapper().writeValueAsString(definition));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return definition;
     }
 
