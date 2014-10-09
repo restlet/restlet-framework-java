@@ -138,7 +138,7 @@ public abstract class SwaggerUtils {
      *            The Java type
      * @return The corresponding Swagger type
      */
-    public static SwaggerTypeFormat convertType(String dataType) {
+    public static SwaggerTypeFormat toSwaggerType(String dataType) {
         if ("String".equals(dataType)) {
             return new SwaggerTypeFormat("string");
         } else if ("Integer".equals(dataType)) {
@@ -155,6 +155,39 @@ public abstract class SwaggerUtils {
             return new SwaggerTypeFormat("string", "date");
         } else {
             return new SwaggerTypeFormat(dataType);
+        }
+    }
+
+    /**
+     * Converts Swagger types to Java types
+     * 
+     * @param dataType
+     *            The Swagger type
+     * @return The corresponding Java type
+     */
+    public static String toJavaType(SwaggerTypeFormat dataType) {
+        if ("string".equals(dataType.getType())
+                && "date".equals(dataType.getFormat())) {
+            return "Date";
+        } else if ("integer".equals(dataType.getType())
+                && "int32".equals(dataType.getFormat())) {
+            return "Integer";
+        } else if ("integer".equals(dataType.getType())
+                && "int64".equals(dataType.getFormat())) {
+            return "Long";
+        } else if ("number".equals(dataType.getType())
+                && "float".equals(dataType.getFormat())) {
+            return "Float";
+        } else if ("number".equals(dataType.getType())
+                && "double".equals(dataType.getFormat())) {
+            return "Double";
+        } else if ("boolean".equals(dataType.getType())) {
+            return "Boolean";
+        } else if ("string".equals(dataType.getType())
+                && !"date".equals(dataType.getFormat())) {
+            return "String";
+        } else {
+            return dataType.getType();
         }
     }
 

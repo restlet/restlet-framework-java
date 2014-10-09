@@ -265,7 +265,8 @@ public abstract class SwaggerTranslator {
         for (PathVariable pv : resource.getPathVariables()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("path");
-            ropd.setType(toSwaggerType(pv.getType()));
+            ropd.setType(SwaggerUtils.toSwaggerType(pv.getType()).getType());
+            ropd.setFormat(SwaggerUtils.toSwaggerType(pv.getType()).getFormat());
             ropd.setRequired(true);
             ropd.setName(pv.getName());
             ropd.setAllowMultiple(false);
@@ -291,7 +292,8 @@ public abstract class SwaggerTranslator {
         for (QueryParameter qp : operation.getQueryParameters()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("query");
-            ropd.setType(toSwaggerType(qp.getType()));
+            ropd.setType(SwaggerUtils.toSwaggerType(qp.getType()).getType());
+            ropd.setFormat(SwaggerUtils.toSwaggerType(qp.getType()).getFormat());
             ropd.setName(qp.getName());
             ropd.setAllowMultiple(true);
             ropd.setDescription(qp.getDescription());
@@ -332,7 +334,7 @@ public abstract class SwaggerTranslator {
             if (representation != null && representation.isRaw()) {
                 ropd.setType("File");
             } else {
-                ropd.setType(toSwaggerType(inRepr.getType()));
+                ropd.setType(inRepr.getType());
             }
             if (inRepr.getType() != null) {
                 usedModels.add(inRepr.getType());
@@ -368,12 +370,12 @@ public abstract class SwaggerTranslator {
             if (outRepr.isArray()) {
                 rod.setType("array");
                 if (isPrimitiveType(outRepr.getType())) {
-                    rod.getItems().setType(toSwaggerType(outRepr.getType()));
+                    // TODO how to display error ?
                 } else {
                     rod.getItems().setRef(outRepr.getType());
                 }
             } else {
-                rod.setType(toSwaggerType(outRepr.getType()));
+                rod.setType(outRepr.getType());
             }
             usedModels.add(outRepr.getType());
         } else {
@@ -552,13 +554,20 @@ public abstract class SwaggerTranslator {
                     tpd.setType("array");
                     tpd.setItems(new ItemsDeclaration());
                     if (isPrimitiveType(prop.getType())) {
-                        tpd.getItems().setType(toSwaggerType(prop.getType()));
+                        tpd.getItems().setType(
+                                SwaggerUtils.toSwaggerType(prop.getType())
+                                        .getType());
+                        tpd.setFormat(SwaggerUtils
+                                .toSwaggerType(prop.getType()).getFormat());
                     } else {
                         tpd.getItems().setRef(prop.getType());
                     }
                 } else {
                     if (isPrimitiveType(prop.getType())) {
-                        tpd.setType(toSwaggerType(prop.getType()));
+                        tpd.setType(SwaggerUtils.toSwaggerType(prop.getType())
+                                .getType());
+                        tpd.setFormat(SwaggerUtils
+                                .toSwaggerType(prop.getType()).getFormat());
                     } else {
                         tpd.setRef(prop.getType());
                     }
@@ -679,7 +688,9 @@ public abstract class SwaggerTranslator {
         PathVariable result = new PathVariable();
         result.setName(parameter.getName());
         result.setDescription(parameter.getDescription());
-        result.setType(toRwadefType(parameter.getType()));
+        result.setType(SwaggerUtils
+                .toJavaType(new SwaggerUtils.SwaggerTypeFormat(parameter
+                        .getType(), parameter.getFormat())));
         result.setArray(parameter.isAllowMultiple());
         return result;
     }
@@ -758,44 +769,6 @@ public abstract class SwaggerTranslator {
             LOGGER.log(Level.FINE, "Property " + property.getName() + " added.");
         }
         return result;
-    }
-
-    /**
-     * Returns the primitive types as RWADef expects them
-     * 
-     * @param type
-     *            The type name to Swaggerize
-     * @return The Swaggerized type
-     */
-    private static String toRwadefType(String type) {
-        if ("int".equals(type)) {
-            return "Integer";
-        } else if ("string".equals(type)) {
-            return "String";
-        } else if ("boolean".equals(type)) {
-            return "Boolean";
-        } else {
-            return type;
-        }
-    }
-
-    /**
-     * Returns the primitive types as Swagger expects them
-     * 
-     * @param type
-     *            The type name to Swaggerize
-     * @return The Swaggerized type
-     */
-    private static String toSwaggerType(String type) {
-        if ("Integer".equals(type)) {
-            return "int";
-        } else if ("String".equals(type)) {
-            return "string";
-        } else if ("Boolean".equals(type)) {
-            return "boolean";
-        } else {
-            return type;
-        }
     }
 
     /**
