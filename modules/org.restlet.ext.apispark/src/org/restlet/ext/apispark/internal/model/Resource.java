@@ -57,10 +57,10 @@ public class Resource {
 
     /** Relative path from the endpoint to this resource */
     private String resourcePath;
-    
+
     /** Authentication protocol used for this resource */
     private String authenticationProtocol;
-    
+
     /** The list of Sections this Resource belongs to */
     private List<String> sections;
 
@@ -137,6 +137,9 @@ public class Resource {
     }
 
     public List<String> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<String>();
+        }
         return sections;
     }
 

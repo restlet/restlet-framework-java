@@ -341,7 +341,7 @@ public class Introspector extends IntrospectionUtils {
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
         if (scheme != null) {
-            result.setAuthenticationProtocol(scheme.getTechnicalName());
+            result.setAuthenticationProtocol(scheme.getName());
         }
 
         return result;

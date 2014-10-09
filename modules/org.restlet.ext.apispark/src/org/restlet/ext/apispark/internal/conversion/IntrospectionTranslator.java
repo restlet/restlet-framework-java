@@ -85,14 +85,6 @@ public class IntrospectionTranslator {
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps, Logger logger) {
         // TODO add section sorting strategies
-        Section section = new Section();
-        if (contract.getSections().isEmpty()) {
-            section = new Section();
-            section.setName(Section.DEFAULT);
-            contract.getSections().add(section);
-        } else {
-            section = contract.getSections().get(0);
-        }
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
             resource.setDescription(ri.getDescription());
@@ -287,7 +279,8 @@ public class IntrospectionTranslator {
                 resource.getOperations().add(operation);
             }
 
-            resource.getSections().add(section.getName());
+            // TODO assign sections to resource
+            // resource.getSections().add(section.getName());
             contract.getResources().add(resource);
         }
     }
@@ -338,7 +331,7 @@ public class IntrospectionTranslator {
                 result.getEndpoints().add(
                         new Endpoint("example.com", 80, Protocol.HTTP
                                 .getSchemeName(), "/v1",
-                                ChallengeScheme.HTTP_BASIC.getTechnicalName()));
+                                ChallengeScheme.HTTP_BASIC.getName()));
             }
 
             Contract contract = new Contract();

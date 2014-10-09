@@ -123,15 +123,15 @@ public abstract class SwaggerTranslator {
         // Authentication
         // TODO deal with API key authentication
         AuthorizationsDeclaration authorizations = new AuthorizationsDeclaration();
-        if (ChallengeScheme.HTTP_BASIC.equals((endpoint
-                .getAuthenticationProtocol()))) {
+        if (ChallengeScheme.HTTP_BASIC.getName().equals(
+                (endpoint.getAuthenticationProtocol()))) {
             authorizations.setBasicAuth(new BasicAuthorizationDeclaration());
-        } else if (ChallengeScheme.HTTP_OAUTH.equals((endpoint
-                .getAuthenticationProtocol()))
-                || ChallengeScheme.HTTP_OAUTH_BEARER.equals((endpoint
-                        .getAuthenticationProtocol()))
-                || ChallengeScheme.HTTP_OAUTH_MAC.equals((endpoint
-                        .getAuthenticationProtocol()))) {
+        } else if (ChallengeScheme.HTTP_OAUTH.getName().equals(
+                (endpoint.getAuthenticationProtocol()))
+                || ChallengeScheme.HTTP_OAUTH_BEARER.getName().equals(
+                        (endpoint.getAuthenticationProtocol()))
+                || ChallengeScheme.HTTP_OAUTH_MAC.getName().equals(
+                        (endpoint.getAuthenticationProtocol()))) {
             authorizations.setOauth2(new OAuth2AuthorizationDeclaration());
         }
 
@@ -140,16 +140,23 @@ public abstract class SwaggerTranslator {
         result.setResourcePath("/" + sectionName);
         Set<String> usedModels = new HashSet<String>();
 
+        Contract contract = definition.getContract();
+
         // Get sections
-        Section section = definition.getContract().getSection(Section.DEFAULT);
-        if (section == null) {
-            // TODO deal with non-default sections
-            section = new Section();
+        List<Resource> resources = contract.getResources();
+        boolean allResources = contract.getSections().isEmpty();
+        for (Resource resource : contract.getResources()) {
+            if (allResources) {
+                resources.add(resource);
+            } else {
+                if (resource.getSections().contains(sectionName)) {
+                    resources.add(resource);
+                }
+            }
         }
 
-        Contract contract = definition.getContract();
         // Get resources
-        for (Resource resource : contract.getResources()) {
+        for (Resource resource : resources) {
             // Discriminate the resources of one category
             if (!resource.getResourcePath().startsWith("/" + sectionName)) {
                 continue;
@@ -345,14 +352,9 @@ public abstract class SwaggerTranslator {
                     definition.getContract().getDescription());
         }
 
-        // Get sections
-        Section section = definition.getContract().getSection(Section.DEFAULT);
-        if (section == null) {
-            // TODO deal with non-default sections
-            section = new Section();
-        }
-
         Contract contract = definition.getContract();
+        boolean allResources = contract.getSections().isEmpty();
+
         // Resources
         List<String> addedApis = new ArrayList<String>();
         if (definition.getContract() != null && contract.getResources() != null) {
@@ -360,12 +362,26 @@ public abstract class SwaggerTranslator {
 
             for (Resource resource : contract.getResources()) {
                 ResourceDeclaration rd = new ResourceDeclaration();
-                rd.setDescription(resource.getDescription());
-                rd.setPath(ReflectUtils.getFirstSegment(resource
-                        .getResourcePath()));
-                if (!addedApis.contains(rd.getPath())) {
-                    addedApis.add(rd.getPath());
-                    result.getApis().add(rd);
+
+                if (allResources) {
+                    rd.setDescription(resource.getDescription());
+                    rd.setPath(ReflectUtils.getFirstSegment(resource
+                            .getResourcePath()));
+                    if (!addedApis.contains(rd.getPath())) {
+                        addedApis.add(rd.getPath());
+                        result.getApis().add(rd);
+                    }
+                } else {
+                    for (String sectionName : resource.getSections()) {
+                        Section section = contract.getSection(sectionName);
+                        rd = new ResourceDeclaration();
+                        rd.setDescription(section.getDescription());
+                        rd.setPath("/" + sectionName);
+                        if (!addedApis.contains(rd.getPath())) {
+                            addedApis.add(rd.getPath());
+                            result.getApis().add(rd);
+                        }
+                    }
                 }
             }
         }
@@ -581,10 +597,6 @@ public abstract class SwaggerTranslator {
         List<String> declaredPathVariables;
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
 
-        // TODO deal with multiple sections
-        Section section = new Section();
-        section.setName(Section.DEFAULT);
-
         try {
             Definition definition = new Definition();
             definition.setVersion(resourceListing.getApiVersion());
@@ -599,7 +611,6 @@ public abstract class SwaggerTranslator {
             contract.setName(resourceListing.getInfo().getTitle());
             LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
             contract.setDescription(resourceListing.getInfo().getDescription());
-            contract.getSections().add(section);
             definition.setContract(contract);
 
             // Resource listing
@@ -609,6 +620,10 @@ public abstract class SwaggerTranslator {
                 ApiDeclaration swagApiDeclaration = entry.getValue();
                 List<String> apiProduces = swagApiDeclaration.getProduces();
                 List<String> apiConsumes = swagApiDeclaration.getConsumes();
+                Section section = new Section();
+                section.setName(entry.getKey());
+                section.setDescription(resourceListing.getApi(
+                        "/" + entry.getKey()).getDescription());
 
                 for (ResourceDeclaration api : swagApiDeclaration.getApis()) {
                     declaredPathVariables = new ArrayList<String>();
@@ -724,7 +739,8 @@ public abstract class SwaggerTranslator {
                                     .getResponseMessages()) {
                                 Response response = new Response();
                                 PayLoad outputPayLoad = new PayLoad();
-                                outputPayLoad.setType(swagResponse.getResponseModel());
+                                outputPayLoad.setType(swagResponse
+                                        .getResponseModel());
                                 response.setOutputPayLoad(outputPayLoad);
                                 response.setName("Error "
                                         + swagResponse.getCode());
@@ -785,13 +801,13 @@ public abstract class SwaggerTranslator {
                     definition.getEndpoints().add(endpoint);
                     if (resourceListing.getAuthorizations().getBasicAuth() != null) {
                         endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
-                                .getTechnicalName());
+                                .getName());
                     } else if (resourceListing.getAuthorizations().getOauth2() != null) {
                         endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
-                                .getTechnicalName());
+                                .getName());
                     } else if (resourceListing.getAuthorizations().getApiKey() != null) {
                         endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
-                                .getTechnicalName());
+                                .getName());
                     }
                 }
             }

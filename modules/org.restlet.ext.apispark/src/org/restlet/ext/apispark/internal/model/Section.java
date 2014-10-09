@@ -43,11 +43,6 @@ package org.restlet.ext.apispark.internal.model;
  */
 public class Section {
 
-    /**
-     * Name of the default section
-     */
-    public static final String DEFAULT = "default";
-
     /** Textual description of the API. */
     private String description;
 

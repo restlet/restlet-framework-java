@@ -28,6 +28,15 @@ public class ResourceListing {
         return apis;
     }
 
+    public ResourceDeclaration getApi(String path) {
+        for (ResourceDeclaration rd : apis) {
+            if (path.equals(rd.getPath())) {
+                return rd;
+            }
+        }
+        return null;
+    }
+
     public String getApiVersion() {
         return apiVersion;
     }

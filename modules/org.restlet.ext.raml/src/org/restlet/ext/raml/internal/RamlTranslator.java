@@ -59,7 +59,6 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -226,10 +225,10 @@ public abstract class RamlTranslator {
                 // In representation
                 ramlInRepresentation = new MimeType();
                 if (operation.getInputPayLoad() != null) {
-                    ramlInRepresentation.setType(operation
-                            .getInputPayLoad().getType());
-                    if (RamlUtils.isPrimitiveType(operation
-                            .getInputPayLoad().getType())) {
+                    ramlInRepresentation.setType(operation.getInputPayLoad()
+                            .getType());
+                    if (RamlUtils.isPrimitiveType(operation.getInputPayLoad()
+                            .getType())) {
                         Property inRepresentationPrimitive = new Property();
                         inRepresentationPrimitive.setName("");
                         inRepresentationPrimitive.setType(operation
@@ -288,8 +287,8 @@ public abstract class RamlTranslator {
                     if (Status.isSuccess(response.getCode())
                             && response.getOutputPayLoad() != null
                             && response.getOutputPayLoad().getType() != null) {
-                        if (RamlUtils.isPrimitiveType(response.getOutputPayLoad()
-                                .getType())) {
+                        if (RamlUtils.isPrimitiveType(response
+                                .getOutputPayLoad().getType())) {
                             Property outRepresentationPrimitive = new Property();
                             outRepresentationPrimitive.setName("");
                             outRepresentationPrimitive.setType(response
@@ -438,10 +437,7 @@ public abstract class RamlTranslator {
         definition.setContract(contract);
         contract.setName(raml.getTitle());
 
-        // TODO deal with multiple sections
-        Section section = new Section();
-        section.setName(Section.DEFAULT);
-        contract.getSections().add(section);
+        // TODO add section sorting strategies
 
         // TODO String defaultMediaType = raml.getMediaType();
         List<PathVariable> rootPathVariables = new ArrayList<PathVariable>();
@@ -457,7 +453,9 @@ public abstract class RamlTranslator {
                 representation.setName(entry.getKey());
                 representation.setDescription(entry.getValue());
                 // TODO get the schema !!!
-                representation.getSections().add(section.getName());
+
+                // TODO set representations's sections
+                // representation.getSections().add(section.getName());
                 contract.getRepresentations().add(representation);
             }
         }

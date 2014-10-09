@@ -169,6 +169,7 @@ public class Swagger2Translator {
         for (Operation operation : resource.getOperations()) {
 
             com.wordnik.swagger.models.Operation operationSwagger = new com.wordnik.swagger.models.Operation();
+            resource.getSections().addAll(operationSwagger.getTags());
 
             String method = operation.getMethod().toLowerCase();
             Path setResult = pathSwagger.set(method, operationSwagger);
