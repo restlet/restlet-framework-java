@@ -74,3 +74,4 @@
 /build/velocity.log
 /build/build.number
 *.iml
+.DS_Store
