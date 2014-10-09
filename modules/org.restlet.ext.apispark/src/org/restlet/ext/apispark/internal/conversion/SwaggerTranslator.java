@@ -55,10 +55,10 @@ import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.License;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
@@ -96,26 +96,133 @@ public abstract class SwaggerTranslator {
     private static final String SWAGGER_VERSION = "1.2";
 
     /**
-     * Retrieves the Swagger API declaration corresponding to a category of the
-     * given Restlet Web API Definition
+     * Fills Swagger resource listing main attributes from Restlet Web API
+     * definition
      * 
-     * @param sectionName
-     *            The category of the API declaration
      * @param definition
-     *            The Restlet Web API Definition
-     * @return The Swagger API definition of the given category
+     *            The Restlet Web API definition
+     * @param listing
+     *            The Swagger 1.2 resource listing
      */
-    public static ApiDeclaration getApiDeclaration(String sectionName,
-            Definition definition) {
-        ApiDeclaration result = new ApiDeclaration();
-        result.setApiVersion(definition.getVersion());
+    private static void fillResourceListingMainAttributes(
+            Definition definition, ResourceListing listing) {
+        // common properties
+        listing.setApiVersion(definition.getVersion());
+        // result.setBasePath(definition.getEndpoint());
+        listing.setInfo(new ApiInfo());
+        listing.setSwaggerVersion(SWAGGER_VERSION);
+        if (definition.getContact() != null) {
+            listing.getInfo().setContact(definition.getContact().getEmail());
+        }
+        if (definition.getLicense() != null) {
+            listing.getInfo().setLicenseUrl(definition.getLicense().getUrl());
+        }
+        if (definition.getContract() != null) {
+            listing.getInfo().setTitle(definition.getContract().getName());
+            listing.getInfo().setDescription(
+                    definition.getContract().getDescription());
+        }
+
+        if (!definition.getEndpoints().isEmpty()) {
+            String authenticationProtocol = definition.getEndpoints().get(0)
+                    .getAuthenticationProtocol();
+            if (authenticationProtocol != null) {
+                AuthorizationsDeclaration authorizations = new AuthorizationsDeclaration();
+                // TODO add other authentication protocols
+                if (ChallengeScheme.HTTP_BASIC.getName().equals(
+                        authenticationProtocol)) {
+                    authorizations
+                            .setBasicAuth(new BasicAuthorizationDeclaration());
+                    listing.setAuthorizations(authorizations);
+                } else if (ChallengeScheme.HTTP_OAUTH.getName().equals(
+                        authenticationProtocol)
+                        || ChallengeScheme.HTTP_OAUTH_BEARER.getName().equals(
+                                authenticationProtocol)
+                        || ChallengeScheme.HTTP_OAUTH_MAC.getName().equals(
+                                authenticationProtocol)) {
+                    authorizations
+                            .setOauth2(new OAuth2AuthorizationDeclaration());
+                }
+            }
+        }
+    }
+
+    /**
+     * Fills Swagger resource listing main attributes from Restlet Web API
+     * definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param listing
+     *            The Swagger 1.2 resource listing
+     */
+    private static void fillResourceListingApis(Definition definition,
+            ResourceListing listing) {
+        Contract contract = definition.getContract();
+        boolean allResources = contract.getSections().isEmpty();
+
+        // Resources
+        List<String> addedApis = new ArrayList<String>();
+        if (definition.getContract() != null && contract.getResources() != null) {
+            listing.setApis(new ArrayList<ResourceDeclaration>());
+
+            for (Resource resource : contract.getResources()) {
+                ResourceDeclaration rd = new ResourceDeclaration();
+
+                if (allResources) {
+                    rd.setDescription(resource.getDescription());
+                    rd.setPath(ReflectUtils.getFirstSegment(resource
+                            .getResourcePath()));
+                    if (!addedApis.contains(rd.getPath())) {
+                        addedApis.add(rd.getPath());
+                        listing.getApis().add(rd);
+                    }
+                } else {
+                    for (String sectionName : resource.getSections()) {
+                        Section section = contract.getSection(sectionName);
+                        rd = new ResourceDeclaration();
+                        rd.setDescription(section.getDescription());
+                        rd.setPath("/" + sectionName);
+                        if (!addedApis.contains(rd.getPath())) {
+                            addedApis.add(rd.getPath());
+                            listing.getApis().add(rd);
+                        }
+                    }
+                }
+            }
+        }
+        Collections.sort(listing.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+
+                });
+    }
+
+    /**
+     * Fills Swagger API declaration main attributes from Restlet Web API
+     * definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param apiDeclaration
+     *            The Swagger 1.2 API declaration
+     * @param sectionName
+     *            The name of the current section
+     */
+    private static void fillApiDeclarationMainAttributes(Definition definition,
+            ApiDeclaration apiDeclaration, String sectionName) {
+        apiDeclaration.setApiVersion(definition.getVersion());
 
         // No way to specify multiple endpoints in Swagger so we take the first
         // one
         Endpoint endpoint;
         if (!definition.getEndpoints().isEmpty()) {
             endpoint = definition.getEndpoints().get(0);
-            result.setBasePath(endpoint.computeUrl());
+            apiDeclaration.setBasePath(endpoint.computeUrl());
         } else {
             endpoint = new Endpoint("http://example.com");
         }
@@ -126,6 +233,7 @@ public abstract class SwaggerTranslator {
         if (ChallengeScheme.HTTP_BASIC.getName().equals(
                 (endpoint.getAuthenticationProtocol()))) {
             authorizations.setBasicAuth(new BasicAuthorizationDeclaration());
+            apiDeclaration.setAuthorizations(authorizations);
         } else if (ChallengeScheme.HTTP_OAUTH.getName().equals(
                 (endpoint.getAuthenticationProtocol()))
                 || ChallengeScheme.HTTP_OAUTH_BEARER.getName().equals(
@@ -135,15 +243,233 @@ public abstract class SwaggerTranslator {
             authorizations.setOauth2(new OAuth2AuthorizationDeclaration());
         }
 
-        result.setInfo(new ApiInfo());
-        result.setSwaggerVersion(SWAGGER_VERSION);
-        result.setResourcePath("/" + sectionName);
-        Set<String> usedModels = new HashSet<String>();
+        apiDeclaration.setInfo(new ApiInfo());
+        apiDeclaration.setSwaggerVersion(SWAGGER_VERSION);
+        apiDeclaration.setResourcePath("/" + sectionName);
+    }
 
+    /**
+     * Fills Swagger ResourceOperationDeclaration's
+     * ResourceOperationParameterDeclaration from Restlet Web API definition's
+     * Resource
+     * 
+     * @param resource
+     *            The Restlet Web API definition's Resource
+     * @param rod
+     *            The Swagger Swagger ResourceOperationDeclaration
+     */
+    private static void fillApiDeclarationPathVariables(Resource resource,
+            ResourceOperationDeclaration rod) {
+        // Get path variables
+        ResourceOperationParameterDeclaration ropd;
+        for (PathVariable pv : resource.getPathVariables()) {
+            ropd = new ResourceOperationParameterDeclaration();
+            ropd.setParamType("path");
+            ropd.setType(toSwaggerType(pv.getType()));
+            ropd.setRequired(true);
+            ropd.setName(pv.getName());
+            ropd.setAllowMultiple(false);
+            ropd.setDescription(pv.getDescription());
+            rod.getParameters().add(ropd);
+        }
+    }
+
+    /**
+     * Fills Swagger ResourceOperationDeclaration's
+     * ResourceOperationParameterDeclaration from Restlet Web API definition's
+     * Operation
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param rod
+     *            The Swagger Swagger ResourceOperationDeclaration
+     */
+    private static void fillApiDeclarationQueryParameters(Operation operation,
+            ResourceOperationDeclaration rod) {
+        // Get query parameters
+        ResourceOperationParameterDeclaration ropd;
+        for (QueryParameter qp : operation.getQueryParameters()) {
+            ropd = new ResourceOperationParameterDeclaration();
+            ropd.setParamType("query");
+            ropd.setType(toSwaggerType(qp.getType()));
+            ropd.setName(qp.getName());
+            ropd.setAllowMultiple(true);
+            ropd.setDescription(qp.getDescription());
+            ropd.setEnum_(qp.getEnumeration());
+            ropd.setDefaultValue(qp.getDefaultValue());
+            rod.getParameters().add(ropd);
+        }
+    }
+
+    /**
+     * Fills Swagger ResourceOperationDeclaration's type from Restlet Web API
+     * definition's Operation
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param rod
+     *            The Swagger Swagger ResourceOperationDeclaration
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param usedModels
+     *            The models specified by this API declaration
+     */
+    private static void fillApiDeclarationInRepresentation(Operation operation,
+            ResourceOperationDeclaration rod, Contract contract,
+            Set<String> usedModels) {
+        // Get in representation
+        ResourceOperationParameterDeclaration ropd;
+        PayLoad inRepr = operation.getInputPayLoad();
+        if (inRepr != null) {
+            Representation representation = contract.getRepresentation(inRepr
+                    .getType());
+
+            ropd = new ResourceOperationParameterDeclaration();
+            ropd.setParamType("body");
+            ropd.setName("body");
+            ropd.setRequired(true);
+
+            if (representation != null && representation.isRaw()) {
+                ropd.setType("File");
+            } else {
+                ropd.setType(toSwaggerType(inRepr.getType()));
+            }
+            if (inRepr.getType() != null) {
+                usedModels.add(inRepr.getType());
+            }
+            rod.getParameters().add(ropd);
+        }
+    }
+
+    /**
+     * Fills Swagger ResourceOperationDeclaration's returned type from Restlet
+     * Web API definition's Operation
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param rod
+     *            The Swagger Swagger ResourceOperationDeclaration
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param usedModels
+     *            The models specified by this API declaration
+     */
+    private static void fillApiDeclarationOutRepresentation(
+            Operation operation, ResourceOperationDeclaration rod,
+            Contract contract, Set<String> usedModels) {
+        // Get out representation
+        PayLoad outRepr = null;
+        for (Response response : operation.getResponses()) {
+            if (Status.isSuccess(response.getCode())) {
+                outRepr = response.getOutputPayLoad();
+            }
+        }
+        if (outRepr != null && outRepr.getType() != null) {
+            if (outRepr.isArray()) {
+                rod.setType("array");
+                if (isPrimitiveType(outRepr.getType())) {
+                    rod.getItems().setType(toSwaggerType(outRepr.getType()));
+                } else {
+                    rod.getItems().setRef(outRepr.getType());
+                }
+            } else {
+                rod.setType(toSwaggerType(outRepr.getType()));
+            }
+            usedModels.add(outRepr.getType());
+        } else {
+            rod.setType("void");
+        }
+    }
+
+    /**
+     * Fills Swagger ResourceOperationDeclaration's error responses from Restlet
+     * Web API definition's Operation
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param rod
+     *            The Swagger Swagger ResourceOperationDeclaration
+     */
+    private static void fillApiDeclarationResponses(Operation operation,
+            ResourceOperationDeclaration rod) {
+        // Get response messages
+        for (Response response : operation.getResponses()) {
+            if (Status.isSuccess(response.getCode())) {
+                continue;
+            }
+            ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
+            rmd.setCode(response.getCode());
+            rmd.setMessage(response.getMessage());
+            if (response.getOutputPayLoad() != null) {
+                rmd.setResponseModel(response.getOutputPayLoad().getType());
+            }
+            rod.getResponseMessages().add(rmd);
+        }
+    }
+
+    /**
+     * Fills Swagger ResourceDeclaration's ResourceOperationDeclaration from
+     * Restlet Web API definition's Resource
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param usedModels
+     *            The models specified by this API declaration
+     * @param rd
+     *            The Swagger Swagger ResourceDeclaration
+     */
+    private static void fillApiDeclarationOperations(Resource resource,
+            Contract contract, Set<String> usedModels, ResourceDeclaration rd) {
+        // Get operations
+        for (Operation operation : resource.getOperations()) {
+            ResourceOperationDeclaration rod = new ResourceOperationDeclaration();
+            rod.setMethod(operation.getMethod());
+            rod.setSummary(operation.getDescription());
+            rod.setNickname(operation.getName());
+            rod.setProduces(operation.getProduces());
+            rod.setConsumes(operation.getConsumes());
+
+            // fill the resource operation parameters
+            fillApiDeclarationPathVariables(resource, rod);
+            fillApiDeclarationQueryParameters(operation, rod);
+
+            // fill the resource operation in representation
+            fillApiDeclarationInRepresentation(operation, rod, contract,
+                    usedModels);
+
+            // fill the resource operation out representation
+            fillApiDeclarationOutRepresentation(operation, rod, contract,
+                    usedModels);
+
+            // fill the resource operation erorr response models
+            fillApiDeclarationResponses(operation, rod);
+
+            rd.getOperations().add(rod);
+        }
+    }
+
+    /**
+     * Fills Swagger ApiDeclaration's ResourceDeclarations from Restlet Web API
+     * definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param apiDeclaration
+     *            The Swagger API declaration
+     * @param sectionName
+     *            The name of the current section
+     * @return The models specified by this API declaration
+     */
+    private static Set<String> fillApiDeclarationResources(
+            Definition definition, ApiDeclaration apiDeclaration,
+            String sectionName) {
+        Set<String> usedModels = new HashSet<String>();
         Contract contract = definition.getContract();
 
-        // Get sections
-        List<Resource> resources = contract.getResources();
+        // Get the resources corresponding to the sectionName
+        List<Resource> resources = new ArrayList<Resource>();
         boolean allResources = contract.getSections().isEmpty();
         for (Resource resource : contract.getResources()) {
             if (allResources) {
@@ -165,108 +491,41 @@ public abstract class SwaggerTranslator {
             rd.setPath(resource.getResourcePath());
             rd.setDescription(resource.getDescription());
 
-            // Get operations
-            for (Operation operation : resource.getOperations()) {
-                ResourceOperationDeclaration rod = new ResourceOperationDeclaration();
-                rod.setMethod(operation.getMethod());
-                rod.setSummary(operation.getDescription());
-                rod.setNickname(operation.getName());
-                rod.setProduces(operation.getProduces());
-                rod.setConsumes(operation.getConsumes());
+            // fill resource declaration
+            fillApiDeclarationOperations(resource, contract, usedModels, rd);
 
-                // Get path variables
-                ResourceOperationParameterDeclaration ropd;
-                for (PathVariable pv : resource.getPathVariables()) {
-                    ropd = new ResourceOperationParameterDeclaration();
-                    ropd.setParamType("path");
-                    ropd.setType(toSwaggerType(pv.getType()));
-                    ropd.setRequired(true);
-                    ropd.setName(pv.getName());
-                    ropd.setAllowMultiple(false);
-                    ropd.setDescription(pv.getDescription());
-                    rod.getParameters().add(ropd);
-                }
-
-                // Get in representation
-                PayLoad inRepr = operation.getInputPayLoad();
-                if (inRepr != null) {
-                    Representation representation = definition.getContract()
-                            .getRepresentation(inRepr.getType());
-
-                    ropd = new ResourceOperationParameterDeclaration();
-                    ropd.setParamType("body");
-                    ropd.setRequired(true);
-
-                    if (representation != null && representation.isRaw()) {
-                        ropd.setType("File");
-                    } else {
-                        ropd.setType(toSwaggerType(inRepr.getType()));
-                    }
-                    if (inRepr.getType() != null) {
-                        usedModels.add(inRepr.getType());
-                    }
-                    rod.getParameters().add(ropd);
-                }
-
-                // Get out representation
-                PayLoad outRepr = null;
-                for (Response response : operation.getResponses()) {
-                    if (Status.isSuccess(response.getCode())) {
-                        outRepr = response.getOutputPayLoad();
-                    }
-                }
-                if (outRepr != null && outRepr.getType() != null) {
-                    if (outRepr.isArray()) {
-                        rod.setType("array");
-                        if (isPrimitiveType(outRepr.getType())) {
-                            rod.getItems().setType(
-                                    toSwaggerType(outRepr.getType()));
-                        } else {
-                            rod.getItems().setRef(outRepr.getType());
-                        }
-                    } else {
-                        rod.setType(toSwaggerType(outRepr.getType()));
-                    }
-                    usedModels.add(outRepr.getType());
-                } else {
-                    rod.setType("void");
-                }
-
-                // Get query parameters
-                for (QueryParameter qp : operation.getQueryParameters()) {
-                    ropd = new ResourceOperationParameterDeclaration();
-                    ropd.setParamType("query");
-                    ropd.setType(toSwaggerType(qp.getType()));
-                    ropd.setName(qp.getName());
-                    ropd.setAllowMultiple(true);
-                    ropd.setDescription(qp.getDescription());
-                    ropd.setEnum_(qp.getEnumeration());
-                    ropd.setDefaultValue(qp.getDefaultValue());
-                    rod.getParameters().add(ropd);
-                }
-
-                // Get response messages
-                for (Response response : operation.getResponses()) {
-                    if (Status.isSuccess(response.getCode())) {
-                        continue;
-                    }
-                    ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
-                    rmd.setCode(response.getCode());
-                    rmd.setMessage(response.getMessage());
-                    if (response.getOutputPayLoad() != null) {
-                        rmd.setResponseModel(response.getOutputPayLoad()
-                                .getType());
-                    }
-                    rod.getResponseMessages().add(rmd);
-                }
-
-                rd.getOperations().add(rod);
-            }
-            result.getApis().add(rd);
+            apiDeclaration.getApis().add(rd);
         }
+        // Sort the API declarations according to their path.
+        Collections.sort(apiDeclaration.getApis(),
+                new Comparator<ResourceDeclaration>() {
+                    @Override
+                    public int compare(ResourceDeclaration o1,
+                            ResourceDeclaration o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+                });
+        return usedModels;
+    }
 
-        result.setModels(new TreeMap<String, ModelDeclaration>());
+    /**
+     * Fills Swagger ApiDeclaration's ModelDeclarations from Restlet Web API
+     * definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param apiDeclaration
+     *            The Swagger API declaration
+     * @param usedModels
+     *            The models specified by this API declaration
+     */
+    private static void fillApiDeclarationRepresentations(
+            Definition definition, ApiDeclaration apiDeclaration,
+            Set<String> usedModels) {
+        Contract contract = definition.getContract();
+        apiDeclaration.setModels(new TreeMap<String, ModelDeclaration>());
         Iterator<String> iterator = usedModels.iterator();
+        // TODO Change this loop
         while (iterator.hasNext()) {
             String model = iterator.next();
             Representation repr = contract.getRepresentation(model);
@@ -310,18 +569,34 @@ public abstract class SwaggerTranslator {
 
                 md.getProperties().put(prop.getName(), tpd);
             }
-            result.getModels().put(md.getId(), md);
+            apiDeclaration.getModels().put(md.getId(), md);
         }
+    }
 
-        // Sort the API declarations according to their path.
-        Collections.sort(result.getApis(),
-                new Comparator<ResourceDeclaration>() {
-                    @Override
-                    public int compare(ResourceDeclaration o1,
-                            ResourceDeclaration o2) {
-                        return o1.getPath().compareTo(o2.getPath());
-                    }
-                });
+    /**
+     * Retrieves the Swagger API declaration corresponding to a category of the
+     * given Restlet Web API Definition
+     * 
+     * @param sectionName
+     *            The category of the API declaration
+     * @param definition
+     *            The Restlet Web API Definition
+     * @return The Swagger API definition of the given category
+     */
+    public static ApiDeclaration getApiDeclaration(String sectionName,
+            Definition definition) {
+        ApiDeclaration result = new ApiDeclaration();
+
+        // fill API declaration main attributes
+        fillApiDeclarationMainAttributes(definition, result, sectionName);
+
+        // fill API declaration resources
+        Set<String> usedModels = fillApiDeclarationResources(definition,
+                result, sectionName);
+
+        // fill API declaration representations
+        fillApiDeclarationRepresentations(definition, result, usedModels);
+
         return result;
     }
 
@@ -335,65 +610,12 @@ public abstract class SwaggerTranslator {
     public static ResourceListing getResourcelisting(Definition definition) {
         ResourceListing result = new ResourceListing();
 
-        // common properties
-        result.setApiVersion(definition.getVersion());
-        // result.setBasePath(definition.getEndpoint());
-        result.setInfo(new ApiInfo());
-        result.setSwaggerVersion(SWAGGER_VERSION);
-        if (definition.getContact() != null) {
-            result.getInfo().setContact(definition.getContact().getEmail());
-        }
-        if (definition.getLicense() != null) {
-            result.getInfo().setLicenseUrl(definition.getLicense().getUrl());
-        }
-        if (definition.getContract() != null) {
-            result.getInfo().setTitle(definition.getContract().getName());
-            result.getInfo().setDescription(
-                    definition.getContract().getDescription());
-        }
+        // fill resource listing main attributes
+        fillResourceListingMainAttributes(definition, result);
 
-        Contract contract = definition.getContract();
-        boolean allResources = contract.getSections().isEmpty();
+        // fill resource listing API list
+        fillResourceListingApis(definition, result);
 
-        // Resources
-        List<String> addedApis = new ArrayList<String>();
-        if (definition.getContract() != null && contract.getResources() != null) {
-            result.setApis(new ArrayList<ResourceDeclaration>());
-
-            for (Resource resource : contract.getResources()) {
-                ResourceDeclaration rd = new ResourceDeclaration();
-
-                if (allResources) {
-                    rd.setDescription(resource.getDescription());
-                    rd.setPath(ReflectUtils.getFirstSegment(resource
-                            .getResourcePath()));
-                    if (!addedApis.contains(rd.getPath())) {
-                        addedApis.add(rd.getPath());
-                        result.getApis().add(rd);
-                    }
-                } else {
-                    for (String sectionName : resource.getSections()) {
-                        Section section = contract.getSection(sectionName);
-                        rd = new ResourceDeclaration();
-                        rd.setDescription(section.getDescription());
-                        rd.setPath("/" + sectionName);
-                        if (!addedApis.contains(rd.getPath())) {
-                            addedApis.add(rd.getPath());
-                            result.getApis().add(rd);
-                        }
-                    }
-                }
-            }
-        }
-        Collections.sort(result.getApis(),
-                new Comparator<ResourceDeclaration>() {
-                    @Override
-                    public int compare(ResourceDeclaration o1,
-                            ResourceDeclaration o2) {
-                        return o1.getPath().compareTo(o2.getPath());
-                    }
-
-                });
         return result;
     }
 
@@ -577,240 +799,378 @@ public abstract class SwaggerTranslator {
     }
 
     /**
+     * Fills Restlet Web API definition's main attributes from Swagger 1.2
+     * definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param listing
+     *            The Swagger 1.2 resource listing
+     * @param basePath
+     *            The basePath of the described Web API
+     */
+    private static void fillMainAttributes(Definition definition,
+            ResourceListing listing, String basePath) {
+        definition.setVersion(listing.getApiVersion());
+        Contact contact = new Contact();
+        contact.setEmail(listing.getInfo().getContact());
+        definition.setContact(contact);
+        License license = new License();
+        license.setUrl(listing.getInfo().getLicenseUrl());
+        definition.setLicense(license);
+
+        Contract contract = new Contract();
+        contract.setName(listing.getInfo().getTitle());
+        LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
+        contract.setDescription(listing.getInfo().getDescription());
+        definition.setContract(contract);
+
+        if (definition.getEndpoints().isEmpty()) {
+            // TODO verify how to deal with API key auth + oauth
+            Endpoint endpoint = new Endpoint(basePath);
+            definition.getEndpoints().add(endpoint);
+            if (listing.getAuthorizations().getBasicAuth() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
+                        .getName());
+            } else if (listing.getAuthorizations().getOauth2() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
+                        .getName());
+            } else if (listing.getAuthorizations().getApiKey() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
+                        .getName());
+            }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's variants from Swagger 1.2 definition
+     * 
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param section
+     *            The current Section
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param swaggerOperation
+     *            The Swagger ResourceOperationDeclaration
+     * @param apiProduces
+     *            The list of media types produced by the operation
+     * @param apiConsumes
+     *            The list of media types consumed by the operation
+     */
+    private static void fillVariants(Contract contract, Section section,
+            Operation operation, ResourceOperationDeclaration swaggerOperation,
+            List<String> apiProduces, List<String> apiConsumes) {
+        // Set variants
+        Representation representation;
+        boolean containsRawTypes = false;
+        for (String produced : apiProduces.isEmpty() ? swaggerOperation
+                .getProduces() : apiProduces) {
+            if (!containsRawTypes
+                    && MediaType.MULTIPART_FORM_DATA.getName().equals(produced)) {
+                representation = new Representation();
+                representation.setName("File");
+                representation.setRaw(true);
+                containsRawTypes = true;
+                representation.getSections().add(section.getName());
+                contract.getRepresentations().add(representation);
+            }
+            operation.getProduces().add(produced);
+        }
+        for (String consumed : apiConsumes.isEmpty() ? swaggerOperation
+                .getConsumes() : apiConsumes) {
+            if (!containsRawTypes
+                    && MediaType.MULTIPART_FORM_DATA.getName().equals(consumed)) {
+                representation = new Representation();
+                representation.setName("File");
+                representation.setRaw(true);
+                containsRawTypes = true;
+                representation.getSections().add(section.getName());
+                contract.getRepresentations().add(representation);
+            }
+            operation.getConsumes().add(consumed);
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's operation output payload from Swagger
+     * ResourceOperationDeclaration
+     * 
+     * @param success
+     *            The Restlet Web API definition's operation success Response
+     * @param swaggerOperation
+     *            The Swagger ResourceOperationDeclaration
+     */
+    private static void fillOutPayLoad(Response success,
+            ResourceOperationDeclaration swaggerOperation) {
+        // Set response's entity
+        PayLoad rwadOutRepr = new PayLoad();
+        if ("array".equals(swaggerOperation.getType())) {
+            LOGGER.log(Level.FINER,
+                    "Operation: " + swaggerOperation.getNickname()
+                            + " returns an array");
+            rwadOutRepr.setArray(true);
+            if (swaggerOperation.getItems().getType() != null) {
+                rwadOutRepr.setType(swaggerOperation.getItems().getType());
+            } else {
+                rwadOutRepr.setType(swaggerOperation.getItems().getRef());
+            }
+        } else {
+            LOGGER.log(Level.FINER,
+                    "Operation: " + swaggerOperation.getNickname()
+                            + " returns a single Representation");
+            rwadOutRepr.setArray(false);
+            if (swaggerOperation.getType() != null) {
+                rwadOutRepr.setType(swaggerOperation.getType());
+            } else {
+                rwadOutRepr.setType(swaggerOperation.getRef());
+            }
+        }
+        success.setOutputPayLoad(rwadOutRepr);
+    }
+
+    /**
+     * Fills Restlet Web API definition's operation parameter from Swagger
+     * ResourceOperationDeclaration
+     * 
+     * @param resource
+     *            The Restlet Web API definition's Resource to which the
+     *            operation is attached
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param swaggerOperation
+     *            The Swagger ResourceOperationDeclaration
+     * @param declaredPathVariables
+     *            The list of declared pathVariable on the resource
+     */
+    private static void fillParameters(Resource resource, Operation operation,
+            ResourceOperationDeclaration swaggerOperation,
+            List<String> declaredPathVariables) {
+        // Loop over Swagger parameters.
+        for (ResourceOperationParameterDeclaration param : swaggerOperation
+                .getParameters()) {
+            if ("path".equals(param.getParamType())) {
+                if (!declaredPathVariables.contains(param.getName())) {
+                    declaredPathVariables.add(param.getName());
+                    PathVariable pathVariable = toPathVariable(param);
+                    resource.getPathVariables().add(pathVariable);
+                }
+            } else if ("body".equals(param.getParamType())) {
+                if (operation.getInputPayLoad() == null) {
+                    PayLoad rwadInRepr = toEntity(param);
+                    operation.setInputPayLoad(rwadInRepr);
+                }
+            } else if ("query".equals(param.getParamType())) {
+                QueryParameter rwadQueryParam = toQueryParameter(param);
+                operation.getQueryParameters().add(rwadQueryParam);
+            }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's operation Responses from Swagger
+     * ResourceOperationDeclaration
+     * 
+     * @param operation
+     *            The Restlet Web API definition's Operation
+     * @param swaggerOperation
+     *            The Swagger ResourceOperationDeclaration
+     */
+    private static void fillResponseMessages(Operation operation,
+            ResourceOperationDeclaration swaggerOperation) {
+        // Set error response messages
+        if (swaggerOperation.getResponseMessages() != null) {
+            for (ResponseMessageDeclaration swagResponse : swaggerOperation
+                    .getResponseMessages()) {
+                Response response = new Response();
+                PayLoad outputPayLoad = new PayLoad();
+                outputPayLoad.setType(swagResponse.getResponseModel());
+                response.setOutputPayLoad(outputPayLoad);
+                response.setName("Error " + swagResponse.getCode());
+                response.setCode(swagResponse.getCode());
+                response.setMessage(swagResponse.getMessage());
+                operation.getResponses().add(response);
+            }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's Representations from Swagger
+     * ApiDeclaration
+     * 
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param section
+     *            The Restlet Web API definition's current Section
+     * @param apiDeclaration
+     *            The Swagger ApiDeclaration
+     * @param subtypes
+     *            The list of this Representation's subtypes
+     * @param declaredTypes
+     *            The list of all declared types for the Contract
+     */
+    private static void fillRepresentations(Contract contract, Section section,
+            ApiDeclaration apiDeclaration, Map<String, List<String>> subtypes,
+            List<String> declaredTypes) {
+        // Add representations
+        Representation representation;
+        for (Entry<String, ModelDeclaration> modelEntry : apiDeclaration
+                .getModels().entrySet()) {
+            ModelDeclaration model = modelEntry.getValue();
+            if (model.getSubTypes() != null && !model.getSubTypes().isEmpty()) {
+                subtypes.put(model.getId(), model.getSubTypes());
+            }
+            if (!declaredTypes.contains(modelEntry.getKey())) {
+                declaredTypes.add(modelEntry.getKey());
+                representation = toRepresentation(model, modelEntry.getKey());
+                representation.getSections().add(section.getName());
+                contract.getRepresentations().add(representation);
+                LOGGER.log(Level.FINE, "Representation " + modelEntry.getKey()
+                        + " added.");
+            }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's Operations from Swagger ApiDeclaration
+     * 
+     * @param resource
+     *            The Restlet Web API definition's Resource
+     * @param apiDeclaration
+     *            The Swagger ApiDeclaration
+     * @param api
+     *            The Swagger ResourceDeclaration
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param section
+     *            The Restlet Web API definition's current Section
+     * @param declaredPathVariables
+     *            The list of all declared path variables for the Resource
+     */
+    private static void fillOperations(Resource resource,
+            ApiDeclaration apiDeclaration, ResourceDeclaration api,
+            Contract contract, Section section,
+            List<String> declaredPathVariables) {
+
+        List<String> apiProduces = apiDeclaration.getProduces();
+        List<String> apiConsumes = apiDeclaration.getConsumes();
+        List<String> declaredTypes = new ArrayList<String>();
+        Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
+        Representation representation;
+
+        // Operations listing
+        Operation operation;
+        for (ResourceOperationDeclaration swaggerOperation : api
+                .getOperations()) {
+            String methodName = swaggerOperation.getMethod();
+            operation = new Operation();
+            operation.setMethod(swaggerOperation.getMethod());
+            operation.setName(swaggerOperation.getNickname());
+            operation.setDescription(swaggerOperation.getSummary());
+
+            // fill produced and consumed variants
+            fillVariants(contract, section, operation, swaggerOperation,
+                    apiProduces, apiConsumes);
+
+            // Extract success response message
+            Response success = new Response();
+            success.setCode(Status.SUCCESS_OK.getCode());
+            success.setDescription("Success");
+            success.setMessage(Status.SUCCESS_OK.getDescription());
+            success.setName("Success");
+
+            // fill output payload
+            fillOutPayLoad(success, swaggerOperation);
+            operation.getResponses().add(success);
+
+            // fill parameters
+            fillParameters(resource, operation, swaggerOperation,
+                    declaredPathVariables);
+
+            // fill responses
+            fillResponseMessages(operation, swaggerOperation);
+
+            resource.getOperations().add(operation);
+            LOGGER.log(Level.FINE, "Method " + methodName + " added.");
+
+            // fill representations
+            fillRepresentations(contract, section, apiDeclaration, subtypes,
+                    declaredTypes);
+
+            // Deal with subtyping
+            for (Entry<String, List<String>> subtypesPair : subtypes.entrySet()) {
+                List<String> subtypesOf = subtypesPair.getValue();
+                for (String subtypeOf : subtypesOf) {
+                    representation = contract.getRepresentation(subtypeOf);
+                    representation.setExtendedType(subtypesPair.getKey());
+                }
+            }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's Contract from Swagger 1.2 definition
+     * 
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param listing
+     *            The Swagger ResourceListing
+     * @param apiDeclarations
+     *            The Swagger ApiDeclaration
+     */
+    private static void fillContract(Contract contract,
+            ResourceListing listing, Map<String, ApiDeclaration> apiDeclarations) {
+
+        // Resource listing
+        Resource resource;
+        for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
+            ApiDeclaration apiDeclaration = entry.getValue();
+            Section section = new Section();
+            section.setName(entry.getKey());
+            section.setDescription(listing.getApi("/" + entry.getKey())
+                    .getDescription());
+
+            for (ResourceDeclaration api : apiDeclaration.getApis()) {
+                resource = new Resource();
+                resource.setResourcePath(api.getPath());
+
+                List<String> declaredPathVariables = new ArrayList<String>();
+                fillOperations(resource, apiDeclaration, api, contract,
+                        section, declaredPathVariables);
+
+                resource.getSections().add(section.getName());
+                contract.getResources().add(resource);
+                LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
+            }
+        }
+    }
+
+    /**
      * Translates a Swagger documentation to a Restlet definition.
      * 
-     * @param resourceListing
+     * @param listing
      *            The Swagger resource listing.
      * @param apiDeclarations
      *            The list of Swagger API declarations.
      * @return The Restlet definition.
      * @throws TranslationException
      */
-    public static Definition translate(ResourceListing resourceListing,
+    public static Definition translate(ResourceListing listing,
             Map<String, ApiDeclaration> apiDeclarations)
             throws TranslationException {
 
-        validate(resourceListing, apiDeclarations);
-
-        boolean containsRawTypes = false;
-        List<String> declaredTypes = new ArrayList<String>();
-        List<String> declaredPathVariables;
-        Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
+        validate(listing, apiDeclarations);
 
         try {
             Definition definition = new Definition();
-            definition.setVersion(resourceListing.getApiVersion());
-            Contact contact = new Contact();
-            contact.setEmail(resourceListing.getInfo().getContact());
-            definition.setContact(contact);
-            License license = new License();
-            license.setUrl(resourceListing.getInfo().getLicenseUrl());
-            definition.setLicense(license);
 
-            Contract contract = new Contract();
-            contract.setName(resourceListing.getInfo().getTitle());
-            LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
-            contract.setDescription(resourceListing.getInfo().getDescription());
-            definition.setContract(contract);
+            // fill main attributes of the Restlet Web API definition
+            String basePath = apiDeclarations.get(
+                    listing.getApis().get(0).getPath()).getBasePath();
+            fillMainAttributes(definition, listing, basePath);
 
-            // Resource listing
-            Resource resource;
-            for (Entry<String, ApiDeclaration> entry : apiDeclarations
-                    .entrySet()) {
-                ApiDeclaration swagApiDeclaration = entry.getValue();
-                List<String> apiProduces = swagApiDeclaration.getProduces();
-                List<String> apiConsumes = swagApiDeclaration.getConsumes();
-                Section section = new Section();
-                section.setName(entry.getKey());
-                section.setDescription(resourceListing.getApi(
-                        "/" + entry.getKey()).getDescription());
+            fillContract(definition.getContract(), listing, apiDeclarations);
 
-                for (ResourceDeclaration api : swagApiDeclaration.getApis()) {
-                    declaredPathVariables = new ArrayList<String>();
-                    resource = new Resource();
-                    resource.setResourcePath(api.getPath());
-
-                    // Operations listing
-                    Operation operation;
-                    for (ResourceOperationDeclaration swagOperation : api
-                            .getOperations()) {
-                        String methodName = swagOperation.getMethod();
-                        operation = new Operation();
-                        operation.setMethod(swagOperation.getMethod());
-                        operation.setName(swagOperation.getNickname());
-                        operation.setDescription(swagOperation.getSummary());
-
-                        // Set variants
-                        Representation representation;
-                        for (String produced : apiProduces.isEmpty() ? swagOperation
-                                .getProduces() : apiProduces) {
-                            if (!containsRawTypes
-                                    && MediaType.MULTIPART_FORM_DATA.getName()
-                                            .equals(produced)) {
-                                representation = new Representation();
-                                representation.setName("File");
-                                representation.setRaw(true);
-                                containsRawTypes = true;
-                                representation.getSections().add(
-                                        section.getName());
-                                contract.getRepresentations().add(
-                                        representation);
-                            }
-                            operation.getProduces().add(produced);
-                        }
-                        for (String consumed : apiConsumes.isEmpty() ? swagOperation
-                                .getConsumes() : apiConsumes) {
-                            if (!containsRawTypes
-                                    && MediaType.MULTIPART_FORM_DATA.getName()
-                                            .equals(consumed)) {
-                                representation = new Representation();
-                                representation.setName("File");
-                                representation.setRaw(true);
-                                containsRawTypes = true;
-                                representation.getSections().add(
-                                        section.getName());
-                                contract.getRepresentations().add(
-                                        representation);
-                            }
-                            operation.getConsumes().add(consumed);
-                        }
-
-                        // Set response's entity
-                        PayLoad rwadOutRepr = new PayLoad();
-                        if ("array".equals(swagOperation.getType())) {
-                            LOGGER.log(Level.FINER, "Operation: "
-                                    + swagOperation.getNickname()
-                                    + " returns an array");
-                            rwadOutRepr.setArray(true);
-                            if (swagOperation.getItems().getType() != null) {
-                                rwadOutRepr.setType(swagOperation.getItems()
-                                        .getType());
-                            } else {
-                                rwadOutRepr.setType(swagOperation.getItems()
-                                        .getRef());
-                            }
-                        } else {
-                            LOGGER.log(Level.FINER, "Operation: "
-                                    + swagOperation.getNickname()
-                                    + " returns a single Representation");
-                            rwadOutRepr.setArray(false);
-                            if (swagOperation.getType() != null) {
-                                rwadOutRepr.setType(swagOperation.getType());
-                            } else {
-                                rwadOutRepr.setType(swagOperation.getRef());
-                            }
-                        }
-
-                        // Extract success response message
-                        Response success = new Response();
-                        success.setCode(Status.SUCCESS_OK.getCode());
-                        success.setOutputPayLoad(rwadOutRepr);
-                        success.setDescription("Success");
-                        success.setMessage(Status.SUCCESS_OK.getDescription());
-                        success.setName("Success");
-                        operation.getResponses().add(success);
-
-                        // Loop over Swagger parameters.
-                        for (ResourceOperationParameterDeclaration param : swagOperation
-                                .getParameters()) {
-                            if ("path".equals(param.getParamType())) {
-                                if (!declaredPathVariables.contains(param
-                                        .getName())) {
-                                    declaredPathVariables.add(param.getName());
-                                    PathVariable pathVariable = toPathVariable(param);
-                                    resource.getPathVariables().add(
-                                            pathVariable);
-                                }
-                            } else if ("body".equals(param.getParamType())) {
-                                if (operation.getInputPayLoad() == null) {
-                                    PayLoad rwadInRepr = toEntity(param);
-                                    operation.setInputPayLoad(rwadInRepr);
-                                }
-                            } else if ("query".equals(param.getParamType())) {
-                                QueryParameter rwadQueryParam = toQueryParameter(param);
-                                operation.getQueryParameters().add(
-                                        rwadQueryParam);
-                            }
-                        }
-
-                        // Set error response messages
-                        if (swagOperation.getResponseMessages() != null) {
-                            for (ResponseMessageDeclaration swagResponse : swagOperation
-                                    .getResponseMessages()) {
-                                Response response = new Response();
-                                PayLoad outputPayLoad = new PayLoad();
-                                outputPayLoad.setType(swagResponse
-                                        .getResponseModel());
-                                response.setOutputPayLoad(outputPayLoad);
-                                response.setName("Error "
-                                        + swagResponse.getCode());
-                                response.setCode(swagResponse.getCode());
-                                response.setMessage(swagResponse.getMessage());
-                                operation.getResponses().add(response);
-                            }
-                        }
-
-                        resource.getOperations().add(operation);
-                        LOGGER.log(Level.FINE, "Method " + methodName
-                                + " added.");
-
-                        // Add representations
-                        for (Entry<String, ModelDeclaration> modelEntry : swagApiDeclaration
-                                .getModels().entrySet()) {
-                            ModelDeclaration model = modelEntry.getValue();
-                            if (model.getSubTypes() != null
-                                    && !model.getSubTypes().isEmpty()) {
-                                subtypes.put(model.getId(), model.getSubTypes());
-                            }
-                            if (!declaredTypes.contains(modelEntry.getKey())) {
-                                declaredTypes.add(modelEntry.getKey());
-                                representation = toRepresentation(model,
-                                        modelEntry.getKey());
-                                representation.getSections().add(
-                                        section.getName());
-                                contract.getRepresentations().add(
-                                        representation);
-                                LOGGER.log(Level.FINE, "Representation "
-                                        + modelEntry.getKey() + " added.");
-                            }
-                        }
-
-                        // Deal with subtyping
-                        for (Entry<String, List<String>> subtypesPair : subtypes
-                                .entrySet()) {
-                            List<String> subtypesOf = subtypesPair.getValue();
-                            for (String subtypeOf : subtypesOf) {
-                                representation = contract
-                                        .getRepresentation(subtypeOf);
-                                representation.setExtendedType(subtypesPair
-                                        .getKey());
-                            }
-                        }
-                    }
-
-                    resource.getSections().add(section.getName());
-                    contract.getResources().add(resource);
-                    LOGGER.log(Level.FINE, "Resource " + api.getPath()
-                            + " added.");
-                }
-
-                if (definition.getEndpoints().isEmpty()) {
-                    // TODO verify how to deal with API key auth + oauth
-                    Endpoint endpoint = new Endpoint(
-                            swagApiDeclaration.getBasePath());
-                    definition.getEndpoints().add(endpoint);
-                    if (resourceListing.getAuthorizations().getBasicAuth() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
-                                .getName());
-                    } else if (resourceListing.getAuthorizations().getOauth2() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
-                                .getName());
-                    } else if (resourceListing.getAuthorizations().getApiKey() != null) {
-                        endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
-                                .getName());
-                    }
-                }
-            }
             LOGGER.log(Level.FINE,
                     "Definition successfully retrieved from Swagger definition");
             return definition;

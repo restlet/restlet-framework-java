@@ -194,7 +194,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         representation2.setName("nameRepresentation2");
 
         // When
-        Swagger swagger = swagger2Translator.getSwaggerFromRwadef(definition);
+        Swagger swagger = swagger2Translator.getSwagger(definition);
 
         // Then
         assertEquals(Float.valueOf(2.0f), swagger.getSwagger());

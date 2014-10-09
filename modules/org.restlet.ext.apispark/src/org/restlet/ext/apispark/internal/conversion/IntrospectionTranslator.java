@@ -26,16 +26,15 @@ import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
@@ -464,14 +463,6 @@ public class IntrospectionTranslator {
             }
 
             // TODO add section sorting strategies
-            Section section = new Section();
-            if (contract.getSections().isEmpty()) {
-                section = new Section();
-                section.setName("All resources");
-                contract.getSections().add(section);
-            } else {
-                section = contract.getSections().get(0);
-            }
             for (RepresentationInfo ri : mapReps.values()) {
                 if (ri.isCollection()) {
                     continue;
@@ -516,7 +507,8 @@ public class IntrospectionTranslator {
 
                 representation.setRaw(ri.isRaw()
                         || ReflectUtils.isJdkClass(ri.getType()));
-                representation.getSections().add(section.getName());
+                // TODO add representation's sections
+                // representation.getSections().add(section.getName());
                 contract.getRepresentations().add(representation);
             }
         }

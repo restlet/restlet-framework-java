@@ -48,13 +48,13 @@ public class Swagger2Translator {
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
 
     /**
-     * Rwadef -> Swagger 2.0
+     * Translates a Restlet Web API Definition to a Swagger definition
      * 
      * @param definition
-     *            Rwadef
-     * @return Swagger 2.0
+     *            The Restlet Web API definition
+     * @return Swagger The translated Swagger 2.0 definition
      */
-    public Swagger getSwaggerFromRwadef(Definition definition) {
+    public Swagger getSwagger(Definition definition) {
 
         // conversion
         Swagger swagger = new Swagger();
@@ -78,12 +78,12 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger main attributes from rwadef definition
+     * Fills swagger main attributes from Restlet Web API definition
      * 
      * @param definition
-     *            rwadef definition
+     *            The Restlet Web API definition
      * @param swagger
-     *            swagger definition
+     *            The Swagger 2.0 definition
      */
     private void fillMainAttributes(Definition definition, Swagger swagger) {
         // basePath

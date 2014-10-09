@@ -62,16 +62,15 @@ import org.restlet.ext.apispark.internal.info.ResponseInfo;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.resource.Directory;
@@ -137,14 +136,6 @@ public class Introspector {
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps) {
         // TODO add section sorting strategies
-        Section section = new Section();
-        if (contract.getSections().isEmpty()) {
-            section = new Section();
-            section.setName("All resources");
-            contract.getSections().add(section);
-        } else {
-            section = contract.getSections().get(0);
-        }
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
             resource.setDescription(ri.getDescription());
@@ -342,7 +333,8 @@ public class Introspector {
                 resource.getOperations().add(operation);
             }
 
-            resource.getSections().add(section.getName());
+            // TODO add resources to sections
+            // resource.getSections().add(section.getName());
             contract.getResources().add(resource);
         }
     }
@@ -482,7 +474,7 @@ public class Introspector {
             ResourceInfo.describe(applicationInfo, result, resource, path);
         }
         if (scheme != null) {
-            result.setAuthenticationProtocol(scheme.getTechnicalName());
+            result.setAuthenticationProtocol(scheme.getName());
         }
 
         return result;
@@ -615,7 +607,7 @@ public class Introspector {
                         new Endpoint("", 80, Protocol.HTTP.getSchemeName(),
                                 "example.com", application
                                         .getAuthenticationProtocol()
-                                        .getTechnicalName()));
+                                        .getName()));
             }
 
             Contract contract = new Contract();
@@ -631,14 +623,6 @@ public class Introspector {
             LOGGER.fine("Contract " + contract.getName() + " added.");
 
             // TODO add section sorting strategies
-            Section section = new Section();
-            if (contract.getSections().isEmpty()) {
-                section = new Section();
-                section.setName("All resources");
-                contract.getSections().add(section);
-            } else {
-                section = contract.getSections().get(0);
-            }
 
             // List of resources.
             contract.setResources(new ArrayList<Resource>());
@@ -797,7 +781,8 @@ public class Introspector {
 
                 representation.setRaw(ri.isRaw()
                         || ReflectUtils.isJdkClass(ri.getType()));
-                representation.getSections().add(section.getName());
+                // TODO add representation's sections
+                // representation.getSections().add(section.getName());
                 contract.getRepresentations().add(representation);
             }
         }
