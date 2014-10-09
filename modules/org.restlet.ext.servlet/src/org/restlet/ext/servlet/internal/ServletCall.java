@@ -164,7 +164,14 @@ public class ServletCall extends ServerCall {
      */
     @Override
     public String getHostDomain() {
-        return getRequest().getServerName();
+        String serverName = getRequest().getServerName();
+        
+        // Check if the servlet container returned an unbracketed IPv6 address
+        if (serverName.indexOf(':') != -1 && serverName.indexOf('[') == -1) {
+            return '[' + serverName + ']';
+        } else {
+            return serverName;
+        }
     }
 
     /**
