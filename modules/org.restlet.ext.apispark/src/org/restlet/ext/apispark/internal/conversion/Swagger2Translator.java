@@ -1,10 +1,10 @@
 package org.restlet.ext.apispark.internal.conversion;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Header;
@@ -170,7 +170,8 @@ public class Swagger2Translator {
         for (Operation operation : resource.getOperations()) {
 
             com.wordnik.swagger.models.Operation operationSwagger = new com.wordnik.swagger.models.Operation();
-            resource.getSections().addAll(operationSwagger.getTags());
+            operationSwagger.setTags(new ArrayList<String>());
+            operationSwagger.getTags().addAll(resource.getSections());
 
             String method = operation.getMethod().toLowerCase();
             Path setResult = pathSwagger.set(method, operationSwagger);
@@ -181,8 +182,9 @@ public class Swagger2Translator {
 
             String description = operation.getDescription();
 
-            operationSwagger.setSummary(StringUtils.substring(description, 0,
-                    120));
+            operationSwagger
+                    .setSummary(description.length() > 120 ? description
+                            .substring(0, 120) : description);
             operationSwagger.setDescription(description);
             operationSwagger.setOperationId(operation.getName());
             operationSwagger.setConsumes(operation.getConsumes());
@@ -381,14 +383,18 @@ public class Swagger2Translator {
                 if (propertySwagger instanceof AbstractNumericProperty) {
                     AbstractNumericProperty abstractNumericProperty = (AbstractNumericProperty) propertySwagger;
                     try {
-                        abstractNumericProperty.setMinimum(Double
-                                .valueOf(property.getMin()));
+                        if (property.getMin() != null) {
+                            abstractNumericProperty.setMinimum(Double
+                                    .valueOf(property.getMin()));
+                        }
                     } catch (NumberFormatException e) {
                         // TODO add error message in a conversion results bean
                     }
                     try {
-                        abstractNumericProperty.setMaximum(Double
-                                .valueOf(property.getMax()));
+                        if (property.getMax() != null) {
+                            abstractNumericProperty.setMaximum(Double
+                                    .valueOf(property.getMax()));
+                        }
                     } catch (NumberFormatException e) {
                         // TODO add error message in a conversion results bean
                     }

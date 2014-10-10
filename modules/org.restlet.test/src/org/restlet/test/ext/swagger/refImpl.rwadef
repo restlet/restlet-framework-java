@@ -1,0 +1,988 @@
+{
+  "contact": {
+    "name": "Cyprien QUILICI",
+    "email": "cquilici@restlet.com",
+    "url": "https://apispark.com"
+  },
+  "contract": {
+    "description": "A tutorial for Restlet Framework",
+    "name": "WebAPITutorial",
+    "sections": [
+      {
+        "name": "ping",
+        "description": "Ping your API !"
+      },
+      {
+        "name": "contacts",
+        "description": "Deal with contacts"
+      },
+      {
+        "name": "companies",
+        "description": "Deal with companies"
+      }
+    ],
+    "representations": [
+      {
+        "description": "A list of companies",
+        "extendedType": null,
+        "name": "CompanyListRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The list of companies",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "list",
+            "type": "CompanyRepresentation",
+            "uniqueItems": true
+          }
+        ],
+        "raw": false,
+        "sections": [
+          "companies"
+        ]
+      },
+      {
+        "description": "A company",
+        "extendedType": null,
+        "name": "CompanyRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The company's website",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "website",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The city of the company's HQ",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "city",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The zip code of the city of the company's HQ",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "zipCode",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "???",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "self",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The comany's name",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "name",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The company's duns",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "duns",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The company's birthday",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "creationDate",
+            "type": "Date",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The phone number to join the company's standard",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "phoneNumber",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The company's address",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "address",
+            "type": "String",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      },
+      {
+        "description": "A list of contacts",
+        "extendedType": null,
+        "name": "ContactListRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The list of contacts",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "list",
+            "type": "ContactRepresentation",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      },
+      {
+        "description": null,
+        "extendedType": null,
+        "name": "ContactRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The name of the contact",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "name",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "???",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "self",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The age of the contact",
+            "enumeration": [],
+            "max": "100",
+            "maxOccurs": 1,
+            "min": "0",
+            "minOccurs": 0,
+            "name": "age",
+            "type": "int",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The company in which the contact works",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "company",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The contact's email",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "email",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The first name of the contact",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "firstName",
+            "type": "String",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      },
+      {
+        "description": "A list of contacts with their full company",
+        "extendedType": null,
+        "name": "ContactWithCompanyListRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The contact's list",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "list",
+            "type": "ContactWithCompanyRepresentation",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      },
+      {
+        "description": "A contact with its full company",
+        "extendedType": null,
+        "name": "ContactWithCompanyRepresentation",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "The contact's age",
+            "enumeration": [],
+            "max": "100",
+            "maxOccurs": 1,
+            "min": "0",
+            "minOccurs": 0,
+            "name": "age",
+            "type": "int",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The contact's name",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "name",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The contact's first name",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "firstName",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The company in which the contact works",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "company",
+            "type": "CompanyRepresentation",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "The contact's email",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "email",
+            "type": "String",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": "???",
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "self",
+            "type": "String",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      },
+      {
+        "description": "A dummy object",
+        "extendedType": null,
+        "name": "Ping",
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "point",
+            "type": "Float",
+            "uniqueItems": false
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "enumeration": [],
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "version",
+            "type": "String",
+            "uniqueItems": false
+          }
+        ],
+        "raw": false,
+        "sections": []
+      }
+    ],
+    "resources": [
+      {
+        "description": "Deals with a list of company",
+        "name": "Companies",
+        "operations": [
+          {
+            "consumes": [],
+            "description": "Loads a list of company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getCompanies",
+            "produces": [
+              "application/x-json-smile",
+              "application/xml",
+              "text/xml",
+              "text/csv",
+              "application/json",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "CompanyListRepresentation",
+                  "description": "The list of all the companies know by the system"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [
+              "text/csv",
+              "application/x-json-smile",
+              "application/json",
+              "application/xml",
+              "text/xml",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "description": "Adds a company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "POST",
+            "name": "postCompanies",
+            "produces": [
+              "text/csv",
+              "application/x-json-smile",
+              "application/json",
+              "application/xml",
+              "text/xml",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "CompanyRepresentation",
+                  "description": "The added company"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/companies",
+        "authenticationProtocol": "HTTP_BASIC",
+        "sections": [
+          "companies"
+        ]
+      },
+      {
+        "description": "Deals with a single company",
+        "name": "CompaniesId",
+        "operations": [
+          {
+            "consumes": [],
+            "description": "Loads a company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getCompaniesId",
+            "produces": [
+              "text/csv",
+              "application/x-json-smile",
+              "application/json",
+              "application/xml",
+              "text/xml",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "CompanyRepresentation",
+                  "description": "The company"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Deletes a company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "DELETE",
+            "name": "deleteCompaniesId",
+            "produces": [],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": null,
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [
+              "text/csv",
+              "application/x-json-smile",
+              "application/json",
+              "application/xml",
+              "text/xml",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "description": "Updates a company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "PUT",
+            "name": "putCompaniesId",
+            "produces": [
+              "text/csv",
+              "application/x-json-smile",
+              "application/json",
+              "application/xml",
+              "text/xml",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "CompanyRepresentation",
+                  "description": "The new state of the company"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "Identifier of the Dog",
+            "name": "id",
+            "type": "string"
+          }
+        ],
+        "resourcePath": "/companies/{id}",
+        "authenticationProtocol": "HTTP_BASIC",
+        "sections": [
+          "companies"
+        ]
+      },
+      {
+        "description": "Deals with a company's contact list",
+        "name": "CompaniesIdContacts",
+        "operations": [
+          {
+            "consumes": [],
+            "description": "Load the company's contact list",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getCompaniesIdContacts",
+            "produces": [
+              "application/xml",
+              "text/xml",
+              "application/json",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml",
+              "text/csv"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactListRepresentation",
+                  "description": "The company's contact list"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Loads a company's contact list with their company field filled",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getCompaniesIdContacts1",
+            "produces": [
+              "application/json",
+              "application/x-yaml",
+              "text/x-yaml",
+              "text/csv",
+              "application/x-json-smile",
+              "application/xml",
+              "text/xml"
+            ],
+            "queryParameters": [
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "Value: load",
+                "enumeration": [],
+                "name": "strategy",
+                "required": false,
+                "type": "string",
+                "separator": "\u0000"
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactWithCompanyListRepresentation",
+                  "description": "The list of the company's contacts"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "The company's identifier",
+            "name": "id",
+            "type": "string"
+          }
+        ],
+        "resourcePath": "/companies/{id}/contacts",
+        "authenticationProtocol": "HTTP_BASIC",
+        "sections": [
+          "contacts",
+          "companies"
+        ]
+      },
+      {
+        "description": "Deals with a list of contacts",
+        "name": "Contacts",
+        "operations": [
+          {
+            "consumes": [],
+            "description": "Loads the list of contacts",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getContacts",
+            "produces": [
+              "application/xml",
+              "text/xml",
+              "application/json",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml",
+              "text/csv"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactListRepresentation",
+                  "description": "The list of contacts"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Loads the list of contacts with their companies",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getContacts1",
+            "produces": [
+              "application/json",
+              "application/x-yaml",
+              "text/x-yaml",
+              "text/csv",
+              "application/x-json-smile",
+              "application/xml",
+              "text/xml"
+            ],
+            "queryParameters": [
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "Value: load",
+                "enumeration": [],
+                "name": "strategy",
+                "required": false,
+                "type": "string",
+                "separator": "\u0000"
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactWithCompanyListRepresentation",
+                  "description": "The list of contacts with their companies"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/contacts",
+        "authenticationProtocol": "HTTP_BASIC",
+        "sections": [
+          "contacts"
+        ]
+      },
+      {
+        "description": "Deals with a contact",
+        "name": "ContactsEmail",
+        "operations": [
+          {
+            "consumes": [
+              "text/csv",
+              "application/xml",
+              "text/xml",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "description": "Creates or updates a contact",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "PUT",
+            "name": "putContactsEmail",
+            "produces": [
+              "text/csv",
+              "application/xml",
+              "text/xml",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactRepresentation",
+                  "description": "The contact"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Deletes the contact",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "DELETE",
+            "name": "deleteContactsEmail",
+            "produces": [],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": null,
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Loads a contact",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getContactsEmail",
+            "produces": [
+              "application/xml",
+              "text/xml",
+              "text/csv",
+              "application/json",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "Value: load",
+                "enumeration": [],
+                "name": "strategy",
+                "required": false,
+                "type": "string",
+                "separator": "\u0000"
+              }
+            ],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactWithCompanyRepresentation",
+                  "description": "The contact"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          },
+          {
+            "consumes": [],
+            "description": "Loads a contact with its company",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getContactsEmail1",
+            "produces": [
+              "text/csv",
+              "application/xml",
+              "text/xml",
+              "application/x-json-smile",
+              "application/x-yaml",
+              "text/x-yaml"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "ContactRepresentation",
+                  "description": "The contact with its company"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "The contact's identifier (its email)",
+            "name": "email",
+            "type": "string"
+          }
+        ],
+        "resourcePath": "/contacts/{email}",
+        "authenticationProtocol": "HTTP_BASIC",
+        "sections": [
+          "contacts"
+        ]
+      },
+      {
+        "description": "Ping your API !",
+        "name": "Ping",
+        "operations": [
+          {
+            "consumes": [],
+            "description": "Provides a dummy unprotected resource to ping the API",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getPing",
+            "produces": [
+              "application/json"
+            ],
+            "queryParameters": [],
+            "responses": [
+              {
+                "code": 200,
+                "description": "The request has succeeded",
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "Ping",
+                  "description": "A dummy object"
+                },
+                "message": "The request has succeeded",
+                "name": "success",
+                "headers": null
+              }
+            ]
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/ping",
+        "authenticationProtocol": null,
+        "sections": [
+          "ping"
+        ]
+      }
+    ]
+  },
+  "endpoints": [
+    {
+      "domain": "example.com",
+      "port": 80,
+      "protocol": "http",
+      "basePath": "/v1",
+      "authenticationProtocol": "HTTP_BASIC"
+    }
+  ],
+  "license": {
+    "name": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+  },
+  "rwadefVersion": "1.0",
+  "version": "1.0.0",
+  "termsOfService": "You can use it as you wish !"
+}

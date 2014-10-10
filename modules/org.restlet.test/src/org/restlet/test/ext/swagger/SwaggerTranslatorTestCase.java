@@ -33,7 +33,6 @@
 
 package org.restlet.test.ext.swagger;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.restlet.data.MediaType;
@@ -43,9 +42,9 @@ import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
@@ -73,8 +72,8 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
     public void testPetstoreSwaggerToRwadef() throws TranslationException,
             IOException {
         Definition savedDefinition = new JacksonRepresentation<Definition>(
-                new FileRepresentation(new File(
-                        "src/org/restlet/test/ext/raml/Petstore.rwadef"),
+                new FileRepresentation(getClass()
+                        .getResource("Petstore.rwadef").getFile(),
                         MediaType.APPLICATION_JSON), Definition.class)
                 .getObject();
         Definition translatedDefinition = SwaggerUtils.getDefinition(

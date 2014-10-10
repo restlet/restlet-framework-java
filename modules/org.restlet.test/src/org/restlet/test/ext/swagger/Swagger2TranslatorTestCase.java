@@ -1,8 +1,10 @@
 package org.restlet.test.ext.swagger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -16,6 +18,8 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
 
 import com.wordnik.swagger.models.Contact;
@@ -32,12 +36,10 @@ import com.wordnik.swagger.models.properties.StringProperty;
 
 public class Swagger2TranslatorTestCase extends RestletTestCase {
 
-    private Swagger2Translator swagger2Translator = new Swagger2Translator();
-
     /**
      * Conversion Rwadef -> Swagger 2.0.
      */
-    public void testGetSwagger() {
+    public void testGetSwagger1() {
         // Given
 
         // definition
@@ -194,7 +196,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         representation2.setName("nameRepresentation2");
 
         // When
-        Swagger swagger = swagger2Translator.getSwagger(definition);
+        Swagger swagger = Swagger2Translator.getSwagger(definition);
 
         // Then
         assertEquals(Float.valueOf(2.0f), swagger.getSwagger());
@@ -319,6 +321,18 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
                 "nameRepresentation2");
         assertEquals("nameRepresentation2", model2.getName());
 
+    }
+
+    public void testSwagger2() throws IOException {
+        // TODO implement the test
+        Definition definition = new JacksonRepresentation<Definition>(
+                new FileRepresentation(getClass().getResource("refImpl.rwadef")
+                        .getFile(), MediaType.APPLICATION_JSON),
+                Definition.class).getObject();
+        Swagger swagger = new JacksonRepresentation<Swagger>(
+                new FileRepresentation(getClass()
+                        .getResource("refImpl.swagger").getFile(),
+                        MediaType.APPLICATION_JSON), Swagger.class).getObject();
     }
 
 }

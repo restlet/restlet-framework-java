@@ -1,0 +1,943 @@
+{
+  "swagger": 2,
+  "info": {
+    "description": "A tutorial for Restlet Framework",
+    "version": "1.0.0",
+    "title": "WebAPITutorial",
+    "termsOfService": null,
+    "contact": {
+      "name": "Cyprien QUILICI",
+      "url": "https://apispark.com",
+      "email": "cquilici@restlet.com"
+    },
+    "license": null
+  },
+  "host": "example.com",
+  "basePath": "/v1",
+  "consumes": null,
+  "produces": null,
+  "paths": {
+    "/companies": {
+      "get": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Loads a list of company",
+        "description": "Loads a list of company",
+        "operationId": "getCompanies",
+        "consumes": [],
+        "produces": [
+          "application/x-json-smile",
+          "application/xml",
+          "text/xml",
+          "text/csv",
+          "application/json",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": null,
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "CompanyListRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Adds a company",
+        "description": "Adds a company",
+        "operationId": "postCompanies",
+        "consumes": [
+          "text/csv",
+          "application/x-json-smile",
+          "application/json",
+          "application/xml",
+          "text/xml",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "produces": [
+          "text/csv",
+          "application/x-json-smile",
+          "application/json",
+          "application/xml",
+          "text/xml",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": null,
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "CompanyRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "put": null,
+      "delete": null,
+      "options": null,
+      "patch": null
+    },
+    "/companies/{id}": {
+      "get": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Loads a company",
+        "description": "Loads a company",
+        "operationId": "getCompaniesId",
+        "consumes": [],
+        "produces": [
+          "text/csv",
+          "application/x-json-smile",
+          "application/json",
+          "application/xml",
+          "text/xml",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Identifier of the Dog",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "CompanyRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": null,
+      "put": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Updates a company",
+        "description": "Updates a company",
+        "operationId": "putCompaniesId",
+        "consumes": [
+          "text/csv",
+          "application/x-json-smile",
+          "application/json",
+          "application/xml",
+          "text/xml",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "produces": [
+          "text/csv",
+          "application/x-json-smile",
+          "application/json",
+          "application/xml",
+          "text/xml",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Identifier of the Dog",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "CompanyRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "delete": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Deletes a company",
+        "description": "Deletes a company",
+        "operationId": "deleteCompaniesId",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Identifier of the Dog",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": null,
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "options": null,
+      "patch": null
+    },
+    "/companies/{id}/contacts": {
+      "get": {
+        "tags": [
+          "contacts",
+          "companies"
+        ],
+        "summary": "Loads a company's contact list with their company field filled",
+        "description": "Loads a company's contact list with their company field filled",
+        "operationId": "getCompaniesIdContacts1",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "application/x-yaml",
+          "text/x-yaml",
+          "text/csv",
+          "application/x-json-smile",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "The company's identifier",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          },
+          {
+            "in": "query",
+            "name": "strategy",
+            "description": "Value: load",
+            "required": false,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "ContactWithCompanyListRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": null,
+      "put": null,
+      "delete": null,
+      "options": null,
+      "patch": null
+    },
+    "/contacts": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Loads the list of contacts with their companies",
+        "description": "Loads the list of contacts with their companies",
+        "operationId": "getContacts1",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "application/x-yaml",
+          "text/x-yaml",
+          "text/csv",
+          "application/x-json-smile",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "strategy",
+            "description": "Value: load",
+            "required": false,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "ContactWithCompanyListRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": null,
+      "put": null,
+      "delete": null,
+      "options": null,
+      "patch": null
+    },
+    "/contacts/{email}": {
+      "get": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Loads a contact with its company",
+        "description": "Loads a contact with its company",
+        "operationId": "getContactsEmail1",
+        "consumes": [],
+        "produces": [
+          "text/csv",
+          "application/xml",
+          "text/xml",
+          "application/x-json-smile",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "email",
+            "description": "The contact's identifier (its email)",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "ContactRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": null,
+      "put": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Creates or updates a contact",
+        "description": "Creates or updates a contact",
+        "operationId": "putContactsEmail",
+        "consumes": [
+          "text/csv",
+          "application/xml",
+          "text/xml",
+          "application/x-json-smile",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "produces": [
+          "text/csv",
+          "application/xml",
+          "text/xml",
+          "application/x-json-smile",
+          "application/x-yaml",
+          "text/x-yaml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "email",
+            "description": "The contact's identifier (its email)",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "ContactRepresentation"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "delete": {
+        "tags": [
+          "contacts"
+        ],
+        "summary": "Deletes the contact",
+        "description": "Deletes the contact",
+        "operationId": "deleteContactsEmail",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "email",
+            "description": "The contact's identifier (its email)",
+            "required": true,
+            "type": "string",
+            "items": null,
+            "collectionFormat": null,
+            "format": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": null,
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "options": null,
+      "patch": null
+    },
+    "/ping": {
+      "get": {
+        "tags": [
+          "ping"
+        ],
+        "summary": "Provides a dummy unprotected resource to ping the API",
+        "description": "Provides a dummy unprotected resource to ping the API",
+        "operationId": "getPing",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": null,
+        "responses": {
+          "200": {
+            "description": "The request has succeeded",
+            "schema": {
+              "format": null,
+              "example": null,
+              "xml": null,
+              "position": null,
+              "description": null,
+              "title": null,
+              "$ref": "Ping"
+            },
+            "examples": null
+          }
+        },
+        "security": null
+      },
+      "post": null,
+      "put": null,
+      "delete": null,
+      "options": null,
+      "patch": null
+    }
+  },
+  "securityDefinition": null,
+  "definitions": {
+    "ContactListRepresentation": {
+      "required": null,
+      "properties": {
+        "list": {
+          "type": "array",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The list of contacts",
+          "title": null,
+          "items": {
+            "format": null,
+            "example": null,
+            "xml": null,
+            "position": null,
+            "description": null,
+            "title": null,
+            "$ref": "ContactRepresentation"
+          }
+        }
+      },
+      "type": null,
+      "description": "A list of contacts",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "ContactRepresentation": {
+      "required": null,
+      "properties": {
+        "name": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The name of the contact",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "self": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "???",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32",
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The age of the contact",
+          "title": null,
+          "minimum": 0,
+          "maximum": 100,
+          "exclusiveMinimum": null,
+          "exclusiveMaximum": null
+        },
+        "company": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company in which the contact works",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "email": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's email",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "firstName": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The first name of the contact",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        }
+      },
+      "type": null,
+      "description": null,
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "CompanyRepresentation": {
+      "required": null,
+      "properties": {
+        "website": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company's website",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "city": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The city of the company's HQ",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "zipCode": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The zip code of the city of the company's HQ",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "self": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "???",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "name": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The comany's name",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "duns": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company's duns",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "creationDate": {
+          "type": "string",
+          "format": "date",
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company's birthday",
+          "title": null
+        },
+        "phoneNumber": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The phone number to join the company's standard",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "address": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company's address",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        }
+      },
+      "type": null,
+      "description": "A company",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "Ping": {
+      "required": null,
+      "properties": {
+        "point": {
+          "type": "number",
+          "format": "float",
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": null,
+          "title": null,
+          "minimum": null,
+          "maximum": null,
+          "exclusiveMinimum": null,
+          "exclusiveMaximum": null
+        },
+        "version": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": null,
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        }
+      },
+      "type": null,
+      "description": "A dummy object",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "ContactWithCompanyRepresentation": {
+      "required": null,
+      "properties": {
+        "age": {
+          "type": "integer",
+          "format": "int32",
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's age",
+          "title": null,
+          "minimum": 0,
+          "maximum": 100,
+          "exclusiveMinimum": null,
+          "exclusiveMaximum": null
+        },
+        "name": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's name",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "firstName": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's first name",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "company": {
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The company in which the contact works",
+          "title": null,
+          "$ref": "CompanyRepresentation"
+        },
+        "email": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's email",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        },
+        "self": {
+          "type": "string",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "???",
+          "title": null,
+          "minLength": null,
+          "maxLength": null,
+          "pattern": null,
+          "enum": null
+        }
+      },
+      "type": null,
+      "description": "A contact with its full company",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "ContactWithCompanyListRepresentation": {
+      "required": null,
+      "properties": {
+        "list": {
+          "type": "array",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The contact's list",
+          "title": null,
+          "items": {
+            "format": null,
+            "example": null,
+            "xml": null,
+            "position": null,
+            "description": null,
+            "title": null,
+            "$ref": "ContactWithCompanyRepresentation"
+          }
+        }
+      },
+      "type": null,
+      "description": "A list of contacts with their full company",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    },
+    "CompanyListRepresentation": {
+      "required": null,
+      "properties": {
+        "list": {
+          "type": "array",
+          "format": null,
+          "example": null,
+          "xml": null,
+          "position": null,
+          "description": "The list of companies",
+          "title": null,
+          "items": {
+            "format": null,
+            "example": null,
+            "xml": null,
+            "position": null,
+            "description": null,
+            "title": null,
+            "$ref": "CompanyRepresentation"
+          }
+        }
+      },
+      "type": null,
+      "description": "A list of companies",
+      "example": null,
+      "additionalProperties": null,
+      "discriminator": null
+    }
+  }
+}
