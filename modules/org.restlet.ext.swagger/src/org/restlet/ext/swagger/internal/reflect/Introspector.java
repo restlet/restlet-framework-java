@@ -344,10 +344,10 @@ public class Introspector {
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
      * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     * @param application
+     *            The source application.
+     * @param baseRef
+     *            The base ref.
      * @return An application description.
      */
     protected static ApplicationInfo getApplicationInfo(
@@ -420,10 +420,6 @@ public class Introspector {
      *            The Filter instance to document.
      * @param path
      *            The base path.
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
      * @return The resource description.
      */
     private static ResourceInfo getResourceInfo(
@@ -441,8 +437,6 @@ public class Introspector {
      * 
      * @param applicationInfo
      *            The parent application.
-     * @param resourceInfo
-     *            The ResourceInfo object to complete.
      * @param finder
      *            The Finder instance to document.
      */
@@ -485,8 +479,6 @@ public class Introspector {
      * 
      * @param applicationInfo
      *            The parent application.
-     * @param resourceInfo
-     *            The ResourceInfo object to complete.
      * @param restlet
      *            The Restlet instance to document.
      */
@@ -797,11 +789,7 @@ public class Introspector {
     }
 
     /**
-     * Concats a list of {@link DocumentationInfo} instances as a single String.
-     * 
-     * @param dis
-     *            The list of {@link DocumentationInfo} instances.
-     * @return A String value.
+     * @return default value if description is null or empty.
      */
     private static String toString(String description, String defaultValue) {
         if (description != null && !description.isEmpty()) {
@@ -820,7 +808,7 @@ public class Introspector {
      * @param application
      *            An application to introspect.
      */
-    public Introspector(Application application, boolean verbose) {
+    public Introspector(Application application) {
         this(null, application);
     }
 
@@ -838,16 +826,18 @@ public class Introspector {
 
         if (component != null && definition != null) {
             LOGGER.fine("Look for the endpoint.");
-            Endpoint endpoint = null;
             // TODO What if the application is attached to several endpoints?
             // Look for the endpoint to which this application is attached.
-            endpoint = getEndpoint(component.getDefaultHost(), application);
-            for (int i = 0; endpoint == null && i < component.getHosts().size(); i++) {
-                VirtualHost virtualHost = component.getHosts().get(i);
-                endpoint = getEndpoint(virtualHost, application);
-                if (endpoint != null) {
-                    definition.getEndpoints().add(endpoint);
+            Endpoint endpoint = getEndpoint(component.getDefaultHost(), application);
+            if (endpoint != null) {
+                definition.getEndpoints().add(endpoint);
+                for (VirtualHost virtualHost : component.getHosts()) {
+                    endpoint = getEndpoint(virtualHost, application);
+                    if (endpoint != null) {
+                        definition.getEndpoints().add(endpoint);
+                    }
                 }
+
             }
         }
     }

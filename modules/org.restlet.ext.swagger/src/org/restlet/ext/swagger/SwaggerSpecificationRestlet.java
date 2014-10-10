@@ -38,10 +38,9 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.cors.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
@@ -49,7 +48,6 @@ import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.swagger.internal.reflect.Introspector;
 import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 import com.wordnik.swagger.core.SwaggerSpec;
 
@@ -66,8 +64,8 @@ import com.wordnik.swagger.core.SwaggerSpec;
  * applications.
  * 
  * @author Thierry Boileau
- * @see https://github.com/wordnik/swagger-ui
- * @see https://helloreverb.com/developers/swagger
+ * @link https://github.com/wordnik/swagger-ui
+ * @link https://helloreverb.com/developers/swagger
  */
 public class SwaggerSpecificationRestlet extends Restlet {
 
@@ -92,6 +90,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The version of Swagger. */
     private String swaggerVersion;
 
+    /** Helper used to add CORS response headers */
+    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
+
     /**
      * Default constructor.<br>
      * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
@@ -115,7 +116,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /**
      * Returns the Swagger documentation of a given resource, also known as
      * "API Declaration" in Swagger vocabulary.
-     * 
+     *
      * @param category
      *            The category of the resource to describe.
      * @return The representation of the API declaration.
@@ -166,7 +167,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
     private synchronized Definition getDefinition() {
         if (definition == null) {
             synchronized (SwaggerSpecificationRestlet.class) {
-                Introspector i = new Introspector(application, false);
+                Introspector i = new Introspector(application);
                 definition = i.getDefinition();
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
@@ -190,7 +191,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /**
      * Returns the representation of the whole resource listing of the
      * Application.
-     * 
+     *
      * @return The representation of the whole resource listing of the
      *         Application.
      */
@@ -214,20 +215,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
         super.handle(request, response);
 
         // CORS support for Swagger-UI
-        Series<Header> headers = new Series<Header>(Header.class);
-        headers.set(
-                "Access-Control-Expose-Headers",
-                "Authorization, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-OAuth-Scopes, X-Accepted-OAuth-Scopes");
-        headers.set("Access-Control-Allow-Headers", "Authorization,");
-        headers.set("Access-Control-Allow-Credentials", "true");
-        headers.set("Access-Control-Allow-Methods", "GET");
-        Series<Header> reqHeaders = (Series<Header>) request.getAttributes()
-                .get(HeaderConstants.ATTRIBUTE_HEADERS);
-        String requestOrigin = reqHeaders.getFirstValue("Origin", "*");
-        headers.set("Access-Control-Allow-Origin", requestOrigin);
-        response.getAttributes()
-                .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
-
+        corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
+        
         if (!Method.GET.equals(request.getMethod())) {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -284,7 +273,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /**
      * Sets the base path of the API's resource.
      * 
-     * @param basePath
+     * @param jsonPath
      *            The base path of the API's resource.
      */
     public void setJsonPath(String jsonPath) {
