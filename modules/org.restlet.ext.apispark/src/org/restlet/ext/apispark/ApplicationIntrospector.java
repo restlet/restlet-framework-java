@@ -330,7 +330,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
     public ApplicationIntrospector(Component component, Application application) {
         ApplicationInfo applicationInfo = getApplicationInfo(application, null);
         definition = DefinitionTranslator.toDefinition(
-                applicationInfo, LOGGER);
+                applicationInfo);
 
         if (component != null && definition != null) {
             LOGGER.fine("Look for the endpoint.");

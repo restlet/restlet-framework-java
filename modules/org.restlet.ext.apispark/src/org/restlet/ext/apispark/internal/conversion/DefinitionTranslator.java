@@ -46,6 +46,10 @@ import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
  */
 public class DefinitionTranslator {
 
+    /** Internal logger. */
+    protected static Logger LOGGER = Logger.getLogger(DefinitionTranslator.class
+            .getName());
+    
     /**
      * Completes a map of representations with a list of representations.
      * 
@@ -82,7 +86,7 @@ public class DefinitionTranslator {
      */
     private static void addResources(ApplicationInfo application,
             Contract contract, List<ResourceInfo> resources, String basePath,
-            Map<String, RepresentationInfo> mapReps, Logger logger) {
+            Map<String, RepresentationInfo> mapReps) {
         // TODO add section sorting strategies
         for (ResourceInfo ri : resources) {
             Resource resource = new Resource();
@@ -91,12 +95,10 @@ public class DefinitionTranslator {
             resource.setAuthenticationProtocol(ri.getAuthenticationProtocol());
             if (ri.getPath() == null) {
                 resource.setResourcePath("/");
+            } else if (!ri.getPath().startsWith("/")) {
+                resource.setResourcePath("/" + ri.getPath());
             } else {
-                if (!ri.getPath().startsWith("/")) {
-                    resource.setResourcePath("/" + ri.getPath());
-                } else {
-                    resource.setResourcePath(ri.getPath());
-                }
+                resource.setResourcePath(ri.getPath());
             }
 
             resource.setPathVariables(new ArrayList<PathVariable>());
@@ -113,12 +115,12 @@ public class DefinitionTranslator {
 
             if (!ri.getChildResources().isEmpty()) {
                 addResources(application, contract, ri.getChildResources(),
-                        resource.getResourcePath(), mapReps, logger);
+                        resource.getResourcePath(), mapReps);
             }
-            logger.fine("Resource " + ri.getPath() + " added.");
+            LOGGER.fine("Resource " + ri.getPath() + " added.");
 
             if (ri.getMethods().isEmpty()) {
-                logger.warning("Resource " + ri.getName() + " has no methods.");
+                LOGGER.warning("Resource " + ri.getName() + " has no methods.");
                 continue;
             }
 
@@ -126,13 +128,18 @@ public class DefinitionTranslator {
             for (MethodInfo mi : ri.getMethods()) {
                 String methodName = mi.getMethod().getName();
                 if ("OPTIONS".equals(methodName) || "PATCH".equals(methodName)) {
-                    logger.fine("Method " + methodName + " ignored.");
+                    LOGGER.fine("Method " + methodName + " ignored.");
                     continue;
                 }
-                logger.fine("Method " + methodName + " added.");
+                LOGGER.fine("Method " + methodName + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(mi.getDescription());
-                operation.setName(mi.getName());
+                if (mi.getName() != null && !"".equals(mi.getName())) {
+                    operation.setName(mi.getName());
+                } else {
+                    operation.setName(mi.getAnnotation().getJavaMethod()
+                            .getName());
+                }
                 operation.setMethod(mi.getMethod().getName());
 
                 // Fill fields produces/consumes
@@ -314,8 +321,7 @@ public class DefinitionTranslator {
      *            The {@link ApplicationInfo} instance.
      * @return The definintion instance.
      */
-    public static Definition toDefinition(ApplicationInfo application,
-            Logger logger) {
+    public static Definition toDefinition(ApplicationInfo application) {
         Definition result = null;
         if (application != null) {
             result = new Definition();
@@ -339,24 +345,24 @@ public class DefinitionTranslator {
             contract.setName(application.getName());
             if (contract.getName() == null || contract.getName().isEmpty()) {
                 contract.setName(application.getClass().getName());
-                logger.log(Level.WARNING,
+                LOGGER.log(Level.WARNING,
                         "Please provide a name to your application, used "
                                 + contract.getName() + " by default.");
             }
-            logger.fine("Contract " + contract.getName() + " added.");
+            LOGGER.fine("Contract " + contract.getName() + " added.");
 
             // List of resources.
             Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
             addResources(application, contract, application.getResources()
                     .getResources(), result.getEndpoints().get(0).computeUrl(),
-                    mapReps, logger);
+                    mapReps);
 
             java.util.List<String> protocols = new ArrayList<String>();
             for (ConnectorHelper<Server> helper : Engine.getInstance()
                     .getRegisteredServers()) {
                 for (Protocol protocol : helper.getProtocols()) {
                     if (!protocols.contains(protocol.getName())) {
-                        logger.fine("Protocol " + protocol.getName()
+                        LOGGER.fine("Protocol " + protocol.getName()
                                 + " added.");
                         protocols.add(protocol.getName());
                     }
@@ -467,7 +473,7 @@ public class DefinitionTranslator {
                 if (ri.isCollection()) {
                     continue;
                 }
-                logger.fine("Representation " + ri.getName() + " added.");
+                LOGGER.fine("Representation " + ri.getName() + " added.");
                 Representation representation = new Representation();
 
                 // TODO analyze
@@ -479,7 +485,7 @@ public class DefinitionTranslator {
 
                 representation.setProperties(new ArrayList<Property>());
                 for (PropertyInfo pi : ri.getProperties()) {
-                    logger.fine("Property " + pi.getName() + " added.");
+                    LOGGER.fine("Property " + pi.getName() + " added.");
                     Property p = new Property();
                     p.setDefaultValue(pi.getDefaultValue());
                     p.setDescription(pi.getDescription());

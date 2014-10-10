@@ -47,7 +47,6 @@ import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
 import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.ext.swagger.internal.reflect.Introspector;
 import org.restlet.representation.Representation;
 
 import com.wordnik.swagger.core.SwaggerSpec;

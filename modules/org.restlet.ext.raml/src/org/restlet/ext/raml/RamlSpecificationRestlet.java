@@ -42,9 +42,9 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.ext.apispark.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.raml.internal.RamlTranslator;
-import org.restlet.ext.raml.internal.reflect.Introspector;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -58,8 +58,8 @@ import org.restlet.representation.StringRepresentation;
  * restlets.<br>
  * 
  * @author Cyprien Quilici
- * @see http://raml.org/
- * @see http://raml.org/spec.html
+ * @link http://raml.org/
+ * @link http://raml.org/spec.html
  */
 public class RamlSpecificationRestlet extends Restlet {
 
@@ -83,7 +83,6 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Default constructor.<br>
-     * Sets the {@link #ramlVersion} to {@link RamlSpec#version()}.
      */
     public RamlSpecificationRestlet() {
         this(null);
@@ -91,8 +90,7 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     * Sets the {@link #ramlVersion} to {@link RamlSpec#version()}.
-     * 
+     *
      * @param context
      *            The context.
      */
@@ -142,8 +140,8 @@ public class RamlSpecificationRestlet extends Restlet {
     private synchronized Definition getDefinition() {
         if (definition == null) {
             synchronized (RamlSpecificationRestlet.class) {
-                Introspector i = new Introspector(application, false);
-                definition = i.getDefinition();
+                ApplicationIntrospector applicationIntrospector = new ApplicationIntrospector(application);
+                definition = applicationIntrospector.getDefinition();
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }

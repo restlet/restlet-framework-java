@@ -727,8 +727,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      */
     public JaxrsIntrospector(Application application) {
         ApplicationInfo applicationInfo = getApplicationInfo(application, null);
-        definition = DefinitionTranslator.toDefinition(
-                applicationInfo, LOGGER);
+        definition = DefinitionTranslator.toDefinition(applicationInfo);
 
         if (definition != null) {
             LOGGER.fine("Look for the endpoint.");
