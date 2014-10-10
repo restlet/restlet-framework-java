@@ -589,17 +589,20 @@ public class Introspector {
             result = new Definition();
             result.setVersion(application.getVersion());
             Reference ref = application.getResources().getBaseRef();
+            String authenticationProtocol =
+                    application.getAuthenticationProtocol() != null ?
+                            application.getAuthenticationProtocol().getName() :
+                            null;
             if (ref != null) {
                 result.getEndpoints().add(
                         new Endpoint(ref.getHostDomain(), ref.getHostPort(),
                                 ref.getSchemeProtocol().getSchemeName(), ref
-                                        .getPath(), null));
+                                        .getPath(), authenticationProtocol));
             } else {
                 result.getEndpoints()
-                        .add(new Endpoint("", 80,
-                                Protocol.HTTP.getSchemeName(), "example.com",
-                                application.getAuthenticationProtocol()
-                                        .getName()));
+                        .add(new Endpoint("example.com", 80,
+                                Protocol.HTTP.getSchemeName(), "v1",
+                                authenticationProtocol));
             }
 
             Contract contract = new Contract();
