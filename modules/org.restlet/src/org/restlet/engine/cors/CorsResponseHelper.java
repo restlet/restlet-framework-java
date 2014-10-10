@@ -44,13 +44,13 @@ public class CorsResponseHelper {
      * for 'Access-Control-Allow-Headers' response header.
      * Default is true.
      */
-    public boolean exposeOnlyRequestedHeader = true;
+    public boolean allowOnlyRequestedHeader = true;
 
     /**
      * Value of 'Access-Control-Allow-Headers' response header.
-     * Used only if {@link #exposeOnlyRequestedHeader} is false.
+     * Used only if {@link #allowOnlyRequestedHeader} is false.
      */
-    public String exposeHeaders = null;
+    public String allowHeaders = null;
 
     public CorsResponseHelper() {
     }
@@ -99,25 +99,25 @@ public class CorsResponseHelper {
         return this;
     }
 
-    /** Getter for {@link #exposeOnlyRequestedHeader} */
-    public boolean isExposeOnlyRequestedHeader() {
-        return exposeOnlyRequestedHeader;
+    /** Getter for {@link #allowOnlyRequestedHeader} */
+    public boolean isAllowOnlyRequestedHeader() {
+        return allowOnlyRequestedHeader;
     }
 
-    /** Setter for {@link #exposeOnlyRequestedHeader} */
-    public CorsResponseHelper setExposeOnlyRequestedHeader(boolean exposeOnlyRequestedHeader) {
-        this.exposeOnlyRequestedHeader = exposeOnlyRequestedHeader;
+    /** Setter for {@link #allowOnlyRequestedHeader} */
+    public CorsResponseHelper setAllowOnlyRequestedHeader(boolean allowOnlyRequestedHeader) {
+        this.allowOnlyRequestedHeader = allowOnlyRequestedHeader;
         return this;
     }
 
-    /** Getter for {@link #exposeHeaders} */
-    public String getExposeHeaders() {
-        return exposeHeaders;
+    /** Getter for {@link #allowHeaders} */
+    public String getAllowHeaders() {
+        return allowHeaders;
     }
 
-    /** Setter for {@link #exposeHeaders} */
-    public CorsResponseHelper setExposeHeaders(String exposeHeaders) {
-        this.exposeHeaders = exposeHeaders;
+    /** Setter for {@link #allowHeaders} */
+    public CorsResponseHelper setAllowHeaders(String allowHeaders) {
+        this.allowHeaders = allowHeaders;
         return this;
     }
 
@@ -186,18 +186,18 @@ public class CorsResponseHelper {
             }
         }
 
-        // Header 'Access-Control-Expose-Headers'
-        if (exposeOnlyRequestedHeader) {
+        // Header 'Access-Control-Allow-Headers'
+        if (allowOnlyRequestedHeader) {
             if (request == null) {
-                throw new RuntimeException("If exposeOnlyRequestedHeader is true, it requires the request parameter");
+                throw new RuntimeException("If allowOnlyRequestedHeader is true, it requires the request parameter");
             }
             String accessControlRequestHeaders = request.getHeaders().getValues("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
-                headers.set("Access-Control-Expose-Headers", accessControlRequestHeaders);
+                headers.set("Access-Control-Allow-Headers", accessControlRequestHeaders);
             }
         } else {
-            if (exposeHeaders != null) {
-                headers.set("Access-Control-Expose-Headers", exposeHeaders);
+            if (allowHeaders != null) {
+                headers.set("Access-Control-Allow-Headers", allowHeaders);
             }
         }
     }

@@ -50,13 +50,13 @@ public class CorsFilter extends Filter {
      * for 'Access-Control-Allow-Headers' response header.
      * Default is true.
      */
-    public boolean exposeOnlyRequestedHeader = true;
+    public boolean allowOnlyRequestedHeader = true;
 
     /**
      * Value of 'Access-Control-Allow-Headers' response header.
-     * Used only if {@link #exposeOnlyRequestedHeader} is false.
+     * Used only if {@link #allowOnlyRequestedHeader} is false.
      */
-    public String exposeHeaders = null;
+    public String allowHeaders = null;
 
     private CorsResponseHelper corsResponseHelper;
 
@@ -95,8 +95,8 @@ public class CorsFilter extends Filter {
                     .setAllowOnlyRequestedMethods(allowOnlyRequestedMethods)
                     .setAllowMethods(allowMethods)
                     .setAllowOnlyRequestedMethods(allowOnlyRequestedMethods)
-                    .setExposeOnlyRequestedHeader(exposeOnlyRequestedHeader)
-                    .setExposeHeaders(exposeHeaders);
+                    .setAllowOnlyRequestedHeader(allowOnlyRequestedHeader)
+                    .setAllowHeaders(allowHeaders);
         }
         return corsResponseHelper;
     }
@@ -147,25 +147,25 @@ public class CorsFilter extends Filter {
         return this;
     }
 
-    /** Getter for {@link #exposeOnlyRequestedHeader} */
-    public boolean isExposeOnlyRequestedHeader() {
-        return exposeOnlyRequestedHeader;
+    /** Getter for {@link #allowOnlyRequestedHeader} */
+    public boolean isAllowOnlyRequestedHeader() {
+        return allowOnlyRequestedHeader;
     }
 
-    /** Setter for {@link #exposeOnlyRequestedHeader} */
-    public CorsFilter setExposeOnlyRequestedHeader(boolean exposeOnlyRequestedHeader) {
-        this.exposeOnlyRequestedHeader = exposeOnlyRequestedHeader;
+    /** Setter for {@link #allowOnlyRequestedHeader} */
+    public CorsFilter setAllowOnlyRequestedHeader(boolean allowOnlyRequestedHeader) {
+        this.allowOnlyRequestedHeader = allowOnlyRequestedHeader;
         return this;
     }
 
-    /** Getter for {@link #exposeHeaders} */
-    public String getExposeHeaders() {
-        return exposeHeaders;
+    /** Getter for {@link #allowHeaders} */
+    public String getAllowHeaders() {
+        return allowHeaders;
     }
 
-    /** Setter for {@link #exposeHeaders} */
-    public CorsFilter setExposeHeaders(String exposeHeaders) {
-        this.exposeHeaders = exposeHeaders;
+    /** Setter for {@link #allowHeaders} */
+    public CorsFilter setAllowHeaders(String allowHeaders) {
+        this.allowHeaders = allowHeaders;
         return this;
     }
 }
