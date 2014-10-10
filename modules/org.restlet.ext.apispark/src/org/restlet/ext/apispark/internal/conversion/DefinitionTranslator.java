@@ -44,7 +44,7 @@ import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
  * 
  * @author Cyprien Quilici
  */
-public class IntrospectionTranslator {
+public class DefinitionTranslator {
 
     /**
      * Completes a map of representations with a list of representations.
@@ -517,10 +517,8 @@ public class IntrospectionTranslator {
     }
 
     /**
-     * Concats a list of {@link DocumentationInfo} instances as a single String.
-     * 
-     * @param dis
-     *            The list of {@link DocumentationInfo} instances.
+     * Returns the description if not empty, otherwise an empty string
+     *
      * @return A String value.
      */
     private static String toString(String description) {
@@ -528,10 +526,8 @@ public class IntrospectionTranslator {
     }
 
     /**
-     * Concats a list of {@link DocumentationInfo} instances as a single String.
-     * 
-     * @param dis
-     *            The list of {@link DocumentationInfo} instances.
+     * Returns the description if not empty, otherwise the default value
+     *
      * @return A String value.
      */
     private static String toString(String description, String defaultValue) {
@@ -546,7 +542,7 @@ public class IntrospectionTranslator {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private IntrospectionTranslator() {
+    private DefinitionTranslator() {
     }
 
 }

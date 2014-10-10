@@ -41,6 +41,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
+import org.restlet.ext.apispark.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
@@ -167,8 +168,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
     private synchronized Definition getDefinition() {
         if (definition == null) {
             synchronized (SwaggerSpecificationRestlet.class) {
-                Introspector i = new Introspector(application);
-                definition = i.getDefinition();
+                ApplicationIntrospector applicationIntrospector = new ApplicationIntrospector(application);
+                definition = applicationIntrospector.getDefinition();
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");

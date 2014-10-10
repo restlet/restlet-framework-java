@@ -63,13 +63,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Application;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
+import org.restlet.ext.apispark.internal.conversion.DefinitionTranslator;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
 import org.restlet.ext.apispark.internal.info.ParameterInfo;
@@ -204,9 +204,9 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            The name of the application class.
      * @return An instance of what must be a subclass of {@link Application}.
      */
-    protected static javax.ws.rs.core.Application getApplication(
+    protected static Application getApplication(
             String className) {
-        javax.ws.rs.core.Application result = null;
+        Application result = null;
 
         if (className == null) {
             return result;
@@ -215,8 +215,8 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         Class<?> clazz = null;
         try {
             clazz = Class.forName(className);
-            if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
-                result = (javax.ws.rs.core.Application) clazz.getConstructor()
+            if (Application.class.isAssignableFrom(clazz)) {
+                result = (Application) clazz.getConstructor()
                         .newInstance();
             } else {
                 LOGGER.log(Level.SEVERE, className
@@ -257,14 +257,14 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
      * 
-     * @param request
-     *            The current request.
-     * @param response
-     *            The current response.
+     * @param application
+     *            The application.
+     * @param baseRef
+     *            The base ref.
      * @return An application description.
      */
     protected static ApplicationInfo getApplicationInfo(
-            javax.ws.rs.core.Application application, Reference baseRef) {
+            Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
 
         for (Class<?> clazz : application.getClasses()) {
@@ -725,19 +725,20 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      * @param application
      *            An application to introspect.
      */
-    public JaxrsIntrospector(javax.ws.rs.core.Application application) {
-        definition = IntrospectionTranslator.toDefinition(
-                getApplicationInfo(application, null), LOGGER);
+    public JaxrsIntrospector(Application application) {
+        ApplicationInfo applicationInfo = getApplicationInfo(application, null);
+        definition = DefinitionTranslator.toDefinition(
+                applicationInfo, LOGGER);
 
         if (definition != null) {
             LOGGER.fine("Look for the endpoint.");
-            String endpoint = null;
+            Endpoint endpoint = null;
             ApplicationPath ap = application.getClass().getAnnotation(
                     ApplicationPath.class);
             if (ap != null) {
-                endpoint = ap.value();
+                endpoint = new Endpoint(ap.value());
             }
-            definition.getEndpoints().add(new Endpoint(endpoint));
+            definition.getEndpoints().add(endpoint);
         }
     }
 
@@ -746,7 +747,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      * 
      * @return The current definition.
      */
-    protected Definition getDefinition() {
+    public Definition getDefinition() {
         return definition;
     }
 }
