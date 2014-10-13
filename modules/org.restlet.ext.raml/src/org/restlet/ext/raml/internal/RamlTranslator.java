@@ -93,7 +93,6 @@ public abstract class RamlTranslator {
         pathVariable.setName(paramName);
         pathVariable.setDescription(uriParameter.getDescription());
         // pathVariable.setType(uriParameter.getType().toString().toLowerCase());
-        pathVariable.setArray(uriParameter.isRepeat());
         return pathVariable;
     }
 
@@ -207,7 +206,6 @@ public abstract class RamlTranslator {
             for (PathVariable pathVariable : resource.getPathVariables()) {
                 uiParam.setDisplayName(pathVariable.getName());
                 uiParam.setDescription(pathVariable.getDescription());
-                uiParam.setRepeat(pathVariable.isArray());
                 uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
                 ramlResource.getUriParameters().put(pathVariable.getName(),
                         uiParam);

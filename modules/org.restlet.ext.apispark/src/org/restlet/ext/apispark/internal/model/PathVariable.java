@@ -40,9 +40,6 @@ package org.restlet.ext.apispark.internal.model;
  */
 public class PathVariable {
 
-    /** Indicates whether you can provide a list of values or just a single one. */
-    private boolean array;
-
     /** Textual description of this variable. */
     private String description;
 
@@ -62,14 +59,6 @@ public class PathVariable {
 
     public String getType() {
         return type;
-    }
-
-    public boolean isArray() {
-        return array;
-    }
-
-    public void setArray(boolean array) {
-        this.array = array;
     }
 
     public void setDescription(String description) {

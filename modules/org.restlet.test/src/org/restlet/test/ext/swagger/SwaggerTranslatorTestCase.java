@@ -188,8 +188,6 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                                 translatedPathVariable.getName());
                         assertEquals(savedPathVariable.getDescription(),
                                 translatedPathVariable.getDescription());
-                        assertEquals(savedPathVariable.isArray(),
-                                translatedPathVariable.isArray());
                     }
                 }
 

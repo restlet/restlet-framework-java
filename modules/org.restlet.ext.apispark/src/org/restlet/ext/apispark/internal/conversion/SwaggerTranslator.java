@@ -691,7 +691,6 @@ public abstract class SwaggerTranslator {
         result.setType(SwaggerUtils
                 .toJavaType(new SwaggerUtils.SwaggerTypeFormat(parameter
                         .getType(), parameter.getFormat())));
-        result.setArray(parameter.isAllowMultiple());
         return result;
     }
 
