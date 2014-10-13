@@ -19,6 +19,7 @@ import org.restlet.routing.Template;
 import org.restlet.service.MetadataService;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -175,14 +176,15 @@ public class ResourceCollector {
             //Input representation
             //Handles only the first method parameter
             Class<?> inputClass = inputClasses[0];
+            Type inputType = mai.getJavaMethod().getGenericParameterTypes()[0];
 
             RepresentationCollector.addRepresentation(
                     collectInfo,
                     inputClass,
-                    mai.getJavaMethod().getGenericParameterTypes()[0]);
+                    inputType);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(inputClass.getSimpleName());
+            inputEntity.setType(ReflectUtils.getSimpleClass(inputType).getName());
             inputEntity.setArray(ReflectUtils.isListType(inputClass));
             operation.setInputPayLoad(inputEntity);
 
@@ -237,16 +239,17 @@ public class ResourceCollector {
         Response response = new Response();
 
         Class<?> outputClass = mai.getJavaMethod().getReturnType();
+        Type outputType = mai.getJavaMethod().getGenericReturnType();
 
         if (outputClass != Void.TYPE) {
             //Output representation
             RepresentationCollector.addRepresentation(
                     collectInfo,
                     outputClass,
-                    mai.getJavaMethod().getGenericReturnType());
+                    outputType);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(outputClass.getSimpleName());
+            outputEntity.setType(ReflectUtils.getSimpleClass(outputType).getName());
             outputEntity.setArray(ReflectUtils.isListType(outputClass));
 
             response.setOutputPayLoad(outputEntity);
