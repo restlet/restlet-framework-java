@@ -182,7 +182,7 @@ public class Finder extends Restlet {
         ServerResource result = null;
 
         if (getTargetClass() != null) {
-            result = create((Class<? extends ServerResource>) getTargetClass(),
+            result = create(getTargetClass(),
                     request, response);
         }
 
