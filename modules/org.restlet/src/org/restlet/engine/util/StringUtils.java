@@ -672,6 +672,32 @@ public class StringUtils {
         return source.substring(beginIndex, endIndex);
     }
 
+
+    /**
+     * Returns the given string if it is non-null; the empty string otherwise.
+     *
+     * @param string the string to test and possibly return
+     * @return {@code string} itself if it is non-null; {@code ""} if it is null
+     */
+    public static String nullToEmpty(String string) {
+        return (string == null) ? "" : string;
+    }
+
+    /**
+     * Returns {@code true} if the given string is null or is the empty string.
+     *
+     * <p>Consider normalizing your string references with {@link #nullToEmpty}.
+     * If you do, you can use {@link String#isEmpty()} instead of this
+     * method, and you won't need special null-safe forms of methods like {@link
+     * String#toUpperCase} either.
+     *
+     * @param string a string reference to check
+     * @return {@code true} if the string is null or is the empty string
+     */
+    public static boolean isNullOrEmpty(String string) {
+        return string == null || string.length() == 0; // string.isEmpty() in Java 6
+    }
+
     /**
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.

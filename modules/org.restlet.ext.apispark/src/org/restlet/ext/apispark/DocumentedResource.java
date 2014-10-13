@@ -31,27 +31,40 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.apispark;
+
+import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.ext.apispark.internal.info.MethodInfo;
+import org.restlet.resource.ServerResource;
 
 /**
- * Represents a query parameter. Associated to an operation.
+ * Describes the ServerResource so that introspection retrieves a more complete
+ * description of the Web API.
  * 
  * @author Cyprien Quilici
+ * 
  */
-public class QueryParameter extends Parameter {
+public interface DocumentedResource {
 
     /**
-     * Indicates which character separates values when this parameter allows
-     * multiple values
+     * Name of the resource. When generating Restlet Framework client SDKs on <a
+     * href="https://apispark.com">APISpark</a>, the annotated interface will be
+     * named [name]Resource and the ClientResource [name]ClientResource.
+     *
+     * Can be overriden.
      */
-    private Character separator;
+    String getName();
 
-    public Character getSeparator() {
-        return separator;
-    }
+    /**
+     * Description of the resource.
+     *
+     * @return The description of the resource
+     */
+    String getDescription();
 
-    public void setSeparator(Character separator) {
-        this.separator = separator;
-    }
-
+    /**
+     * Name of a section of your Web API. Used to tidy it in documentation.
+     * //todo section by method ??
+     */
+    String getSection();
 }

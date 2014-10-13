@@ -42,7 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.ext.apispark.DocumentedServerResource;
+import org.restlet.ext.apispark.DocumentedResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
@@ -91,10 +91,10 @@ public class ResourceInfo extends DocumentedInfo {
             ServerResource sr = (ServerResource) resource;
             sr.updateAllowedMethods();
             methodsList.addAll(sr.getAllowedMethods());
-            if (sr instanceof DocumentedServerResource) {
-                info.setDescription(((DocumentedServerResource) sr)
+            if (sr instanceof DocumentedResource) {
+                info.setDescription(((DocumentedResource) sr)
                         .getDescription());
-                info.setName(((DocumentedServerResource) sr).getName());
+                info.setName(((DocumentedResource) sr).getName());
             }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
@@ -128,10 +128,10 @@ public class ResourceInfo extends DocumentedInfo {
                             methodInfo.setMethod(method);
                             methodInfo.setAnnotation(annotationInfo);
                             MethodInfo.describeAnnotation(methodInfo, mai, sr);
-                            if (sr instanceof DocumentedServerResource) {
-                                ((DocumentedServerResource) sr).describe(
-                                        methodInfo, mai);
-                            }
+//                            if (sr instanceof DocumentedResource) {
+//                                ((DocumentedResource) sr).describe(
+//                                        methodInfo, mai);
+//                            }
                         }
                     }
                 }

@@ -43,6 +43,8 @@ import org.restlet.Component;
 import org.restlet.engine.Engine;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.introspection.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
@@ -167,8 +169,7 @@ public class Introspector extends IntrospectionUtils {
             if (Application.class.isAssignableFrom(clazz)) {
                 Application application = ApplicationIntrospector.getApplication(defSource);
                 Component component = ComponentIntrospector.getComponent(compName);
-                ApplicationIntrospector applicationIntrospector = new ApplicationIntrospector(component, application);
-                definition = applicationIntrospector.getDefinition();
+                definition = ApplicationIntrospector.getDefinition(application, null, component);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxrsIntrospector.getApplication(defSource);
                 JaxrsIntrospector jaxrsIntrospector = new JaxrsIntrospector(jaxrsApplication);

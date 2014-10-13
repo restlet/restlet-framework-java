@@ -49,6 +49,9 @@ public class Representation {
     /** Reference to its parent type if any. */
     private String extendedType;
 
+    /** Identifier of the representation. */
+    private String identifier;
+
     /** Name of the representation. */
     private String name;
 
@@ -71,6 +74,10 @@ public class Representation {
 
     public String getName() {
         return name;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public List<Property> getProperties() {
@@ -103,6 +110,10 @@ public class Representation {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public void setProperties(List<Property> properties) {

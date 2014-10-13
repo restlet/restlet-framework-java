@@ -42,7 +42,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.raml.internal.RamlTranslator;
 import org.restlet.representation.Representation;
@@ -140,8 +140,7 @@ public class RamlSpecificationRestlet extends Restlet {
     private synchronized Definition getDefinition() {
         if (definition == null) {
             synchronized (RamlSpecificationRestlet.class) {
-                ApplicationIntrospector applicationIntrospector = new ApplicationIntrospector(application);
-                definition = applicationIntrospector.getDefinition();
+                definition = ApplicationIntrospector.getDefinition(application);
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
