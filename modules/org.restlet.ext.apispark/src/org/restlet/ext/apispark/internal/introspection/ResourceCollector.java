@@ -52,7 +52,6 @@ public class ResourceCollector {
 
         //add operations
         ArrayList<Operation> operations = new ArrayList<Operation>();
-        Set<Method> uniqueMethods = new HashSet<Method>();
 
         List<AnnotationInfo> annotations =
                 sr.isAnnotated() ?
@@ -65,12 +64,6 @@ public class ResourceCollector {
                     MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
 
                     Method method = methodAnnotationInfo.getRestletMethod();
-
-                    //TODO how to handle multiple get ?? methodAnnotationInfo.getQuery ?
-//                    if (uniqueMethods.add(method)) {
-//                        LOGGER.fine("Method " + method.getName() + " ignored. Already added");
-//                        continue;
-//                    }
 
                     if ("OPTIONS".equals(method.getName()) ||
                             "PATCH".equals(method.getName())) {
