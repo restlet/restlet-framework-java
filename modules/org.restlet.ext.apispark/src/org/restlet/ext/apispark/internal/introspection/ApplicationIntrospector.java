@@ -172,25 +172,26 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 //            }
 //        }
 
+        String scheme =
+                collectInfo.getSchemes().isEmpty() ?
+                        null :
+                        collectInfo.getSchemes().get(0).getName();
+
         //Introspect component if any
         if (component != null) {
             LOGGER.fine("Look for the endpoint.");
             // Look for the endpoint to which this application is attached.
-            Endpoint endpoint = ComponentIntrospector.getEndpoint(component.getDefaultHost(), application);
+            Endpoint endpoint = ComponentIntrospector.getEndpoint(component.getDefaultHost(), application, scheme);
             if (endpoint != null) {
                 definition.getEndpoints().add(endpoint);
             }
             for (VirtualHost virtualHost : component.getHosts()) {
-                endpoint = ComponentIntrospector.getEndpoint(virtualHost, application);
+                endpoint = ComponentIntrospector.getEndpoint(virtualHost, application, scheme);
                 if (endpoint != null) {
                     definition.getEndpoints().add(endpoint);
                 }
             }
         } else {
-            String scheme =
-                    collectInfo.getSchemes().isEmpty() ?
-                            null :
-                            collectInfo.getSchemes().get(0).getName();
             Endpoint endpoint = new Endpoint("example.com",
                     80, Protocol.HTTP.getSchemeName(), "/v1", scheme);
             definition.getEndpoints().add(endpoint);

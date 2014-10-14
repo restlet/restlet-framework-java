@@ -91,10 +91,12 @@ public class ComponentIntrospector extends IntrospectionUtils {
      *            The virtual host to which this application may be attached.
      * @param application
      *            The application.
+     * @param challengeScheme
+     *            The challenge scheme used or null
      * @return The endpoint.
      */
     public static Endpoint getEndpoint(VirtualHost virtualHost,
-                                 Application application) {
+                                       Application application, String challengeScheme) {
         Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
@@ -136,7 +138,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
                         // Concatenate in order to get the endpoint
                         result = new Endpoint(ref.getHostDomain(),
                                 ref.getHostPort(), ref.getSchemeProtocol()
-                                .getSchemeName(), ref.getPath(), null);
+                                .getSchemeName(), ref.getPath(), challengeScheme);
                     }
                 }
             }
