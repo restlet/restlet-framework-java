@@ -4,10 +4,13 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Method;
 import org.restlet.routing.Filter;
 
 /**
  * Filter that add CORS headers on HTTP response.
+ * OPTIONS Methods are intercepted by this filter and
+ * Resource OPTIONS methods are never called.
  *
  * Example:
  * <pre>
@@ -16,6 +19,7 @@ import org.restlet.routing.Filter;
  *  .setAllowMethods("GET,POST")
  *  .setAllowCredentials(false);
  * </pre>
+ *
  * @author Manuel Boillod
  */
 public class CorsFilter extends Filter {
@@ -69,6 +73,24 @@ public class CorsFilter extends Filter {
 
     public CorsFilter(Context context, Restlet next) {
         super(context, next);
+    }
+
+    /**
+     * If current request method is OPTIONS, do not call doHandle().
+     *
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return
+     */
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        if (Method.OPTIONS.equals(request.getMethod())) {
+            return SKIP;
+        } else {
+            return super.beforeHandle(request, response);
+        }
     }
 
     /**
