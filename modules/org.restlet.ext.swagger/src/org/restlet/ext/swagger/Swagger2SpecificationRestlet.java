@@ -33,8 +33,8 @@
 
 package org.restlet.ext.swagger;
 
+import com.wordnik.swagger.models.Swagger;
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -46,35 +46,51 @@ import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
-
-import com.wordnik.swagger.models.Swagger;
+import org.restlet.routing.Router;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
- * swagger-spec project.<br>
+ * swagger-spec project v2.0.<br>
  * It helps to generate the high level documentation for the whole API (set by
  * calling {@link #setApiInboundRoot(org.restlet.Application)} or
- * {@link #setApiInboundRoot(org.restlet.Restlet)} methods, and the
- * documentation for each resource.<br>
+ * {@link #setApiInboundRoot(org.restlet.Restlet)} methods, and the documentation for each
+ * resource.<br>
  * By default it instrospects the chain of Application's routers, filters,
  * restlet.<br>
- * Use the {@link org.restlet.ext.swagger.JaxrsSwaggerSpecificationRestlet}
- * restlet for Jax-RS applications.
- * 
- * @author Thierry Boileau
- * @link https://github.com/wordnik/swagger-ui
- * @link https://helloreverb.com/developers/swagger
+ * Use the {@link org.restlet.ext.swagger.JaxrsSwaggerSpecificationRestlet} restlet for Jax-RS
+ * applications.
+ *
+ * <p>
+ * Usage example (in an {@link Application} class):
+ * <pre>
+ * new Swagger2SpecificationRestlet(this).attach(baseRouter);
+ * </pre>
+ * or
+ * <pre>
+ * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet();
+ * swagger2SpecificationRestlet.setApiInboundRoot(this);
+ * swagger2SpecificationRestlet.attach(baseRouter);
+ * </pre>
+ * </p>
+ *
+ * @author Manuel Boillod
+ * @see <a href="http://github.com/wordnik/swagger-ui">Swagger UI (github)</a>
+ * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample application of Swagger-UI</a>
+ * @see <a href="http://swagger.io/">Swagger.io website</a>
  */
 public class Swagger2SpecificationRestlet extends Restlet {
 
+    /** The version of Swagger. */
+    public static final Float SWAGGER_VERSION = 2.0f;
+
     /** The root Restlet to describe. */
-    Restlet apiInboundRoot;
+    private Restlet apiInboundRoot;
 
     /** The version of the API. */
     private String apiVersion;
 
     /** The Application to describe. */
-    Application application;
+    private Application application;
 
     /** The base path of the API. */
     private String basePath;
@@ -85,41 +101,33 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The root Restlet to describe. */
     private String jsonPath;
 
-    /** The version of Swagger. */
-    public static final Float SWAGGER_VERSION = 2.0f;
-
     /** Helper used to add CORS response headers */
     private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
 
     /**
      * Default constructor.<br>
-     * Sets the {@link #swaggerVersion} to
-     * {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
      */
     public Swagger2SpecificationRestlet() {
-        this(null);
     }
 
     /**
      * Constructor.<br>
-     * Sets the {@link #swaggerVersion} to
-     * {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
-     * 
-     * @param context
-     *            The context.
+     *
+     * @param application
+     *            The application to describe.
      */
-    public Swagger2SpecificationRestlet(Context context) {
-        super(context);
+    public Swagger2SpecificationRestlet(Application application) {
+        this.application = application;
     }
 
     /**
-     * Returns the Swagger documentation of the Web API.
-     * 
-     * @return The Swagger documentation of the Web API.
+     * Constructor.<br>
+     *
+     * @param apiInboundRoot
+     *            The api inbound root to describe.
      */
-    public Representation getSwagger() {
-        return new JacksonRepresentation<Swagger>(
-                Swagger2Translator.getSwagger(getDefinition()));
+    public Swagger2SpecificationRestlet(Restlet apiInboundRoot) {
+        this.application = application;
     }
 
     /**
@@ -183,13 +191,24 @@ public class Swagger2SpecificationRestlet extends Restlet {
         return jsonPath;
     }
 
+    /**
+     * Returns the representation of the whole resource listing of the
+     * Application.
+     *
+     * @return The representation of the whole resource listing of the
+     *         Application.
+     */
+    public Representation getSwagger() {
+        return new JacksonRepresentation<Swagger>(
+                Swagger2Translator.getSwagger(getDefinition()));
+    }
+
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         // CORS support for Swagger-UI
-        corsResponseHelper
-                .addCorsResponseHeaderIfCorsRequest(request, response);
+        corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
 
         if (Method.GET.equals(request.getMethod())) {
             response.setEntity(getSwagger());
@@ -197,6 +216,34 @@ public class Swagger2SpecificationRestlet extends Restlet {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
+    }
+
+    /**
+     * Defines one route (by default "/swagger.json") for serving the
+     * application specification.
+     *
+     * @param router
+     *            The router on which defining the new route.
+     *
+     * @see #attach(org.restlet.routing.Router, String) to attach it with a custom path
+     */
+    public void attach(Router router) {
+        attach(router, "/swagger.json");
+    }
+
+    /**
+     * Defines one route (by default "/swagger.json") for serving the
+     * application specification.
+     *
+     * @param router
+     *            The router on which defining the new route.
+     * @param path
+     *            The root path of the documentation Restlet.
+     *
+     * @see #attach(org.restlet.routing.Router) to attach it with the default path
+     */
+    public void attach(Router router, String path) {
+        router.attach(path, this);
     }
 
     /**

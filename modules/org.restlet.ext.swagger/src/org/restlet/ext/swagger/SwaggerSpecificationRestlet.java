@@ -33,11 +33,7 @@
 
 package org.restlet.ext.swagger;
 
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
@@ -50,6 +46,7 @@ import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 
 import com.wordnik.swagger.core.SwaggerSpec;
+import org.restlet.routing.Router;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -62,10 +59,20 @@ import com.wordnik.swagger.core.SwaggerSpec;
  * restlet.<br>
  * Use the {@link JaxrsSwaggerSpecificationRestlet} restlet for Jax-RS
  * applications.
- * 
+ *
+ * <p>
+ * Usage example:
+ * <pre>
+ * SwaggerSpecificationRestlet swagger1SpecificationRestlet = new SwaggerSpecificationRestlet();
+ * swagger1SpecificationRestlet.setApiInboundRoot(this);
+ * swagger1SpecificationRestlet.attach(baseRouter);
+ * </pre>
+ * </p>
+
  * @author Thierry Boileau
- * @link https://github.com/wordnik/swagger-ui
- * @link https://helloreverb.com/developers/swagger
+ * @see <a href="http://github.com/wordnik/swagger-ui">Swagger UI (github)</a>
+ * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample application of Swagger-UI</a>
+ * @see <a href="http://helloreverb.com/developers/swagger">Swagger Developper page</a>
  */
 public class SwaggerSpecificationRestlet extends Restlet {
 
@@ -88,7 +95,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
     private String jsonPath;
 
     /** The version of Swagger. */
-    private String swaggerVersion;
+    private String swaggerVersion = "1.2";
 
     /** Helper used to add CORS response headers */
     private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
@@ -110,7 +117,6 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public SwaggerSpecificationRestlet(Context context) {
         super(context);
-        swaggerVersion = "1.2";
     }
 
     /**
@@ -214,18 +220,51 @@ public class SwaggerSpecificationRestlet extends Restlet {
 
         // CORS support for Swagger-UI
         corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
-        
-        if (!Method.GET.equals(request.getMethod())) {
+
+        if (Method.GET.equals(request.getMethod())) {
+            Object resource = request.getAttributes().get("resource");
+
+            if (resource instanceof String) {
+                response.setEntity(getApiDeclaration((String) resource));
+            } else {
+                response.setEntity(getResourceListing());
+            }
+        } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
-        Object resource = request.getAttributes().get("resource");
+    }
 
-        if (resource instanceof String) {
-            response.setEntity(getApiDeclaration((String) resource));
-        } else {
-            response.setEntity(getResourceListing());
-        }
+    /**
+     * Defines two routes, one for the high level "Resource listing" (by default
+     * "/api-docs"), and the other one for the "API declaration". The second
+     * route is a sub-resource of the first one, defined with the path variable
+     * "resource" (ie "/api-docs/{resource}").
+     *
+     * @param router
+     *            The router on which defining the new route.
+     *
+     * @see #attach(org.restlet.routing.Router, String) to attach it with a custom path
+     */
+    public void attach(Router router) {
+        attach(router, "/api-docs");
+    }
+
+    /**
+     * Defines two routes, one for the high level "Resource listing", and the
+     * other one for the "API declaration". The second route is a sub-resource
+     * of the first one, defined with the path variable "resource".
+     *
+     * @param router
+     *            The router on which defining the new route.
+     * @param path
+     *            The root path of the documentation Restlet.
+     *
+     * @see #attach(org.restlet.routing.Router) to attach it with the default path
+     */
+    public void attach(Router router, String path) {
+        router.attach(path, this);
+        router.attach(path + "/{resource}", this);
     }
 
     /**
