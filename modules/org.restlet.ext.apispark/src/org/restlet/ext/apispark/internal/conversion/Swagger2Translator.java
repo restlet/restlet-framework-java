@@ -50,7 +50,7 @@ import com.wordnik.swagger.models.properties.StringProperty;
 public class Swagger2Translator {
 
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
-    
+
     /** Internal logger. */
     protected static Logger LOGGER = Logger.getLogger(ApplicationIntrospector.class
             .getName());
@@ -99,17 +99,8 @@ public class Swagger2Translator {
         Endpoint endpoint = definition.getEndpoints().get(0);
         swagger.setHost(endpoint.getDomain());
         swagger.setBasePath(endpoint.getBasePath());
-        // TODO all schemes ?
-
         // Should be any of "http", "https", "ws", "wss"
         swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint.getProtocol())));
-
-        // TODO check all
-        // swagger.setConsumes();
-        // swagger.setProduces();
-        // swagger.parameters
-        // swagger.responses
-        // swagger.setSecurityDefinition();
     }
 
     /**
@@ -168,7 +159,6 @@ public class Swagger2Translator {
 
             fillPathOperations(definition, resource, pathSwagger);
             paths.put(resource.getResourcePath(), pathSwagger);
-            // TODO path.parameters not in swagger bean - not in rwadef either
         }
         swagger.setPaths(paths);
     }
@@ -194,7 +184,7 @@ public class Swagger2Translator {
             String method = operation.getMethod().toLowerCase();
             Path setResult = pathSwagger.set(method, operationSwagger);
             if (setResult == null) {
-                // TODO add error message in a conversion results bean
+                LOGGER.warning("Method not supported:" + method);
                 return;
             }
 
@@ -239,10 +229,6 @@ public class Swagger2Translator {
         if (operation.getInputPayLoad() != null) {
             BodyParameter bodyParameterSwagger = new BodyParameter();
             bodyParameterSwagger.setName("body");
-
-            // TODO no body parameter.description
-
-            // TODO add Multipart FormData Parameters
 
             PayLoad inRepr = operation.getInputPayLoad();
             Representation representation = definition.getContract()
@@ -294,9 +280,6 @@ public class Swagger2Translator {
             queryParameterSwagger.setName(queryParameter.getName());
             queryParameterSwagger.setDescription(queryParameter
                     .getDescription());
-            // TODO attributes above are not present in swagger bean
-            // queryParameterSwagger.setDefaultValue(queryParameter.getDefault());
-            // queryParameterSwagger.setEnumeration(queryParameter.getEnumeration());
             operationSwagger.addParameter(queryParameterSwagger);
         }
 
@@ -309,9 +292,6 @@ public class Swagger2Translator {
                     header.getType()).getFormat());
             headerParameterSwagger.setName(header.getName());
             headerParameterSwagger.setDescription(header.getDescription());
-            // TODO attributes above are not present in swagger bean
-            // headerParameterSwagger.setDefaultValue(header.getDefault());
-            // headerParameterSwagger.setEnumeration(header.getEnumeration());
             operationSwagger.addParameter(headerParameterSwagger);
         }
     }
@@ -408,7 +388,7 @@ public class Swagger2Translator {
                                     .valueOf(property.getMin()));
                         }
                     } catch (NumberFormatException e) {
-                        // TODO add error message in a conversion results bean
+                        LOGGER.warning("Min property is not a number: " + property.getMin());
                     }
                     try {
                         if (property.getMax() != null) {
@@ -416,7 +396,7 @@ public class Swagger2Translator {
                                     .valueOf(property.getMax()));
                         }
                     } catch (NumberFormatException e) {
-                        // TODO add error message in a conversion results bean
+                        LOGGER.warning("Max property is not a number: " + property.getMax());
                     }
                 }
                 modelSwagger.property(property.getName(), propertySwagger);
@@ -436,14 +416,14 @@ public class Swagger2Translator {
      */
     private static boolean isPrimitiveType(String type) {
         return "string".equals(type.toLowerCase())
-                || "int".equals(type.toLowerCase())
+                || "byte".equals(type.toLowerCase())
+                || "short".equals(type.toLowerCase())
                 || "integer".equals(type.toLowerCase())
                 || "long".equals(type.toLowerCase())
                 || "float".equals(type.toLowerCase())
                 || "double".equals(type.toLowerCase())
                 || "date".equals(type.toLowerCase())
-                || "boolean".equals(type.toLowerCase())
-                || "bool".equals(type.toLowerCase());
+                || "boolean".equals(type.toLowerCase());
     }
 
     /**
@@ -457,7 +437,9 @@ public class Swagger2Translator {
             String type) {
         if ("string".equals(type.toLowerCase())) {
             return new StringProperty();
-        } else if ("int".equals(type.toLowerCase())) {
+        } else if ("byte".equals(type.toLowerCase())) {
+            return new IntegerProperty();
+        } else if ("short".equals(type.toLowerCase())) {
             return new IntegerProperty();
         } else if ("integer".equals(type.toLowerCase())) {
             return new IntegerProperty();
@@ -470,8 +452,6 @@ public class Swagger2Translator {
         } else if ("date".equals(type.toLowerCase())) {
             return new DateProperty();
         } else if ("boolean".equals(type.toLowerCase())) {
-            return new BooleanProperty();
-        } else if ("bool".equals(type.toLowerCase())) {
             return new BooleanProperty();
         }
         // Reference to a representation
