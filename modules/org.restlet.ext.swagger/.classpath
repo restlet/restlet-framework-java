@@ -14,5 +14,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json4s"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.scala"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.apispark"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.model"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

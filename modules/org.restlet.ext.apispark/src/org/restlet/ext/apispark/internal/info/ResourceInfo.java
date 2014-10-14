@@ -93,8 +93,8 @@ public class ResourceInfo extends DocumentedInfo {
             methodsList.addAll(sr.getAllowedMethods());
             if (sr instanceof DocumentedResource) {
                 info.setDescription(((DocumentedResource) sr)
-                        .getDescription());
-                info.setName(((DocumentedResource) sr).getName());
+                        .getResourceDescription());
+                info.setName(((DocumentedResource) sr).getResourceName());
             }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;

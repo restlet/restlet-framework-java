@@ -1,15 +1,12 @@
 package org.restlet.ext.apispark.internal.introspection;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by manu on 11/10/2014.

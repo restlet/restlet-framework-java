@@ -208,7 +208,6 @@ public class SwaggerSpecificationRestlet extends Restlet {
         return swaggerVersion;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);

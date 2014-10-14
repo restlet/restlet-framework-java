@@ -33,30 +33,34 @@
 
 package org.restlet.ext.swagger;
 
-import org.restlet.*;
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
+import org.restlet.ext.apispark.internal.conversion.Swagger2Translator;
 import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
+
+import com.wordnik.swagger.models.Swagger;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
  * swagger-spec project.<br>
  * It helps to generate the high level documentation for the whole API (set by
  * calling {@link #setApiInboundRoot(org.restlet.Application)} or
- * {@link #setApiInboundRoot(org.restlet.Restlet)} methods, and the documentation for each
- * resource.<br>
+ * {@link #setApiInboundRoot(org.restlet.Restlet)} methods, and the
+ * documentation for each resource.<br>
  * By default it instrospects the chain of Application's routers, filters,
  * restlet.<br>
- * Use the {@link org.restlet.ext.swagger.JaxrsSwaggerSpecificationRestlet} restlet for Jax-RS
- * applications.
- *
+ * Use the {@link org.restlet.ext.swagger.JaxrsSwaggerSpecificationRestlet}
+ * restlet for Jax-RS applications.
+ * 
  * @author Thierry Boileau
  * @link https://github.com/wordnik/swagger-ui
  * @link https://helloreverb.com/developers/swagger
@@ -82,14 +86,15 @@ public class Swagger2SpecificationRestlet extends Restlet {
     private String jsonPath;
 
     /** The version of Swagger. */
-    private String swaggerVersion;
+    public static final Float SWAGGER_VERSION = 2.0f;
 
     /** Helper used to add CORS response headers */
     private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
 
     /**
      * Default constructor.<br>
-     * Sets the {@link #swaggerVersion} to {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
+     * Sets the {@link #swaggerVersion} to
+     * {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
      */
     public Swagger2SpecificationRestlet() {
         this(null);
@@ -97,27 +102,24 @@ public class Swagger2SpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     * Sets the {@link #swaggerVersion} to {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
-     *
+     * Sets the {@link #swaggerVersion} to
+     * {@link com.wordnik.swagger.core.SwaggerSpec#version()}.
+     * 
      * @param context
      *            The context.
      */
     public Swagger2SpecificationRestlet(Context context) {
         super(context);
-        swaggerVersion = "1.2";
     }
 
     /**
-     * Returns the Swagger documentation of a given resource, also known as
-     * "API Declaration" in Swagger vocabulary.
-     *
-     * @param category
-     *            The category of the resource to describe.
-     * @return The representation of the API declaration.
+     * Returns the Swagger documentation of the Web API.
+     * 
+     * @return The Swagger documentation of the Web API.
      */
-    public Representation getApiDeclaration(String category) {
-        return new JacksonRepresentation<ApiDeclaration>(
-                SwaggerTranslator.getApiDeclaration(category, getDefinition()));
+    public Representation getSwagger() {
+        return new JacksonRepresentation<Swagger>(
+                Swagger2Translator.getSwagger(getDefinition()));
     }
 
     /**
@@ -181,43 +183,16 @@ public class Swagger2SpecificationRestlet extends Restlet {
         return jsonPath;
     }
 
-    /**
-     * Returns the representation of the whole resource listing of the
-     * Application.
-     *
-     * @return The representation of the whole resource listing of the
-     *         Application.
-     */
-    public Representation getResourceListing() {
-        return new JacksonRepresentation<ResourceListing>(
-                SwaggerTranslator.getResourcelisting(getDefinition()));
-    }
-
-    /**
-     * Returns the version of Swagger used to generate this documentation.
-     * 
-     * @return The version of Swagger used to generate this documentation.
-     */
-    public String getSwaggerVersion() {
-        return swaggerVersion;
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         // CORS support for Swagger-UI
-        corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
+        corsResponseHelper
+                .addCorsResponseHeaderIfCorsRequest(request, response);
 
         if (Method.GET.equals(request.getMethod())) {
-            Object resource = request.getAttributes().get("resource");
-
-            if (resource instanceof String) {
-                response.setEntity(getApiDeclaration((String) resource));
-            } else {
-                response.setEntity(getResourceListing());
-            }
+            response.setEntity(getSwagger());
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
@@ -272,16 +247,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
      */
     public void setJsonPath(String jsonPath) {
         this.jsonPath = jsonPath;
-    }
-
-    /**
-     * Sets the version of Swagger used to generate this documentation.
-     * 
-     * @param swaggerVersion
-     *            The version of Swagger.
-     */
-    public void setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
     }
 
 }

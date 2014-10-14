@@ -33,9 +33,8 @@
 
 package org.restlet.ext.apispark;
 
-import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.ext.apispark.internal.info.MethodInfo;
-import org.restlet.resource.ServerResource;
+import java.util.List;
+
 
 /**
  * Describes the ServerResource so that introspection retrieves a more complete
@@ -53,18 +52,18 @@ public interface DocumentedResource {
      *
      * Can be overriden.
      */
-    String getName();
+    String getResourceName();
 
     /**
      * Description of the resource.
      *
      * @return The description of the resource
      */
-    String getDescription();
+    String getResourceDescription();
 
     /**
      * Name of a section of your Web API. Used to tidy it in documentation.
      * //todo section by method ??
      */
-    String getSection();
+    List<String> getResourceSections();
 }

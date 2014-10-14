@@ -35,6 +35,7 @@ package org.restlet.ext.apispark.internal.conversion;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -318,7 +319,7 @@ public abstract class SwaggerTranslator {
      */
     private static void fillApiDeclarationInRepresentation(Operation operation,
             ResourceOperationDeclaration rod, Contract contract,
-            Set<String> usedModels) {
+            Collection<String> usedModels) {
         // Get in representation
         ResourceOperationParameterDeclaration ropd;
         PayLoad inRepr = operation.getInputPayLoad();
@@ -358,7 +359,7 @@ public abstract class SwaggerTranslator {
      */
     private static void fillApiDeclarationOutRepresentation(
             Operation operation, ResourceOperationDeclaration rod,
-            Contract contract, Set<String> usedModels) {
+            Contract contract, Collection<String> usedModels) {
         // Get out representation
         PayLoad outRepr = null;
         for (Response response : operation.getResponses()) {
@@ -389,11 +390,13 @@ public abstract class SwaggerTranslator {
      * 
      * @param operation
      *            The Restlet Web API definition's Operation
+     * @param usedModels
+     *            The models specified by this API declaration
      * @param rod
      *            The Swagger Swagger ResourceOperationDeclaration
      */
     private static void fillApiDeclarationResponses(Operation operation,
-            ResourceOperationDeclaration rod) {
+            Collection<String> usedModels, ResourceOperationDeclaration rod) {
         // Get response messages
         for (Response response : operation.getResponses()) {
             if (Status.isSuccess(response.getCode())) {
@@ -404,6 +407,7 @@ public abstract class SwaggerTranslator {
             rmd.setMessage(response.getMessage());
             if (response.getOutputPayLoad() != null) {
                 rmd.setResponseModel(response.getOutputPayLoad().getType());
+                usedModels.add(response.getOutputPayLoad().getType());
             }
             rod.getResponseMessages().add(rmd);
         }
@@ -423,7 +427,8 @@ public abstract class SwaggerTranslator {
      *            The Swagger Swagger ResourceDeclaration
      */
     private static void fillApiDeclarationOperations(Resource resource,
-            Contract contract, Set<String> usedModels, ResourceDeclaration rd) {
+            Contract contract, Collection<String> usedModels,
+            ResourceDeclaration rd) {
         // Get operations
         for (Operation operation : resource.getOperations()) {
             ResourceOperationDeclaration rod = new ResourceOperationDeclaration();
@@ -446,7 +451,7 @@ public abstract class SwaggerTranslator {
                     usedModels);
 
             // fill the resource operation erorr response models
-            fillApiDeclarationResponses(operation, rod);
+            fillApiDeclarationResponses(operation, usedModels, rod);
 
             rd.getOperations().add(rod);
         }
@@ -464,7 +469,7 @@ public abstract class SwaggerTranslator {
      *            The name of the current section
      * @return The models specified by this API declaration
      */
-    private static Set<String> fillApiDeclarationResources(
+    private static Collection<String> fillApiDeclarationResources(
             Definition definition, ApiDeclaration apiDeclaration,
             String sectionName) {
         Set<String> usedModels = new HashSet<String>();
@@ -523,7 +528,7 @@ public abstract class SwaggerTranslator {
      */
     private static void fillApiDeclarationRepresentations(
             Definition definition, ApiDeclaration apiDeclaration,
-            Set<String> usedModels) {
+            Collection<String> usedModels) {
         Contract contract = definition.getContract();
         apiDeclaration.setModels(new TreeMap<String, ModelDeclaration>());
         Iterator<String> iterator = usedModels.iterator();
@@ -600,7 +605,7 @@ public abstract class SwaggerTranslator {
         fillApiDeclarationMainAttributes(definition, result, sectionName);
 
         // fill API declaration resources
-        Set<String> usedModels = fillApiDeclarationResources(definition,
+        Collection<String> usedModels = fillApiDeclarationResources(definition,
                 result, sectionName);
 
         // fill API declaration representations

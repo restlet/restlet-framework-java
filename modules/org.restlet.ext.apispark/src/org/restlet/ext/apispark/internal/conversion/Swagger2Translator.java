@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Header;
@@ -20,6 +23,7 @@ import org.restlet.ext.apispark.internal.model.Response;
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
+import com.wordnik.swagger.models.License;
 import com.wordnik.swagger.models.ModelImpl;
 import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.RefModel;
@@ -46,6 +50,10 @@ import com.wordnik.swagger.models.properties.StringProperty;
 public class Swagger2Translator {
 
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
+    
+    /** Internal logger. */
+    protected static Logger LOGGER = Logger.getLogger(ApplicationIntrospector.class
+            .getName());
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
@@ -120,16 +128,26 @@ public class Swagger2Translator {
         infoSwagger.setVersion(definition.getVersion()); // required
 
         Contact contactSwagger = new Contact();
-        contactSwagger.setName(definition.getContact().getName());
-        contactSwagger.setEmail(definition.getContact().getEmail());
-        contactSwagger.setUrl(definition.getContact().getUrl());
+        if (definition.getContact() != null) {
+            contactSwagger.setName(definition.getContact().getName());
+            contactSwagger.setEmail(definition.getContact().getEmail());
+            contactSwagger.setUrl(definition.getContact().getUrl());
+        }
         infoSwagger.setContact(contactSwagger);
 
-        // TODO license.name required (not in rwadef)
-        // License licenseSwagger = new License();
-        // licenseSwagger.setName(); //required
-        // licenseSwagger.setUrl(definition.getLicense());
-        // infoSwagger.setLicense(licenseSwagger);
+        License licenseSwagger = new License();
+        if (definition.getLicense() != null) {
+            if (!StringUtils.isNullOrEmpty(definition.getLicense().getName())) {
+                org.restlet.ext.apispark.internal.model.License license = definition
+                        .getLicense();
+                licenseSwagger.setName(license.getName()); // required
+                licenseSwagger.setUrl(license.getUrl());
+                infoSwagger.setLicense(licenseSwagger);
+            } else if (!StringUtils.isNullOrEmpty(definition.getLicense()
+                    .getUrl())) {
+                LOGGER.warning("You must specify a license name");
+            }
+        }
 
         swagger.setInfo(infoSwagger); // required
     }
@@ -182,9 +200,11 @@ public class Swagger2Translator {
 
             String description = operation.getDescription();
 
-            operationSwagger
-                    .setSummary(description.length() > 120 ? description
-                            .substring(0, 120) : description);
+            if (description != null) {
+                operationSwagger
+                        .setSummary(description.length() > 120 ? description
+                                .substring(0, 120) : description);
+            }
             operationSwagger.setDescription(description);
             operationSwagger.setOperationId(operation.getName());
             operationSwagger.setConsumes(operation.getConsumes());

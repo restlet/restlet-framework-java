@@ -7,6 +7,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.DocumentedResource;
 import org.restlet.ext.apispark.internal.model.*;
@@ -32,10 +33,11 @@ public class ResourceCollector {
     protected static Logger LOGGER = Logger.getLogger(ResourceCollector.class
             .getName());
 
-    public static void collectResourceForDirectory(CollectInfo collectInfo, Directory directory, String basePath, ChallengeScheme scheme) {
+    public static void collectResourceForDirectory(CollectInfo collectInfo,
+            Directory directory, String basePath, ChallengeScheme scheme) {
         Resource resource = getResource(directory, basePath, scheme);
 
-        //add operations
+        // add operations
         ArrayList<Operation> operations = new ArrayList<Operation>();
         operations.add(getOperationFromMethod(Method.GET));
         if (directory.isModifiable()) {
@@ -47,16 +49,16 @@ public class ResourceCollector {
         collectInfo.addResource(resource);
     }
 
-    public static void collectResourceForServletResource(CollectInfo collectInfo, ServerResource sr, String basePath, ChallengeScheme scheme) {
+    public static void collectResourceForServletResource(
+            CollectInfo collectInfo, ServerResource sr, String basePath,
+            ChallengeScheme scheme) {
         Resource resource = getResource(sr, basePath, scheme);
 
-        //add operations
+        // add operations
         ArrayList<Operation> operations = new ArrayList<Operation>();
 
-        List<AnnotationInfo> annotations =
-                sr.isAnnotated() ?
-                        AnnotationUtils.getInstance().getAnnotations(sr.getClass()) :
-                        null;
+        List<AnnotationInfo> annotations = sr.isAnnotated() ? AnnotationUtils
+                .getInstance().getAnnotations(sr.getClass()) : null;
 
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
@@ -65,8 +67,8 @@ public class ResourceCollector {
 
                     Method method = methodAnnotationInfo.getRestletMethod();
 
-                    if ("OPTIONS".equals(method.getName()) ||
-                            "PATCH".equals(method.getName())) {
+                    if ("OPTIONS".equals(method.getName())
+                            || "PATCH".equals(method.getName())) {
                         LOGGER.fine("Method " + method.getName() + " ignored.");
                         continue;
                     }
@@ -74,15 +76,15 @@ public class ResourceCollector {
                     Operation operation = getOperationFromMethod(method);
 
                     if (StringUtils.isNullOrEmpty(operation.getName())) {
-                        LOGGER.warning("Java method " +
-                                methodAnnotationInfo.getJavaMethod().getName() +
-                                " has no Method name.");
-                        operation.setName(
-                                methodAnnotationInfo.getJavaMethod()
-                                        .getName());
+                        LOGGER.warning("Java method "
+                                + methodAnnotationInfo.getJavaMethod()
+                                        .getName() + " has no Method name.");
+                        operation.setName(methodAnnotationInfo.getJavaMethod()
+                                .getName());
                     }
 
-                    completeOperation(collectInfo, operation, methodAnnotationInfo, sr);
+                    completeOperation(collectInfo, operation,
+                            methodAnnotationInfo, sr);
 
                     operations.add(operation);
                 }
@@ -92,21 +94,25 @@ public class ResourceCollector {
                 resource.setOperations(operations);
                 collectInfo.addResource(resource);
             } else {
-                LOGGER.warning("Resource " + resource.getName() + " has no methods.");
+                LOGGER.warning("Resource " + resource.getName()
+                        + " has no methods.");
             }
         } else {
-            LOGGER.warning("Resource " + resource.getName() + " has no methods.");
+            LOGGER.warning("Resource " + resource.getName()
+                    + " has no methods.");
         }
     }
 
-    private static Resource getResource(Object restlet, String basePath, ChallengeScheme scheme) {
+    private static Resource getResource(Object restlet, String basePath,
+            ChallengeScheme scheme) {
         Resource resource = new Resource();
         resource.setResourcePath(basePath);
 
         if (restlet instanceof DocumentedResource) {
             DocumentedResource documentedServerResource = (DocumentedResource) restlet;
-            resource.setName(documentedServerResource.getName());
-            resource.setDescription(documentedServerResource.getDescription());
+            resource.setName(documentedServerResource.getResourceName());
+            resource.setDescription(documentedServerResource
+                    .getResourceDescription());
         }
 
         if (StringUtils.isNullOrEmpty(resource.getName())) {
@@ -153,56 +159,87 @@ public class ResourceCollector {
     /**
      * Automatically describes a method by discovering the resource's
      * annotations.
-     *
+     * 
      */
-    private static void completeOperation(
-            CollectInfo collectInfo, Operation operation,
-            MethodAnnotationInfo mai,
-            ServerResource sr) {
+    private static void completeOperation(CollectInfo collectInfo,
+            Operation operation, MethodAnnotationInfo mai, ServerResource sr) {
         // Loop over the annotated Java methods
         MetadataService metadataService = sr.getMetadataService();
+
+        // Retrieve thrown classes
+        Response response;
+        Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
+        if (thrownClasses != null) {
+            for (Class<?> thrownClass : thrownClasses) {
+                try {
+                    StatusAnnotationInfo statusAnnotation = AnnotationUtils
+                            .getInstance().getStatusAnnotationInfo(thrownClass);
+                    if (statusAnnotation != null) {
+                        int statusCode = Integer.parseInt(statusAnnotation
+                                .getAnnotationValue());
+                        RepresentationCollector.addRepresentation(collectInfo,
+                                thrownClass,
+                                ReflectUtils.getSimpleClass(thrownClass));
+                        response = new Response();
+                        response.setCode(statusCode);
+                        response.setMessage("Error " + statusCode);
+                        PayLoad outputPayLoad = new PayLoad();
+                        outputPayLoad.setType(thrownClass.getSimpleName());
+                        response.setOutputPayLoad(outputPayLoad);
+                        operation.getResponses().add(response);
+                    }
+                } catch (NumberFormatException e) {
+                    // TODO also check that the value of the code belongs to
+                    // the known HTTP status codes ?
+                    LOGGER.severe("Annotation value for thrown class: "
+                            + thrownClass.getSimpleName()
+                            + " is not a valid HTTP status code.");
+                }
+            }
+        }
 
         // Describe the input
         Class<?>[] inputClasses = mai.getJavaMethod().getParameterTypes();
         if (inputClasses != null && inputClasses.length > 0) {
 
-            //Input representation
-            //Handles only the first method parameter
+            // Input representation
+            // Handles only the first method parameter
             Class<?> inputClass = inputClasses[0];
             Type inputType = mai.getJavaMethod().getGenericParameterTypes()[0];
 
-            RepresentationCollector.addRepresentation(
-                    collectInfo,
-                    inputClass,
+            RepresentationCollector.addRepresentation(collectInfo, inputClass,
                     inputType);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(ReflectUtils.getSimpleClass(inputType).getName());
+            inputEntity.setType(ReflectUtils.getSimpleClass(inputType)
+                    .getName());
             inputEntity.setArray(ReflectUtils.isListType(inputClass));
             operation.setInputPayLoad(inputEntity);
 
-            //Consumes
+            // Consumes
             if (metadataService != null) {
 
                 try {
                     List<Variant> requestVariants = mai.getRequestVariants(
-                            metadataService,
-                            sr.getConverterService());
+                            metadataService, sr.getConverterService());
 
                     if (requestVariants == null || requestVariants.isEmpty()) {
-                        LOGGER.warning("Method has no requested variant: " + mai);
+                        LOGGER.warning("Method has no requested variant: "
+                                + mai);
                         return;
                     }
 
-                    //une representation per variant ?
+                    // une representation per variant ?
                     for (Variant variant : requestVariants) {
 
                         if (variant.getMediaType() == null) {
-                            LOGGER.warning("Variant has no media type: " + variant);
+                            LOGGER.warning("Variant has no media type: "
+                                    + variant);
                             continue;
                         }
 
-                        operation.getConsumes().add(variant.getMediaType().getName());
+                        operation.getConsumes().add(
+                                variant.getMediaType().getName());
                     }
                 } catch (IOException e) {
                     throw new ResourceException(e);
@@ -217,32 +254,30 @@ public class ResourceCollector {
                 QueryParameter queryParameter = new QueryParameter();
                 queryParameter.setName(parameter.getName());
                 queryParameter.setRequired(true);
-                queryParameter.setDescription(
-                        StringUtils.isNullOrEmpty(parameter.getValue()) ?
-                                "" :
-                                "Value: " + parameter.getValue());
+                queryParameter.setDescription(StringUtils
+                        .isNullOrEmpty(parameter.getValue()) ? "" : "Value: "
+                        + parameter.getValue());
                 queryParameter.setDefaultValue(parameter.getValue());
                 queryParameter.setAllowMultiple(false);
                 operation.getQueryParameters().add(queryParameter);
             }
         }
 
-        // Describe the response
+        // Describe the success response
 
-        Response response = new Response();
+        response = new Response();
 
         Class<?> outputClass = mai.getJavaMethod().getReturnType();
         Type outputType = mai.getJavaMethod().getGenericReturnType();
 
         if (outputClass != Void.TYPE) {
-            //Output representation
-            RepresentationCollector.addRepresentation(
-                    collectInfo,
-                    outputClass,
+            // Output representation
+            RepresentationCollector.addRepresentation(collectInfo, outputClass,
                     outputType);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(ReflectUtils.getSimpleClass(outputType).getName());
+            outputEntity.setType(ReflectUtils.getSimpleClass(outputType)
+                    .getName());
             outputEntity.setArray(ReflectUtils.isListType(outputClass));
 
             response.setOutputPayLoad(outputEntity);
@@ -254,20 +289,18 @@ public class ResourceCollector {
         response.setMessage(Status.SUCCESS_OK.getDescription());
         operation.getResponses().add(response);
 
-        //Produces
+        // Produces
         if (metadataService != null) {
             try {
-                List<Variant> responseVariants = mai
-                        .getResponseVariants(
-                                metadataService,
-                                sr.getConverterService());
+                List<Variant> responseVariants = mai.getResponseVariants(
+                        metadataService, sr.getConverterService());
 
                 if (responseVariants == null || responseVariants.isEmpty()) {
                     LOGGER.warning("Method has no response variant: " + mai);
                     return;
                 }
 
-                //une representation per variant ?
+                // une representation per variant ?
                 for (Variant variant : responseVariants) {
 
                     if (variant.getMediaType() == null) {
@@ -275,7 +308,8 @@ public class ResourceCollector {
                         continue;
                     }
 
-                    operation.getProduces().add(variant.getMediaType().getName());
+                    operation.getProduces().add(
+                            variant.getMediaType().getName());
                 }
             } catch (IOException e) {
                 throw new ResourceException(e);
