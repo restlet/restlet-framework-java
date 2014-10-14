@@ -9,10 +9,20 @@ import org.restlet.util.Series;
 
 /**
  * Helper to add CORS headers on HTTP response.
+ * Support by default simple methods (HEAD, GET, POST).
+ * For not simple methods, client send a preflight request with the method OPTIONS.
+ *
+ * @see <a href="http://www.w3.org/TR/cors">W3C CORS Specification</a>
  *
  * @author Manuel Boillod
  */
 public class CorsResponseHelper {
+
+    /**
+     * Returns a default instance of {@link #CorsResponseHelper()}.
+     * This instance is shared across whole application, so do not update its configuration.
+     */
+    public static final CorsResponseHelper DEFAULT = new CorsResponseHelper();
 
     /**
      * If true, add 'Access-Control-Allow-Credentials' header.
