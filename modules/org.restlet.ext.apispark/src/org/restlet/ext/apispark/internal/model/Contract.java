@@ -131,9 +131,9 @@ public class Contract {
         return null;
     }
 
-    public Representation getRepresentation(String name) {
+    public Representation getRepresentation(String identifier) {
         for (Representation result : getRepresentations()) {
-            if (name.equals(result.getName())) {
+            if (identifier.equals(result.getIdentifier())) {
                 return result;
             }
         }

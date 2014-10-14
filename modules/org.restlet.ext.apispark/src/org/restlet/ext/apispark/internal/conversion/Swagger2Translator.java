@@ -43,6 +43,7 @@ import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.LongProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
+import org.restlet.ext.apispark.internal.model.Types;
 
 /**
  * Translator : RWADEF <-> Swagger 2.0.
@@ -216,10 +217,10 @@ public class Swagger2Translator {
         // Path parameters
         for (PathVariable pathVariable : resource.getPathVariables()) {
             PathParameter pathParameterSwagger = new PathParameter();
-            pathParameterSwagger.setType(SwaggerUtils.toSwaggerType(
-                    pathVariable.getType()).getType()); // required
-            pathParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
-                    pathVariable.getType()).getFormat());
+            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerUtils.toSwaggerType(pathVariable.getType());
+            pathParameterSwagger.setType(swaggerTypeFormat.getType()); // required
+            pathParameterSwagger.setFormat(swaggerTypeFormat.getFormat());
             pathParameterSwagger.setName(pathVariable.getName()); // required
             pathParameterSwagger.setDescription(pathVariable.getDescription());
             operationSwagger.addParameter(pathParameterSwagger);
@@ -236,7 +237,7 @@ public class Swagger2Translator {
 
             if (representation != null && representation.isRaw()) {
                 ModelImpl modelImpl = new ModelImpl();
-                modelImpl.setType("file");
+                modelImpl.setType(representation.getIdentifier());
                 modelImpl.setDescription(representation.getDescription());
                 bodyParameterSwagger.setSchema(modelImpl);
             } else {
@@ -247,7 +248,7 @@ public class Swagger2Translator {
                     arrayModel.setItems(newPropertyForType(inRepr.getType()));
                     bodyParameterSwagger.setSchema(arrayModel);
                 } else {
-                    if (isPrimitiveType(inRepr.getType())) {
+                    if (Types.isPrimitiveType(inRepr.getType())) {
                         ModelImpl modelImpl = new ModelImpl();
                         modelImpl.setType(inRepr.getType());
                         bodyParameterSwagger.setSchema(modelImpl);
@@ -313,10 +314,7 @@ public class Swagger2Translator {
 
                 if (representation != null && representation.isRaw()) {
                     // TODO wait for the swagger class
-                    com.wordnik.swagger.models.properties.AbstractProperty fileProperty = new AbstractProperty() {
-                        // anonymous class
-                    };
-                    fileProperty.setType("file");
+                    FileProperty fileProperty = new FileProperty();
                     fileProperty
                             .setDescription(representation.getDescription());
                     responseSwagger.setSchema(fileProperty);
@@ -351,13 +349,13 @@ public class Swagger2Translator {
                 .getRepresentations()) {
 
             if (representation.isRaw()
-                    || isPrimitiveType(representation.getName())) {
+                    || Types.isPrimitiveType(representation.getIdentifier())) {
                 continue;
             }
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getName());
+            modelSwagger.setName(representation.getIdentifier());
             modelSwagger.setDescription(representation.getDescription());
 
             /* Property -> Property */
@@ -407,26 +405,6 @@ public class Swagger2Translator {
     }
 
     /**
-     * Indicates if the given type is a primitive type.
-     * 
-     * @param type
-     *            The type to be analysed
-     * @return A boolean of value true if the given type is primitive, false
-     *         otherwise.
-     */
-    private static boolean isPrimitiveType(String type) {
-        return "string".equals(type.toLowerCase())
-                || "byte".equals(type.toLowerCase())
-                || "short".equals(type.toLowerCase())
-                || "integer".equals(type.toLowerCase())
-                || "long".equals(type.toLowerCase())
-                || "float".equals(type.toLowerCase())
-                || "double".equals(type.toLowerCase())
-                || "date".equals(type.toLowerCase())
-                || "boolean".equals(type.toLowerCase());
-    }
-
-    /**
      * Get new property for Swagger 2.0 for the primitive type of Rwadef.
      * 
      * @param type
@@ -438,9 +416,11 @@ public class Swagger2Translator {
         if ("string".equals(type.toLowerCase())) {
             return new StringProperty();
         } else if ("byte".equals(type.toLowerCase())) {
-            return new IntegerProperty();
+            //TODO wait for Swagger class
+            return new ByteProperty();
         } else if ("short".equals(type.toLowerCase())) {
-            return new IntegerProperty();
+            //TODO wait for Swagger class
+            return new ShortProperty();
         } else if ("integer".equals(type.toLowerCase())) {
             return new IntegerProperty();
         } else if ("long".equals(type.toLowerCase())) {
@@ -458,4 +438,26 @@ public class Swagger2Translator {
         return new RefProperty(type);
     }
 
+    //TODO wait for Swagger class
+    private static class FileProperty extends AbstractProperty {
+        private FileProperty() {
+            setType("file");
+        }
+    }
+
+    //TODO wait for Swagger class
+    private static class ShortProperty extends AbstractProperty {
+        private ShortProperty() {
+            setType("integer");
+            setFormat("int32"); //int16 not supported
+        }
+    }
+
+    //TODO wait for Swagger class
+    private static class ByteProperty extends AbstractProperty {
+        private ByteProperty() {
+            setType("string");
+            setFormat("byte");
+        }
+    }
 }

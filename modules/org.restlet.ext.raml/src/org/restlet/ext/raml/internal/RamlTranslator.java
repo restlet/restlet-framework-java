@@ -329,17 +329,17 @@ public abstract class RamlTranslator {
         Map<String, String> schemas = new HashMap<String, String>();
         raml.getSchemas().add(schemas);
         for (Representation representation : contract.getRepresentations()) {
-            if (RamlUtils.isPrimitiveType(representation.getName())) {
+            if (RamlUtils.isPrimitiveType(representation.getIdentifier())) {
                 continue;
             }
             try {
-                schemas.put(representation.getName(), m
+                schemas.put(representation.getIdentifier(), m
                         .writeValueAsString(RamlUtils
                                 .generateSchema(representation)));
             } catch (JsonProcessingException e) {
                 LOGGER.log(Level.WARNING,
                         "Error when putting mime type schema for representation: "
-                                + representation.getName(), e);
+                                + representation.getIdentifier(), e);
             }
         }
         return raml;
@@ -359,7 +359,7 @@ public abstract class RamlTranslator {
             List<Representation> representations, String name) {
         if (name != null) {
             for (Representation repr : representations) {
-                if (name.equals(repr.getName())) {
+                if (name.equals(repr.getIdentifier())) {
                     return repr;
                 }
             }

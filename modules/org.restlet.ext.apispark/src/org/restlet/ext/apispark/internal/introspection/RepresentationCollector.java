@@ -53,7 +53,7 @@ public class RepresentationCollector {
         } else {
             //type is an Entity
             //Example: "java.util.Contact" or "String"
-            representation.setIdentifier(Types.convertPrimtiveType(representationType));
+            representation.setIdentifier(Types.convertPrimitiveType(representationType));
             //Example: "Contact"
             representation.setName(representationType.getSimpleName());
         }
@@ -75,7 +75,7 @@ public class RepresentationCollector {
                     property.setName(field.getName());
                     property.setDescription("");
                     Class<?> fieldType = ReflectUtils.getSimpleClass(field);
-                    property.setType(Types.convertPrimtiveType(fieldType));
+                    property.setType(Types.convertPrimitiveType(fieldType));
                     property.setMinOccurs(0);
                     boolean isCollection = ReflectUtils.isListType(field.getType());
                     property.setMaxOccurs(isCollection ? -1 : 1);

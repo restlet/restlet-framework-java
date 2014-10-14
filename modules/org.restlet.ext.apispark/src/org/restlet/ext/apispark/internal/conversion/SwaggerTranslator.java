@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -266,8 +265,10 @@ public abstract class SwaggerTranslator {
         for (PathVariable pv : resource.getPathVariables()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("path");
-            ropd.setType(SwaggerUtils.toSwaggerType(pv.getType()).getType());
-            ropd.setFormat(SwaggerUtils.toSwaggerType(pv.getType()).getFormat());
+            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerUtils.toSwaggerType(pv.getType());
+            ropd.setType(swaggerTypeFormat.getType());
+            ropd.setFormat(swaggerTypeFormat.getFormat());
             ropd.setRequired(true);
             ropd.setName(pv.getName());
             ropd.setAllowMultiple(false);
@@ -293,8 +294,10 @@ public abstract class SwaggerTranslator {
         for (QueryParameter qp : operation.getQueryParameters()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("query");
-            ropd.setType(SwaggerUtils.toSwaggerType(qp.getType()).getType());
-            ropd.setFormat(SwaggerUtils.toSwaggerType(qp.getType()).getFormat());
+            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerUtils.toSwaggerType(qp.getType());
+            ropd.setType(swaggerTypeFormat.getType());
+            ropd.setFormat(swaggerTypeFormat.getFormat());
             ropd.setName(qp.getName());
             ropd.setAllowMultiple(true);
             ropd.setDescription(qp.getDescription());
@@ -332,12 +335,8 @@ public abstract class SwaggerTranslator {
             ropd.setName("body");
             ropd.setRequired(true);
 
-            if (representation != null && representation.isRaw()) {
-                ropd.setType("File");
-            } else {
-                ropd.setType(inRepr.getType());
-            }
-            if (inRepr.getType() != null) {
+            ropd.setType(inRepr.getType());
+            if (representation != null) {
                 usedModels.add(inRepr.getType());
             }
             rod.getParameters().add(ropd);
@@ -417,8 +416,8 @@ public abstract class SwaggerTranslator {
      * Fills Swagger ResourceDeclaration's ResourceOperationDeclaration from
      * Restlet Web API definition's Resource
      * 
-     * @param operation
-     *            The Restlet Web API definition's Operation
+     * @param resource
+     *            The Restlet Web API definition's Resource
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param usedModels
@@ -531,10 +530,10 @@ public abstract class SwaggerTranslator {
             Collection<String> usedModels) {
         Contract contract = definition.getContract();
         apiDeclaration.setModels(new TreeMap<String, ModelDeclaration>());
-        Iterator<String> iterator = usedModels.iterator();
-        // TODO Change this loop
-        while (iterator.hasNext()) {
-            String model = iterator.next();
+
+        List<String> usedModelsList = new ArrayList<String>(usedModels);
+        for (int i = 0; i < usedModelsList.size(); i++) {
+            String model = usedModelsList.get(i);
             Representation repr = contract.getRepresentation(model);
             if (repr == null || isPrimitiveType(model)) {
                 continue;
@@ -547,9 +546,8 @@ public abstract class SwaggerTranslator {
                     md.getRequired().add(prop.getName());
                 }
                 if (!isPrimitiveType(prop.getType())
-                        && !usedModels.contains(prop.getType())) {
-                    usedModels.add(prop.getType());
-                    iterator = usedModels.iterator();
+                        && !usedModelsList.contains(prop.getType())) {
+                    usedModelsList.add(prop.getType());
                 }
                 TypePropertyDeclaration tpd = new TypePropertyDeclaration();
                 tpd.setDescription(prop.getDescription());
@@ -559,20 +557,22 @@ public abstract class SwaggerTranslator {
                     tpd.setType("array");
                     tpd.setItems(new ItemsDeclaration());
                     if (isPrimitiveType(prop.getType())) {
+                        SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
+                                SwaggerUtils.toSwaggerType(prop.getType());
                         tpd.getItems().setType(
-                                SwaggerUtils.toSwaggerType(prop.getType())
+                                swaggerTypeFormat
                                         .getType());
-                        tpd.setFormat(SwaggerUtils
-                                .toSwaggerType(prop.getType()).getFormat());
+                        tpd.setFormat(swaggerTypeFormat.getFormat());
                     } else {
                         tpd.getItems().setRef(prop.getType());
                     }
                 } else {
                     if (isPrimitiveType(prop.getType())) {
-                        tpd.setType(SwaggerUtils.toSwaggerType(prop.getType())
+                        SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
+                                SwaggerUtils.toSwaggerType(prop.getType());
+                        tpd.setType(swaggerTypeFormat
                                 .getType());
-                        tpd.setFormat(SwaggerUtils
-                                .toSwaggerType(prop.getType()).getFormat());
+                        tpd.setFormat(swaggerTypeFormat.getFormat());
                     } else {
                         tpd.setRef(prop.getType());
                     }
@@ -694,7 +694,7 @@ public abstract class SwaggerTranslator {
         result.setName(parameter.getName());
         result.setDescription(parameter.getDescription());
         result.setType(SwaggerUtils
-                .toJavaType(new SwaggerUtils.SwaggerTypeFormat(parameter
+                .toDefinitionType(new SwaggerUtils.SwaggerTypeFormat(parameter
                         .getType(), parameter.getFormat())));
         return result;
     }

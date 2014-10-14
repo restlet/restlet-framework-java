@@ -149,7 +149,7 @@ public class RamlUtils {
         SimpleTypeSchema propertySchema;
         ObjectSchema objectSchema;
         objectSchema = new ObjectSchema();
-        objectSchema.setTitle(representation.getName());
+        objectSchema.setTitle(representation.getIdentifier());
         objectSchema.setDescription(representation.getDescription());
         if (!representation.isRaw()) {
             if (representation.getExtendedType() != null) {

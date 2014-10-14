@@ -236,7 +236,7 @@ public class IntrospectionUtils {
 
                     @Override
                     public int compare(Representation o1, Representation o2) {
-                        return o1.getName().compareTo(o2.getName());
+                        return o1.getIdentifier().compareTo(o2.getIdentifier());
                     }
 
                 });
