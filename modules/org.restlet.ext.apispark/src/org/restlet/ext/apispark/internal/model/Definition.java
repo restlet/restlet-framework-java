@@ -42,13 +42,16 @@ import java.util.List;
  * @author Cyprien Quilici
  */
 public class Definition {
+    
+    /** RWADef version of the definition */
+    public final static String RWADEF_VERSION = "0.9";
 
     /** Any useful information for a user that plans to access to the API. */
     private Contact contact;
 
     /** Contract of this API. */
     private Contract contract;
-
+    
     /**
      * Endpoints on which one can access the Web API.
      */
@@ -56,9 +59,6 @@ public class Definition {
 
     /** URL of the description of the license used by the API. */
     private License license;
-
-    /** RWADef version of the definition */
-    private final String rwadefVersion = "1.0";
 
     /** Current version of the API. */
     private String version;
@@ -82,10 +82,6 @@ public class Definition {
 
     public License getLicense() {
         return license;
-    }
-
-    public String getRwadefVersion() {
-        return rwadefVersion;
     }
 
     public String getVersion() {
