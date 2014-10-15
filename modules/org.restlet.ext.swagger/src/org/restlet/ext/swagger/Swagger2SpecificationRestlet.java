@@ -39,6 +39,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
@@ -73,6 +74,7 @@ import java.util.List;
  * or
  * <pre>
  * new Swagger2SpecificationRestlet()
+ *      .setBasePath("http://myapp.com/api/v1")
  *      .setApiInboundRoot(this)
  *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by swagger-annotation extension
  *      .attach(baseRouter);
@@ -87,7 +89,7 @@ import java.util.List;
 public class Swagger2SpecificationRestlet extends Restlet {
 
     /** The version of Swagger. */
-    public static final Float SWAGGER_VERSION = 2.0f;
+    public static final String SWAGGER_VERSION = "2.0";
 
     /** The root Restlet to describe. */
     private Restlet apiInboundRoot;
@@ -98,15 +100,14 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The Application to describe. */
     private Application application;
 
-    //todo clean unused attributes
     /** The base path of the API. */
     private String basePath;
 
+    /** The base reference of the API. */
+    private Reference baseRef;
+
     /** The RWADef of the API. */
     private Definition definition;
-
-    /** The root Restlet to describe. */
-    private String jsonPath;
 
     /** List of additionnal introspector plugins to use */
     private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
@@ -182,7 +183,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (Swagger2SpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null,
+                        baseRef,
                         null,
                         introspectorPlugins);
                 // This data seems necessary for Swagger codegen.
@@ -193,15 +194,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
         }
 
         return definition;
-    }
-
-    /**
-     * Returns the base path of the API's resource.
-     * 
-     * @return The base path of the API's resource.
-     */
-    public String getJsonPath() {
-        return jsonPath;
     }
 
     /**
@@ -311,18 +303,11 @@ public class Swagger2SpecificationRestlet extends Restlet {
      */
     public Swagger2SpecificationRestlet setBasePath(String basePath) {
         this.basePath = basePath;
+        //Process basepath and check validity
+        this.baseRef = basePath != null ? new Reference(basePath) : null;
         return this;
     }
 
-    /**
-     * Sets the base path of the API's resource.
-     *
-     * @param jsonPath
-     *            The base path of the API's resource.
-     */
-    public Swagger2SpecificationRestlet setJsonPath(String jsonPath) {
-        this.jsonPath = jsonPath;
-        return this;
-    }
+
 
 }

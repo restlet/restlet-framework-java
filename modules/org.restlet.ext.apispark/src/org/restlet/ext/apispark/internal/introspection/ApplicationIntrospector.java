@@ -189,6 +189,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                         collectInfo.getSchemes().get(0).getName();
 
         //Introspect component if any
+        if (baseRef != null) {
+            Endpoint endpoint = new Endpoint(baseRef.getHostDomain(),
+                    baseRef.getHostPort(), baseRef.getSchemeProtocol().getSchemeName(), baseRef.getPath(), scheme);
+            definition.getEndpoints().add(endpoint);
+        }
         if (component != null) {
             LOGGER.fine("Look for the endpoint.");
             // Look for the endpoint to which this application is attached.
@@ -202,7 +207,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                     definition.getEndpoints().add(endpoint);
                 }
             }
-        } else {
+        }
+        if (definition.getEndpoints().isEmpty()) {
             Endpoint endpoint = new Endpoint("example.com",
                     80, Protocol.HTTP.getSchemeName(), "/v1", scheme);
             definition.getEndpoints().add(endpoint);

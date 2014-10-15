@@ -48,7 +48,7 @@ public class Endpoint {
     private String domain;
 
     /** The endpoint's port. */
-    private int port;
+    private Integer port;
 
     /** Protocol used for this endpoint. */
     private String protocol;
@@ -63,10 +63,23 @@ public class Endpoint {
     /** Authentication protocol used for this endpoint */
     private String authenticationProtocol;
 
-    public Endpoint(String domain, int port, String protocol,
+    /**
+     *
+     * @param domain
+     *      Domain of the endpoint
+     * @param port
+     *      Port of the endpoint. Value -1 is considered as null.
+     * @param protocol
+     *      Protocol of the endpoint
+     * @param basePath
+     *      Base path of the endpoint
+     * @param authenticationProtocol
+     *      Authentication scheme of the endpoint
+     */
+    public Endpoint(String domain, Integer port, String protocol,
             String basePath, String authenticationProtocol) {
         this.domain = domain;
-        this.port = port;
+        setPort(port);
         this.protocol = protocol;
         this.basePath = basePath;
         this.authenticationProtocol = authenticationProtocol;
@@ -82,8 +95,6 @@ public class Endpoint {
             basePath = m.group(5);
             if (m.group(4) != null) {
                 port = Integer.parseInt(m.group(4));
-            } else {
-                port = 80;
             }
         } else {
             throw new RuntimeException("url does not match URL pattern: " + url);
@@ -95,7 +106,7 @@ public class Endpoint {
 
     public String computeUrl() {
         return protocol + "://" + domain
-                + (port != 80 ? ":" + port : "") + basePath;
+                + (port != null ? ":" + port : "") + basePath;
     }
 
     public String getDomain() {
@@ -114,8 +125,12 @@ public class Endpoint {
         this.domain = domain;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPort(Integer port) {
+        if (port != null && port != -1) {
+            this.port = port;
+        } else {
+            port = null;
+        }
     }
 
     public void setProtocol(String protocol) {
