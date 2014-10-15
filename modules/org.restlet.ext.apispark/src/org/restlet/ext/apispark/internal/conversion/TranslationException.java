@@ -3,26 +3,20 @@ package org.restlet.ext.apispark.internal.conversion;
 @SuppressWarnings("serial")
 public class TranslationException extends Exception {
 
-    private String message;
-
     private String type;
 
     public TranslationException(String type, String message) {
-        super();
+        super(message);
         this.type = type;
-        this.message = message;
     }
 
-    public String getMessage() {
-        return message;
+    public TranslationException(String type, String message, Throwable throwable) {
+        super(message, throwable);
+        this.type = type;
     }
 
     public String getType() {
         return type;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public void setType(String type) {

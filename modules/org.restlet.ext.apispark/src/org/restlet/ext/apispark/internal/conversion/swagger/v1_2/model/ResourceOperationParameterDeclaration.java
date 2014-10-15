@@ -1,14 +1,28 @@
-package org.restlet.ext.apispark.internal.model.swagger;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @JsonInclude(Include.NON_NULL)
-public class TypePropertyDeclaration {
+public class ResourceOperationParameterDeclaration {
+    public static final String PARAM_TYPE_BODY = "body";
+
+    public static final String PARAM_TYPE_FORM = "form";
+
+    public static final String PARAM_TYPE_HEADER = "header";
+
+    public static final String PARAM_TYPE_PATH = "path";
+
+    public static final String PARAM_TYPE_QUERY = "query";
+
+    private boolean allowMultiple;
+
+    private String defaultValue;
+
     private String description;
 
     @JsonProperty("enum")
@@ -23,12 +37,17 @@ public class TypePropertyDeclaration {
 
     private String minimum;
 
-    @JsonProperty("$ref")
-    private String ref;
+    private String name;
+
+    private String paramType;
+
+    private boolean required;
 
     private String type;
 
-    private boolean uniqueItems;
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
     public String getDescription() {
         return description;
@@ -57,16 +76,32 @@ public class TypePropertyDeclaration {
         return minimum;
     }
 
-    public String getRef() {
-        return ref;
+    public String getName() {
+        return name;
+    }
+
+    public String getParamType() {
+        return paramType;
     }
 
     public String getType() {
         return type;
     }
 
-    public boolean isUniqueItems() {
-        return uniqueItems;
+    public boolean isAllowMultiple() {
+        return allowMultiple;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     public void setDescription(String description) {
@@ -93,16 +128,19 @@ public class TypePropertyDeclaration {
         this.minimum = minimum;
     }
 
-    public void setRef(String ref) {
-        this.ref = ref;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setParamType(String paramType) {
+        this.paramType = paramType;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 
     public void setType(String type) {
         this.type = type;
     }
-
-    public void setUniqueItems(boolean uniqueItems) {
-        this.uniqueItems = uniqueItems;
-    }
-
 }

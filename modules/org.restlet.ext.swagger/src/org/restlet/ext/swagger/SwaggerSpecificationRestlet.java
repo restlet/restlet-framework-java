@@ -37,16 +37,19 @@ import org.restlet.*;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
+import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 
-import com.wordnik.swagger.core.SwaggerSpec;
 import org.restlet.routing.Router;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -63,9 +66,10 @@ import org.restlet.routing.Router;
  * <p>
  * Usage example:
  * <pre>
- * SwaggerSpecificationRestlet swagger1SpecificationRestlet = new SwaggerSpecificationRestlet();
- * swagger1SpecificationRestlet.setApiInboundRoot(this);
- * swagger1SpecificationRestlet.attach(baseRouter);
+ * new SwaggerSpecificationRestlet()
+ *      .setApiInboundRoot(this)
+ *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by swagger-annotation extension
+ *      .attach(baseRouter);
  * </pre>
  * </p>
 
@@ -97,12 +101,14 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The version of Swagger. */
     private String swaggerVersion = "1.2";
 
+    /** List of additionnal introspector plugins to use */
+    private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
+
     /** Helper used to add CORS response headers */
     private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
 
     /**
      * Default constructor.<br>
-     * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
      */
     public SwaggerSpecificationRestlet() {
         this(null);
@@ -110,8 +116,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
-     * 
+     *
      * @param context
      *            The context.
      */
@@ -173,7 +178,10 @@ public class SwaggerSpecificationRestlet extends Restlet {
     private synchronized Definition getDefinition() {
         if (definition == null) {
             synchronized (SwaggerSpecificationRestlet.class) {
-                definition = ApplicationIntrospector.getDefinition(application);
+                definition = ApplicationIntrospector.getDefinition(application,
+                        null,
+                        null,
+                        introspectorPlugins);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
@@ -273,8 +281,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public void setApiInboundRoot(Application application) {
+    public SwaggerSpecificationRestlet setApiInboundRoot(Application application) {
         this.application = application;
+        return this;
     }
 
     /**
@@ -283,8 +292,21 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param apiInboundRoot
      *            The application's root Restlet.
      */
-    public void setApiInboundRoot(Restlet apiInboundRoot) {
+    public SwaggerSpecificationRestlet setApiInboundRoot(Restlet apiInboundRoot) {
         this.apiInboundRoot = apiInboundRoot;
+        return this;
+    }
+
+    /**
+     * Add an introspector plugin to default introspector
+     *
+     * @param introspectorPlugin
+     *          Introspector Plugin to add
+     *
+     */
+    public SwaggerSpecificationRestlet addIntrospectorPlugin(IntrospectorPlugin introspectorPlugin) {
+        introspectorPlugins.add(introspectorPlugin);
+        return this;
     }
 
     /**
@@ -293,8 +315,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public void setApiVersion(String apiVersion) {
+    public SwaggerSpecificationRestlet setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
+        return this;
     }
 
     /**
@@ -303,8 +326,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public void setBasePath(String basePath) {
+    public SwaggerSpecificationRestlet setBasePath(String basePath) {
         this.basePath = basePath;
+        return this;
     }
 
     /**
@@ -313,18 +337,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param jsonPath
      *            The base path of the API's resource.
      */
-    public void setJsonPath(String jsonPath) {
+    public SwaggerSpecificationRestlet setJsonPath(String jsonPath) {
         this.jsonPath = jsonPath;
-    }
-
-    /**
-     * Sets the version of Swagger used to generate this documentation.
-     * 
-     * @param swaggerVersion
-     *            The version of Swagger.
-     */
-    public void setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
+        return this;
     }
 
 }

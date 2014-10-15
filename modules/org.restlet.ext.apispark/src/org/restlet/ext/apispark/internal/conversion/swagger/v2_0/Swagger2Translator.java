@@ -1,24 +1,4 @@
-package org.restlet.ext.apispark.internal.conversion;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Header;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.PathVariable;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
+package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;
@@ -43,7 +23,26 @@ import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.LongProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.model.Header;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Types;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Translator : RWADEF <-> Swagger 2.0.
@@ -217,8 +216,8 @@ public class Swagger2Translator {
         // Path parameters
         for (PathVariable pathVariable : resource.getPathVariables()) {
             PathParameter pathParameterSwagger = new PathParameter();
-            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
-                    SwaggerUtils.toSwaggerType(pathVariable.getType());
+            SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerTypes.toSwaggerType(pathVariable.getType());
             pathParameterSwagger.setType(swaggerTypeFormat.getType()); // required
             pathParameterSwagger.setFormat(swaggerTypeFormat.getFormat());
             pathParameterSwagger.setName(pathVariable.getName()); // required
@@ -273,9 +272,9 @@ public class Swagger2Translator {
                 // do not set "csv" as it's the default format
                 // queryParameterSwagger.setCollectionFormat("csv");
             } else {
-                queryParameterSwagger.setType(SwaggerUtils.toSwaggerType(
+                queryParameterSwagger.setType(SwaggerTypes.toSwaggerType(
                         queryParameter.getType()).getType());
-                queryParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
+                queryParameterSwagger.setFormat(SwaggerTypes.toSwaggerType(
                         queryParameter.getType()).getFormat());
             }
             queryParameterSwagger.setName(queryParameter.getName());
@@ -287,9 +286,9 @@ public class Swagger2Translator {
         for (Header header : operation.getHeaders()) {
             HeaderParameter headerParameterSwagger = new HeaderParameter();
             headerParameterSwagger.setRequired(header.isRequired());
-            headerParameterSwagger.setType(SwaggerUtils.toSwaggerType(
+            headerParameterSwagger.setType(SwaggerTypes.toSwaggerType(
                     header.getType()).getType());
-            headerParameterSwagger.setFormat(SwaggerUtils.toSwaggerType(
+            headerParameterSwagger.setFormat(SwaggerTypes.toSwaggerType(
                     header.getType()).getFormat());
             headerParameterSwagger.setName(header.getName());
             headerParameterSwagger.setDescription(header.getDescription());

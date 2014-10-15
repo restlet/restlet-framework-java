@@ -1,28 +1,14 @@
-package org.restlet.ext.apispark.internal.model.swagger;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @JsonInclude(Include.NON_NULL)
-public class ResourceOperationParameterDeclaration {
-    public static final String PARAM_TYPE_BODY = "body";
-
-    public static final String PARAM_TYPE_FORM = "form";
-
-    public static final String PARAM_TYPE_HEADER = "header";
-
-    public static final String PARAM_TYPE_PATH = "path";
-
-    public static final String PARAM_TYPE_QUERY = "query";
-
-    private boolean allowMultiple;
-
-    private String defaultValue;
-
+public class TypePropertyDeclaration {
     private String description;
 
     @JsonProperty("enum")
@@ -37,17 +23,12 @@ public class ResourceOperationParameterDeclaration {
 
     private String minimum;
 
-    private String name;
-
-    private String paramType;
-
-    private boolean required;
+    @JsonProperty("$ref")
+    private String ref;
 
     private String type;
 
-    public String getDefaultValue() {
-        return defaultValue;
-    }
+    private boolean uniqueItems;
 
     public String getDescription() {
         return description;
@@ -76,32 +57,16 @@ public class ResourceOperationParameterDeclaration {
         return minimum;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getParamType() {
-        return paramType;
+    public String getRef() {
+        return ref;
     }
 
     public String getType() {
         return type;
     }
 
-    public boolean isAllowMultiple() {
-        return allowMultiple;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setAllowMultiple(boolean allowMultiple) {
-        this.allowMultiple = allowMultiple;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
+    public boolean isUniqueItems() {
+        return uniqueItems;
     }
 
     public void setDescription(String description) {
@@ -128,19 +93,16 @@ public class ResourceOperationParameterDeclaration {
         this.minimum = minimum;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setParamType(String paramType) {
-        this.paramType = paramType;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 
     public void setType(String type) {
         this.type = type;
     }
+
+    public void setUniqueItems(boolean uniqueItems) {
+        this.uniqueItems = uniqueItems;
+    }
+
 }

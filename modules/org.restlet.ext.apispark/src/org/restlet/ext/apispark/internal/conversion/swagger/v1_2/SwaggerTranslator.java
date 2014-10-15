@@ -31,7 +31,41 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.conversion;
+package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
+
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.Contact;
+import org.restlet.ext.apispark.internal.model.Contract;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.model.License;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
+import org.restlet.ext.apispark.internal.model.Types;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiInfo;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.AuthorizationsDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.BasicAuthorizationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ItemsDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ModelDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.OAuth2AuthorizationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.TypePropertyDeclaration;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -47,38 +81,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.model.Contact;
-import org.restlet.ext.apispark.internal.model.Contract;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.License;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.PathVariable;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ApiInfo;
-import org.restlet.ext.apispark.internal.model.swagger.AuthorizationsDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.BasicAuthorizationDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ItemsDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ModelDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.OAuth2AuthorizationDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceOperationParameterDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResponseMessageDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.TypePropertyDeclaration;
-import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
@@ -265,8 +267,8 @@ public abstract class SwaggerTranslator {
         for (PathVariable pv : resource.getPathVariables()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("path");
-            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
-                    SwaggerUtils.toSwaggerType(pv.getType());
+            SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerTypes.toSwaggerType(pv.getType());
             ropd.setType(swaggerTypeFormat.getType());
             ropd.setFormat(swaggerTypeFormat.getFormat());
             ropd.setRequired(true);
@@ -294,8 +296,8 @@ public abstract class SwaggerTranslator {
         for (QueryParameter qp : operation.getQueryParameters()) {
             ropd = new ResourceOperationParameterDeclaration();
             ropd.setParamType("query");
-            SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
-                    SwaggerUtils.toSwaggerType(qp.getType());
+            SwaggerTypeFormat swaggerTypeFormat =
+                    SwaggerTypes.toSwaggerType(qp.getType());
             ropd.setType(swaggerTypeFormat.getType());
             ropd.setFormat(swaggerTypeFormat.getFormat());
             ropd.setName(qp.getName());
@@ -369,7 +371,7 @@ public abstract class SwaggerTranslator {
         if (outRepr != null && outRepr.getType() != null) {
             if (outRepr.isArray()) {
                 rod.setType("array");
-                if (isPrimitiveType(outRepr.getType())) {
+                if (Types.isPrimitiveType(outRepr.getType())) {
                     // TODO how to display error ?
                 } else {
                     rod.getItems().setRef(outRepr.getType());
@@ -535,7 +537,7 @@ public abstract class SwaggerTranslator {
         for (int i = 0; i < usedModelsList.size(); i++) {
             String model = usedModelsList.get(i);
             Representation repr = contract.getRepresentation(model);
-            if (repr == null || isPrimitiveType(model)) {
+            if (repr == null || Types.isPrimitiveType(model)) {
                 continue;
             }
             ModelDeclaration md = new ModelDeclaration();
@@ -545,7 +547,7 @@ public abstract class SwaggerTranslator {
                 if (prop.getMinOccurs() > 0) {
                     md.getRequired().add(prop.getName());
                 }
-                if (!isPrimitiveType(prop.getType())
+                if (!Types.isPrimitiveType(prop.getType())
                         && !usedModelsList.contains(prop.getType())) {
                     usedModelsList.add(prop.getType());
                 }
@@ -556,9 +558,9 @@ public abstract class SwaggerTranslator {
                 if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
                     tpd.setType("array");
                     tpd.setItems(new ItemsDeclaration());
-                    if (isPrimitiveType(prop.getType())) {
-                        SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
-                                SwaggerUtils.toSwaggerType(prop.getType());
+                    if (Types.isPrimitiveType(prop.getType())) {
+                        SwaggerTypeFormat swaggerTypeFormat =
+                                SwaggerTypes.toSwaggerType(prop.getType());
                         tpd.getItems().setType(
                                 swaggerTypeFormat
                                         .getType());
@@ -567,9 +569,9 @@ public abstract class SwaggerTranslator {
                         tpd.getItems().setRef(prop.getType());
                     }
                 } else {
-                    if (isPrimitiveType(prop.getType())) {
-                        SwaggerUtils.SwaggerTypeFormat swaggerTypeFormat =
-                                SwaggerUtils.toSwaggerType(prop.getType());
+                    if (Types.isPrimitiveType(prop.getType())) {
+                        SwaggerTypeFormat swaggerTypeFormat =
+                                SwaggerTypes.toSwaggerType(prop.getType());
                         tpd.setType(swaggerTypeFormat
                                 .getType());
                         tpd.setFormat(swaggerTypeFormat.getFormat());
@@ -634,34 +636,11 @@ public abstract class SwaggerTranslator {
     }
 
     /**
-     * Indicates if the given type is a primitive type.
-     * 
-     * @param type
-     *            The type to be analysed
-     * @return A boolean of value true if the given type is primitive, false
-     *         otherwise.
-     */
-    private static boolean isPrimitiveType(String type) {
-        if ("string".equals(type.toLowerCase())
-                || "int".equals(type.toLowerCase())
-                || "integer".equals(type.toLowerCase())
-                || "long".equals(type.toLowerCase())
-                || "float".equals(type.toLowerCase())
-                || "double".equals(type.toLowerCase())
-                || "date".equals(type.toLowerCase())
-                || "boolean".equals(type.toLowerCase())
-                || "bool".equals(type.toLowerCase())) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Converts a Swagger parameter to an instance of {@link PayLoad}.
-     * 
+     * Converts a Swagger parameter to an instance of {@link org.restlet.ext.apispark.internal.model.PayLoad}.
+     *
      * @param parameter
      *            The Swagger parameter.
-     * @return An instance of {@link PayLoad}.
+     * @return An instance of {@link org.restlet.ext.apispark.internal.model.PayLoad}.
      */
     private static PayLoad toEntity(
             ResourceOperationParameterDeclaration parameter) {
@@ -682,29 +661,29 @@ public abstract class SwaggerTranslator {
     }
 
     /**
-     * Converts a Swagger parameter to an instance of {@link PathVariable}.
-     * 
+     * Converts a Swagger parameter to an instance of {@link org.restlet.ext.apispark.internal.model.PathVariable}.
+     *
      * @param parameter
      *            The Swagger parameter.
-     * @return An instance of {@link PathVariable}.
+     * @return An instance of {@link org.restlet.ext.apispark.internal.model.PathVariable}.
      */
     private static PathVariable toPathVariable(
             ResourceOperationParameterDeclaration parameter) {
         PathVariable result = new PathVariable();
         result.setName(parameter.getName());
         result.setDescription(parameter.getDescription());
-        result.setType(SwaggerUtils
-                .toDefinitionType(new SwaggerUtils.SwaggerTypeFormat(parameter
+        result.setType(SwaggerTypes
+                .toDefinitionType(new SwaggerTypeFormat(parameter
                         .getType(), parameter.getFormat())));
         return result;
     }
 
     /**
-     * Converts a Swagger parameter to an instance of {@link QueryParameter}.
-     * 
+     * Converts a Swagger parameter to an instance of {@link org.restlet.ext.apispark.internal.model.QueryParameter}.
+     *
      * @param parameter
      *            The Swagger parameter.
-     * @return An instance of {@link QueryParameter}.
+     * @return An instance of {@link org.restlet.ext.apispark.internal.model.QueryParameter}.
      */
     private static QueryParameter toQueryParameter(
             ResourceOperationParameterDeclaration parameter) {
@@ -724,17 +703,18 @@ public abstract class SwaggerTranslator {
     }
 
     /**
-     * Converts a Swagger model to an instance of {@link Representation}.
-     * 
+     * Converts a Swagger model to an instance of {@link org.restlet.ext.apispark.internal.model.Representation}.
+     *
      * @param model
      *            The Swagger model.
      * @param name
      *            The name of the representation.
-     * @return An instance of {@link Representation}.
+     * @return An instance of {@link org.restlet.ext.apispark.internal.model.Representation}.
      */
     private static Representation toRepresentation(ModelDeclaration model,
             String name) {
         Representation result = new Representation();
+        result.setIdentifier(name);
         result.setName(name);
         result.setDescription(model.getDescription());
 
@@ -778,7 +758,7 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's main attributes from Swagger 1.2
      * definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param listing
@@ -821,7 +801,7 @@ public abstract class SwaggerTranslator {
 
     /**
      * Fills Restlet Web API definition's variants from Swagger 1.2 definition
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param section
@@ -843,28 +823,10 @@ public abstract class SwaggerTranslator {
         boolean containsRawTypes = false;
         for (String produced : apiProduces.isEmpty() ? swaggerOperation
                 .getProduces() : apiProduces) {
-            if (!containsRawTypes
-                    && MediaType.MULTIPART_FORM_DATA.getName().equals(produced)) {
-                representation = new Representation();
-                representation.setName("File");
-                representation.setRaw(true);
-                containsRawTypes = true;
-                representation.getSections().add(section.getName());
-                contract.getRepresentations().add(representation);
-            }
             operation.getProduces().add(produced);
         }
         for (String consumed : apiConsumes.isEmpty() ? swaggerOperation
                 .getConsumes() : apiConsumes) {
-            if (!containsRawTypes
-                    && MediaType.MULTIPART_FORM_DATA.getName().equals(consumed)) {
-                representation = new Representation();
-                representation.setName("File");
-                representation.setRaw(true);
-                containsRawTypes = true;
-                representation.getSections().add(section.getName());
-                contract.getRepresentations().add(representation);
-            }
             operation.getConsumes().add(consumed);
         }
     }
@@ -872,7 +834,7 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's operation output payload from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param success
      *            The Restlet Web API definition's operation success Response
      * @param swaggerOperation
@@ -909,7 +871,7 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's operation parameter from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource to which the
      *            operation is attached
@@ -947,7 +909,7 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's operation Responses from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param swaggerOperation
@@ -974,7 +936,7 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's Representations from Swagger
      * ApiDeclaration
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param section
@@ -1010,7 +972,7 @@ public abstract class SwaggerTranslator {
 
     /**
      * Fills Restlet Web API definition's Operations from Swagger ApiDeclaration
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource
      * @param apiDeclaration
@@ -1087,7 +1049,7 @@ public abstract class SwaggerTranslator {
 
     /**
      * Fills Restlet Web API definition's Contract from Swagger 1.2 definition
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param listing
@@ -1104,7 +1066,7 @@ public abstract class SwaggerTranslator {
             ApiDeclaration apiDeclaration = entry.getValue();
             Section section = new Section();
             section.setName(entry.getKey());
-            section.setDescription(listing.getApi("/" + entry.getKey())
+            section.setDescription(listing.getApi(entry.getKey())
                     .getDescription());
 
             for (ResourceDeclaration api : apiDeclaration.getApis()) {
@@ -1124,13 +1086,13 @@ public abstract class SwaggerTranslator {
 
     /**
      * Translates a Swagger documentation to a Restlet definition.
-     * 
+     *
      * @param listing
      *            The Swagger resource listing.
      * @param apiDeclarations
      *            The list of Swagger API declarations.
      * @return The Restlet definition.
-     * @throws TranslationException
+     * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      */
     public static Definition translate(ResourceListing listing,
             Map<String, ApiDeclaration> apiDeclarations)
@@ -1153,11 +1115,10 @@ public abstract class SwaggerTranslator {
             return definition;
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
-                throw new TranslationException("file",
-                        ((FileNotFoundException) e).getMessage());
+                throw new TranslationException("file", e.getMessage(), e);
             } else {
                 throw new TranslationException("compliance",
-                        "Impossible to read your API definition, check your Swagger specs compliance");
+                        "Impossible to read your API definition, check your Swagger specs compliance", e);
             }
         }
     }
@@ -1165,12 +1126,12 @@ public abstract class SwaggerTranslator {
     /**
      * Indicates if the given resource listing and list of API declarations
      * match.
-     * 
+     *
      * @param resourceListing
      *            The Swagger resource listing.
      * @param apiDeclarations
      *            The list of Swagger API declarations.
-     * @throws TranslationException
+     * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      */
     private static void validate(ResourceListing resourceListing,
             Map<String, ApiDeclaration> apiDeclarations)

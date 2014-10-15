@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.conversion;
+package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +43,12 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.swagger.ApiDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceDeclaration;
-import org.restlet.ext.apispark.internal.model.swagger.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.resource.ClientResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,7 +68,7 @@ public abstract class SwaggerUtils {
             String userName, String password) {
         ClientResource cr = new ClientResource(url);
         cr.accept(MediaType.APPLICATION_JSON);
-        if (!isEmpty(userName) && !isEmpty(password)) {
+        if (!StringUtils.isNullOrEmpty(userName) && !StringUtils.isNullOrEmpty(password)) {
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
                     password);
         }
@@ -83,7 +85,7 @@ public abstract class SwaggerUtils {
      * @param password
      *            The paswword for service authentication.
      * @return A {@link Definition}.
-     * @throws TranslationException
+     * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      */
     public static Definition getDefinition(String swaggerUrl, String userName,
             String password) throws TranslationException {
@@ -95,7 +97,7 @@ public abstract class SwaggerUtils {
         Pattern p = Pattern
                 .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
         boolean remote = p.matcher(swaggerUrl).matches();
-        ResourceListing resourceListing = new ResourceListing();
+        ResourceListing resourceListing;
         Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
         if (remote) {
             LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
@@ -105,7 +107,7 @@ public abstract class SwaggerUtils {
                 LOGGER.log(Level.FINE,
                         "Reading file: " + swaggerUrl + api.getPath());
                 apis.put(
-                        api.getPath().replaceAll("/", ""),
+                        api.getPath(),
                         createAuthenticatedClientResource(
                                 swaggerUrl + api.getPath(), userName, password)
                                 .get(ApiDeclaration.class));
@@ -131,108 +133,8 @@ public abstract class SwaggerUtils {
         return SwaggerTranslator.translate(resourceListing, apis);
     }
 
-    /**
-     * Converts Java types to Swagger types
-     * 
-     * @param dataType
-     *            The Java type
-     * @return The corresponding Swagger type
-     */
-    public static SwaggerTypeFormat toSwaggerType(String dataType) {
-        if ("string".equals(dataType)) {
-            return new SwaggerTypeFormat("string");
-        } else if ("byte".equals(dataType)) {
-            return new SwaggerTypeFormat("string", "byte");
-        } else if ("short".equals(dataType)) {
-            return new SwaggerTypeFormat("integer", "int32");
-        } else if ("integer".equals(dataType)) {
-            return new SwaggerTypeFormat("integer", "int32");
-        } else if ("long".equals(dataType)) {
-            return new SwaggerTypeFormat("integer", "int64");
-        } else if ("float".equals(dataType)) {
-            return new SwaggerTypeFormat("number", "float");
-        } else if ("double".equals(dataType)) {
-            return new SwaggerTypeFormat("number", "double");
-        } else if ("boolean".equals(dataType)) {
-            return new SwaggerTypeFormat("boolean");
-        } else if ("date".equals(dataType)) {
-            return new SwaggerTypeFormat("string", "date");
-        } else {
-            return new SwaggerTypeFormat(dataType);
-        }
-    }
 
-    /**
-     * Converts Swagger types to Java types
-     * 
-     * @param dataType
-     *            The Swagger type
-     * @return The corresponding Java type
-     */
-    public static String toDefinitionType(SwaggerTypeFormat dataType) {
-        if ("string".equals(dataType.getType())) {
-            if ("date".equals(dataType.getFormat())) {
-                return "date";
-            } else if ("byte".equals(dataType.getFormat())) {
-                return "byte";
-            } else {
-                return "string";
-            }
-        } else if ("integer".equals(dataType.getType())) {
-            if ("int64".equals(dataType.getFormat())) {
-                return "long";
-            } else {
-                return "integer";
-            }
-        } else if ("number".equals(dataType.getType())) {
-            if ("float".equals(dataType.getFormat())) {
-                return "Float";
-            } else {
-                return "double";
-            }
-        } else if ("boolean".equals(dataType.getType())) {
-            return "boolean";
-        } else {
-            return dataType.getType();
-        }
-    }
 
-    /**
-     * Internal class representing a Swagger type
-     */
-    public static class SwaggerTypeFormat {
-        private String type;
-
-        private String format;
-
-        public SwaggerTypeFormat(String type) {
-            this(type, null);
-        }
-
-        public SwaggerTypeFormat(String type, String format) {
-            this.type = type;
-            this.format = format;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getFormat() {
-            return format;
-        }
-    }
-
-    /**
-     * Indicates if the given velue is either null or empty.
-     * 
-     * @param value
-     *            The value.
-     * @return True if the value is either null or empty.
-     */
-    private static boolean isEmpty(String value) {
-        return value == null || value.isEmpty();
-    }
 
     /**
      * Private constructor to ensure that the class acts as a true utility class
