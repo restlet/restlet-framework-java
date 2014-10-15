@@ -66,6 +66,12 @@ public class Definition {
     /** A textual description of the terms of service of the Web API */
     private String termsOfService;
 
+    /** A list of the keywords describing the Web API */
+    private List<String> keywords;
+
+    /** Company or individual's name */
+    private String attribution;
+
     public Contact getContact() {
         return contact;
     }
@@ -119,5 +125,21 @@ public class Definition {
 
     public void setTermsOfService(String termsOfService) {
         this.termsOfService = termsOfService;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getAttribution() {
+        return attribution;
+    }
+
+    public void setAttribution(String attribution) {
+        this.attribution = attribution;
     }
 }
