@@ -1,5 +1,26 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.model.Header;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Types;
+import org.restlet.ext.apispark.internal.utils.StringUtils;
+
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
@@ -23,26 +44,6 @@ import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.LongProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Header;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.PathVariable;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Types;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Translator : RWADEF <-> Swagger 2.0.
@@ -52,8 +53,8 @@ public class Swagger2Translator {
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(ApplicationIntrospector.class
-            .getName());
+    protected static Logger LOGGER = Logger
+            .getLogger(ApplicationIntrospector.class.getName());
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
@@ -97,8 +98,8 @@ public class Swagger2Translator {
             Swagger swagger) {
         // basePath
         Endpoint endpoint = definition.getEndpoints().get(0);
-        swagger.setHost(endpoint.getDomain() +
-                (endpoint.getPort() == null ? "" : (":" + endpoint.getPort())));
+        swagger.setHost(endpoint.getDomain()
+                + (endpoint.getPort() == null ? "" : (":" + endpoint.getPort())));
         swagger.setBasePath(endpoint.getBasePath());
         // Should be any of "http", "https", "ws", "wss"
         swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint.getProtocol())));
@@ -217,8 +218,8 @@ public class Swagger2Translator {
         // Path parameters
         for (PathVariable pathVariable : resource.getPathVariables()) {
             PathParameter pathParameterSwagger = new PathParameter();
-            SwaggerTypeFormat swaggerTypeFormat =
-                    SwaggerTypes.toSwaggerType(pathVariable.getType());
+            SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                    .toSwaggerType(pathVariable.getType());
             pathParameterSwagger.setType(swaggerTypeFormat.getType()); // required
             pathParameterSwagger.setFormat(swaggerTypeFormat.getFormat());
             pathParameterSwagger.setName(pathVariable.getName()); // required
@@ -386,7 +387,8 @@ public class Swagger2Translator {
                                     .valueOf(property.getMin()));
                         }
                     } catch (NumberFormatException e) {
-                        LOGGER.warning("Min property is not a number: " + property.getMin());
+                        LOGGER.warning("Min property is not a number: "
+                                + property.getMin());
                     }
                     try {
                         if (property.getMax() != null) {
@@ -394,7 +396,8 @@ public class Swagger2Translator {
                                     .valueOf(property.getMax()));
                         }
                     } catch (NumberFormatException e) {
-                        LOGGER.warning("Max property is not a number: " + property.getMax());
+                        LOGGER.warning("Max property is not a number: "
+                                + property.getMax());
                     }
                 }
                 modelSwagger.property(property.getName(), propertySwagger);
@@ -416,10 +419,10 @@ public class Swagger2Translator {
         if ("string".equals(type.toLowerCase())) {
             return new StringProperty();
         } else if ("byte".equals(type.toLowerCase())) {
-            //TODO wait for Swagger class
+            // TODO wait for Swagger class
             return new ByteProperty();
         } else if ("short".equals(type.toLowerCase())) {
-            //TODO wait for Swagger class
+            // TODO wait for Swagger class
             return new ShortProperty();
         } else if ("integer".equals(type.toLowerCase())) {
             return new IntegerProperty();
@@ -438,22 +441,22 @@ public class Swagger2Translator {
         return new RefProperty(type);
     }
 
-    //TODO wait for Swagger class
+    // TODO wait for Swagger class
     private static class FileProperty extends AbstractProperty {
         private FileProperty() {
             setType("file");
         }
     }
 
-    //TODO wait for Swagger class
+    // TODO wait for Swagger class
     private static class ShortProperty extends AbstractProperty {
         private ShortProperty() {
             setType("integer");
-            setFormat("int32"); //int16 not supported
+            setFormat("int32"); // int16 not supported
         }
     }
 
-    //TODO wait for Swagger class
+    // TODO wait for Swagger class
     private static class ByteProperty extends AbstractProperty {
         private ByteProperty() {
             setType("string");
