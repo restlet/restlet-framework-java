@@ -3,15 +3,22 @@ package org.restlet.ext.apispark.internal.utils;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -250,5 +257,51 @@ public class IntrospectionUtils {
                     }
 
                 });
+    }
+
+    public static void updateRepresentationsSectionsFromResources(
+            Definition definition) {
+        Map<Resource, Collection<String>> resourcesLinks = new HashMap<Resource, Collection<String>>();
+        Map<Representation, Collection<String>> representationsSections = new HashMap<Representation, Collection<String>>();
+        for (Resource resource : definition.getContract().getResources()) {
+            Collection<String> representations = new HashSet<String>();
+            for (Operation operation : resource.getOperations()) {
+                if (operation.getInputPayLoad() != null
+                        && operation.getInputPayLoad().getType() != null) {
+                    representations.add(operation.getInputPayLoad().getType());
+                }
+                for (Response response : operation.getResponses()) {
+                    if (response.getOutputPayLoad() != null
+                            && response.getOutputPayLoad().getType() != null) {
+                        representations.add(response.getOutputPayLoad()
+                                .getType());
+                    }
+                }
+            }
+            resourcesLinks.put(resource, representations);
+        }
+
+        for (Entry<Resource, Collection<String>> entry : resourcesLinks
+                .entrySet()) {
+            for (String representationIdentifier : entry.getValue()) {
+                Representation representation = definition.getContract()
+                        .getRepresentation(representationIdentifier);
+                if (representationsSections.get(representationIdentifier) != null) {
+                    representationsSections.get(representationIdentifier).addAll(
+                            entry.getKey().getSections());
+                } else {
+                    Collection<String> representationSections = new HashSet<String>();
+                    representationSections.addAll(representation.getSections());
+                    representationSections.addAll(entry.getKey().getSections());
+                    representationsSections.put(representation,
+                            representationSections);
+                }
+            }
+        }
+
+        for (Entry<Representation, Collection<String>> entry : representationsSections
+                .entrySet()) {
+            entry.getKey().setSections(new ArrayList<String>(entry.getValue()));
+        }
     }
 }

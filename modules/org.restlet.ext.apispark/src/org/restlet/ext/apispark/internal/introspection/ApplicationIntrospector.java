@@ -130,13 +130,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      * @param introspectorPlugins
      * @return An application description.
      */
-    public static Definition getDefinition(
-            Application application,
-            Reference baseRef,
-            Component component,
+    public static Definition getDefinition(Application application,
+            Reference baseRef, Component component,
             List<IntrospectorPlugin> introspectorPlugins) {
 
-        //initialize the list to avoid to add a null check statement
+        // initialize the list to avoid to add a null check statement
         if (introspectorPlugins == null) {
             introspectorPlugins = new ArrayList<IntrospectorPlugin>();
         }
@@ -172,61 +170,64 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                 application.getInboundRoot(), null /*
                                                     * there is no challenge
                                                     * scheme yet
-                                                    */,
-                                                    introspectorPlugins);
+                                                    */, introspectorPlugins);
 
         // add resources
         contract.setResources(collectInfo.getResources());
         // add representations
         contract.setRepresentations(collectInfo.getRepresentations());
+        // add sections
+        contract.setSections(collectInfo.getSections());
 
-        //todo add protocols ??
-//        java.util.List<String> protocols = new ArrayList<String>();
-//        for (ConnectorHelper<Server> helper : Engine.getInstance()
-//                .getRegisteredServers()) {
-//            for (Protocol protocol : helper.getProtocols()) {
-//                if (!protocols.contains(protocol.getName())) {
-//                    LOGGER.fine("Protocol " + protocol.getName()
-//                            + " added.");
-//                    protocols.add(protocol.getName());
-//                }
-//            }
-//        }
+        // todo add protocols ??
+        // java.util.List<String> protocols = new ArrayList<String>();
+        // for (ConnectorHelper<Server> helper : Engine.getInstance()
+        // .getRegisteredServers()) {
+        // for (Protocol protocol : helper.getProtocols()) {
+        // if (!protocols.contains(protocol.getName())) {
+        // LOGGER.fine("Protocol " + protocol.getName()
+        // + " added.");
+        // protocols.add(protocol.getName());
+        // }
+        // }
+        // }
 
-        String scheme =
-                collectInfo.getSchemes().isEmpty() ?
-                        null :
-                        collectInfo.getSchemes().get(0).getName();
+        String scheme = collectInfo.getSchemes().isEmpty() ? null : collectInfo
+                .getSchemes().get(0).getName();
 
-        //Introspect component if any
+        // Introspect component if any
         if (baseRef != null) {
             Endpoint endpoint = new Endpoint(baseRef.getHostDomain(),
-                    baseRef.getHostPort(), baseRef.getSchemeProtocol().getSchemeName(), baseRef.getPath(), scheme);
+                    baseRef.getHostPort(), baseRef.getSchemeProtocol()
+                            .getSchemeName(), baseRef.getPath(), scheme);
             definition.getEndpoints().add(endpoint);
         }
         if (component != null) {
             LOGGER.fine("Look for the endpoint.");
             // Look for the endpoint to which this application is attached.
-            Endpoint endpoint = ComponentIntrospector.getEndpoint(component.getDefaultHost(), application, scheme);
-        // add sections
-        contract.setSections(collectInfo.getSections());
+            Endpoint endpoint = ComponentIntrospector.getEndpoint(
+                    component.getDefaultHost(), application, scheme);
+            // add sections
+            contract.setSections(collectInfo.getSections());
             if (endpoint != null) {
                 definition.getEndpoints().add(endpoint);
             }
             for (VirtualHost virtualHost : component.getHosts()) {
-                endpoint = ComponentIntrospector.getEndpoint(virtualHost, application, scheme);
+                endpoint = ComponentIntrospector.getEndpoint(virtualHost,
+                        application, scheme);
                 if (endpoint != null) {
                     definition.getEndpoints().add(endpoint);
                 }
             }
         }
         if (definition.getEndpoints().isEmpty()) {
-            Endpoint endpoint = new Endpoint("example.com",
-                    80, Protocol.HTTP.getSchemeName(), "/v1", scheme);
+            Endpoint endpoint = new Endpoint("example.com", 80,
+                    Protocol.HTTP.getSchemeName(), "/v1", scheme);
             definition.getEndpoints().add(endpoint);
         }
 
-        IntrospectionUtils.sortDefinition(definition);
+        sortDefinition(definition);
+        updateRepresentationsSectionsFromResources(definition);
 
         for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
             introspectorPlugin.processDefinition(definition, application);
