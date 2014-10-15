@@ -113,7 +113,7 @@ public class Introspector extends IntrospectionUtils {
                 create = true;
             } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
-            } else if ("-i".equals(args[i]) || "--introspector-plugins".equals(args[i])) {
+            } else if ("-i".equals(args[i]) || "--introspectorPlugins".equals(args[i])) {
                 String introspectorPluginClass = getParameter(args, ++i);
                 IntrospectorPlugin introspectorPlugin = ReflectUtils.newInstance(introspectorPluginClass, IntrospectorPlugin.class);
                 introspectorPlugins.add(introspectorPlugin);
@@ -277,7 +277,7 @@ public class Introspector extends IntrospectionUtils {
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
         printOption(
                 o,
-                "-i, --introspector-plugins introspectorPluginClass",
+                "-i, --introspectorPlugins introspectorPluginClass",
                 "The optional class name of an introspector plugin. This options could be use several times for each plugin.");
         printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
