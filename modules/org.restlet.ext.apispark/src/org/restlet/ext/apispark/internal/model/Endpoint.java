@@ -113,7 +113,7 @@ public class Endpoint {
         return domain;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 

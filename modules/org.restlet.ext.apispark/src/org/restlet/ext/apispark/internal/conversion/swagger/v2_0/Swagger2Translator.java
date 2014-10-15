@@ -97,7 +97,8 @@ public class Swagger2Translator {
             Swagger swagger) {
         // basePath
         Endpoint endpoint = definition.getEndpoints().get(0);
-        swagger.setHost(endpoint.getDomain());
+        swagger.setHost(endpoint.getDomain() +
+                (endpoint.getPort() == null ? "" : (":" + endpoint.getPort())));
         swagger.setBasePath(endpoint.getBasePath());
         // Should be any of "http", "https", "ws", "wss"
         swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint.getProtocol())));
