@@ -1,13 +1,17 @@
 {
-  "contact": "apiteam@wordnik.com",
+  "contact": {
+        "name": "apiteam",
+        "email": "apiteam@wordnik.com"
+  },
   "contract": {
     "description": "This is a sample server Petstore server.  You can find out more about Swagger \n    at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a> or on irc.freenode.net, #swagger.  For this sample,\n    you can use the api key \"special-key\" to test the authorization filters",
     "name": "Swagger Sample App",
     "representations": [
       {
         "description": null,
+        "identifier": "Tag",
         "name": "Tag",
-        "parentType": null,
+        "extendedType": null,
         "properties": [
           {
             "defaultValue": null,
@@ -17,7 +21,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "id",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -29,7 +33,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "name",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           }
@@ -38,8 +42,9 @@
       },
       {
         "description": null,
+        "identifier": "Pet",
         "name": "Pet",
-        "parentType": null,
+        "extendedType": null,
         "properties": [
           {
             "defaultValue": null,
@@ -49,7 +54,7 @@
             "min": "0.0",
             "minOccurs": 1,
             "name": "id",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -61,7 +66,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "category",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "Category"
           },
@@ -73,7 +78,7 @@
             "min": null,
             "minOccurs": 1,
             "name": "name",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -85,7 +90,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "photoUrls",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -97,7 +102,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "tags",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "Tag"
           },
@@ -109,7 +114,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "status",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           }
@@ -118,8 +123,9 @@
       },
       {
         "description": null,
+        "identifier": "Category",
         "name": "Category",
-        "parentType": null,
+        "extendedType": null,
         "properties": [
           {
             "defaultValue": null,
@@ -129,7 +135,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "id",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -141,7 +147,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "name",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           }
@@ -150,15 +156,9 @@
       },
       {
         "description": null,
-        "name": "File",
-        "parentType": null,
-        "properties": [],
-        "raw": true
-      },
-      {
-        "description": null,
+        "identifier": "Order",
         "name": "Order",
-        "parentType": null,
+        "extendedType": null,
         "properties": [
           {
             "defaultValue": null,
@@ -168,7 +168,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "id",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -180,7 +180,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "petId",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -192,7 +192,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "quantity",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -204,7 +204,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "status",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -216,7 +216,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "shipDate",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           }
@@ -225,8 +225,9 @@
       },
       {
         "description": null,
+        "identifier": "User",
         "name": "User",
-        "parentType": null,
+        "extendedType": null,
         "properties": [
           {
             "defaultValue": null,
@@ -236,7 +237,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "id",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           },
@@ -248,7 +249,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "firstName",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -260,7 +261,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "username",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -272,7 +273,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "lastName",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -284,7 +285,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "email",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -296,7 +297,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "password",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -308,7 +309,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "phone",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "string"
           },
@@ -320,7 +321,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "userStatus",
-            "possibleValues": [],
+            "enumeration": [],
             "uniqueItems": false,
             "type": "integer"
           }
@@ -336,28 +337,24 @@
           {
             "description": "Finds Pets by tags",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "findPetsByTags",
-            "outRepresentation": {
-              "array": true,
-              "representation": "Pet"
-            },
             "queryParameters": [
               {
                 "allowMultiple": true,
                 "defaultValue": null,
                 "description": "Tags to filter by",
                 "name": "tags",
-                "possibleValues": [],
+                "enumeration": [],
                 "required": true
               }
             ],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": true,
-                  "representation": "Pet"
+                  "type": "Pet"
                 },
                 "code": 200,
                 "description": "Success",
@@ -365,9 +362,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -394,19 +391,15 @@
           {
             "description": "Find pet by ID",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "getPetById",
-            "outRepresentation": {
-              "array": false,
-              "representation": "Pet"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "Pet"
+                  "type": "Pet"
                 },
                 "code": 200,
                 "description": "Success",
@@ -414,9 +407,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -424,9 +417,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -445,19 +438,15 @@
           {
             "description": "Deletes a pet",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "DELETE",
             "name": "deletePet",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -465,9 +454,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -486,22 +475,18 @@
           {
             "description": "partial updates to a pet",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "Pet"
+              "type": "Pet"
             },
             "method": "PATCH",
             "name": "partialUpdate",
-            "outRepresentation": {
-              "array": true,
-              "representation": "Pet"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": true,
-                  "representation": "Pet"
+                  "type": "Pet"
                 },
                 "code": 200,
                 "description": "Success",
@@ -509,9 +494,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -533,19 +518,15 @@
           {
             "description": "Updates a pet in the store with form data",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "POST",
             "name": "updatePetWithForm",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -553,9 +534,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 405,
                 "description": null,
@@ -576,8 +557,7 @@
         ],
         "pathVariables": [
           {
-            "array": false,
-            "description": "ID of pet that needs to be fetched",
+            "description": "Pet id to delete",
             "name": "petId"
           }
         ],
@@ -590,22 +570,18 @@
           {
             "description": "Add a new pet to the store",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "Pet"
+              "type": "Pet"
             },
             "method": "POST",
             "name": "addPet",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -613,9 +589,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 405,
                 "description": null,
@@ -637,22 +613,18 @@
           {
             "description": "Update an existing pet",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "Pet"
+              "type": "Pet"
             },
             "method": "PUT",
             "name": "updatePet",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -660,9 +632,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -670,9 +642,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -680,9 +652,9 @@
                 "name": "Error 404"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 405,
                 "description": null,
@@ -709,20 +681,16 @@
           {
             "description": "Finds Pets by status",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "findPetsByStatus",
-            "outRepresentation": {
-              "array": true,
-              "representation": "Pet"
-            },
             "queryParameters": [
               {
                 "allowMultiple": true,
                 "defaultValue": "available",
                 "description": "Status values that need to be considered for filter",
                 "name": "status",
-                "possibleValues": [
+                "enumeration": [
                   "available",
                   "pending",
                   "sold"
@@ -732,9 +700,9 @@
             ],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": true,
-                  "representation": "Pet"
+                  "type": "Pet"
                 },
                 "code": 200,
                 "description": "Success",
@@ -742,9 +710,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -771,19 +739,15 @@
           {
             "description": "uploads an image",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "POST",
             "name": "uploadFile",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -812,19 +776,15 @@
           {
             "description": "Delete purchase order by ID",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "DELETE",
             "name": "deleteOrder",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -832,9 +792,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -842,9 +802,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -860,19 +820,15 @@
           {
             "description": "Find purchase order by ID",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "getOrderById",
-            "outRepresentation": {
-              "array": false,
-              "representation": "Order"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "Order"
+                  "type": "Order"
                 },
                 "code": 200,
                 "description": "Success",
@@ -880,9 +836,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -890,9 +846,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -908,7 +864,6 @@
         ],
         "pathVariables": [
           {
-            "array": false,
             "description": "ID of the order that needs to be deleted",
             "name": "orderId"
           }
@@ -922,22 +877,18 @@
           {
             "description": "Place an order for a pet",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "Order"
+              "type": "Order"
             },
             "method": "POST",
             "name": "placeOrder",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -945,9 +896,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -971,22 +922,18 @@
           {
             "description": "Create user",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "User"
+              "type": "User"
             },
             "method": "POST",
             "name": "createUser",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1010,22 +957,18 @@
           {
             "description": "Creates list of users with given input array",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": true,
-              "representation": "User"
+              "type": "User"
             },
             "method": "POST",
             "name": "createUsersWithArrayInput",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1049,22 +992,18 @@
           {
             "description": "Creates list of users with given list input",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": true,
-              "representation": "User"
+              "type": "User"
             },
             "method": "POST",
             "name": "createUsersWithListInput",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1088,22 +1027,18 @@
           {
             "description": "Updated user",
             "headers": [],
-            "inRepresentation": {
+            "inputPayLoad": {
               "array": false,
-              "representation": "User"
+              "type": "User"
             },
             "method": "PUT",
             "name": "updateUser",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1111,9 +1046,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -1121,9 +1056,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -1139,19 +1074,15 @@
           {
             "description": "Delete user",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "DELETE",
             "name": "deleteUser",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1159,9 +1090,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -1169,9 +1100,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -1187,19 +1118,15 @@
           {
             "description": "Get user by user name",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "getUserByName",
-            "outRepresentation": {
-              "array": false,
-              "representation": "User"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "User"
+                  "type": "User"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1207,9 +1134,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -1217,9 +1144,9 @@
                 "name": "Error 400"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 404,
                 "description": null,
@@ -1235,7 +1162,6 @@
         ],
         "pathVariables": [
           {
-            "array": false,
             "description": "name that need to be deleted",
             "name": "username"
           }
@@ -1249,20 +1175,16 @@
           {
             "description": "Logs user into the system",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "loginUser",
-            "outRepresentation": {
-              "array": false,
-              "representation": "string"
-            },
             "queryParameters": [
               {
                 "allowMultiple": false,
                 "defaultValue": null,
                 "description": "The user name for login",
                 "name": "username",
-                "possibleValues": [],
+                "enumeration": [],
                 "required": true
               },
               {
@@ -1270,15 +1192,15 @@
                 "defaultValue": null,
                 "description": "The password for login in clear text",
                 "name": "password",
-                "possibleValues": [],
+                "enumeration": [],
                 "required": true
               }
             ],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "string"
+                  "type": "string"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1286,9 +1208,9 @@
                 "name": "Success"
               },
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": null
+                  "type": null
                 },
                 "code": 400,
                 "description": null,
@@ -1312,19 +1234,15 @@
           {
             "description": "Logs out current logged in user session",
             "headers": [],
-            "inRepresentation": null,
+            "inputPayLoad": null,
             "method": "GET",
             "name": "logoutUser",
-            "outRepresentation": {
-              "array": false,
-              "representation": "void"
-            },
             "queryParameters": [],
             "responses": [
               {
-                "body": {
+                "outputPayLoad": {
                   "array": false,
-                  "representation": "void"
+                  "type": "void"
                 },
                 "code": 200,
                 "description": "Success",
@@ -1351,6 +1269,9 @@
 	  	"basePath": "/api"  	
 	  }
 	],
-  "license": "http://www.apache.org/licenses/LICENSE-2.0.html",
+  "license": {
+        "name": "LICENSE-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+  },
   "version": "1.0.0"
 }

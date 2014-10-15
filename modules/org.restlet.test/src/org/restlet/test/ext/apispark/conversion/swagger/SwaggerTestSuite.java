@@ -31,11 +31,13 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.swagger;
+package org.restlet.test.ext.apispark.conversion.swagger;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.restlet.test.ext.apispark.conversion.swagger.v1_2.SwaggerTranslatorTestCase;
+import org.restlet.test.ext.apispark.conversion.swagger.v2_0.Swagger2TranslatorTestCase;
 
 /**
  * Suite with all Swagger unit tests.

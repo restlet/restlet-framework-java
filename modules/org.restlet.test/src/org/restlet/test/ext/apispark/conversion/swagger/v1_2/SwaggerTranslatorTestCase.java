@@ -31,14 +31,19 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.swagger;
+package org.restlet.test.ext.apispark.conversion.swagger.v1_2;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.SwaggerTranslator;
-import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -55,33 +60,52 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Unit test for the {@link SwaggerTranslator} class.
+ * Unit test for the {@link org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator} class.
  * 
  * @author Cyprien Quilici
  */
 public class SwaggerTranslatorTestCase extends RestletTestCase {
 
     /**
-     * Retrieves the Petstore from {@linkplain http
-     * ://petstore.swagger.wordnik.com/api/api-docs}, and translates it to
-     * RWADef using SwaggerTranslater.
+     * Retrieves the Petstore from
+     * <a href="http://petstore.swagger.wordnik.com/api/api-docs">http://petstore.swagger.wordnik.com/api/api-doc</a>,
+     * and translates it to RWADef using SwaggerTranslater.
      * 
      * @throws TranslationException
      * @throws IOException
      */
-    public void testPetstoreSwaggerToRwadef() throws TranslationException,
+    public void testPetstoreSwaggerUrlToRwadef() throws TranslationException,
             IOException {
+        Definition translatedDefinition = SwaggerUtils.getDefinition(
+                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
+        comparePetstoreDefinition(translatedDefinition);
+
+    }
+    public void testPetstoreSwaggerJsonToRwadef() throws TranslationException,
+            IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResourceListing resourceListing = objectMapper.readValue(getClass().getResource("api-docs.json"), ResourceListing.class);
+        ApiDeclaration petApiDeclaration = objectMapper.readValue(getClass().getResource("pet.json"), ApiDeclaration.class);
+        ApiDeclaration storeApiDeclaration = objectMapper.readValue(getClass().getResource("store.json"), ApiDeclaration.class);
+        ApiDeclaration userApiDeclaration = objectMapper.readValue(getClass().getResource("user.json"), ApiDeclaration.class);
+        Map<String, ApiDeclaration> apiDeclarations = new HashMap<String, ApiDeclaration>();
+        apiDeclarations.put("/pet", petApiDeclaration);
+        apiDeclarations.put("/store", storeApiDeclaration);
+        apiDeclarations.put("/user", userApiDeclaration);
+        Definition translatedDefinition = SwaggerTranslator.translate(resourceListing, apiDeclarations);
+        comparePetstoreDefinition(translatedDefinition);
+    }
+
+    private void comparePetstoreDefinition(Definition translatedDefinition) throws IOException {
         Definition savedDefinition = new JacksonRepresentation<Definition>(
                 new FileRepresentation(getClass()
                         .getResource("Petstore.rwadef").getFile(),
                         MediaType.APPLICATION_JSON), Definition.class)
                 .getObject();
-        Definition translatedDefinition = SwaggerUtils.getDefinition(
-                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
 
         // Api Info
-        assertEquals(savedDefinition.getContact(),
-                translatedDefinition.getContact());
+        assertEquals(savedDefinition.getContact().getEmail(),
+                translatedDefinition.getContact().getEmail());
 
         Endpoint savedEndpoint = savedDefinition.getEndpoints().get(0);
         Endpoint translatedEndpoint = translatedDefinition.getEndpoints()
@@ -94,8 +118,8 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         assertEquals(savedEndpoint.getBasePath(),
                 translatedEndpoint.getBasePath());
 
-        assertEquals(savedDefinition.getLicense(),
-                translatedDefinition.getLicense());
+        assertEquals(savedDefinition.getLicense().getUrl(),
+                translatedDefinition.getLicense().getUrl());
         assertEquals(savedDefinition.getVersion(),
                 translatedDefinition.getVersion());
 

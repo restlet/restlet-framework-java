@@ -1,11 +1,11 @@
-package org.restlet.test.ext.swagger;
+package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.Swagger2Translator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -94,33 +94,33 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         PathVariable pathVariable1 = new PathVariable();
         resource1.getPathVariables().add(pathVariable1);
         pathVariable1.setName("namePathVariable1");
-        pathVariable1.setType("String");
+        pathVariable1.setType("string");
         pathVariable1.setDescription("description");
 
         // resource 1 : path variable 2
         PathVariable pathVariable2 = new PathVariable();
         resource1.getPathVariables().add(pathVariable2);
         pathVariable2.setName("namePathVariable2");
-        pathVariable2.setType("String");
+        pathVariable2.setType("string");
         pathVariable2.setDescription("description");
 
         // resource 1 : operation 1 : inRepresentation
         PayLoad inRepr = new PayLoad();
         operation1.setInputPayLoad(inRepr);
-        inRepr.setType("Integer");
+        inRepr.setType("integer");
 
         // resource 1 : operation 1 : queryParameter 1
         QueryParameter queryParameter1 = new QueryParameter();
         operation1.getQueryParameters().add(queryParameter1);
         queryParameter1.setName("nameQueryParameter1");
-        queryParameter1.setType("Integer");
+        queryParameter1.setType("integer");
         queryParameter1.setDescription("description");
 
         // resource 1 : operation 1 : queryParameter 2
         QueryParameter queryParameter2 = new QueryParameter();
         operation1.getQueryParameters().add(queryParameter2);
         queryParameter2.setName("nameQueryParameter2");
-        queryParameter2.setType("String");
+        queryParameter2.setType("string");
         queryParameter2.setDescription("description");
 
         // resource 1 : operation 1 : response 1
@@ -131,7 +131,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         PayLoad response1Entity = new PayLoad();
         response1.setOutputPayLoad(response1Entity);
         response1Entity.setArray(true);
-        response1Entity.setType("Integer");
+        response1Entity.setType("integer");
         assertTrue(response1.getOutputPayLoad().isArray());
 
         // resource 1 : operation 1 : response 2
@@ -153,7 +153,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         PayLoad response3Entity = new PayLoad();
         response3.setOutputPayLoad(response3Entity);
         response3Entity.setArray(false);
-        response3Entity.setType("Integer");
+        response3Entity.setType("integer");
         assertFalse(response3.getOutputPayLoad().isArray());
 
         // resource 2
@@ -164,13 +164,14 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         // representation 1
         Representation representation1 = new Representation();
         definition.getContract().getRepresentations().add(representation1);
+        representation1.setIdentifier("com.restlet.nameRepresentation1");
         representation1.setName("nameRepresentation1");
 
         // representation 1 : property 1
         Property representation1Property1 = new Property();
         representation1.getProperties().add(representation1Property1);
-        representation1Property1.setName("nameRepresentation1Property1");
-        representation1Property1.setType("Integer");
+        representation1Property1.setName("com.restlet.nameRepresentation1Property1");
+        representation1Property1.setType("integer");
         representation1Property1.setMin("1.0");
         representation1Property1.setMax("2.0");
         representation1Property1.setDescription("description");
@@ -178,21 +179,22 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         // representation 1 : property 2
         Property representation1Property2 = new Property();
         representation1.getProperties().add(representation1Property2);
-        representation1Property2.setName("nameRepresentation1Property2");
+        representation1Property2.setName("com.restlet.nameRepresentation1Property2");
         representation1Property2.setMaxOccurs(-1);
-        representation1Property2.setType("String");
+        representation1Property2.setType("string");
         representation1Property2.setDescription("description");
 
         // representation 1 : property 3
         Property representation1Property3 = new Property();
         representation1.getProperties().add(representation1Property3);
-        representation1Property3.setName("nameRepresentation1Property3");
+        representation1Property3.setName("com.restlet.nameRepresentation1Property3");
         representation1Property3.setType("Entity");
         representation1Property3.setDescription("description");
 
         // representation 2
         Representation representation2 = new Representation();
         definition.getContract().getRepresentations().add(representation2);
+        representation2.setIdentifier("com.restlet.nameRepresentation2");
         representation2.setName("nameRepresentation2");
 
         // When
@@ -243,14 +245,14 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
                 .get(2);
         assertNotNull(bodyParameter);
         ModelImpl schemaBodyParameter = (ModelImpl) bodyParameter.getSchema();
-        assertEquals("int", schemaBodyParameter.getType());
+        assertEquals("integer", schemaBodyParameter.getType());
         // queryParameter 1
         com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter1 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
                 .getParameters().get(3);
         assertEquals("query", op1QueryParameter1.getIn());
         assertEquals("nameQueryParameter1", op1QueryParameter1.getName());
         assertEquals(false, op1QueryParameter1.getRequired());
-        assertEquals("int", op1QueryParameter1.getType());
+        assertEquals("integer", op1QueryParameter1.getType());
         assertEquals("description", op1QueryParameter1.getDescription());
         // queryParameter 2
         com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter2 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
@@ -291,48 +293,48 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
 
         // representation 1
         ModelImpl model1 = (ModelImpl) swagger.getDefinitions().get(
-                "nameRepresentation1");
-        assertEquals("nameRepresentation1", model1.getName());
+                "com.restlet.nameRepresentation1");
+        assertEquals("com.restlet.nameRepresentation1", model1.getName());
         // representation 1 : property 1
-        assertTrue(model1.getProperties().get("nameRepresentation1Property1") instanceof IntegerProperty);
+        assertTrue(model1.getProperties().get("com.restlet.nameRepresentation1Property1") instanceof IntegerProperty);
         IntegerProperty model1Property1 = (IntegerProperty) model1
-                .getProperties().get("nameRepresentation1Property1");
-        assertEquals("nameRepresentation1Property1", model1Property1.getName());
+                .getProperties().get("com.restlet.nameRepresentation1Property1");
+        assertEquals("com.restlet.nameRepresentation1Property1", model1Property1.getName());
         assertEquals("description", model1Property1.getDescription());
         assertEquals(1.0d, model1Property1.getMinimum());
         assertEquals(2.0d, model1Property1.getMaximum());
         // representation 1 : property 2
-        assertTrue(model1.getProperties().get("nameRepresentation1Property2") instanceof ArrayProperty);
+        assertTrue(model1.getProperties().get("com.restlet.nameRepresentation1Property2") instanceof ArrayProperty);
         ArrayProperty model1Property2 = (ArrayProperty) model1.getProperties()
-                .get("nameRepresentation1Property2");
-        assertEquals("nameRepresentation1Property2", model1Property2.getName());
+                .get("com.restlet.nameRepresentation1Property2");
+        assertEquals("com.restlet.nameRepresentation1Property2", model1Property2.getName());
         assertEquals("description", model1Property2.getDescription());
         assertTrue(model1Property2.getItems() instanceof StringProperty);
         // representation 1 : property 3
-        assertTrue(model1.getProperties().get("nameRepresentation1Property3") instanceof RefProperty);
+        assertTrue(model1.getProperties().get("com.restlet.nameRepresentation1Property3") instanceof RefProperty);
         RefProperty model1Property3 = (RefProperty) model1.getProperties().get(
-                "nameRepresentation1Property3");
-        assertEquals("nameRepresentation1Property3", model1Property3.getName());
+                "com.restlet.nameRepresentation1Property3");
+        assertEquals("com.restlet.nameRepresentation1Property3", model1Property3.getName());
         assertEquals("description", model1Property3.getDescription());
         assertEquals("Entity", model1Property3.get$ref());
 
         // representation 2
         ModelImpl model2 = (ModelImpl) swagger.getDefinitions().get(
-                "nameRepresentation2");
-        assertEquals("nameRepresentation2", model2.getName());
+                "com.restlet.nameRepresentation2");
+        assertEquals("com.restlet.nameRepresentation2", model2.getName());
 
     }
 
-    public void testSwagger2() throws IOException {
-        // TODO implement the test
-        Definition definition = new JacksonRepresentation<Definition>(
-                new FileRepresentation(getClass().getResource("refImpl.rwadef")
-                        .getFile(), MediaType.APPLICATION_JSON),
-                Definition.class).getObject();
-        Swagger swagger = new JacksonRepresentation<Swagger>(
-                new FileRepresentation(getClass()
-                        .getResource("refImpl.swagger").getFile(),
-                        MediaType.APPLICATION_JSON), Swagger.class).getObject();
-    }
+    // TODO implement the test
+//    public void testSwagger2() throws IOException {
+//        Definition definition = new JacksonRepresentation<Definition>(
+//                new FileRepresentation(getClass().getResource("refImpl.rwadef")
+//                        .getFile(), MediaType.APPLICATION_JSON),
+//                Definition.class).getObject();
+//        Swagger swagger = new JacksonRepresentation<Swagger>(
+//                new FileRepresentation(getClass()
+//                        .getResource("refImpl.swagger").getFile(),
+//                        MediaType.APPLICATION_JSON), Swagger.class).getObject();
+//    }
 
 }
