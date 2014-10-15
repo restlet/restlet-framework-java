@@ -492,7 +492,9 @@ public abstract class SwaggerTranslator {
         // Get resources
         for (Resource resource : resources) {
             // Discriminate the resources of one category
-            if (!resource.getResourcePath().startsWith("/" + sectionName)) {
+            if (allResources
+                    && !resource.getResourcePath()
+                            .startsWith("/" + sectionName)) {
                 continue;
             }
             ResourceDeclaration rd = new ResourceDeclaration();

@@ -64,4 +64,17 @@ public class Section {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public Section() {
+        this(null, null);
+    }
+
+    public Section(String name) {
+        this(name, null);
+    }
+
+    public Section(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

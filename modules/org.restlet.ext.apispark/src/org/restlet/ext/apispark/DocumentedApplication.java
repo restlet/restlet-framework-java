@@ -33,7 +33,9 @@
 
 package org.restlet.ext.apispark;
 
-import org.restlet.Application;
+import java.util.Map;
+
+import org.restlet.ext.apispark.internal.model.Section;
 
 /**
  * Describes the sections of a Web API for documentation purpose.
@@ -41,18 +43,13 @@ import org.restlet.Application;
  * @author Cyprien Quilici
  * 
  */
-public class DocumentedApplication extends Application {
+public interface DocumentedApplication {
 
     /**
-     * Describes a section of the Web API given its name.
-     * To be overriden.
+     * A list of the Sections of the Web API
      * 
-     * @param section
-     *            The section's name
-     * @return The section's description
+     * @return The Sections of the Web API
      */
-    public String getSectionDescription(String section) {
-        // to be overriden
-        return null;
-    }
+    Map<String, Section> getSections();
+    
 }

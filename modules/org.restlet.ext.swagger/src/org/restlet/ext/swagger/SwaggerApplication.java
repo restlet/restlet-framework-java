@@ -33,9 +33,13 @@
 
 package org.restlet.ext.swagger;
 
+import java.util.Map;
+
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
@@ -64,7 +68,13 @@ import org.restlet.routing.Router;
  *      or/and {@link org.restlet.ext.swagger.Swagger2SpecificationRestlet} instead.
  * 
  */
-public class SwaggerApplication extends Application {
+public class SwaggerApplication extends Application implements
+        DocumentedApplication {
+
+    /**
+     * The Sections of the Web API
+     */
+    private Map<String, Section> sections;
 
     /**
      * Returns the next router available.
@@ -218,5 +228,10 @@ public class SwaggerApplication extends Application {
                 context);
         result.setApiInboundRoot(this);
         return result;
+    }
+
+    @Override
+    public Map<String, Section> getSections() {
+        return sections;
     }
 }

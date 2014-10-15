@@ -33,22 +33,23 @@
 
 package org.restlet.ext.apispark.internal.introspection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.DocumentedApplication;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.routing.VirtualHost;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -59,16 +60,17 @@ import java.util.logging.Logger;
 public class ApplicationIntrospector extends IntrospectionUtils {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(ApplicationIntrospector.class
-            .getName());
+    protected static Logger LOGGER = Logger
+            .getLogger(ApplicationIntrospector.class.getName());
 
     /**
-     * Returns an instance of what must be a subclass of {@link org.restlet.Application}.
-     * Returns null in case of errors.
-     *
+     * Returns an instance of what must be a subclass of
+     * {@link org.restlet.Application}. Returns null in case of errors.
+     * 
      * @param className
      *            The name of the application class.
-     * @return An instance of what must be a subclass of {@link org.restlet.Application}.
+     * @return An instance of what must be a subclass of
+     *         {@link org.restlet.Application}.
      */
     public static Application getApplication(String className) {
         return ReflectUtils.newInstance(className, Application.class);
@@ -76,7 +78,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
-     *
+     * 
      * @param application
      *            An application to introspect.
      */
@@ -86,12 +88,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
-     *
+     * 
      * @param application
      *            An application to introspect.
      */
-    public static Definition getDefinition(
-            Application application,
+    public static Definition getDefinition(Application application,
             Reference baseRef) {
         return getDefinition(application, baseRef, null);
     }
@@ -100,36 +101,35 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
-     *
+     * 
      * @param application
      *            An application to introspect.
      * @param component
      *            An component to introspect in order to get extra details such
      *            as the endpoint.
-     *
+     * 
      * @return An application description.
      */
-    public static Definition getDefinition(
-            Application application,
-            Reference baseRef,
-            Component component) {
-        return getDefinition(application, baseRef, component, (List<IntrospectorPlugin>)null);
+    public static Definition getDefinition(Application application,
+            Reference baseRef, Component component) {
+        return getDefinition(application, baseRef, component,
+                (List<IntrospectorPlugin>) null);
     }
 
     /**
-         * Returns a APISpark description of the current application. By default,
-         * this method discovers all the resources attached to this application. It
-         * can be overridden to add documentation, list of representations, etc.
-         *
-         * @param application
-         *            An application to introspect.
-         * @param component
-         *            An component to introspect in order to get extra details such
-         *            as the endpoint.
-         *
-         * @param introspectorPlugins
+     * Returns a APISpark description of the current application. By default,
+     * this method discovers all the resources attached to this application. It
+     * can be overridden to add documentation, list of representations, etc.
+     * 
+     * @param application
+     *            An application to introspect.
+     * @param component
+     *            An component to introspect in order to get extra details such
+     *            as the endpoint.
+     * 
+     * @param introspectorPlugins
      * @return An application description.
-         */
+     */
     public static Definition getDefinition(
             Application application,
             Reference baseRef,
@@ -142,9 +142,10 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         }
         Definition definition = new Definition();
 
-        //Contract
+        // Contract
         Contract contract = new Contract();
-        contract.setDescription(StringUtils.nullToEmpty(application.getDescription()));
+        contract.setDescription(StringUtils.nullToEmpty(application
+                .getDescription()));
         if (StringUtils.isNullOrEmpty(application.getName())) {
             LOGGER.log(Level.WARNING,
                     "Please provide a name to your application, used "
@@ -153,22 +154,31 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         } else {
             contract.setName(application.getName());
         }
+
+        // Sections
+        CollectInfo collectInfo = new CollectInfo();
+        if (application instanceof DocumentedApplication) {
+            DocumentedApplication documentedApplication = (DocumentedApplication) application;
+            collectInfo.setSections(documentedApplication.getSections());
+        }
         definition.setContract(contract);
 
-        //Go through restlet nodes to collect resources, representations and schemes
-        CollectInfo collectInfo = new CollectInfo();
-        RestletCollector.collect(
-                collectInfo /* resources are added during collect*/,
-                "" /* start path is empty */,
-                application.getInboundRoot(),
-                null /* there is no challenge scheme yet */,
-                introspectorPlugins);
+        // Go through restlet nodes to collect resources, representations and
+        // schemes
+        RestletCollector.collect(collectInfo /*
+                                              * resources are added during
+                                              * collect
+                                              */, "" /* start path is empty */,
+                application.getInboundRoot(), null /*
+                                                    * there is no challenge
+                                                    * scheme yet
+                                                    */,
+                                                    introspectorPlugins);
 
-        //add resources
+        // add resources
         contract.setResources(collectInfo.getResources());
-        //add representations
+        // add representations
         contract.setRepresentations(collectInfo.getRepresentations());
-
 
         //todo add protocols ??
 //        java.util.List<String> protocols = new ArrayList<String>();
@@ -198,6 +208,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
             LOGGER.fine("Look for the endpoint.");
             // Look for the endpoint to which this application is attached.
             Endpoint endpoint = ComponentIntrospector.getEndpoint(component.getDefaultHost(), application, scheme);
+        // add sections
+        contract.setSections(collectInfo.getSections());
             if (endpoint != null) {
                 definition.getEndpoints().add(endpoint);
             }
@@ -214,14 +226,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
             definition.getEndpoints().add(endpoint);
         }
 
-        //todo not add sections
-
         IntrospectionUtils.sortDefinition(definition);
 
         for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
             introspectorPlugin.processDefinition(definition, application);
         }
-
         return definition;
     }
 }

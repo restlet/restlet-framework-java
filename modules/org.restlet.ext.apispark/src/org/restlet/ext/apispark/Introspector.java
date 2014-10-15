@@ -43,15 +43,14 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.engine.Engine;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
 import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.introspection.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.ext.swagger.v2_0.introspector.SwaggerAnnotationIntrospectorPlugin;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark

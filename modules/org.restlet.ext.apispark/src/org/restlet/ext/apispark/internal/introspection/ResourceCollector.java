@@ -34,10 +34,9 @@ public class ResourceCollector {
             .getName());
 
     public static void collectResourceForDirectory(CollectInfo collectInfo,
-                                                   Directory directory, String basePath,
-                                                   ChallengeScheme scheme,
-                                                   List<IntrospectorPlugin> introspectorPlugins) {
-        Resource resource = getResource(directory, basePath, scheme);
+            Directory directory, String basePath, ChallengeScheme scheme, List<IntrospectorPlugin> introspectorPlugins) {
+        Resource resource = getResource(collectInfo, directory, basePath,
+                scheme);
 
         // add operations
         ArrayList<Operation> operations = new ArrayList<Operation>();
@@ -58,7 +57,7 @@ public class ResourceCollector {
             CollectInfo collectInfo, ServerResource sr, String basePath,
             ChallengeScheme scheme,
             List<IntrospectorPlugin> introspectorPlugins) {
-        Resource resource = getResource(sr, basePath, scheme);
+        Resource resource = getResource(collectInfo, sr, basePath, scheme);
 
         // add operations
         ArrayList<Operation> operations = new ArrayList<Operation>();
@@ -116,8 +115,8 @@ public class ResourceCollector {
         }
     }
 
-    private static Resource getResource(Object restlet, String basePath,
-            ChallengeScheme scheme) {
+    private static Resource getResource(CollectInfo collectInfo,
+            Object restlet, String basePath, ChallengeScheme scheme) {
         Resource resource = new Resource();
         resource.setResourcePath(basePath);
 
@@ -126,6 +125,20 @@ public class ResourceCollector {
             resource.setName(documentedServerResource.getResourceName());
             resource.setDescription(documentedServerResource
                     .getResourceDescription());
+            for (String identifier : documentedServerResource
+                    .getResourceSections()) {
+                if (collectInfo.getSection(identifier) == null) {
+                    collectInfo.addSection(new Section(identifier));
+                }
+            }
+            resource.setSections(documentedServerResource.getResourceSections());
+        } else {
+            String sectionName = restlet.getClass().getPackage().getName();
+            if (collectInfo.getSection(sectionName) == null) {
+                Section section = new Section(sectionName);
+                collectInfo.addSection(section);
+            }
+            resource.getSections().add(sectionName);
         }
 
         if (StringUtils.isNullOrEmpty(resource.getName())) {
@@ -191,16 +204,16 @@ public class ResourceCollector {
                     if (statusAnnotation != null) {
                         int statusCode = Integer.parseInt(statusAnnotation
                                 .getAnnotationValue());
-                        RepresentationCollector.addRepresentation(collectInfo,
-                                thrownClass,
-                                ReflectUtils.getSimpleClass(thrownClass),
-                                introspectorPlugins);
                         response = new Response();
                         response.setCode(statusCode);
                         response.setMessage("Error " + statusCode);
-                        PayLoad outputPayLoad = new PayLoad();
-                        outputPayLoad.setType(thrownClass.getSimpleName());
-                        response.setOutputPayLoad(outputPayLoad);
+                        // TODO re-add when RF returns error beans
+                        // RepresentationCollector.addRepresentation(collectInfo,
+                        // thrownClass,
+                        // ReflectUtils.getSimpleClass(thrownClass));
+                        // PayLoad outputPayLoad = new PayLoad();
+                        // outputPayLoad.setType(thrownClass.getSimpleName());
+                        // response.setOutputPayLoad(outputPayLoad);
                         operation.getResponses().add(response);
                     }
                 } catch (NumberFormatException e) {
