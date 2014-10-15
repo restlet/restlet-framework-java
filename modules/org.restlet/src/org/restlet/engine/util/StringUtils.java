@@ -33,7 +33,9 @@
 
 package org.restlet.engine.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -696,6 +698,28 @@ public class StringUtils {
      */
     public static boolean isNullOrEmpty(String string) {
         return string == null || string.length() == 0; // string.isEmpty() in Java 6
+    }
+
+    /**
+     * Returns an list of trimmed token splitted with the split character ",".
+     * @param stringToSlit
+     *          The String to split
+     * @return List of tokens
+     */
+    public static List<String> splitAndTrim(String stringToSlit) {
+       return splitAndTrim(stringToSlit, ",");
+    }
+
+    /**
+     * Returns an list of trimmed token splitted with the split character.
+     * @param stringToSlit
+     *          The String to split
+     * @param splitCharacter
+     *          The split Character
+     * @return List of tokens
+     */
+    public static List<String> splitAndTrim(String stringToSlit, String splitCharacter) {
+       return Arrays.asList(stringToSlit.split("\\s*"+splitCharacter+"\\s*"));
     }
 
     /**
