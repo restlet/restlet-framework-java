@@ -138,4 +138,8 @@ public class Definition {
     public void setAttribution(String attribution) {
         this.attribution = attribution;
     }
+
+    public static String getRwadefVersion() {
+        return RWADEF_VERSION;
+    }
 }
