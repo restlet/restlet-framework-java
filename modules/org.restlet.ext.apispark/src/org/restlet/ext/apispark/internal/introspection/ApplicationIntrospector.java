@@ -41,9 +41,12 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.routing.VirtualHost;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,25 +71,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      * @return An instance of what must be a subclass of {@link org.restlet.Application}.
      */
     public static Application getApplication(String className) {
-        if (className == null) {
-            return null;
-        }
-
-        try {
-            Class<?> clazz = Class.forName(className);
-            if (Application.class.isAssignableFrom(clazz)) {
-                return (Application) clazz.getConstructor().newInstance();
-            } else {
-                throw new RuntimeException(className
-                        + " does not seem to be a valid subclass of "
-                        + Application.class.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot locate the definition source.", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot instantiate the application class. " +
-                    "Check that the application class has an empty constructor.", e);
-        }
+        return ReflectUtils.newInstance(className, Application.class);
     }
 
     /**
@@ -108,7 +93,6 @@ public class ApplicationIntrospector extends IntrospectionUtils {
     public static Definition getDefinition(
             Application application,
             Reference baseRef) {
-
         return getDefinition(application, baseRef, null);
     }
 
@@ -129,7 +113,33 @@ public class ApplicationIntrospector extends IntrospectionUtils {
             Application application,
             Reference baseRef,
             Component component) {
+        return getDefinition(application, baseRef, component, (List<IntrospectorPlugin>)null);
+    }
 
+    /**
+         * Returns a APISpark description of the current application. By default,
+         * this method discovers all the resources attached to this application. It
+         * can be overridden to add documentation, list of representations, etc.
+         *
+         * @param application
+         *            An application to introspect.
+         * @param component
+         *            An component to introspect in order to get extra details such
+         *            as the endpoint.
+         *
+         * @param introspectorPlugins
+     * @return An application description.
+         */
+    public static Definition getDefinition(
+            Application application,
+            Reference baseRef,
+            Component component,
+            List<IntrospectorPlugin> introspectorPlugins) {
+
+        //initialize the list to avoid to add a null check statement
+        if (introspectorPlugins == null) {
+            introspectorPlugins = new ArrayList<IntrospectorPlugin>();
+        }
         Definition definition = new Definition();
 
         //Contract
@@ -151,7 +161,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                 collectInfo /* resources are added during collect*/,
                 "" /* start path is empty */,
                 application.getInboundRoot(),
-                null /* there is no challenge scheme yet */);
+                null /* there is no challenge scheme yet */,
+                introspectorPlugins);
 
         //add resources
         contract.setResources(collectInfo.getResources());
@@ -200,6 +211,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         //todo not add sections
 
         IntrospectionUtils.sortDefinition(definition);
+
+        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+            introspectorPlugin.processDefinition(definition, application);
+        }
+
         return definition;
     }
 }

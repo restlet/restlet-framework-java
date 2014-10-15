@@ -34,6 +34,8 @@
 package org.restlet.ext.apispark;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -41,12 +43,15 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.engine.Engine;
-import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.introspection.ComponentIntrospector;
+import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
+import org.restlet.ext.swagger.v2_0.introspector.SwaggerAnnotationIntrospectorPlugin;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -77,9 +82,11 @@ public class Introspector extends IntrospectionUtils {
         String language = null;
         String versionId = null;
         String updateStrategy = null;
+        List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
         boolean newVersion = false;
         boolean create = false;
 
+        //TODO add option for enable ou disable swagger annotation support (default ?)
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
             if ("-h".equals(args[i])) {
@@ -106,6 +113,10 @@ public class Introspector extends IntrospectionUtils {
                 create = true;
             } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
+            } else if ("-i".equals(args[i]) || "--introspector-plugins".equals(args[i])) {
+                String introspectorPluginClass = getParameter(args, ++i);
+                IntrospectorPlugin introspectorPlugin = ReflectUtils.newInstance(introspectorPluginClass, IntrospectorPlugin.class);
+                introspectorPlugins.add(introspectorPlugin);
             } else if ("-V".equals(args[i]) || "--verbose".equals(args[i])) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
@@ -169,7 +180,9 @@ public class Introspector extends IntrospectionUtils {
             if (Application.class.isAssignableFrom(clazz)) {
                 Application application = ApplicationIntrospector.getApplication(defSource);
                 Component component = ComponentIntrospector.getComponent(compName);
-                definition = ApplicationIntrospector.getDefinition(application, null, component);
+                definition = ApplicationIntrospector.getDefinition(
+                        application, null, component,
+                        introspectorPlugins);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxrsIntrospector.getApplication(defSource);
                 JaxrsIntrospector jaxrsIntrospector = new JaxrsIntrospector(jaxrsApplication);
@@ -262,6 +275,10 @@ public class Introspector extends IntrospectionUtils {
                 o,
                 "-l, --language languageName",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
+        printOption(
+                o,
+                "-i, --introspector-plugins introspectorPluginClass",
+                "The optional class name of an introspector plugin. This options could be use several times for each plugin.");
         printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
     }

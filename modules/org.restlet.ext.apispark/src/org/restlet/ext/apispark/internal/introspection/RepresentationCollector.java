@@ -19,10 +19,13 @@ public class RepresentationCollector {
      *
      * @param clazz The class to document.
      * @param type  The class to document.
+     * @param introspectorPlugins
      * @return The name of representation type if added, null otherwise
      * {@link Representation}.
      */
-    public static String addRepresentation(CollectInfo collectInfo, Class<?> clazz, Type type) {
+    public static String addRepresentation(CollectInfo collectInfo,
+                                           Class<?> clazz, Type type,
+                                           IntrospectorPlugin[] introspectorPlugins) {
         // Introspect the java class
         Representation representation = new Representation();
         representation.setDescription("");
@@ -35,7 +38,7 @@ public class RepresentationCollector {
         //todo check generics use cases
         if (generic || isList) {
             //Collect generic type
-            addRepresentation(collectInfo, representationType, representationType.getGenericSuperclass());
+            addRepresentation(collectInfo, representationType, representationType.getGenericSuperclass(), introspectorPlugins);
             return null;
         }
 
@@ -79,6 +82,11 @@ public class RepresentationCollector {
                     property.setMinOccurs(0);
                     boolean isCollection = ReflectUtils.isListType(field.getType());
                     property.setMaxOccurs(isCollection ? -1 : 1);
+
+                    for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+                        introspectorPlugin.processProperty(property, field);
+                    }
+
                     representation.getProperties().add(property);
                 }
 
@@ -94,6 +102,9 @@ public class RepresentationCollector {
 
             }
 
+            for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+                introspectorPlugin.processRepresentation(representation, representationType);
+            }
             //add in cache
             collectInfo.addRepresentation(representation.getIdentifier(), representation);
         }

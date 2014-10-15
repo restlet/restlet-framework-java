@@ -11,6 +11,7 @@ import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.security.ChallengeAuthenticator;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -22,15 +23,17 @@ public class RestletCollector {
     private static Logger LOGGER = Logger.getLogger(RestletCollector.class
             .getName());
             
-    public static void collect(CollectInfo collectInfo, String basePath, Restlet restlet, ChallengeScheme scheme) {
+    public static void collect(CollectInfo collectInfo, String basePath,
+                               Restlet restlet, ChallengeScheme scheme,
+                               List<IntrospectorPlugin> introspectorPlugins) {
         if (restlet instanceof Router) {
-            collectForRouter(collectInfo, basePath, (Router) restlet, scheme);
+            collectForRouter(collectInfo, basePath, (Router) restlet, scheme, introspectorPlugins);
         } else if (restlet instanceof Route) {
-            collectForRoute(collectInfo, basePath, (Route) restlet, scheme);
+            collectForRoute(collectInfo, basePath, (Route) restlet, scheme, introspectorPlugins);
         } else if (restlet instanceof Filter) {
-            collectForFilter(collectInfo, basePath, (Filter) restlet, scheme);
+            collectForFilter(collectInfo, basePath, (Filter) restlet, scheme, introspectorPlugins);
         } else if (restlet instanceof Finder) {
-            collectForFinder(collectInfo, basePath, (Finder) restlet, scheme);
+            collectForFinder(collectInfo, basePath, (Finder) restlet, scheme, introspectorPlugins);
         } else {
             LOGGER.fine("Restlet type ignored. Class " + restlet.getClass());
         }
@@ -43,35 +46,42 @@ public class RestletCollector {
      *
      * @param router
      *            The router to document.
+     * @param introspectorPlugins
      */
-    private static void collectForRouter(CollectInfo collectInfo, String basePath, Router router, ChallengeScheme scheme) {
+    private static void collectForRouter(CollectInfo collectInfo, String basePath,
+                                         Router router, ChallengeScheme scheme,
+                                         List<IntrospectorPlugin> introspectorPlugins) {
         for (Route route : router.getRoutes()) {
-            collectForRoute(collectInfo, basePath, route, scheme);
+            collectForRoute(collectInfo, basePath, route, scheme, introspectorPlugins);
         }
 
         if (router.getDefaultRoute() != null) {
-            collectForRoute(collectInfo, basePath, router.getDefaultRoute(), scheme);
+            collectForRoute(collectInfo, basePath, router.getDefaultRoute(), scheme, introspectorPlugins);
         }
     }
 
-    private static void collectForRoute(CollectInfo collectInfo,  String basePath, Route route, ChallengeScheme scheme) {
+    private static void collectForRoute(CollectInfo collectInfo,  String basePath,
+                                        Route route, ChallengeScheme scheme,
+                                        List<IntrospectorPlugin> introspectorPlugins) {
         if (route instanceof TemplateRoute) {
             TemplateRoute templateRoute = (TemplateRoute) route;
             String path = templateRoute.getTemplate().getPattern();
-            collect(collectInfo, basePath + path, route.getNext(), scheme);
+            collect(collectInfo, basePath + path, route.getNext(), scheme, introspectorPlugins);
         } else {
             LOGGER.fine("Route type ignored. Class " + route.getClass());
         }
     }
 
-    private static void collectForFilter(CollectInfo collectInfo, String basePath, Filter filter, ChallengeScheme scheme) {
+    private static void collectForFilter(CollectInfo collectInfo, String basePath,
+                                         Filter filter, ChallengeScheme scheme,
+                                         List<IntrospectorPlugin> introspectorPlugins) {
 
         if (filter instanceof ChallengeAuthenticator) {
             scheme = ((ChallengeAuthenticator) filter).getScheme();
             collectInfo.addSchemeIfNotExists(scheme);
         }
 
-        collect(collectInfo, basePath, filter.getNext(), scheme);
+        collect(collectInfo, basePath, filter.getNext(), scheme, introspectorPlugins);
     }
 
 
@@ -81,15 +91,19 @@ public class RestletCollector {
      *
      * @param finder
      *            The Finder instance to document.
+     * @param introspectorPlugins
      */
     private static void collectForFinder(CollectInfo collectInfo, String basePath,
-                                             Finder finder, ChallengeScheme scheme) {
+                                             Finder finder, ChallengeScheme scheme,
+                                             List<IntrospectorPlugin> introspectorPlugins) {
         if (finder instanceof Directory) {
-            ResourceCollector.collectResourceForDirectory(collectInfo, (Directory) finder, basePath, scheme);
+            ResourceCollector.collectResourceForDirectory(collectInfo,
+                    (Directory) finder, basePath, scheme, introspectorPlugins);
         } else {
             ServerResource serverResource = finder.find(null, null);
             if (serverResource != null) {
-                ResourceCollector.collectResourceForServletResource(collectInfo, serverResource, basePath, scheme);
+                ResourceCollector.collectResourceForServletResource(collectInfo,
+                        serverResource, basePath, scheme, introspectorPlugins);
             } else {
                 LOGGER.fine("Finder has no server resource. Class " + finder.getClass());
             }

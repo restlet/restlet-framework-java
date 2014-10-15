@@ -39,6 +39,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 import org.restlet.routing.*;
 
@@ -63,25 +64,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
      * @return An instance of what must be a subclass of {@link org.restlet.Component}.
      */
     public static Component getComponent(String className) {
-        if (className == null) {
-            return null;
-        }
-
-        try {
-            Class<?> clazz = Class.forName(className);
-            if (Component.class.isAssignableFrom(clazz)) {
-                return (Component) clazz.getConstructor().newInstance();
-            } else {
-                throw new RuntimeException(className
-                        + " does not seem to a valid subclass of "
-                        + Component.class.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot locate the component class.", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot instantiate the component class. " +
-                    "Check that the component class has an empty constructor.", e);
-        }
+        return ReflectUtils.newInstance(className, Component.class);
     }
 
     /**

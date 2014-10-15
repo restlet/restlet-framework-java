@@ -34,7 +34,9 @@ public class ResourceCollector {
             .getName());
 
     public static void collectResourceForDirectory(CollectInfo collectInfo,
-            Directory directory, String basePath, ChallengeScheme scheme) {
+                                                   Directory directory, String basePath,
+                                                   ChallengeScheme scheme,
+                                                   List<IntrospectorPlugin> introspectorPlugins) {
         Resource resource = getResource(directory, basePath, scheme);
 
         // add operations
@@ -46,12 +48,16 @@ public class ResourceCollector {
         }
         resource.setOperations(operations);
 
+        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+            introspectorPlugin.processResource(resource, directory);
+        }
         collectInfo.addResource(resource);
     }
 
     public static void collectResourceForServletResource(
             CollectInfo collectInfo, ServerResource sr, String basePath,
-            ChallengeScheme scheme) {
+            ChallengeScheme scheme,
+            List<IntrospectorPlugin> introspectorPlugins) {
         Resource resource = getResource(sr, basePath, scheme);
 
         // add operations
@@ -86,6 +92,9 @@ public class ResourceCollector {
                     completeOperation(collectInfo, operation,
                             methodAnnotationInfo, sr);
 
+                    for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+                        introspectorPlugin.processOperation(operation, methodAnnotationInfo);
+                    }
                     operations.add(operation);
                 }
             }
@@ -100,6 +109,10 @@ public class ResourceCollector {
         } else {
             LOGGER.warning("Resource " + resource.getName()
                     + " has no methods.");
+        }
+
+        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+            introspectorPlugin.processResource(resource, sr);
         }
     }
 
@@ -162,7 +175,8 @@ public class ResourceCollector {
      * 
      */
     private static void completeOperation(CollectInfo collectInfo,
-            Operation operation, MethodAnnotationInfo mai, ServerResource sr) {
+            Operation operation, MethodAnnotationInfo mai, ServerResource sr,
+            IntrospectorPlugin... introspectorPlugins) {
         // Loop over the annotated Java methods
         MetadataService metadataService = sr.getMetadataService();
 
@@ -179,7 +193,8 @@ public class ResourceCollector {
                                 .getAnnotationValue());
                         RepresentationCollector.addRepresentation(collectInfo,
                                 thrownClass,
-                                ReflectUtils.getSimpleClass(thrownClass));
+                                ReflectUtils.getSimpleClass(thrownClass),
+                                introspectorPlugins);
                         response = new Response();
                         response.setCode(statusCode);
                         response.setMessage("Error " + statusCode);
@@ -208,7 +223,7 @@ public class ResourceCollector {
             Type inputType = mai.getJavaMethod().getGenericParameterTypes()[0];
 
             RepresentationCollector.addRepresentation(collectInfo, inputClass,
-                    inputType);
+                    inputType, introspectorPlugins);
 
             PayLoad inputEntity = new PayLoad();
             inputEntity.setType(ReflectUtils.getSimpleClass(inputType)
@@ -273,7 +288,7 @@ public class ResourceCollector {
         if (outputClass != Void.TYPE) {
             // Output representation
             RepresentationCollector.addRepresentation(collectInfo, outputClass,
-                    outputType);
+                    outputType, introspectorPlugins);
 
             PayLoad outputEntity = new PayLoad();
             outputEntity.setType(ReflectUtils.getSimpleClass(outputType)
