@@ -1,988 +1,1277 @@
 {
   "contact": {
-    "name": "Cyprien QUILICI",
-    "email": "cquilici@restlet.com",
-    "url": "https://apispark.com"
+    "name": "apiteam",
+    "email": "apiteam@wordnik.com"
   },
   "contract": {
-    "description": "A tutorial for Restlet Framework",
-    "name": "WebAPITutorial",
-    "sections": [
-      {
-        "name": "ping",
-        "description": "Ping your API !"
-      },
-      {
-        "name": "contacts",
-        "description": "Deal with contacts"
-      },
-      {
-        "name": "companies",
-        "description": "Deal with companies"
-      }
-    ],
+    "description": "This is a sample server Petstore server.  You can find out more about Swagger \n    at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a> or on irc.freenode.net, #swagger.  For this sample,\n    you can use the api key \"special-key\" to test the authorization filters",
+    "name": "Swagger Sample App",
     "representations": [
       {
-        "description": "A list of companies",
+        "description": null,
+        "identifier": "Tag",
+        "name": "Tag",
         "extendedType": null,
-        "name": "CompanyListRepresentation",
         "properties": [
           {
             "defaultValue": null,
-            "description": "The list of companies",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": -1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "list",
-            "type": "CompanyRepresentation",
-            "uniqueItems": true
-          }
-        ],
-        "raw": false,
-        "sections": [
-          "companies"
-        ]
-      },
-      {
-        "description": "A company",
-        "extendedType": null,
-        "name": "CompanyRepresentation",
-        "properties": [
-          {
-            "defaultValue": null,
-            "description": "The company's website",
-            "enumeration": [],
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
-            "name": "website",
-            "type": "String",
-            "uniqueItems": false
+            "name": "id",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
           },
           {
             "defaultValue": null,
-            "description": "The city of the company's HQ",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "city",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The zip code of the city of the company's HQ",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "zipCode",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "???",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "self",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The comany's name",
-            "enumeration": [],
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
             "name": "name",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The company's duns",
             "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "duns",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The company's birthday",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "creationDate",
-            "type": "Date",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The phone number to join the company's standard",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "phoneNumber",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The company's address",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "address",
-            "type": "String",
-            "uniqueItems": false
+            "uniqueItems": false,
+            "type": "string"
           }
         ],
-        "raw": false,
-        "sections": []
-      },
-      {
-        "description": "A list of contacts",
-        "extendedType": null,
-        "name": "ContactListRepresentation",
-        "properties": [
-          {
-            "defaultValue": null,
-            "description": "The list of contacts",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": -1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "list",
-            "type": "ContactRepresentation",
-            "uniqueItems": false
-          }
-        ],
-        "raw": false,
-        "sections": []
+        "raw": false
       },
       {
         "description": null,
+        "identifier": "Pet",
+        "name": "Pet",
         "extendedType": null,
-        "name": "ContactRepresentation",
         "properties": [
           {
             "defaultValue": null,
-            "description": "The name of the contact",
+            "description": "unique identifier for the pet",
+            "max": "100.0",
+            "maxOccurs": 1,
+            "min": "0.0",
+            "minOccurs": 1,
+            "name": "id",
             "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
+            "name": "category",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "Category"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 1,
             "name": "name",
-            "type": "String",
-            "uniqueItems": false
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
           },
           {
             "defaultValue": null,
-            "description": "???",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "self",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The age of the contact",
-            "enumeration": [],
-            "max": "100",
-            "maxOccurs": 1,
-            "min": "0",
-            "minOccurs": 0,
-            "name": "age",
-            "type": "int",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The company in which the contact works",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "company",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The contact's email",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "email",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "The first name of the contact",
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "firstName",
-            "type": "String",
-            "uniqueItems": false
-          }
-        ],
-        "raw": false,
-        "sections": []
-      },
-      {
-        "description": "A list of contacts with their full company",
-        "extendedType": null,
-        "name": "ContactWithCompanyListRepresentation",
-        "properties": [
-          {
-            "defaultValue": null,
-            "description": "The contact's list",
-            "enumeration": [],
+            "description": null,
             "max": null,
             "maxOccurs": -1,
             "min": null,
             "minOccurs": 0,
-            "name": "list",
-            "type": "ContactWithCompanyRepresentation",
-            "uniqueItems": false
-          }
-        ],
-        "raw": false,
-        "sections": []
-      },
-      {
-        "description": "A contact with its full company",
-        "extendedType": null,
-        "name": "ContactWithCompanyRepresentation",
-        "properties": [
-          {
-            "defaultValue": null,
-            "description": "The contact's age",
+            "name": "photoUrls",
             "enumeration": [],
-            "max": "100",
-            "maxOccurs": 1,
-            "min": "0",
-            "minOccurs": 0,
-            "name": "age",
-            "type": "int",
-            "uniqueItems": false
+            "uniqueItems": false,
+            "type": "string"
           },
           {
             "defaultValue": null,
-            "description": "The contact's name",
+            "description": null,
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "tags",
             "enumeration": [],
+            "uniqueItems": false,
+            "type": "Tag"
+          },
+          {
+            "defaultValue": null,
+            "description": "pet status in the store",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "status",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "identifier": "Category",
+        "name": "Category",
+        "extendedType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
             "name": "name",
-            "type": "String",
-            "uniqueItems": false
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "identifier": "Order",
+        "name": "Order",
+        "extendedType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
           },
           {
             "defaultValue": null,
-            "description": "The contact's first name",
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "petId",
             "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "quantity",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": "Order Status",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "status",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "shipDate",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "identifier": "User",
+        "name": "User",
+        "extendedType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
             "name": "firstName",
-            "type": "String",
-            "uniqueItems": false
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
           },
           {
             "defaultValue": null,
-            "description": "The company in which the contact works",
-            "enumeration": [],
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
-            "name": "company",
-            "type": "CompanyRepresentation",
-            "uniqueItems": false
+            "name": "username",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
           },
           {
             "defaultValue": null,
-            "description": "The contact's email",
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "lastName",
             "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
             "name": "email",
-            "type": "String",
-            "uniqueItems": false
-          },
-          {
-            "defaultValue": null,
-            "description": "???",
             "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "self",
-            "type": "String",
-            "uniqueItems": false
-          }
-        ],
-        "raw": false,
-        "sections": []
-      },
-      {
-        "description": "A dummy object",
-        "extendedType": null,
-        "name": "Ping",
-        "properties": [
-          {
-            "defaultValue": null,
-            "description": null,
-            "enumeration": [],
-            "max": null,
-            "maxOccurs": 1,
-            "min": null,
-            "minOccurs": 0,
-            "name": "point",
-            "type": "Float",
-            "uniqueItems": false
+            "uniqueItems": false,
+            "type": "string"
           },
           {
             "defaultValue": null,
             "description": null,
-            "enumeration": [],
             "max": null,
             "maxOccurs": 1,
             "min": null,
             "minOccurs": 0,
-            "name": "version",
-            "type": "String",
-            "uniqueItems": false
+            "name": "password",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "phone",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": "User Status",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "userStatus",
+            "enumeration": [],
+            "uniqueItems": false,
+            "type": "integer"
           }
         ],
-        "raw": false,
-        "sections": []
+        "raw": false
       }
     ],
     "resources": [
       {
-        "description": "Deals with a list of company",
-        "name": "Companies",
+        "description": null,
+        "name": null,
         "operations": [
           {
-            "consumes": [],
-            "description": "Loads a list of company",
+            "description": "Finds Pets by tags",
             "headers": [],
             "inputPayLoad": null,
             "method": "GET",
-            "name": "getCompanies",
-            "produces": [
-              "application/x-json-smile",
-              "application/xml",
-              "text/xml",
-              "text/csv",
-              "application/json",
-              "application/x-yaml",
-              "text/x-yaml"
+            "name": "findPetsByTags",
+            "queryParameters": [
+              {
+                "allowMultiple": true,
+                "defaultValue": null,
+                "description": "Tags to filter by",
+                "name": "tags",
+                "enumeration": [],
+                "required": true
+              }
             ],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": true,
+                  "type": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid tag value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet/findByTags"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Find pet by ID",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getPetById",
             "queryParameters": [],
             "responses": [
               {
-                "code": 200,
-                "description": "The request has succeeded",
                 "outputPayLoad": {
                   "array": false,
-                  "type": "CompanyListRepresentation",
-                  "description": "The list of all the companies know by the system"
+                  "type": "Pet"
                 },
+                "code": 200,
+                "description": "Success",
                 "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Pet not found",
+                "name": "Error 404"
               }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Deletes a pet",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "DELETE",
+            "name": "deletePet",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid pet value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "partial updates to a pet",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "Pet"
+            },
+            "method": "PATCH",
+            "name": "partialUpdate",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": true,
+                  "type": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid tag value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/json",
+              "application/xml"
             ]
           },
           {
-            "consumes": [
-              "text/csv",
-              "application/x-json-smile",
-              "application/json",
-              "application/xml",
-              "text/xml",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "description": "Adds a company",
+            "description": "Updates a pet in the store with form data",
             "headers": [],
             "inputPayLoad": null,
             "method": "POST",
-            "name": "postCompanies",
-            "produces": [
-              "text/csv",
-              "application/x-json-smile",
-              "application/json",
-              "application/xml",
-              "text/xml",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
+            "name": "updatePetWithForm",
             "queryParameters": [],
             "responses": [
               {
-                "code": 200,
-                "description": "The request has succeeded",
                 "outputPayLoad": {
                   "array": false,
-                  "type": "CompanyRepresentation",
-                  "description": "The added company"
+                  "type": "void"
                 },
+                "code": 200,
+                "description": "Success",
                 "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Invalid input",
+                "name": "Error 405"
               }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ]
+          }
+        ],
+        "pathVariables": [
+          {
+            "description": "Pet id to delete",
+            "name": "petId"
+          }
+        ],
+        "resourcePath": "/pet/{petId}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Add a new pet to the store",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "Pet"
+            },
+            "method": "POST",
+            "name": "addPet",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Invalid input",
+                "name": "Error 405"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/json",
+              "application/xml"
+            ]
+          },
+          {
+            "description": "Update an existing pet",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "Pet"
+            },
+            "method": "PUT",
+            "name": "updatePet",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Pet not found",
+                "name": "Error 404"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Validation exception",
+                "name": "Error 405"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Finds Pets by status",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "findPetsByStatus",
+            "queryParameters": [
+              {
+                "allowMultiple": true,
+                "defaultValue": "available",
+                "description": "Status values that need to be considered for filter",
+                "name": "status",
+                "enumeration": [
+                  "available",
+                  "pending",
+                  "sold"
+                ],
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": true,
+                  "type": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid status value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet/findByStatus"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "uploads an image",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "POST",
+            "name": "uploadFile",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "multipart/form-data"
             ]
           }
         ],
         "pathVariables": [],
-        "resourcePath": "/companies",
-        "authenticationProtocol": "HTTP_BASIC",
-        "sections": [
-          "companies"
-        ]
+        "resourcePath": "/pet/uploadImage"
       },
       {
-        "description": "Deals with a single company",
-        "name": "CompaniesId",
+        "description": null,
+        "name": null,
         "operations": [
           {
-            "consumes": [],
-            "description": "Loads a company",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getCompaniesId",
-            "produces": [
-              "text/csv",
-              "application/x-json-smile",
-              "application/json",
-              "application/xml",
-              "text/xml",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "CompanyRepresentation",
-                  "description": "The company"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Deletes a company",
+            "description": "Delete purchase order by ID",
             "headers": [],
             "inputPayLoad": null,
             "method": "DELETE",
-            "name": "deleteCompaniesId",
-            "produces": [],
+            "name": "deleteOrder",
             "queryParameters": [],
             "responses": [
               {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": null,
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [
-              "text/csv",
-              "application/x-json-smile",
-              "application/json",
-              "application/xml",
-              "text/xml",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "description": "Updates a company",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "PUT",
-            "name": "putCompaniesId",
-            "produces": [
-              "text/csv",
-              "application/x-json-smile",
-              "application/json",
-              "application/xml",
-              "text/xml",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
                 "outputPayLoad": {
                   "array": false,
-                  "type": "CompanyRepresentation",
-                  "description": "The new state of the company"
+                  "type": "void"
                 },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          }
-        ],
-        "pathVariables": [
-          {
-            "array": false,
-            "description": "Identifier of the Dog",
-            "name": "id",
-            "type": "string"
-          }
-        ],
-        "resourcePath": "/companies/{id}",
-        "authenticationProtocol": "HTTP_BASIC",
-        "sections": [
-          "companies"
-        ]
-      },
-      {
-        "description": "Deals with a company's contact list",
-        "name": "CompaniesIdContacts",
-        "operations": [
-          {
-            "consumes": [],
-            "description": "Load the company's contact list",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getCompaniesIdContacts",
-            "produces": [
-              "application/xml",
-              "text/xml",
-              "application/json",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml",
-              "text/csv"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
                 "code": 200,
-                "description": "The request has succeeded",
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "ContactListRepresentation",
-                  "description": "The company's contact list"
+                  "type": null
                 },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Loads a company's contact list with their company field filled",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getCompaniesIdContacts1",
-            "produces": [
-              "application/json",
-              "application/x-yaml",
-              "text/x-yaml",
-              "text/csv",
-              "application/x-json-smile",
-              "application/xml",
-              "text/xml"
-            ],
-            "queryParameters": [
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
               {
-                "allowMultiple": false,
-                "defaultValue": null,
-                "description": "Value: load",
-                "enumeration": [],
-                "name": "strategy",
-                "required": false,
-                "type": "string",
-                "separator": "\u0000"
-              }
-            ],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
                 "outputPayLoad": {
                   "array": false,
-                  "type": "ContactWithCompanyListRepresentation",
-                  "description": "The list of the company's contacts"
+                  "type": null
                 },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          }
-        ],
-        "pathVariables": [
-          {
-            "array": false,
-            "description": "The company's identifier",
-            "name": "id",
-            "type": "string"
-          }
-        ],
-        "resourcePath": "/companies/{id}/contacts",
-        "authenticationProtocol": "HTTP_BASIC",
-        "sections": [
-          "contacts",
-          "companies"
-        ]
-      },
-      {
-        "description": "Deals with a list of contacts",
-        "name": "Contacts",
-        "operations": [
-          {
-            "consumes": [],
-            "description": "Loads the list of contacts",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getContacts",
-            "produces": [
-              "application/xml",
-              "text/xml",
-              "application/json",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml",
-              "text/csv"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "ContactListRepresentation",
-                  "description": "The list of contacts"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Loads the list of contacts with their companies",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getContacts1",
-            "produces": [
-              "application/json",
-              "application/x-yaml",
-              "text/x-yaml",
-              "text/csv",
-              "application/x-json-smile",
-              "application/xml",
-              "text/xml"
-            ],
-            "queryParameters": [
-              {
-                "allowMultiple": false,
-                "defaultValue": null,
-                "description": "Value: load",
-                "enumeration": [],
-                "name": "strategy",
-                "required": false,
-                "type": "string",
-                "separator": "\u0000"
+                "code": 404,
+                "description": null,
+                "message": "Order not found",
+                "name": "Error 404"
               }
             ],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "ContactWithCompanyListRepresentation",
-                  "description": "The list of contacts with their companies"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          }
-        ],
-        "pathVariables": [],
-        "resourcePath": "/contacts",
-        "authenticationProtocol": "HTTP_BASIC",
-        "sections": [
-          "contacts"
-        ]
-      },
-      {
-        "description": "Deals with a contact",
-        "name": "ContactsEmail",
-        "operations": [
-          {
-            "consumes": [
-              "text/csv",
-              "application/xml",
-              "text/xml",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "description": "Creates or updates a contact",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "PUT",
-            "name": "putContactsEmail",
-            "produces": [
-              "text/csv",
-              "application/xml",
-              "text/xml",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "ContactRepresentation",
-                  "description": "The contact"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Deletes the contact",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "DELETE",
-            "name": "deleteContactsEmail",
-            "produces": [],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": null,
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Loads a contact",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getContactsEmail",
-            "produces": [
-              "application/xml",
-              "text/xml",
-              "text/csv",
-              "application/json",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "queryParameters": [
-              {
-                "allowMultiple": false,
-                "defaultValue": null,
-                "description": "Value: load",
-                "enumeration": [],
-                "name": "strategy",
-                "required": false,
-                "type": "string",
-                "separator": "\u0000"
-              }
-            ],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "ContactWithCompanyRepresentation",
-                  "description": "The contact"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          },
-          {
-            "consumes": [],
-            "description": "Loads a contact with its company",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getContactsEmail1",
-            "produces": [
-              "text/csv",
-              "application/xml",
-              "text/xml",
-              "application/x-json-smile",
-              "application/x-yaml",
-              "text/x-yaml"
-            ],
-            "queryParameters": [],
-            "responses": [
-              {
-                "code": 200,
-                "description": "The request has succeeded",
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "ContactRepresentation",
-                  "description": "The contact with its company"
-                },
-                "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
-              }
-            ]
-          }
-        ],
-        "pathVariables": [
-          {
-            "array": false,
-            "description": "The contact's identifier (its email)",
-            "name": "email",
-            "type": "string"
-          }
-        ],
-        "resourcePath": "/contacts/{email}",
-        "authenticationProtocol": "HTTP_BASIC",
-        "sections": [
-          "contacts"
-        ]
-      },
-      {
-        "description": "Ping your API !",
-        "name": "Ping",
-        "operations": [
-          {
-            "consumes": [],
-            "description": "Provides a dummy unprotected resource to ping the API",
-            "headers": [],
-            "inputPayLoad": null,
-            "method": "GET",
-            "name": "getPing",
             "produces": [
               "application/json"
             ],
+            "consumes": []
+          },
+          {
+            "description": "Find purchase order by ID",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getOrderById",
             "queryParameters": [],
             "responses": [
               {
-                "code": 200,
-                "description": "The request has succeeded",
                 "outputPayLoad": {
                   "array": false,
-                  "type": "Ping",
-                  "description": "A dummy object"
+                  "type": "Order"
                 },
+                "code": 200,
+                "description": "Success",
                 "message": "The request has succeeded",
-                "name": "success",
-                "headers": null
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Order not found",
+                "name": "Error 404"
               }
-            ]
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [
+          {
+            "description": "ID of the order that needs to be deleted",
+            "name": "orderId"
+          }
+        ],
+        "resourcePath": "/store/order/{orderId}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Place an order for a pet",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "Order"
+            },
+            "method": "POST",
+            "name": "placeOrder",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid order",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
           }
         ],
         "pathVariables": [],
-        "resourcePath": "/ping",
-        "authenticationProtocol": null,
-        "sections": [
-          "ping"
-        ]
+        "resourcePath": "/store/order"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Create user",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "User"
+            },
+            "method": "POST",
+            "name": "createUser",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Creates list of users with given input array",
+            "headers": [],
+            "inputPayLoad": {
+              "array": true,
+              "type": "User"
+            },
+            "method": "POST",
+            "name": "createUsersWithArrayInput",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/createWithArray"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Creates list of users with given list input",
+            "headers": [],
+            "inputPayLoad": {
+              "array": true,
+              "type": "User"
+            },
+            "method": "POST",
+            "name": "createUsersWithListInput",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/createWithList"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Updated user",
+            "headers": [],
+            "inputPayLoad": {
+              "array": false,
+              "type": "User"
+            },
+            "method": "PUT",
+            "name": "updateUser",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Delete user",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "DELETE",
+            "name": "deleteUser",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Get user by user name",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "getUserByName",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "User"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [
+          {
+            "description": "name that need to be deleted",
+            "name": "username"
+          }
+        ],
+        "resourcePath": "/user/{username}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Logs user into the system",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "loginUser",
+            "queryParameters": [
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "The user name for login",
+                "name": "username",
+                "enumeration": [],
+                "required": true
+              },
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "The password for login in clear text",
+                "name": "password",
+                "enumeration": [],
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "string"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username and password combination",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/login"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Logs out current logged in user session",
+            "headers": [],
+            "inputPayLoad": null,
+            "method": "GET",
+            "name": "logoutUser",
+            "queryParameters": [],
+            "responses": [
+              {
+                "outputPayLoad": {
+                  "array": false,
+                  "type": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/logout"
       }
     ]
   },
   "endpoints": [
     {
-      "domain": "example.com",
-      "port": 80,
+      "domain": "petstore.swagger.wordnik.com",
+      "port": null,
       "protocol": "http",
-      "basePath": "/v1",
-      "authenticationProtocol": "HTTP_BASIC"
+      "basePath": "/api"
     }
   ],
   "license": {
-    "name": "Apache 2.0",
+    "name": "LICENSE-2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
   },
-  "rwadefVersion": "1.0",
-  "version": "1.0.0",
-  "termsOfService": "You can use it as you wish !"
+  "version": "1.0.0"
 }

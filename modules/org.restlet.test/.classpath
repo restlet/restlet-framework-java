@@ -38,5 +38,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.guice"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.apispark"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.model"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

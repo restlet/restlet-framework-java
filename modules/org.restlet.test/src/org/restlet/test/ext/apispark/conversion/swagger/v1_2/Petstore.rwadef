@@ -1264,7 +1264,7 @@
   "endpoints": [
 	  {
 	  	"domain": "petstore.swagger.wordnik.com",
-	  	"port": 80,
+	  	"port": null,
 	  	"protocol": "http",
 	  	"basePath": "/api"  	
 	  }
