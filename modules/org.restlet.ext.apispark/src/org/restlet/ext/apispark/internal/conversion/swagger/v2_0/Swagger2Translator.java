@@ -301,15 +301,16 @@ public class Swagger2Translator {
     private static void fillOperationResponses(Definition definition,
             Operation operation,
             com.wordnik.swagger.models.Operation operationSwagger) {
-        for (Response reponse : operation.getResponses()) {
+        for (Response response : operation.getResponses()) {
             /* Response -> Response */
             com.wordnik.swagger.models.Response responseSwagger = new com.wordnik.swagger.models.Response();
 
-            responseSwagger.setDescription(reponse.getDescription()); // required
+            responseSwagger.setDescription(response.getDescription()); // required
 
             // Response Schema
-            if (reponse.getOutputPayLoad() != null) {
-                PayLoad entity = reponse.getOutputPayLoad();
+            if (response.getOutputPayLoad() != null
+                    && response.getOutputPayLoad().getType() != null) {
+                PayLoad entity = response.getOutputPayLoad();
                 final Representation representation = definition.getContract()
                         .getRepresentation(entity.getType());
 
@@ -330,7 +331,7 @@ public class Swagger2Translator {
                 }
             }
 
-            operationSwagger.addResponse(String.valueOf(reponse.getCode()),
+            operationSwagger.addResponse(String.valueOf(response.getCode()),
                     responseSwagger);
 
         }

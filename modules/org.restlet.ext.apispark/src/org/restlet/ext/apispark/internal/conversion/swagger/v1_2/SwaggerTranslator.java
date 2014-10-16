@@ -33,10 +33,37 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiInfo;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.AuthorizationsDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.BasicAuthorizationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ItemsDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ModelDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.OAuth2AuthorizationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.TypePropertyDeclaration;
 import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -53,34 +80,6 @@ import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.model.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiInfo;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.AuthorizationsDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.BasicAuthorizationDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ItemsDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ModelDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.OAuth2AuthorizationDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.TypePropertyDeclaration;
-
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Tool library for converting Restlet Web API Definition to and from Swagger
