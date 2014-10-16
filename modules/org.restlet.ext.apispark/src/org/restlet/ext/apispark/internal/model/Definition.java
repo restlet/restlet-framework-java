@@ -42,16 +42,19 @@ import java.util.List;
  * @author Cyprien Quilici
  */
 public class Definition {
-    
+
     /** RWADef version of the definition */
-    public final static String RWADEF_VERSION = "0.9";
+    public static final String SPEC_VERSION = "0.9";
+
+    /** The spec version, this field is used for serialization */
+    private String specVersion = SPEC_VERSION;
 
     /** Any useful information for a user that plans to access to the API. */
     private Contact contact;
 
     /** Contract of this API. */
     private Contract contract;
-    
+
     /**
      * Endpoints on which one can access the Web API.
      */
@@ -139,7 +142,7 @@ public class Definition {
         this.attribution = attribution;
     }
 
-    public static String getRwadefVersion() {
-        return RWADEF_VERSION;
+    public String getSpecVersion() {
+        return specVersion;
     }
 }

@@ -1107,7 +1107,7 @@ public abstract class SwaggerTranslator {
 
             // fill main attributes of the Restlet Web API definition
             String basePath = apiDeclarations.get(
-                    listing.getApis().get(0).getPath()).getBasePath();
+                    (listing.getApis().get(0).getPath()).substring(1)).getBasePath();
             fillMainAttributes(definition, listing, basePath);
 
             fillContract(definition.getContract(), listing, apiDeclarations);
