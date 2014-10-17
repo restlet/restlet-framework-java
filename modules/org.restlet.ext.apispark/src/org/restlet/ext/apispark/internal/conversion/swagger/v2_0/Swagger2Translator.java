@@ -97,12 +97,21 @@ public class Swagger2Translator {
     private static void fillMainAttributes(Definition definition,
             Swagger swagger) {
         // basePath
-        Endpoint endpoint = definition.getEndpoints().get(0);
-        swagger.setHost(endpoint.getDomain()
-                + (endpoint.getPort() == null ? "" : (":" + endpoint.getPort())));
-        swagger.setBasePath(endpoint.getBasePath());
-        // Should be any of "http", "https", "ws", "wss"
-        swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint.getProtocol())));
+        if (definition.getEndpoints() != null
+                && !definition.getEndpoints().isEmpty()) {
+            Endpoint endpoint = definition.getEndpoints().get(0);
+            boolean displayPort = endpoint.getPort() == null
+                    || (endpoint.getPort() == 80 && "http".equals(endpoint
+                            .getProtocol()))
+                    || (endpoint.getPort() == 443 && "https".equals(endpoint
+                            .getProtocol()));
+            swagger.setHost(endpoint.getDomain()
+                    + (displayPort ? "" : (":" + endpoint.getPort())));
+            swagger.setBasePath(endpoint.getBasePath());
+            // Should be any of "http", "https", "ws", "wss"
+            swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint
+                    .getProtocol())));
+        }
     }
 
     /**
