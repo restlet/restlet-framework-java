@@ -36,8 +36,6 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Represents a Web API
  * 
@@ -50,15 +48,6 @@ public class Definition {
 
     /** The spec version, this field is used for serialization */
     private final String specVersion = SPEC_VERSION;
-    
-    /** The spec version, this field is used for serialization */
-    private final int specMajorVersion = 0;
-    
-    /** The spec version, this field is used for serialization */
-    private final int specMinorVersion = 9;
-    
-    /** The spec version, this field is used for serialization */
-    private final int specRevision = 0;
 
     /** Any useful information for a user that plans to access to the API. */
     private Contact contact;
@@ -155,20 +144,5 @@ public class Definition {
 
     public String getSpecVersion() {
         return specVersion;
-    }
-
-    @JsonIgnore
-    public int getSpecMajorVersion() {
-        return specMajorVersion;
-    }
-
-    @JsonIgnore
-    public int getSpecMinorVersion() {
-        return specMinorVersion;
-    }
-
-    @JsonIgnore
-    public int getSpecRevision() {
-        return specRevision;
     }
 }
