@@ -366,7 +366,7 @@ public class Swagger2Translator {
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getIdentifier());
+            modelSwagger.setName(representation.getName());
             modelSwagger.setDescription(representation.getDescription());
 
             /* Property -> Property */
