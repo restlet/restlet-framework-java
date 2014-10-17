@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.wordnik.swagger"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.jackson"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.jaxrs"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
@@ -14,6 +13,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json4s"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.scala"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.apispark"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.model"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.models_1.5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
