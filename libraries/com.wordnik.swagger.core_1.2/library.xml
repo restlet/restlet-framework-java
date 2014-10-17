@@ -1,7 +1,7 @@
 <library id="swagger.core_1.2" symbolicName="com.wordnik.swagger.core">
 	<name>Swagger</name>
 	<description>Swagger document your API with style. Swagger spec compatibility: 1.1</description>
-	<version>1.2.5</version>
+	<version>1.2</version>
 	<homeUri>https://helloreverb.com/developers/swagger</homeUri>
 	<downloadUri>https://github.com/wordnik/swagger-core/wiki/Downloads
 	</downloadUri>

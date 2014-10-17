@@ -11,7 +11,8 @@
 		<dependency type="library" id="scala" />
 		<dependency type="library" id="slf4j" />
 		<dependency type="library" id="e4" />
-		<dependency type="library" id="swagger" />
+		<dependency type="library" id="swagger.annotations_1.2" />
+		<dependency type="library" id="swagger.core_1.2" />
 		<dependency type="library" id="jaxrs" />
 		<dependency type="library" id="jackson" />
 		<dependency type="library" id="json4s" />
