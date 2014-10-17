@@ -356,13 +356,13 @@ public class Swagger2Translator {
                 .getRepresentations()) {
 
             if (representation.isRaw()
-                    || Types.isPrimitiveType(representation.getIdentifier())) {
+                    || Types.isPrimitiveType(representation.getName())) {
                 continue;
             }
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getName());
+            modelSwagger.setName(representation.getIdentifier());
             modelSwagger.setDescription(representation.getDescription());
 
             /* Property -> Property */
