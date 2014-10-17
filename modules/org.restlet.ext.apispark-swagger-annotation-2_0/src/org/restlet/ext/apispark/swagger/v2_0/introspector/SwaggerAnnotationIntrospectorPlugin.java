@@ -1,4 +1,4 @@
-package org.restlet.ext.swagger.v2_0.introspector;
+package org.restlet.ext.apispark.swagger.v2_0.introspector;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -16,7 +16,7 @@ import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.swagger.v2_0.SwaggerAnnotationUtils;
+import org.restlet.ext.apispark.swagger.v2_0.SwaggerAnnotationUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 

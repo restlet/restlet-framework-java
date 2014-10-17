@@ -1,4 +1,4 @@
-package org.restlet.ext.swagger.v2_0;
+package org.restlet.ext.apispark.swagger.v2_0;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -42,7 +42,7 @@ public class SwaggerAnnotationUtils {
      *          The Resource to update
      */
     public static void processApi(Api api, Resource resource) {
-        if (!StringUtils.isNullOrEmpty(api.value())){
+        if (!StringUtils.isNullOrEmpty(api.value())) {
             resource.setName(api.value());
         }
         if (!StringUtils.isNullOrEmpty(api.description())) {
