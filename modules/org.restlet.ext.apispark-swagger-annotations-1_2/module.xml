@@ -1,4 +1,4 @@
-<module id="apispark-swagger-annotation-1_2" excludes="android,gwt" type="integration" package="org.restlet.ext.apispark.swagger.1_2">
+<module id="apispark-swagger-annotation-1_2" excludes="android,gwt" type="integration" package="org.restlet.ext.apispark-swagger-annotations-1_2">
 	<name>ApiSpark Extension - Support for swagger annotations 1.2 (library swagger 1.3)</name>
 	<description>Support for the Swagger specification.</description>
 	<distributions>
