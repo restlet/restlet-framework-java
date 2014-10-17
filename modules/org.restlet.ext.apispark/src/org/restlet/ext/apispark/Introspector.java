@@ -277,7 +277,9 @@ public class Introspector extends IntrospectionUtils {
         printOption(
                 o,
                 "-i, --introspectorPlugins introspectorPluginClass",
-                "The optional class name of an introspector plugin. This options could be use several times for each plugin.");
+                "The optional class name of an introspector plugin. " +
+                        "This options could be use several times for each plugin. " +
+                        "Example: 'org.restlet.ext.swagger.v2_0.introspector.SwaggerAnnotationIntrospectorPlugin'");
         printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
     }
