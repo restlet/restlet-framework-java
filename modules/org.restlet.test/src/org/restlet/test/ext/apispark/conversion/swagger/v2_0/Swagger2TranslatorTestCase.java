@@ -1,6 +1,7 @@
 package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -612,8 +613,9 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         Swagger translatedSwagger = Swagger2Translator
                 .getSwagger(savedDefinition);
 
+        URL refImpl = getClass().getResource("refImpl.swagger");
         Swagger savedSwagger = new SwaggerLoader()
-                .read("src/org/restlet/test/ext/apispark/conversion/swagger/v2_0/refImpl.swagger");
+                .read(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }
