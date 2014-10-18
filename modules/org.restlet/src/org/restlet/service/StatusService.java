@@ -321,9 +321,9 @@ public class StatusService extends Service {
         if (throwable instanceof ResourceException) {
             ResourceException re = (ResourceException) throwable;
 
-            if (re.getCause() != null) {
+            if (re.getCause() != null && re.getCause() != throwable) {
                 // What is most interesting is the embedded cause
-                result = new Status(re.getStatus(), re.getCause());
+                result = toStatus(re.getCause(), request, response);
             } else {
                 result = re.getStatus();
             }
