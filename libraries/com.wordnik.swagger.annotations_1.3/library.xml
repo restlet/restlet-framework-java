@@ -1,0 +1,18 @@
+<library id="swagger.annotations_1.3" symbolicName="com.wordnik.swagger.annotations">
+	<name>Swagger</name>
+	<description>Swagger document your API with style. Swagger spec compatibility: 1.2</description>
+	<version>1.3</version>
+	<homeUri>https://helloreverb.com/developers/swagger</homeUri>
+	<downloadUri>https://github.com/wordnik/swagger-core/wiki/Downloads
+	</downloadUri>
+	<provider>Reverb Technologies, Inc</provider>
+
+	<package id="swagger-annotations" name="com.wordnik.swagger.annotations">
+		<maven>
+			<groupId>com.wordnik</groupId>
+			<artifactId>swagger-annotations_2.9.1</artifactId>
+			<version>1.2.5</version>
+		</maven>
+	</package>
+	<dependency type="library" id="scala" />
+</library>

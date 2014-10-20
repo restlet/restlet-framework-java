@@ -12,4 +12,4 @@ allowing APIs to always stay in sync."
 For more information:
 https://helloreverb.com/developers/swagger
 
-Swagger spec compatibility: 2.0
+Swagger spec compatibility: 1.2

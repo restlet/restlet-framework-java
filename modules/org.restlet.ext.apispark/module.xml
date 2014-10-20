@@ -6,10 +6,11 @@
 		<distribution id="maven" />
 		<distribution id="p2" />
 	</distributions>
-	
+
    <dependencies>
       <dependency type="library" id="guava" />
       <dependency type="library" id="jaxrs" />
+      <dependency type="library" id="swagger.models_1.5" />
       <dependency type="module" id="core" />
       <dependency type="module" id="jackson" />
    </dependencies>

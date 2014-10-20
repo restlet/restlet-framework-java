@@ -179,19 +179,19 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         // add sections
         contract.setSections(collectInfo.getSections());
 
-        // todo add protocols ??
-        // java.util.List<String> protocols = new ArrayList<String>();
-        // for (ConnectorHelper<Server> helper : Engine.getInstance()
-        // .getRegisteredServers()) {
-        // for (Protocol protocol : helper.getProtocols()) {
-        // if (!protocols.contains(protocol.getName())) {
-        // LOGGER.fine("Protocol " + protocol.getName()
-        // + " added.");
-        // protocols.add(protocol.getName());
-        // }
-        // }
-        // }
+        addEnpoints(application, baseRef, component, definition, contract, collectInfo);
 
+        sortDefinition(definition);
+
+        updateRepresentationsSectionsFromResources(definition);
+
+        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
+            introspectorPlugin.processDefinition(definition, application);
+        }
+        return definition;
+    }
+
+    private static void addEnpoints(Application application, Reference baseRef, Component component, Definition definition, Contract contract, CollectInfo collectInfo) {
         String scheme = collectInfo.getSchemes().isEmpty() ? null : collectInfo
                 .getSchemes().get(0).getName();
 
@@ -220,18 +220,12 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                 }
             }
         }
+
+        //if no endpoints are defined, add a default one to have correct scheme
         if (definition.getEndpoints().isEmpty()) {
             Endpoint endpoint = new Endpoint("example.com", 80,
                     Protocol.HTTP.getSchemeName(), "/v1", scheme);
             definition.getEndpoints().add(endpoint);
         }
-
-        sortDefinition(definition);
-        updateRepresentationsSectionsFromResources(definition);
-
-        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-            introspectorPlugin.processDefinition(definition, application);
-        }
-        return definition;
     }
 }

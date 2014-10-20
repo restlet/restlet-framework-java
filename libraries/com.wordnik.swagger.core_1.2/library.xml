@@ -1,7 +1,7 @@
-<library id="swagger.core.1_5" symbolicName="com.wordnik.swagger.core">
+<library id="swagger.core_1.2" symbolicName="com.wordnik.swagger.core">
 	<name>Swagger</name>
-	<description>Swagger document your API with style. Swagger spec compatibility: 2.0</description>
-	<version>1.5</version>
+	<description>Swagger document your API with style. Swagger spec compatibility: 1.1</description>
+	<version>1.2</version>
 	<homeUri>https://helloreverb.com/developers/swagger</homeUri>
 	<downloadUri>https://github.com/wordnik/swagger-core/wiki/Downloads
 	</downloadUri>
@@ -10,8 +10,9 @@
 	<package id="swagger-core" name="com.wordnik.swagger.core">
 		<maven>
 			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>1.5.0-SNAPSHOT</version>
+			<artifactId>swagger-core_2.9.1</artifactId>
+			<version>1.2.5</version>
 		</maven>
 	</package>
+	<dependency type="library" id="scala" />
 </library>

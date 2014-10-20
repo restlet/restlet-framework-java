@@ -12,6 +12,8 @@
 	<dependencies>
 		<dependency type="library" id="junit" />
 		<dependency type="library" id="hamcrest" />
+		<dependency type="library" id="swagger.core_1.5" />
+		<dependency type="library" id="swagger.models_1.5" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="crypto" />
