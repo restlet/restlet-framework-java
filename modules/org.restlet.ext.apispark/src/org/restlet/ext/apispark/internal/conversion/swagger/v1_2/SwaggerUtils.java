@@ -43,12 +43,12 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
-import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.utils.StringUtils;
 import org.restlet.resource.ClientResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
