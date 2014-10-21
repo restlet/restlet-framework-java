@@ -360,6 +360,11 @@ public class Swagger2Translator {
                 continue;
             }
 
+            if (org.restlet.engine.util.StringUtils.isNullOrEmpty(representation.getIdentifier())) {
+                LOGGER.warning("A representation should have an identifier:" + representation.getName());
+                continue;
+            }
+
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
             modelSwagger.setName(representation.getIdentifier());
