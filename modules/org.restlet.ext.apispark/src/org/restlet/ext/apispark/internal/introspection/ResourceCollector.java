@@ -8,7 +8,7 @@ import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.StatusAnnotationInfo;
-import org.restlet.ext.apispark.internal.utils.StringUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.DocumentedResource;
 import org.restlet.ext.apispark.internal.model.*;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
