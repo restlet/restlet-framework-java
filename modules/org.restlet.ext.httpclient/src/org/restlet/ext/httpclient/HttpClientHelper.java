@@ -26,9 +26,9 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.httpclient;
