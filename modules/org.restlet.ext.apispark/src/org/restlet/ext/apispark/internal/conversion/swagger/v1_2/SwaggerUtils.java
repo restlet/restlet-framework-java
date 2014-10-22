@@ -48,6 +48,7 @@ import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListingApi;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.resource.ClientResource;
 
@@ -103,7 +104,7 @@ public abstract class SwaggerUtils {
             LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
             resourceListing = createAuthenticatedClientResource(swaggerUrl,
                     userName, password).get(ResourceListing.class);
-            for (ResourceDeclaration api : resourceListing.getApis()) {
+            for (ResourceListingApi api : resourceListing.getApis()) {
                 LOGGER.log(Level.FINE,
                         "Reading file: " + swaggerUrl + api.getPath());
                 apis.put(
@@ -120,7 +121,7 @@ public abstract class SwaggerUtils {
                         ResourceListing.class);
                 String basePath = resourceListingFile.getParent();
                 LOGGER.log(Level.FINE, "Base path: " + basePath);
-                for (ResourceDeclaration api : resourceListing.getApis()) {
+                for (ResourceListingApi api : resourceListing.getApis()) {
                     LOGGER.log(Level.FINE,
                             "Reading file " + basePath + api.getPath());
                     apis.put(api.getPath(), om.readValue(new File(basePath

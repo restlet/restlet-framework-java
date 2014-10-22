@@ -60,6 +60,7 @@ import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ModelDecl
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.OAuth2AuthorizationDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListingApi;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
@@ -165,12 +166,12 @@ public abstract class SwaggerTranslator {
         // Resources
         List<String> addedApis = new ArrayList<String>();
         if (definition.getContract() != null && contract.getResources() != null) {
-            listing.setApis(new ArrayList<ResourceDeclaration>());
+            listing.setApis(new ArrayList<ResourceListingApi>());
 
             for (Resource resource : contract.getResources()) {
-                ResourceDeclaration rd = new ResourceDeclaration();
 
                 if (allResources) {
+                    ResourceListingApi rd = new ResourceListingApi();
                     rd.setDescription(resource.getDescription());
                     rd.setPath(ReflectUtils.getFirstSegment(resource
                             .getResourcePath()));
@@ -181,7 +182,7 @@ public abstract class SwaggerTranslator {
                 } else {
                     for (String sectionName : resource.getSections()) {
                         Section section = contract.getSection(sectionName);
-                        rd = new ResourceDeclaration();
+                        ResourceListingApi rd = new ResourceListingApi();
                         rd.setDescription(section.getDescription());
                         rd.setPath("/" + sectionName);
                         if (!addedApis.contains(rd.getPath())) {
@@ -193,10 +194,10 @@ public abstract class SwaggerTranslator {
             }
         }
         Collections.sort(listing.getApis(),
-                new Comparator<ResourceDeclaration>() {
+                new Comparator<ResourceListingApi>() {
                     @Override
-                    public int compare(ResourceDeclaration o1,
-                            ResourceDeclaration o2) {
+                    public int compare(ResourceListingApi o1,
+                                       ResourceListingApi o2) {
                         return o1.getPath().compareTo(o2.getPath());
                     }
 

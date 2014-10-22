@@ -9,7 +9,7 @@ import java.util.List;
 @JsonInclude(Include.NON_NULL)
 public class ResourceListing {
     // private String resourcePath";
-    private List<ResourceDeclaration> apis;
+    private List<ResourceListingApi> apis;
 
     private String apiVersion;
 
@@ -21,17 +21,17 @@ public class ResourceListing {
 
     private String swaggerVersion;
 
-    public List<ResourceDeclaration> getApis() {
+    public List<ResourceListingApi> getApis() {
         if (apis == null) {
-            apis = new ArrayList<ResourceDeclaration>();
+            apis = new ArrayList<ResourceListingApi>();
         }
         return apis;
     }
 
-    public ResourceDeclaration getApi(String path) {
-        for (ResourceDeclaration rd : apis) {
-            if (path.equals(rd.getPath())) {
-                return rd;
+    public ResourceListingApi getApi(String path) {
+        for (ResourceListingApi api : apis) {
+            if (path.equals(api.getPath())) {
+                return api;
             }
         }
         return null;
@@ -57,7 +57,7 @@ public class ResourceListing {
         return swaggerVersion;
     }
 
-    public void setApis(List<ResourceDeclaration> apis) {
+    public void setApis(List<ResourceListingApi> apis) {
         this.apis = apis;
     }
 
