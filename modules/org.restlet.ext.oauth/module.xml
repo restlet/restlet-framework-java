@@ -18,7 +18,6 @@
 		<dependency type="module" id="crypto" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="json" />
-		<dependency type="module" id="wadl" />
 	</dependencies>
 	<maven-misc>
 <![CDATA[

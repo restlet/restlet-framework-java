@@ -55,7 +55,7 @@ public class RoleLimitPolicy extends LimitPolicy {
      * The default limit applied when the request's user has no role or his
      * roles are not contained in {@link RoleLimitPolicy#limitsPerRole}.
      */
-    public int defaultLimit;
+    private int defaultLimit;
 
     /** Maps a role name to a limit. */
     private Map<String, Integer> limitsPerRole;
@@ -122,7 +122,7 @@ public class RoleLimitPolicy extends LimitPolicy {
     @Override
     public int getLimit(Request request, String countedValue) {
         // TODO we don't rely on the counted value?
-        int result = defaultLimit;
+        int result = 0;
         List<Role> roles = request.getClientInfo().getRoles();
         // iterate over user's roles
         for (Role role : roles) {
@@ -132,7 +132,52 @@ public class RoleLimitPolicy extends LimitPolicy {
             }
         }
 
+        if (result == 0) {
+            result = defaultLimit;
+        }
+
         return result;
+    }
+
+    /**
+     * Returns the policy's default limit.
+     * 
+     * @return Policy's default limit.
+     */
+    public int getDefaultLimit() {
+        return defaultLimit;
+    }
+
+    /**
+     * Set the policy's default limit.
+     * 
+     * @param defaultLimit
+     *            Policy's default limit.
+     */
+    public void setDefaultLimit(int defaultLimit) {
+        this.defaultLimit = defaultLimit;
+    }
+
+    /**
+     * Returns the {@link Map} defining limits corresponding to different
+     * {@link Role}
+     * 
+     * @return Limits corresponding to different {@link Role}
+     */
+    public Map<String, Integer> getLimitsPerRole() {
+        return limitsPerRole;
+    }
+
+    /**
+     * Set the {@link Map} defining limits corresponding to different
+     * {@link Role}
+     * 
+     * @param limitsPerRole
+     *            {@link Map} defining limits corresponding to different
+     *            {@link Role}
+     */
+    public void setLimitsPerRole(Map<String, Integer> limitsPerRole) {
+        this.limitsPerRole = limitsPerRole;
     }
 
 }

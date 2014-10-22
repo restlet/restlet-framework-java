@@ -108,7 +108,7 @@ public class FirewallFilter extends Filter {
      */
     @Override
     public int beforeHandle(Request request, Response response) {
-        int result = Filter.SKIP;
+        int result = Filter.CONTINUE;
         for (FirewallRule rule : rules) {
             int value = rule.beforeHandle(request, response);
             if (value != Filter.CONTINUE) {
