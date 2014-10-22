@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -47,6 +48,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Header;
+import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
@@ -57,7 +59,9 @@ import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderNameReader;
 import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.MethodReader;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.header.RecipientInfoReader;
@@ -129,6 +133,12 @@ public class HttpRequest extends Request {
 
     /** Indicates if the recipients info was parsed and added. */
     private volatile boolean recipientsInfoAdded;
+
+    /** Indicates if the access control request headers was parsed and added */
+    private volatile boolean accessControlRequestHeadersAdded;
+
+    /** Indicates if the access control request methods was parsed and added */
+    private volatile boolean accessControlRequestMethodAdded;
 
     /**
      * Constructor.
@@ -598,6 +608,32 @@ public class HttpRequest extends Request {
     }
 
     @Override
+    public Set<HeaderName> getAccessControlRequestHeaders() {
+        Set<HeaderName> result = super.getAccessControlRequestHeaders();
+        if (!accessControlRequestHeadersAdded) {
+            for (String header : getHttpCall().getRequestHeaders()
+                    .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS, true)) {
+                new HeaderNameReader(header).addValues(result);
+            }
+            accessControlRequestHeadersAdded = true;
+        }
+        return result;
+    }
+
+    @Override
+    public Set<Method> getAccessControlRequestMethod() {
+        Set<Method> result = super.getAccessControlRequestMethod();
+        if (!accessControlRequestMethodAdded) {
+            for (String header : getHttpCall().getRequestHeaders()
+                    .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD, true)) {
+                new MethodReader(header).addValues(result);
+            }
+            accessControlRequestMethodAdded = true;
+        }
+        return result;
+    }
+
+    @Override
     public void setChallengeResponse(ChallengeResponse response) {
         super.setChallengeResponse(response);
         this.securityAdded = true;
@@ -627,4 +663,15 @@ public class HttpRequest extends Request {
         this.warningsAdded = true;
     }
 
+    @Override
+    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
+        this.accessControlRequestHeadersAdded = true;
+    }
+
+    @Override
+    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+        super.setAccessControlRequestMethod(accessControlRequestMethod);
+        this.accessControlRequestMethodAdded = true;
+    }
 }

@@ -90,6 +90,18 @@ public final class HeaderConstants {
 
     public static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
+    public static final String HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL = "Access-Control-Allow-Credential";
+
+    public static final String HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+
+    public static final String HEADER_ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+
+    public static final String HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+
+    public static final String HEADER_ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
+
+    public static final String HEADER_ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
+
     public static final String HEADER_AGE = "Age";
 
     public static final String HEADER_ALLOW = "Allow";
