@@ -239,8 +239,7 @@ public class ResourceCollector {
                     inputType, introspectorPlugins);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(ReflectUtils.getSimpleClass(inputType)
-                    .getName());
+            inputEntity.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(inputType)));
             inputEntity.setArray(ReflectUtils.isListType(inputClass));
             operation.setInputPayLoad(inputEntity);
 
@@ -304,8 +303,7 @@ public class ResourceCollector {
                     outputType, introspectorPlugins);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(ReflectUtils.getSimpleClass(outputType)
-                    .getName());
+            outputEntity.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(outputType)));
             outputEntity.setArray(ReflectUtils.isListType(outputClass));
 
             response.setOutputPayLoad(outputEntity);

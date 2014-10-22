@@ -286,15 +286,19 @@ public class IntrospectionUtils {
             for (String representationIdentifier : entry.getValue()) {
                 Representation representation = definition.getContract()
                         .getRepresentation(representationIdentifier);
-                if (representationsSections.get(representationIdentifier) != null) {
-                    representationsSections.get(representationIdentifier).addAll(
-                            entry.getKey().getSections());
-                } else {
-                    Collection<String> representationSections = new HashSet<String>();
-                    representationSections.addAll(representation.getSections());
-                    representationSections.addAll(entry.getKey().getSections());
-                    representationsSections.put(representation,
-                            representationSections);
+
+                //primitives types are not present in representations list
+                if (representation != null) {
+                    if (representationsSections.get(representation) != null) {
+                        representationsSections.get(representation).addAll(
+                                entry.getKey().getSections());
+                    } else {
+                        Collection<String> representationSections = new HashSet<String>();
+                        representationSections.addAll(representation.getSections());
+                        representationSections.addAll(entry.getKey().getSections());
+                        representationsSections.put(representation,
+                                representationSections);
+                    }
                 }
             }
         }
