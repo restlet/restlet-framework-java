@@ -35,7 +35,9 @@ package org.restlet;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
@@ -44,6 +46,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Encoding;
+import org.restlet.data.HeaderName;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -133,6 +136,12 @@ public class Request extends Message {
     /** The application root reference. */
     private volatile Reference rootRef;
 
+    /** The set of headers requested on the requested resource in a CORS request. */
+    private volatile Set<HeaderName> accessControlRequestHeaders;
+
+    /** The set of methods requested on the requested resource in a CORS request. */
+    private volatile Set<Method> accessControlRequestMethod;
+
     /**
      * Constructor.
      */
@@ -164,6 +173,8 @@ public class Request extends Message {
      */
     public Request(Method method, Reference resourceRef, Representation entity) {
         super(entity);
+        this.accessControlRequestHeaders = null;
+        this.accessControlRequestMethod = null;
         this.challengeResponse = null;
         this.clientInfo = null;
         this.conditions = null;
@@ -585,6 +596,50 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the modifiable set of headers requested on the requested resource.
+     *  in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Headers" header.
+     *
+     * @return The set of requested headers in a CORS request..
+     */
+    public Set<HeaderName> getAccessControlRequestHeaders() {
+        // Lazy initialization with double-check.
+        Set<HeaderName> a = this.accessControlRequestHeaders;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlRequestHeaders;
+                if (a == null) {
+                    this.accessControlRequestHeaders = a = new CopyOnWriteArraySet<HeaderName>();
+                }
+            }
+        }
+        return a;    }
+
+    /**
+     * Returns the modifiable set of methods requested on the requested resource.
+     *  in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Request-Method" header.
+     *
+     * @return The set of requested methods in a CORS request..
+     */
+    public Set<Method> getAccessControlRequestMethod() {
+        // Lazy initialization with double-check.
+        Set<Method> a = this.accessControlRequestMethod;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlRequestMethod;
+                if (a == null) {
+                    this.accessControlRequestMethod = a = new CopyOnWriteArraySet<Method>();
+                }
+            }
+        }
+        return a;    }
+
+    /**
      * Indicates if the request is asynchronous. The test consist in verifying
      * that the {@link #getOnResponse()} method returns a callback object.
      * 
@@ -896,6 +951,52 @@ public class Request extends Message {
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
     }
+
+
+    /**
+     * Sets the set of headers requested on the requested resource in
+     * a CORS request.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Headers" header.
+     *
+     * @param accessControlRequestHeaders
+     *            The set of headers requested on the requested resource in
+     *            a CORS request.
+     */
+    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+        synchronized (getAccessControlRequestHeaders()) {
+            if (accessControlRequestHeaders != this.accessControlRequestHeaders) {
+                this.accessControlRequestHeaders.clear();
+
+                if (accessControlRequestHeaders != null) {
+                    this.accessControlRequestHeaders.addAll(accessControlRequestHeaders);
+                }
+            }
+        }    }
+
+
+    /**
+     * Sets the set of methods requested on the requested resource
+     * in a CORS request.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Methods" header.
+     *
+     * @param accessControlRequestMethod
+     *            The set of methods requested on the requested resource in
+     *            a CORS request.
+     */
+    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+        synchronized (getAccessControlRequestMethod()) {
+            if (accessControlRequestMethod != this.accessControlRequestMethod) {
+                this.accessControlRequestMethod.clear();
+
+                if (accessControlRequestMethod != null) {
+                    this.accessControlRequestMethod.addAll(accessControlRequestMethod);
+                }
+            }
+        }    }
 
     /**
      * Displays a synthesis of the request like an HTTP request line.

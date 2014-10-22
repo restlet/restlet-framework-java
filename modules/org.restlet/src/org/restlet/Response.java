@@ -44,6 +44,7 @@ import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
+import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -143,6 +144,18 @@ public class Response extends Message {
     /** The status. */
     private volatile Status status;
 
+    /** Indicates if the requested resource allow credential in a CORS request. */
+    private volatile Boolean accessControlAllowCredential;
+
+    /** The set of headers allowed on the requested resource in a CORS request. */
+    private volatile Set<HeaderName> accessControlAllowHeaders;
+
+    /** The set of methods allowed on the requested resource in a CORS request. */
+    private volatile Set<Method> accessControlAllowMethods;
+
+    /** The origin allowed on the requested resource in a CORS request. */
+    private volatile String accessControlAllowOrigin;
+
     /**
      * Constructor.
      * 
@@ -151,6 +164,10 @@ public class Response extends Message {
      */
     public Response(Request request) {
         this.age = 0;
+        this.accessControlAllowCredential = null;
+        this.accessControlAllowHeaders = null;
+        this.accessControlAllowMethods = null;
+        this.accessControlAllowOrigin = null;
         this.allowedMethods = null;
         this.autoCommitting = true;
         this.challengeRequests = null;
@@ -335,6 +352,76 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
+    }
+
+    /**
+     * Indicate if the requested resource allow credential in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Credential" header.
+     *
+     * @return True if the requested resource allow credential in a CORS request.
+     */
+    public Boolean getAccessControlAllowCredential() {
+        return this.accessControlAllowCredential;
+    }
+
+    /**
+     * Returns the modifiable set of headers allowed on the requested resource.
+     *  in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Headers" header.
+     *
+     * @return The set of requested headers in a CORS request..
+     */
+    public Set<HeaderName> getAccessControlAllowHeaders() {
+        // Lazy initialization with double-check.
+        Set<HeaderName> a = this.accessControlAllowHeaders;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlAllowHeaders;
+                if (a == null) {
+                    this.accessControlAllowHeaders = a = new CopyOnWriteArraySet<HeaderName>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Returns the modifiable set of methods allowed on the requested resource.
+     *  in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Methods" header.
+     *
+     * @return The set of allowed methods in a CORS request..
+     */
+    public Set<Method> getAccessControlAllowMethods() {
+        // Lazy initialization with double-check.
+        Set<Method> a = this.accessControlAllowMethods;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlAllowMethods;
+                if (a == null) {
+                    this.accessControlAllowMethods = a = new CopyOnWriteArraySet<Method>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Returns origin allowed on the requested resource in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Origin" header.
+     *
+     * @return The origin allowed on the requested resource in a CORS request.
+     */
+    public String getAccessControlAllowOrigin() {
+        return this.accessControlAllowOrigin;
     }
 
     /**
@@ -724,6 +811,77 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
+    }
+
+    /**
+     * Indicate if the requested resource allow credential in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Credential" header.
+     *
+     * @param accessControlAllowCredential
+     *      True if the requested resource allow credential in a CORS request.
+     */
+    public void setAccessControlAllowCredential(Boolean accessControlAllowCredential) {
+        this.accessControlAllowCredential = accessControlAllowCredential;
+    }
+
+    /**
+     * Sets the set of headers allowed on the requested resource in
+     * a CORS request.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Headers" header.
+     *
+     * @param accessControlAllowHeaders
+     *            The set of headers allowed on the requested resource in
+     *            a CORS request.
+     */
+    public void setAccessControlAllowHeaders(Set<HeaderName> accessControlAllowHeaders) {
+        synchronized (getAccessControlAllowHeaders()) {
+            if (accessControlAllowHeaders != this.accessControlAllowHeaders) {
+                this.accessControlAllowHeaders.clear();
+
+                if (accessControlAllowHeaders != null) {
+                    this.accessControlAllowHeaders.addAll(accessControlAllowHeaders);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the set of methods allowed on the requested resource in a CORS request.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Methods" header.
+     *
+     * @param accessControlAllowMethods
+     *            The set of methods allowed on the requested resource in
+     *            a CORS request.
+     */
+    public void setAccessControlAllowMethods(Set<Method> accessControlAllowMethods) {
+        synchronized (getAccessControlAllowMethods()) {
+            if (accessControlAllowMethods != this.accessControlAllowMethods) {
+                this.accessControlAllowMethods.clear();
+
+                if (accessControlAllowMethods != null) {
+                    this.accessControlAllowMethods.addAll(accessControlAllowMethods);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns origin allowed on the requested resource in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Origin" header.
+     *
+     * @param accessControlAllowOrigin
+     *          The origin allowed on the requested resource in a CORS request.
+     */
+    public void setAccessControlAllowOrigin(String accessControlAllowOrigin) {
+        this.accessControlAllowOrigin = accessControlAllowOrigin;
     }
 
     /**

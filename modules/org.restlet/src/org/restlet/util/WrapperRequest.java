@@ -34,6 +34,7 @@
 package org.restlet.util;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.Request;
@@ -43,6 +44,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.HeaderName;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -274,6 +276,27 @@ public class WrapperRequest extends Request {
         return this.wrappedRequest;
     }
 
+
+    /**
+     * Returns the access control request headers of the target resource.
+     *
+     * @return The access control request headers of the target resource.
+     */
+    @Override
+    public Set<HeaderName> getAccessControlRequestHeaders() {
+        return wrappedRequest.getAccessControlRequestHeaders();
+    }
+
+    /**
+     * Returns the access control request method of the target resource.
+     *
+     * @return The access control request method of the target resource.
+     */
+    @Override
+    public Set<Method> getAccessControlRequestMethod() {
+        return wrappedRequest.getAccessControlRequestMethod();
+    }
+
     @Override
     public boolean isAsynchronous() {
         return wrappedRequest.isAsynchronous();
@@ -490,6 +513,28 @@ public class WrapperRequest extends Request {
     @Override
     public void setRootRef(Reference rootRef) {
         getWrappedRequest().setRootRef(rootRef);
+    }
+
+    /**
+     * Sets the access control request headers of the target resource.
+     *
+     * @param accessControlRequestHeaders
+     *              The access control request headers of the target resource.
+     */
+    @Override
+    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
+    }
+
+    /**
+     * Sets the access control request method of the target resource.
+     *
+     * @param accessControlRequestMethod
+     *              The access control request method of the target resource.
+     */
+    @Override
+    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+        super.setAccessControlRequestMethod(accessControlRequestMethod);
     }
 
     @Override
