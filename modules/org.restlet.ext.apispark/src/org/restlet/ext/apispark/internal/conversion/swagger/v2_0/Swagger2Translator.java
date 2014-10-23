@@ -50,11 +50,11 @@ import com.wordnik.swagger.models.properties.StringProperty;
  */
 public class Swagger2Translator {
 
-    public static final Float SWAGGER_2_0_VERSION = 2.0f;
-
     /** Internal logger. */
     protected static Logger LOGGER = Logger
             .getLogger(ApplicationIntrospector.class.getName());
+
+    public static final Float SWAGGER_2_0_VERSION = 2.0f;
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
@@ -449,7 +449,7 @@ public class Swagger2Translator {
             return new BooleanProperty();
         }
         // Reference to a representation
-        return new RefProperty(type);
+        return new RefProperty().asDefault(type);
     }
 
     // TODO wait for Swagger class
