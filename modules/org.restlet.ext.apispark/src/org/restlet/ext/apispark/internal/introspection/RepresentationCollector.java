@@ -88,6 +88,10 @@ public class RepresentationCollector {
                 .getIdentifier()) == null;
 
         if (notInCache) {
+
+            // add representation in cache before complete it to avoid infinite loop
+            collectInfo.addRepresentation(representation);
+
             if (!isRaw) {
                 // add properties definition
                 for (Field field : ReflectUtils
@@ -130,8 +134,7 @@ public class RepresentationCollector {
             for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
                 introspectorPlugin.processRepresentation(representation, representationType);
             }
-            // add in cache
-            collectInfo.addRepresentation(representation);
+
         }
         return representation.getIdentifier();
     }
