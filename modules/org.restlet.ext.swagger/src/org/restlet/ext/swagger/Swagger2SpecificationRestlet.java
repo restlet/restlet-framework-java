@@ -33,6 +33,8 @@
 
 package org.restlet.ext.swagger;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.models.Swagger;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -204,8 +206,12 @@ public class Swagger2SpecificationRestlet extends Restlet {
      *         Application.
      */
     public Representation getSwagger() {
-        return new JacksonRepresentation<Swagger>(
+        JacksonRepresentation<Swagger> swaggerJacksonRepresentation = new JacksonRepresentation<Swagger>(
                 Swagger2Translator.getSwagger(getDefinition()));
+        //configure object mapper to not include null values
+        ObjectMapper objectMapper = swaggerJacksonRepresentation.getObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return swaggerJacksonRepresentation;
     }
 
     @Override
