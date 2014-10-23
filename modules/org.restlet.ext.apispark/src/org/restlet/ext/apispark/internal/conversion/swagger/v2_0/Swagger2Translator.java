@@ -54,7 +54,7 @@ public class Swagger2Translator {
     protected static Logger LOGGER = Logger
             .getLogger(Swagger2Translator.class.getName());
 
-    public static final Float SWAGGER_2_0_VERSION = 2.0f;
+    public static final String SWAGGER_2_0_VERSION = "2.0";
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
