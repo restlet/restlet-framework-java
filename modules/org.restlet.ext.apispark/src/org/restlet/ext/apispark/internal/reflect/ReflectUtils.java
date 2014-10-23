@@ -137,6 +137,9 @@ public class ReflectUtils {
             Class<?> c = (Class<?>) type;
             if (c.isArray()) {
                 return c.getComponentType();
+            } else if (Collection.class.isAssignableFrom(c)){
+                //Simple class that extends Collection<E>. Should inspect superclass.
+                return getSimpleClass(c.getGenericSuperclass());
             } else {
                 return c;
             }
