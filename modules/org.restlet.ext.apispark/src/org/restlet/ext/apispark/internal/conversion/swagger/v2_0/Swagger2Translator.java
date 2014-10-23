@@ -52,7 +52,7 @@ public class Swagger2Translator {
 
     /** Internal logger. */
     protected static Logger LOGGER = Logger
-            .getLogger(ApplicationIntrospector.class.getName());
+            .getLogger(Swagger2Translator.class.getName());
 
     public static final Float SWAGGER_2_0_VERSION = 2.0f;
 
