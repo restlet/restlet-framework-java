@@ -4,11 +4,21 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
-- 2.3 Milestone 2 (05/06/2014)
     - New features
-      - Added Firewall feature.
-        Contributed by Guillaume Blondeau.
+      -
+       
+    - Enhancements
+      - Unified the HTTP client connector parameters (socket connection to 15s, 
+        idle socket to 60s, socket stop to 60s, max connections per host to 10, 
+        max total connections to 20). Suggested by Kristoffer Gronowski.
+      
+    - Bugs fixed
+      - 
+     
+
+- 2.3 Milestone 3 (09/18/2014)
+    - New features
+      - Added API firewall feature to the APISpark extension.
       - Added RAML support in dedicated extension.
 
     - Enhancements

@@ -94,6 +94,15 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * protocol will not automatically follow redirects.</td>
  * </tr>
  * <tr>
+ * <td>hostnameVerifier</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Class name of the hostname verifier to use instead of HTTP Client default
+ * behavior. The given class name must implement
+ * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
+ * constructor.</td>
+ * </tr>
+ * <tr>
  * <td>idleCheckInterval</td>
  * <td>int</td>
  * <td>0</td>
@@ -103,9 +112,9 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * <tr>
  * <td>idleTimeout</td>
  * <td>long</td>
- * <td>10000</td>
+ * <td>60000</td>
  * <td>Returns the time in ms beyond which idle connections are eligible for
- * reaping. The default value is 10000 ms.</td>
+ * reaping. The default value is 60000 ms.</td>
  * </tr>
  * <tr>
  * <td>maxConnectionsPerHost</td>
@@ -133,20 +142,6 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
- * <td>stopIdleTimeout</td>
- * <td>int</td>
- * <td>1000</td>
- * <td>The minimum idle time, in milliseconds, for connections to be closed when
- * stopping the connector.</td>
- * </tr>
- * <tr>
- * <td>socketTimeout</td>
- * <td>int</td>
- * <td>0</td>
- * <td>Sets the socket timeout to a specified timeout, in milliseconds. A
- * timeout of zero is interpreted as an infinite timeout.</td>
- * </tr>
- * <tr>
  * <td>retryHandler</td>
  * <td>String</td>
  * <td>null</td>
@@ -154,6 +149,26 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * behavior. The given class name must extend the
  * org.apache.http.client.HttpRequestRetryHandler class and have a default
  * constructor</td>
+ * </tr>
+ * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>15000</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
+ * <tr>
+ * <td>socketTimeout</td>
+ * <td>int</td>
+ * <td>60000</td>
+ * <td>Sets the socket timeout to a specified timeout, in milliseconds. A
+ * timeout of zero is interpreted as an infinite timeout.</td>
+ * </tr>
+ * <tr>
+ * <td>stopIdleTimeout</td>
+ * <td>int</td>
+ * <td>60000</td>
+ * <td>The minimum idle time, in milliseconds, for connections to be closed when
+ * stopping the connector.</td>
  * </tr>
  * <tr>
  * <td>tcpNoDelay</td>
@@ -168,15 +183,6 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>
- * </tr>
- * <tr>
- * <td>hostnameVerifier</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Class name of the hostname verifier to use instead of HTTP Client default
- * behavior. The given class name must implement
- * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
- * constructor.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
@@ -382,7 +388,7 @@ public class HttpClientHelper extends
 
     /**
      * Returns the time in ms beyond which idle connections are eligible for
-     * reaping. The default value is 10000 ms.
+     * reaping. The default value is 60000 ms.
      * 
      * @return The time in millis beyond which idle connections are eligible for
      *         reaping.
@@ -390,7 +396,7 @@ public class HttpClientHelper extends
      */
     public long getIdleTimeout() {
         return Long.parseLong(getHelpedParameters().getFirstValue(
-                "idleTimeout", "10000"));
+                "idleTimeout", "60000"));
     }
 
     /**
@@ -448,14 +454,30 @@ public class HttpClientHelper extends
     }
 
     /**
+     * Returns the connection timeout. Defaults to 15000.
+     * 
+     * @return The connection timeout.
+     */
+    public int getSocketConnectTimeoutMs() {
+        int result = 0;
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "15000"));
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the socket timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
+     * infinite timeout. Defaults to 60000.
      * 
      * @return The read timeout value.
      */
     public int getSocketTimeout() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "socketTimeout", "0"));
+                "socketTimeout", "60000"));
     }
 
     /**

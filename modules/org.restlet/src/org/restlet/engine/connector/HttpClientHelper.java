@@ -82,15 +82,15 @@ import org.restlet.engine.util.ReferenceUtils;
  * <tr>
  * <td>readTimeout</td>
  * <td>int</td>
- * <td>0</td>
+ * <td>60000</td>
  * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
  * <tr>
- * <td>useCaches</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>If true, the protocol is allowed to use caching whenever it can.</td>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>15000</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
@@ -99,6 +99,12 @@ import org.restlet.engine.util.ReferenceUtils;
  * <td>Let you specify a {@link org.restlet.engine.ssl.SslContextFactory}
  * qualified class name as a parameter, or an instance as an attribute for a
  * more complete and flexible SSL context setting.</td>
+ * </tr>
+ * <tr>
+ * <td>useCaches</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, the protocol is allowed to use caching whenever it can.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
@@ -115,7 +121,6 @@ import org.restlet.engine.util.ReferenceUtils;
  * this behavior for POST requests only by setting the system property
  * "sun.net.http.retryPost" to "false".
  * 
- * @see Client#getConnectTimeout()
  * @see <a
  *      href="http://download.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
@@ -190,13 +195,29 @@ public class HttpClientHelper extends
 
     /**
      * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
+     * infinite timeout. Defaults to 60000.
      * 
      * @return The read timeout value.
      */
     public int getReadTimeout() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "readTimeout", "0"));
+                "readTimeout", "60000"));
+    }
+
+    /**
+     * Returns the connection timeout. Defaults to 15000.
+     * 
+     * @return The connection timeout.
+     */
+    public int getSocketConnectTimeoutMs() {
+        int result = 0;
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "15000"));
+        }
+
+        return result;
     }
 
     /**
