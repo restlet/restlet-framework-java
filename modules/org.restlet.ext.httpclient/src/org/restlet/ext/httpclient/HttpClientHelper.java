@@ -489,7 +489,7 @@ public class HttpClientHelper extends
      */
     public int getStopIdleTimeout() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "stopIdleTimeout", "1000"));
+                "stopIdleTimeout", "60000"));
     }
 
     /**

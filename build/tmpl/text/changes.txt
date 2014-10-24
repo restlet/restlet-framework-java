@@ -13,7 +13,7 @@ Changes log
         max total connections to 20). Suggested by Kristoffer Gronowski.
       
     - Bugs fixed
-      - 
+      - @Status now works with annotated methods.
      
 
 - 2.3 Milestone 3 (09/18/2014)
