@@ -36,11 +36,22 @@ package org.restlet.service;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.converter.ConverterUtils;
+import org.restlet.engine.resource.VariantInfo;
+import org.restlet.engine.util.ThrowableSerializer;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -68,6 +79,10 @@ import org.restlet.resource.ResourceException;
  * @author Jerome Louvel
  */
 public class StatusService extends Service {
+
+    /** HTML Variant */
+    private static final VariantInfo VARIANT_HTML = new VariantInfo(MediaType.TEXT_HTML);
+
     /** The email address to contact in case of error. */
     private volatile String contactEmail;
 
@@ -134,14 +149,16 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
-     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
+     * @deprecated Use {@link #toRepresentation(Status, Throwable, Request,
+     * Response, ConverterService, ConnegService, MetadataService)}
      *             instead.
      */
     @Deprecated
     public Representation getRepresentation(Status status, Request request,
             Response response) {
         // [ifndef gwt] instruction
-        return toRepresentation(status, null, request, response, null);
+        return toRepresentation(status, null,
+                request, response, null, null, null);
         // [ifdef gwt] instruction uncomment
         // return toRepresentation(status, null, request, response);
     }
@@ -231,7 +248,8 @@ public class StatusService extends Service {
      * Returns a representation for the given status.<br>
      * In order to customize the default representation, this method can be
      * overridden. By default it invokes
-     * {@link #toRepresentation(Status, Request, Response)}.
+     * {@link #toRepresentation(Status, Throwable, Request, Response,
+     * ConverterService, ConnegService, MetadataService)}
      * 
      * @param status
      *            The status to represent.
@@ -245,7 +263,8 @@ public class StatusService extends Service {
             Resource resource) {
         // [ifndef gwt] instruction
         return toRepresentation(status, throwable, resource.getRequest(),
-                resource.getResponse(), resource.getConverterService());
+                resource.getResponse(), resource.getConverterService(),
+                resource.getConnegService(), resource.getMetadataService());
         // [ifdef gwt] instruction uncomment
         // return null;
     }
@@ -255,7 +274,7 @@ public class StatusService extends Service {
      * Returns a representation for the given status. In order to customize the
      * default representation, this method can be overridden. It returns null by
      * default.
-     * 
+     *
      * @param status
      *            The status to represent.
      * @param throwable
@@ -267,11 +286,87 @@ public class StatusService extends Service {
      * @param converterService
      *            The converter service.
      * @return The representation of the given status.
+     *
+     * @deprecated Use {@link #toRepresentation(org.restlet.data.Status, Throwable, org.restlet.Request, org.restlet.Response, ConverterService, ConnegService, MetadataService)} instead.
      */
     public Representation toRepresentation(Status status, Throwable throwable,
             Request request, Response response,
             ConverterService converterService) {
-        return null;
+        return toRepresentation(status, throwable,
+                request, response, converterService, null, null);
+    }
+
+    /**
+     * Returns a representation for the given status. In order to customize the
+     * default representation, this method can be overridden. It returns a
+     * {@link org.restlet.data.Status} representation by default or a {@link java.lang.Throwable}
+     * representation if the throwable is annotated with {@link org.restlet.resource.Status}.
+     *
+     * @param status
+     *            The status to represent.
+     * @param throwable
+     *            The exception or error caught. If null, use {@link org.restlet.data.Status#getThrowable()}.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @param converterService
+     *            The converter service.
+     * @param connegService
+     *            The content negotiation service.
+     * @param metadataService
+     *            The metadata service.
+     * @return The representation of the given status.
+     */
+    public Representation toRepresentation(Status status, Throwable throwable,
+                                           Request request, Response response,
+                                           ConverterService converterService,
+                                           ConnegService connegService,
+                                           MetadataService metadataService) {
+        Representation result = null;
+
+        //do content negotiation for status
+        if (converterService != null && connegService != null && metadataService != null) {
+            Map<String, Object> representationMap = null;
+
+            //serialize exception if any and if {@link org.restlet.resource.Status} annotation ask for it
+            // [ifndef gwt]
+            Throwable cause = throwable != null ? throwable : status.getThrowable();
+            if (cause != null) {
+                org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                        .getInstance()
+                        .getStatusAnnotationInfo(cause.getClass());
+                if (sai != null && sai.isSerializeProperties()) {
+                    try {
+                        representationMap = ThrowableSerializer.serializeToMap(cause);
+                    } catch (Exception e) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING, "Could not serialize throwable class " + cause.getClass(), e);
+                    }
+                }
+            }
+            // [enddef]
+
+            //default representation match with the status properties
+            if (representationMap == null) {
+                representationMap = new LinkedHashMap<String, Object>();
+                representationMap.put("code", status.getCode());
+                representationMap.put("reasonPhrase", status.getReasonPhrase());
+                representationMap.put("description", status.getDescription());
+            }
+
+            List<VariantInfo> variants = ConverterUtils.getVariants(representationMap.getClass(), null);
+            if (!variants.contains(VARIANT_HTML)) {
+                variants.add(VARIANT_HTML);
+            }
+            Variant variant = connegService.getPreferredVariant(variants, request, metadataService);
+            try {
+                result = converterService.toRepresentation(representationMap, variant);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
     // [ifdef gwt] method uncomment

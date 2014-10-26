@@ -55,12 +55,13 @@ public class MyServerResource20 extends ServerResource implements MyResource20 {
     private volatile MyBean myBean = new MyBean("myName", "myDescription");
 
     @SuppressWarnings("unused")
-    public MyBean represent() throws MyException {
-        if (true) {
-            throw new MyException(new Date());
-        }
+    public MyBean represent() throws MyException01 {
+        throw new MyException01(new Date());
+    }
 
-        return myBean;
+    @Override
+    public MyBean representAndSerializeException() throws MyException02 {
+        throw new MyException02("representAndSerializeException error");
     }
 
 }
