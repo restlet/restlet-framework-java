@@ -4,14 +4,14 @@ import java.util.Date;
 
 import org.restlet.resource.Status;
 
-@Status("401")
-public class MyException extends Throwable {
+@Status(400)
+public class MyException01 extends Throwable {
 
     private static final long serialVersionUID = 1L;
 
     private Date date;
 
-    public MyException(Date date) {
+    public MyException01(Date date) {
         this.date = date;
     }
 

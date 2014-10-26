@@ -50,13 +50,21 @@ import java.lang.annotation.Target;
  * &#064;Get
  * public MyBean represent() throws MyServerError, MyNotFoundError;
  * 
- * &#064;Status(&quot;500&quot;)
+ * &#064;Status(500)
  * public class MyServerError implements Throwable{
  *    ...
  * }
  * 
- * &#064;Status(&quot;404&quot;)
+ * &#064;Status(404)
  * public class MyNotFoundError extends RuntimeException{
+ *    ...
+ * }
+ *
+ * &#064;Status(value = 400, serializeProperties = true)
+ * public class MyBadParameterError extends RuntimeException{
+ *    public String getParameterName() {
+ *        ...
+ *    };
  *    ...
  * }
  * </pre>
@@ -70,10 +78,21 @@ public @interface Status {
 
     /**
      * Specifies the HTTP status code associated to the annotated
-     * {@link Throwable}.
+     * {@link Throwable}. Default is 500.
      * 
      * @return The result HTTP status code.
      */
-    String value() default "";
+    int value() default 500;
+
+    /**
+     * Indicates if the properties of the annotated {@link Throwable}
+     * should be serialized in the HTTP response.
+     * The properties of the class {@link Throwable}
+     * are not serialized.
+     *
+     * @return True if properties of the annotated {@link Throwable}
+     * should be serialized in the HTTP response.
+     */
+    boolean serializeProperties() default false;
 
 }

@@ -43,6 +43,9 @@ import org.restlet.resource.Get;
 public interface MyResource20 {
 
     @Get
-    MyBean represent() throws MyException;
+    MyBean represent() throws MyException01;
+
+    @Get
+    MyBean representAndSerializeException() throws MyException02;
 
 }
