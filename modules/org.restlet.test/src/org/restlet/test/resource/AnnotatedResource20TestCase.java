@@ -77,9 +77,24 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
     public void testGet() throws IOException, ResourceException {
         try {
             myResource.represent();
-        } catch (MyException e) {
-            assertNotNull(e.getDate());
+            fail("should fail");
+        } catch (MyException01 e) {
+            fail("exception should be catch by client resource");
+        } catch (ResourceException e) {
+            assertEquals(400, e.getStatus().getCode());
         }
     }
 
+
+    public void testGetAndSerializeException() throws IOException, ResourceException {
+        try {
+            myResource.representAndSerializeException();
+            fail("should fail");
+        } catch (MyException02 e) {
+            fail("exception should be catch by client resource");
+        } catch (ResourceException e) {
+            assertEquals(400, e.getStatus().getCode());
+            //TODO How to retrieve the response entity with the error representation ?
+        }
+    }
 }

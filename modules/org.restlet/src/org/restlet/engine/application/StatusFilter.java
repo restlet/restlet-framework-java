@@ -45,7 +45,9 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Filter;
+import org.restlet.service.ConnegService;
 import org.restlet.service.ConverterService;
+import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 
 // [excludes gwt]
@@ -176,7 +178,9 @@ public class StatusFilter extends Filter {
                 if ((response.getEntity() == null) || isOverwriting()) {
                     response.setEntity(getStatusService().toRepresentation(
                             status, throwable, request, response,
-                            getApplication().getConverterService()));
+                            getConverterService(),
+                            getConnegService(),
+                            getMetadataService()));
                 }
             }
         }
@@ -202,6 +206,26 @@ public class StatusFilter extends Filter {
     public ConverterService getConverterService() {
         return (getApplication() == null) ? null : getApplication()
                 .getConverterService();
+    }
+
+    /**
+     * Returns the content negotiation service of the application if available or null.
+     *
+     * @return The content negotiation service of the application if available or null.
+     */
+    public ConnegService getConnegService() {
+        return (getApplication() == null) ? null : getApplication()
+                .getConnegService();
+    }
+
+    /**
+     * Returns the metadata service of the application if available or null.
+     *
+     * @return The metadata service of the application if available or null.
+     */
+    public MetadataService getMetadataService() {
+        return (getApplication() == null) ? null : getApplication()
+                .getMetadataService();
     }
 
     /**
@@ -279,7 +303,7 @@ public class StatusFilter extends Filter {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
-     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
+     * @deprecated Use {@link #toRepresentation(Status, Throwable, Request, Response)}
      *             instead.
      */
     @Deprecated
@@ -403,7 +427,7 @@ public class StatusFilter extends Filter {
 
         try {
             result = getStatusService().toRepresentation(status, throwable,
-                    request, response, getConverterService());
+                    request, response, getConverterService(), getConnegService(), getMetadataService());
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to get the custom status representation", e);
