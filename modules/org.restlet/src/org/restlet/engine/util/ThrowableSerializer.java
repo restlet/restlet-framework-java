@@ -34,13 +34,9 @@
 package org.restlet.engine.util;
 
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  *  Utilities to serialize {@link Throwable}.
@@ -48,9 +44,6 @@ import java.util.concurrent.ConcurrentMap;
  * @author Manuel Boillod
  */
 public class ThrowableSerializer {
-
-    /** BeanInfo cache. */
-    private static final ConcurrentMap<Class<?>, BeanInfo> cache = new ConcurrentHashMap<Class<?>, BeanInfo>();
 
     /**
      * Serialize {@link Throwable} properties to a Map using reflection.
@@ -64,7 +57,7 @@ public class ThrowableSerializer {
      */
     public static Map<String, Object> serializeToMap(Throwable throwable) {
         try {
-            BeanInfo beanInfo = getBeanInfo(throwable);
+            BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(throwable.getClass());
             Map<String, Object> properties = new HashMap<String, Object>();
 
             PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
@@ -78,31 +71,4 @@ public class ThrowableSerializer {
             throw new RuntimeException("Could not serialize properties of class " + throwable.getCause(), e);
         }
     }
-
-    /**
-     * Get a BeanInfo from cache or create it.
-     * @param throwable
-     *          Throwable instance
-     * @return BeanInfo of throwable class
-     */
-    private static BeanInfo getBeanInfo(Throwable throwable) throws IntrospectionException {
-        BeanInfo result = cache.get(throwable.getClass());
-
-        if (result == null) {
-            // Inspect the class itself for annotations
-            result = Introspector.getBeanInfo(throwable.getClass(), Throwable.class, Introspector.IGNORE_ALL_BEANINFO);
-
-            // Put the list in the cache if no one was previously present
-            BeanInfo prev = cache.putIfAbsent(throwable.getClass(), result);
-
-            if (prev != null) {
-                // Reuse the previous entry
-                result = prev;
-            }
-        }
-
-        return result;
-    }
-
-    ;
 }
