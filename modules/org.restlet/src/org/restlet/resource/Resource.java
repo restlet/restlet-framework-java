@@ -63,7 +63,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
-import org.restlet.service.StatusService;
 import org.restlet.util.Series;
 
 /**
@@ -743,19 +742,20 @@ public abstract class Resource {
         return getResponse() == null ? null : getResponse().getStatus();
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the application's status service or create a new one.
-     * 
+     *
      * @return The status service.
      */
-    public StatusService getStatusService() {
-        StatusService result = null;
+    public org.restlet.service.StatusService getStatusService() {
+        org.restlet.service.StatusService result = null;
 
         // [ifndef gwt] instruction
         result = getApplication().getStatusService();
 
         if (result == null) {
-            result = new StatusService();
+            result = new org.restlet.service.StatusService();
         }
 
         return result;
