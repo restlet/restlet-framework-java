@@ -43,6 +43,7 @@ import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.engine.util.ThrowableSerializer;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StatusRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
@@ -327,7 +328,7 @@ public class StatusService extends Service {
 
         //do content negotiation for status
         if (converterService != null && connegService != null && metadataService != null) {
-            Map<String, Object> representationMap = null;
+            Object representationObject = null;
 
             //serialize exception if any and if {@link org.restlet.resource.Status} annotation ask for it
             // [ifndef gwt]
@@ -338,7 +339,7 @@ public class StatusService extends Service {
                         .getStatusAnnotationInfo(cause.getClass());
                 if (sai != null && sai.isSerializeProperties()) {
                     try {
-                        representationMap = ThrowableSerializer.serializeToMap(cause);
+                        representationObject = ThrowableSerializer.serializeToMap(cause);
                     } catch (Exception e) {
                         Context.getCurrentLogger().log(
                                 Level.WARNING, "Could not serialize throwable class " + cause.getClass(), e);
@@ -348,20 +349,17 @@ public class StatusService extends Service {
             // [enddef]
 
             //default representation match with the status properties
-            if (representationMap == null) {
-                representationMap = new LinkedHashMap<String, Object>();
-                representationMap.put("code", status.getCode());
-                representationMap.put("reasonPhrase", status.getReasonPhrase());
-                representationMap.put("description", status.getDescription());
+            if (representationObject == null) {
+                representationObject = new StatusRepresentation(status);
             }
 
-            List<VariantInfo> variants = ConverterUtils.getVariants(representationMap.getClass(), null);
+            List<VariantInfo> variants = ConverterUtils.getVariants(representationObject.getClass(), null);
             if (!variants.contains(VARIANT_HTML)) {
                 variants.add(VARIANT_HTML);
             }
             Variant variant = connegService.getPreferredVariant(variants, request, metadataService);
             try {
-                result = converterService.toRepresentation(representationMap, variant);
+                result = converterService.toRepresentation(representationObject, variant);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
