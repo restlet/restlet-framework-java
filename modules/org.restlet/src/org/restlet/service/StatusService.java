@@ -111,7 +111,6 @@ public class StatusService extends Service {
         this.overwriting = false;
     }
 
-    // [ifndef gwt] method
     @Override
     public org.restlet.routing.Filter createInboundFilter(Context context) {
         return new org.restlet.engine.application.StatusFilter(context, this);
@@ -155,11 +154,8 @@ public class StatusService extends Service {
     @Deprecated
     public Representation getRepresentation(Status status, Request request,
             Response response) {
-        // [ifndef gwt] instruction
         return toRepresentation(status, null,
                 request, response, null, null, null);
-        // [ifdef gwt] instruction uncomment
-        // return toRepresentation(status, null, request, response);
     }
 
     /**
@@ -260,15 +256,11 @@ public class StatusService extends Service {
      */
     public Representation toRepresentation(Status status, Throwable throwable,
             Resource resource) {
-        // [ifndef gwt] instruction
         return toRepresentation(status, throwable, resource.getRequest(),
                 resource.getResponse(), resource.getConverterService(),
                 resource.getConnegService(), resource.getMetadataService());
-        // [ifdef gwt] instruction uncomment
-        // return null;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a representation for the given status. In order to customize the
      * default representation, this method can be overridden. It returns null by
@@ -329,7 +321,6 @@ public class StatusService extends Service {
             Object representationObject = null;
 
             //serialize exception if any and if {@link org.restlet.resource.Status} annotation ask for it
-            // [ifndef gwt]
             Throwable cause = throwable != null ? throwable : status.getThrowable();
             if (cause != null) {
                 org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
@@ -344,7 +335,6 @@ public class StatusService extends Service {
                     }
                 }
             }
-            // [enddef]
 
             //default representation match with the status properties
             if (representationObject == null) {
@@ -362,32 +352,9 @@ public class StatusService extends Service {
                 throw new RuntimeException(e);
             }
         }
+        // [enddef]
         return result;
     }
-
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Returns a representation for the given status. In order to customize
-    // the
-    // * default representation, this method can be overridden. It returns null
-    // by
-    // * default.
-    // *
-    // * @param status
-    // * The status to represent.
-    // * @param throwable
-    // * The exception or error caught.
-    // * @param request
-    // * The request handled.
-    // * @param response
-    // * The response updated.
-    // * @return The representation of the given status.
-    // */
-    // public Representation toRepresentation(Status status, Throwable
-    // throwable,
-    // Request request, Response response) {
-    // return null;
-    // }
 
     /**
      * Returns a status for a given exception or error. By default it unwraps
@@ -419,7 +386,6 @@ public class StatusService extends Service {
                 result = re.getStatus();
             }
         } else {
-            // [ifndef gwt]
             org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
                     .getInstance()
                     .getStatusAnnotationInfo(throwable.getClass());
@@ -429,9 +395,6 @@ public class StatusService extends Service {
             } else {
                 result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
             }
-            // [enddef]
-            // [ifdef gwt] instruction uncomment
-            // result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
         }
 
         return result;
