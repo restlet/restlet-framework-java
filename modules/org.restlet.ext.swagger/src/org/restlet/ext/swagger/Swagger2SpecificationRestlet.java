@@ -111,7 +111,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The RWADef of the API. */
     private Definition definition;
 
-    /** List of additionnal introspector plugins to use */
+    /** List of additional introspector plugins to use */
     private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
 
     /** Helper used to add CORS response headers */
