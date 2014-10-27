@@ -34,6 +34,7 @@
 package org.restlet.test.resource;
 
 import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 /**
  * Sample annotated interface.
@@ -45,7 +46,7 @@ public interface MyResource20 {
     @Get
     MyBean represent() throws MyException01;
 
-    @Get
+    @Put
     MyBean representAndSerializeException() throws MyException02;
 
 }
