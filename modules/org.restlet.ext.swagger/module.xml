@@ -8,9 +8,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="scala" />
 		<dependency type="library" id="slf4j" />
-		<dependency type="library" id="e4" />
 		<dependency type="library" id="swagger.annotations_1.2" />
 		<dependency type="library" id="swagger.core_1.2" />
 		<dependency type="library" id="jaxrs" />
