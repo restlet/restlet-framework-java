@@ -10,7 +10,7 @@ import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  *
@@ -31,5 +31,5 @@ public interface IntrospectorPlugin {
 
     void processRepresentation(Representation representation, Class<?> representationType);
 
-    void processProperty(Property property, Field field);
+    void processProperty(Property property, Method readMethod);
 }

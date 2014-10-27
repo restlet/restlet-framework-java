@@ -20,7 +20,7 @@ import org.restlet.ext.apispark.swagger.v1_2.SwaggerAnnotationUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Created by manu on 14/10/2014.
@@ -80,8 +80,8 @@ public class SwaggerAnnotationIntrospectorPlugin implements IntrospectorPlugin {
     }
 
     @Override
-    public void processProperty(Property property, Field field) {
-        ApiModelProperty apiModelProperty = field.getAnnotation(ApiModelProperty.class);
+    public void processProperty(Property property, Method readMethod) {
+        ApiModelProperty apiModelProperty = readMethod.getAnnotation(ApiModelProperty.class);
         if (apiModelProperty != null) {
             SwaggerAnnotationUtils.processApiModelProperty(apiModelProperty, property);
         }

@@ -1,8 +1,10 @@
 package org.restlet.ext.apispark.internal.introspection;
 
-import java.lang.reflect.Field;
+import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Type;
 
+import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Section;
@@ -15,21 +17,16 @@ import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 public class RepresentationCollector {
 
     /**
-<<<<<<< HEAD
      * Returns the description of the given class as a
      * {@link Representation}.
      *
-     * @param clazz The class to document.
-     * @param type  The class to document.
-     * @param introspectorPlugins
-=======
-     * Returns the description of the given class as a {@link Representation}.
-     * 
      * @param clazz
      *            The class to document.
-     * @param type²
+     * @param type
      *            The class to document.
->>>>>>> added sections by package
+     * @param introspectorPlugins
+     *            The introspector plugins
+     *
      * @return The name of representation type if added, null otherwise
      *         {@link Representation}.
      */
@@ -94,25 +91,25 @@ public class RepresentationCollector {
 
             if (!isRaw) {
                 // add properties definition
-                for (Field field : ReflectUtils
-                        .getAllDeclaredFields(representationType)) {
-                    if ("serialVersionUID".equals(field.getName())) {
-                        continue;
-                    }
+
+                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(representationType);
+                for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+                    Class<?> propertyClazz = pd.getReadMethod().getReturnType();
+                    Type propertyType = pd.getReadMethod().getGenericReturnType();
+
                     Property property = new Property();
-                    property.setName(field.getName());
+                    property.setName(pd.getName());
                     property.setDescription("");
-                    Class<?> fieldType = ReflectUtils.getSimpleClass(field);
-                    addRepresentation(collectInfo, fieldType,
-                            field.getGenericType(), introspectorPlugins);
-                    property.setType(Types.convertPrimitiveType(fieldType));
+                    property.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(propertyType)));
                     property.setMinOccurs(0);
-                    boolean isCollection = ReflectUtils.isListType(field
-                            .getType());
+                    boolean isCollection = ReflectUtils.isListType(propertyClazz);
                     property.setMaxOccurs(isCollection ? -1 : 1);
 
+                    addRepresentation(collectInfo, propertyClazz,
+                            propertyType, introspectorPlugins);
+
                     for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-                        introspectorPlugin.processProperty(property, field);
+                        introspectorPlugin.processProperty(property, pd.getReadMethod());
                     }
 
                     representation.getProperties().add(property);
