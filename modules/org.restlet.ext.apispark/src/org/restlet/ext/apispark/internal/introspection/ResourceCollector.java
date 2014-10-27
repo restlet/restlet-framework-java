@@ -12,6 +12,7 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.DocumentedResource;
 import org.restlet.ext.apispark.internal.model.*;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.representation.StatusRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
@@ -194,34 +195,30 @@ public class ResourceCollector {
         MetadataService metadataService = sr.getMetadataService();
 
         // Retrieve thrown classes
-        Response response;
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
-                try {
-                    StatusAnnotationInfo statusAnnotation = AnnotationUtils
-                            .getInstance().getStatusAnnotationInfo(thrownClass);
-                    if (statusAnnotation != null) {
-                        int statusCode = Integer.parseInt(statusAnnotation
-                                .getAnnotationValue());
-                        response = new Response();
-                        response.setCode(statusCode);
-                        response.setMessage("Error " + statusCode);
-                        // TODO re-add when RF returns error beans
-                        // RepresentationCollector.addRepresentation(collectInfo,
-                        // thrownClass,
-                        // ReflectUtils.getSimpleClass(thrownClass));
-                        // PayLoad outputPayLoad = new PayLoad();
-                        // outputPayLoad.setType(thrownClass.getSimpleName());
-                        // response.setOutputPayLoad(outputPayLoad);
-                        operation.getResponses().add(response);
-                    }
-                } catch (NumberFormatException e) {
-                    // TODO also check that the value of the code belongs to
-                    // the known HTTP status codes ?
-                    LOGGER.severe("Annotation value for thrown class: "
-                            + thrownClass.getSimpleName()
-                            + " is not a valid HTTP status code.");
+                StatusAnnotationInfo statusAnnotation = AnnotationUtils
+                        .getInstance().getStatusAnnotationInfo(thrownClass);
+                if (statusAnnotation != null) {
+                    int statusCode = statusAnnotation.getStatus().getCode();
+                    Response response = new Response();
+                    response.setCode(statusCode);
+                    response.setMessage("Status " + statusCode);
+
+                    Class<?> outputPayloadType =
+                        statusAnnotation.isSerializeProperties() ?
+                         thrownClass : StatusRepresentation.class;
+
+                    RepresentationCollector.addRepresentation(collectInfo,
+                            outputPayloadType, null, introspectorPlugins);
+
+                    PayLoad outputPayLoad = new PayLoad();
+                    outputPayLoad.setType(outputPayloadType.getName());
+                    response.setOutputPayLoad(outputPayLoad);
+                    operation.getResponses().add(response);
+
+
                 }
             }
         }
@@ -292,7 +289,7 @@ public class ResourceCollector {
 
         // Describe the success response
 
-        response = new Response();
+        Response response = new Response();
 
         Class<?> outputClass = mai.getJavaMethod().getReturnType();
         Type outputType = mai.getJavaMethod().getGenericReturnType();
