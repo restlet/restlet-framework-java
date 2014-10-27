@@ -31,23 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.raml.internal;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.raml.model.ActionType;
-import org.raml.model.ParamType;
-import org.raml.model.Raml;
-import org.raml.model.Resource;
-import org.raml.parser.rule.ValidationResult;
-import org.raml.parser.visitor.RamlValidationService;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.Representation;
+package org.restlet.ext.apispark.internal.conversion.raml;
 
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;
@@ -57,6 +41,22 @@ import com.fasterxml.jackson.module.jsonSchema.types.NumberSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.StringSchema;
+import org.raml.model.ActionType;
+import org.raml.model.ParamType;
+import org.raml.model.Raml;
+import org.raml.model.Resource;
+import org.raml.parser.rule.ValidationResult;
+import org.raml.parser.visitor.RamlValidationService;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.Representation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Utility class for RAML java beans.
@@ -203,11 +203,11 @@ public class RamlUtils {
     }
 
     /**
-     * Returns the RAML {@link ActionType} given an HTTP method name.
-     * 
+     * Returns the RAML {@link org.raml.model.ActionType} given an HTTP method name.
+     *
      * @param method
      *            The HTTP method name as String.
-     * @return The corresponding {@link ActionType}.
+     * @return The corresponding {@link org.raml.model.ActionType}.
      */
     public static ActionType getActionType(String method) {
         String m = (method != null) ? method.toLowerCase() : null;
@@ -340,7 +340,7 @@ public class RamlUtils {
 
     /**
      * Returns the primitive type as RAML expects them.
-     * 
+     *
      * @param type
      *            The Java primitive type.
      * @return The primitive type expected by RAML.
@@ -361,7 +361,7 @@ public class RamlUtils {
      * Indicates if the given RAML definition is valid according to RAML
      * specifications.
      * 
-     * @param raml
+     * @param location
      *            The RAML definition.
      * @throws TranslationException
      */

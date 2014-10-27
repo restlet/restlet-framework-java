@@ -31,16 +31,11 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.raml.internal;
+package org.restlet.ext.apispark.internal.conversion.raml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 import org.raml.model.Action;
 import org.raml.model.ActionType;
 import org.raml.model.MimeType;
@@ -49,6 +44,7 @@ import org.raml.model.SecurityScheme;
 import org.raml.model.parameter.UriParameter;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -60,9 +56,13 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Tools library for converting Restlet Web API Definition to and from RAML
@@ -77,15 +77,15 @@ public abstract class RamlTranslator {
             .getName());
 
     /**
-     * Returns the {@link PathVariable} as described by the given
-     * {@link UriParameter}.
-     * 
+     * Returns the {@link org.restlet.ext.apispark.internal.model.PathVariable} as described by the given
+     * {@link org.raml.model.parameter.UriParameter}.
+     *
      * @param paramName
      *            The name of the path variable.
      * @param uriParameter
      *            The uri parameter.
-     * @return The {@link PathVariable} as described by the given
-     *         {@link UriParameter}.
+     * @return The {@link org.restlet.ext.apispark.internal.model.PathVariable} as described by the given
+     *         {@link org.raml.model.parameter.UriParameter}.
      */
     private static PathVariable getPathVariable(String paramName,
             UriParameter uriParameter) {
@@ -97,12 +97,12 @@ public abstract class RamlTranslator {
     }
 
     /**
-     * Returns the list of {@link PathVariable} as defined by the given
+     * Returns the list of {@link org.restlet.ext.apispark.internal.model.PathVariable} as defined by the given
      * {@link org.raml.model.Resource}.
-     * 
+     *
      * @param resource
      *            The given resource.
-     * @return The list of {@link PathVariable} as defined by the given
+     * @return The list of {@link org.restlet.ext.apispark.internal.model.PathVariable} as defined by the given
      *         {@link org.raml.model.Resource}.
      */
     private static List<PathVariable> getPathVariables(

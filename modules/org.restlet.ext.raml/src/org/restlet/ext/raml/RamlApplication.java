@@ -126,6 +126,7 @@ public class RamlApplication extends Application {
     public void attachRamlDocumentationRestlet(Router router, String ramlPath,
             Restlet ramlRestlet) {
         router.attach(ramlPath, ramlRestlet);
+        documented = true;
     }
 
     /**
@@ -136,8 +137,8 @@ public class RamlApplication extends Application {
      *            The router on which defining the new route.
      */
     public void attachRamlSpecificationRestlet(Router router) {
-        Restlet restlet = getRamlSpecificationRestlet(getContext());
-        attachRamlDocumentationRestlet(router, "/raml", restlet);
+        getRamlSpecificationRestlet(getContext()).attach(router);
+        documented = true;
     }
 
     /**
