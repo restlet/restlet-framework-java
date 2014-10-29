@@ -272,8 +272,13 @@ public abstract class Message {
      */
     @SuppressWarnings("unchecked")
     public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
+        Series<Header> headers = (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
+        if (headers == null) {
+            headers = new Series<Header>(Header.class);
+            getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+        }
+        return headers;
     }
 
     /**
