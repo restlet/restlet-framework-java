@@ -541,7 +541,7 @@ public class Introspector {
             definition = i.getDefinition();
         } else if (a != null) {
             LOGGER.fine("Instantiate introspector");
-            JaxRsIntrospector2 i = new JaxRsIntrospector2(a);
+            JaxRsIntrospector i = new JaxRsIntrospector(a);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();

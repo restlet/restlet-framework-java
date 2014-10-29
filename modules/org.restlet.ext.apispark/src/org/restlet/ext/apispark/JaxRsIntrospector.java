@@ -87,7 +87,7 @@ import org.restlet.routing.Template;
  * 
  * @author Thierry Boileau
  */
-public class JaxRsIntrospector2 {
+public class JaxRsIntrospector {
 
     /** Internal logger. */
     private static Logger LOGGER = Context.getCurrentLogger();
@@ -328,7 +328,7 @@ public class JaxRsIntrospector2 {
         Definition definition = null;
         if (application != null) {
             LOGGER.fine("Instantiate introspector");
-            JaxRsIntrospector2 i = new JaxRsIntrospector2(application);
+            JaxRsIntrospector i = new JaxRsIntrospector(application);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
@@ -349,7 +349,7 @@ public class JaxRsIntrospector2 {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        IntrospectionUtils.printSynopsis(o, JaxRsIntrospector2.class,
+        IntrospectionUtils.printSynopsis(o, JaxRsIntrospector.class,
                 "[options] APPLICATION");
         o.println("DESCRIPTION");
         IntrospectionUtils
@@ -388,7 +388,7 @@ public class JaxRsIntrospector2 {
                         "You can get a detailled log of the process using the JDK's API.",
                         "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
                         "Here is the name of the used Logger: "
-                                + JaxRsIntrospector2.class.getName());
+                                + JaxRsIntrospector.class.getName());
     }
 
     private static void scan(Annotation[] annotations, Class<?> parameterClass,
@@ -782,7 +782,7 @@ public class JaxRsIntrospector2 {
      * @param application
      *            An {@link javax.ws.rs.core.Application} to introspect.
      */
-    public JaxRsIntrospector2(javax.ws.rs.core.Application application) {
+    public JaxRsIntrospector(javax.ws.rs.core.Application application) {
         definition = IntrospectionTranslator.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 
