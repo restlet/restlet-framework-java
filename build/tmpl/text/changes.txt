@@ -11,10 +11,13 @@ Changes log
       - Unified the HTTP client connector parameters (socket connection to 15s, 
         idle socket to 60s, socket stop to 60s, max connections per host to 10, 
         max total connections to 20). Suggested by Kristoffer Gronowski.
+      - Upgraded Jackson to version 2.4.3.
+      - Jackson representation now ignore empty value (null or empty collections)
+        by default in the JSON/XML/CSV/YAML produced, leading to more compact 
+        representations.
       
     - Bugs fixed
-      - @Status now works with annotated methods.
-     
+      - @Status now works with annotated methods on the server-side.
 
 - 2.3 Milestone 3 (09/18/2014)
     - New features

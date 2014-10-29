@@ -44,6 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -201,6 +202,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     protected ObjectMapper createObjectMapper() {
         ObjectMapper result = null;
+
         if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
@@ -237,6 +239,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             result = new ObjectMapper(jsonFactory);
         }
 
+        result.setSerializationInclusion(Include.NON_EMPTY);
         return result;
     }
 

@@ -1,7 +1,7 @@
 <library id="jackson" symbolicName="com.fasterxml.jackson">
 	<name>High-performance JSON processor</name>
 	<description>High-performance JSON processor</description>
-	<version>2.2</version>
+	<version>2.4</version>
 	<release>3</release>
 	<homeUri>http://jackson.codehaus.org/</homeUri>
 	<downloadUri>http://wiki.fasterxml.com/JacksonDownload</downloadUri>

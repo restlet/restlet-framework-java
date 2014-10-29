@@ -86,10 +86,25 @@ public class JacksonTestCase extends RestletTestCase {
         JacksonRepresentation<Invoice> rep = new JacksonRepresentation<Invoice>(
                 MediaType.TEXT_CSV, invoice);
         String text = rep.getText();
-        assertEquals("1356533333882,12456,false\n", text);
+        assertEquals("12456,1356533333882,false\n", text);
         rep = new JacksonRepresentation<Invoice>(new StringRepresentation(text,
                 rep.getMediaType()), Invoice.class);
         verify(invoice, rep.getObject());
+    }
+
+    public void testException() throws Exception {
+        Customer customer = createCustomer();
+        MyException me = new MyException(customer, "CUST-1234");
+        me.setStackTrace(new StackTraceElement[0]);
+        me.initCause(null);
+
+        JacksonRepresentation<MyException> rep = new JacksonRepresentation<MyException>(
+                MediaType.APPLICATION_JSON, me);
+        String text = rep.getText();
+
+        rep = new JacksonRepresentation<MyException>(new StringRepresentation(
+                text, rep.getMediaType()), MyException.class);
+        verify(me, rep.getObject());
     }
 
     public void testJson() throws Exception {
@@ -175,5 +190,10 @@ public class JacksonTestCase extends RestletTestCase {
     protected void verify(Invoice invoice1, Invoice invoice2) {
         assertEquals(invoice1.getAmount(), invoice2.getAmount());
         assertEquals(invoice1.getDate(), invoice2.getDate());
+    }
+
+    protected void verify(MyException me1, MyException me2) {
+        assertEquals(me1.getErrorCode(), me2.getErrorCode());
+        verify(me1.getCustomer(), me2.getCustomer());
     }
 }
