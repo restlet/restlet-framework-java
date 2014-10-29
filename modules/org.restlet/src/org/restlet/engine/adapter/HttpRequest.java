@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
@@ -82,13 +83,12 @@ public class HttpRequest extends Request {
      *            The header name to add.
      * @param headerValue
      *            The header value to add.
+     * @deprecated Use {@link Message#getHeaders()} directly instead.
      */
+    @Deprecated
     public static void addHeader(Request request, String headerName,
             String headerValue) {
-        if (request instanceof HttpRequest) {
-            ((HttpRequest) request).getHeaders().add(
-                    new Header(headerName, headerValue));
-        }
+        request.getHeaders().add(new Header(headerName, headerValue));
     }
 
     /** Indicates if the cache control data was parsed and added. */
