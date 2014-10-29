@@ -34,9 +34,8 @@
 package org.restlet.ext.swagger.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import scala.actors.threadpool.Arrays;
 
 /**
  * Swagger tooling class.
@@ -57,7 +56,6 @@ public class SwaggerUtils {
         return path;
     }
 
-    @SuppressWarnings("unchecked")
     public static List<String> toList(String csvString) {
         if (csvString == null || csvString.isEmpty()) {
             return new ArrayList<String>();

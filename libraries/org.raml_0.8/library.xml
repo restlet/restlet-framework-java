@@ -12,8 +12,10 @@
 	    <artifactId>raml-parser</artifactId>
 	    <version>0.8.7</version>
 	</package>
-	<dependency type="library" id="io" />
-	<dependency type="library" id="snakeyaml" />
+	<dependencies>
+		<dependency type="library" id="io" />
+		<dependency type="library" id="snakeyaml" />
+	</dependencies>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
