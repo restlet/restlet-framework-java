@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - New features
-      -
+      - 
        
     - Enhancements
       - Unified the HTTP client connector parameters (socket connection to 15s, 

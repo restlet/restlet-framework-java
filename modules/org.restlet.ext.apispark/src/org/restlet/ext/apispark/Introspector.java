@@ -43,14 +43,15 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.ext.apispark.internal.conversion.IntrospectionTranslator;
-import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.SwaggerUtils;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.info.ApplicationInfo;
 import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
@@ -66,16 +67,15 @@ import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
- * Publish the documentation of a Restlet-based Application to the APISpark
- * console.
+ * Extract and push the web API documentation of a Restlet API-based
+ * {@link Application} to the APISpark console.
  * 
  * @author Thierry Boileau
  */
-public class Introspector extends IntrospectionUtils {
+public class Introspector {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(Introspector.class
-            .getName());
+    private static Logger LOGGER = Context.getCurrentLogger();
 
     /**
      * Returns an instance of what must be a subclass of {@link Application}.
@@ -490,14 +490,16 @@ public class Introspector extends IntrospectionUtils {
                 });
 
         LOGGER.fine("Check parameters");
-        if (isEmpty(serviceUrl)) {
+        if (IntrospectionUtils.isEmpty(serviceUrl)) {
             serviceUrl = "https://apispark.com/";
         }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";
         }
 
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(defSource)) {
+        if (IntrospectionUtils.isEmpty(ulogin)
+                || IntrospectionUtils.isEmpty(upwd)
+                || IntrospectionUtils.isEmpty(defSource)) {
             printHelp();
             System.exit(1);
         }
@@ -523,7 +525,7 @@ public class Introspector extends IntrospectionUtils {
                     application = getApplication(defSource);
                     component = getComponent(compName);
                 } else if (clazz != null) {
-                    a = JaxrsIntrospector.getApplication(defSource);
+                    a = IntrospectionUtils.getApplication(defSource);
                 }
             } catch (ClassNotFoundException e) {
                 LOGGER.log(Level.SEVERE,
@@ -539,7 +541,7 @@ public class Introspector extends IntrospectionUtils {
             definition = i.getDefinition();
         } else if (a != null) {
             LOGGER.fine("Instantiate introspector");
-            JaxrsIntrospector i = new JaxrsIntrospector(a);
+            JaxRsIntrospector2 i = new JaxRsIntrospector2(a);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
@@ -547,8 +549,8 @@ public class Introspector extends IntrospectionUtils {
             definition = SwaggerUtils.getDefinition(defSource, ulogin, upwd);
         }
         if (definition != null) {
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl,
-                    LOGGER);
+            IntrospectionUtils.sendDefinition(definition, definitionId, ulogin,
+                    upwd, serviceUrl, LOGGER);
         } else {
             LOGGER.severe("Please provide a valid application class name or definition URL.");
         }
@@ -561,35 +563,46 @@ public class Introspector extends IntrospectionUtils {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class, "[options] APPLICATION");
-        printSynopsis(o, Introspector.class,
+        IntrospectionUtils.printSynopsis(o, Introspector.class,
+                "[options] APPLICATION");
+        IntrospectionUtils.printSynopsis(o, Introspector.class,
                 "-l swagger [options] SWAGGER DEFINITION URL/PATH");
         o.println("DESCRIPTION");
-        printSentence(
-                o,
-                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class or by the swagger definition available on the ",
-                "URL/PATH");
-        printSentence(
-                o,
-                "If the whole process is successfull, it displays the url of the corresponding documentation.");
+        IntrospectionUtils
+                .printSentence(
+                        o,
+                        "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
+                        "the full name of your Restlet application class or by the swagger definition available on the ",
+                        "URL/PATH");
+        IntrospectionUtils
+                .printSentence(
+                        o,
+                        "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
-        printOption(o, "-h, --help", "Prints this help.");
-        printOption(o, "-u, --username", "The mandatory APISpark user name.");
-        printOption(o, "-p, --password", "The mandatory APISpark user secret key.");
-        printOption(o, "-c, --component",
-                "The optional full name of your Restlet Component class.",
-                "This allows to collect some other data, such as the endpoint.");
-        printOption(
-                o,
-                "-d, --definition",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
-        printOption(
-                o,
-                "-l, --language",
-                "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        printOption(o, "-v, --verbose",
-                "The optional parameter switching the process to a verbose mode");
+        IntrospectionUtils.printOption(o, "-h, --help", "Prints this help.");
+        IntrospectionUtils.printOption(o, "-u, --username",
+                "The mandatory APISpark user name.");
+        IntrospectionUtils.printOption(o, "-p, --password",
+                "The mandatory APISpark user secret key.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "-c, --component",
+                        "The optional full name of your Restlet Component class.",
+                        "This allows to collect some other data, such as the endpoint.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "-d, --definition",
+                        "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "-l, --language",
+                        "The optional name of the description language of the definition you want to upload. Possible value: swagger");
+        IntrospectionUtils
+                .printOption(o, "-v, --verbose",
+                        "The optional parameter switching the process to a verbose mode");
     }
 
     /** The current Web API definition. */
@@ -609,10 +622,10 @@ public class Introspector extends IntrospectionUtils {
      * Constructor.
      * 
      * @param component
-     *            An component to introspect in order to get extra details such
-     *            as the endpoint.
+     *            A {@link Component} to introspect in order to get extra
+     *            details such as the endpoint.
      * @param application
-     *            An application to introspect.
+     *            An {@link Application} to introspect.
      */
     public Introspector(Component component, Application application) {
         definition = IntrospectionTranslator.toDefinition(

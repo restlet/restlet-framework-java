@@ -31,15 +31,13 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark;
+package org.restlet.ext.apispark.internal.firewall;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Restlet;
 import org.restlet.ext.apispark.internal.firewall.rule.FirewallRule;
 import org.restlet.routing.Filter;
 
@@ -51,46 +49,19 @@ import org.restlet.routing.Filter;
 public class FirewallFilter extends Filter {
 
     /** The list of associated {@link FirewallRule}. */
-    private List<FirewallRule> rules;
-
-    /**
-     * Constructor.
-     */
-    public FirewallFilter() {
-        this(null);
-    }
+    protected final List<FirewallRule> rules;
 
     /**
      * Constructor.
      * 
      * @param context
      *            The context.
+     * @param rules
+     *            The list of associated {@link FirewallRule}.
      */
-    public FirewallFilter(Context context) {
-        this(context, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param next
-     *            The next Restlet.
-     */
-    public FirewallFilter(Context context, Restlet next) {
-        super(context, next);
-        rules = new ArrayList<FirewallRule>();
-    }
-
-    /**
-     * Adds a rule to the firewall.
-     * 
-     * @param rule
-     *            The rule to add.
-     */
-    public void add(FirewallRule rule) {
-        rules.add(rule);
+    public FirewallFilter(Context context, List<FirewallRule> rules) {
+        super(context);
+        this.rules = rules;
     }
 
     /**
@@ -109,6 +80,7 @@ public class FirewallFilter extends Filter {
     @Override
     public int beforeHandle(Request request, Response response) {
         int result = Filter.SKIP;
+        
         for (FirewallRule rule : rules) {
             int value = rule.beforeHandle(request, response);
             if (value != Filter.CONTINUE) {
@@ -116,6 +88,7 @@ public class FirewallFilter extends Filter {
             }
             result = value;
         }
+        
         return result;
     }
 

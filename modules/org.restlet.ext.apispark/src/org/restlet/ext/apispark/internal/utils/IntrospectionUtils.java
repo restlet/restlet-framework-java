@@ -2,10 +2,14 @@ package org.restlet.ext.apispark.internal.utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -21,8 +25,66 @@ import org.restlet.resource.ResourceException;
  */
 public class IntrospectionUtils {
 
+    /** Internal logger. */
+    private static Logger LOGGER = Context.getCurrentLogger();
+
     /**
-     * Indicates if the given velue is either null or empty.
+     * Returns an instance of what must be a subclass of {@link Application}.
+     * Returns null in case of errors.
+     * 
+     * @param className
+     *            The name of the application class.
+     * @return An instance of what must be a subclass of {@link Application}.
+     */
+    public static javax.ws.rs.core.Application getApplication(String className) {
+        javax.ws.rs.core.Application result = null;
+
+        if (className == null) {
+            return result;
+        }
+
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(className);
+            if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
+                result = (javax.ws.rs.core.Application) clazz.getConstructor()
+                        .newInstance();
+            } else {
+                LOGGER.log(Level.SEVERE, className
+                        + " does not seem to be a valid subclass of "
+                        + Application.class.getName() + " class.");
+            }
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "Cannot locate the application class.", e);
+        } catch (InstantiationException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Cannot instantiate the application class.", e);
+        } catch (IllegalAccessException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Cannot instantiate the application class.", e);
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Check that the application class has an empty constructor.",
+                    e);
+        } catch (InvocationTargetException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Cannot instantiate the application class.", e);
+        } catch (NoSuchMethodException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Check that the application class has an empty constructor.",
+                    e);
+        } catch (SecurityException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Cannot instantiate the application class.", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Indicates if the given value is either null or empty.
      * 
      * @param value
      *            The value.

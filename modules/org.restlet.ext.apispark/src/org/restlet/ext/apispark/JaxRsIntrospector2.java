@@ -36,13 +36,11 @@ package org.restlet.ext.apispark;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.ApplicationPath;
@@ -65,7 +63,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -85,15 +82,15 @@ import org.restlet.representation.Variant;
 import org.restlet.routing.Template;
 
 /**
- * Publish the documentation of a Jaxrs-based Application to the APISpark
- * console.
+ * Extract and push the web API documentation of a JAX-RS API-based
+ * {@link javax.ws.rs.core.Application} to the APISpark console.
  * 
  * @author Thierry Boileau
  */
-public class JaxrsIntrospector extends IntrospectionUtils {
+public class JaxRsIntrospector2 {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Context.getCurrentLogger();
+    private static Logger LOGGER = Context.getCurrentLogger();
 
     /**
      * Completes or creates the "Web form" representation handled by a method,
@@ -197,62 +194,6 @@ public class JaxrsIntrospector extends IntrospectionUtils {
     }
 
     /**
-     * Returns an instance of what must be a subclass of {@link Application}.
-     * Returns null in case of errors.
-     * 
-     * @param className
-     *            The name of the application class.
-     * @return An instance of what must be a subclass of {@link Application}.
-     */
-    protected static javax.ws.rs.core.Application getApplication(
-            String className) {
-        javax.ws.rs.core.Application result = null;
-
-        if (className == null) {
-            return result;
-        }
-
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-            if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
-                result = (javax.ws.rs.core.Application) clazz.getConstructor()
-                        .newInstance();
-            } else {
-                LOGGER.log(Level.SEVERE, className
-                        + " does not seem to be a valid subclass of "
-                        + Application.class.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Cannot locate the application class.", e);
-        } catch (InstantiationException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (IllegalAccessException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (IllegalArgumentException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Check that the application class has an empty constructor.",
-                    e);
-        } catch (InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        } catch (NoSuchMethodException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Check that the application class has an empty constructor.",
-                    e);
-        } catch (SecurityException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot instantiate the application class.", e);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
@@ -263,7 +204,7 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      *            The current response.
      * @return An application description.
      */
-    protected static ApplicationInfo getApplicationInfo(
+    private static ApplicationInfo getApplicationInfo(
             javax.ws.rs.core.Application application, Reference baseRef) {
         ApplicationInfo applicationInfo = new ApplicationInfo();
 
@@ -366,33 +307,36 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         }
 
         LOGGER.fine("Check parameters");
-        if (isEmpty(serviceUrl)) {
+        if (IntrospectionUtils.isEmpty(serviceUrl)) {
             serviceUrl = "https://apispark.com/";
         }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";
         }
 
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(appName)) {
+        if (IntrospectionUtils.isEmpty(ulogin)
+                || IntrospectionUtils.isEmpty(upwd)
+                || IntrospectionUtils.isEmpty(appName)) {
             printHelp();
             System.exit(1);
         }
 
         // Validate the application class name
-        javax.ws.rs.core.Application application = getApplication(appName);
+        javax.ws.rs.core.Application application = IntrospectionUtils
+                .getApplication(appName);
 
         Definition definition = null;
         if (application != null) {
             LOGGER.fine("Instantiate introspector");
-            JaxrsIntrospector i = new JaxrsIntrospector(application);
+            JaxRsIntrospector2 i = new JaxRsIntrospector2(application);
 
             LOGGER.info("Generate documentation");
             definition = i.getDefinition();
         }
 
         if (definition != null) {
-            sendDefinition(definition, definitionId, ulogin, upwd, serviceUrl,
-                    LOGGER);
+            IntrospectionUtils.sendDefinition(definition, definitionId, ulogin,
+                    upwd, serviceUrl, LOGGER);
         } else {
             LOGGER.severe("Please provide a valid application class name.");
         }
@@ -405,35 +349,46 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        printSynopsis(o, JaxrsIntrospector.class, "[options] APPLICATION");
+        IntrospectionUtils.printSynopsis(o, JaxRsIntrospector2.class,
+                "[options] APPLICATION");
         o.println("DESCRIPTION");
-        printSentence(
-                o,
-                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                "the full name of your Restlet application class.");
-        printSentence(
-                o,
-                "If the whole process is successfull, it displays the url of the corresponding documentation.");
+        IntrospectionUtils
+                .printSentence(
+                        o,
+                        "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
+                        "the full name of your Restlet application class.");
+        IntrospectionUtils
+                .printSentence(
+                        o,
+                        "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
-        printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user name.");
-        printOption(o, "-p", "The mandatory APISpark user secret key.");
-        printOption(o, "-s",
-                "The optional APISpark platform URL (by default https://apispark.com).");
-        printOption(o, "-c",
-                "The optional full name of your Restlet Component class.",
-                "This allows to collect some other data, such as the endpoint.");
-        printOption(
-                o,
-                "-d",
-                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
+        IntrospectionUtils.printOption(o, "-h", "Prints this help.");
+        IntrospectionUtils.printOption(o, "-u",
+                "The mandatory APISpark user name.");
+        IntrospectionUtils.printOption(o, "-p",
+                "The mandatory APISpark user secret key.");
+        IntrospectionUtils
+                .printOption(o, "-s",
+                        "The optional APISpark platform URL (by default https://apispark.com).");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "-c",
+                        "The optional full name of your Restlet Component class.",
+                        "This allows to collect some other data, such as the endpoint.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "-d",
+                        "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
         o.println("LOGGING");
-        printSentence(
-                o,
-                "You can get a detailled log of the process using the JDK's API.",
-                "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
-                "Here is the name of the used Logger: "
-                        + JaxrsIntrospector.class.getName());
+        IntrospectionUtils
+                .printSentence(
+                        o,
+                        "You can get a detailled log of the process using the JDK's API.",
+                        "See the official documentation: http://docs.oracle.com/javase/7/docs/technotes/guides/logging/overview.html",
+                        "Here is the name of the used Logger: "
+                                + JaxRsIntrospector2.class.getName());
     }
 
     private static void scan(Annotation[] annotations, Class<?> parameterClass,
@@ -497,7 +452,8 @@ public class JaxrsIntrospector extends IntrospectionUtils {
                 method.getParameters().add(pi);
             } else if (annotation instanceof javax.ws.rs.core.Context) {
                 valueComputed = true;
-                javax.ws.rs.core.Context context = (javax.ws.rs.core.Context) annotation;
+                // javax.ws.rs.core.Context context = (javax.ws.rs.core.Context)
+                // annotation;
                 // TODO scan context annotation.
             }
         }
@@ -617,8 +573,8 @@ public class JaxrsIntrospector extends IntrospectionUtils {
             queryParams.add(queryParam);
         }
 
-        javax.ws.rs.core.Context context = field
-                .getAnnotation(javax.ws.rs.core.Context.class);
+        // javax.ws.rs.core.Context context = field
+        // .getAnnotation(javax.ws.rs.core.Context.class);
         // TODO hanlde context annotation
     }
 
@@ -808,14 +764,14 @@ public class JaxrsIntrospector extends IntrospectionUtils {
         // Context context = method.getAnnotation(Context.class);
     }
 
-    private static void scanAnnotation() {
-        // HttpMethod x
-        // NameBinding x
-    }
+    // private static void scanAnnotation() {
+    // // HttpMethod x
+    // // NameBinding x
+    // }
 
-    private static void scanConstructor() {
-        // Encoded x
-    }
+    // private static void scanConstructor() {
+    // // Encoded x
+    // }
 
     /** The current Web API definition. */
     private Definition definition;
@@ -824,9 +780,9 @@ public class JaxrsIntrospector extends IntrospectionUtils {
      * Constructor.
      * 
      * @param application
-     *            An application to introspect.
+     *            An {@link javax.ws.rs.core.Application} to introspect.
      */
-    public JaxrsIntrospector(javax.ws.rs.core.Application application) {
+    public JaxRsIntrospector2(javax.ws.rs.core.Application application) {
         definition = IntrospectionTranslator.toDefinition(
                 getApplicationInfo(application, null), LOGGER);
 

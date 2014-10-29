@@ -43,7 +43,7 @@ import org.restlet.routing.Filter;
  * 
  * @author Guillaume Blondeau
  */
-public abstract class FirewallRule {
+public abstract class FirewallRule extends Filter {
 
     /**
      * Updates the response, if necessary. It does nothing by default.
