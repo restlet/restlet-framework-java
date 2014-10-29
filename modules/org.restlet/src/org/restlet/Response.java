@@ -44,7 +44,6 @@ import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -148,7 +147,7 @@ public class Response extends Message {
     private volatile Boolean accessControlAllowCredential;
 
     /** The set of headers allowed on the requested resource in a CORS request. */
-    private volatile Set<HeaderName> accessControlAllowHeaders;
+    private volatile Set<String> accessControlAllowHeaders;
 
     /** The set of methods allowed on the requested resource in a CORS request. */
     private volatile Set<Method> accessControlAllowMethods;
@@ -375,14 +374,14 @@ public class Response extends Message {
      *
      * @return The set of requested headers in a CORS request..
      */
-    public Set<HeaderName> getAccessControlAllowHeaders() {
+    public Set<String> getAccessControlAllowHeaders() {
         // Lazy initialization with double-check.
-        Set<HeaderName> a = this.accessControlAllowHeaders;
+        Set<String> a = this.accessControlAllowHeaders;
         if (a == null) {
             synchronized (this) {
                 a = this.accessControlAllowHeaders;
                 if (a == null) {
-                    this.accessControlAllowHeaders = a = new CopyOnWriteArraySet<HeaderName>();
+                    this.accessControlAllowHeaders = a = new CopyOnWriteArraySet<String>();
                 }
             }
         }
@@ -837,7 +836,7 @@ public class Response extends Message {
      *            The set of headers allowed on the requested resource in
      *            a CORS request.
      */
-    public void setAccessControlAllowHeaders(Set<HeaderName> accessControlAllowHeaders) {
+    public void setAccessControlAllowHeaders(Set<String> accessControlAllowHeaders) {
         synchronized (getAccessControlAllowHeaders()) {
             if (accessControlAllowHeaders != this.accessControlAllowHeaders) {
                 this.accessControlAllowHeaders.clear();

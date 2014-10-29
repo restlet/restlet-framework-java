@@ -46,7 +46,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Encoding;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -137,7 +136,7 @@ public class Request extends Message {
     private volatile Reference rootRef;
 
     /** The set of headers requested on the requested resource in a CORS request. */
-    private volatile Set<HeaderName> accessControlRequestHeaders;
+    private volatile Set<String> accessControlRequestHeaders;
 
     /** The set of methods requested on the requested resource in a CORS request. */
     private volatile Set<Method> accessControlRequestMethod;
@@ -604,14 +603,14 @@ public class Request extends Message {
      *
      * @return The set of requested headers in a CORS request..
      */
-    public Set<HeaderName> getAccessControlRequestHeaders() {
+    public Set<String> getAccessControlRequestHeaders() {
         // Lazy initialization with double-check.
-        Set<HeaderName> a = this.accessControlRequestHeaders;
+        Set<String> a = this.accessControlRequestHeaders;
         if (a == null) {
             synchronized (this) {
                 a = this.accessControlRequestHeaders;
                 if (a == null) {
-                    this.accessControlRequestHeaders = a = new CopyOnWriteArraySet<HeaderName>();
+                    this.accessControlRequestHeaders = a = new CopyOnWriteArraySet<String>();
                 }
             }
         }
@@ -964,7 +963,7 @@ public class Request extends Message {
      *            The set of headers requested on the requested resource in
      *            a CORS request.
      */
-    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+    public void setAccessControlRequestHeaders(Set<String> accessControlRequestHeaders) {
         synchronized (getAccessControlRequestHeaders()) {
             if (accessControlRequestHeaders != this.accessControlRequestHeaders) {
                 this.accessControlRequestHeaders.clear();

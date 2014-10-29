@@ -44,7 +44,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
-import org.restlet.data.HeaderName;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -283,7 +282,7 @@ public class WrapperRequest extends Request {
      * @return The access control request headers of the target resource.
      */
     @Override
-    public Set<HeaderName> getAccessControlRequestHeaders() {
+    public Set<String> getAccessControlRequestHeaders() {
         return wrappedRequest.getAccessControlRequestHeaders();
     }
 
@@ -522,7 +521,7 @@ public class WrapperRequest extends Request {
      *              The access control request headers of the target resource.
      */
     @Override
-    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+    public void setAccessControlRequestHeaders(Set<String> accessControlRequestHeaders) {
         super.setAccessControlRequestHeaders(accessControlRequestHeaders);
     }
 

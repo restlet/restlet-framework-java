@@ -4,7 +4,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.routing.Filter;
 
@@ -63,7 +62,7 @@ public class CorsFilter extends Filter {
      * Value of 'Access-Control-Allow-Headers' response header.
      * Used only if {@link #allowOnlyRequestedHeader} is false.
      */
-    public Set<HeaderName> allowHeaders = null;
+    public Set<String> allowHeaders = null;
 
     private CorsResponseHelper corsResponseHelper;
 
@@ -183,12 +182,12 @@ public class CorsFilter extends Filter {
     }
 
     /** Getter for {@link #allowHeaders} */
-    public Set<HeaderName> getAllowHeaders() {
+    public Set<String> getAllowHeaders() {
         return allowHeaders;
     }
 
     /** Setter for {@link #allowHeaders} */
-    public CorsFilter setAllowHeaders(Set<HeaderName> allowHeaders) {
+    public CorsFilter setAllowHeaders(Set<String> allowHeaders) {
         this.allowHeaders = allowHeaders;
         return this;
     }

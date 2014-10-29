@@ -34,17 +34,16 @@
 package org.restlet.engine.header;
 
 import org.restlet.data.Header;
-import org.restlet.data.HeaderName;
 
 import java.io.IOException;
 import java.util.Collection;
 
 /**
- * HeaderName header reader.
+ * String header reader.
  * 
  * @author Manuel Boillod
  */
-public class HeaderNameReader extends HeaderReader<HeaderName> {
+public class StringReader extends HeaderReader<String> {
 
     /**
      * Adds values to the given collection.
@@ -54,8 +53,8 @@ public class HeaderNameReader extends HeaderReader<HeaderName> {
      * @param collection
      *            The collection to update.
      */
-    public static void addValues(Header header, Collection<HeaderName> collection) {
-        new HeaderNameReader(header.getValue()).addValues(collection);
+    public static void addValues(Header header, Collection<String> collection) {
+        new StringReader(header.getValue()).addValues(collection);
     }
 
     /**
@@ -64,13 +63,13 @@ public class HeaderNameReader extends HeaderReader<HeaderName> {
      * @param header
      *            The header to read.
      */
-    public HeaderNameReader(String header) {
+    public StringReader(String header) {
         super(header);
     }
 
     @Override
-    public HeaderName readValue() throws IOException {
-        return new HeaderName(readToken());
+    public String readValue() throws IOException {
+        return readToken();
     }
 
 }

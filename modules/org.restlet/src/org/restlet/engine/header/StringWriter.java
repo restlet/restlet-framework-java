@@ -33,32 +33,29 @@
 
 package org.restlet.engine.header;
 
-import org.restlet.data.HeaderName;
-import org.restlet.data.Method;
-
 import java.util.Set;
 
 /**
- * Header names header writer.
+ * String header writer.
  * 
  * @author Manuel Boillod
  */
-public class HeaderNameWriter extends HeaderWriter<HeaderName> {
+public class StringWriter extends HeaderWriter<String> {
 
     /**
-     * Writes a set of header names with a comma separator.
+     * Writes a set of values with a comma separator.
      * 
-     * @param headerNames
-     *            The set of header names.
-     * @return The formatted set of header names.
+     * @param values
+     *            The set of values.
+     * @return The formatted set of values.
      */
-    public static String write(Set<HeaderName> headerNames) {
-        return new HeaderNameWriter().append(headerNames).toString();
+    public static String write(Set<String> values) {
+        return new StringWriter().append(values).toString();
     }
 
     @Override
-    public HeaderNameWriter append(HeaderName headerName) {
-        return (HeaderNameWriter) appendToken(headerName.getName());
+    public StringWriter append(String value) {
+        return (StringWriter) appendToken(value);
     }
 
 }

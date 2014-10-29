@@ -62,7 +62,7 @@ import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.header.HeaderNameReader;
+import org.restlet.engine.header.StringReader;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.MethodReader;
 import org.restlet.engine.header.PreferenceReader;
@@ -662,7 +662,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         if (!accessControlRequestHeadersAdded) {
             for (String header : getHeaders()
                     .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS, true)) {
-                new HeaderNameReader(header).addValues(result);
+                new StringReader(header).addValues(result);
             }
             accessControlRequestHeadersAdded = true;
         }

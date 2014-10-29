@@ -2,7 +2,6 @@ package org.restlet.engine.cors;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 
 import java.util.Set;
@@ -60,7 +59,7 @@ public class CorsResponseHelper {
      * Value of 'Access-Control-Allow-Headers' response header.
      * Used only if {@link #allowOnlyRequestedHeaders} is false.
      */
-    public Set<HeaderName> allowHeaders = null;
+    public Set<String> allowHeaders = null;
 
     public CorsResponseHelper() {
     }
@@ -121,12 +120,12 @@ public class CorsResponseHelper {
     }
 
     /** Getter for {@link #allowHeaders} */
-    public Set<HeaderName> getAllowHeaders() {
+    public Set<String> getAllowHeaders() {
         return allowHeaders;
     }
 
     /** Setter for {@link #allowHeaders} */
-    public CorsResponseHelper setAllowHeaders(Set<HeaderName> allowHeaders) {
+    public CorsResponseHelper setAllowHeaders(Set<String> allowHeaders) {
         this.allowHeaders = allowHeaders;
         return this;
     }
@@ -192,7 +191,7 @@ public class CorsResponseHelper {
             if (request == null) {
                 throw new RuntimeException("If allowOnlyRequestedHeaders is true, it requires the request parameter");
             }
-            Set<HeaderName> accessControlRequestHeaders = request.getAccessControlRequestHeaders();
+            Set<String> accessControlRequestHeaders = request.getAccessControlRequestHeaders();
             if (!accessControlRequestHeaders.isEmpty()) {
                 response.setAccessControlAllowHeaders(accessControlRequestHeaders);
             }

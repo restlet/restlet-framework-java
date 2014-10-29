@@ -48,7 +48,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Header;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
@@ -59,12 +58,12 @@ import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.header.HeaderNameReader;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.MethodReader;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.header.RecipientInfoReader;
+import org.restlet.engine.header.StringReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -608,12 +607,12 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public Set<HeaderName> getAccessControlRequestHeaders() {
-        Set<HeaderName> result = super.getAccessControlRequestHeaders();
+    public Set<String> getAccessControlRequestHeaders() {
+        Set<String> result = super.getAccessControlRequestHeaders();
         if (!accessControlRequestHeadersAdded) {
             for (String header : getHttpCall().getRequestHeaders()
                     .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS, true)) {
-                new HeaderNameReader(header).addValues(result);
+                new StringReader(header).addValues(result);
             }
             accessControlRequestHeadersAdded = true;
         }
@@ -664,7 +663,7 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+    public void setAccessControlRequestHeaders(Set<String> accessControlRequestHeaders) {
         super.setAccessControlRequestHeaders(accessControlRequestHeaders);
         this.accessControlRequestHeadersAdded = true;
     }

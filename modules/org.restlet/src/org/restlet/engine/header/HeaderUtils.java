@@ -469,7 +469,7 @@ public class HeaderUtils {
 
         if (request.getAccessControlRequestHeaders() != null) {
             addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
-                    HeaderNameWriter.write(request.getAccessControlRequestHeaders()),
+                    StringWriter.write(request.getAccessControlRequestHeaders()),
                     headers);
         }
 
@@ -617,7 +617,7 @@ public class HeaderUtils {
 
         if (response.getAccessControlAllowHeaders() != null) {
             addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
-                    HeaderNameWriter.write(response.getAccessControlAllowHeaders()),
+                    StringWriter.write(response.getAccessControlAllowHeaders()),
                     headers);
         }
         if (response.getAccessControlAllowOrigin() != null) {
@@ -814,7 +814,7 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL)) {
                     response.setAccessControlAllowCredential(Boolean.parseBoolean(header.getValue()));
-                    HeaderNameReader.addValues(header, response.getAccessControlAllowHeaders());
+                    StringReader.addValues(header, response.getAccessControlAllowHeaders());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN)) {
                     response.setAccessControlAllowOrigin(header.getValue());
