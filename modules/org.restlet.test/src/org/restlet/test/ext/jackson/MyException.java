@@ -1,5 +1,8 @@
 package org.restlet.test.ext.jackson;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({ "cause", "localizedMessage", "suppressed" })
 public class MyException extends Exception {
 
     private static final long serialVersionUID = 1L;
@@ -13,13 +16,13 @@ public class MyException extends Exception {
 
     public MyException(Customer customer, String errorCode) {
         this(customer, errorCode, "Customer exception detected", null, true,
-                false);
+                true);
     }
 
     public MyException(Customer customer, String errorCode, String message,
             Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
-        super();
+        super(message, cause, enableSuppression, writableStackTrace);
         this.customer = customer;
         this.errorCode = errorCode;
     }

@@ -94,13 +94,16 @@ public class JacksonTestCase extends RestletTestCase {
 
     public void testException() throws Exception {
         Customer customer = createCustomer();
+
         MyException me = new MyException(customer, "CUST-1234");
+
+        // Unless we are in debug mode, hide those properties
         me.setStackTrace(new StackTraceElement[0]);
-        me.initCause(null);
 
         JacksonRepresentation<MyException> rep = new JacksonRepresentation<MyException>(
                 MediaType.APPLICATION_JSON, me);
         String text = rep.getText();
+        System.out.println(text);
 
         rep = new JacksonRepresentation<MyException>(new StringRepresentation(
                 text, rep.getMediaType()), MyException.class);
