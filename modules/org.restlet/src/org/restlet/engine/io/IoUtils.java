@@ -557,7 +557,6 @@ public class IoUtils {
      *            The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
-    @SuppressWarnings("resource")
     public static InputStream getStream(ReadableByteChannel readableChannel) {
         InputStream result = null;
 
@@ -667,7 +666,6 @@ public class IoUtils {
      *            The writable byte channel.
      * @return An output stream based on a given writable byte channel.
      */
-    @SuppressWarnings("resource")
     public static OutputStream getStream(WritableByteChannel writableChannel) {
         OutputStream result = null;
 

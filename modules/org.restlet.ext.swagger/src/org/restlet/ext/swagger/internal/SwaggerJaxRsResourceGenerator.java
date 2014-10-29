@@ -260,6 +260,7 @@ public class SwaggerJaxRsResourceGenerator {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void processMethod(Method method, Class httpMethodClass) {
         String methodPath = resourcePath;
         Path pathAnnotation = method.getAnnotation(Path.class);

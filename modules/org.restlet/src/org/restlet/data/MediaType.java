@@ -33,9 +33,12 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.header.HeaderWriter;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
@@ -808,22 +811,28 @@ public final class MediaType extends Metadata {
 
         // Merge parameters taken from the name and the method argument.
         if (parameters != null && !parameters.isEmpty()) {
-            if (params == null) {
-                params = new StringBuilder();
-            }
-            HeaderWriter<Parameter> hw = new HeaderWriter<Parameter>() {
-                @Override
-                public HeaderWriter<Parameter> append(Parameter value) {
-                    return appendExtension(value);
+            try {
+                if (params == null) {
+                    params = new StringBuilder();
                 }
-            };
-            for (int i = 0; i < parameters.size(); i++) {
-                Parameter p = parameters.get(i);
-                hw.appendParameterSeparator();
-                hw.appendSpace();
-                hw.append(p);
+                HeaderWriter<Parameter> hw = new HeaderWriter<Parameter>() {
+                    @Override
+                    public HeaderWriter<Parameter> append(Parameter value) {
+                        return appendExtension(value);
+                    }
+                };
+                for (int i = 0; i < parameters.size(); i++) {
+                    Parameter p = parameters.get(i);
+                    hw.appendParameterSeparator();
+                    hw.appendSpace();
+                    hw.append(p);
+                }
+                params.append(hw.toString());
+                hw.close();
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.INFO,
+                        "Unable to parse the media type parameter", e);
             }
-            params.append(hw.toString());
         }
 
         return (params == null) ? mainType + '/' + subType : mainType + '/'
