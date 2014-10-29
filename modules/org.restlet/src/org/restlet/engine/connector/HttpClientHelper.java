@@ -205,22 +205,6 @@ public class HttpClientHelper extends
     }
 
     /**
-     * Returns the connection timeout. Defaults to 15000.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "15000"));
-        }
-
-        return result;
-    }
-
-    /**
      * Indicates if this URL is being examined in a context in which it makes
      * sense to allow user interactions such as popping up an authentication
      * dialog.
