@@ -46,6 +46,7 @@ import java.util.Set;
  */
 public class SetUtils {
 
+    // [ifndef gwt] method
     /**
      * Returns a new {@link java.util.HashSet} with the given elements
      * @param elements
