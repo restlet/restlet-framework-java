@@ -372,7 +372,7 @@ public class Response extends Message {
      * Note that when used with HTTP connectors, this property maps to the
      * "Access-Control-Allow-Headers" header.
      *
-     * @return The set of requested headers in a CORS request..
+     * @return The set of allowed headers in a CORS request..
      */
     public Set<String> getAccessControlAllowHeaders() {
         // Lazy initialization with double-check.

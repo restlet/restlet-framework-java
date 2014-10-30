@@ -110,7 +110,7 @@ public class CorsFilter extends Filter {
     /**
      * Returns a lazy-initialized instance of {@link org.restlet.engine.cors.CorsResponseHelper}.
      */
-    private CorsResponseHelper getCorsResponseHelper() {
+    protected CorsResponseHelper getCorsResponseHelper() {
         if (corsResponseHelper == null) {
             corsResponseHelper = new CorsResponseHelper()
                     .setAllowCredentials(allowCredentials)
