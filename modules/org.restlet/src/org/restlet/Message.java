@@ -278,7 +278,7 @@ public abstract class Message {
             // [ifndef gwt] instruction
             headers = new Series<Header>(Header.class);
             // [ifdef gwt] instruction uncomment
-            // headers = new org.restlet.client.engine.util.HeaderSeries();
+            // headers = new org.restlet.engine.util.HeaderSeries();
             getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         }
         return headers;
