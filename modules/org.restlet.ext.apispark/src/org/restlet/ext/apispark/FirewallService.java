@@ -67,10 +67,10 @@ public class FirewallService extends Service {
     private List<FirewallRule> rules;
 
     /**
-     * Constructor. Disables the firewall by default.
+     * Constructor. Enables the firewall by default.
      */
     public FirewallService() {
-        this(false);
+        this(true);
     }
 
     /**
