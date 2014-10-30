@@ -34,11 +34,15 @@
 package org.restlet.test.resource;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.restlet.Application;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StatusRepresentation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
 
@@ -59,11 +63,13 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         Engine.getInstance().getRegisteredConverters()
                 .add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
-        Finder finder = new Finder();
-        finder.setTargetClass(MyServerResource20.class);
+
+        //Use Application because we need StatusService, ConverterService, ...
+        Application application = new Application();
+        application.setInboundRoot(MyServerResource20.class);
 
         this.clientResource = new ClientResource("http://local");
-        this.clientResource.setNext(finder);
+        this.clientResource.setNext(application);
         this.myResource = clientResource.wrap(MyResource20.class);
     }
 
@@ -77,9 +83,39 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
     public void testGet() throws IOException, ResourceException {
         try {
             myResource.represent();
-        } catch (MyException e) {
-            assertNotNull(e.getDate());
+            fail("should fail");
+        } catch (MyException01 e) {
+            fail("exception should be catch by client resource");
+        } catch (ResourceException e) {
+            assertEquals(400, e.getStatus().getCode());
+            Representation responseEntity = clientResource.getResponseEntity();
+            if (responseEntity instanceof JacksonRepresentation) {
+                assertTrue(JacksonRepresentation.class.isAssignableFrom(responseEntity.getClass()));
+                JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
+                Object entity = jacksonRepresentation.getObject();
+                assertTrue(StatusRepresentation.class.isAssignableFrom(entity.getClass()));
+                StatusRepresentation statusRepresentation = (StatusRepresentation) entity;
+                assertEquals(400, statusRepresentation.getCode());
+            }
         }
     }
 
+
+    public void testGetAndSerializeException() throws IOException, ResourceException {
+        try {
+            myResource.representAndSerializeException();
+            fail("should fail");
+        } catch (MyException02 e) {
+            fail("exception should be catch by client resource");
+        } catch (ResourceException e) {
+            assertEquals(400, e.getStatus().getCode());
+            Representation responseEntity = clientResource.getResponseEntity();
+            assertTrue(JacksonRepresentation.class.isAssignableFrom(responseEntity.getClass()));
+            JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
+            Object entity = jacksonRepresentation.getObject();
+            assertTrue(Map.class.isAssignableFrom(entity.getClass()));
+            Map<String, Object> map = (Map<String, Object>) entity;
+            assertEquals("my custom error", map.get("customProperty"));
+        }
+    }
 }

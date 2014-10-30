@@ -46,24 +46,24 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     /** The status parsed from the annotation value. */
     private final Status status;
 
+    /** The serializeProperties indicator parsed from the annotation value. */
+    private final boolean serializeProperties;
+
     /**
      * Constructor.
-     * 
-     * @param javaClass
+     *  @param javaClass
      *            The class or interface that hosts the annotated Java method.
-     * @param value
-     *            The annotation value.
+     * @param code
+     *            The status code
+     * @param serializeProperties
+     *            The indicator for serialize properties attribute.
      */
-    public StatusAnnotationInfo(Class<?> javaClass, String value) {
-        super(javaClass, null, value);
+    public StatusAnnotationInfo(Class<?> javaClass, int code, boolean serializeProperties) {
+        super(javaClass, null, Integer.toString(code));
 
         // Parse the main components of the annotation value
-        if ((value != null) && !value.equals("")) {
-            Integer code = Integer.parseInt(value);
-            this.status = Status.valueOf(code);
-        } else {
-            this.status = Status.SERVER_ERROR_INTERNAL;
-        }
+        this.status = Status.valueOf(code);
+        this.serializeProperties = serializeProperties;
     }
 
     /**
@@ -101,10 +101,20 @@ public class StatusAnnotationInfo extends AnnotationInfo {
         return status;
     }
 
+    /**
+     * Returns the serializeProperties indicator parsed from the annotation value.
+     *
+     * @return the serializeProperties indicator parsed from the annotation value.
+     */
+    public boolean isSerializeProperties() {
+        return serializeProperties;
+    }
+
     @Override
     public String toString() {
         return "StatusAnnotationInfo [javaMethod: " + javaMethod
                 + ", javaClass: " + getJavaClass() + ", status: " + status
+                + ", serializeProperties: " + serializeProperties
                 + "]";
     }
 
