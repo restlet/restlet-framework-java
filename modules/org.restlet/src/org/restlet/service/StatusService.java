@@ -315,33 +315,34 @@ public class StatusService extends Service {
      * @return The representation of the given status.
      */
     public Status toStatus(Throwable throwable, Request request,
-            Response response) {
-        Status result = null;
+                           Response response) {
+        Status result;
 
+        Status defaultStatus = Status.SERVER_ERROR_INTERNAL;
+        Throwable t = throwable;
+
+        //If throwable is a ResourceException, use its status and the cause.
         if (throwable instanceof ResourceException) {
-            ResourceException re = (ResourceException) throwable;
-
-            if (re.getCause() != null && re.getCause() != throwable) {
-                // What is most interesting is the embedded cause
-                result = toStatus(re.getCause(), request, response);
-            } else {
-                result = re.getStatus();
+            defaultStatus = ((ResourceException) throwable).getStatus();
+            if (throwable.getCause() != null && throwable.getCause() != throwable) {
+                t = throwable.getCause();
             }
-        } else {
-            // [ifndef gwt]
-            org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
-                    .getInstance()
-                    .getStatusAnnotationInfo(throwable.getClass());
-
-            if (sai != null) {
-                result = new Status(sai.getStatus(), throwable);
-            } else {
-                result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
-            }
-            // [enddef]
-            // [ifdef gwt] instruction uncomment
-            // result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
         }
+
+        // [ifndef gwt]
+        // look for Status annotation
+        org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                .getInstance()
+                .getStatusAnnotationInfo(t.getClass());
+
+        if (sai != null) {
+            result = new Status(sai.getStatus(), t);
+        } else {
+            result = new Status(defaultStatus, t);
+        }
+        // [enddef]
+        // [ifdef gwt] instruction uncomment
+        // result = new Status(defaultStatus, t);
 
         return result;
     }
