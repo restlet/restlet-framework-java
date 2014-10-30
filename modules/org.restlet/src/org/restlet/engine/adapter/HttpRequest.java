@@ -620,12 +620,14 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public Set<Method> getAccessControlRequestMethod() {
-        Set<Method> result = super.getAccessControlRequestMethod();
+    public Method getAccessControlRequestMethod() {
+        Method result = super.getAccessControlRequestMethod();
         if (!accessControlRequestMethodAdded) {
-            for (String header : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD, true)) {
-                new MethodReader(header).addValues(result);
+            String header = getHttpCall().getRequestHeaders()
+                    .getFirstValue(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD, true);
+            if (header != null) {
+                result = Method.valueOf(header);
+                super.setAccessControlRequestMethod(result);
             }
             accessControlRequestMethodAdded = true;
         }
@@ -669,7 +671,7 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
         super.setAccessControlRequestMethod(accessControlRequestMethod);
         this.accessControlRequestMethodAdded = true;
     }

@@ -475,7 +475,7 @@ public class HeaderUtils {
 
         if (request.getAccessControlRequestMethod() != null) {
             addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
-                    MethodWriter.write(request.getAccessControlRequestMethod()),
+                    request.getAccessControlRequestMethod().getName(),
                     headers);
         }
 
@@ -821,6 +821,9 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS)) {
                     MethodReader.addValues(header, response.getAccessControlAllowMethods());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS)) {
+                    StringReader.addValues(header, response.getAccessControlExposeHeaders());
                 }
             }
         }

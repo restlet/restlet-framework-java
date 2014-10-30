@@ -5,6 +5,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Method;
+import org.restlet.engine.util.SetUtils;
 import org.restlet.routing.Filter;
 
 import java.util.Set;
@@ -18,7 +19,7 @@ import java.util.Set;
  * <pre>
  * Router router = new Router(getContext());
  * CorsFilter corsFilter = new CorsFilter(getContext(), router)
- *  .setAllowMethods("GET,POST")
+ *  .setAllowMethods(new HashSet(Arrays.asList("GET, POST")))
  *  .setAllowCredentials(false);
  * </pre>
  *
@@ -28,15 +29,15 @@ public class CorsFilter extends Filter {
 
     /**
      * If true, add 'Access-Control-Allow-Credentials' header.
-     * Default is true.
+     * Default is false.
      */
-    public boolean allowCredentials = true;
+    public boolean allowCredentials = false;
 
     /**
      * Value of 'Access-Control-Allow-Origin' header.
      * Default is '*'.
      */
-    public String allowOrigin = "*";
+    public Set<String> allowOrigins = SetUtils.newHashSet("*");
 
     /**
      * If true, use value of 'Access-Control-Request-Method' request header
@@ -63,6 +64,11 @@ public class CorsFilter extends Filter {
      * Used only if {@link #allowOnlyRequestedHeader} is false.
      */
     public Set<String> allowHeaders = null;
+
+    /**
+     * Value of 'Access-Control-Expose-Headers' response header.
+     */
+    public Set<String> exposeHeaders = null;
 
     private CorsResponseHelper corsResponseHelper;
 
@@ -104,7 +110,7 @@ public class CorsFilter extends Filter {
     @Override
     protected void afterHandle(Request request, Response response) {
         CorsResponseHelper corsResponseHelper = getCorsResponseHelper();
-        corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
+        corsResponseHelper.addCorsResponseHeaders(request, response);
     }
 
     /**
@@ -114,12 +120,13 @@ public class CorsFilter extends Filter {
         if (corsResponseHelper == null) {
             corsResponseHelper = new CorsResponseHelper()
                     .setAllowCredentials(allowCredentials)
-                    .setAllowOrigin(allowOrigin)
+                    .setAllowOrigins(allowOrigins)
                     .setAllowOnlyRequestedMethod(allowOnlyRequestedMethod)
                     .setAllowMethods(allowMethods)
                     .setAllowOnlyRequestedMethod(allowOnlyRequestedMethod)
                     .setAllowOnlyRequestedHeaders(allowOnlyRequestedHeader)
-                    .setAllowHeaders(allowHeaders);
+                    .setAllowHeaders(allowHeaders)
+                    .setExposeHeaders(exposeHeaders);
         }
         return corsResponseHelper;
     }
@@ -137,14 +144,14 @@ public class CorsFilter extends Filter {
         return this;
     }
 
-    /** Getter for {@link #allowOrigin} */
-    public String getAllowOrigin() {
-        return allowOrigin;
+    /** Getter for {@link #allowOrigins} */
+    public Set<String> getAllowOrigins() {
+        return allowOrigins;
     }
 
-    /** Setter for {@link #allowOrigin} */
-    public CorsFilter setAllowOrigin(String allowOrigin) {
-        this.allowOrigin = allowOrigin;
+    /** Setter for {@link #allowOrigins} */
+    public CorsFilter setAllowOrigins(Set<String> allowOrigins) {
+        this.allowOrigins = allowOrigins;
         return this;
     }
 
@@ -189,6 +196,17 @@ public class CorsFilter extends Filter {
     /** Setter for {@link #allowHeaders} */
     public CorsFilter setAllowHeaders(Set<String> allowHeaders) {
         this.allowHeaders = allowHeaders;
+        return this;
+    }
+
+    /** Getter for {@link #exposeHeaders} */
+    public Set<String> getExposeHeaders() {
+        return exposeHeaders;
+    }
+
+    /** Setter for {@link #exposeHeaders} */
+    public CorsFilter setExposeHeaders(Set<String> exposeHeaders) {
+        this.exposeHeaders = exposeHeaders;
         return this;
     }
 }

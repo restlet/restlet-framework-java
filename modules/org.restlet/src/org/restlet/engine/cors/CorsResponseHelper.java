@@ -3,6 +3,7 @@ package org.restlet.engine.cors;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
+import org.restlet.engine.util.SetUtils;
 
 import java.util.Set;
 
@@ -18,22 +19,16 @@ import java.util.Set;
 public class CorsResponseHelper {
 
     /**
-     * Returns a default instance of {@link #CorsResponseHelper()}.
-     * This instance is shared across whole application, so do not update its configuration.
-     */
-    public static final CorsResponseHelper DEFAULT = new CorsResponseHelper();
-
-    /**
      * If true, add 'Access-Control-Allow-Credentials' header.
-     * Default is true.
+     * Default is false.
      */
-    public boolean allowCredentials = true;
+    public boolean allowCredentials = false;
 
     /**
      * Value of 'Access-Control-Allow-Origin' header.
      * Default is '*'.
      */
-    public String allowOrigin = "*";
+    public Set<String> allowOrigins = SetUtils.newHashSet("*");
 
     /**
      * If true, use value of 'Access-Control-Request-Method' request header
@@ -61,6 +56,11 @@ public class CorsResponseHelper {
      */
     public Set<String> allowHeaders = null;
 
+    /**
+     * Value of 'Access-Control-Expose-Headers' response header.
+     */
+    public Set<String> exposeHeaders = null;
+
     public CorsResponseHelper() {
     }
 
@@ -75,14 +75,14 @@ public class CorsResponseHelper {
         return this;
     }
 
-    /** Getter for {@link #allowOrigin} */
-    public String getAllowOrigin() {
-        return allowOrigin;
+    /** Getter for {@link #allowOrigins} */
+    public Set<String> getAllowOrigins() {
+        return allowOrigins;
     }
 
-    /** Setter for {@link #allowOrigin} */
-    public CorsResponseHelper setAllowOrigin(String allowOrigin) {
-        this.allowOrigin = allowOrigin;
+    /** Setter for {@link #allowOrigins} */
+    public CorsResponseHelper setAllowOrigins(Set<String> allowOrigins) {
+        this.allowOrigins = allowOrigins;
         return this;
     }
 
@@ -130,28 +130,15 @@ public class CorsResponseHelper {
         return this;
     }
 
-    /**
-     * Add CORS headers to response if request has header 'Origin'.
-     *
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response
-     */
-    public void addCorsResponseHeaderIfCorsRequest(Request request, Response response) {
-        if (isCorsRequest(request)) {
-            addCorsResponseHeaders(request, response);
-        }
+    /** Getter for {@link #exposeHeaders} */
+    public Set<String> getExposeHeaders() {
+        return exposeHeaders;
     }
 
-    /**
-     * Test if request is a CORS request, ie if request has header 'Origin'.
-     *
-     * @param request
-     *            The request to handle.
-     */
-    public boolean isCorsRequest(Request request) {
-        return request.getHeaders().getValues("Origin") != null;
+    /** Setter for {@link #exposeHeaders} */
+    public CorsResponseHelper setExposeHeaders(Set<String> exposeHeaders) {
+        this.exposeHeaders = exposeHeaders;
+        return this;
     }
 
     /**
@@ -163,42 +150,97 @@ public class CorsResponseHelper {
      *            The response
      */
     public void addCorsResponseHeaders(Request request, Response response) {
-        // Header 'Access-Control-Allow-Origin'
-        response.setAccessControlAllowOrigin(allowOrigin);
+
+        String origin = request.getHeaders().getFirstValue("Origin", true);
+
+        if (origin == null) {
+            // Not a CORS request
+            return;
+        }
+
+        if (!allowOrigins.contains("*") && !allowOrigins.contains(origin)) {
+            // Origin not allowed
+            return;
+        }
+
+        boolean isPreflightRequest = Method.OPTIONS.equals(request.getMethod());
+
+        if (isPreflightRequest) {
+
+            Method accessControlRequestMethod = request.getAccessControlRequestMethod();
+            if (accessControlRequestMethod == null) {
+                // Requested Method is required
+                return;
+            }
+
+            Method requestedMethod = request.getAccessControlRequestMethod();
+            if (requestedMethod == null) {
+                return;
+            }
+
+            if (!allowOnlyRequestedMethod &&
+                    (allowMethods == null || !allowMethods.contains(requestedMethod))) {
+                //Method not allowed
+                return;
+            }
+
+            Set<String> requestedHeaders = request.getAccessControlRequestHeaders();
+            if (requestedHeaders == null) {
+                requestedHeaders = SetUtils.newHashSet();
+            }
+
+            if (!allowOnlyRequestedHeaders &&
+                    (allowHeaders == null || !isAllHeadersAllowed(allowHeaders, requestedHeaders))){
+                //Headers not allowed
+                return;
+            }
+
+            // Header 'Access-Control-Allow-Methods'
+            response.setAccessControlAllowMethods(SetUtils.newHashSet(requestedMethod));
+
+            // Header 'Access-Control-Allow-Headers'
+            response.setAccessControlAllowHeaders(requestedHeaders);
+        } else {
+            //simple request
+
+            // Header 'Access-Control-Expose-Headers'
+            if (exposeHeaders != null && !exposeHeaders.isEmpty()) {
+                response.setAccessControlExposeHeaders(exposeHeaders);
+            }
+        }
 
         // Header 'Access-Control-Allow-Credentials'
         if (allowCredentials) {
             response.setAccessControlAllowCredential(true);
         }
 
-        // Header 'Access-Control-Allow-Methods'
-        if (allowOnlyRequestedMethod) {
-            if (request == null) {
-                throw new RuntimeException("If allowOnlyRequestedMethod is true, it requires the request parameter");
-            }
-            Set<Method> accessControlRequestMethods = request.getAccessControlRequestMethod();
-            if (!accessControlRequestMethods.isEmpty()) {
-                response.setAccessControlAllowMethods(accessControlRequestMethods);
-            }
-        } else {
-            if (allowMethods != null) {
-                response.setAccessControlAllowMethods(allowMethods);
-            }
-        }
-
-        // Header 'Access-Control-Allow-Headers'
-        if (allowOnlyRequestedHeaders) {
-            if (request == null) {
-                throw new RuntimeException("If allowOnlyRequestedHeaders is true, it requires the request parameter");
-            }
-            Set<String> accessControlRequestHeaders = request.getAccessControlRequestHeaders();
-            if (!accessControlRequestHeaders.isEmpty()) {
-                response.setAccessControlAllowHeaders(accessControlRequestHeaders);
-            }
-        } else {
-            if (allowHeaders != null) {
-                response.setAccessControlAllowHeaders(allowHeaders);
-            }
-        }
+        // Header 'Access-Control-Allow-Origin'
+        response.setAccessControlAllowOrigin(origin);
     }
+
+    /**
+     * Returns true if all requested headers are allowed (case-insensitive)
+     * @param allowHeaders
+     *      The allowed headers
+     * @param requestedHeaders
+     *      The requested headers
+     * @return True if all requested headers are allowed (case-insensitive)
+     */
+    private boolean isAllHeadersAllowed(Set<String> allowHeaders, Set<String> requestedHeaders) {
+        for (String requestedHeader : requestedHeaders) {
+            boolean headerAllowed = false;
+            for (String allowHeader : allowHeaders) {
+                if (allowHeader.equalsIgnoreCase(requestedHeader)) {
+                    headerAllowed = true;
+                    break;
+                }
+            }
+            if (!headerAllowed) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }

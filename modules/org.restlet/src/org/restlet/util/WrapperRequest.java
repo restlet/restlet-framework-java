@@ -292,7 +292,7 @@ public class WrapperRequest extends Request {
      * @return The access control request method of the target resource.
      */
     @Override
-    public Set<Method> getAccessControlRequestMethod() {
+    public Method getAccessControlRequestMethod() {
         return wrappedRequest.getAccessControlRequestMethod();
     }
 
@@ -532,7 +532,7 @@ public class WrapperRequest extends Request {
      *              The access control request method of the target resource.
      */
     @Override
-    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
         super.setAccessControlRequestMethod(accessControlRequestMethod);
     }
 

@@ -138,8 +138,8 @@ public class Request extends Message {
     /** The set of headers requested on the requested resource in a CORS request. */
     private volatile Set<String> accessControlRequestHeaders;
 
-    /** The set of methods requested on the requested resource in a CORS request. */
-    private volatile Set<Method> accessControlRequestMethod;
+    /** The method requested on the requested resource in a CORS request. */
+    private volatile Method accessControlRequestMethod;
 
     /**
      * Constructor.
@@ -617,26 +617,17 @@ public class Request extends Message {
         return a;    }
 
     /**
-     * Returns the modifiable set of methods requested on the requested resource.
+     * Returns the method requested on the requested resource.
      *  in a CORS request.
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Access-Control-Request-Method" header.
      *
-     * @return The set of requested methods in a CORS request..
+     * @return The requested method in a CORS request..
      */
-    public Set<Method> getAccessControlRequestMethod() {
-        // Lazy initialization with double-check.
-        Set<Method> a = this.accessControlRequestMethod;
-        if (a == null) {
-            synchronized (this) {
-                a = this.accessControlRequestMethod;
-                if (a == null) {
-                    this.accessControlRequestMethod = a = new CopyOnWriteArraySet<Method>();
-                }
-            }
-        }
-        return a;    }
+    public Method getAccessControlRequestMethod() {
+        return this.accessControlRequestMethod;
+    }
 
     /**
      * Indicates if the request is asynchronous. The test consist in verifying
@@ -976,26 +967,19 @@ public class Request extends Message {
 
 
     /**
-     * Sets the set of methods requested on the requested resource
+     * Sets the method requested on the requested resource
      * in a CORS request.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Access-Control-Allow-Methods" header.
      *
      * @param accessControlRequestMethod
-     *            The set of methods requested on the requested resource in
+     *            The method requested on the requested resource in
      *            a CORS request.
      */
-    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
-        synchronized (getAccessControlRequestMethod()) {
-            if (accessControlRequestMethod != this.accessControlRequestMethod) {
-                this.accessControlRequestMethod.clear();
-
-                if (accessControlRequestMethod != null) {
-                    this.accessControlRequestMethod.addAll(accessControlRequestMethod);
-                }
-            }
-        }    }
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
+        this.accessControlRequestMethod = accessControlRequestMethod;
+    }
 
     /**
      * Displays a synthesis of the request like an HTTP request line.

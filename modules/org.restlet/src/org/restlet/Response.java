@@ -155,6 +155,9 @@ public class Response extends Message {
     /** The origin allowed on the requested resource in a CORS request. */
     private volatile String accessControlAllowOrigin;
 
+    /** The set of headers exposed on the requested resource in a CORS request. */
+    private volatile Set<String> accessControlExposeHeaders;
+
     /**
      * Constructor.
      * 
@@ -167,6 +170,7 @@ public class Response extends Message {
         this.accessControlAllowHeaders = null;
         this.accessControlAllowMethods = null;
         this.accessControlAllowOrigin = null;
+        this.accessControlExposeHeaders = null;
         this.allowedMethods = null;
         this.autoCommitting = true;
         this.challengeRequests = null;
@@ -382,6 +386,28 @@ public class Response extends Message {
                 a = this.accessControlAllowHeaders;
                 if (a == null) {
                     this.accessControlAllowHeaders = a = new CopyOnWriteArraySet<String>();
+                }
+            }
+        }
+        return a;
+    }
+    /**
+     * Returns the modifiable set of headers exposed on the requested resource.
+     *  in a CORS request.
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Expose-Headers" header.
+     *
+     * @return The set of exposed headers in a CORS request..
+     */
+    public Set<String> getAccessControlExposeHeaders() {
+        // Lazy initialization with double-check.
+        Set<String> a = this.accessControlExposeHeaders;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlExposeHeaders;
+                if (a == null) {
+                    this.accessControlExposeHeaders = a = new CopyOnWriteArraySet<String>();
                 }
             }
         }
@@ -843,6 +869,29 @@ public class Response extends Message {
 
                 if (accessControlAllowHeaders != null) {
                     this.accessControlAllowHeaders.addAll(accessControlAllowHeaders);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the set of headers exposed on the requested resource in
+     * a CORS request.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Expose-Headers" header.
+     *
+     * @param accessControlExposeHeaders
+     *            The set of headers exposed on the requested resource in
+     *            a CORS request.
+     */
+    public void setAccessControlExposeHeaders(Set<String> accessControlExposeHeaders) {
+        synchronized (getAccessControlAllowHeaders()) {
+            if (accessControlExposeHeaders != this.accessControlExposeHeaders) {
+                this.accessControlExposeHeaders.clear();
+
+                if (accessControlExposeHeaders != null) {
+                    this.accessControlExposeHeaders.addAll(accessControlExposeHeaders);
                 }
             }
         }
