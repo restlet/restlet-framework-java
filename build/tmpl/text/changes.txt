@@ -6,10 +6,12 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
       - Fixed potential NPE in odata extension when schema ComplexType in a 
-        document does not declare a schema attribute. Issue #932.
+        document does not declare a schema attribute (issue #932).
       - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
         Issue #931. Reported and contributed by Tal Liron.
-      - The Restlet internal connector only serves from one thread. #937
+      - The Restlet internal connector only serves from one thread (issue #937).
+      - Securing JaxRepresentation by default (issue #785).
+        Reported by Jim Trainor.
 
     - Enhancements
       - Added targetRef support to templates, allow reference variables to 
