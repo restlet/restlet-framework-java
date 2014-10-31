@@ -12,6 +12,8 @@ Changes log
       - The Restlet internal connector only serves from one thread (issue #937).
       - Securing JaxRepresentation by default (issue #785).
         Reported by Jim Trainor.
+      - OData Edm.DateTime properties are sometimes parsed as null (issue #946).
+        Reported and contributed by Emmanuel Liossis.
 
     - Enhancements
       - Added targetRef support to templates, allow reference variables to 
