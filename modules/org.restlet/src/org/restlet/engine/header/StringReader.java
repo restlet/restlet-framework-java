@@ -33,10 +33,10 @@
 
 package org.restlet.engine.header;
 
-import org.restlet.data.Header;
-
 import java.io.IOException;
 import java.util.Collection;
+
+import org.restlet.data.Header;
 
 /**
  * String header reader.
@@ -47,7 +47,7 @@ public class StringReader extends HeaderReader<String> {
 
     /**
      * Adds values to the given collection.
-     *
+     * 
      * @param header
      *            The header to read.
      * @param collection
@@ -59,7 +59,7 @@ public class StringReader extends HeaderReader<String> {
 
     /**
      * Constructor.
-     *
+     * 
      * @param header
      *            The header to read.
      */

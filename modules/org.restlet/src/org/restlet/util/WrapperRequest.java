@@ -275,10 +275,9 @@ public class WrapperRequest extends Request {
         return this.wrappedRequest;
     }
 
-
     /**
      * Returns the access control request headers of the target resource.
-     *
+     * 
      * @return The access control request headers of the target resource.
      */
     @Override
@@ -288,7 +287,7 @@ public class WrapperRequest extends Request {
 
     /**
      * Returns the access control request method of the target resource.
-     *
+     * 
      * @return The access control request method of the target resource.
      */
     @Override
@@ -516,20 +515,21 @@ public class WrapperRequest extends Request {
 
     /**
      * Sets the access control request headers of the target resource.
-     *
+     * 
      * @param accessControlRequestHeaders
-     *              The access control request headers of the target resource.
+     *            The access control request headers of the target resource.
      */
     @Override
-    public void setAccessControlRequestHeaders(Set<String> accessControlRequestHeaders) {
+    public void setAccessControlRequestHeaders(
+            Set<String> accessControlRequestHeaders) {
         super.setAccessControlRequestHeaders(accessControlRequestHeaders);
     }
 
     /**
      * Sets the access control request method of the target resource.
-     *
+     * 
      * @param accessControlRequestMethod
-     *              The access control request method of the target resource.
+     *            The access control request method of the target resource.
      */
     @Override
     public void setAccessControlRequestMethod(Method accessControlRequestMethod) {

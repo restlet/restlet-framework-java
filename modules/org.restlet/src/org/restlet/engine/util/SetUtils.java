@@ -33,14 +33,12 @@
 
 package org.restlet.engine.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
- * Utilities for Set manipulation
+ * Utilities for manipulation of {@link Set}.
  * 
  * @author Manuel Boillod
  */
@@ -49,8 +47,9 @@ public class SetUtils {
     // [ifndef gwt] method
     /**
      * Returns a new {@link java.util.HashSet} with the given elements
+     * 
      * @param elements
-     *      The elements
+     *            The elements
      * @return A new {@link java.util.HashSet} with the given elements
      */
     @SafeVarargs
