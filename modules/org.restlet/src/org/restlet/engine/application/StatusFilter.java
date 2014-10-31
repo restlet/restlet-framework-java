@@ -114,14 +114,14 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Allows filtering after its handling by the target Restlet.
-     * If the status is not set, set {@link org.restlet.data.Status#SUCCESS_OK}
-     * by default.
-     *
+     * Allows filtering after its handling by the target Restlet. If the status
+     * is not set, set {@link org.restlet.data.Status#SUCCESS_OK} by default.
+     * 
      * If this is an error status, try to get a representation of it with
-     * {@link org.restlet.service.StatusService#toStatus(Throwable, org.restlet.Request, org.restlet.Response)}.
-     * If the representation is null, get a default one with
-     * {@link #getDefaultRepresentation(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}.
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, org.restlet.Request, org.restlet.Response)}
+     * . If the representation is null, get a default one with
+     * {@link #getDefaultRepresentation(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}
+     * .
      * 
      * @param request
      *            The request to handle.
@@ -142,15 +142,16 @@ public class StatusFilter extends Filter {
             Representation representation = null;
 
             try {
-                representation = getStatusService().toRepresentation(response.getStatus(),
-                        request, response);
+                representation = getStatusService().toRepresentation(
+                        response.getStatus(), request, response);
             } catch (Exception e) {
                 getLogger().log(Level.WARNING,
                         "Unable to get the custom status representation", e);
             }
 
             if (representation == null) {
-                representation = getDefaultRepresentation(response.getStatus(), request, response);
+                representation = getDefaultRepresentation(response.getStatus(),
+                        request, response);
             }
             response.setEntity(representation);
         }
@@ -158,7 +159,8 @@ public class StatusFilter extends Filter {
 
     /**
      * Handles the call by distributing it to the next Restlet. If a throwable
-     * is caught, the {@link org.restlet.service.StatusService#toStatus(Throwable, Request, Response)}
+     * is caught, the
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, Request, Response)}
      * method is invoked.
      * 
      * @param request

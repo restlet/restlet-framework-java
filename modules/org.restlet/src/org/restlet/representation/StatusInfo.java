@@ -3,9 +3,9 @@ package org.restlet.representation;
 import org.restlet.data.Status;
 
 /**
- *
+ * 
  * Representation of a {@link Status}.
- *
+ * 
  * @author Manuel Boillod
  */
 public class StatusInfo {
@@ -20,12 +20,13 @@ public class StatusInfo {
     String reasonPhrase;
 
     /**
-     *  Constructor
+     * Constructor
      */
     public StatusInfo() {
     }
+
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param code
      *            The specification code.
@@ -34,9 +35,7 @@ public class StatusInfo {
      * @param reasonPhrase
      *            The short reason phrase.
      */
-    public StatusInfo(int code, String description,
-                                String reasonPhrase) {
-        super();
+    public StatusInfo(int code, String description, String reasonPhrase) {
         this.code = code;
         this.description = description;
         this.reasonPhrase = reasonPhrase;
@@ -44,7 +43,7 @@ public class StatusInfo {
 
     /**
      * Constructor.
-     *
+     * 
      * @param status
      *            The represented status.
      */
@@ -52,12 +51,11 @@ public class StatusInfo {
         this.code = status.getCode();
         this.reasonPhrase = status.getReasonPhrase();
         this.description = status.getDescription();
-
     }
 
     /**
      * Returns the code of the status.
-     *
+     * 
      * @return The code of the status.
      */
     public int getCode() {
@@ -66,7 +64,7 @@ public class StatusInfo {
 
     /**
      * Returns the description of the status.
-     *
+     * 
      * @return The description of the status.
      */
     public String getDescription() {
@@ -75,7 +73,7 @@ public class StatusInfo {
 
     /**
      * Returns the short description of the status.
-     *
+     * 
      * @return The short description of the status.
      */
     public String getReasonPhrase() {
@@ -84,7 +82,7 @@ public class StatusInfo {
 
     /**
      * Sets the code of the status.
-     *
+     * 
      * @param code
      *            The code of the status.
      */
@@ -94,7 +92,7 @@ public class StatusInfo {
 
     /**
      * Sets the description of the status.
-     *
+     * 
      * @param code
      *            The description of the status.
      */
@@ -104,7 +102,7 @@ public class StatusInfo {
 
     /**
      * Sets the short description of the status.
-     *
+     * 
      * @param code
      *            The short description of the status.
      */

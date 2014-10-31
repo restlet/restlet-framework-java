@@ -78,8 +78,8 @@ public class StatusService extends Service {
 
     // [ifndef gwt] member
     /** HTML Variant */
-    private static final org.restlet.engine.resource.VariantInfo VARIANT_HTML =
-            new org.restlet.engine.resource.VariantInfo(MediaType.TEXT_HTML);
+    private static final org.restlet.engine.resource.VariantInfo VARIANT_HTML = new org.restlet.engine.resource.VariantInfo(
+            MediaType.TEXT_HTML);
 
     // [ifndef gwt] member
     /** The service used to select the preferred variant. */
@@ -111,10 +111,10 @@ public class StatusService extends Service {
 
     /**
      * Constructor. By default, it creates the necessary services.
-     *
+     * 
      * @param enabled
      *            True if the service has been enabled.
-     *
+     * 
      */
     public StatusService(boolean enabled) {
         // [ifndef gwt] instruction
@@ -219,8 +219,7 @@ public class StatusService extends Service {
      * @param response
      *            The response updated.
      * @return The representation of the given status.
-     * @deprecated Use
-     *             {@link #toRepresentation(Status, Request, Response)}
+     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
      *             instead.
      */
     @Deprecated
@@ -259,8 +258,8 @@ public class StatusService extends Service {
                 representationObject = new StatusInfo(status);
             }
 
-            List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils.getVariants(
-                    representationObject.getClass(), null);
+            List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
+                    .getVariants(representationObject.getClass(), null);
             // TODO This seems to be a workaround in order to prevent zealous
             // converters to cope with conversions whereas they are not supposed
             // to. Should be updated when introducing strict mode of content
@@ -433,7 +432,7 @@ public class StatusService extends Service {
      * {@link org.restlet.data.Status} representation by default or a
      * {@link java.lang.Throwable} representation if the throwable is annotated
      * with {@link org.restlet.resource.Status}.
-     *
+     * 
      * @param status
      *            The status to represent.
      * @param request
@@ -442,8 +441,8 @@ public class StatusService extends Service {
      *            The response updated.
      * @return The representation of the given status.
      */
-    public Representation toRepresentation(Status status,
-            Request request, Response response) {
+    public Representation toRepresentation(Status status, Request request,
+            Response response) {
         return getRepresentation(status, request, response);
     }
 
@@ -459,12 +458,10 @@ public class StatusService extends Service {
      *            The parent resource.
      * @return The representation of the given status.
      */
-    public Representation toRepresentation(Status status,
-            Resource resource) {
+    public Representation toRepresentation(Status status, Resource resource) {
         return toRepresentation(status, resource.getRequest(),
                 resource.getResponse());
     }
-
 
     /**
      * Returns a status for a given exception or error. By default it unwraps
