@@ -18,6 +18,8 @@ Changes log
       
     - Bugs fixed
       - @Status now works with annotated methods on the server-side.
+      - Securing JaxRepresentation by default (issue #785).
+        Reported by Jim Trainor.
 
 - 2.3 Milestone 3 (09/18/2014)
     - New features
