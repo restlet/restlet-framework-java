@@ -75,7 +75,7 @@ public class StatusServiceTestCase extends RestletTestCase {
                 metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status, null,
+        Representation representation = ss.toRepresentation(status,
                 request, new Response(request));
 
         // verify
@@ -105,7 +105,7 @@ public class StatusServiceTestCase extends RestletTestCase {
                 metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status, null,
+        Representation representation = ss.toRepresentation(status,
                 request, new Response(request));
 
         // verify

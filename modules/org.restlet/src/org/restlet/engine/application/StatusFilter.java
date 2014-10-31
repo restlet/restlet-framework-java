@@ -114,8 +114,14 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Allows filtering after its handling by the target Restlet. Does nothing
+     * Allows filtering after its handling by the target Restlet.
+     * If the status is not set, set {@link org.restlet.data.Status#SUCCESS_OK}
      * by default.
+     *
+     * If this is an error status, try to get a representation of it with
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, org.restlet.Request, org.restlet.Response)}.
+     * If the representation is null, get a default one with
+     * {@link #getDefaultRepresentation(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}.
      * 
      * @param request
      *            The request to handle.
@@ -132,15 +138,28 @@ public class StatusFilter extends Filter {
         // Do we need to get a representation for the current status?
         if (response.getStatus().isError()
                 && ((response.getEntity() == null) || isOverwriting())) {
-            response.setEntity(toRepresentation(response.getStatus(), null,
-                    request, response));
+
+            Representation representation = null;
+
+            try {
+                representation = getStatusService().toRepresentation(response.getStatus(),
+                        request, response);
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Unable to get the custom status representation", e);
+            }
+
+            if (representation == null) {
+                representation = getDefaultRepresentation(response.getStatus(), request, response);
+            }
+            response.setEntity(representation);
         }
     }
 
     /**
      * Handles the call by distributing it to the next Restlet. If a throwable
-     * is caught, the {@link #toStatus(Throwable, Request, Response)} method is
-     * invoked.
+     * is caught, the {@link org.restlet.service.StatusService#toStatus(Throwable, Request, Response)}
+     * method is invoked.
      * 
      * @param request
      *            The request to handle.
@@ -154,10 +173,10 @@ public class StatusFilter extends Filter {
         try {
             super.doHandle(request, response);
         } catch (Throwable throwable) {
-            Level level = Level.INFO;
             Status status = getStatusService().toStatus(throwable, request,
                     response);
 
+            Level level = Level.INFO;
             if (status.isServerError()) {
                 level = Level.WARNING;
             } else if (status.isConnectorError()) {
@@ -165,17 +184,11 @@ public class StatusFilter extends Filter {
             } else if (status.isClientError()) {
                 level = Level.FINE;
             }
-
             getLogger().log(level,
                     "Exception or error caught by status service", throwable);
 
             if (response != null) {
                 response.setStatus(status);
-
-                if ((response.getEntity() == null) || isOverwriting()) {
-                    response.setEntity(getStatusService().toRepresentation(
-                            status, throwable, request, response));
-                }
             }
         }
 
@@ -256,50 +269,6 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     * @deprecated Use
-     *             {@link #toRepresentation(Status, Throwable, Request, Response)}
-     *             instead.
-     */
-    @Deprecated
-    protected Representation getRepresentation(Status status, Request request,
-            Response response) {
-        return toRepresentation(status, null, request, response);
-    }
-
-    /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status including the related error
-     * or exception and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be
-     * overridden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
-     */
-    @Deprecated
-    protected Status getStatus(Throwable throwable, Request request,
-            Response response) {
-        return toStatus(throwable, request, response);
-    }
-
-    /**
      * Returns the status information to display in the default representation.
      * By default it returns the status's reason phrase.
      * 
@@ -371,56 +340,4 @@ public class StatusFilter extends Filter {
         this.statusService = statusService;
     }
 
-    /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Representation toRepresentation(Status status,
-            Throwable throwable, Request request, Response response) {
-        Representation result = null;
-
-        try {
-            result = getStatusService().toRepresentation(status, throwable,
-                    request, response);
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to get the custom status representation", e);
-        }
-
-        if (result == null) {
-            result = getDefaultRepresentation(status, request, response);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status including the related error
-     * or exception and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be overriden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Status toStatus(Throwable throwable, Request request,
-            Response response) {
-        return getStatusService().toStatus(throwable, request, response);
-    }
 }

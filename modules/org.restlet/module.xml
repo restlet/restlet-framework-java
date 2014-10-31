@@ -167,7 +167,6 @@
          <exclude name="src/org/restlet/service/LogService.java" />
          <exclude name="src/org/restlet/service/RangeService.java" />
          <exclude name="src/org/restlet/service/RealmService.java" />
-         <exclude name="src/org/restlet/service/StatusService.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
          <exclude name="src/org/restlet/service/TunnelService.java" />
          <exclude name="src/org/restlet/util/ByteReadingListener.java" />
