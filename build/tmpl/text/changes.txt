@@ -3,10 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
-    - New features
-      - 
-       
+- 2.3 Milestone 4 (10/31/2014)
     - Enhancements
       - Unified the HTTP client connector parameters (socket connection to 15s, 
         idle socket to 60s, socket stop to 60s, max connections per host to 10, 
