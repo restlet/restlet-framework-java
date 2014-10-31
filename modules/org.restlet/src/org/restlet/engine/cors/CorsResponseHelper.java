@@ -1,16 +1,20 @@
 package org.restlet.engine.cors;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.engine.util.SetUtils;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Helper to add CORS headers on HTTP response.
- * Support by default simple methods (HEAD, GET, POST).
- * For not simple methods, client send a preflight request with the method OPTIONS.
+ * In CORS specification, not simple methods should send a preflight request with the method OPTIONS.
+ * Simple methods are HEAD, GET and POST.
  *
  * @see <a href="http://www.w3.org/TR/cors">W3C CORS Specification</a>
  *
@@ -18,126 +22,94 @@ import java.util.Set;
  */
 public class CorsResponseHelper {
 
+    private static Logger LOGGER = Context.getCurrentLogger();
+
     /**
      * If true, add 'Access-Control-Allow-Credentials' header.
      * Default is false.
      */
-    public boolean allowCredentials = false;
+    public boolean allowedCredentials = false;
 
     /**
      * Value of 'Access-Control-Allow-Origin' header.
      * Default is '*'.
      */
-    public Set<String> allowOrigins = SetUtils.newHashSet("*");
-
-    /**
-     * If true, use value of 'Access-Control-Request-Method' request header
-     * for 'Access-Control-Allow-Methods' response header.
-     * Default is true.
-     */
-    public boolean allowOnlyRequestedMethod = true;
-
-    /**
-     * Value of 'Access-Control-Allow-Methods' response header.
-     * Used only if {@link #allowOnlyRequestedMethod} is false.
-     */
-    public Set<Method> allowMethods = null;
+    public Set<String> allowedOrigins = SetUtils.newHashSet("*");
 
     /**
      * If true, use value of 'Access-Control-Request-Headers' request header
-     * for 'Access-Control-Allow-Headers' response header.
+     * for 'Access-Control-Allow-Headers' response header. If false, use
+     * {@link #allowedHeaders}.
      * Default is true.
      */
-    public boolean allowOnlyRequestedHeaders = true;
+    public boolean allowAllRequestedHeaders = true;
 
     /**
      * Value of 'Access-Control-Allow-Headers' response header.
-     * Used only if {@link #allowOnlyRequestedHeaders} is false.
+     * Used only if {@link #allowAllRequestedHeaders} is false.
      */
-    public Set<String> allowHeaders = null;
+    public Set<String> allowedHeaders = null;
 
     /**
      * Value of 'Access-Control-Expose-Headers' response header.
      */
-    public Set<String> exposeHeaders = null;
+    public Set<String> exposedHeaders = null;
 
     public CorsResponseHelper() {
     }
 
-    /** Getter for {@link #allowCredentials} */
-    public boolean isAllowCredentials() {
-        return allowCredentials;
+    /** Getter for {@link #allowedCredentials} */
+    public boolean isAllowedCredentials() {
+        return allowedCredentials;
     }
 
-    /** Setter for {@link #allowCredentials} */
-    public CorsResponseHelper setAllowCredentials(boolean allowCredentials) {
-        this.allowCredentials = allowCredentials;
+    /** Setter for {@link #allowedCredentials} */
+    public CorsResponseHelper setAllowedCredentials(boolean allowedCredentials) {
+        this.allowedCredentials = allowedCredentials;
         return this;
     }
 
-    /** Getter for {@link #allowOrigins} */
-    public Set<String> getAllowOrigins() {
-        return allowOrigins;
+    /** Getter for {@link #allowedOrigins} */
+    public Set<String> getAllowedOrigins() {
+        return allowedOrigins;
     }
 
-    /** Setter for {@link #allowOrigins} */
-    public CorsResponseHelper setAllowOrigins(Set<String> allowOrigins) {
-        this.allowOrigins = allowOrigins;
+    /** Setter for {@link #allowedOrigins} */
+    public CorsResponseHelper setAllowedOrigins(Set<String> allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
         return this;
     }
 
-    /** Getter for {@link #allowOnlyRequestedMethod} */
-    public boolean isAllowOnlyRequestedMethod() {
-        return allowOnlyRequestedMethod;
+    /** Getter for {@link #allowAllRequestedHeaders} */
+    public boolean isAllowAllRequestedHeaders() {
+        return allowAllRequestedHeaders;
     }
 
-    /** Setter for {@link #allowOnlyRequestedMethod} */
-    public CorsResponseHelper setAllowOnlyRequestedMethod(boolean allowOnlyRequestedMethod) {
-        this.allowOnlyRequestedMethod = allowOnlyRequestedMethod;
+    /** Setter for {@link #allowAllRequestedHeaders} */
+    public CorsResponseHelper setAllowAllRequestedHeaders(boolean allowAllRequestedHeaders) {
+        this.allowAllRequestedHeaders = allowAllRequestedHeaders;
         return this;
     }
 
-    /** Getter for {@link #allowMethods} */
-    public Set<Method> getAllowMethods() {
-        return allowMethods;
+    /** Getter for {@link #allowedHeaders} */
+    public Set<String> getAllowedHeaders() {
+        return allowedHeaders;
     }
 
-    /** Setter for {@link #allowMethods} */
-    public CorsResponseHelper setAllowMethods(Set<Method> allowMethods) {
-        this.allowMethods = allowMethods;
+    /** Setter for {@link #allowedHeaders} */
+    public CorsResponseHelper setAllowedHeaders(Set<String> allowedHeaders) {
+        this.allowedHeaders = allowedHeaders;
         return this;
     }
 
-    /** Getter for {@link #allowOnlyRequestedHeaders} */
-    public boolean isAllowOnlyRequestedHeaders() {
-        return allowOnlyRequestedHeaders;
+    /** Getter for {@link #exposedHeaders} */
+    public Set<String> getExposedHeaders() {
+        return exposedHeaders;
     }
 
-    /** Setter for {@link #allowOnlyRequestedHeaders} */
-    public CorsResponseHelper setAllowOnlyRequestedHeaders(boolean allowOnlyRequestedHeaders) {
-        this.allowOnlyRequestedHeaders = allowOnlyRequestedHeaders;
-        return this;
-    }
-
-    /** Getter for {@link #allowHeaders} */
-    public Set<String> getAllowHeaders() {
-        return allowHeaders;
-    }
-
-    /** Setter for {@link #allowHeaders} */
-    public CorsResponseHelper setAllowHeaders(Set<String> allowHeaders) {
-        this.allowHeaders = allowHeaders;
-        return this;
-    }
-
-    /** Getter for {@link #exposeHeaders} */
-    public Set<String> getExposeHeaders() {
-        return exposeHeaders;
-    }
-
-    /** Setter for {@link #exposeHeaders} */
-    public CorsResponseHelper setExposeHeaders(Set<String> exposeHeaders) {
-        this.exposeHeaders = exposeHeaders;
+    /** Setter for {@link #exposedHeaders} */
+    public CorsResponseHelper setExposedHeaders(Set<String> exposedHeaders) {
+        this.exposedHeaders = exposedHeaders;
         return this;
     }
 
@@ -158,8 +130,13 @@ public class CorsResponseHelper {
             return;
         }
 
-        if (!allowOrigins.contains("*") && !allowOrigins.contains(origin)) {
+        Set<Method> allowedMethods = new HashSet<>(response.getAllowedMethods());
+        // Header 'Allow' is not relevant in CORS request.
+        response.getAllowedMethods().clear();
+
+        if (!allowedOrigins.contains("*") && !allowedOrigins.contains(origin)) {
             // Origin not allowed
+            LOGGER.fine("Origin " + origin + " not allowed for CORS request");
             return;
         }
 
@@ -167,20 +144,33 @@ public class CorsResponseHelper {
 
         if (isPreflightRequest) {
 
-            Method accessControlRequestMethod = request.getAccessControlRequestMethod();
-            if (accessControlRequestMethod == null) {
-                // Requested Method is required
+            //Default OPTIONS method in a server resource returns a
+            // {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED} if the method is not implemented
+            // or a {@link Status#SUCCESS_NO_CONTENT} or a {@link Status#SUCCESS_NO_CONTENT} if
+            // the method is implemented and the call succeed.
+            // Other status are considered as error.
+
+            // Preflight request returns a 200 status except if server resource method .
+            // If the preflight request is not allowed, CORS response headers will not be added.
+            if (Status.SUCCESS_OK.equals(response.getStatus())
+                    || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
+                    || Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(response.getStatus())) {
+                response.setStatus(Status.SUCCESS_OK);
+            } else {
+                LOGGER.fine("The CORS preflight request failed in server resource.");
                 return;
             }
 
             Method requestedMethod = request.getAccessControlRequestMethod();
             if (requestedMethod == null) {
+                // Requested Method is required
+                LOGGER.fine("A CORS preflight request should specified header 'Access-Control-Request-Method'");
                 return;
             }
 
-            if (!allowOnlyRequestedMethod &&
-                    (allowMethods == null || !allowMethods.contains(requestedMethod))) {
+            if (!allowedMethods.contains(requestedMethod)) {
                 //Method not allowed
+                LOGGER.fine("The CORS preflight request ask for methods not allowed in header 'Access-Control-Request-Method'");
                 return;
             }
 
@@ -189,14 +179,15 @@ public class CorsResponseHelper {
                 requestedHeaders = SetUtils.newHashSet();
             }
 
-            if (!allowOnlyRequestedHeaders &&
-                    (allowHeaders == null || !isAllHeadersAllowed(allowHeaders, requestedHeaders))){
+            if (!allowAllRequestedHeaders &&
+                    (allowedHeaders == null || !isAllHeadersAllowed(allowedHeaders, requestedHeaders))){
                 //Headers not allowed
+                LOGGER.fine("The CORS preflight request ask for headers not allowed in header 'Access-Control-Request-Headers'");
                 return;
             }
 
             // Header 'Access-Control-Allow-Methods'
-            response.setAccessControlAllowMethods(SetUtils.newHashSet(requestedMethod));
+            response.setAccessControlAllowMethods(allowedMethods);
 
             // Header 'Access-Control-Allow-Headers'
             response.setAccessControlAllowHeaders(requestedHeaders);
@@ -204,18 +195,22 @@ public class CorsResponseHelper {
             //simple request
 
             // Header 'Access-Control-Expose-Headers'
-            if (exposeHeaders != null && !exposeHeaders.isEmpty()) {
-                response.setAccessControlExposeHeaders(exposeHeaders);
+            if (exposedHeaders != null && !exposedHeaders.isEmpty()) {
+                response.setAccessControlExposeHeaders(exposedHeaders);
             }
         }
 
         // Header 'Access-Control-Allow-Credentials'
-        if (allowCredentials) {
+        if (allowedCredentials) {
             response.setAccessControlAllowCredential(true);
         }
 
         // Header 'Access-Control-Allow-Origin'
-        response.setAccessControlAllowOrigin(origin);
+        if (!allowedCredentials && allowedOrigins.contains("*")) {
+            response.setAccessControlAllowOrigin("*");
+        } else {
+            response.setAccessControlAllowOrigin(origin);
+        }
     }
 
     /**
