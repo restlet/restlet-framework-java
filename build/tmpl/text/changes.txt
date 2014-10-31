@@ -22,6 +22,7 @@ Changes log
       - Added Firewall feature.
         Contributed by Guillaume Blondeau.
       - Added RAML support in dedicated extension.
+      - Fixed log level (issue #777). Reported by marcus-nl.
 
 - 2.2.2 (08/05/2014)
     - Bugs fixed
