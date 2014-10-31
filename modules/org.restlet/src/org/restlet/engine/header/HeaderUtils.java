@@ -80,6 +80,12 @@ public class HeaderUtils {
      */
     private static final Set<String> STANDARD_HEADERS = Collections
             .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
                     HeaderConstants.HEADER_ACCEPT,
                     HeaderConstants.HEADER_ACCEPT_CHARSET,
                     HeaderConstants.HEADER_ACCEPT_ENCODING,
@@ -459,6 +465,20 @@ public class HeaderUtils {
         }
         // [enddef]
 
+        // CORS headers
+
+        if (request.getAccessControlRequestHeaders() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+                    StringWriter.write(request.getAccessControlRequestHeaders()),
+                    headers);
+        }
+
+        if (request.getAccessControlRequestMethod() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+                    request.getAccessControlRequestMethod().getName(),
+                    headers);
+        }
+
         // ----------------------------------
         // 3) Add supported extension headers
         // ----------------------------------
@@ -585,6 +605,31 @@ public class HeaderUtils {
                                 .formatRequest(challengeRequest, response,
                                         headers), headers);
             }
+        }
+
+        // CORS headers
+
+        if (response.getAccessControlAllowCredential() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL,
+                    response.getAccessControlAllowCredential().toString(),
+                    headers);
+        }
+
+        if (response.getAccessControlAllowHeaders() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+                    StringWriter.write(response.getAccessControlAllowHeaders()),
+                    headers);
+        }
+        if (response.getAccessControlAllowOrigin() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+                    response.getAccessControlAllowOrigin(),
+                    headers);
+        }
+
+        if (response.getAccessControlAllowMethods() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+                    MethodWriter.write(response.getAccessControlAllowMethods()),
+                    headers);
         }
 
         // ----------------------------------
@@ -766,6 +811,19 @@ public class HeaderUtils {
                     TokenReader tr = new TokenReader(header.getValue());
                     response.getServerInfo().setAcceptingRanges(
                             tr.readValues().contains("bytes"));
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL)) {
+                    response.setAccessControlAllowCredential(Boolean.parseBoolean(header.getValue()));
+                    StringReader.addValues(header, response.getAccessControlAllowHeaders());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN)) {
+                    response.setAccessControlAllowOrigin(header.getValue());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS)) {
+                    MethodReader.addValues(header, response.getAccessControlAllowMethods());
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS)) {
+                    StringReader.addValues(header, response.getAccessControlExposeHeaders());
                 }
             }
         }

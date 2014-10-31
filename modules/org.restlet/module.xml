@@ -92,6 +92,7 @@
          <exclude name="src/org/restlet/engine/connector/HttpUrlConnectionCall*" />
          <exclude name="src/org/restlet/engine/connector/*Server*" />
          <exclude name="src/org/restlet/engine/converter/**" />
+         <exclude name="src/org/restlet/engine/cors/**" />
          <exclude name="src/org/restlet/engine/header/ExpectationUtils.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationReader.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationWriter.java" />
@@ -159,6 +160,7 @@
          <exclude name="src/org/restlet/service/ConnegService.java" />
          <exclude name="src/org/restlet/service/ConnectorService.java" />
          <exclude name="src/org/restlet/service/ConverterService.java" />
+         <exclude name="src/org/restlet/service/CorsService.java" />
          <exclude name="src/org/restlet/service/DecoderService.java" />
          <exclude name="src/org/restlet/service/EncoderService.java" />
          <exclude name="src/org/restlet/service/LogService.java" />
