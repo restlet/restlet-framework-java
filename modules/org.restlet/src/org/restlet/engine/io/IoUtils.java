@@ -399,7 +399,7 @@ public class IoUtils {
                         wbc = pipe.sink();
                         representation.write(wbc);
                     } catch (IOException ioe) {
-                        Context.getCurrentLogger().log(Level.FINE,
+                        Context.getCurrentLogger().log(Level.WARNING,
                                 "Error while writing to the piped channel.",
                                 ioe);
                     } finally {
@@ -408,7 +408,7 @@ public class IoUtils {
                                 wbc.close();
                             } catch (IOException e) {
                                 Context.getCurrentLogger()
-                                        .log(Level.FINE,
+                                        .log(Level.WARNING,
                                                 "Error while closing to the piped channel.",
                                                 e);
                             }
