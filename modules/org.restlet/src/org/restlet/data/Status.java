@@ -35,7 +35,6 @@ package org.restlet.data;
 
 import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
-import org.restlet.service.StatusService;
 
 /**
  * Status to return after handling a call.
@@ -1092,7 +1091,7 @@ public final class Status {
 
     /**
      * Returns the description. This value is typically used by the
-     * {@link StatusService} to build a meaningful description of an error via a
+     * {@link org.restlet.service.StatusService} to build a meaningful description of an error via a
      * response entity.
      * 
      * @return The description.

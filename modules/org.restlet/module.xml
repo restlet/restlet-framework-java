@@ -84,6 +84,7 @@
          <exclude name="src/org/restlet/engine/adapter/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/adapter/Server*.java" />
          <exclude name="src/org/restlet/engine/application/*Conneg.java" />
+         <exclude name="src/org/restlet/engine/application/StatusFilter.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/connector/ConnectionClosingRepresentation*" />
          <exclude name="src/org/restlet/engine/connector/Ftp*" />
@@ -119,6 +120,7 @@
          <exclude name="src/org/restlet/engine/ssl/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
+         <exclude name="src/org/restlet/engine/util/BeanInfoUtils.java" />
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/ChildClientDispatcher.java" />
          <exclude name="src/org/restlet/engine/util/ChildContext.java" />
@@ -135,6 +137,7 @@
          <exclude name="src/org/restlet/engine/util/Pool.java" />
          <exclude name="src/org/restlet/engine/util/ReferenceUtils.java" />
          <exclude name="src/org/restlet/engine/util/TemplateDispatcher.java" />
+         <exclude name="src/org/restlet/engine/util/ThrowableSerializer.java" />
          <exclude name="src/org/restlet/engine/util/WrapperScheduledExecutorService.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/BufferingRepresentation.java" />
@@ -166,6 +169,7 @@
          <exclude name="src/org/restlet/service/LogService.java" />
          <exclude name="src/org/restlet/service/RangeService.java" />
          <exclude name="src/org/restlet/service/RealmService.java" />
+         <exclude name="src/org/restlet/service/StatusService.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
          <exclude name="src/org/restlet/service/TunnelService.java" />
          <exclude name="src/org/restlet/util/ByteReadingListener.java" />

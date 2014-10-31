@@ -46,24 +46,25 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     /** The status parsed from the annotation value. */
     private final Status status;
 
+    /** Indicates if the {@link Throwable} should be serialized. */
+    private final boolean serialize;
+
     /**
      * Constructor.
      * 
      * @param javaClass
      *            The class or interface that hosts the annotated Java method.
-     * @param value
-     *            The annotation value.
+     * @param code
+     *            The status code
+     * @param serialize
+     *            Indicates if the {@link Throwable} should be serialized.
      */
-    public StatusAnnotationInfo(Class<?> javaClass, String value) {
-        super(javaClass, null, value);
+    public StatusAnnotationInfo(Class<?> javaClass, int code, boolean serialize) {
+        super(javaClass, null, Integer.toString(code));
 
         // Parse the main components of the annotation value
-        if ((value != null) && !value.equals("")) {
-            Integer code = Integer.parseInt(value);
-            this.status = Status.valueOf(code);
-        } else {
-            this.status = Status.SERVER_ERROR_INTERNAL;
-        }
+        this.status = Status.valueOf(code);
+        this.serialize = serialize;
     }
 
     /**
@@ -101,11 +102,22 @@ public class StatusAnnotationInfo extends AnnotationInfo {
         return status;
     }
 
+    /**
+     * Returns the serializeProperties indicator parsed from the annotation
+     * value.
+     *
+     * @return the serializeProperties indicator parsed from the annotation
+     *         value.
+     */
+    public boolean isSerialize() {
+        return serialize;
+    }
+
     @Override
     public String toString() {
         return "StatusAnnotationInfo [javaMethod: " + javaMethod
                 + ", javaClass: " + getJavaClass() + ", status: " + status
-                + "]";
+                + ", serializeProperties: " + serialize + "]";
     }
 
 }

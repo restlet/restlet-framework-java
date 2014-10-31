@@ -23,6 +23,13 @@ Changes log
       - OData Edm.DateTime properties are sometimes parsed as null (issue #946).
         Reported and contributed by Emmanuel Liossis.
 
+    - API changes
+      - Deprecated statusService property in Component to keep it only in Application.
+      - Added connegService, metadataService and converterService properties to StatusService
+        and pass them via the constructor instead of the toRepresentation and toStatus methods.
+      - Renamed @Status#serializeProperties (default to false) into serialize (default to true).
+      - Deprecated Component#statusService in favor of the Application#statusService property.
+
 - 2.3 Milestone 3 (09/18/2014)
     - New features
       - Added API firewall feature to the APISpark extension.
@@ -40,7 +47,7 @@ Changes log
         methods accepting 'null' string values to facilitate the processing of path 
         variables and query parameters.
       - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
-        toRepresentation(...) and toStatus(...), added additional parameters to allow
+        toRepresentation(...) and toStatus(...), added throwable parameters to allow
         access to throwable and converter service if available.
       - Aligned behavior of StatusService (underlying StatusFilter) with the behavior of
         the ServerResource#doCatch() method in case a throwable is intercepted.
