@@ -52,7 +52,6 @@ public class MyServerResource20 extends ServerResource implements MyResource20 {
         server.start();
     }
 
-    @SuppressWarnings("unused")
     public MyBean represent() throws MyException01 {
         throw new MyException01(new Date());
     }

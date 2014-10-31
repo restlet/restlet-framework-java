@@ -46,24 +46,25 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     /** The status parsed from the annotation value. */
     private final Status status;
 
-    /** The serializeProperties indicator parsed from the annotation value. */
-    private final boolean serializeProperties;
+    /** Indicates if the {@link Throwable} should be serialized. */
+    private final boolean serialize;
 
     /**
      * Constructor.
-     *  @param javaClass
+     * 
+     * @param javaClass
      *            The class or interface that hosts the annotated Java method.
      * @param code
      *            The status code
-     * @param serializeProperties
-     *            The indicator for serialize properties attribute.
+     * @param serialize
+     *            Indicates if the {@link Throwable} should be serialized.
      */
-    public StatusAnnotationInfo(Class<?> javaClass, int code, boolean serializeProperties) {
+    public StatusAnnotationInfo(Class<?> javaClass, int code, boolean serialize) {
         super(javaClass, null, Integer.toString(code));
 
         // Parse the main components of the annotation value
         this.status = Status.valueOf(code);
-        this.serializeProperties = serializeProperties;
+        this.serialize = serialize;
     }
 
     /**
@@ -102,20 +103,21 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     }
 
     /**
-     * Returns the serializeProperties indicator parsed from the annotation value.
+     * Returns the serializeProperties indicator parsed from the annotation
+     * value.
      *
-     * @return the serializeProperties indicator parsed from the annotation value.
+     * @return the serializeProperties indicator parsed from the annotation
+     *         value.
      */
-    public boolean isSerializeProperties() {
-        return serializeProperties;
+    public boolean isSerialize() {
+        return serialize;
     }
 
     @Override
     public String toString() {
         return "StatusAnnotationInfo [javaMethod: " + javaMethod
                 + ", javaClass: " + getJavaClass() + ", status: " + status
-                + ", serializeProperties: " + serializeProperties
-                + "]";
+                + ", serializeProperties: " + serialize + "]";
     }
 
 }

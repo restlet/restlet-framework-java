@@ -384,7 +384,9 @@ public class Component extends Restlet {
      * Returns the status service, enabled by default.
      * 
      * @return The status service.
+     * @deprecated Use {@link Application#getStatusService()} instead.
      */
+    @Deprecated
     public StatusService getStatusService() {
         return getServices().get(StatusService.class);
     }
@@ -530,7 +532,10 @@ public class Component extends Restlet {
      * 
      * @param statusService
      *            The status service.
+     * @deprecated Use {@link Application#setStatusService(StatusService)}
+     *             instead.
      */
+    @Deprecated
     public void setStatusService(StatusService statusService) {
         getServices().set(statusService);
     }

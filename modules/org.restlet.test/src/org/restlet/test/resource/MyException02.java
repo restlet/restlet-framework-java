@@ -2,9 +2,7 @@ package org.restlet.test.resource;
 
 import org.restlet.resource.Status;
 
-import java.util.Date;
-
-@Status(value = 400, serializeProperties = true)
+@Status(value = 400)
 public class MyException02 extends Throwable {
 
     private static final long serialVersionUID = 1L;

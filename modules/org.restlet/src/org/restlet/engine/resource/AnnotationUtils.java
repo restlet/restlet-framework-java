@@ -149,8 +149,8 @@ public class AnnotationUtils {
 
         if (annotation != null) {
             Status status = (Status) annotation;
-            result.add(new StatusAnnotationInfo(initialClass,
-                    status.value(), status.serializeProperties()));
+            result.add(new StatusAnnotationInfo(initialClass, status.value(),
+                    status.serialize()));
         }
 
         return result;
