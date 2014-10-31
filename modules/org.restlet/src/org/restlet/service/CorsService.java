@@ -47,9 +47,9 @@ import org.restlet.routing.Filter;
  * Example:
  * 
  * <pre>
- * CorsService corsService = new CorsService().setAllowedOrigins(
- *         new HashSet(Arrays.asList(&quot;http://server.com&quot;))).setAllowedCredentials(
- *         true);
+ * CorsService corsService = new CorsService();
+ * corsService.setAllowedOrigins(new HashSet(Arrays.asList(&quot;http://server.com&quot;)));
+ * corsService.setAllowedCredentials(true);
  * </pre>
  * 
  * @author Manuel Boillod
@@ -174,10 +174,8 @@ public class CorsService extends Service {
      *            response header. If false, use {@link #allowedHeaders}.
      * @return Itself for chaining methods calls.
      */
-    public CorsService setAllowAllRequestedHeaders(
-            boolean allowAllRequestedHeaders) {
+    public void setAllowAllRequestedHeaders(boolean allowAllRequestedHeaders) {
         this.allowAllRequestedHeaders = allowAllRequestedHeaders;
-        return this;
     }
 
     /**
@@ -187,9 +185,8 @@ public class CorsService extends Service {
      *            True to add the 'Access-Control-Allow-Credentials' header.
      * @return Itself for chaining methods calls.
      */
-    public CorsService setAllowedCredentials(boolean allowedCredentials) {
+    public void setAllowedCredentials(boolean allowedCredentials) {
         this.allowedCredentials = allowedCredentials;
-        return this;
     }
 
     /**
@@ -200,9 +197,8 @@ public class CorsService extends Service {
      *            The value of 'Access-Control-Allow-Headers' response header.
      * @return Itself for chaining methods calls.
      */
-    public CorsService setAllowedHeaders(Set<String> allowedHeaders) {
+    public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
-        return this;
     }
 
     /**
@@ -212,9 +208,8 @@ public class CorsService extends Service {
      *            The value of 'Access-Control-Allow-Origin' header.
      * @return Itself for chaining methods calls.
      */
-    public CorsService setAllowedOrigins(Set<String> allowedOrigins) {
+    public void setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
-        return this;
     }
 
     /**
@@ -224,8 +219,7 @@ public class CorsService extends Service {
      *            The value of 'Access-Control-Expose-Headers' response header.
      * @return Itself for chaining methods calls.
      */
-    public CorsService setExposedHeaders(Set<String> exposedHeaders) {
+    public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
-        return this;
     }
 }
