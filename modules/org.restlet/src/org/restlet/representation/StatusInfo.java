@@ -3,12 +3,12 @@ package org.restlet.representation;
 import org.restlet.data.Status;
 
 /**
- * 
+ *
  * Representation of a {@link Status}.
- * 
+ *
  * @author Manuel Boillod
  */
-public class StatusRepresentation {
+public class StatusInfo {
 
     /** The specification code. */
     int code;
@@ -20,6 +20,12 @@ public class StatusRepresentation {
     String reasonPhrase;
 
     /**
+     *  Constructor
+     */
+    public StatusInfo() {
+    }
+    /**
+     * Constructor
      * 
      * @param code
      *            The specification code.
@@ -28,8 +34,8 @@ public class StatusRepresentation {
      * @param reasonPhrase
      *            The short reason phrase.
      */
-    public StatusRepresentation(int code, String description,
-            String reasonPhrase) {
+    public StatusInfo(int code, String description,
+                                String reasonPhrase) {
         super();
         this.code = code;
         this.description = description;
@@ -38,11 +44,11 @@ public class StatusRepresentation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param status
      *            The represented status.
      */
-    public StatusRepresentation(Status status) {
+    public StatusInfo(Status status) {
         this.code = status.getCode();
         this.reasonPhrase = status.getReasonPhrase();
         this.description = status.getDescription();
@@ -51,7 +57,7 @@ public class StatusRepresentation {
 
     /**
      * Returns the code of the status.
-     * 
+     *
      * @return The code of the status.
      */
     public int getCode() {
@@ -60,7 +66,7 @@ public class StatusRepresentation {
 
     /**
      * Returns the description of the status.
-     * 
+     *
      * @return The description of the status.
      */
     public String getDescription() {
@@ -69,7 +75,7 @@ public class StatusRepresentation {
 
     /**
      * Returns the short description of the status.
-     * 
+     *
      * @return The short description of the status.
      */
     public String getReasonPhrase() {
@@ -78,7 +84,7 @@ public class StatusRepresentation {
 
     /**
      * Sets the code of the status.
-     * 
+     *
      * @param code
      *            The code of the status.
      */
@@ -88,7 +94,7 @@ public class StatusRepresentation {
 
     /**
      * Sets the description of the status.
-     * 
+     *
      * @param code
      *            The description of the status.
      */
@@ -98,7 +104,7 @@ public class StatusRepresentation {
 
     /**
      * Sets the short description of the status.
-     * 
+     *
      * @param code
      *            The short description of the status.
      */
