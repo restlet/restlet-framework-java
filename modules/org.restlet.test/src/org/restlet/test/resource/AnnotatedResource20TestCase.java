@@ -42,7 +42,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StatusRepresentation;
+import org.restlet.representation.StatusInfo;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
@@ -97,10 +97,10 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
                         .isAssignableFrom(responseEntity.getClass()));
                 JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
                 Object entity = jacksonRepresentation.getObject();
-                assertTrue(StatusRepresentation.class.isAssignableFrom(entity
+                assertTrue(StatusInfo.class.isAssignableFrom(entity
                         .getClass()));
-                StatusRepresentation statusRepresentation = (StatusRepresentation) entity;
-                assertEquals(400, statusRepresentation.getCode());
+                StatusInfo statusInfo = (StatusInfo) entity;
+                assertEquals(400, statusInfo.getCode());
             }
         }
     }

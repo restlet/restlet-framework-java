@@ -8,15 +8,15 @@ import org.restlet.data.Status;
  *
  * @author Manuel Boillod
  */
-public class StatusRepresentation {
+public class StatusInfo {
     int code;
     String reasonPhrase;
     String description;
 
-    public StatusRepresentation() {
+    public StatusInfo() {
     }
 
-    public StatusRepresentation(Status status) {
+    public StatusInfo(Status status) {
         this.code = status.getCode();
         this.reasonPhrase = status.getReasonPhrase();
         this.description = status.getDescription();
