@@ -15,7 +15,8 @@ Changes log
       - Jackson representation now ignore empty value (null or empty collections)
         by default in the JSON/XML/CSV/YAML produced, leading to more compact 
         representations.
-      
+     - Fixed log level (issue #777). Reported by marcus-nl.
+
     - Bugs fixed
       - @Status now works with annotated methods on the server-side.
       - Securing JaxRepresentation by default (issue #785).
