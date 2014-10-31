@@ -4,7 +4,7 @@ import org.restlet.data.Status;
 
 /**
  *
- * Representation of a {@link Status}
+ * Representation of a {@link Status}.
  *
  * @author Manuel Boillod
  */
