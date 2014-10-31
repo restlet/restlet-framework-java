@@ -46,8 +46,8 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     /** The status parsed from the annotation value. */
     private final Status status;
 
-    /** Indicates if the {@link Throwable} should be serialized. */
-    private final boolean serialize;
+    /** Indicates if the {@link Status#getThrowable()} should be serialized. */
+    private final boolean serializable;
 
     /**
      * Constructor.
@@ -56,15 +56,16 @@ public class StatusAnnotationInfo extends AnnotationInfo {
      *            The class or interface that hosts the annotated Java method.
      * @param code
      *            The status code
-     * @param serialize
+     * @param serializable
      *            Indicates if the {@link Throwable} should be serialized.
      */
-    public StatusAnnotationInfo(Class<?> javaClass, int code, boolean serialize) {
+    public StatusAnnotationInfo(Class<?> javaClass, int code,
+            boolean serializable) {
         super(javaClass, null, Integer.toString(code));
 
         // Parse the main components of the annotation value
         this.status = Status.valueOf(code);
-        this.serialize = serialize;
+        this.serializable = serializable;
     }
 
     /**
@@ -103,21 +104,19 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     }
 
     /**
-     * Returns the serializeProperties indicator parsed from the annotation
-     * value.
-     *
-     * @return the serializeProperties indicator parsed from the annotation
-     *         value.
+     * Returns the serialize indicator parsed from the annotation value.
+     * 
+     * @return the serialize indicator parsed from the annotation value.
      */
-    public boolean isSerialize() {
-        return serialize;
+    public boolean isSerializable() {
+        return serializable;
     }
 
     @Override
     public String toString() {
         return "StatusAnnotationInfo [javaMethod: " + javaMethod
                 + ", javaClass: " + getJavaClass() + ", status: " + status
-                + ", serializeProperties: " + serialize + "]";
+                + ", serializeProperties: " + serializable + "]";
     }
 
 }

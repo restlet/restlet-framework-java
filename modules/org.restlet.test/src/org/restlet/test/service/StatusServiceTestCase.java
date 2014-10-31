@@ -94,8 +94,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
-    public void testSerializedException()
-            throws IOException {
+    public void testSerializedException() throws IOException {
         Status status = new Status(400, new MyException02("test message"));
 
         ConverterService converterService = new ConverterService();

@@ -10,7 +10,7 @@ public class MyException02 extends Throwable {
     private String customProperty;
 
     public MyException02(String customProperty) {
-        this.customProperty = customProperty ;
+        this.customProperty = customProperty;
     }
 
     public String getCustomProperty() {

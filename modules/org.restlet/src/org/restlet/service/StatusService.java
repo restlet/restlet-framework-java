@@ -141,6 +141,7 @@ public class StatusService extends Service {
 
     /**
      * Returns the service used to select the preferred variant.
+     * 
      * @return The service used to select the preferred variant.
      */
     public ConnegService getConnegService() {
@@ -158,8 +159,11 @@ public class StatusService extends Service {
     }
 
     /**
-     * Returns the service used to convert between status/throwable and representation.
-     * @return The service used to convert between status/throwable and representation.
+     * Returns the service used to convert between status/throwable and
+     * representation.
+     * 
+     * @return The service used to convert between status/throwable and
+     *         representation.
      */
     public ConverterService getConverterService() {
         return converterService;
@@ -176,6 +180,7 @@ public class StatusService extends Service {
 
     /**
      * Returns the service used to select the preferred variant.
+     * 
      * @return The service used to select the preferred variant.
      */
     public MetadataService getMetadataService() {
@@ -259,7 +264,9 @@ public class StatusService extends Service {
 
     /**
      * Sets the service used to select the preferred variant.
-     * @param connegService The service used to select the preferred variant.
+     * 
+     * @param connegService
+     *            The service used to select the preferred variant.
      */
     public void setConnegService(ConnegService connegService) {
         this.connegService = connegService;
@@ -277,8 +284,12 @@ public class StatusService extends Service {
     }
 
     /**
-     * Sets the service used to convert between status/throwable and representation.
-     * @param converterService The service used to convert between status/throwable and representation.
+     * Sets the service used to convert between status/throwable and
+     * representation.
+     * 
+     * @param converterService
+     *            The service used to convert between status/throwable and
+     *            representation.
      */
     public void setConverterService(ConverterService converterService) {
         this.converterService = converterService;
@@ -296,7 +307,9 @@ public class StatusService extends Service {
 
     /**
      * Sets the service used to select the preferred variant.
-     * @param metadataService The service used to select the preferred variant.
+     * 
+     * @param metadataService
+     *            The service used to select the preferred variant.
      */
     public void setMetadataService(MetadataService metadataService) {
         this.metadataService = metadataService;
@@ -318,7 +331,7 @@ public class StatusService extends Service {
      * {@link org.restlet.data.Status} representation by default or a
      * {@link java.lang.Throwable} representation if the throwable is annotated
      * with {@link org.restlet.resource.Status}.
-     *
+     * 
      * @param status
      *            The status to represent.
      * @param throwable
@@ -348,7 +361,7 @@ public class StatusService extends Service {
                 org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
                         .getInstance()
                         .getStatusAnnotationInfo(cause.getClass());
-                if (sai != null && sai.isSerialize()) {
+                if (sai != null && sai.isSerializable()) {
                     try {
                         representationObject = ThrowableSerializer
                                 .serializeToMap(cause);
@@ -369,6 +382,10 @@ public class StatusService extends Service {
 
             List<VariantInfo> variants = ConverterUtils.getVariants(
                     representationObject.getClass(), null);
+            // TODO This seems to be a workaround in order to prevent zealous
+            // converters to cope with conversions whereas they are not supposed
+            // to. Should be updated when introducing strict mode of content
+            // negotiation.
             if (!variants.contains(VARIANT_HTML)) {
                 variants.add(VARIANT_HTML);
             }

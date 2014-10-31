@@ -1091,8 +1091,8 @@ public final class Status {
 
     /**
      * Returns the description. This value is typically used by the
-     * {@link org.restlet.service.StatusService} to build a meaningful description of an error via a
-     * response entity.
+     * {@link org.restlet.service.StatusService} to build a meaningful
+     * description of an error via a response entity.
      * 
      * @return The description.
      */

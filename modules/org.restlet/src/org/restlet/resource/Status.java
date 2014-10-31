@@ -87,7 +87,7 @@ public @interface Status {
     /**
      * Indicates if the annotated {@link Throwable} should be serialized in the
      * HTTP response entity.
-     *
+     * 
      * @return True if {@link Throwable} should be serialized in the HTTP
      *         response entity.
      */

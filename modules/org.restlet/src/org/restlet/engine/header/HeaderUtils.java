@@ -468,15 +468,15 @@ public class HeaderUtils {
         // CORS headers
 
         if (request.getAccessControlRequestHeaders() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+            addHeader(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
                     StringWriter.write(request.getAccessControlRequestHeaders()),
                     headers);
         }
 
         if (request.getAccessControlRequestMethod() != null) {
             addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
-                    request.getAccessControlRequestMethod().getName(),
-                    headers);
+                    request.getAccessControlRequestMethod().getName(), headers);
         }
 
         // ----------------------------------
@@ -616,18 +616,19 @@ public class HeaderUtils {
         }
 
         if (response.getAccessControlAllowHeaders() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+            addHeader(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
                     StringWriter.write(response.getAccessControlAllowHeaders()),
                     headers);
         }
         if (response.getAccessControlAllowOrigin() != null) {
             addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-                    response.getAccessControlAllowOrigin(),
-                    headers);
+                    response.getAccessControlAllowOrigin(), headers);
         }
 
         if (response.getAccessControlAllowMethods() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+            addHeader(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     MethodWriter.write(response.getAccessControlAllowMethods()),
                     headers);
         }
@@ -813,17 +814,21 @@ public class HeaderUtils {
                             tr.readValues().contains("bytes"));
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL)) {
-                    response.setAccessControlAllowCredential(Boolean.parseBoolean(header.getValue()));
-                    StringReader.addValues(header, response.getAccessControlAllowHeaders());
+                    response.setAccessControlAllowCredential(Boolean
+                            .parseBoolean(header.getValue()));
+                    StringReader.addValues(header,
+                            response.getAccessControlAllowHeaders());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN)) {
                     response.setAccessControlAllowOrigin(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS)) {
-                    MethodReader.addValues(header, response.getAccessControlAllowMethods());
+                    MethodReader.addValues(header,
+                            response.getAccessControlAllowMethods());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS)) {
-                    StringReader.addValues(header, response.getAccessControlExposeHeaders());
+                    StringReader.addValues(header,
+                            response.getAccessControlExposeHeaders());
                 }
             }
         }
