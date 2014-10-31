@@ -24,6 +24,66 @@ public class ODataDeepExpandTestCase extends RestletTestCase {
     /** OData service used for all tests. */
     private ContainerService service;
 
+    /**
+     * This checks that a multilingual text field (containing texts for many
+     * languages) has been fully expanded to contain all literals for every
+     * language and to contain the language definitions themselves too.
+     * 
+     * @param multilingual
+     *            The field containing the multiple texts for each language.
+     * @param basePath
+     *            The descriptive path of the multilingual field. Used in
+     *            assertion error messages.
+     */
+    private void assertFullExpansionOfMultilingualField(
+            Multilingual multilingual, String basePath) {
+
+        String baseMessage = "Should have fetched " + basePath;
+
+        Assert.assertNotNull(baseMessage, multilingual);
+
+        Assert.assertNotNull(baseMessage + "/literals",
+                multilingual.getLiterals());
+
+        for (Literal literal : multilingual.getLiterals()) {
+
+            Assert.assertNotNull(baseMessage + "/literals(?)", literal);
+
+            Language language = literal.getLanguage();
+
+            Assert.assertNotNull(String.format("%s/literals(%d)/language",
+                    baseMessage, literal.getId()), language);
+
+            Assert.assertTrue(String.format(
+                    "%s/literals(%d)/language/@id should be greater than zero",
+                    basePath, literal.getId()), language.getId() > 0);
+
+            String languagePath = String.format("%s/literals(%d)/language(%d)",
+                    basePath, literal.getId(), language.getId());
+
+            switch (language.getId()) {
+
+            case 1:
+                Assert.assertTrue(languagePath
+                        + "/@localeCode shoule be \"el\"",
+                        "el".equals(language.getLocaleCode()));
+
+                break;
+
+            case 2:
+                Assert.assertTrue(languagePath
+                        + "/@localeCode shoule be \"en\"",
+                        "en".equals(language.getLocaleCode()));
+
+                Assert.assertTrue(
+                        languagePath + "/@name shoule be \"English\"",
+                        "English".equals(language.getName()));
+
+                break;
+            }
+        }
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -44,6 +104,39 @@ public class ODataDeepExpandTestCase extends RestletTestCase {
         component.stop();
         component = null;
         super.tearDown();
+    }
+
+    /**
+     * This test performs expansion and checks parsing of date forms with
+     * omitted seconds (Issue #946) in the expanded hierarchy.
+     */
+    public void testJobExpansionAndParsingOfShortDates() {
+
+        Query<Job> query = service
+                .createJobQuery("/Job")
+                .expand("jobParts/description/literals/language,jobPosting/name/literals/language");
+
+        for (Job job : query) {
+            Assert.assertNotNull(
+                    "Failed to parse date, resulting to null value",
+                    job.getStartDate());
+            Assert.assertNotNull(
+                    "Failed to parse date, resulting to null value",
+                    job.getEndDate());
+
+            if (job.getJobParts() != null) {
+
+                for (JobPart jobPart : job.getJobParts()) {
+                    Assert.assertNotNull(
+                            "Failed to parse date, resulting to null value",
+                            jobPart.getStartDate());
+                    Assert.assertNotNull(
+                            "Failed to parse date, resulting to null value",
+                            jobPart.getEndDate());
+                }
+            }
+        }
+
     }
 
     /**
@@ -147,92 +240,6 @@ public class ODataDeepExpandTestCase extends RestletTestCase {
                             divisionPath + "/name");
                 }
 
-            }
-        }
-    }
-
-    /**
-     * This test performs expansion and checks parsing of 
-     * date forms with omitted seconds (Issue #946) in the expanded hierarchy.    
-     */
-    public void testJobExpansionAndParsingOfShortDates() {
-        
-    	Query<Job> query = service
-                .createJobQuery("/Job")
-                .expand("jobParts/description/literals/language,jobPosting/name/literals/language");
-
-        for (Job job : query) {
-        	Assert.assertNotNull("Failed to parse date, resulting to null value", job.getStartDate());
-        	Assert.assertNotNull("Failed to parse date, resulting to null value", job.getEndDate());
-            
-        	if (job.getJobParts() != null) {
-
-                for (JobPart jobPart : job.getJobParts()) {
-                	Assert.assertNotNull("Failed to parse date, resulting to null value", jobPart.getStartDate());
-                	Assert.assertNotNull("Failed to parse date, resulting to null value", jobPart.getEndDate());
-                }
-            }
-        }
-        
-    }
-
-
-    /**
-     * This checks that a multilingual text field (containing texts for many
-     * languages) has been fully expanded to contain all literals for every
-     * language and to contain the language definitions themselves too.
-     * 
-     * @param multilingual
-     *            The field containing the multiple texts for each language.
-     * @param basePath
-     *            The descriptive path of the multilingual field. Used in
-     *            assertion error messages.
-     */
-    private void assertFullExpansionOfMultilingualField(
-            Multilingual multilingual, String basePath) {
-
-        String baseMessage = "Should have fetched " + basePath;
-
-        Assert.assertNotNull(baseMessage, multilingual);
-
-        Assert.assertNotNull(baseMessage + "/literals",
-                multilingual.getLiterals());
-
-        for (Literal literal : multilingual.getLiterals()) {
-
-            Assert.assertNotNull(baseMessage + "/literals(?)", literal);
-
-            Language language = literal.getLanguage();
-
-            Assert.assertNotNull(String.format("%s/literals(%d)/language",
-                    baseMessage, literal.getId()), language);
-
-            Assert.assertTrue(String.format(
-                    "%s/literals(%d)/language/@id should be greater than zero",
-                    basePath, literal.getId()), language.getId() > 0);
-
-            String languagePath = String.format("%s/literals(%d)/language(%d)",
-                    basePath, literal.getId(), language.getId());
-
-            switch (language.getId()) {
-
-            case 1:
-                Assert.assertTrue(languagePath
-                        + "/@localeCode shoule be \"el\"",
-                        "el".equals(language.getLocaleCode()));
-
-                break;
-
-            case 2:
-                Assert.assertTrue(languagePath
-                        + "/@localeCode shoule be \"en\"",
-                        "en".equals(language.getLocaleCode()));
-
-                Assert.assertTrue(
-                        languagePath + "/@name shoule be \"English\"",
-                        "English".equals(language.getName()));
-
-                break;
             }
         }
     }

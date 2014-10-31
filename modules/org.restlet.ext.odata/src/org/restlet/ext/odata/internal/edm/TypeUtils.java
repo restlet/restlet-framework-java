@@ -55,8 +55,8 @@ public class TypeUtils {
 
     /** Formater for the EDM DateTime type. */
     public static final List<String> dateTimeFormats = Arrays.asList(
-            "yyyy-MM-dd'T'HH:mm:ssz", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm",
-            "EEE, dd MMM yyyy HH:mm:ss zzz");
+            "yyyy-MM-dd'T'HH:mm:ssz", "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm", "EEE, dd MMM yyyy HH:mm:ss zzz");
 
     /** Formater for the EDM Decimal type. */
     public static final NumberFormat decimalFormat = DecimalFormat
