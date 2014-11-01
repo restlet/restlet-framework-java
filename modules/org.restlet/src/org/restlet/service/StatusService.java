@@ -260,13 +260,7 @@ public class StatusService extends Service {
 
             List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
                     .getVariants(representationObject.getClass(), null);
-            // TODO This seems to be a workaround in order to prevent zealous
-            // converters to cope with conversions whereas they are not supposed
-            // to. Should be updated when introducing strict mode of content
-            // negotiation.
-            if (!variants.contains(VARIANT_HTML)) {
-                variants.add(VARIANT_HTML);
-            }
+
             Variant variant = connegService.getPreferredVariant(variants,
                     request, metadataService);
             try {
