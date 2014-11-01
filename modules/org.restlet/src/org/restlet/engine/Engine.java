@@ -923,6 +923,8 @@ public class Engine {
     public void registerDefaultConverters() {
         getRegisteredConverters().add(
                 new org.restlet.engine.converter.DefaultConverter());
+        getRegisteredConverters().add(
+                new org.restlet.engine.converter.StatusInfoHtmlConverter());
     }
 
     /**
