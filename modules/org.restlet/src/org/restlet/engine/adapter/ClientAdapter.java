@@ -91,8 +91,8 @@ public class ClientAdapter extends Adapter {
                     public void handle(Request request, Response response) {
                         try {
                             updateResponse(response,
-                                    new Status(httpCall.getStatusCode(), null,
-                                            httpCall.getReasonPhrase(), null),
+                                    new Status(httpCall.getStatusCode(),
+                                            httpCall.getReasonPhrase()),
                                     httpCall);
 
                             if (userCallback != null) {

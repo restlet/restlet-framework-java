@@ -239,7 +239,7 @@ public class JettyClientCall extends ClientCall {
             this.httpResponse = (HttpResponse) this.inputStreamResponseListener
                     .get(timeout, TimeUnit.MILLISECONDS);
 
-            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+            result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "An error occurred while reading the request entity.", e);
