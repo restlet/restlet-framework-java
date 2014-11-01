@@ -82,10 +82,10 @@ public class StatusServiceTestCase extends RestletTestCase {
         Status expectedStatus = Status.CLIENT_ERROR_BAD_REQUEST;
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();
         expectedRepresentationMap.put("code", expectedStatus.getCode());
-        expectedRepresentationMap.put("reasonPhrase",
-                expectedStatus.getReasonPhrase());
         expectedRepresentationMap.put("description",
                 expectedStatus.getDescription());
+        expectedRepresentationMap.put("reasonPhrase",
+                expectedStatus.getReasonPhrase());
         String expectedJsonRepresentation = new JacksonRepresentation<HashMap<String, Object>>(
                 expectedRepresentationMap).getText();
 
