@@ -1099,11 +1099,7 @@ public final class Status {
      *            The status to copy.
      * @param description
      *            The description to associate.
-     * @deprecated This should carry the reason phrase instead of the
-     *             description as a first string parameter. Please use
-     *             alternative signatures.
      */
-    @Deprecated
     public Status(Status status, String description) {
         this(status, null, null, description);
     }

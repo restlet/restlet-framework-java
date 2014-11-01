@@ -209,11 +209,7 @@ public class ResourceException extends RuntimeException {
      *            The status to copy.
      * @param description
      *            The description of the encapsulated status.
-     * @deprecated This should carry the reason phrase instead of the
-     *             description as a first string parameter. Please use
-     *             alternative signatures.
      */
-    @Deprecated
     public ResourceException(Status status, String description) {
         this(new Status(status, description));
     }

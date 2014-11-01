@@ -95,6 +95,7 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
             if (responseEntity instanceof JacksonRepresentation) {
                 assertTrue(JacksonRepresentation.class
                         .isAssignableFrom(responseEntity.getClass()));
+                @SuppressWarnings("rawtypes")
                 JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
                 Object entity = jacksonRepresentation.getObject();
                 assertTrue(StatusInfo.class.isAssignableFrom(entity
@@ -117,9 +118,13 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
             Representation responseEntity = clientResource.getResponseEntity();
             assertTrue(JacksonRepresentation.class
                     .isAssignableFrom(responseEntity.getClass()));
+            
+            @SuppressWarnings("rawtypes")
             JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
             Object entity = jacksonRepresentation.getObject();
             assertTrue(Map.class.isAssignableFrom(entity.getClass()));
+            
+            @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) entity;
             assertEquals("my custom error", map.get("customProperty"));
         }

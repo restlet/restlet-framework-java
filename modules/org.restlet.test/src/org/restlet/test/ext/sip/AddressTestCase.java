@@ -109,14 +109,17 @@ public class AddressTestCase extends RestletTestCase {
         assertEquals("\"A. G. Bell\" <sip:agb@bell-telephone.com> ;tag=a48s", w
                 .append(a).toString());
 
-        w = new AddressWriter();
-        a = new Address();
-        a.setDisplayName(null);
-        a.setReference(new Reference("sip:agb@bell-telephone.com"));
-        a.getParameters().add("tag", "a48s");
-        assertEquals("<sip:agb@bell-telephone.com> ;tag=a48s", w.append(a)
-                .toString());
-        w.close();
+        try {
+            w = new AddressWriter();
+            a = new Address();
+            a.setDisplayName(null);
+            a.setReference(new Reference("sip:agb@bell-telephone.com"));
+            a.getParameters().add("tag", "a48s");
+            assertEquals("<sip:agb@bell-telephone.com> ;tag=a48s", w.append(a)
+                    .toString());
+        } finally {
+            w.close();
+        }
     }
 
 }
