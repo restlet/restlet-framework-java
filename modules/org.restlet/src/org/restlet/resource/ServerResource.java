@@ -270,12 +270,6 @@ public abstract class ServerResource extends Resource {
 
         if (getResponse() != null) {
             getResponse().setStatus(status);
-
-            if (getResponseEntity() == null) {
-                getResponse().setEntity(
-                        getStatusService().toRepresentation(status, throwable,
-                                this));
-            }
         }
     }
 

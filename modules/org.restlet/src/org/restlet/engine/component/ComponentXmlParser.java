@@ -440,6 +440,7 @@ public class ComponentXmlParser {
     /**
      * Parse a configuration file and update the component's configuration.
      */
+    @SuppressWarnings("deprecation")
     public void parse() {
         try {
             // Parse and validate the XML configuration

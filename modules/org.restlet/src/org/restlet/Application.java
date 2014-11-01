@@ -157,19 +157,24 @@ public class Application extends Restlet {
             this.helper.setContext(context);
         }
 
+        ConnegService connegService = new ConnegService();
+        ConverterService converterService = new ConverterService();
+        MetadataService metadataService = new MetadataService();
+
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
         this.services = new ServiceList(context);
         this.services.add(new TunnelService(true, true));
-        this.services.add(new StatusService());
+        this.services.add(new StatusService(true, converterService,
+                metadataService, connegService));
         this.services.add(new DecoderService());
         this.services.add(new EncoderService(false));
         this.services.add(new RangeService());
         this.services.add(new ConnectorService());
-        this.services.add(new ConnegService());
-        this.services.add(new ConverterService());
-        this.services.add(new MetadataService());
+        this.services.add(connegService);
+        this.services.add(converterService);
+        this.services.add(metadataService);
 
         // [ifndef gae]
         this.services.add(new org.restlet.service.TaskService(false));

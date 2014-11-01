@@ -31,34 +31,31 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.resource;
+package org.restlet.engine.header;
 
-import java.util.Date;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.resource.ServerResource;
+import java.util.Set;
 
 /**
- * Sample server resource.
+ * String header writer.
  * 
- * @author Jerome Louvel
+ * @author Manuel Boillod
  */
-public class MyServerResource20 extends ServerResource implements MyResource20 {
+public class StringWriter extends HeaderWriter<String> {
 
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.HTTP, 8111);
-        server.setNext(MyServerResource20.class);
-        server.start();
-    }
-
-    public MyBean represent() throws MyException01 {
-        throw new MyException01(new Date());
+    /**
+     * Writes a set of values with a comma separator.
+     * 
+     * @param values
+     *            The set of values.
+     * @return The formatted set of values.
+     */
+    public static String write(Set<String> values) {
+        return new StringWriter().append(values).toString();
     }
 
     @Override
-    public MyBean representAndSerializeException() throws MyException02 {
-        throw new MyException02("my custom error");
+    public StringWriter append(String value) {
+        return (StringWriter) appendToken(value);
     }
 
 }

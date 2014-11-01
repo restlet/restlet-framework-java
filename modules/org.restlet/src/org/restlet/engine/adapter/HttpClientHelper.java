@@ -111,7 +111,7 @@ public abstract class HttpClientHelper extends ClientHelper {
 
     /**
      * Returns the connection timeout. Defaults to 15000.
-     *
+     * 
      * @return The connection timeout.
      */
     public int getSocketConnectTimeoutMs() {
@@ -124,7 +124,7 @@ public abstract class HttpClientHelper extends ClientHelper {
 
         return result;
     }
-    
+
     @Override
     public void handle(Request request, Response response) {
         try {

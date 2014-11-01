@@ -84,6 +84,7 @@
          <exclude name="src/org/restlet/engine/adapter/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/adapter/Server*.java" />
          <exclude name="src/org/restlet/engine/application/*Conneg.java" />
+         <exclude name="src/org/restlet/engine/application/StatusFilter.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/connector/ConnectionClosingRepresentation*" />
          <exclude name="src/org/restlet/engine/connector/Ftp*" />
@@ -92,6 +93,7 @@
          <exclude name="src/org/restlet/engine/connector/HttpUrlConnectionCall*" />
          <exclude name="src/org/restlet/engine/connector/*Server*" />
          <exclude name="src/org/restlet/engine/converter/**" />
+         <exclude name="src/org/restlet/engine/cors/**" />
          <exclude name="src/org/restlet/engine/header/ExpectationUtils.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationReader.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationWriter.java" />
@@ -118,6 +120,7 @@
          <exclude name="src/org/restlet/engine/ssl/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
+         <exclude name="src/org/restlet/engine/util/BeanInfoUtils.java" />
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/ChildClientDispatcher.java" />
          <exclude name="src/org/restlet/engine/util/ChildContext.java" />
@@ -134,6 +137,7 @@
          <exclude name="src/org/restlet/engine/util/Pool.java" />
          <exclude name="src/org/restlet/engine/util/ReferenceUtils.java" />
          <exclude name="src/org/restlet/engine/util/TemplateDispatcher.java" />
+         <exclude name="src/org/restlet/engine/util/ThrowableSerializer.java" />
          <exclude name="src/org/restlet/engine/util/WrapperScheduledExecutorService.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/BufferingRepresentation.java" />
@@ -159,6 +163,7 @@
          <exclude name="src/org/restlet/service/ConnegService.java" />
          <exclude name="src/org/restlet/service/ConnectorService.java" />
          <exclude name="src/org/restlet/service/ConverterService.java" />
+         <exclude name="src/org/restlet/service/CorsService.java" />
          <exclude name="src/org/restlet/service/DecoderService.java" />
          <exclude name="src/org/restlet/service/EncoderService.java" />
          <exclude name="src/org/restlet/service/LogService.java" />

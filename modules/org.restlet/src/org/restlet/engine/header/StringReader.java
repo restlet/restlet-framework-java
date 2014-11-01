@@ -31,34 +31,45 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.resource;
+package org.restlet.engine.header;
 
-import java.util.Date;
+import java.io.IOException;
+import java.util.Collection;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.resource.ServerResource;
+import org.restlet.data.Header;
 
 /**
- * Sample server resource.
+ * String header reader.
  * 
- * @author Jerome Louvel
+ * @author Manuel Boillod
  */
-public class MyServerResource20 extends ServerResource implements MyResource20 {
+public class StringReader extends HeaderReader<String> {
 
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.HTTP, 8111);
-        server.setNext(MyServerResource20.class);
-        server.start();
+    /**
+     * Adds values to the given collection.
+     * 
+     * @param header
+     *            The header to read.
+     * @param collection
+     *            The collection to update.
+     */
+    public static void addValues(Header header, Collection<String> collection) {
+        new StringReader(header.getValue()).addValues(collection);
     }
 
-    public MyBean represent() throws MyException01 {
-        throw new MyException01(new Date());
+    /**
+     * Constructor.
+     * 
+     * @param header
+     *            The header to read.
+     */
+    public StringReader(String header) {
+        super(header);
     }
 
     @Override
-    public MyBean representAndSerializeException() throws MyException02 {
-        throw new MyException02("my custom error");
+    public String readValue() throws IOException {
+        return readToken();
     }
 
 }

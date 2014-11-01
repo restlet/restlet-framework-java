@@ -31,34 +31,32 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.resource;
+package org.restlet.engine.util;
 
-import java.util.Date;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.resource.ServerResource;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Sample server resource.
+ * Utilities for manipulation of {@link Set}.
  * 
- * @author Jerome Louvel
+ * @author Manuel Boillod
  */
-public class MyServerResource20 extends ServerResource implements MyResource20 {
+public class SetUtils {
 
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.HTTP, 8111);
-        server.setNext(MyServerResource20.class);
-        server.start();
-    }
-
-    public MyBean represent() throws MyException01 {
-        throw new MyException01(new Date());
-    }
-
-    @Override
-    public MyBean representAndSerializeException() throws MyException02 {
-        throw new MyException02("my custom error");
+    // [ifndef gwt] method
+    /**
+     * Returns a new {@link java.util.HashSet} with the given elements
+     * 
+     * @param elements
+     *            The elements
+     * @return A new {@link java.util.HashSet} with the given elements
+     */
+    @SafeVarargs
+    public static <E> Set<E> newHashSet(E... elements) {
+        HashSet<E> set = new HashSet<>(elements.length);
+        Collections.addAll(set, elements);
+        return set;
     }
 
 }

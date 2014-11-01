@@ -44,6 +44,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
+import org.restlet.resource.Status;
 import org.restlet.service.MetadataService;
 
 // [excludes gwt]
@@ -147,8 +148,9 @@ public class AnnotationUtils {
                 .getAnnotation(org.restlet.resource.Status.class);
 
         if (annotation != null) {
-            result.add(new StatusAnnotationInfo(initialClass,
-                    ((org.restlet.resource.Status) annotation).value()));
+            Status status = (Status) annotation;
+            result.add(new StatusAnnotationInfo(initialClass, status.value(),
+                    status.serialize()));
         }
 
         return result;
