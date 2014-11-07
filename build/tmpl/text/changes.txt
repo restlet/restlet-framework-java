@@ -4,11 +4,18 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      -        
+
+    - API changes
+      -        
+
+    - Bugs fixed
+      -        
 
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements
-      - Added support of GWT 2.1.7.
-        Contributed by Koen.
+      - Added support of GWT 2.7. Contributed by Koen.
       - Enhanced introspection of Restlet and Jaxrs based applications in 
         conjunction with Swagger and Raml annotations.
       - Added APISpark agent service.
@@ -18,9 +25,6 @@ Changes log
         JSON/XML/CSV/YAML produced, leading to more compact representations.
       - Added additional constructors to Status and ResourceException for convenience
         purpose. Suggested by Kristoffer Gronowski.
-
-    - Bugs fixed
-      -        
 
 - 2.3 Milestone 4 (10/31/2014)
     - Enhancements
