@@ -72,6 +72,13 @@ public class AgentService extends Service {
     private Integer cellVersion;
 
     /**
+     * Default constructor.
+     */
+    public AgentService() {
+        super(true);
+    }
+
+    /**
      * Constructor using the default APISpark service url.
      * 
      * @param agentUsername
