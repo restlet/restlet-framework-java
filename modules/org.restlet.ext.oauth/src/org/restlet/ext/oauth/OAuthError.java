@@ -45,15 +45,14 @@ package org.restlet.ext.oauth;
 public enum OAuthError {
 
     access_denied, // 4.1.2.1 & 4.2.2.1
+    insufficient_scope, // Bearer 3.1, // 5.2
     invalid_client, // 5.2
-    invalid_grant, // 5.2
+    invalid_grant, // 4.1.2.1 & 4.2.2.1 & 5.2
     invalid_request, // 4.1.2.1 & 4.2.2.1 & 5.2
     invalid_scope, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unauthorized_client, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unsupported_grant_type, // 5.2
-    unsupported_response_type, // 4.1.2.1 & 4.2.2.1
+    invalid_token, // 5.2
     server_error, // 4.1.2.1 & 4.2.2.1
-
-    invalid_token, // Bearer 3.1
-    insufficient_scope // Bearer 3.1
+    unauthorized_client, // 4.1.2.1 & 4.2.2.1
+    unsupported_grant_type, // Bearer 3.1
+    unsupported_response_type
 }

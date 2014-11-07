@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+
 import org.json.JSONException;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -101,21 +102,21 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         return VERSION;
     }
 
+    private String authorizationURI;
+
     private final boolean basicSecret;
 
     private final org.restlet.Client cc;
-
-    private final SecureRandom random;
 
     private String clientId;
 
     private String clientSecret;
 
+    private final SecureRandom random;
+
     private String redirectURI;
 
     private String[] scope;
-
-    private String authorizationURI;
 
     private String tokenURI;
 
@@ -169,120 +170,6 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         }
     }
 
-    private String setupState(Response response) {
-        String sessionId = UUID.randomUUID().toString();
-
-        byte[] secret = new byte[20];
-        random.nextBytes(secret);
-        String state = Base64.encode(secret, false);
-
-        CookieSetting cs = new CookieSetting("_state", sessionId);
-        response.getCookieSettings().add(cs);
-
-        getContext().getAttributes().put(sessionId, state);
-
-        return state;
-    }
-
-    private void validateState(Request request, Form params) throws Exception {
-        String sessionId = request.getCookies().getFirstValue("_state");
-        String state = (String) getContext().getAttributes().get(sessionId);
-        if (state != null && state.equals(params.getFirstValue(STATE))) {
-            return;
-        }
-        // CSRF detected
-        throw new Exception("The state does not match.");
-    }
-
-    protected OAuthParameters createAuthorizationRequest() {
-        OAuthParameters parameters = new OAuthParameters().responseType(
-                ResponseType.code).add(CLIENT_ID, getClientId());
-        if (redirectURI != null) {
-            parameters.redirectURI(redirectURI);
-        }
-        if (scope != null) {
-            parameters.scope(scope);
-        }
-        return parameters;
-    }
-
-    protected OAuthParameters createTokenRequest(String code) {
-        OAuthParameters parameters = new OAuthParameters().grantType(
-                GrantType.authorization_code).code(code);
-        if (redirectURI != null) {
-            parameters.redirectURI(redirectURI);
-        }
-        return parameters;
-    }
-
-    protected Representation getErrorPage(Exception ex) {
-        // Failed in initial auth resource request
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><body><pre>");
-        if (ex instanceof OAuthException) {
-            OAuthException oex = (OAuthException) ex;
-            sb.append("OAuth2 error detected.\n");
-
-            sb.append("Error : ").append(oex.getError());
-            if (oex.getErrorDescription() != null) {
-                sb.append("Error description : ").append(
-                        oex.getErrorDescription());
-            }
-
-            if (oex.getErrorURI() != null) {
-                sb.append("<a href=\"");
-                sb.append(oex.getErrorURI());
-                sb.append("\">Error Description</a>");
-            }
-        } else {
-            sb.append("General error detected.\n");
-            sb.append("Error : ").append(ex.getMessage());
-        }
-
-        sb.append("</pre></body></html>");
-
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
-    }
-
-    private Token requestToken(String code) throws OAuthException, IOException,
-            JSONException {
-        getLogger().fine("Came back after authorization code = " + code);
-
-        final AccessTokenClientResource tokenResource;
-        String endpoint = getTokenURI();
-        if (endpoint.contains("graph.facebook.com")) {
-            // We should use Facebook implementation. (Old draft spec.)
-            tokenResource = new FacebookAccessTokenClientResource(
-                    new Reference(endpoint));
-        } else {
-            tokenResource = new AccessTokenClientResource(new Reference(
-                    endpoint));
-            tokenResource
-                    .setAuthenticationMethod(basicSecret ? ChallengeScheme.HTTP_BASIC
-                            : null);
-        }
-        tokenResource.setClientCredentials(getClientId(), getClientSecret());
-
-        if (cc != null) {
-            tokenResource.setNext(cc);
-        }
-
-        OAuthParameters tokenRequest = createTokenRequest(code);
-
-        try {
-            getLogger().fine("Sending access form : " + tokenRequest);
-            return tokenResource.requestToken(tokenRequest);
-        } finally {
-            tokenResource.release();
-        }
-    }
-
-    private int sendErrorPage(Response response, Exception ex) {
-        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
-        response.setEntity(getErrorPage(ex));
-        return STOP;
-    }
-
     @Override
     protected int beforeHandle(Request request, Response response) {
         // Sets the no-store Cache-Control header
@@ -326,19 +213,39 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         return STOP;
     }
 
+    protected OAuthParameters createAuthorizationRequest() {
+        OAuthParameters parameters = new OAuthParameters().responseType(
+                ResponseType.code).add(CLIENT_ID, getClientId());
+        if (redirectURI != null) {
+            parameters.redirectURI(redirectURI);
+        }
+        if (scope != null) {
+            parameters.scope(scope);
+        }
+        return parameters;
+    }
+
+    protected OAuthParameters createTokenRequest(String code) {
+        OAuthParameters parameters = new OAuthParameters().grantType(
+                GrantType.authorization_code).code(code);
+        if (redirectURI != null) {
+            parameters.redirectURI(redirectURI);
+        }
+        return parameters;
+    }
+
+    /**
+     * @return the authorizationURI
+     */
+    public String getAuthorizationURI() {
+        return authorizationURI;
+    }
+
     /**
      * @return the clientId
      */
     public String getClientId() {
         return clientId;
-    }
-
-    /**
-     * @param clientId
-     *            the clientId to set
-     */
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
     }
 
     /**
@@ -348,12 +255,33 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         return clientSecret;
     }
 
-    /**
-     * @param clientSecret
-     *            the clientSecret to set
-     */
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
+    protected Representation getErrorPage(Exception ex) {
+        // Failed in initial auth resource request
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><pre>");
+        if (ex instanceof OAuthException) {
+            OAuthException oex = (OAuthException) ex;
+            sb.append("OAuth2 error detected.\n");
+
+            sb.append("Error : ").append(oex.getError());
+            if (oex.getErrorDescription() != null) {
+                sb.append("Error description : ").append(
+                        oex.getErrorDescription());
+            }
+
+            if (oex.getErrorURI() != null) {
+                sb.append("<a href=\"");
+                sb.append(oex.getErrorURI());
+                sb.append("\">Error Description</a>");
+            }
+        } else {
+            sb.append("General error detected.\n");
+            sb.append("Error : ").append(ex.getMessage());
+        }
+
+        sb.append("</pre></body></html>");
+
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
     }
 
     /**
@@ -364,14 +292,6 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param redirectURI
-     *            the redirectURI to set
-     */
-    public void setRedirectURI(String redirectURI) {
-        this.redirectURI = redirectURI;
-    }
-
-    /**
      * @return the scope
      */
     public String[] getScope() {
@@ -379,18 +299,49 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param scope
-     *            the scope to set
+     * @return the tokenURI
      */
-    public void setScope(String[] scope) {
-        this.scope = scope;
+    public String getTokenURI() {
+        return tokenURI;
     }
 
-    /**
-     * @return the authorizationURI
-     */
-    public String getAuthorizationURI() {
-        return authorizationURI;
+    private Token requestToken(String code) throws OAuthException, IOException,
+            JSONException {
+        getLogger().fine("Came back after authorization code = " + code);
+
+        final AccessTokenClientResource tokenResource;
+        String endpoint = getTokenURI();
+        if (endpoint.contains("graph.facebook.com")) {
+            // We should use Facebook implementation. (Old draft spec.)
+            tokenResource = new FacebookAccessTokenClientResource(
+                    new Reference(endpoint));
+        } else {
+            tokenResource = new AccessTokenClientResource(new Reference(
+                    endpoint));
+            tokenResource
+                    .setAuthenticationMethod(basicSecret ? ChallengeScheme.HTTP_BASIC
+                            : null);
+        }
+        tokenResource.setClientCredentials(getClientId(), getClientSecret());
+
+        if (cc != null) {
+            tokenResource.setNext(cc);
+        }
+
+        OAuthParameters tokenRequest = createTokenRequest(code);
+
+        try {
+            getLogger().fine("Sending access form : " + tokenRequest);
+            return tokenResource.requestToken(tokenRequest);
+        } finally {
+            tokenResource.release();
+        }
+    }
+
+    private int sendErrorPage(Response response, Exception ex) {
+        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
+        response.setEntity(getErrorPage(ex));
+        return STOP;
     }
 
     /**
@@ -402,10 +353,35 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @return the tokenURI
+     * @param clientId
+     *            the clientId to set
      */
-    public String getTokenURI() {
-        return tokenURI;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    /**
+     * @param clientSecret
+     *            the clientSecret to set
+     */
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    /**
+     * @param redirectURI
+     *            the redirectURI to set
+     */
+    public void setRedirectURI(String redirectURI) {
+        this.redirectURI = redirectURI;
+    }
+
+    /**
+     * @param scope
+     *            the scope to set
+     */
+    public void setScope(String[] scope) {
+        this.scope = scope;
     }
 
     /**
@@ -414,6 +390,31 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
      */
     public void setTokenURI(String tokenURI) {
         this.tokenURI = tokenURI;
+    }
+
+    private String setupState(Response response) {
+        String sessionId = UUID.randomUUID().toString();
+
+        byte[] secret = new byte[20];
+        random.nextBytes(secret);
+        String state = Base64.encode(secret, false);
+
+        CookieSetting cs = new CookieSetting("_state", sessionId);
+        response.getCookieSettings().add(cs);
+
+        getContext().getAttributes().put(sessionId, state);
+
+        return state;
+    }
+
+    private void validateState(Request request, Form params) throws Exception {
+        String sessionId = request.getCookies().getFirstValue("_state");
+        String state = (String) getContext().getAttributes().get(sessionId);
+        if (state != null && state.equals(params.getFirstValue(STATE))) {
+            return;
+        }
+        // CSRF detected
+        throw new Exception("The state does not match.");
     }
 
 }

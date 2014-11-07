@@ -45,6 +45,12 @@ import org.restlet.ext.osgi.ApplicationProvider;
  * @author Wolfgang Werner
  */
 public class ApplicationServlet extends ServerServlet {
+    private static final long serialVersionUID = 5252087180467260130L;
+
+    private transient ApplicationProvider applicationProvider;
+
+    private ServletConfig servletConfig;
+
     public ApplicationServlet(ApplicationProvider applicationProvider) {
         this.applicationProvider = applicationProvider;
     }
@@ -65,10 +71,4 @@ public class ApplicationServlet extends ServerServlet {
         servletConfig = config;
         super.init(config);
     }
-
-    private static final long serialVersionUID = 5252087180467260130L;
-
-    private transient ApplicationProvider applicationProvider;
-
-    private ServletConfig servletConfig;
 }

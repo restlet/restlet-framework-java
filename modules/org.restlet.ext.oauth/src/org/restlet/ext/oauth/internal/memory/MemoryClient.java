@@ -35,6 +35,7 @@ package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Arrays;
 import java.util.Map;
+
 import org.restlet.ext.oauth.GrantType;
 import org.restlet.ext.oauth.ResponseType;
 import org.restlet.ext.oauth.internal.Client;
@@ -52,9 +53,9 @@ public class MemoryClient implements Client {
 
     private ClientType clientType;
 
-    private String[] redirectURIs;
-
     private Map<String, Object> properties;
+
+    private String[] redirectURIs;
 
     protected MemoryClient(String clientId, ClientType clientType,
             String[] redirectURIs, Map<String, Object> properties) {
@@ -72,24 +73,16 @@ public class MemoryClient implements Client {
         return clientSecret;
     }
 
-    protected void setClientSecret(char[] clientSecret) {
-        this.clientSecret = clientSecret;
-    }
-
-    public String[] getRedirectURIs() {
-        return redirectURIs;
+    public ClientType getClientType() {
+        return clientType;
     }
 
     public Map<String, Object> getProperties() {
         return properties;
     }
 
-    public boolean isResponseTypeAllowed(ResponseType responseType) {
-        return isFlowSupported(responseType);
-    }
-
-    public boolean isGrantTypeAllowed(GrantType grantType) {
-        return isFlowSupported(grantType);
+    public String[] getRedirectURIs() {
+        return redirectURIs;
     }
 
     private boolean isFlowSupported(Object flow) {
@@ -98,7 +91,15 @@ public class MemoryClient implements Client {
                 flow);
     }
 
-    public ClientType getClientType() {
-        return clientType;
+    public boolean isGrantTypeAllowed(GrantType grantType) {
+        return isFlowSupported(grantType);
+    }
+
+    public boolean isResponseTypeAllowed(ResponseType responseType) {
+        return isFlowSupported(responseType);
+    }
+
+    protected void setClientSecret(char[] clientSecret) {
+        this.clientSecret = clientSecret;
     }
 }

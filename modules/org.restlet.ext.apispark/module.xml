@@ -15,5 +15,6 @@
       <dependency type="library" id="raml" />
       <dependency type="module" id="core" />
       <dependency type="module" id="jackson" />
+      <dependency type="module" id="jaxrs" />
    </dependencies>
 </module>

@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth;
 
 import java.net.URI;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -130,18 +131,6 @@ public class ProtectedClientResource extends ClientResource implements
         return token;
     }
 
-    public void setToken(Token token) {
-        this.token = token;
-    }
-
-    public boolean isUseBodyMethod() {
-        return useBodyMethod;
-    }
-
-    public void setUseBodyMethod(boolean useBodyMethod) {
-        this.useBodyMethod = useBodyMethod;
-    }
-
     @Override
     public Response handleOutbound(Request request) {
         if (token == null) {
@@ -172,5 +161,17 @@ public class ProtectedClientResource extends ClientResource implements
                     "Unsupported token type.");
         }
         return super.handleOutbound(request);
+    }
+
+    public boolean isUseBodyMethod() {
+        return useBodyMethod;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
+    public void setUseBodyMethod(boolean useBodyMethod) {
+        this.useBodyMethod = useBodyMethod;
     }
 }

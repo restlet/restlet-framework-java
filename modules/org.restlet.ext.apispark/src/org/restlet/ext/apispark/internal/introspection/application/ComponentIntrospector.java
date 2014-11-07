@@ -41,7 +41,11 @@ import org.restlet.data.Reference;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.routing.*;
+import org.restlet.routing.Filter;
+import org.restlet.routing.Route;
+import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Publish the documentation of a Restlet-based Application to the APISpark
@@ -52,16 +56,18 @@ import org.restlet.routing.*;
 public class ComponentIntrospector extends IntrospectionUtils {
 
     /** Internal logger. */
-//    protected static Logger LOGGER = Logger.getLogger(ComponentIntrospector.class
-//            .getName());
+    // protected static Logger LOGGER =
+    // Logger.getLogger(ComponentIntrospector.class
+    // .getName());
 
     /**
-     * Returns an instance of what must be a subclass of {@link org.restlet.Component}.
-     * Returns null in case of errors.
-     *
+     * Returns an instance of what must be a subclass of
+     * {@link org.restlet.Component}. Returns null in case of errors.
+     * 
      * @param className
      *            The name of the component class.
-     * @return An instance of what must be a subclass of {@link org.restlet.Component}.
+     * @return An instance of what must be a subclass of
+     *         {@link org.restlet.Component}.
      */
     public static Component getComponent(String className) {
         return ReflectUtils.newInstance(className, Component.class);
@@ -69,7 +75,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
 
     /**
      * Returns the endpoint to which the application is attached.
-     *
+     * 
      * @param virtualHost
      *            The virtual host to which this application may be attached.
      * @param application
@@ -79,7 +85,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
      * @return The endpoint.
      */
     public static Endpoint getEndpoint(VirtualHost virtualHost,
-                                       Application application, String challengeScheme) {
+            Application application, String challengeScheme) {
         Endpoint result = null;
 
         for (Route route : virtualHost.getRoutes()) {
@@ -121,7 +127,8 @@ public class ComponentIntrospector extends IntrospectionUtils {
                         // Concatenate in order to get the endpoint
                         result = new Endpoint(ref.getHostDomain(),
                                 ref.getHostPort(), ref.getSchemeProtocol()
-                                .getSchemeName(), ref.getPath(), challengeScheme);
+                                        .getSchemeName(), ref.getPath(),
+                                challengeScheme);
                     }
                 }
             }
@@ -131,7 +138,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
 
     /**
      * Returns the next application available.
-     *
+     * 
      * @param current
      *            The current Restlet to inspect.
      * @return The first application available.

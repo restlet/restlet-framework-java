@@ -212,19 +212,6 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onMessageCompleted(boolean endDetected) throws IOException {
-        super.onMessageCompleted(endDetected);
-
-        // Wakeup the controller to update the registrations,
-        // since this callback can be called asynchronous
-        getHelper().getController().wakeup();
-
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Inbound message completed");
-        }
-    }
-
-    @Override
     public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
         int result = 0;
@@ -300,12 +287,6 @@ public abstract class InboundWay extends Way {
     public void onFillEof() {
     }
 
-    @Override
-    protected void onPostProcessing() {
-        // Socket channel exhausted
-        setIoState(IoState.INTEREST);
-    }
-
     /**
      * Callback invoked when a message has been received. Note that only the
      * start line and the headers must have been received, not the optional
@@ -317,6 +298,25 @@ public abstract class InboundWay extends Way {
             getLogger()
                     .finer("Inbound message start line and headers received");
         }
+    }
+
+    @Override
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        super.onMessageCompleted(endDetected);
+
+        // Wakeup the controller to update the registrations,
+        // since this callback can be called asynchronous
+        getHelper().getController().wakeup();
+
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Inbound message completed");
+        }
+    }
+
+    @Override
+    protected void onPostProcessing() {
+        // Socket channel exhausted
+        setIoState(IoState.INTEREST);
     }
 
     /**

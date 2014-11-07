@@ -91,9 +91,9 @@ public abstract class BaseResourceProvider extends BaseRestletProvider
         implements ResourceProvider {
     private Finder finder;
 
-    private String[] paths;
-
     private Integer matchingMode;
+
+    private String[] paths;
 
     /**
      * Called by OSGi DS to activate the service
@@ -141,12 +141,12 @@ public abstract class BaseResourceProvider extends BaseRestletProvider
     }
 
     @Override
-    public String[] getPaths() {
-        return paths.clone();
+    public int getMatchingMode() {
+        return matchingMode;
     }
 
     @Override
-    public int getMatchingMode() {
-        return matchingMode;
+    public String[] getPaths() {
+        return paths.clone();
     }
 }

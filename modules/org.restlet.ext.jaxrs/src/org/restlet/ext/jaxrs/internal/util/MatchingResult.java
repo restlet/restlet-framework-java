@@ -44,11 +44,11 @@ import javax.ws.rs.Path;
  */
 public class MatchingResult {
 
+    private final RemainingPath finalCapturingGroup;
+
     private final String matched;
 
     private final Map<String, String> variables;
-
-    private final RemainingPath finalCapturingGroup;
 
     /**
      * Creates a new MatchingResult

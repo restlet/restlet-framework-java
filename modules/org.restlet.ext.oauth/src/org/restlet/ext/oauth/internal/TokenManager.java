@@ -42,6 +42,48 @@ import org.restlet.ext.oauth.OAuthException;
 public interface TokenManager {
 
     /**
+     * Call
+     * {@link #findToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
+     * with username=null.
+     * 
+     * @param client
+     *            the client that bound to token.
+     * @return null if not found.
+     */
+    Token findToken(Client client);
+
+    /**
+     * Find a token issued for the client and the username. For those tokens
+     * issued for 'client_credentials' grant type, username must be null.
+     * 
+     * @param client
+     *            the client that bound to token.
+     * @param username
+     *            the username that bound to token. null if the token was issued
+     *            for the client itself.
+     * @return null if not found.
+     */
+    Token findToken(Client client, String username);
+
+    /**
+     * Find all tokens bound to the client.
+     * 
+     * @param client
+     *            the client that bound to tokens.
+     * @return 0 length if not found.
+     */
+    Token[] findTokens(Client client);
+
+    /**
+     * Find all tokens bound to the username.
+     * 
+     * @param username
+     *            the username that bound to tokens.
+     * @return 0 length if not found.
+     */
+    Token[] findTokens(String username);
+
+    /**
      * Generate a new token for the client and the username. If the token has
      * already issued for the client and the username, the token will be
      * replaced or updated. If username is null, token will issued for the
@@ -66,59 +108,40 @@ public interface TokenManager {
      * @return
      * @throws OAuthException
      */
-    Token generateToken(Client client, String[] scope)
-            throws OAuthException;
+    Token generateToken(Client client, String[] scope) throws OAuthException;
 
     Token refreshToken(Client client, String refreshToken, String[] scope)
             throws OAuthException;
 
-    String storeSession(AuthSession session) throws OAuthException;
-
     AuthSession restoreSession(String code) throws OAuthException;
 
-    Token validateToken(String accessToken) throws OAuthException;
-
     /**
-     * Find a token issued for the client and the username. For those tokens
-     * issued for 'client_credentials' grant type, username must be null.
-     * 
-     * @param client
-     *            the client that bound to token.
-     * @param username
-     *            the username that bound to token. null if the token was issued
-     *            for the client itself.
-     * @return null if not found.
-     */
-    Token findToken(Client client, String username);
-
-    /**
-     * Call
-     * {@link #findToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
-     * with username=null.
-     * 
-     * @param client
-     *            the client that bound to token.
-     * @return null if not found.
-     */
-    Token findToken(Client client);
-
-    /**
-     * Find all tokens bound to the username.
-     * 
-     * @param username
-     *            the username that bound to tokens.
-     * @return 0 length if not found.
-     */
-    Token[] findTokens(String username);
-
-    /**
-     * Find all tokens bound to the client.
+     * Revoke all tokens bound to the client.
      * 
      * @param client
      *            the client that bound to tokens.
      * @return 0 length if not found.
      */
-    Token[] findTokens(Client client);
+    void revokeAllTokens(Client client);
+
+    /**
+     * Revoke all tokens bound to the username.
+     * 
+     * @param username
+     *            the username that bound to tokens.
+     * @return 0 length if not found.
+     */
+    void revokeAllTokens(String username);
+
+    /**
+     * Call
+     * {@link #revokeToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
+     * with username=null.
+     * 
+     * @param client
+     *            the client that bound to token.
+     */
+    void revokeToken(Client client);
 
     /**
      * Revoke a token issued for the client and the username. For those tokens
@@ -132,31 +155,7 @@ public interface TokenManager {
      */
     void revokeToken(Client client, String username);
 
-    /**
-     * Call
-     * {@link #revokeToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
-     * with username=null.
-     * 
-     * @param client
-     *            the client that bound to token.
-     */
-    void revokeToken(Client client);
+    String storeSession(AuthSession session) throws OAuthException;
 
-    /**
-     * Revoke all tokens bound to the username.
-     * 
-     * @param username
-     *            the username that bound to tokens.
-     * @return 0 length if not found.
-     */
-    void revokeAllTokens(String username);
-
-    /**
-     * Revoke all tokens bound to the client.
-     * 
-     * @param client
-     *            the client that bound to tokens.
-     * @return 0 length if not found.
-     */
-    void revokeAllTokens(Client client);
+    Token validateToken(String accessToken) throws OAuthException;
 }

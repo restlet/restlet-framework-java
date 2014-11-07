@@ -147,15 +147,15 @@ public class Relation {
             "predecessor-version");
 
     /**
-     * A URI that refers to the immediately preceding archive document.
-     */
-    public static final Relation PREVIOUS_ARCHIVE = new Relation("prev-archive");
-
-    /**
      * Signifies that the IRI in the value of the href attribute identifies the
      * previous resource in a series including the current resource.
      */
     public static final Relation PREVIOUS = new Relation("previous");
+
+    /**
+     * A URI that refers to the immediately preceding archive document.
+     */
+    public static final Relation PREVIOUS_ARCHIVE = new Relation("prev-archive");
 
     /**
      * Signifies that the IRI in the value of the href attribute identifies a

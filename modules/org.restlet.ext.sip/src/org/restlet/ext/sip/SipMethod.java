@@ -42,15 +42,15 @@ import org.restlet.data.Method;
  */
 public final class SipMethod {
 
-    private static final String BASE_SIP = "http://tools.ietf.org/html/rfc3261";
+    private static final String _BASE_SIP = "http://tools.ietf.org/html/rfc3261";
 
-    private static final String BASE_SIP_EVENT = "http://tools.ietf.org/html/rfc3903";
+    private static final String _BASE_SIP_EVENT = "http://tools.ietf.org/html/rfc3903";
 
-    private static final String BASE_SIP_INFO = "http://tools.ietf.org/html/rfc2976";
+    private static final String _BASE_SIP_INFO = "http://tools.ietf.org/html/rfc2976";
 
-    private static final String BASE_SIP_NOTIFICATION = "http://tools.ietf.org/html/rfc3265";
+    private static final String _BASE_SIP_NOTIFICATION = "http://tools.ietf.org/html/rfc3265";
 
-    private static final String BASE_SIP_REFER = "http://tools.ietf.org/html/rfc3515";
+    private static final String _BASE_SIP_REFER = "http://tools.ietf.org/html/rfc3515";
 
     /**
      * Confirms that the client has received a final response to an INVITE
@@ -60,7 +60,7 @@ public final class SipMethod {
      *      RFC - 17.1.1.3 ACK</a>
      */
     public static final Method ACK = new Method("ACK",
-            "Acknowledgment message", BASE_SIP + "#section-17.1.1.3", false,
+            "Acknowledgment message", _BASE_SIP + "#section-17.1.1.3", false,
             false, false);
 
     /**
@@ -70,7 +70,7 @@ public final class SipMethod {
      *      15.1 BYE</a>
      */
     public static final Method BYE = new Method("BYE", "Terminates a call",
-            BASE_SIP + "#section-15.1");
+            _BASE_SIP + "#section-15.1");
 
     /**
      * Cancels any pending request.
@@ -79,7 +79,7 @@ public final class SipMethod {
      *      CANCEL</a>
      */
     public static final Method CANCEL = new Method("CANCEL",
-            "Cancels any pending request", BASE_SIP + "#section-9");
+            "Cancels any pending request", _BASE_SIP + "#section-9");
 
     /**
      * Allow for the carrying of session related control information that is
@@ -89,7 +89,7 @@ public final class SipMethod {
      *      Method</a>
      */
     public static final Method INFO = new Method("INFO", "Information message",
-            BASE_SIP_INFO);
+            _BASE_SIP_INFO);
 
     /**
      * Indicates a client is being invited to participate in a call session.
@@ -98,7 +98,7 @@ public final class SipMethod {
      *      INVITE</a>
      */
     public static final Method INVITE = new Method("INVITE",
-            "Call session invitation", BASE_SIP + "#section-17");
+            "Call session invitation", _BASE_SIP + "#section-17");
 
     /**
      * Sent to inform subscribers of changes in state to which the subscriber
@@ -108,7 +108,7 @@ public final class SipMethod {
      *      3.2. Description of NOTIFY Behavior</a>
      */
     public static final Method NOTIFY = new Method("NOTIFY",
-            "Notification message", BASE_SIP_NOTIFICATION + "#section-3.2");
+            "Notification message", _BASE_SIP_NOTIFICATION + "#section-3.2");
 
     /**
      * Queries the capabilities of servers.
@@ -117,7 +117,7 @@ public final class SipMethod {
      *      OPTIONS</a>
      */
     public static final Method OPTIONS = new Method("OPTIONS",
-            "Capabilities query", BASE_SIP + "#section-11");
+            "Capabilities query", _BASE_SIP + "#section-11");
 
     /**
      * Publishes event state.
@@ -126,7 +126,7 @@ public final class SipMethod {
      *      Constructing PUBLISH Requests</a>
      */
     public static final Method PUBLISH = new Method("PUBLISH",
-            "Publication message", BASE_SIP_EVENT + "#section-4");
+            "Publication message", _BASE_SIP_EVENT + "#section-4");
 
     /**
      * The recipient should refer to a resource provided in the Refer-To header
@@ -136,7 +136,7 @@ public final class SipMethod {
      *      - 2 REFER</a>
      */
     public static final Method REFER = new Method("REFER",
-            "Contact a third-party", BASE_SIP_REFER + "#section-2");
+            "Contact a third-party", _BASE_SIP_REFER + "#section-2");
 
     /**
      * Registers the address listed in the To header field with a SIP server.
@@ -145,7 +145,7 @@ public final class SipMethod {
      *      REGISTER</a>
      */
     public static final Method REGISTER = new Method("REGISTER",
-            "User registration", BASE_SIP + "#section-10");
+            "User registration", _BASE_SIP + "#section-10");
 
     /**
      * Used to request current state and state updates from a remote node.
@@ -154,7 +154,7 @@ public final class SipMethod {
      *      3.1. Description of SUBSCRIBE Behavior</a>
      */
     public static final Method SUBSCRIBE = new Method("SUBSCRIBE",
-            "Subscription message", BASE_SIP_NOTIFICATION + "#section-3.1");
+            "Subscription message", _BASE_SIP_NOTIFICATION + "#section-3.1");
 
     /**
      * Returns the method associated to a given method name. If an existing

@@ -35,9 +35,7 @@ package org.restlet.ext.xdb;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.security.AccessControlException;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;

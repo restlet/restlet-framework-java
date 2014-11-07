@@ -673,11 +673,11 @@ public class StringUtils {
         return source.substring(beginIndex, endIndex);
     }
 
-
     /**
      * Returns the given string if it is non-null; the empty string otherwise.
-     *
-     * @param string the string to test and possibly return
+     * 
+     * @param string
+     *            the string to test and possibly return
      * @return {@code string} itself if it is non-null; {@code ""} if it is null
      */
     public static String nullToEmpty(String string) {
@@ -686,39 +686,46 @@ public class StringUtils {
 
     /**
      * Returns {@code true} if the given string is null or is the empty string.
-     *
-     * <p>Consider normalizing your string references with {@link #nullToEmpty}.
-     * If you do, you can use {@link String#isEmpty()} instead of this
-     * method, and you won't need special null-safe forms of methods like {@link
-     * String#toUpperCase} either.
-     *
-     * @param string a string reference to check
+     * 
+     * <p>
+     * Consider normalizing your string references with {@link #nullToEmpty}. If
+     * you do, you can use {@link String#isEmpty()} instead of this method, and
+     * you won't need special null-safe forms of methods like
+     * {@link String#toUpperCase} either.
+     * 
+     * @param string
+     *            a string reference to check
      * @return {@code true} if the string is null or is the empty string
      */
     public static boolean isNullOrEmpty(String string) {
-        return string == null || string.length() == 0; // string.isEmpty() in Java 6
+        return string == null || string.length() == 0; // string.isEmpty() in
+                                                       // Java 6
     }
 
     /**
      * Returns an list of trimmed token splitted with the split character ",".
+     * 
      * @param stringToSlit
-     *          The String to split
+     *            The String to split
      * @return List of tokens
      */
     public static List<String> splitAndTrim(String stringToSlit) {
-       return splitAndTrim(stringToSlit, ",");
+        return splitAndTrim(stringToSlit, ",");
     }
 
     /**
      * Returns an list of trimmed token splitted with the split character.
+     * 
      * @param stringToSlit
-     *          The String to split
+     *            The String to split
      * @param splitCharacter
-     *          The split Character
+     *            The split Character
      * @return List of tokens
      */
-    public static List<String> splitAndTrim(String stringToSlit, String splitCharacter) {
-       return Arrays.asList(stringToSlit.split("\\s*"+splitCharacter+"\\s*"));
+    public static List<String> splitAndTrim(String stringToSlit,
+            String splitCharacter) {
+        return Arrays.asList(stringToSlit.split("\\s*" + splitCharacter
+                + "\\s*"));
     }
 
     /**

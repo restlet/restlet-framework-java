@@ -745,7 +745,7 @@ public abstract class Resource {
     // [ifndef gwt] method
     /**
      * Returns the application's status service or create a new one.
-     *
+     * 
      * @return The status service.
      */
     public org.restlet.service.StatusService getStatusService() {

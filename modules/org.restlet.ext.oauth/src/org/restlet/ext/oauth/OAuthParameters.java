@@ -36,6 +36,7 @@ package org.restlet.ext.oauth;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.Scopes;
@@ -54,9 +55,9 @@ public class OAuthParameters implements OAuthResourceDefs {
         form = new Form();
     }
 
-    @Override
-    public String toString() {
-        return form.getQueryString();
+    public OAuthParameters add(String name, String value) {
+        form.add(name, value);
+        return this;
     }
 
     // protected OAuthParameters clientId(String clientId) {
@@ -69,8 +70,8 @@ public class OAuthParameters implements OAuthResourceDefs {
     // return this;
     // }
 
-    public OAuthParameters responseType(ResponseType responseType) {
-        add(RESPONSE_TYPE, responseType.name());
+    public OAuthParameters code(String code) {
+        add(CODE, code);
         return this;
     }
 
@@ -79,8 +80,8 @@ public class OAuthParameters implements OAuthResourceDefs {
         return this;
     }
 
-    public OAuthParameters code(String code) {
-        add(CODE, code);
+    public OAuthParameters password(String password) {
+        add(PASSWORD, password);
         return this;
     }
 
@@ -89,18 +90,13 @@ public class OAuthParameters implements OAuthResourceDefs {
         return this;
     }
 
-    public OAuthParameters username(String username) {
-        add(USERNAME, username);
-        return this;
-    }
-
-    public OAuthParameters password(String password) {
-        add(PASSWORD, password);
-        return this;
-    }
-
     public OAuthParameters refreshToken(String refreshToken) {
         add(REFRESH_TOKEN, refreshToken);
+        return this;
+    }
+
+    public OAuthParameters responseType(ResponseType responseType) {
+        add(RESPONSE_TYPE, responseType.name());
         return this;
     }
 
@@ -114,13 +110,8 @@ public class OAuthParameters implements OAuthResourceDefs {
         return this;
     }
 
-    public OAuthParameters add(String name, String value) {
-        form.add(name, value);
-        return this;
-    }
-
-    public Representation toRepresentation() {
-        return form.getWebRepresentation();
+    protected Form toForm() {
+        return form;
     }
 
     public Reference toReference(String uri) {
@@ -137,7 +128,17 @@ public class OAuthParameters implements OAuthResourceDefs {
         return reference;
     }
 
-    protected Form toForm() {
-        return form;
+    public Representation toRepresentation() {
+        return form.getWebRepresentation();
+    }
+
+    @Override
+    public String toString() {
+        return form.getQueryString();
+    }
+
+    public OAuthParameters username(String username) {
+        add(USERNAME, username);
+        return this;
     }
 }

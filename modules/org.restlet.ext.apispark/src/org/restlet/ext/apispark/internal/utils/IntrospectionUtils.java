@@ -34,10 +34,9 @@ public class IntrospectionUtils {
 
     private static List<String> STRATEGIES = Arrays.asList("add", "reset");
 
-
     /**
      * Indicates if the given value is either null or empty.
-     *
+     * 
      * @param value
      *            The value.
      * @return True if the value is either null or empty.
@@ -283,15 +282,17 @@ public class IntrospectionUtils {
                 Representation representation = definition.getContract()
                         .getRepresentation(representationIdentifier);
 
-                //primitives types are not present in representations list
+                // primitives types are not present in representations list
                 if (representation != null) {
                     if (representationsSections.get(representation) != null) {
                         representationsSections.get(representation).addAll(
                                 entry.getKey().getSections());
                     } else {
                         Collection<String> representationSections = new HashSet<String>();
-                        representationSections.addAll(representation.getSections());
-                        representationSections.addAll(entry.getKey().getSections());
+                        representationSections.addAll(representation
+                                .getSections());
+                        representationSections.addAll(entry.getKey()
+                                .getSections());
                         representationsSections.put(representation,
                                 representationSections);
                     }

@@ -40,6 +40,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.oauth.GrantType;
 import org.restlet.ext.oauth.ResponseType;
@@ -51,21 +52,21 @@ import org.restlet.ext.oauth.internal.Client.ClientType;
  */
 public abstract class AbstractClientManager implements ClientManager {
 
-    public static final int RESEED_CLIENTS = 100;
-
-    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] { ResponseType.token, };
-
     public static final Object[] DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL = new Object[] {
             ResponseType.code, GrantType.authorization_code,
             GrantType.client_credentials, GrantType.refresh_token };
 
-    private SecureRandom random;
+    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] { ResponseType.token, };
 
-    private boolean issueClientSecretToPublicClients = false;
+    public static final int RESEED_CLIENTS = 100;
+
+    private volatile int count = 0;
 
     private Map<ClientType, Object[]> defaultSupportedFlow;
 
-    private volatile int count = 0;
+    private boolean issueClientSecretToPublicClients = false;
+
+    private SecureRandom random;
 
     public AbstractClientManager() {
         try {
@@ -137,15 +138,6 @@ public abstract class AbstractClientManager implements ClientManager {
         return issueClientSecretToPublicClients;
     }
 
-    /**
-     * @param issueClientSecretToPublicClients
-     *            the issueClientSecretToPublicClients to set
-     */
-    public void setIssueClientSecretToPublicClients(
-            boolean issueClientSecretToPublicClients) {
-        this.issueClientSecretToPublicClients = issueClientSecretToPublicClients;
-    }
-
     public void setDefaultSupportedFlow(ClientType clientType, Object[] flows) {
         if (flows == null) {
             throw new IllegalArgumentException("Flows cannot be null.");
@@ -156,5 +148,14 @@ public abstract class AbstractClientManager implements ClientManager {
             }
         }
         defaultSupportedFlow.put(clientType, flows);
+    }
+
+    /**
+     * @param issueClientSecretToPublicClients
+     *            the issueClientSecretToPublicClients to set
+     */
+    public void setIssueClientSecretToPublicClients(
+            boolean issueClientSecretToPublicClients) {
+        this.issueClientSecretToPublicClients = issueClientSecretToPublicClients;
     }
 }

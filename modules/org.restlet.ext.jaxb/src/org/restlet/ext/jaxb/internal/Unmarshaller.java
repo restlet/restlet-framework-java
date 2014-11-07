@@ -62,6 +62,9 @@ import org.xml.sax.XMLReader;
  */
 public class Unmarshaller<T> {
 
+    /** The JAXB classloader. */
+    private final ClassLoader classLoader;
+
     /** The JAXB context path. */
     private final String contextPath;
 
@@ -83,9 +86,6 @@ public class Unmarshaller<T> {
             return m;
         }
     };
-
-    /** The JAXB classloader. */
-    private final ClassLoader classLoader;
 
     /**
      * Constructor.
@@ -148,6 +148,23 @@ public class Unmarshaller<T> {
     }
 
     /**
+     * Unmarshal XML data from the specified Restlet string representation and
+     * return the resulting Java content tree.
+     * 
+     * @param jaxbRep
+     *            The source JAXB representation.
+     * @return The newly created root object of the Java content tree.
+     * @throws JAXBException
+     *             If any unexpected problem occurs during unmarshaling.
+     * @throws IOException
+     *             If an error occurs accessing the string representation.
+     */
+    public Object unmarshal(JaxbRepresentation<?> jaxbRep)
+            throws JAXBException, IOException {
+        return unmarshal(jaxbRep, jaxbRep.getReader());
+    }
+
+    /**
      * Unmarshal XML data from the specified input stream and return the
      * resulting Java content tree.
      * 
@@ -203,22 +220,5 @@ public class Unmarshaller<T> {
 
         getUnmarshaller().setEventHandler(jaxbRep.getValidationEventHandler());
         return getUnmarshaller().unmarshal(ss);
-    }
-
-    /**
-     * Unmarshal XML data from the specified Restlet string representation and
-     * return the resulting Java content tree.
-     * 
-     * @param jaxbRep
-     *            The source JAXB representation.
-     * @return The newly created root object of the Java content tree.
-     * @throws JAXBException
-     *             If any unexpected problem occurs during unmarshaling.
-     * @throws IOException
-     *             If an error occurs accessing the string representation.
-     */
-    public Object unmarshal(JaxbRepresentation<?> jaxbRep)
-            throws JAXBException, IOException {
-        return unmarshal(jaxbRep, jaxbRep.getReader());
     }
 }

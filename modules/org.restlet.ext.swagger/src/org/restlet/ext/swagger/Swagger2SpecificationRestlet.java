@@ -33,10 +33,11 @@
 
 package org.restlet.ext.swagger;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -45,56 +46,52 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.cors.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Swagger;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
  * swagger-spec project v2.0.<br>
  * It helps to generate the high level documentation for the whole API (set by
- * calling {@link #setApplication(Application)}
- * methods, and the documentation for each
- * resource.<br>
+ * calling {@link #setApplication(Application)} methods, and the documentation
+ * for each resource.<br>
  * By default it instrospects the chain of Application's routers, filters,
  * restlet.<br>
- * Use the {@link JaxRsApplicationSwagger2SpecificationRestlet} restlet for Jax-RS
- * applications.
- *
+ * Use the {@link JaxRsApplicationSwagger2SpecificationRestlet} restlet for
+ * Jax-RS applications.
+ * 
  * <p>
  * Usage example (in an {@link Application} class):
+ * 
  * <pre>
- * new Swagger2SpecificationRestlet(this)
- *      .attach(baseRouter);
+ * new Swagger2SpecificationRestlet(this).attach(baseRouter);
  * </pre>
+ * 
  * or
+ * 
  * <pre>
- * new Swagger2SpecificationRestlet()
- *      .setBasePath("http://myapp.com/api/v1")
- *      .setApplication(this) //this is the current Application
- *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by swagger-annotation extension
- *      .attach(baseRouter);
+ * new Swagger2SpecificationRestlet().setBasePath(&quot;http://myapp.com/api/v1&quot;)
+ *         .setApplication(this) // this is the current Application
+ *         .attach(baseRouter);
  * </pre>
+ * 
  * </p>
- *
+ * 
  * @author Manuel Boillod
  * @see <a href="http://github.com/wordnik/swagger-ui">Swagger UI (github)</a>
- * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample application of Swagger-UI</a>
+ * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample
+ *      application of Swagger-UI</a>
  * @see <a href="http://swagger.io/">Swagger.io website</a>
  */
 public class Swagger2SpecificationRestlet extends Restlet {
-
-    /**
-     * The version of the Swagger specification.
-     *  Default is {@link Swagger2Translator#SWAGGER_VERSION}
-     */
-    private String swaggerVersion = Swagger2Translator.SWAGGER_VERSION;
 
     /** The version of the API. */
     private String apiVersion;
@@ -108,39 +105,82 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The base reference of the API. */
     private Reference baseRef;
 
+    /** Helper used to add CORS response headers */
+    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
+
     /** The RWADef of the API. */
     private Definition definition;
 
     /** List of additional introspector plugins to use */
-    private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
-
-    /** Helper used to add CORS response headers */
-    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
+    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
 
     /**
-     * Default constructor.<br>
+     * The version of the Swagger specification. Default is
+     * {@link Swagger2Translator#SWAGGER_VERSION}
      */
-    public Swagger2SpecificationRestlet() {
-    }
+    private String swaggerVersion = Swagger2Translator.SWAGGER_VERSION;
 
     /**
      * Constructor.<br>
-     *
+     * 
      * @param application
      *            The application to describe.
      */
     public Swagger2SpecificationRestlet(Application application) {
+        super(application.getContext());
         this.application = application;
     }
 
     /**
-     * Returns the version of the Swagger specification.
-     *  Default is {@link Swagger2Translator#SWAGGER_VERSION}
-     *
-     * @return The version of the Swagger specification.
+     * Constructor.<br>
+     * 
+     * @param context
+     *            The context.
      */
-    public String getSwaggerVersion() {
-        return swaggerVersion;
+    public Swagger2SpecificationRestlet(Context context) {
+        super(context);
+    }
+
+    /**
+     * Adds an introspection helper.
+     * 
+     * @param helper
+     *            The introspection helper to add.
+     */
+    public Swagger2SpecificationRestlet addIntrospectionHelper(
+            IntrospectionHelper helper) {
+        introspectionHelpers.add(helper);
+        return this;
+    }
+
+    /**
+     * Defines one route (by default "/swagger.json") for serving the
+     * application specification.
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * 
+     * @see #attach(org.restlet.routing.Router, String) to attach it with a
+     *      custom path
+     */
+    public void attach(Router router) {
+        attach(router, "/swagger.json");
+    }
+
+    /**
+     * Defines one route (by default "/swagger.json") for serving the
+     * application specification.
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * @param path
+     *            The root path of the documentation Restlet.
+     * 
+     * @see #attach(org.restlet.routing.Router) to attach it with the default
+     *      path
+     */
+    public void attach(Router router, String path) {
+        router.attach(path, this);
     }
 
     /**
@@ -170,9 +210,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (Swagger2SpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef,
-                        null,
-                        introspectorPlugins);
+                        baseRef, null, introspectionHelpers);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
@@ -186,18 +224,30 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /**
      * Returns the representation of the whole resource listing of the
      * Application.
-     *
+     * 
      * @return The representation of the whole resource listing of the
      *         Application.
      */
     public Representation getSwagger() {
         Swagger swagger = Swagger2Translator.getSwagger(getDefinition());
         swagger.setSwagger(swaggerVersion);
-        JacksonRepresentation<Swagger> swaggerJacksonRepresentation = new JacksonRepresentation<>(swagger);
-        //configure object mapper to not include null values
-        ObjectMapper objectMapper = swaggerJacksonRepresentation.getObjectMapper();
+        JacksonRepresentation<Swagger> swaggerJacksonRepresentation = new JacksonRepresentation<>(
+                swagger);
+        // configure object mapper to not include null values
+        ObjectMapper objectMapper = swaggerJacksonRepresentation
+                .getObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return swaggerJacksonRepresentation;
+    }
+
+    /**
+     * Returns the version of the Swagger specification. Default is
+     * {@link Swagger2Translator#SWAGGER_VERSION}
+     * 
+     * @return The version of the Swagger specification.
+     */
+    public String getSwaggerVersion() {
+        return swaggerVersion;
     }
 
     @Override
@@ -216,80 +266,8 @@ public class Swagger2SpecificationRestlet extends Restlet {
     }
 
     /**
-     * Defines one route (by default "/swagger.json") for serving the
-     * application specification.
-     *
-     * @param router
-     *            The router on which defining the new route.
-     *
-     * @see #attach(org.restlet.routing.Router, String) to attach it with a custom path
-     */
-    public void attach(Router router) {
-        attach(router, "/swagger.json");
-    }
-
-    /**
-     * Defines one route (by default "/swagger.json") for serving the
-     * application specification.
-     *
-     * @param router
-     *            The router on which defining the new route.
-     * @param path
-     *            The root path of the documentation Restlet.
-     *
-     * @see #attach(org.restlet.routing.Router) to attach it with the default path
-     */
-    public void attach(Router router, String path) {
-        router.attach(path, this);
-    }
-
-    /**
-     * Sets the root Restlet for the given application.
-     *
-     * @param application
-     *            The application.
-     */
-    public Swagger2SpecificationRestlet Swagger2SpecificationRestlet(Application application) {
-        this.application = application;
-        return this;
-    }
-
-    /**
-     * Sets the root Restlet for the given application.
-     *
-     * @param application
-     *            The application.
-     */
-    public Swagger2SpecificationRestlet setApplication(Application application) {
-        this.application = application;
-        return this;
-    }
-    /**
-     * Add an introspector plugin to default introspector
-     *
-     * @param introspectorPlugin
-     *          Introspector Plugin to add
-     *
-     */
-    public Swagger2SpecificationRestlet addIntrospectorPlugin(IntrospectorPlugin introspectorPlugin) {
-        introspectorPlugins.add(introspectorPlugin);
-        return this;
-    }
-
-    /**
-     * Sets the version of the Swagger specification.
-     *
-     * @param swaggerVersion
-     *            The version of the Swagger specification.
-     */
-    public Swagger2SpecificationRestlet setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
-        return this;
-    }
-
-    /**
      * Sets the API's version.
-     *
+     * 
      * @param apiVersion
      *            The API version.
      */
@@ -299,18 +277,50 @@ public class Swagger2SpecificationRestlet extends Restlet {
     }
 
     /**
+     * Sets the root Restlet for the given application.
+     * 
+     * @param application
+     *            The application.
+     */
+    public Swagger2SpecificationRestlet setApplication(Application application) {
+        this.application = application;
+        return this;
+    }
+
+    /**
      * Sets the base path of the API.
-     *
+     * 
      * @param basePath
      *            The base path of the API
      */
     public Swagger2SpecificationRestlet setBasePath(String basePath) {
         this.basePath = basePath;
-        //Process basepath and check validity
+        // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
         return this;
     }
 
+    /**
+     * Sets the version of the Swagger specification.
+     * 
+     * @param swaggerVersion
+     *            The version of the Swagger specification.
+     */
+    public Swagger2SpecificationRestlet setSwaggerVersion(String swaggerVersion) {
+        this.swaggerVersion = swaggerVersion;
+        return this;
+    }
 
+    /**
+     * Sets the root Restlet for the given application.
+     * 
+     * @param application
+     *            The application.
+     */
+    public Swagger2SpecificationRestlet Swagger2SpecificationRestlet(
+            Application application) {
+        this.application = application;
+        return this;
+    }
 
 }

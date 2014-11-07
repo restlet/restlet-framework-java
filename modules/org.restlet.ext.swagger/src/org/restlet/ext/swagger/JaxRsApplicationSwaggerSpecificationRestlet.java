@@ -33,6 +33,11 @@
 
 package org.restlet.ext.swagger;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -44,51 +49,43 @@ import org.restlet.engine.cors.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
 
-import javax.ws.rs.core.Application;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Restlet that generates Swagger documentation in the format defined by the
  * swagger-spec project for a JaxRS application<br>
  * It helps to generate the high level documentation for the whole API (set by
  * calling {@link #setApplication(Application)} or
- * {@link #setApiInboundRoot(Application)} methods, and the documentation for each
- * resource.<br>
+ * {@link #setApiInboundRoot(Application)} methods, and the documentation for
+ * each resource.<br>
  * By default it instrospects the JaxRs Application classes and singletons.<br>
- * Use the {@link org.restlet.ext.swagger.SwaggerSpecificationRestlet} restlet for Restlet
- * applications.
- *
+ * Use the {@link org.restlet.ext.swagger.SwaggerSpecificationRestlet} restlet
+ * for Restlet applications.
+ * 
  * <p>
  * Usage example:
+ * 
  * <pre>
- * new SwaggerSpecificationRestlet()
- *      .setApiInboundRoot(this)
- *      .setBasePath("http://myapp.com/api/v1")
- *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by apispark-swagger-annotations-xx extension
- *      .attach(baseRouter);
+ * new SwaggerSpecificationRestlet().setApiInboundRoot(this)
+ *         .setBasePath(&quot;http://myapp.com/api/v1&quot;)
+ *         .attach(baseRouter);
  * </pre>
+ * 
  * </p>
-
+ * 
  * @author Thierry Boileau
  * @see <a href="http://github.com/wordnik/swagger-ui">Swagger UI (github)</a>
- * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample application of Swagger-UI</a>
- * @see <a href="http://helloreverb.com/developers/swagger">Swagger Developper page</a>
+ * @see <a href="http://petstore.swagger.wordnik.com">Petstore sample
+ *      application of Swagger-UI</a>
+ * @see <a href="http://helloreverb.com/developers/swagger">Swagger Developper
+ *      page</a>
  */
 public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
-
-    /**
-     * The version of the Swagger specification.
-     *  Default is {@link SwaggerTranslator#SWAGGER_VERSION}
-     */
-    private String swaggerVersion = SwaggerTranslator.SWAGGER_VERSION;
 
     /** The version of the API. */
     private String apiVersion;
@@ -102,14 +99,20 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
     /** The base reference of the API. */
     private Reference baseRef;
 
+    /** Helper used to add CORS response headers */
+    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
+
     /** The RWADef of the API. */
     private Definition definition;
 
     /** List of additional introspector plugins to use */
-    private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
+    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
 
-    /** Helper used to add CORS response headers */
-    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
+    /**
+     * The version of the Swagger specification. Default is
+     * {@link SwaggerTranslator#SWAGGER_VERSION}
+     */
+    private String swaggerVersion = SwaggerTranslator.SWAGGER_VERSION;
 
     /**
      * Default constructor.<br>
@@ -120,7 +123,7 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     *
+     * 
      * @param context
      *            The context.
      */
@@ -129,27 +132,65 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
     }
 
     /**
+     * Add an introspector plugin to default introspector
+     * 
+     * @param helper
+     *            Introspector Plugin to add
+     * 
+     */
+    public JaxRsApplicationSwaggerSpecificationRestlet addIntrospectorPlugin(
+            IntrospectionHelper helper) {
+        introspectionHelpers.add(helper);
+        return this;
+    }
+
+    /**
+     * Defines two routes, one for the high level "Resource listing" (by default
+     * "/api-docs"), and the other one for the "API declaration". The second
+     * route is a sub-resource of the first one, defined with the path variable
+     * "resource" (ie "/api-docs/{resource}").
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * 
+     * @see #attach(org.restlet.routing.Router, String) to attach it with a
+     *      custom path
+     */
+    public void attach(Router router) {
+        attach(router, "/api-docs");
+    }
+
+    /**
+     * Defines two routes, one for the high level "Resource listing", and the
+     * other one for the "API declaration". The second route is a sub-resource
+     * of the first one, defined with the path variable "resource".
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * @param path
+     *            The root path of the documentation Restlet.
+     * 
+     * @see #attach(org.restlet.routing.Router) to attach it with the default
+     *      path
+     */
+    public void attach(Router router, String path) {
+        router.attach(path, this);
+        router.attach(path + "/{resource}", this);
+    }
+
+    /**
      * Returns the Swagger documentation of a given resource, also known as
      * "API Declaration" in Swagger vocabulary.
-     *
+     * 
      * @param category
      *            The category of the resource to describe.
      * @return The representation of the API declaration.
      */
     public Representation getApiDeclaration(String category) {
-        ApiDeclaration apiDeclaration = SwaggerTranslator.getApiDeclaration(category, getDefinition());
+        ApiDeclaration apiDeclaration = SwaggerTranslator.getApiDeclaration(
+                category, getDefinition());
         apiDeclaration.setSwaggerVersion(swaggerVersion);
         return new JacksonRepresentation<>(apiDeclaration);
-    }
-
-    /**
-     * Returns the version of the Swagger specification.
-     *  Default is {@link SwaggerTranslator#SWAGGER_VERSION}
-     *
-     * @return The version of the Swagger specification.
-     */
-    public String getSwaggerVersion() {
-        return swaggerVersion;
     }
 
     /**
@@ -179,11 +220,11 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (JaxRsApplicationSwaggerSpecificationRestlet.class) {
                 definition = JaxRsIntrospector.getDefinition(application,
-                        baseRef,
-                        introspectorPlugins);
+                        baseRef, introspectionHelpers);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
-                    definition.setVersion(apiVersion != null ? apiVersion : "1.0");
+                    definition.setVersion(apiVersion != null ? apiVersion
+                            : "1.0");
                 }
             }
         }
@@ -194,14 +235,25 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
     /**
      * Returns the representation of the whole resource listing of the
      * Application.
-     *
+     * 
      * @return The representation of the whole resource listing of the
      *         Application.
      */
     public Representation getResourceListing() {
-        ResourceListing resourcelisting = SwaggerTranslator.getResourcelisting(getDefinition());
+        ResourceListing resourcelisting = SwaggerTranslator
+                .getResourcelisting(getDefinition());
         resourcelisting.setSwaggerVersion(swaggerVersion);
         return new JacksonRepresentation<>(resourcelisting);
+    }
+
+    /**
+     * Returns the version of the Swagger specification. Default is
+     * {@link SwaggerTranslator#SWAGGER_VERSION}
+     * 
+     * @return The version of the Swagger specification.
+     */
+    public String getSwaggerVersion() {
+        return swaggerVersion;
     }
 
     @Override
@@ -226,79 +278,14 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
     }
 
     /**
-     * Defines two routes, one for the high level "Resource listing" (by default
-     * "/api-docs"), and the other one for the "API declaration". The second
-     * route is a sub-resource of the first one, defined with the path variable
-     * "resource" (ie "/api-docs/{resource}").
-     *
-     * @param router
-     *            The router on which defining the new route.
-     *
-     * @see #attach(org.restlet.routing.Router, String) to attach it with a custom path
-     */
-    public void attach(Router router) {
-        attach(router, "/api-docs");
-    }
-
-    /**
-     * Defines two routes, one for the high level "Resource listing", and the
-     * other one for the "API declaration". The second route is a sub-resource
-     * of the first one, defined with the path variable "resource".
-     *
-     * @param router
-     *            The router on which defining the new route.
-     * @param path
-     *            The root path of the documentation Restlet.
-     *
-     * @see #attach(org.restlet.routing.Router) to attach it with the default path
-     */
-    public void attach(Router router, String path) {
-        router.attach(path, this);
-        router.attach(path + "/{resource}", this);
-    }
-
-    /**
      * Sets the root Restlet for the given application.
      * 
      * @param application
      *            The application.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApiInboundRoot(Application application) {
+    public JaxRsApplicationSwaggerSpecificationRestlet setApiInboundRoot(
+            Application application) {
         this.application = application;
-        return this;
-    }
-
-    /**
-     * Sets the root Restlet for the given application.
-     * 
-     * @param application
-     *            The application
-     */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApplication(Application application) {
-        this.application = application;
-        return this;
-    }
-
-    /**
-     * Add an introspector plugin to default introspector
-     *
-     * @param introspectorPlugin
-     *          Introspector Plugin to add
-     *
-     */
-    public JaxRsApplicationSwaggerSpecificationRestlet addIntrospectorPlugin(IntrospectorPlugin introspectorPlugin) {
-        introspectorPlugins.add(introspectorPlugin);
-        return this;
-    }
-
-    /**
-     * Sets the version of the Swagger specification.
-     *
-     * @param swaggerVersion
-     *            The version of the Swagger specification.
-     */
-    public JaxRsApplicationSwaggerSpecificationRestlet setSwaggerVersion(String swaggerVersion) {
-        this.swaggerVersion = swaggerVersion;
         return this;
     }
 
@@ -308,8 +295,21 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApiVersion(String apiVersion) {
+    public JaxRsApplicationSwaggerSpecificationRestlet setApiVersion(
+            String apiVersion) {
         this.apiVersion = apiVersion;
+        return this;
+    }
+
+    /**
+     * Sets the root Restlet for the given application.
+     * 
+     * @param application
+     *            The application
+     */
+    public JaxRsApplicationSwaggerSpecificationRestlet setApplication(
+            Application application) {
+        this.application = application;
         return this;
     }
 
@@ -319,10 +319,23 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setBasePath(String basePath) {
+    public JaxRsApplicationSwaggerSpecificationRestlet setBasePath(
+            String basePath) {
         this.basePath = basePath;
-        //Process basepath and check validity
+        // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
+        return this;
+    }
+
+    /**
+     * Sets the version of the Swagger specification.
+     * 
+     * @param swaggerVersion
+     *            The version of the Swagger specification.
+     */
+    public JaxRsApplicationSwaggerSpecificationRestlet setSwaggerVersion(
+            String swaggerVersion) {
+        this.swaggerVersion = swaggerVersion;
         return this;
     }
 

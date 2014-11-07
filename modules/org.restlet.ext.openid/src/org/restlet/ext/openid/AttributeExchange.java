@@ -127,6 +127,11 @@ public class AttributeExchange extends Metadata implements
         this.schema = schema;
     }
 
+    public int compareTo(AttributeExchange o) {
+        return this.schema.compareTo(o.getSchema());
+        // return 0;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object instanceof AttributeExchange) {
@@ -157,11 +162,6 @@ public class AttributeExchange extends Metadata implements
 
     public void setSchema(String schema) {
         this.schema = schema;
-    }
-
-    public int compareTo(AttributeExchange o) {
-        return this.schema.compareTo(o.getSchema());
-        // return 0;
     }
 
 }

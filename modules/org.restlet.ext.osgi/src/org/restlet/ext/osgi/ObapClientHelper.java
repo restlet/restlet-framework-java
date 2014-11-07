@@ -66,6 +66,13 @@ public class ObapClientHelper extends LocalClientHelper {
     private final static Map<String, Bundle> BUNDLE_CACHE = new ConcurrentHashMap<String, Bundle>();
 
     /**
+     * Clears the registry of bundles.
+     */
+    public static void clear() {
+        BUNDLE_CACHE.clear();
+    }
+
+    /**
      * Registers the given bundle.
      * 
      * @param bundle
@@ -80,13 +87,6 @@ public class ObapClientHelper extends LocalClientHelper {
             result = true;
         }
         return result;
-    }
-
-    /**
-     * Clears the registry of bundles.
-     */
-    public static void clear() {
-        BUNDLE_CACHE.clear();
     }
 
     /**

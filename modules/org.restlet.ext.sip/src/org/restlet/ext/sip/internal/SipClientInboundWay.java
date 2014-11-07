@@ -317,6 +317,11 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    protected boolean hasIoInterest() {
+        return (getIoState() == IoState.IDLE);
+    }
+
+    @Override
     public boolean isEmpty() {
         return super.isEmpty() && (getMessage() == null);
     }
@@ -336,11 +341,6 @@ public class SipClientInboundWay extends ClientInboundWay {
         }
 
         super.onReceived(message);
-    }
-
-    @Override
-    protected boolean hasIoInterest() {
-        return (getIoState() == IoState.IDLE);
     }
 
     @Override

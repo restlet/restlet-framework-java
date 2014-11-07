@@ -51,10 +51,6 @@ public class BlankNodeToken extends LexicalUnit {
     /** List of lexical units contained by this blank node. */
     private List<LexicalUnit> lexicalUnits;
 
-    public List<LexicalUnit> getLexicalUnits() {
-        return lexicalUnits;
-    }
-
     /** Indicates if the given blank node has been already resolved. */
     private boolean resolved = false;
 
@@ -86,6 +82,10 @@ public class BlankNodeToken extends LexicalUnit {
     public BlankNodeToken(String value) {
         super(value);
         this.resolved = true;
+    }
+
+    public List<LexicalUnit> getLexicalUnits() {
+        return lexicalUnits;
     }
 
     @Override

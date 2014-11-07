@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.restlet.engine.util.BeanInfoUtils;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Section;
@@ -25,15 +25,15 @@ public class RepresentationCollector {
      *            The class to document.
      * @param type
      *            The class to document.
-     * @param introspectorPlugins
-     *            The introspector plugins
-     *
+     * @param introspectionHelper
+     *            The introspector helpers.
+     * 
      * @return The name of representation type if added, null otherwise
      *         {@link Representation}.
      */
     public static String addRepresentation(CollectInfo collectInfo,
-                                           Class<?> clazz, Type type,
-                                           List<? extends IntrospectorPlugin> introspectorPlugins) {
+            Class<?> clazz, Type type,
+            List<? extends IntrospectionHelper> introspectionHelper) {
         // Introspect the java class
         Representation representation = new Representation();
         representation.setDescription("");
@@ -47,7 +47,8 @@ public class RepresentationCollector {
         if (generic || isList) {
             // Collect generic type
             addRepresentation(collectInfo, representationType,
-                    representationType.getGenericSuperclass(), introspectorPlugins);
+                    representationType.getGenericSuperclass(),
+                    introspectionHelper);
             return null;
         }
 
@@ -87,38 +88,43 @@ public class RepresentationCollector {
 
         if (notInCache) {
 
-            // add representation in cache before complete it to avoid infinite loop
+            // add representation in cache before complete it to avoid infinite
+            // loop
             collectInfo.addRepresentation(representation);
 
             if (!isRaw) {
                 // add properties definition
 
-                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(representationType);
+                BeanInfo beanInfo = BeanInfoUtils
+                        .getBeanInfo(representationType);
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
                     Class<?> propertyClazz = pd.getReadMethod().getReturnType();
-                    Type propertyType = pd.getReadMethod().getGenericReturnType();
+                    Type propertyType = pd.getReadMethod()
+                            .getGenericReturnType();
 
                     Property property = new Property();
                     property.setName(pd.getName());
                     property.setDescription("");
-                    property.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(propertyType)));
+                    property.setType(Types.convertPrimitiveType(ReflectUtils
+                            .getSimpleClass(propertyType)));
                     property.setMinOccurs(0);
-                    boolean isCollection = ReflectUtils.isListType(propertyClazz);
+                    boolean isCollection = ReflectUtils
+                            .isListType(propertyClazz);
                     property.setMaxOccurs(isCollection ? -1 : 1);
 
-                    addRepresentation(collectInfo, propertyClazz,
-                            propertyType, introspectorPlugins);
+                    addRepresentation(collectInfo, propertyClazz, propertyType,
+                            introspectionHelper);
 
-                    for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-                        introspectorPlugin.processProperty(property, pd.getReadMethod());
+                    for (IntrospectionHelper helper : introspectionHelper) {
+                        helper.processProperty(property, pd.getReadMethod());
                     }
 
                     representation.getProperties().add(property);
                 }
             }
-            
-            for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-                introspectorPlugin.processRepresentation(representation, representationType);
+
+            for (IntrospectionHelper helper : introspectionHelper) {
+                helper.processRepresentation(representation, representationType);
             }
 
         }

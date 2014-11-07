@@ -58,6 +58,9 @@ import org.restlet.ext.jetty.JettyServerHelper;
  */
 public class JettyHandler extends AbstractHandler {
 
+    /** The Restlet server helper. */
+    private final JettyServerHelper helper;
+
     /**
      * Constructor for HTTP server connectors.
      * 
@@ -81,6 +84,18 @@ public class JettyHandler extends AbstractHandler {
             this.helper = new HttpsServerHelper(server);
         else
             this.helper = new HttpServerHelper(server);
+    }
+
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
+        this.helper.start();
+    }
+
+    @Override
+    protected void doStop() throws Exception {
+        super.doStop();
+        this.helper.stop();
     }
 
     /**
@@ -107,19 +122,4 @@ public class JettyHandler extends AbstractHandler {
                 .handle(new JettyServerCall(this.helper.getHelped(), channel));
         baseRequest.setHandled(true);
     }
-
-    @Override
-    protected void doStart() throws Exception {
-        super.doStart();
-        this.helper.start();
-    }
-
-    @Override
-    protected void doStop() throws Exception {
-        super.doStop();
-        this.helper.stop();
-    }
-
-    /** The Restlet server helper. */
-    private final JettyServerHelper helper;
 }

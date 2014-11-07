@@ -1,33 +1,33 @@
 /**
  * Copyright 2005-2014 Restlet
- *
+ * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
  * 1.0 (the "Licenses"). You can select the license that you prefer but you may
  * not use this file except in compliance with one of these Licenses.
- *
+ * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- *
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.opensource.org/licenses/lgpl-3.0
- *
+ * 
  * You can obtain a copy of the LGPL 2.1 license at
  * http://www.opensource.org/licenses/lgpl-2.1
- *
+ * 
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.opensource.org/licenses/cddl1
- *
+ * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- *
+ * 
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- *
+ * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- *
+ * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -46,7 +46,6 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListingApi;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -56,7 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tools library for Swagger.
- *
+ * 
  * @author Cyprien Quilici
  */
 public abstract class SwaggerUtils {
@@ -66,10 +65,11 @@ public abstract class SwaggerUtils {
             .getName());
 
     private static ClientResource createAuthenticatedClientResource(String url,
-                                                                    String userName, String password) {
+            String userName, String password) {
         ClientResource cr = new ClientResource(url);
         cr.accept(MediaType.APPLICATION_JSON);
-        if (!StringUtils.isNullOrEmpty(userName) && !StringUtils.isNullOrEmpty(password)) {
+        if (!StringUtils.isNullOrEmpty(userName)
+                && !StringUtils.isNullOrEmpty(password)) {
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userName,
                     password);
         }
@@ -78,7 +78,7 @@ public abstract class SwaggerUtils {
 
     /**
      * Returns the {@link Definition} by reading the Swagger definition URL.
-     *
+     * 
      * @param swaggerUrl
      *            The URl of the Swagger definition service.
      * @param userName
@@ -89,7 +89,7 @@ public abstract class SwaggerUtils {
      * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      */
     public static Definition getDefinition(String swaggerUrl, String userName,
-                                           String password) throws TranslationException {
+            String password) throws TranslationException {
 
         // Check that URL is non empty and well formed
         if (swaggerUrl == null) {
@@ -133,9 +133,6 @@ public abstract class SwaggerUtils {
         }
         return SwaggerTranslator.translate(resourceListing, apis);
     }
-
-
-
 
     /**
      * Private constructor to ensure that the class acts as a true utility class

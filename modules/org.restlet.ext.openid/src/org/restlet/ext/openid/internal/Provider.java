@@ -70,9 +70,9 @@ public class Provider {
 
     public static final String OPENID_MODE = "openid.mode";
 
-    public static final String OPENID_RETURNTO = "openid.return_to";
-
     public static final String OPENID_REALM = "openid.realm";
+
+    public static final String OPENID_RETURNTO = "openid.return_to";
 
     private final Map<String, UserSession> sessions = new HashMap<String, UserSession>();
 
@@ -88,42 +88,6 @@ public class Provider {
 
     public Message fetchAttributes(UserSession us) throws Exception {
         return fetchAttributes(us.getParameterList());
-    }
-
-    public Logger getLogger() {
-        Logger result = null;
-
-        Context context = Context.getCurrent();
-
-        if (context != null) {
-            result = context.getLogger();
-        }
-
-        if (result == null) {
-            result = Engine.getLogger(this, "org.restlet.ext.openid.OP");
-        }
-
-        return result;
-    }
-
-    public Set<AttributeExchange> getOptionalAttributes(UserSession us)
-            throws Exception {
-        return getAttributes(us.getParameterList(), false);
-    }
-
-    public Set<AttributeExchange> getOptionalAttributes(ParameterList pl)
-            throws Exception {
-        return getAttributes(pl, false);
-    }
-
-    public Set<AttributeExchange> getRequiredAttributes(UserSession us)
-            throws Exception {
-        return getAttributes(us.getParameterList(), true);
-    }
-
-    public Set<AttributeExchange> getRequiredAttributes(ParameterList pl)
-            throws Exception {
-        return getAttributes(pl, true);
     }
 
     public Set<AttributeExchange> getAttributes(ParameterList pl,
@@ -147,6 +111,22 @@ public class Provider {
         return null;
     }
 
+    public Logger getLogger() {
+        Logger result = null;
+
+        Context context = Context.getCurrent();
+
+        if (context != null) {
+            result = context.getLogger();
+        }
+
+        if (result == null) {
+            result = Engine.getLogger(this, "org.restlet.ext.openid.OP");
+        }
+
+        return result;
+    }
+
     @SuppressWarnings("rawtypes")
     public Map getOptionalAttributes(Message m) throws Exception {
         FetchRequest req = (FetchRequest) m
@@ -154,11 +134,31 @@ public class Provider {
         return req.getAttributes(false);
     }
 
+    public Set<AttributeExchange> getOptionalAttributes(ParameterList pl)
+            throws Exception {
+        return getAttributes(pl, false);
+    }
+
+    public Set<AttributeExchange> getOptionalAttributes(UserSession us)
+            throws Exception {
+        return getAttributes(us.getParameterList(), false);
+    }
+
     @SuppressWarnings("rawtypes")
     public Map getRequiredAttributes(Message m) throws Exception {
         FetchRequest req = (FetchRequest) m
                 .getExtension(AxMessage.OPENID_NS_AX);
         return req.getAttributes(true);
+    }
+
+    public Set<AttributeExchange> getRequiredAttributes(ParameterList pl)
+            throws Exception {
+        return getAttributes(pl, true);
+    }
+
+    public Set<AttributeExchange> getRequiredAttributes(UserSession us)
+            throws Exception {
+        return getAttributes(us.getParameterList(), true);
     }
 
     public UserSession getSession(String sessionId) {

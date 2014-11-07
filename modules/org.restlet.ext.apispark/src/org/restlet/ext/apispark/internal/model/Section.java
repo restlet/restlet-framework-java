@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark.internal.model;
 
-
 /**
  * Represents a section of a Web API. A section is a logical part of the Web API
  * and should be used to tidy it.
@@ -49,22 +48,6 @@ public class Section {
     /** Name of the API. */
     private String name;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
     public Section() {
         this(null, null);
     }
@@ -76,5 +59,21 @@ public class Section {
     public Section(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

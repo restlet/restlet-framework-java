@@ -86,6 +86,23 @@ public class ServerConnectionController extends ConnectionController {
         }
     }
 
+    @Override
+    protected void doInit() {
+        super.doInit();
+
+        // Register interest in NIO accept events
+        try {
+            getHelper().getServerSocketChannel().register(getSelector(),
+                    SelectionKey.OP_ACCEPT);
+        } catch (IOException ioe) {
+            getHelper().getLogger().log(Level.WARNING,
+                    "Unexpected error while registering an NIO selection key",
+                    ioe);
+        }
+
+        this.latch.countDown();
+    }
+
     /**
      * Returns the parent server helper.
      * 
@@ -153,22 +170,5 @@ public class ServerConnectionController extends ConnectionController {
                         "Unexpected error while accepting new connection", ex);
             }
         }
-    }
-
-    @Override
-    protected void doInit() {
-        super.doInit();
-
-        // Register interest in NIO accept events
-        try {
-            getHelper().getServerSocketChannel().register(getSelector(),
-                    SelectionKey.OP_ACCEPT);
-        } catch (IOException ioe) {
-            getHelper().getLogger().log(Level.WARNING,
-                    "Unexpected error while registering an NIO selection key",
-                    ioe);
-        }
-
-        this.latch.countDown();
     }
 }

@@ -46,17 +46,6 @@ import org.restlet.ext.sip.EventType;
 public class EventTypeWriter extends HeaderWriter<EventType> {
 
     /**
-     * Writes a list of event types.
-     * 
-     * @param eventTypes
-     *            The list of event types.
-     * @return The formatted list of event types.
-     */
-    public static String write(List<EventType> eventTypes) {
-        return new EventTypeWriter().append(eventTypes).toString();
-    }
-
-    /**
      * Writes an event type.
      * 
      * @param eventType
@@ -65,6 +54,17 @@ public class EventTypeWriter extends HeaderWriter<EventType> {
      */
     public static String write(EventType eventType) {
         return new EventTypeWriter().append(eventType).toString();
+    }
+
+    /**
+     * Writes a list of event types.
+     * 
+     * @param eventTypes
+     *            The list of event types.
+     * @return The formatted list of event types.
+     */
+    public static String write(List<EventType> eventTypes) {
+        return new EventTypeWriter().append(eventTypes).toString();
     }
 
     @Override

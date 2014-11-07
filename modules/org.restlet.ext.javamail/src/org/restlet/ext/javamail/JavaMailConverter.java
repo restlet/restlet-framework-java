@@ -65,17 +65,17 @@ public class JavaMailConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
-        return -1.0f;
-    }
-
-    @Override
     public float score(Object source, Variant target, Resource resource) {
         if (source instanceof Message) {
             return 1.0f;
         }
 
+        return -1.0f;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            Resource resource) {
         return -1.0f;
     }
 

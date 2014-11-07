@@ -51,11 +51,6 @@ public class Contract {
     private String name;
 
     /**
-     * Sections referenced by the API's Representations and Resources.
-     */
-    private List<Section> sections;
-
-    /**
      * Representations available with this API Note: their "name" is used as a
      * reference further in this description.
      */
@@ -63,6 +58,11 @@ public class Contract {
 
     /** Resources provided by the API. */
     private List<Resource> resources;
+
+    /**
+     * Sections referenced by the API's Representations and Resources.
+     */
+    private List<Section> sections;
 
     public String getDescription() {
         return description;
@@ -72,29 +72,10 @@ public class Contract {
         return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Section> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<Section>();
-        }
-        return sections;
-    }
-
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
-    }
-
-    public Section getSection(String name) {
-        for (Section section : sections) {
-            if (name.equals(section.getName())) {
-                return section;
+    public Representation getRepresentation(String identifier) {
+        for (Representation result : getRepresentations()) {
+            if (identifier.equals(result.getIdentifier())) {
+                return result;
             }
         }
         return null;
@@ -107,21 +88,6 @@ public class Contract {
         return representations;
     }
 
-    public void setRepresentations(List<Representation> representations) {
-        this.representations = representations;
-    }
-
-    public List<Resource> getResources() {
-        if (resources == null) {
-            resources = new ArrayList<Resource>();
-        }
-        return resources;
-    }
-
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
-    }
-
     public Resource getResource(String path) {
         for (Resource result : getResources()) {
             if (path.equals(result.getResourcePath())) {
@@ -131,12 +97,46 @@ public class Contract {
         return null;
     }
 
-    public Representation getRepresentation(String identifier) {
-        for (Representation result : getRepresentations()) {
-            if (identifier.equals(result.getIdentifier())) {
-                return result;
+    public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
+        return resources;
+    }
+
+    public Section getSection(String name) {
+        for (Section section : sections) {
+            if (name.equals(section.getName())) {
+                return section;
             }
         }
         return null;
+    }
+
+    public List<Section> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<Section>();
+        }
+        return sections;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRepresentations(List<Representation> representations) {
+        this.representations = representations;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
     }
 }

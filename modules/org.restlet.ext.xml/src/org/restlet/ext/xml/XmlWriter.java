@@ -361,26 +361,15 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * @author David Megginson, Jerome Louvel (contact@restlet.com)
  */
 public final class XmlWriter extends XMLFilterImpl {
-    private static final Object SEEN_NOTHING = new Object();
+    private static final Object SEEN_DATA = new Object();
 
     private static final Object SEEN_ELEMENT = new Object();
 
-    private static final Object SEEN_DATA = new Object();
+    private static final Object SEEN_NOTHING = new Object();
 
-    /**
-     * Constant representing empty attributes.
-     */
-    private final Attributes EMPTY_ATTS = new AttributesImpl();
+    private volatile boolean dataFormat = false;
 
-    /**
-     * The prefixes table.
-     */
-    private volatile Map<String, String> prefixTable;
-
-    /**
-     * The forced declarations table.
-     */
-    private volatile Map<String, Boolean> forcedDeclTable;
+    private volatile int depth = 0;
 
     /**
      * The document declarations table.
@@ -393,9 +382,26 @@ public final class XmlWriter extends XMLFilterImpl {
     private volatile int elementLevel = 0;
 
     /**
+     * Constant representing empty attributes.
+     */
+    private final Attributes EMPTY_ATTS = new AttributesImpl();
+
+    /**
+     * The forced declarations table.
+     */
+    private volatile Map<String, Boolean> forcedDeclTable;
+
+    private volatile int indentStep = 0;
+
+    /**
      * The namespace support.
      */
     private volatile NamespaceSupport nsSupport;
+
+    /**
+     * The underlying writer.
+     */
+    private volatile Writer output;
 
     /**
      * The prefix counter.
@@ -403,19 +409,13 @@ public final class XmlWriter extends XMLFilterImpl {
     private volatile int prefixCounter = 0;
 
     /**
-     * The underlying writer.
+     * The prefixes table.
      */
-    private volatile Writer output;
+    private volatile Map<String, String> prefixTable;
 
     private volatile Object state = SEEN_NOTHING;
 
     private volatile Stack<Object> stateStack = new Stack<Object>();
-
-    private volatile boolean dataFormat = false;
-
-    private volatile int indentStep = 0;
-
-    private volatile int depth = 0;
 
     /**
      * Create a new XML writer.

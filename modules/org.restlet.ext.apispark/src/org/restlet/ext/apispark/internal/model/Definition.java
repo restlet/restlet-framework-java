@@ -46,8 +46,8 @@ public class Definition {
     /** RWADef version of the definition */
     public static final String SPEC_VERSION = "0.9.0";
 
-    /** The spec version, this field is used for serialization */
-    private final String specVersion = SPEC_VERSION;
+    /** Company or individual's name */
+    private String attribution;
 
     /** Any useful information for a user that plans to access to the API. */
     private Contact contact;
@@ -60,20 +60,24 @@ public class Definition {
      */
     private List<Endpoint> endpoints;
 
+    /** A list of the keywords describing the Web API */
+    private List<String> keywords;
+
     /** URL of the description of the license used by the API. */
     private License license;
 
-    /** Current version of the API. */
-    private String version;
+    /** The spec version, this field is used for serialization */
+    private final String specVersion = SPEC_VERSION;
 
     /** A textual description of the terms of service of the Web API */
     private String termsOfService;
 
-    /** A list of the keywords describing the Web API */
-    private List<String> keywords;
+    /** Current version of the API. */
+    private String version;
 
-    /** Company or individual's name */
-    private String attribution;
+    public String getAttribution() {
+        return attribution;
+    }
 
     public Contact getContact() {
         return contact;
@@ -83,12 +87,35 @@ public class Definition {
         return contract;
     }
 
+    public List<Endpoint> getEndpoints() {
+        if (endpoints == null) {
+            endpoints = new ArrayList<Endpoint>();
+        }
+        return endpoints;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
     public License getLicense() {
         return license;
     }
 
+    public String getSpecVersion() {
+        return specVersion;
+    }
+
+    public String getTermsOfService() {
+        return termsOfService;
+    }
+
     public String getVersion() {
         return version;
+    }
+
+    public void setAttribution(String attribution) {
+        this.attribution = attribution;
     }
 
     public void setContact(Contact contact) {
@@ -99,50 +126,23 @@ public class Definition {
         this.contract = contract;
     }
 
-    public void setLicense(License license) {
-        this.license = license;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public List<Endpoint> getEndpoints() {
-        if (endpoints == null) {
-            endpoints = new ArrayList<Endpoint>();
-        }
-        return endpoints;
-    }
-
     public void setEndpoints(List<Endpoint> endpoints) {
         this.endpoints = endpoints;
-    }
-
-    public String getTermsOfService() {
-        return termsOfService;
-    }
-
-    public void setTermsOfService(String termsOfService) {
-        this.termsOfService = termsOfService;
-    }
-
-    public List<String> getKeywords() {
-        return keywords;
     }
 
     public void setKeywords(List<String> keywords) {
         this.keywords = keywords;
     }
 
-    public String getAttribution() {
-        return attribution;
+    public void setLicense(License license) {
+        this.license = license;
     }
 
-    public void setAttribution(String attribution) {
-        this.attribution = attribution;
+    public void setTermsOfService(String termsOfService) {
+        this.termsOfService = termsOfService;
     }
 
-    public String getSpecVersion() {
-        return specVersion;
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

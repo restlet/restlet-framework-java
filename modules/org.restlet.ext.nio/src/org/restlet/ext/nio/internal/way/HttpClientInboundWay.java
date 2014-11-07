@@ -115,12 +115,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onMessageCompleted(boolean endDetected) throws IOException {
-        getMessages().remove(getMessage());
-        super.onMessageCompleted(endDetected);
-    }
-
-    @Override
     public void onError(Status status) {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
@@ -130,6 +124,12 @@ public class HttpClientInboundWay extends ClientInboundWay {
         }
 
         super.onError(status);
+    }
+
+    @Override
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        getMessages().remove(getMessage());
+        super.onMessageCompleted(endDetected);
     }
 
     @Override

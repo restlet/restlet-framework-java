@@ -1,11 +1,12 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
+
 /**
  * Internal class representing a Swagger type
  */
 public class SwaggerTypeFormat {
-    private String type;
-
     private String format;
+
+    private String type;
 
     public SwaggerTypeFormat(String type) {
         this(type, null);
@@ -16,11 +17,11 @@ public class SwaggerTypeFormat {
         this.format = format;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public String getFormat() {
         return format;
+    }
+
+    public String getType() {
+        return type;
     }
 }

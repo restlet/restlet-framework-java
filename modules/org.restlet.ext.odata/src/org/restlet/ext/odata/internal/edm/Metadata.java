@@ -104,6 +104,38 @@ public class Metadata extends SaxRepresentation {
     }
 
     /**
+     * Returns the complectType that corresponds to a given entity class.
+     * 
+     * @param entityClass
+     *            The entity class.
+     * @return The ComplexType that corresponds to a given entity class.
+     */
+    public ComplexType getComplexType(Class<?> entityClass) {
+        ComplexType result = null;
+
+        // Try to match the entity class names (without package);
+        String className = entityClass.getName();
+        int index = className.lastIndexOf(".");
+        if (index != -1) {
+            className = className.substring(index + 1);
+        }
+
+        for (Iterator<Schema> iec = getSchemas().iterator(); result == null
+                && iec.hasNext();) {
+            Schema schema = iec.next();
+            for (Iterator<ComplexType> ies = schema.getComplexTypes()
+                    .iterator(); result == null && ies.hasNext();) {
+                ComplexType type = ies.next();
+                if (type.getClassName().equals(className)) {
+                    result = type;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the list of entity containers.
      * 
      * @return The list of entity containers.
@@ -166,38 +198,6 @@ public class Metadata extends SaxRepresentation {
                     .iterator(); result == null && ies.hasNext();) {
                 EntitySet entitySet = ies.next();
                 EntityType type = entitySet.getType();
-                if (type.getClassName().equals(className)) {
-                    result = type;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the complectType that corresponds to a given entity class.
-     * 
-     * @param entityClass
-     *            The entity class.
-     * @return The ComplexType that corresponds to a given entity class.
-     */
-    public ComplexType getComplexType(Class<?> entityClass) {
-        ComplexType result = null;
-
-        // Try to match the entity class names (without package);
-        String className = entityClass.getName();
-        int index = className.lastIndexOf(".");
-        if (index != -1) {
-            className = className.substring(index + 1);
-        }
-
-        for (Iterator<Schema> iec = getSchemas().iterator(); result == null
-                && iec.hasNext();) {
-            Schema schema = iec.next();
-            for (Iterator<ComplexType> ies = schema.getComplexTypes()
-                    .iterator(); result == null && ies.hasNext();) {
-                ComplexType type = ies.next();
                 if (type.getClassName().equals(className)) {
                     result = type;
                 }

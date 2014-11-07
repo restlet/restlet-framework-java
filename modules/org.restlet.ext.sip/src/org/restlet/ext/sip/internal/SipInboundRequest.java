@@ -89,8 +89,17 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
     // HTTP specific members (copy from ConnectedRequest)
 
+    /** Indicates if the alert info data was parsed and added. */
+    private volatile boolean alertInfoAdded;
+
+    /** Indicates if the allowed event types data was parsed and added. */
+    private volatile boolean allowedEventTypesAdded;
+
     /** Indicates if the cache control data was parsed and added. */
     private volatile boolean cacheDirectivesAdded;
+
+    /** Indicates if the caller data was parsed and added. */
+    private volatile boolean callerInfoAdded;
 
     /** Indicates if the client data was parsed and added. */
     private volatile boolean clientAdded;
@@ -101,52 +110,14 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     /** The parent network connection. */
     private final Connection<Server> connection;
 
+    /** Indicates if the contact data was parsed and added. */
+    private volatile boolean contactAdded;
+
     /** The context of the parent connector. */
     private final Context context;
 
     /** Indicates if the cookies were parsed and added. */
     private volatile boolean cookiesAdded;
-
-    /** The protocol name and version. */
-    private volatile String protocol;
-
-    /** Indicates if the proxy security data was parsed and added. */
-    private volatile boolean proxySecurityAdded;
-
-    /** Indicates if the ranges data was parsed and added. */
-    private volatile boolean rangesAdded;
-
-    /** Indicates if the recipients info was parsed and added. */
-    private volatile boolean recipientsInfoAdded;
-
-    /** Indicates if the referrer was parsed and added. */
-    private volatile boolean referrerAdded;
-
-    /** The target resource URI. */
-    private volatile String resourceUri;
-
-    /** Indicates if the security data was parsed and added. */
-    private volatile boolean securityAdded;
-
-    /** The user principal. */
-    private final Principal userPrincipal;
-
-    /** Indicates if the warning data was parsed and added. */
-    private volatile boolean warningsAdded;
-
-    // SIP specific members
-
-    /** Indicates if the alert info data was parsed and added. */
-    private volatile boolean alertInfoAdded;
-
-    /** Indicates if the allowed event types data was parsed and added. */
-    private volatile boolean allowedEventTypesAdded;
-
-    /** Indicates if the caller data was parsed and added. */
-    private volatile boolean callerInfoAdded;
-
-    /** Indicates if the contact data was parsed and added. */
-    private volatile boolean contactAdded;
 
     /** Indicates if the event data was parsed and added. */
     private volatile boolean eventAdded;
@@ -157,14 +128,28 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     /** Indicates if the priority data was parsed and added. */
     private volatile boolean priorityAdded;
 
+    /** The protocol name and version. */
+    private volatile String protocol;
+
     /** Indicates if the proxy data was parsed and added. */
     private volatile boolean proxyRequiresAdded;
 
-    /** Indicates if the SIP recipients data was parsed and added. */
-    private volatile boolean sipRecipientsInfoAdded;
+    // SIP specific members
+
+    /** Indicates if the proxy security data was parsed and added. */
+    private volatile boolean proxySecurityAdded;
+
+    /** Indicates if the ranges data was parsed and added. */
+    private volatile boolean rangesAdded;
+
+    /** Indicates if the recipients info was parsed and added. */
+    private volatile boolean recipientsInfoAdded;
 
     /** Indicates if the recorded routes data was parsed and added. */
     private volatile boolean recordedRoutesAdded;
+
+    /** Indicates if the referrer was parsed and added. */
+    private volatile boolean referrerAdded;
 
     /** Indicates if the refer-to data was parsed and added. */
     private volatile boolean referToAdded;
@@ -175,17 +160,32 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     /** Indicates if the requires data was parsed and added. */
     private volatile boolean requiresAdded;
 
+    /** The target resource URI. */
+    private volatile String resourceUri;
+
     /** Indicates if the routes data was parsed and added. */
     private volatile boolean routesAdded;
 
+    /** Indicates if the security data was parsed and added. */
+    private volatile boolean securityAdded;
+
     /** Indicates if the if-match data was parsed and added. */
     private volatile boolean sipIfMatchAdded;
+
+    /** Indicates if the SIP recipients data was parsed and added. */
+    private volatile boolean sipRecipientsInfoAdded;
 
     /** Indicates if the subscription data was parsed and added. */
     private volatile boolean subscriptionAdded;
 
     /** Indicates if the supported data was parsed and added. */
     private volatile boolean supportedAdded;
+
+    /** The user principal. */
+    private final Principal userPrincipal;
+
+    /** Indicates if the warning data was parsed and added. */
+    private volatile boolean warningsAdded;
 
     /**
      * Constructor.

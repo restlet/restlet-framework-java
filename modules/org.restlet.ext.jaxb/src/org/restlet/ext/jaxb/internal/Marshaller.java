@@ -55,6 +55,12 @@ import org.restlet.ext.jaxb.JaxbRepresentation;
  */
 public class Marshaller<T> {
 
+    /** The JAXB classloader. */
+    private final ClassLoader classLoader;
+
+    /** The JAXB context path. */
+    private final String contextPath;
+
     /** The parent JAXB representation. */
     private final JaxbRepresentation<T> jaxbRepresentation;
 
@@ -104,12 +110,6 @@ public class Marshaller<T> {
         }
     };
 
-    /** The JAXB context path. */
-    private final String contextPath;
-
-    /** The JAXB classloader. */
-    private final ClassLoader classLoader;
-
     // This is a factory class.
     public Marshaller(JaxbRepresentation<T> jaxbRepresentation) {
         this(jaxbRepresentation, null, null);
@@ -133,21 +133,21 @@ public class Marshaller<T> {
     }
 
     /**
-     * Returns the JAXB context path.
-     * 
-     * @return The JAXB context path.
-     */
-    public String getContextPath() {
-        return this.contextPath;
-    }
-
-    /**
      * Returns the JAXB classloader.
      * 
      * @return The JAXB classloader.
      */
     public ClassLoader getClassLoader() {
         return this.classLoader;
+    }
+
+    /**
+     * Returns the JAXB context path.
+     * 
+     * @return The JAXB context path.
+     */
+    public String getContextPath() {
+        return this.contextPath;
     }
 
     /**

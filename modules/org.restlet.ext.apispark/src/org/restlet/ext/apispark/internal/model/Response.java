@@ -50,11 +50,8 @@ public class Response {
     /** Textual description of this response. */
     private String description;
 
-    /**
-     * Custom content of the body if any. Could be null if the response is of
-     * type "204 - No Content"
-     */
-    private PayLoad outputPayLoad;
+    /** The list of Headers associated with this response. */
+    private List<Header> headers;
 
     /** Status message of the response. */
     private String message;
@@ -62,8 +59,11 @@ public class Response {
     /** Name of this response. */
     private String name;
 
-    /** The list of Headers associated with this response. */
-    private List<Header> headers;
+    /**
+     * Custom content of the body if any. Could be null if the response is of
+     * type "204 - No Content"
+     */
+    private PayLoad outputPayLoad;
 
     /**
      * Constructor. The default status code is {@link Status#SUCCESS_OK}.
@@ -81,8 +81,8 @@ public class Response {
         return description;
     }
 
-    public PayLoad getOutputPayLoad() {
-        return outputPayLoad;
+    public List<Header> getHeaders() {
+        return headers;
     }
 
     public String getMessage() {
@@ -93,6 +93,10 @@ public class Response {
         return name;
     }
 
+    public PayLoad getOutputPayLoad() {
+        return outputPayLoad;
+    }
+
     public void setCode(int code) {
         this.code = code;
     }
@@ -101,8 +105,8 @@ public class Response {
         this.description = description;
     }
 
-    public void setOutputPayLoad(PayLoad outputPayLoad) {
-        this.outputPayLoad = outputPayLoad;
+    public void setHeaders(List<Header> headers) {
+        this.headers = headers;
     }
 
     public void setMessage(String message) {
@@ -113,11 +117,7 @@ public class Response {
         this.name = name;
     }
 
-    public List<Header> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(List<Header> headers) {
-        this.headers = headers;
+    public void setOutputPayLoad(PayLoad outputPayLoad) {
+        this.outputPayLoad = outputPayLoad;
     }
 }

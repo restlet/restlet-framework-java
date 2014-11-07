@@ -546,6 +546,15 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     }
 
     /**
+     * Sets the ObjectFactory
+     * 
+     * @param objectFactory
+     */
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
+
+    /**
      * Returns a Collection of {@link MessageBodyWriter}s, which generic type
      * supports the given entityClass.
      * 
@@ -574,14 +583,5 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         }
         // NICE optimization: may be cached for speed.
         return new MessageBodyWriterSubSet(mbws, entityClass, genericType);
-    }
-
-    /**
-     * Sets the ObjectFactory
-     * 
-     * @param objectFactory
-     */
-    public void setObjectFactory(ObjectFactory objectFactory) {
-        this.objectFactory = objectFactory;
     }
 }

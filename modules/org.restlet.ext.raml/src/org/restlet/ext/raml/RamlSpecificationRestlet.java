@@ -33,6 +33,9 @@
 
 package org.restlet.ext.raml;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.raml.emitter.RamlEmitter;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -44,15 +47,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.raml.RamlTranslator;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Router;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Restlet that generates RAML documentation in the format defined by the RAML
@@ -62,18 +62,18 @@ import java.util.List;
  * {@link #setApiInboundRoot(Restlet)} methods.<br>
  * By default it instrospects the chain of Application's routers, filters,
  * restlets.<br>
- *
+ * 
  * <p>
  * Usage example:
+ * 
  * <pre>
- * new RamlSpecificationRestlet()
- *      .setApiInboundRoot(this)
- *      .setBasePath("http://myapp.com/api/v1")
- *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by swagger-annotation extension
- *      .attach(baseRouter);
+ * new RamlSpecificationRestlet().setApiInboundRoot(this)
+ *         .setBasePath(&quot;http://myapp.com/api/v1&quot;)
+ *         .attach(baseRouter);
  * </pre>
+ * 
  * </p>
- *
+ * 
  * @author Cyprien Quilici
  * @link http://raml.org/
  * @link http://raml.org/spec.html
@@ -98,11 +98,11 @@ public class RamlSpecificationRestlet extends Restlet {
     /** The definition of the API. */
     private Definition definition;
 
+    /** List of additional introspector plugins to use */
+    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
+
     /** The version of the supported RAML specifications. */
     private String ramlVersion;
-
-    /** List of additional introspector plugins to use */
-    private List<IntrospectorPlugin> introspectorPlugins = new ArrayList<IntrospectorPlugin>();
 
     /**
      * Default constructor.<br>
@@ -113,13 +113,56 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     *
+     * 
      * @param context
      *            The context.
      */
     public RamlSpecificationRestlet(Context context) {
         super(context);
         ramlVersion = "0.8";
+    }
+
+    /**
+     * Add an introspector plugin to default introspector
+     * 
+     * @param helper
+     *            Introspector Plugin to add
+     * 
+     */
+    public RamlSpecificationRestlet addIntrospectorPlugin(
+            IntrospectionHelper helper) {
+        introspectionHelpers.add(helper);
+        return this;
+    }
+
+    /**
+     * Defines one route (by default "/raml") for serving the application
+     * specification.
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * 
+     * @see #attach(org.restlet.routing.Router, String) to attach it with a
+     *      custom path
+     */
+    public void attach(Router router) {
+        attach(router, "/raml");
+    }
+
+    /**
+     * Defines one route (by default "/raml") for serving the application
+     * specification.
+     * 
+     * @param router
+     *            The router on which defining the new route.
+     * @param path
+     *            The root path of the documentation Restlet.
+     * 
+     * @see #attach(org.restlet.routing.Router) to attach it with the default
+     *      path
+     */
+    public void attach(Router router, String path) {
+        router.attach(path, this);
     }
 
     /**
@@ -164,9 +207,7 @@ public class RamlSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (RamlSpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef,
-                        null,
-                        introspectorPlugins);
+                        baseRef, null, introspectionHelpers);
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }
@@ -207,48 +248,8 @@ public class RamlSpecificationRestlet extends Restlet {
     }
 
     /**
-     * Defines one route (by default "/raml") for serving the
-     * application specification.
-     *
-     * @param router
-     *            The router on which defining the new route.
-     *
-     * @see #attach(org.restlet.routing.Router, String) to attach it with a custom path
-     */
-    public void attach(Router router) {
-        attach(router, "/raml");
-    }
-
-    /**
-     * Defines one route (by default "/raml") for serving the
-     * application specification.
-     *
-     * @param router
-     *            The router on which defining the new route.
-     * @param path
-     *            The root path of the documentation Restlet.
-     *
-     * @see #attach(org.restlet.routing.Router) to attach it with the default path
-     */
-    public void attach(Router router, String path) {
-        router.attach(path, this);
-    }
-
-    /**
-     * Add an introspector plugin to default introspector
-     *
-     * @param introspectorPlugin
-     *          Introspector Plugin to add
-     *
-     */
-    public RamlSpecificationRestlet addIntrospectorPlugin(IntrospectorPlugin introspectorPlugin) {
-        introspectorPlugins.add(introspectorPlugin);
-        return this;
-    }
-
-    /**
      * Sets the root Restlet for the given application.
-     *
+     * 
      * @param application
      *            The application.
      */
@@ -259,7 +260,7 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Sets the root Restlet for the given application.
-     *
+     * 
      * @param apiInboundRoot
      *            The application's root Restlet.
      */
@@ -270,7 +271,7 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Sets the API's version.
-     *
+     * 
      * @param apiVersion
      *            The API version.
      */
@@ -281,20 +282,20 @@ public class RamlSpecificationRestlet extends Restlet {
 
     /**
      * Sets the base path of the API.
-     *
+     * 
      * @param basePath
      *            The base path of the API
      */
     public RamlSpecificationRestlet setBasePath(String basePath) {
         this.basePath = basePath;
-        //Process basepath and check validity
+        // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
         return this;
     }
 
     /**
      * Sets the version of RAML used to generate this documentation.
-     *
+     * 
      * @param ramlVersion
      *            The version of RAML.
      */

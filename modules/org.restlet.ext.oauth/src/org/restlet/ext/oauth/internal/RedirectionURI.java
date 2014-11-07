@@ -39,9 +39,9 @@ package org.restlet.ext.oauth.internal;
  */
 public class RedirectionURI {
 
-    private final String uri;
-
     private final boolean dynamicConfigured;
+
+    private final String uri;
 
     public RedirectionURI(String uri) {
         this(uri, false);
@@ -52,16 +52,16 @@ public class RedirectionURI {
         this.dynamicConfigured = dynamicConfigured;
     }
 
-    @Override
-    public String toString() {
-        return getURI();
-    }
-
     public String getURI() {
         return uri;
     }
 
     public boolean isDynamicConfigured() {
         return dynamicConfigured;
+    }
+
+    @Override
+    public String toString() {
+        return getURI();
     }
 }

@@ -68,11 +68,11 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         return list.iterator();
     }
 
-    private List<MediaType> mediaTypes;
+    private List<String> encodings;
 
     private List<Locale> languages;
 
-    private List<String> encodings;
+    private List<MediaType> mediaTypes;
 
     private List<Variant> variants;
 

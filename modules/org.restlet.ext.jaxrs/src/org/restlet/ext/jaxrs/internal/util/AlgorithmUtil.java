@@ -69,6 +69,18 @@ public class AlgorithmUtil {
     }
 
     /**
+     * Sorts the ResourceMethods by it's number of non default regular
+     * expressions
+     */
+    private static Comparator<ResourceMethod> COMP = new Comparator<ResourceMethod>() {
+        public int compare(ResourceMethod rm1, ResourceMethod rm2) {
+            int nndre1 = rm1.getPathRegExp().getNoNonDefCaprGroups();
+            int nndre2 = rm2.getPathRegExp().getNoNonDefCaprGroups();
+            return nndre2 - nndre1;
+        }
+    };
+
+    /**
      * Adds the matched template parameters to the {@link CallContext}.
      * 
      * @param matchResult
@@ -170,18 +182,6 @@ public class AlgorithmUtil {
         }
         return mms;
     }
-
-    /**
-     * Sorts the ResourceMethods by it's number of non default regular
-     * expressions
-     */
-    private static Comparator<ResourceMethod> COMP = new Comparator<ResourceMethod>() {
-        public int compare(ResourceMethod rm1, ResourceMethod rm2) {
-            int nndre1 = rm1.getPathRegExp().getNoNonDefCaprGroups();
-            int nndre2 = rm2.getPathRegExp().getNoNonDefCaprGroups();
-            return nndre2 - nndre1;
-        }
-    };
 
     /**
      * Sort by using the media type of input data as the primary key and the

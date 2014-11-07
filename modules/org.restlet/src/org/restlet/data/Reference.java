@@ -776,12 +776,10 @@ public class Reference {
         if (value != null) {
             if (path == null) {
                 setPath("/" + value);
+            } else if (path.endsWith("/")) {
+                setPath(path + encode(value));
             } else {
-                if (path.endsWith("/")) {
-                    setPath(path + encode(value));
-                } else {
-                    setPath(path + "/" + encode(value));
-                }
+                setPath(path + "/" + encode(value));
             }
         }
 

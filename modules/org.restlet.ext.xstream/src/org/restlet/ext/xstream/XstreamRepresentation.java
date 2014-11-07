@@ -86,11 +86,11 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
     /** The (parsed) object to format. */
     private T object;
 
-    /** The target class of the object to serialize. */
-    private Class<T> targetClass;
-
     /** The representation to parse. */
     private Representation representation;
+
+    /** The target class of the object to serialize. */
+    private Class<T> targetClass;
 
     /** The XStream XML driver class. */
     private Class<? extends HierarchicalStreamDriver> xmlDriverClass;

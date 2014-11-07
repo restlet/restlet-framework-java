@@ -58,6 +58,6 @@ public interface MessageBodyReaderSet {
      *         criteria, or null if no matching MessageBodyReader could be
      *         found.
      */
-    MessageBodyReader getBestReader(Class<?> paramType,
-            Type genericType, Annotation[] annotations, MediaType mediaType);
+    MessageBodyReader getBestReader(Class<?> paramType, Type genericType,
+            Annotation[] annotations, MediaType mediaType);
 }

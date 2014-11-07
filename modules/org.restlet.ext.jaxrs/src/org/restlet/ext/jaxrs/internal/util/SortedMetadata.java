@@ -59,9 +59,9 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     @SuppressWarnings("hiding")
     private class IteratorIterator<T extends Metadata> implements Iterator<T> {
-        private final Iterator<Iterable<T>> iterIter;
-
         private Iterator<T> iter;
+
+        private final Iterator<Iterable<T>> iterIter;
 
         IteratorIterator(Iterator<Iterable<T>> iterIter) {
             this.iterIter = iterIter;

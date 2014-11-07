@@ -61,13 +61,6 @@ public class MessageBodyWriterSubSet {
     }
 
     /**
-     * The class supported by the contained message body writers, given by the
-     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
-     * {@code null}.
-     */
-    private final Class<?> type;
-
-    /**
      * The type supported by the contained message body writers, given by the
      * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
      * {@code null}.
@@ -75,6 +68,13 @@ public class MessageBodyWriterSubSet {
     private final Type genericType;
 
     private final List<MessageBodyWriter> mbws;
+
+    /**
+     * The class supported by the contained message body writers, given by the
+     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
+     * {@code null}.
+     */
+    private final Class<?> type;
 
     MessageBodyWriterSubSet(List<MessageBodyWriter> mbws, final Class<?> type,
             final Type genericType) {

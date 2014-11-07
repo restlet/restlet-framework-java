@@ -34,13 +34,13 @@
 package org.restlet.ext.oauth;
 
 import org.restlet.Context;
-import org.restlet.ext.oauth.internal.Client;
-import org.restlet.ext.oauth.internal.ClientManager;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.ClientManager;
 import org.restlet.security.SecretVerifier;
 import org.restlet.security.User;
 import org.restlet.security.Verifier;
@@ -53,12 +53,27 @@ import org.restlet.security.Verifier;
  */
 public class ClientVerifier implements Verifier {
 
-    private Context context;
-
     private boolean acceptBodyMethod = false;
+
+    private Context context;
 
     public ClientVerifier(Context context) {
         this.context = context;
+    }
+
+    /**
+     * @return the acceptBodyMethod
+     */
+    public boolean isAcceptBodyMethod() {
+        return acceptBodyMethod;
+    }
+
+    /**
+     * @param acceptBodyMethod
+     *            the acceptBodyMethod to set
+     */
+    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
+        this.acceptBodyMethod = acceptBodyMethod;
     }
 
     public int verify(Request request, Response response) {
@@ -115,20 +130,5 @@ public class ClientVerifier implements Verifier {
             return RESULT_INVALID;
         }
         return RESULT_VALID;
-    }
-
-    /**
-     * @return the acceptBodyMethod
-     */
-    public boolean isAcceptBodyMethod() {
-        return acceptBodyMethod;
-    }
-
-    /**
-     * @param acceptBodyMethod
-     *            the acceptBodyMethod to set
-     */
-    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
-        this.acceptBodyMethod = acceptBodyMethod;
     }
 }

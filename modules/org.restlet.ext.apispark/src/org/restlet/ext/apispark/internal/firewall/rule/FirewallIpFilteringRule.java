@@ -33,20 +33,21 @@
 
 package org.restlet.ext.apispark.internal.firewall.rule;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
 /**
- * A {@link FirewallIpFilteringRule} filter user IP address from a white list or a black list/
- *
+ * Filters requests by testing the presence of the user IP address from a white
+ * list or a black list.
+ * 
  * @author Manuel Boillod
  */
 public class FirewallIpFilteringRule extends FirewallRule {
@@ -59,14 +60,15 @@ public class FirewallIpFilteringRule extends FirewallRule {
 
     }
 
-    public FirewallIpFilteringRule(Collection<String> filteredAddresses, boolean whiteList) {
+    public FirewallIpFilteringRule(Collection<String> filteredAddresses,
+            boolean whiteList) {
         this.filteredAddresses = new HashSet<>(filteredAddresses);
         this.whiteList = whiteList;
     }
 
     /**
      * Filters the request on the user IP address.
-     *
+     * 
      * @param request
      *            The request to handle.
      * @param response
@@ -77,14 +79,11 @@ public class FirewallIpFilteringRule extends FirewallRule {
         String address = request.getClientInfo().getUpstreamAddress();
 
         if (filteredAddresses.contains(address)) {
-            if (whiteList) {
-                return Filter.CONTINUE;
-            } else {
+            if (!whiteList) {
                 Context.getCurrentLogger().log(
                         Level.FINE,
                         "The current request has been blocked because \""
-                                + address
-                                + "\" is in the black list.");
+                                + address + "\" is in the black list.");
 
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
                 return Filter.STOP;
@@ -94,27 +93,25 @@ public class FirewallIpFilteringRule extends FirewallRule {
                 Context.getCurrentLogger().log(
                         Level.FINE,
                         "The current request has been blocked because \""
-                                + address
-                                + "\" is not in the white list.");
+                                + address + "\" is not in the white list.");
 
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
                 return Filter.STOP;
-            } else {
-                return Filter.CONTINUE;
             }
         }
+        return Filter.CONTINUE;
     }
 
     public Set<String> getFilteredAddresses() {
         return filteredAddresses;
     }
 
-    public void setFilteredAddresses(Set<String> filteredAddresses) {
-        this.filteredAddresses = filteredAddresses;
-    }
-
     public boolean isWhiteList() {
         return whiteList;
+    }
+
+    public void setFilteredAddresses(Set<String> filteredAddresses) {
+        this.filteredAddresses = filteredAddresses;
     }
 
     public void setWhiteList(boolean whiteList) {

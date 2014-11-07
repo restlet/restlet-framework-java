@@ -113,11 +113,6 @@ public class SimpleCall extends ServerCall {
     }
 
     @Override
-    public void flushBuffers() throws IOException {
-        this.response.commit();
-    }
-
-    @Override
     public void complete() {
         try {
             // Commit the response
@@ -125,6 +120,11 @@ public class SimpleCall extends ServerCall {
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Unable to commit the response", ex);
         }
+    }
+
+    @Override
+    public void flushBuffers() throws IOException {
+        this.response.commit();
     }
 
     @Override

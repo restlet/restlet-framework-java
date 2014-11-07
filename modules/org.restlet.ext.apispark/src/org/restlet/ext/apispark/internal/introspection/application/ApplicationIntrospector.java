@@ -44,7 +44,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.DocumentedApplication;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -63,6 +63,46 @@ public class ApplicationIntrospector extends IntrospectionUtils {
     /** Internal logger. */
     protected static Logger LOGGER = Logger
             .getLogger(ApplicationIntrospector.class.getName());
+
+    private static void addEnpoints(Application application, Reference baseRef,
+            Component component, Definition definition, Contract contract,
+            CollectInfo collectInfo) {
+        String scheme = collectInfo.getSchemes().isEmpty() ? null : collectInfo
+                .getSchemes().get(0).getName();
+
+        // Introspect component if any
+        if (baseRef != null) {
+            Endpoint endpoint = new Endpoint(baseRef.getHostDomain(),
+                    baseRef.getHostPort(), baseRef.getSchemeProtocol()
+                            .getSchemeName(), baseRef.getPath(), scheme);
+            definition.getEndpoints().add(endpoint);
+        }
+        if (component != null) {
+            LOGGER.fine("Look for the endpoint.");
+            // Look for the endpoint to which this application is attached.
+            Endpoint endpoint = ComponentIntrospector.getEndpoint(
+                    component.getDefaultHost(), application, scheme);
+            // add sections
+            contract.setSections(collectInfo.getSections());
+            if (endpoint != null) {
+                definition.getEndpoints().add(endpoint);
+            }
+            for (VirtualHost virtualHost : component.getHosts()) {
+                endpoint = ComponentIntrospector.getEndpoint(virtualHost,
+                        application, scheme);
+                if (endpoint != null) {
+                    definition.getEndpoints().add(endpoint);
+                }
+            }
+        }
+
+        // if no endpoints are defined, add a default one to have correct scheme
+        if (definition.getEndpoints().isEmpty()) {
+            Endpoint endpoint = new Endpoint("example.com", 80,
+                    Protocol.HTTP.getSchemeName(), "/v1", scheme);
+            definition.getEndpoints().add(endpoint);
+        }
+    }
 
     /**
      * Returns an instance of what must be a subclass of
@@ -127,18 +167,18 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      *            An component to introspect in order to get extra details such
      *            as the endpoint.
      * 
-     * @param introspectorPlugins
-     *              Optional list of introspector plugins
-     *
+     * @param introspectionHelpers
+     *            Optional list of introspector plugins
+     * 
      * @return An application description.
      */
     public static Definition getDefinition(Application application,
             Reference baseRef, Component component,
-            List<? extends IntrospectorPlugin> introspectorPlugins) {
+            List<? extends IntrospectionHelper> introspectionHelpers) {
 
         // initialize the list to avoid to add a null check statement
-        if (introspectorPlugins == null) {
-            introspectorPlugins = new ArrayList<>();
+        if (introspectionHelpers == null) {
+            introspectionHelpers = new ArrayList<>();
         }
         Definition definition = new Definition();
 
@@ -172,7 +212,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
                 application.getInboundRoot(), null /*
                                                     * there is no challenge
                                                     * scheme yet
-                                                    */, introspectorPlugins);
+                                                    */, introspectionHelpers);
 
         // add resources
         contract.setResources(collectInfo.getResources());
@@ -181,53 +221,16 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         // add sections
         contract.setSections(collectInfo.getSections());
 
-        addEnpoints(application, baseRef, component, definition, contract, collectInfo);
+        addEnpoints(application, baseRef, component, definition, contract,
+                collectInfo);
 
         sortDefinition(definition);
 
         updateRepresentationsSectionsFromResources(definition);
 
-        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-            introspectorPlugin.processDefinition(definition, application.getClass());
+        for (IntrospectionHelper helper : introspectionHelpers) {
+            helper.processDefinition(definition, application.getClass());
         }
         return definition;
-    }
-
-    private static void addEnpoints(Application application, Reference baseRef, Component component, Definition definition, Contract contract, CollectInfo collectInfo) {
-        String scheme = collectInfo.getSchemes().isEmpty() ? null : collectInfo
-                .getSchemes().get(0).getName();
-
-        // Introspect component if any
-        if (baseRef != null) {
-            Endpoint endpoint = new Endpoint(baseRef.getHostDomain(),
-                    baseRef.getHostPort(), baseRef.getSchemeProtocol()
-                            .getSchemeName(), baseRef.getPath(), scheme);
-            definition.getEndpoints().add(endpoint);
-        }
-        if (component != null) {
-            LOGGER.fine("Look for the endpoint.");
-            // Look for the endpoint to which this application is attached.
-            Endpoint endpoint = ComponentIntrospector.getEndpoint(
-                    component.getDefaultHost(), application, scheme);
-            // add sections
-            contract.setSections(collectInfo.getSections());
-            if (endpoint != null) {
-                definition.getEndpoints().add(endpoint);
-            }
-            for (VirtualHost virtualHost : component.getHosts()) {
-                endpoint = ComponentIntrospector.getEndpoint(virtualHost,
-                        application, scheme);
-                if (endpoint != null) {
-                    definition.getEndpoints().add(endpoint);
-                }
-            }
-        }
-
-        //if no endpoints are defined, add a default one to have correct scheme
-        if (definition.getEndpoints().isEmpty()) {
-            Endpoint endpoint = new Endpoint("example.com", 80,
-                    Protocol.HTTP.getSchemeName(), "/v1", scheme);
-            definition.getEndpoints().add(endpoint);
-        }
     }
 }

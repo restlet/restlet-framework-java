@@ -51,11 +51,11 @@ import org.restlet.resource.Resource;
  */
 public class HtmlConverter extends ConverterHelper {
 
-    private static final VariantInfo VARIANT_WWW_FORM = new VariantInfo(
-            MediaType.APPLICATION_WWW_FORM);
-
     private static final VariantInfo VARIANT_MULTIPART = new VariantInfo(
             MediaType.MULTIPART_FORM_DATA);
+
+    private static final VariantInfo VARIANT_WWW_FORM = new VariantInfo(
+            MediaType.APPLICATION_WWW_FORM);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {

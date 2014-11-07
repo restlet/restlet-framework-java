@@ -90,20 +90,6 @@ public class SpringHost extends VirtualHost {
     }
 
     /**
-     * Sets the map of routes to attach. The map keys are the URI templates and
-     * the values can be either Restlet instances, {@link ServerResource}
-     * subclasses (as {@link Class} instances or as qualified class names).
-     * 
-     * @param routes
-     *            The map of routes to attach.
-     */
-    public void setAttachments(Map<String, Object> routes) {
-        for (String key : routes.keySet()) {
-            setAttachment(key, routes.get(key));
-        }
-    }
-
-    /**
      * Sets a route to attach. The keys is the URI template and the value can be
      * either Restlet instance, {@link ServerResource} subclasse (as
      * {@link Class} instances or as qualified class names).
@@ -119,6 +105,20 @@ public class SpringHost extends VirtualHost {
         }
 
         SpringRouter.setAttachment(this, path, route);
+    }
+
+    /**
+     * Sets the map of routes to attach. The map keys are the URI templates and
+     * the values can be either Restlet instances, {@link ServerResource}
+     * subclasses (as {@link Class} instances or as qualified class names).
+     * 
+     * @param routes
+     *            The map of routes to attach.
+     */
+    public void setAttachments(Map<String, Object> routes) {
+        for (String key : routes.keySet()) {
+            setAttachment(key, routes.get(key));
+        }
     }
 
     /**

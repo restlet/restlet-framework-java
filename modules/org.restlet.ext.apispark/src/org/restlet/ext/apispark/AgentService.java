@@ -39,67 +39,197 @@ import org.restlet.ext.apispark.internal.agent.AgentFilter;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
 
+/**
+ * Configures a proxy for your own application and provides some services hosted
+ * by the APISpark platform such as analytics, security.
+ * 
+ * @author Cyprien Quilici
+ * @author Manuel Boillod
+ */
 public class AgentService extends Service {
+    /** The URL of the remote service used by default. */
+    public static final String DEFAULT_AGENT_SERVICE_URL = "https://apispark.restlet.com";
 
-    public static final String DEFAULT_AGENT_SERVICE_PATH = "https://apispark.restlet.com";
+    /** The password used to connect to the APISpark platform. */
+    private char[] agentSecret;
 
-    private Integer cellId;
-    private Integer cellVersion;
-    private String agentServicePath = DEFAULT_AGENT_SERVICE_PATH;
+    /** The url of the APISpark service. */
+    private String agentServiceUrl = DEFAULT_AGENT_SERVICE_URL;
+
+    /** The login used to connect to the APISpark platform. */
     private String agentUsername;
-    private char[] agentSecretKey;
 
-    public AgentService() {
+    /**
+     * The identifier of the cell configured on the APISpark platform for your
+     * application.
+     */
+    private Integer cell;
+
+    /**
+     * The identifier of the cell version configured on the APISpark platform
+     * for your application.
+     */
+    private Integer cellVersion;
+
+    /**
+     * Constructor using the default APISpark service url.
+     * 
+     * @param agentUsername
+     *            The login used to connect to the APISpark platform.
+     * @param agentSecret
+     *            The password used to connect to the APISpark platform.
+     * @param cell
+     *            The identifier of the cell configured on the APISpark platform
+     *            for your application.
+     * @param cellVersion
+     *            The identifier of the cell version configured on the APISpark
+     *            platform for your application.
+     */
+    public AgentService(String agentUsername, char[] agentSecret, Integer cell,
+            Integer cellVersion) {
+        this(DEFAULT_AGENT_SERVICE_URL, agentUsername, agentSecret, cell,
+                cellVersion);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param agentServiceUrl
+     *            The url of the APISpark service.
+     * @param agentUsername
+     *            The login used to connect to the APISpark platform.
+     * @param agentSecret
+     *            The password used to connect to the APISpark platform.
+     * @param cell
+     *            The identifier of the cell configured on the APISpark platform
+     *            for your application.
+     * @param cellVersion
+     *            The identifier of the cell version configured on the APISpark
+     *            platform for your application.
+     */
+    public AgentService(String agentServiceUrl, String agentUsername,
+            char[] agentSecret, Integer cell, Integer cellVersion) {
+        super(true);
+        this.agentSecret = agentSecret;
+        this.agentServiceUrl = agentServiceUrl;
+        this.agentUsername = agentUsername;
+        this.cell = cell;
+        this.cellVersion = cellVersion;
     }
 
     @Override
     public Filter createInboundFilter(Context context) {
         AgentConfig agentConfig = new AgentConfig();
-        agentConfig.setCellId(cellId);
+        agentConfig.setCell(cell);
         agentConfig.setCellVersion(cellVersion);
-        agentConfig.setAgentServicePath(agentServicePath);
+        agentConfig.setAgentServiceUrl(agentServiceUrl);
         agentConfig.setAgentUsername(agentUsername);
-        agentConfig.setAgentSecretKey(agentSecretKey);
+        agentConfig.setAgentSecret(agentSecret);
+
         return new AgentFilter(agentConfig, context);
     }
 
-    public Integer getCellId() {
-        return cellId;
+    /**
+     * Returns the password used to connect to the APISpark platform.
+     * 
+     * @return The password used to connect to the APISpark platform.
+     */
+    public String getAgentSecret() {
+        return new String(agentSecret);
     }
 
-    public void setCellId(Integer cellId) {
-        this.cellId = cellId;
+    /**
+     * Returns the url of the APISpark service.
+     * 
+     * @return The url of the APISpark service.
+     */
+    public String getAgentServiceUrl() {
+        return agentServiceUrl;
     }
 
-    public Integer getCellVersion() {
-        return cellVersion;
-    }
-
-    public void setCellVersion(Integer cellVersion) {
-        this.cellVersion = cellVersion;
-    }
-
-    public String getAgentServicePath() {
-        return agentServicePath;
-    }
-
-    public void setAgentServicePath(String agentServicePath) {
-        this.agentServicePath = agentServicePath;
-    }
-
+    /**
+     * Returns the login used to connect to the APISpark platform.
+     * 
+     * @return The login used to connect to the APISpark platform.
+     */
     public String getAgentUsername() {
         return agentUsername;
     }
 
+    /**
+     * Returns the identifier of the cell configured on the APISpark platform
+     * for your application.
+     * 
+     * @return The identifier of the cell configured on the APISpark platform
+     *         for your application.
+     */
+    public Integer getCell() {
+        return cell;
+    }
+
+    /**
+     * Returns the identifier of the cell version configured on the APISpark
+     * platform for your application.
+     * 
+     * @return The identifier of the cell version configured on the APISpark
+     *         platform for your application.
+     */
+    public Integer getCellVersion() {
+        return cellVersion;
+    }
+
+    /**
+     * Sets the password used to connect to the APISpark platform.
+     * 
+     * @param agentSecret
+     *            The password used to connect to the APISpark platform.
+     */
+    public void setAgentSecret(String agentSecret) {
+        this.agentSecret = agentSecret != null ? agentSecret.toCharArray()
+                : null;
+    }
+
+    /**
+     * Sets the url of the APISpark service.
+     * 
+     * @param agentServiceUrl
+     *            The url of the APISpark service.
+     */
+    public void setAgentServiceUrl(String agentServiceUrl) {
+        this.agentServiceUrl = agentServiceUrl;
+    }
+
+    /**
+     * Sets the login used to connect to the APISpark platform.
+     * 
+     * @param agentUsername
+     *            The login used to connect to the APISpark platform.
+     */
     public void setAgentUsername(String agentUsername) {
         this.agentUsername = agentUsername;
     }
 
-    public String getAgentSecretKey() {
-        return new String(agentSecretKey);
+    /**
+     * Sets the identifier of the cell configured on the APISpark platform for
+     * your application.
+     * 
+     * @param cell
+     *            The identifier of the cell configured on the APISpark platform
+     *            for your application.
+     */
+    public void setCell(Integer cell) {
+        this.cell = cell;
     }
 
-    public void setAgentSecretKey(String agentSecretKey) {
-        this.agentSecretKey = agentSecretKey != null ? agentSecretKey.toCharArray() : null;
+    /**
+     * Sets the identifier of the cell version configured on the APISpark
+     * platform for your application.
+     * 
+     * @param cellVersion
+     *            The identifier of the cell version configured on the APISpark
+     *            platform for your application.
+     */
+    public void setCellVersion(Integer cellVersion) {
+        this.cellVersion = cellVersion;
     }
 }

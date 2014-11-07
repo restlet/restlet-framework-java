@@ -40,16 +40,16 @@ package org.restlet.ext.nio.internal.state;
  */
 public enum ConnectionState {
 
-    /** The network connection is being opened and connected. */
-    OPENING,
-
-    /** The network connection has been successfully opened and connected. */
-    OPEN,
+    /** The network connection has been successfully closed. */
+    CLOSED,
 
     /** Waiting for all pending responses to be sent. */
     CLOSING,
 
-    /** The network connection has been successfully closed. */
-    CLOSED;
+    /** The network connection has been successfully opened and connected. */
+    OPEN,
+
+    /** The network connection is being opened and connected. */
+    OPENING;
 
 }

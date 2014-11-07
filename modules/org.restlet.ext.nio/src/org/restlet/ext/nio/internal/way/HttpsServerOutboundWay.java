@@ -75,6 +75,11 @@ public class HttpsServerOutboundWay extends HttpServerOutboundWay {
     }
 
     @Override
+    public void postProcess(int drained) throws IOException {
+        getConnection().handleSslResult();
+    }
+
+    @Override
     public int preProcess(int maxDrained, Object... args) throws IOException {
         int result = 0;
 
@@ -86,11 +91,6 @@ public class HttpsServerOutboundWay extends HttpServerOutboundWay {
         }
 
         return result;
-    }
-
-    @Override
-    public void postProcess(int drained) throws IOException {
-        getConnection().handleSslResult();
     }
 
 }

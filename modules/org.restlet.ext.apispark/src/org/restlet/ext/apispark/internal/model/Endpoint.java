@@ -44,6 +44,16 @@ import java.util.regex.Pattern;
  */
 public class Endpoint {
 
+    /** Authentication protocol used for this endpoint */
+    private String authenticationProtocol;
+
+    /**
+     * Base path for this endpoint.
+     * 
+     * Ex: http://example.com:8555/v1/admin => basePath = /v1/admin
+     */
+    private String basePath;
+
     /** The domain's name. */
     private String domain;
 
@@ -53,36 +63,7 @@ public class Endpoint {
     /** Protocol used for this endpoint. */
     private String protocol;
 
-    /**
-     * Base path for this endpoint.
-     * 
-     * Ex: http://example.com:8555/v1/admin => basePath = /v1/admin
-     */
-    private String basePath;
-
-    /** Authentication protocol used for this endpoint */
-    private String authenticationProtocol;
-
-    /**
-     *
-     * @param domain
-     *      Domain of the endpoint
-     * @param port
-     *      Port of the endpoint. Value -1 is considered as null.
-     * @param protocol
-     *      Protocol of the endpoint
-     * @param basePath
-     *      Base path of the endpoint
-     * @param authenticationProtocol
-     *      Authentication scheme of the endpoint
-     */
-    public Endpoint(String domain, Integer port, String protocol,
-            String basePath, String authenticationProtocol) {
-        this.domain = domain;
-        setPort(port);
-        this.protocol = protocol;
-        this.basePath = basePath;
-        this.authenticationProtocol = authenticationProtocol;
+    public Endpoint() {
     }
 
     public Endpoint(String url) {
@@ -101,12 +82,39 @@ public class Endpoint {
         }
     }
 
-    public Endpoint() {
+    /**
+     * 
+     * @param domain
+     *            Domain of the endpoint
+     * @param port
+     *            Port of the endpoint. Value -1 is considered as null.
+     * @param protocol
+     *            Protocol of the endpoint
+     * @param basePath
+     *            Base path of the endpoint
+     * @param authenticationProtocol
+     *            Authentication scheme of the endpoint
+     */
+    public Endpoint(String domain, Integer port, String protocol,
+            String basePath, String authenticationProtocol) {
+        this.domain = domain;
+        setPort(port);
+        this.protocol = protocol;
+        this.basePath = basePath;
+        this.authenticationProtocol = authenticationProtocol;
     }
 
     public String computeUrl() {
-        return protocol + "://" + domain
-                + (port != null ? ":" + port : "") + basePath;
+        return protocol + "://" + domain + (port != null ? ":" + port : "")
+                + basePath;
+    }
+
+    public String getAuthenticationProtocol() {
+        return authenticationProtocol;
+    }
+
+    public String getBasePath() {
+        return basePath;
     }
 
     public String getDomain() {
@@ -119,6 +127,14 @@ public class Endpoint {
 
     public String getProtocol() {
         return protocol;
+    }
+
+    public void setAuthenticationProtocol(String authenticationProtocol) {
+        this.authenticationProtocol = authenticationProtocol;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 
     public void setDomain(String domain) {
@@ -135,21 +151,5 @@ public class Endpoint {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
-    }
-
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
-    }
-
-    public String getAuthenticationProtocol() {
-        return authenticationProtocol;
-    }
-
-    public void setAuthenticationProtocol(String authenticationProtocol) {
-        this.authenticationProtocol = authenticationProtocol;
     }
 }

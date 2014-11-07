@@ -68,12 +68,38 @@ import org.restlet.representation.Representation;
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
     /**
+     * @param mediaType
+     * @param entityStream
+     * @return
+     */
+    static Form getForm(MediaType mediaType, InputStream entityStream) {
+        org.restlet.data.MediaType restletMediaType = Converter
+                .toRestletMediaType(mediaType);
+        Form form = new Form(new InputRepresentation(entityStream,
+                restletMediaType));
+        Request.getCurrent().setEntity(form.getWebRepresentation());
+        return form;
+    }
+
+    /**
      * @see AbstractProvider#getSize(java.lang.Object)
      */
     @Override
     public long getSize(Form form, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return -1;
+    }
+
+    /**
+     * @see AbstractProvider#readFrom(Class, Type, Annotation[], MediaType,
+     *      MultivaluedMap, InputStream)
+     */
+    @Override
+    public Form readFrom(Class<Form> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        return getForm(mediaType, entityStream);
     }
 
     /**
@@ -95,31 +121,5 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
             OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
         IoUtils.copy(formRepr.getStream(), entityStream);
-    }
-
-    /**
-     * @see AbstractProvider#readFrom(Class, Type, Annotation[], MediaType,
-     *      MultivaluedMap, InputStream)
-     */
-    @Override
-    public Form readFrom(Class<Form> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException {
-        return getForm(mediaType, entityStream);
-    }
-
-    /**
-     * @param mediaType
-     * @param entityStream
-     * @return
-     */
-    static Form getForm(MediaType mediaType, InputStream entityStream) {
-        org.restlet.data.MediaType restletMediaType = Converter
-                .toRestletMediaType(mediaType);
-        Form form = new Form(new InputRepresentation(entityStream,
-                restletMediaType));
-        Request.getCurrent().setEntity(form.getWebRepresentation());
-        return form;
     }
 }

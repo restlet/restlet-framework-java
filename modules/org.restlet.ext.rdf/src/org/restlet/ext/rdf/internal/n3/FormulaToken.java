@@ -46,13 +46,6 @@ import org.restlet.ext.rdf.internal.turtle.LexicalUnit;
  */
 public class FormulaToken extends LexicalUnit {
 
-    @Override
-    public Object resolve() {
-        org.restlet.Context.getCurrentLogger().warning(
-                "Formulae are not supported yet.");
-        return null;
-    }
-
     public FormulaToken(RdfN3Reader contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
@@ -62,5 +55,12 @@ public class FormulaToken extends LexicalUnit {
     @Override
     public void parse() throws IOException {
         ((RdfN3Reader) getContentReader()).parseFormula(this);
+    }
+
+    @Override
+    public Object resolve() {
+        org.restlet.Context.getCurrentLogger().warning(
+                "Formulae are not supported yet.");
+        return null;
     }
 }

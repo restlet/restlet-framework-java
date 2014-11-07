@@ -43,6 +43,9 @@ import java.util.List;
  */
 public class Resource {
 
+    /** Authentication protocol used for this resource */
+    private String authenticationProtocol;
+
     /** Textual description of this resource */
     private String description;
 
@@ -58,11 +61,12 @@ public class Resource {
     /** Relative path from the endpoint to this resource */
     private String resourcePath;
 
-    /** Authentication protocol used for this resource */
-    private String authenticationProtocol;
-
     /** The list of Sections this Resource belongs to */
     private List<String> sections;
+
+    public String getAuthenticationProtocol() {
+        return authenticationProtocol;
+    }
 
     public String getDescription() {
         return description;
@@ -108,6 +112,17 @@ public class Resource {
         return resourcePath;
     }
 
+    public List<String> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<String>();
+        }
+        return sections;
+    }
+
+    public void setAuthenticationProtocol(String authenticationProtocol) {
+        this.authenticationProtocol = authenticationProtocol;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -126,21 +141,6 @@ public class Resource {
 
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
-    }
-
-    public String getAuthenticationProtocol() {
-        return authenticationProtocol;
-    }
-
-    public void setAuthenticationProtocol(String authenticationProtocol) {
-        this.authenticationProtocol = authenticationProtocol;
-    }
-
-    public List<String> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<String>();
-        }
-        return sections;
     }
 
     public void setSections(List<String> sections) {

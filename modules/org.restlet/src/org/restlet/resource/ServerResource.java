@@ -57,8 +57,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
-import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
@@ -818,7 +818,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Returns the description.
-     *
+     * 
      * @return The description
      */
     public String getDescription() {
@@ -867,7 +867,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Returns the display name.
-     *
+     * 
      * @return The display name.
      */
     public String getName() {
@@ -1641,7 +1641,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Sets the description.
-     *
+     * 
      * @param description
      *            The description.
      */
@@ -1707,7 +1707,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Sets the display name.
-     *
+     * 
      * @param name
      *            The display name.
      */

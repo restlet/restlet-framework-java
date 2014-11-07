@@ -35,6 +35,7 @@ package org.restlet.ext.oauth.internal;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import org.restlet.ext.oauth.OAuthException;
 
 /**
@@ -43,45 +44,9 @@ import org.restlet.ext.oauth.OAuthException;
  */
 public abstract class AbstractTokenManager implements TokenManager {
 
-    public static final int RESEED_TOKENS = 1000;
-
     public static final int DEFAULT_TOKEN_EXPIRE_PERIOD = 3600;
 
-    private SecureRandom random;
-
-    private int expirePeriod = DEFAULT_TOKEN_EXPIRE_PERIOD;
-
-    private boolean updateRefreshToken = true;
-
-    private volatile int count = 0;
-
-    public AbstractTokenManager() {
-        try {
-            random = SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    protected String generateRawCode() {
-        StringBuilder raw = new StringBuilder(generate(20));
-        raw.append('|').append(System.currentTimeMillis());
-        return raw.toString();
-    }
-
-    protected String generateRawToken() {
-        return generate(40);
-    }
-
-    protected String generate(int len) {
-        if (count++ > RESEED_TOKENS) {
-            count = 0;
-            random.setSeed(random.generateSeed(20));
-        }
-        byte[] token = new byte[len];
-        random.nextBytes(token);
-        return toHex(token);
-    }
+    public static final int RESEED_TOKENS = 1000;
 
     protected static String toHex(byte[] input) {
         StringBuilder sb = new StringBuilder();
@@ -96,17 +61,49 @@ public abstract class AbstractTokenManager implements TokenManager {
         return sb.toString();
     }
 
-    public Token generateToken(Client client, String[] scope)
-            throws OAuthException {
-        return generateToken(client, null, scope);
+    private volatile int count = 0;
+
+    private int expirePeriod = DEFAULT_TOKEN_EXPIRE_PERIOD;
+
+    private SecureRandom random;
+
+    private boolean updateRefreshToken = true;
+
+    public AbstractTokenManager() {
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     public Token findToken(Client client) {
         return findToken(client, null);
     }
 
-    public void revokeToken(Client client) {
-        revokeToken(client, null);
+    protected String generate(int len) {
+        if (count++ > RESEED_TOKENS) {
+            count = 0;
+            random.setSeed(random.generateSeed(20));
+        }
+        byte[] token = new byte[len];
+        random.nextBytes(token);
+        return toHex(token);
+    }
+
+    protected String generateRawCode() {
+        StringBuilder raw = new StringBuilder(generate(20));
+        raw.append('|').append(System.currentTimeMillis());
+        return raw.toString();
+    }
+
+    protected String generateRawToken() {
+        return generate(40);
+    }
+
+    public Token generateToken(Client client, String[] scope)
+            throws OAuthException {
+        return generateToken(client, null, scope);
     }
 
     /**
@@ -117,18 +114,22 @@ public abstract class AbstractTokenManager implements TokenManager {
     }
 
     /**
+     * @return the updateRefreshToken
+     */
+    public boolean isUpdateRefreshToken() {
+        return updateRefreshToken;
+    }
+
+    public void revokeToken(Client client) {
+        revokeToken(client, null);
+    }
+
+    /**
      * @param expirePeriod
      *            the expirePeriod to set
      */
     public void setExpirePeriod(int expirePeriod) {
         this.expirePeriod = expirePeriod;
-    }
-
-    /**
-     * @return the updateRefreshToken
-     */
-    public boolean isUpdateRefreshToken() {
-        return updateRefreshToken;
     }
 
     /**

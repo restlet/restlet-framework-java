@@ -50,23 +50,23 @@ import org.xml.sax.XMLReader;
  */
 public abstract class AbstractXmlReader implements XMLReader {
 
-    /** The features map. */
-    private final HashMap<String, Boolean> features;
-
-    /** The properties map. */
-    private final HashMap<String, Object> properties;
+    /** The content handler. */
+    private ContentHandler contentHandler;
 
     /** The entity resolver. */
     private EntityResolver entityResolver;
 
+    /** The error handler. */
+    private ErrorHandler errorHandler;
+
+    /** The features map. */
+    private final HashMap<String, Boolean> features;
+
     /** The DTD handler. */
     private DTDHandler handler;
 
-    /** The content handler. */
-    private ContentHandler contentHandler;
-
-    /** The error handler. */
-    private ErrorHandler errorHandler;
+    /** The properties map. */
+    private final HashMap<String, Object> properties;
 
     /**
      * Default constructor.

@@ -49,10 +49,6 @@ public class ListToken extends LexicalUnit {
     /** The list of contained tokens. */
     List<LexicalUnit> lexicalUnits;
 
-    public List<LexicalUnit> getLexicalUnits() {
-        return lexicalUnits;
-    }
-
     /**
      * Constructor with arguments.
      * 
@@ -66,6 +62,20 @@ public class ListToken extends LexicalUnit {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
         this.parse();
+    }
+
+    public List<LexicalUnit> getLexicalUnits() {
+        return lexicalUnits;
+    }
+
+    @Override
+    public String getValue() {
+        return lexicalUnits.toString();
+    }
+
+    @Override
+    public void parse() throws IOException {
+        getContentReader().parseList(this);
     }
 
     @Override
@@ -100,15 +110,5 @@ public class ListToken extends LexicalUnit {
                 RdfConstants.OBJECT_NIL);
 
         return currentBlankNode;
-    }
-
-    @Override
-    public String getValue() {
-        return lexicalUnits.toString();
-    }
-
-    @Override
-    public void parse() throws IOException {
-        getContentReader().parseList(this);
     }
 }

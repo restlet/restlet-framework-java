@@ -93,9 +93,6 @@ import org.restlet.ext.xdb.internal.XdbServletCall;
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletAdapter extends ServerAdapter {
-    /** The target Restlet. */
-    private volatile Restlet target;
-
     /** Connection to the XMLDB repository. */
     private volatile Connection conn;
 
@@ -104,6 +101,9 @@ public class XdbServletAdapter extends ServerAdapter {
 
     /** The local port of the server connector. */
     private volatile int localPort = -1;
+
+    /** The target Restlet. */
+    private volatile Restlet target;
 
     /**
      * Constructor. Remembers to manually set the "target" property before

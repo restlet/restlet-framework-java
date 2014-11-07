@@ -46,14 +46,14 @@ public enum GrantType {
     authorization_code,
 
     /**
-     * Defined in 4.3 Resource Owner Password Credentials Grant.
-     */
-    password,
-
-    /**
      * Defined in 4.4 Client Credentials Grant.
      */
     client_credentials,
+
+    /**
+     * Defined in 4.3 Resource Owner Password Credentials Grant.
+     */
+    password,
 
     /**
      * Defined in 6 Refreshing an Access Token.

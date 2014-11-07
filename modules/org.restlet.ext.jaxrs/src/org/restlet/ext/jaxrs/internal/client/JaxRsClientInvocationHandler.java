@@ -91,6 +91,93 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
         this.clientResource = clientResource;
     }
 
+    private void addCookieParam(Request request, String representationAsText,
+            Annotation annotation) {
+        Series<Cookie> cookies = request.getCookies();
+        if (cookies == null) {
+            cookies = new Series<Cookie>(Cookie.class);
+        }
+
+        cookies.add(new Cookie(((CookieParam) annotation).value(),
+                representationAsText));
+
+        request.setCookies(cookies);
+    }
+
+    private void addHeaderParam(Request request, String representationAsText,
+            Annotation annotation) {
+        Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
+                representationAsText);
+    }
+
+    private void addPathParam(Request request, String representationAsText,
+            Annotation annotation) {
+        String paramName = ((PathParam) annotation).value();
+        String existingPath = Reference.decode(request.getResourceRef()
+                .getPath());
+
+        String simplePathParam = String.format("{%s}", paramName);
+        if (existingPath.contains(simplePathParam)) {
+            existingPath = existingPath.replace(simplePathParam,
+                    Reference.encode(representationAsText));
+        }
+
+        // TODO - allow regex path params - this code *mostly* works, but not
+        // quite
+        // String regexPathParam = String.format(".*\\{%s:(.+)\\}.*",
+        // paramName);
+        // try {
+        // if (existingPath.matches(regexPathParam)) {
+        // Matcher matcher = Pattern.compile(regexPathParam).matcher(
+        // existingPath);
+        // String pattern = matcher.group(1);
+        //
+        // /* I'm not sure how much sense it makes to match on the
+        // * textual form of the representation, unless it is a String...
+        // */
+        // if (representationAsText.matches(pattern)) {
+        // existingPath = existingPath.replace(regexPathParam,
+        // Reference.encode(representationAsText));
+        // }
+        // }
+        // } catch (PatternSyntaxException pse) {
+        // // something is not right in the param definition, skip it
+        // pse.printStackTrace();
+        // return;
+        // }
+
+        request.getResourceRef().setPath(existingPath);
+    }
+
+    private void addQueryParam(Request request, String representationAsText,
+            Annotation annotation) {
+        request.getResourceRef().addQueryParameter(
+                new Parameter(((QueryParam) annotation).value(),
+                        representationAsText));
+    }
+
+    private String getRepresentationAsText(Object value) {
+        Class<? extends Object> clazz = value.getClass();
+        boolean isPrimitiveOrWrapped = clazz.isPrimitive()
+                || ClassUtils.wrapperToPrimitive(clazz) != null;
+
+        if (isPrimitiveOrWrapped || clazz == String.class) {
+            return String.valueOf(value);
+        }
+
+        String representationAsText = null;
+
+        try {
+            Representation representation = clientResource.getApplication()
+                    .getConverterService().toRepresentation(value);
+            representationAsText = representation.getText();
+        } catch (IOException e) {
+            throw new WebApplicationException(e);
+        }
+
+        return representationAsText;
+    }
+
     @Override
     protected Request getRequest(Method javaMethod, Object[] args)
             throws Throwable {
@@ -145,93 +232,6 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
         // TODO - possibly throw an exception if the arg count != processed
         // annotations?
-    }
-
-    private void addPathParam(Request request, String representationAsText,
-            Annotation annotation) {
-        String paramName = ((PathParam) annotation).value();
-        String existingPath = Reference.decode(request.getResourceRef()
-                .getPath());
-
-        String simplePathParam = String.format("{%s}", paramName);
-        if (existingPath.contains(simplePathParam)) {
-            existingPath = existingPath.replace(simplePathParam,
-                    Reference.encode(representationAsText));
-        }
-
-        // TODO - allow regex path params - this code *mostly* works, but not
-        // quite
-        // String regexPathParam = String.format(".*\\{%s:(.+)\\}.*",
-        // paramName);
-        // try {
-        // if (existingPath.matches(regexPathParam)) {
-        // Matcher matcher = Pattern.compile(regexPathParam).matcher(
-        // existingPath);
-        // String pattern = matcher.group(1);
-        //
-        // /* I'm not sure how much sense it makes to match on the
-        // * textual form of the representation, unless it is a String...
-        // */
-        // if (representationAsText.matches(pattern)) {
-        // existingPath = existingPath.replace(regexPathParam,
-        // Reference.encode(representationAsText));
-        // }
-        // }
-        // } catch (PatternSyntaxException pse) {
-        // // something is not right in the param definition, skip it
-        // pse.printStackTrace();
-        // return;
-        // }
-
-        request.getResourceRef().setPath(existingPath);
-    }
-
-    private void addCookieParam(Request request, String representationAsText,
-            Annotation annotation) {
-        Series<Cookie> cookies = request.getCookies();
-        if (cookies == null) {
-            cookies = new Series<Cookie>(Cookie.class);
-        }
-
-        cookies.add(new Cookie(((CookieParam) annotation).value(),
-                representationAsText));
-
-        request.setCookies(cookies);
-    }
-
-    private void addQueryParam(Request request, String representationAsText,
-            Annotation annotation) {
-        request.getResourceRef().addQueryParameter(
-                new Parameter(((QueryParam) annotation).value(),
-                        representationAsText));
-    }
-
-    private void addHeaderParam(Request request, String representationAsText,
-            Annotation annotation) {
-        Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
-                representationAsText);
-    }
-
-    private String getRepresentationAsText(Object value) {
-        Class<? extends Object> clazz = value.getClass();
-        boolean isPrimitiveOrWrapped = clazz.isPrimitive()
-                || ClassUtils.wrapperToPrimitive(clazz) != null;
-
-        if (isPrimitiveOrWrapped || clazz == String.class) {
-            return String.valueOf(value);
-        }
-
-        String representationAsText = null;
-
-        try {
-            Representation representation = clientResource.getApplication()
-                    .getConverterService().toRepresentation(value);
-            representationAsText = representation.getText();
-        } catch (IOException e) {
-            throw new WebApplicationException(e);
-        }
-
-        return representationAsText;
     }
 
     private void setRequestPathToAnnotationPath(Method javaMethod,

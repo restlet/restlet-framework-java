@@ -123,9 +123,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
                 series, !caseSensitive), caseSensitive);
     }
 
-    private final MultivaluedMapImpl<K, V> mmap;
-
     private final boolean caseInsensitive;
+
+    private final MultivaluedMapImpl<K, V> mmap;
 
     /**
      * Creates a new unmodifiable {@link MultivaluedMap}.

@@ -6,53 +6,54 @@ package org.restlet.ext.apispark.internal.agent.bean;
 @SuppressWarnings("ALL")
 public class ModulesSettings {
 
-    String cellRevision;
+    boolean analyticsModuleEnabled;
 
     boolean authenticationModuleEnabled;
 
     boolean authorizationModuleEnabled;
 
-    boolean firewallModuleEnabled;
+    String cellRevision;
 
-    boolean analyticsModuleEnabled;
+    boolean firewallModuleEnabled;
 
     public String getCellRevision() {
         return cellRevision;
-    }
-
-    public void setCellRevision(String cellRevision) {
-        this.cellRevision = cellRevision;
-    }
-
-    public boolean isAuthenticationModuleEnabled() {
-        return authenticationModuleEnabled;
-    }
-
-    public void setAuthenticationModuleEnabled(boolean authenticationModuleEnabled) {
-        this.authenticationModuleEnabled = authenticationModuleEnabled;
-    }
-
-    public boolean isAuthorizationModuleEnabled() {
-        return authorizationModuleEnabled;
-    }
-
-    public void setAuthorizationModuleEnabled(boolean authorizationModuleEnabled) {
-        this.authorizationModuleEnabled = authorizationModuleEnabled;
-    }
-
-    public boolean isFirewallModuleEnabled() {
-        return firewallModuleEnabled;
-    }
-
-    public void setFirewallModuleEnabled(boolean firewallModuleEnabled) {
-        this.firewallModuleEnabled = firewallModuleEnabled;
     }
 
     public boolean isAnalyticsModuleEnabled() {
         return analyticsModuleEnabled;
     }
 
+    public boolean isAuthenticationModuleEnabled() {
+        return authenticationModuleEnabled;
+    }
+
+    public boolean isAuthorizationModuleEnabled() {
+        return authorizationModuleEnabled;
+    }
+
+    public boolean isFirewallModuleEnabled() {
+        return firewallModuleEnabled;
+    }
+
     public void setAnalyticsModuleEnabled(boolean analyticsModuleEnabled) {
         this.analyticsModuleEnabled = analyticsModuleEnabled;
+    }
+
+    public void setAuthenticationModuleEnabled(
+            boolean authenticationModuleEnabled) {
+        this.authenticationModuleEnabled = authenticationModuleEnabled;
+    }
+
+    public void setAuthorizationModuleEnabled(boolean authorizationModuleEnabled) {
+        this.authorizationModuleEnabled = authorizationModuleEnabled;
+    }
+
+    public void setCellRevision(String cellRevision) {
+        this.cellRevision = cellRevision;
+    }
+
+    public void setFirewallModuleEnabled(boolean firewallModuleEnabled) {
+        this.firewallModuleEnabled = firewallModuleEnabled;
     }
 }

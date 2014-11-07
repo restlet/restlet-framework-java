@@ -95,6 +95,19 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      * @return the character set of the current entity, or null, if no entity or
      *         no character set is available.
      */
+    private CharacterSet getCurrentRequestEntityCharacterSet() {
+        Representation entity = Request.getCurrent().getEntity();
+
+        if (entity == null)
+            return null;
+
+        return entity.getCharacterSet();
+    }
+
+    /**
+     * @return the character set of the current entity, or null, if no entity or
+     *         no character set is available.
+     */
     private String getCurrentResponseEntityCharset() {
         String result = null;
         Response rsp = Response.getCurrent();
@@ -118,19 +131,6 @@ public class StringProvider extends AbstractProvider<CharSequence> {
 
         return result;
 
-    }
-
-    /**
-     * @return the character set of the current entity, or null, if no entity or
-     *         no character set is available.
-     */
-    private CharacterSet getCurrentRequestEntityCharacterSet() {
-        Representation entity = Request.getCurrent().getEntity();
-
-        if (entity == null)
-            return null;
-
-        return entity.getCharacterSet();
     }
 
     /**

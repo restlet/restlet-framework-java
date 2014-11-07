@@ -117,6 +117,15 @@ public class RoleLimitPolicy extends LimitPolicy {
     }
 
     /**
+     * Returns the policy's default limit.
+     * 
+     * @return Policy's default limit.
+     */
+    public int getDefaultLimit() {
+        return defaultLimit;
+    }
+
+    /**
      * Returns the highest limit associated to the user's roles.
      */
     @Override
@@ -140,12 +149,13 @@ public class RoleLimitPolicy extends LimitPolicy {
     }
 
     /**
-     * Returns the policy's default limit.
+     * Returns the {@link Map} defining limits corresponding to different
+     * {@link Role}
      * 
-     * @return Policy's default limit.
+     * @return Limits corresponding to different {@link Role}
      */
-    public int getDefaultLimit() {
-        return defaultLimit;
+    public Map<String, Integer> getLimitsPerRole() {
+        return limitsPerRole;
     }
 
     /**
@@ -156,16 +166,6 @@ public class RoleLimitPolicy extends LimitPolicy {
      */
     public void setDefaultLimit(int defaultLimit) {
         this.defaultLimit = defaultLimit;
-    }
-
-    /**
-     * Returns the {@link Map} defining limits corresponding to different
-     * {@link Role}
-     * 
-     * @return Limits corresponding to different {@link Role}
-     */
-    public Map<String, Integer> getLimitsPerRole() {
-        return limitsPerRole;
     }
 
     /**

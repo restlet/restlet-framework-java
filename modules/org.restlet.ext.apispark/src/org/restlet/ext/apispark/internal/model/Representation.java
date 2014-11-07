@@ -72,12 +72,12 @@ public class Representation {
         return extendedType;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getIdentifier() {
         return identifier;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<Property> getProperties() {
@@ -96,6 +96,13 @@ public class Representation {
         return null;
     }
 
+    public List<String> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<String>();
+        }
+        return sections;
+    }
+
     public boolean isRaw() {
         return raw;
     }
@@ -108,12 +115,12 @@ public class Representation {
         this.extendedType = extendedType;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setProperties(List<Property> properties) {
@@ -122,13 +129,6 @@ public class Representation {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
-    }
-
-    public List<String> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<String>();
-        }
-        return sections;
     }
 
     public void setSections(List<String> sections) {

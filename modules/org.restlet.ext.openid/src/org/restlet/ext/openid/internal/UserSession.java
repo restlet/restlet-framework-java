@@ -49,20 +49,20 @@ public class UserSession {
         this.pl = pl;
     }
 
-    public void setParameterList(ParameterList pl) {
-        this.pl = pl;
-    }
-
-    public void setUser(OpenIdUser user) {
-        this.user = user;
-    }
-
     public ParameterList getParameterList() {
         return pl;
     }
 
     public OpenIdUser getUser() {
         return user;
+    }
+
+    public void setParameterList(ParameterList pl) {
+        this.pl = pl;
+    }
+
+    public void setUser(OpenIdUser user) {
+        this.user = user;
     }
 
 }

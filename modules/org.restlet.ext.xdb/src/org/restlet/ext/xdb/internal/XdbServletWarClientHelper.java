@@ -34,7 +34,6 @@
 package org.restlet.ext.xdb.internal;
 
 import java.io.InputStream;
-
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
@@ -74,6 +73,13 @@ import org.restlet.service.MetadataService;
 public class XdbServletWarClientHelper extends ServletWarClientHelper {
 
     /**
+     * XMLDB path directory used to access to deployed resources as WAR. URL:
+     * war:///myPath/myFile.ext XDB:
+     * /home/USER/wars/HelloRestlet/myPath/myFile.ext
+     */
+    private static final String DEPLOY_DIR = "/wars/";
+
+    /**
      * XMLDB base directory used to access to user resources URL:
      * file:///$HOME/myPath/myFile.ext XDB: /home/USER/myPath/myFile.ext
      */
@@ -85,13 +91,6 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
      * /home/USER/wars/HelloRestlet/myPath/myFile.ext
      */
     private static final String USER_DIR = "/home/";
-
-    /**
-     * XMLDB path directory used to access to deployed resources as WAR. URL:
-     * war:///myPath/myFile.ext XDB:
-     * /home/USER/wars/HelloRestlet/myPath/myFile.ext
-     */
-    private static final String DEPLOY_DIR = "/wars/";
 
     /** The Servlet Config to use. */
     private volatile ServletConfig config;

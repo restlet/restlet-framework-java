@@ -48,14 +48,6 @@ public abstract class BaseRestletProvider implements RestletProvider {
     private FilterProvider filterProvider;
 
     /**
-     * Called by getInboundRoot() to determine the filtered restlet that is next
-     * in the chain.
-     * 
-     * @return the restlet to be filtered
-     */
-    protected abstract Restlet getFilteredRestlet();
-
-    /**
      * Called by OSGi DS to inject the filter provider service
      * 
      * @param filterProvider
@@ -64,6 +56,14 @@ public abstract class BaseRestletProvider implements RestletProvider {
     public void bindFilterProvider(FilterProvider filterProvider) {
         this.filterProvider = filterProvider;
     }
+
+    /**
+     * Called by getInboundRoot() to determine the filtered restlet that is next
+     * in the chain.
+     * 
+     * @return the restlet to be filtered
+     */
+    protected abstract Restlet getFilteredRestlet();
 
     @Override
     public Restlet getInboundRoot(Context context) {

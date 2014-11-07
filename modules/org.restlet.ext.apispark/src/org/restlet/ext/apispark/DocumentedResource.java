@@ -35,18 +35,15 @@ package org.restlet.ext.apispark;
 
 import java.util.List;
 
-
 /**
- * Describes the ServerResource so that introspection retrieves a more complete
- * description of the Web API.
+ * Completes the documentation of a Resource so that introspection retrieves a
+ * more complete description of the Web API.
  * 
  * @author Cyprien Quilici
  * 
  */
 public interface DocumentedResource {
 
-    /**
-     * Name of a section of your Web API. Used to tidy it in documentation.
-     */
+    /** List of sections that describe the resource. */
     List<String> getSections();
 }

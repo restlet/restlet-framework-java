@@ -34,6 +34,7 @@
 package org.restlet.ext.xdb.internal;
 
 import java.io.InputStream;
+import java.sql.Connection;
 
 /**
  * Input stream that synchronizes the state of a connection instance and an
@@ -41,11 +42,11 @@ import java.io.InputStream;
  */
 public abstract class InputEntityStream extends InputStream {
 
-    /** The notifiable connection. */
-    private volatile Notifiable notifiable;
-
     /** The inbound stream. */
     private InputStream inboundStream;
+
+    /** The notifiable connection. */
+    private volatile Notifiable notifiable;
 
     /**
      * Constructor.

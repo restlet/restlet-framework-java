@@ -47,9 +47,9 @@ public enum IoState {
     /** IO interest reported. */
     INTEREST,
 
-    /** IO ready to be processed. */
-    READY,
-
     /** IO activity going on. */
-    PROCESSING;
+    PROCESSING,
+
+    /** IO ready to be processed. */
+    READY;
 }

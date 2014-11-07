@@ -65,12 +65,6 @@ public class JdbcConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
-        return 0;
-    }
-
-    @Override
     public float score(Object source, Variant target, Resource resource) {
         if (source instanceof WebRowSet || source instanceof JdbcResult
                 || source instanceof ResultSet) {
@@ -78,6 +72,12 @@ public class JdbcConverter extends ConverterHelper {
         }
 
         return -1.0f;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            Resource resource) {
+        return 0;
     }
 
     @Override

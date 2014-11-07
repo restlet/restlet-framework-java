@@ -136,9 +136,9 @@ public class JaxRsRestlet extends Restlet {
      */
     class ResObjAndMeth {
 
-        private ResourceObject resourceObject;
-
         private ResourceMethod resourceMethod;
+
+        private ResourceObject resourceObject;
 
         ResObjAndMeth(ResourceObject resourceObject,
                 ResourceMethod resourceMethod) {
@@ -174,11 +174,11 @@ public class JaxRsRestlet extends Restlet {
      */
     class RroRemPathAndMatchedPath {
 
+        private String matchedUriPath;
+
         private ResourceObject rootResObj;
 
         private RemainingPath u;
-
-        private String matchedUriPath;
 
         RroRemPathAndMatchedPath(ResourceObject rootResObj, RemainingPath u,
                 String matchedUriPath) {
@@ -188,16 +188,12 @@ public class JaxRsRestlet extends Restlet {
         }
     }
 
+    private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
+
     static {
         javax.ws.rs.ext.RuntimeDelegate
                 .setInstance(new org.restlet.ext.jaxrs.internal.spi.RuntimeDelegateImpl());
     }
-
-    private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
-    private final JaxRsProviders providers;
-
-    private final ResourceClasses resourceClasses;
 
     /**
      * Contains and handles the exceptions occurring while in resource objects
@@ -206,12 +202,16 @@ public class JaxRsRestlet extends Restlet {
      */
     private final ExceptionHandler excHandler;
 
+    private volatile ObjectFactory objectFactory;
+
+    private final JaxRsProviders providers;
+
+    private final ResourceClasses resourceClasses;
+
     /**
      * Contains the thread localized {@link CallContext}s.
      */
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
-
-    private volatile ObjectFactory objectFactory;
 
     /**
      * Creates a new JaxRsRestlet with the given Context. Only the default

@@ -7,52 +7,73 @@ import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
 
 /**
+ * Tool class for the agent service.
+ * 
  * @author Manuel Boillod
  */
 public abstract class AgentUtils {
 
     /**
-     * Returns a client resource configured to communicate with the apispark connector cell.
-     *
+     * Returns a client resource configured to communicate with the apispark
+     * connector cell.
+     * 
      * @param agentConfig
-     *          The agent configuration
+     *            The agent configuration.
      * @param modulesSettings
-     *          The modules settings. Could be null.
+     *            The optional modules settings.
      * @param resourceClass
-     *          The resource class
+     *            The resource class.
      * @param resourcePath
-     *          The resource path
-     *
-     * @return a client resource configured to communicate with the apispark connector cell.
+     *            The resource path.
+     * 
+     * @return A client resource configured to communicate with the apispark
+     *         connector cell.
      */
-    public static <T> T getConfiguredClientResource(AgentConfig agentConfig,
-                                                    ModulesSettings modulesSettings,
-                                                             Class<T> resourceClass,
-                                                             String resourcePath) {
+    public static <T> T getClientResource(AgentConfig agentConfig,
+            ModulesSettings modulesSettings, Class<T> resourceClass,
+            String resourcePath) {
 
-        String path = agentConfig.getAgentServicePath() +
-                "/agent" +
-                "/cells/" + agentConfig.getCellId() +
-                "/versions/" + agentConfig.getCellVersion() +
-                resourcePath;
+        StringBuilder sb = new StringBuilder(agentConfig.getAgentServiceUrl());
+        if (!agentConfig.getAgentServiceUrl().endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append("agent");
+        sb.append("/cells/");
+        sb.append(agentConfig.getCell());
+        sb.append("/versions/");
+        sb.append(agentConfig.getCellVersion());
+        if (resourcePath != null) {
+            if (!resourcePath.startsWith("/")) {
+                sb.append("/");
+            }
+            sb.append(resourcePath);
+        }
 
-        ClientResource clientResource = new ClientResource(path);
+        ClientResource clientResource = new ClientResource(sb.toString());
 
-        //add authentication scheme
+        // add authentication scheme
         clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                agentConfig.getAgentUsername(),
-                agentConfig.getAgentSecretKey());
+                agentConfig.getAgentUsername(), agentConfig.getAgentSecret());
 
-        //send agent version to apispark in headers
+        // send agent version to apispark in headers
         Series<Header> headers = clientResource.getRequest().getHeaders();
-        headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_AGENT_VERSION, AgentConfig.AGENT_VERSION);
+        headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_AGENT_VERSION,
+                AgentConfig.AGENT_VERSION);
 
-        //send connector cell revision to apispark in headers
+        // send connector cell revision to apispark in headers
         if (modulesSettings != null) {
-            headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_CELL_REVISION, modulesSettings.getCellRevision());
+            headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_CELL_REVISION,
+                    modulesSettings.getCellRevision());
         }
 
         return clientResource.wrap(resourceClass);
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private AgentUtils() {
     }
 
 }

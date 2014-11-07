@@ -48,22 +48,6 @@ public class StringToken extends LexicalUnit {
     /** The language of the value. */
     private String language;
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     /** Does this string contains at least a new line character? */
     private boolean multiLines;
 
@@ -83,6 +67,14 @@ public class StringToken extends LexicalUnit {
         super(contentHandler, context);
         multiLines = false;
         this.parse();
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getType() {
+        return type;
     }
 
     /**
@@ -112,8 +104,16 @@ public class StringToken extends LexicalUnit {
         return result;
     }
 
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
     public void setMultiLines(boolean multiLines) {
         this.multiLines = multiLines;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

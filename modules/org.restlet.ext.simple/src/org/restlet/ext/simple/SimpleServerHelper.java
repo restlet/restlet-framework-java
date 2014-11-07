@@ -70,6 +70,11 @@ import org.simpleframework.transport.connect.Connection;
  */
 public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
+     * Socket this server is listening to.
+     */
+    private volatile InetSocketAddress address;
+
+    /**
      * Indicates if this service is acting in HTTP or HTTPS mode.
      */
     private volatile boolean confidential;
@@ -85,11 +90,6 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     private volatile ContainerServer containerServer;
 
     /**
-     * Socket this server is listening to.
-     */
-    private volatile InetSocketAddress address;
-
-    /**
      * Constructor.
      * 
      * @param server
@@ -100,12 +100,30 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
+     * Returns the socket address this server is listening to.
+     * 
+     * @return The socket address this server is listening to.
+     */
+    protected InetSocketAddress getAddress() {
+        return this.address;
+    }
+
+    /**
      * Returns the Simple connection.
      * 
      * @return The Simple connection.
      */
     protected Connection getConnection() {
         return this.connection;
+    }
+
+    /**
+     * Returns the Simple container server.
+     * 
+     * @return The Simple container server.
+     */
+    protected ContainerServer getContainerServer() {
+        return this.containerServer;
     }
 
     /**
@@ -119,30 +137,22 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Returns the Simple container server.
-     * 
-     * @return The Simple container server.
-     */
-    protected ContainerServer getContainerServer() {
-        return this.containerServer;
-    }
-
-    /**
-     * Returns the socket address this server is listening to.
-     * 
-     * @return The socket address this server is listening to.
-     */
-    protected InetSocketAddress getAddress() {
-        return this.address;
-    }
-
-    /**
      * Indicates if this service is acting in HTTP or HTTPS mode.
      * 
      * @return True if this service is acting in HTTP or HTTPS mode.
      */
     public boolean isConfidential() {
         return this.confidential;
+    }
+
+    /**
+     * Sets the socket address this server is listening to.
+     * 
+     * @param address
+     *            The socket address this server is listening to.
+     */
+    protected void setAddress(InetSocketAddress address) {
+        this.address = address;
     }
 
     /**
@@ -173,16 +183,6 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      */
     protected void setContainerServer(ContainerServer container) {
         this.containerServer = container;
-    }
-
-    /**
-     * Sets the socket address this server is listening to.
-     * 
-     * @param address
-     *            The socket address this server is listening to.
-     */
-    protected void setAddress(InetSocketAddress address) {
-        this.address = address;
     }
 
     @Override

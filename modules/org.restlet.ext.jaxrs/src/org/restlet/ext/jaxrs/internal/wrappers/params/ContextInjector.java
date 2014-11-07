@@ -124,6 +124,29 @@ public class ContextInjector {
         }
     }
 
+    /**
+     * @author Stephan Koops
+     */
+    private static final class ExtendedUriInfoInjector implements Injector {
+
+        private final InjectionAim aim;
+
+        private final ThreadLocalizedExtendedUriInfo uriInfo;
+
+        ExtendedUriInfoInjector(InjectionAim aim,
+                ThreadLocalizedContext tlContext) {
+            this.aim = aim;
+            this.uriInfo = new ThreadLocalizedExtendedUriInfo(tlContext);
+        }
+
+        public void injectInto(Object resource, boolean allMustBeAvailable)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            this.uriInfo.saveStateForCurrentThread(allMustBeAvailable);
+            this.aim.injectInto(resource, this.uriInfo, allMustBeAvailable);
+        }
+    }
+
     static class FieldWrapper implements InjectionAim {
 
         private final Field field;
@@ -251,29 +274,6 @@ public class ContextInjector {
         UriInfoInjector(InjectionAim aim, ThreadLocalizedContext tlContext) {
             this.aim = aim;
             this.uriInfo = new ThreadLocalizedUriInfo(tlContext);
-        }
-
-        public void injectInto(Object resource, boolean allMustBeAvailable)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException {
-            this.uriInfo.saveStateForCurrentThread(allMustBeAvailable);
-            this.aim.injectInto(resource, this.uriInfo, allMustBeAvailable);
-        }
-    }
-
-    /**
-     * @author Stephan Koops
-     */
-    private static final class ExtendedUriInfoInjector implements Injector {
-
-        private final InjectionAim aim;
-
-        private final ThreadLocalizedExtendedUriInfo uriInfo;
-
-        ExtendedUriInfoInjector(InjectionAim aim,
-                ThreadLocalizedContext tlContext) {
-            this.aim = aim;
-            this.uriInfo = new ThreadLocalizedExtendedUriInfo(tlContext);
         }
 
         public void injectInto(Object resource, boolean allMustBeAvailable)

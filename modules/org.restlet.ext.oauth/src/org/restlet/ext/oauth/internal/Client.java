@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth.internal;
 
 import java.util.Map;
+
 import org.restlet.ext.oauth.GrantType;
 import org.restlet.ext.oauth.ResponseType;
 
@@ -48,15 +49,15 @@ import org.restlet.ext.oauth.ResponseType;
  */
 public interface Client {
 
+    public static enum ClientType {
+        CONFIDENTIAL, PUBLIC
+    }
+
     public static final String PROPERTY_APPLICATION_NAME = "application_name";
 
     public static final String PROPERTY_DESCRIPTION = "description";
 
     public static final String PROPERTY_SUPPORTED_FLOWS = "supported_flows";
-
-    public static enum ClientType {
-        CONFIDENTIAL, PUBLIC
-    }
 
     /**
      * Client id that the client has registered at the auth provider.
@@ -73,6 +74,10 @@ public interface Client {
 
     public char[] getClientSecret();
 
+    public ClientType getClientType();
+
+    public Map<String, Object> getProperties();
+
     /**
      * Redirect URL that the client has registered at the auth provider.
      * 
@@ -80,11 +85,7 @@ public interface Client {
      */
     public String[] getRedirectURIs();
 
-    public Map<String, Object> getProperties();
-
-    public boolean isResponseTypeAllowed(ResponseType responseType);
-
     public boolean isGrantTypeAllowed(GrantType grantType);
 
-    public ClientType getClientType();
+    public boolean isResponseTypeAllowed(ResponseType responseType);
 }

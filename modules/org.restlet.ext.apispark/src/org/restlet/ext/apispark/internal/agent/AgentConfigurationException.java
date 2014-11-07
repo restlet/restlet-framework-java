@@ -3,6 +3,7 @@ package org.restlet.ext.apispark.internal.agent;
 /**
  * @author Manuel Boillod
  */
+@SuppressWarnings("serial")
 public class AgentConfigurationException extends AgentException {
 
     public AgentConfigurationException() {

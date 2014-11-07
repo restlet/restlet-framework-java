@@ -126,17 +126,6 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     /**
-     * Returns the value of the "loginPage" parameter.
-     * 
-     * @param c
-     *            The context where to find the parameter.
-     * @return The value of the "loginPage" parameter.
-     */
-    public static String getLoginPage(Context c) {
-        return c.getParameters().getFirstValue("login", "/login");
-    }
-
-    /**
      * Returns the value of the "authPageTemplate" parameter.
      * 
      * @param c
@@ -167,6 +156,17 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     /**
+     * Returns the value of the "loginPage" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "loginPage" parameter.
+     */
+    public static String getLoginPage(Context c) {
+        return c.getParameters().getFirstValue("login", "/login");
+    }
+
+    /**
      * Sets the value of the "authPage" parameter.
      * 
      * @param authPage
@@ -176,18 +176,6 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      */
     public static void setAuthPage(String authPage, Context c) {
         c.getParameters().set("authPage", authPage);
-    }
-
-    /**
-     * Sets the value of the "loginPage" parameter.
-     * 
-     * @param loginPage
-     *            The value of the "loginPage" parameter.
-     * @param c
-     *            The context to update.
-     */
-    public static void setLoginPage(String loginPage, Context c) {
-        c.getParameters().set("loginPage", loginPage);
     }
 
     /**
@@ -216,6 +204,18 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
 
     public static void setErrorPageTemplate(String errorPageTemplate, Context c) {
         c.getParameters().set("errorPageTemplate", errorPageTemplate);
+    }
+
+    /**
+     * Sets the value of the "loginPage" parameter.
+     * 
+     * @param loginPage
+     *            The value of the "loginPage" parameter.
+     * @param c
+     *            The context to update.
+     */
+    public static void setLoginPage(String loginPage, Context c) {
+        c.getParameters().set("loginPage", loginPage);
     }
 
     /**

@@ -78,6 +78,15 @@ public class WadlConverter extends ConverterHelper {
     }
 
     @Override
+    public float score(Object source, Variant target, Resource resource) {
+        if (source instanceof ApplicationInfo) {
+            return 1.0f;
+        }
+
+        return -1.0f;
+    }
+
+    @Override
     public <T> float score(Representation source, Class<T> target,
             Resource resource) {
         float result = -1.0F;
@@ -88,15 +97,6 @@ public class WadlConverter extends ConverterHelper {
         }
 
         return result;
-    }
-
-    @Override
-    public float score(Object source, Variant target, Resource resource) {
-        if (source instanceof ApplicationInfo) {
-            return 1.0f;
-        }
-
-        return -1.0f;
     }
 
     @Override

@@ -11,7 +11,8 @@ public class OperationsAuthorization extends ArrayList<OperationAuthorization> {
     public OperationsAuthorization() {
     }
 
-    public OperationsAuthorization(Collection<? extends OperationAuthorization> c) {
+    public OperationsAuthorization(
+            Collection<? extends OperationAuthorization> c) {
         super(c);
     }
 }

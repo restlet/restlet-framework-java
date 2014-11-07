@@ -49,9 +49,9 @@ public class NoMessageBodyReaderException extends WebApplicationException {
 
     private static final long serialVersionUID = 9177449724300611418L;
 
-    private final Class<?> paramType;
-
     private final MediaType mediaType;
+
+    private final Class<?> paramType;
 
     /**
      * @param paramType

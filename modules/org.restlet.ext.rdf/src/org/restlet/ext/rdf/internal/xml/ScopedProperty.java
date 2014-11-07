@@ -47,9 +47,9 @@ import java.util.List;
 class ScopedProperty<E> {
     private int[] depths;
 
-    private List<E> values;
-
     private int size;
+
+    private List<E> values;
 
     /**
      * Constructor.

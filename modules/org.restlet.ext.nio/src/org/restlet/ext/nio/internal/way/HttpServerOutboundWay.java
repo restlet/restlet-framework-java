@@ -97,6 +97,18 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
     }
 
     @Override
+    public void onError(Status status) {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onOutboundError(status, rsp);
+            }
+        }
+
+        super.onError(status);
+    }
+
+    @Override
     public void onMessageCompleted(boolean endDetected) throws IOException {
         getMessages().remove(getMessage());
 
@@ -117,18 +129,6 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
         }
 
         super.onMessageCompleted(endDetected);
-    }
-
-    @Override
-    public void onError(Status status) {
-        for (Response rsp : getMessages()) {
-            if (rsp != getMessage()) {
-                getMessages().remove(rsp);
-                getHelper().onOutboundError(status, rsp);
-            }
-        }
-
-        super.onError(status);
     }
 
     @Override

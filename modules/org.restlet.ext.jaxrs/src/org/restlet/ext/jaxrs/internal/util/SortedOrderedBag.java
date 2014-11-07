@@ -164,19 +164,19 @@ public class SortedOrderedBag<E> implements Collection<E> {
     }
 
     /**
-     * @see java.util.Collection#isEmpty()
-     */
-    public boolean isEmpty() {
-        return this.elements.isEmpty();
-    }
-
-    /**
      * @param index
      * @return the element at the given position
      * @see java.util.List#get(int)
      */
     public E get(int index) {
         return this.elements.get(index);
+    }
+
+    /**
+     * @see java.util.Collection#isEmpty()
+     */
+    public boolean isEmpty() {
+        return this.elements.isEmpty();
     }
 
     /**

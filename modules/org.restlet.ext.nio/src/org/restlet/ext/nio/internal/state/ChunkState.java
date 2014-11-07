@@ -40,15 +40,15 @@ package org.restlet.ext.nio.internal.state;
  */
 public enum ChunkState {
 
-    /** Reading the chunk size line. */
-    SIZE,
-
     /** Reading the chunked data. */
     DATA,
 
-    /** Reading the chunk trailer. */
-    TRAILER,
-
     /** Reading the chunk end. */
-    END;
+    END,
+
+    /** Reading the chunk size line. */
+    SIZE,
+
+    /** Reading the chunk trailer. */
+    TRAILER;
 }

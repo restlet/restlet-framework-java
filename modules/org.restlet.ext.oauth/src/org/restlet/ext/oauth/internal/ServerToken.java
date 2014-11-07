@@ -40,19 +40,19 @@ package org.restlet.ext.oauth.internal;
 public interface ServerToken extends Token {
 
     /**
+     * The client associated with this token.
+     * 
+     * @return
+     */
+    String getClientId();
+
+    /**
      * The resource owner name associated with this token.
      * 
      * @return null if the resource owner is the client. (i.e.
      *         client_credentials grant.)
      */
     String getUsername();
-
-    /**
-     * The client associated with this token.
-     * 
-     * @return
-     */
-    String getClientId();
 
     /**
      * Check if the token is expired.

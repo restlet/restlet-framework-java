@@ -9,10 +9,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.raml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.google.guava"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.models_1.5"/>
-<<<<<<< HEAD
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.raml"/>
-=======
->>>>>>> dfd69e294a8e1ca46fe2057e7d9f0b8ec4f0dcc9
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jaxrs"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -56,43 +56,27 @@ import org.restlet.ext.oauth.ResponseType;
  */
 public class AuthSession {
 
-    public static final int DEFAULT_TIMEOUT_SEC = 600;
-
-    private static final String ID = "id";
+    private static final String CALLBACK = "callback";
 
     private static final String CLIENT_ID = "client_id";
 
-    private static final String GRANTED_SCOPE = "granted_scope";
-
-    private static final String REQ_SCOPE = "requested_scope";
+    public static final int DEFAULT_TIMEOUT_SEC = 600;
 
     private static final String FLOW = "flow";
 
-    private static final String CALLBACK = "callback";
+    private static final String GRANTED_SCOPE = "granted_scope";
 
-    private static final String OWNER = "owner";
-
-    private static final String STATE = "state";
+    private static final String ID = "id";
 
     private static final String LAST_ACTIVITY = "last_activity";
 
+    private static final String OWNER = "owner";
+
+    private static final String REQ_SCOPE = "requested_scope";
+
+    private static final String STATE = "state";
+
     private static final String TIMEOUT_SEC = "timeout_sec";
-
-    // Normalized attributes for data storage.
-    private final ConcurrentMap<String, Object> attribs;
-
-    private AuthSession() {
-        this.attribs = new ConcurrentHashMap<String, Object>();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof AuthSession)) {
-            return false;
-        }
-        AuthSession e = (AuthSession) obj;
-        return this.attribs.equals(e.attribs);
-    }
 
     /**
      * Instantiate new authorization session.
@@ -118,98 +102,25 @@ public class AuthSession {
         return session;
     }
 
-    /**
-     * Get the Map interface that suitable for the database.
-     * 
-     * @return
-     */
-    public Map<String, Object> toMap() {
-        return attribs;
+    // Normalized attributes for data storage.
+    private final ConcurrentMap<String, Object> attribs;
+
+    private AuthSession() {
+        this.attribs = new ConcurrentHashMap<String, Object>();
     }
 
-    public String getId() {
-        return (String) getAttribute(ID);
-    }
-
-    /**
-     * Set the client/application that created the cookie
-     * 
-     * @param clientId
-     *            POJO representing a client_id/secret
-     */
-    public void setClientId(String clientId) {
-        setAttribute(CLIENT_ID, clientId);
-    }
-
-    /**
-     * @return return the client that established the cookie
-     */
-    public String getClientId() {
-        return (String) getAttribute(CLIENT_ID);
-    }
-
-    public void setGrantedScope(String[] scope) {
-        setAttribute(GRANTED_SCOPE, Arrays.asList(scope));
-    }
-
-    public String[] getGrantedScope() {
-        @SuppressWarnings("unchecked")
-        List<String> list = (List<String>) getAttribute(GRANTED_SCOPE);
-
-        if (list == null) {
-            return null;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AuthSession)) {
+            return false;
         }
-
-        return (String[]) list.toArray(new String[list.size()]);
+        AuthSession e = (AuthSession) obj;
+        return this.attribs.equals(e.attribs);
     }
 
-    /**
-     * @param scope
-     *            array of scopes requested but not yet approved
-     */
-    public void setRequestedScope(String[] scope) {
-        setAttribute(REQ_SCOPE, Arrays.asList(scope));
-    }
-
-    /**
-     * 
-     * @return array of requested scopes
-     */
-    public String[] getRequestedScope() {
-        @SuppressWarnings("unchecked")
-        List<Object> list = (List<Object>) getAttribute(REQ_SCOPE);
-
-        if (list == null) {
-            return null;
-        }
-
-        return (String[]) list.toArray(new String[list.size()]);
-    }
-
-    /**
-     * 
-     * @param owner
-     *            the identity of the user of this session (openid)
-     */
-    public void setScopeOwner(String owner) {
-        setAttribute(OWNER, owner);
-    }
-
-    /**
-     * 
-     * @return identity of the authenticated user.
-     */
-    public String getScopeOwner() {
-        return (String) getAttribute(OWNER);
-    }
-
-    /**
-     * @param flow
-     *            current executing flow
-     */
-    public void setAuthFlow(ResponseType flow) {
-        // Normalize
-        setAttribute(FLOW, flow.name());
+    // private only used for storage
+    private Object getAttribute(String name) {
+        return attribs.get(name);
     }
 
     /**
@@ -224,26 +135,25 @@ public class AuthSession {
     }
 
     /**
-     * @param state
-     *            to be save and returned with code
+     * @return return the client that established the cookie
      */
-    public void setState(String state) {
-        setAttribute(STATE, state);
+    public String getClientId() {
+        return (String) getAttribute(CLIENT_ID);
     }
 
-    /**
-     * @return client oauth state parameter
-     */
-    public String getState() {
-        return (String) getAttribute(STATE);
+    public String[] getGrantedScope() {
+        @SuppressWarnings("unchecked")
+        List<String> list = (List<String>) getAttribute(GRANTED_SCOPE);
+
+        if (list == null) {
+            return null;
+        }
+
+        return (String[]) list.toArray(new String[list.size()]);
     }
 
-    public void setRedirectionURI(RedirectionURI uri) {
-        // Normalize
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("uri", uri.getURI());
-        map.put("dynamic", uri.isDynamicConfigured());
-        setAttribute(CALLBACK, map);
+    public String getId() {
+        return (String) getAttribute(ID);
     }
 
     /**
@@ -264,13 +174,26 @@ public class AuthSession {
     }
 
     /**
-     * Default is 600 sec = 10min
      * 
-     * @param timeSeconds
-     *            sets the session expiry time in seconds
+     * @return array of requested scopes
      */
-    public void setSessionTimeout(int timeSeconds) {
-        setAttribute(TIMEOUT_SEC, timeSeconds);
+    public String[] getRequestedScope() {
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) getAttribute(REQ_SCOPE);
+
+        if (list == null) {
+            return null;
+        }
+
+        return (String[]) list.toArray(new String[list.size()]);
+    }
+
+    /**
+     * 
+     * @return identity of the authenticated user.
+     */
+    public String getScopeOwner() {
+        return (String) getAttribute(OWNER);
     }
 
     /**
@@ -282,9 +205,15 @@ public class AuthSession {
         return ((Number) getAttribute(TIMEOUT_SEC)).intValue();
     }
 
-    // private only used for storage
-    private Object getAttribute(String name) {
-        return attribs.get(name);
+    /**
+     * @return client oauth state parameter
+     */
+    public String getState() {
+        return (String) getAttribute(STATE);
+    }
+
+    private Object removeAttribute(String name) {
+        return attribs.remove(name);
     }
 
     /**
@@ -302,8 +231,79 @@ public class AuthSession {
         }
     }
 
-    private Object removeAttribute(String name) {
-        return attribs.remove(name);
+    /**
+     * @param flow
+     *            current executing flow
+     */
+    public void setAuthFlow(ResponseType flow) {
+        // Normalize
+        setAttribute(FLOW, flow.name());
+    }
+
+    /**
+     * Set the client/application that created the cookie
+     * 
+     * @param clientId
+     *            POJO representing a client_id/secret
+     */
+    public void setClientId(String clientId) {
+        setAttribute(CLIENT_ID, clientId);
+    }
+
+    public void setGrantedScope(String[] scope) {
+        setAttribute(GRANTED_SCOPE, Arrays.asList(scope));
+    }
+
+    public void setRedirectionURI(RedirectionURI uri) {
+        // Normalize
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("uri", uri.getURI());
+        map.put("dynamic", uri.isDynamicConfigured());
+        setAttribute(CALLBACK, map);
+    }
+
+    /**
+     * @param scope
+     *            array of scopes requested but not yet approved
+     */
+    public void setRequestedScope(String[] scope) {
+        setAttribute(REQ_SCOPE, Arrays.asList(scope));
+    }
+
+    /**
+     * 
+     * @param owner
+     *            the identity of the user of this session (openid)
+     */
+    public void setScopeOwner(String owner) {
+        setAttribute(OWNER, owner);
+    }
+
+    /**
+     * Default is 600 sec = 10min
+     * 
+     * @param timeSeconds
+     *            sets the session expiry time in seconds
+     */
+    public void setSessionTimeout(int timeSeconds) {
+        setAttribute(TIMEOUT_SEC, timeSeconds);
+    }
+
+    /**
+     * @param state
+     *            to be save and returned with code
+     */
+    public void setState(String state) {
+        setAttribute(STATE, state);
+    }
+
+    /**
+     * Get the Map interface that suitable for the database.
+     * 
+     * @return
+     */
+    public Map<String, Object> toMap() {
+        return attribs;
     }
 
     public void updateActivity() throws AuthSessionTimeoutException {

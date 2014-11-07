@@ -64,17 +64,9 @@ import org.restlet.routing.Router;
  * of {@link SwaggerSpecificationRestlet}.
  * 
  * @author Thierry Boileau
- * @deprecated Use {@link org.restlet.ext.swagger.SwaggerSpecificationRestlet}
- *      or/and {@link org.restlet.ext.swagger.Swagger2SpecificationRestlet} instead.
- * 
  */
 public class SwaggerApplication extends Application implements
         DocumentedApplication {
-
-    /**
-     * The Sections of the Web API
-     */
-    private Map<String, Section> sections;
 
     /**
      * Returns the next router available.
@@ -130,6 +122,11 @@ public class SwaggerApplication extends Application implements
     private boolean documented;
 
     /**
+     * The Sections of the Web API
+     */
+    private Map<String, Section> sections;
+
+    /**
      * Defines two routes, one for the high level "Resource listing", and the
      * other one for the "API declaration". The second route is a sub-resource
      * of the first one, defined with the path variable "resource".
@@ -161,11 +158,12 @@ public class SwaggerApplication extends Application implements
      * "/api-docs"), and the other one for the "API declaration". The second
      * route is a sub-resource of the first one, defined with the path variable
      * "resource" (ie "/api-docs/{resource}").
-     *
+     * 
      * @param router
      *            The router on which defining the new route.
-     *
-     * @see #attachSwaggerSpecificationRestlet(org.restlet.routing.Router, String) to attach it with a custom path
+     * 
+     * @see #attachSwaggerSpecificationRestlet(org.restlet.routing.Router,
+     *      String) to attach it with a custom path
      */
     public void attachSwaggerSpecificationRestlet(Router router) {
         getSwaggerSpecificationRestlet(getContext()).attach(router);
@@ -176,13 +174,14 @@ public class SwaggerApplication extends Application implements
      * Defines two routes, one for the high level "Resource listing", and the
      * other one for the "API declaration". The second route is a sub-resource
      * of the first one, defined with the path variable "resource".
-     *
+     * 
      * @param router
      *            The router on which defining the new route.
      * @param path
      *            The root path of the documentation Restlet.
-     *
-     * @see #attachSwaggerSpecificationRestlet(org.restlet.routing.Router) to attach it with the default path
+     * 
+     * @see #attachSwaggerSpecificationRestlet(org.restlet.routing.Router) to
+     *      attach it with the default path
      */
     public void attachSwaggerSpecificationRestlet(Router router, String path) {
         getSwaggerSpecificationRestlet(getContext()).attach(router, path);
@@ -215,6 +214,11 @@ public class SwaggerApplication extends Application implements
         return inboundRoot;
     }
 
+    @Override
+    public Map<String, Section> getSections() {
+        return sections;
+    }
+
     /**
      * The dedicated {@link Restlet} able to generate the Swagger specification
      * formats.
@@ -228,10 +232,5 @@ public class SwaggerApplication extends Application implements
                 context);
         result.setApiInboundRoot(this);
         return result;
-    }
-
-    @Override
-    public Map<String, Section> getSections() {
-        return sections;
     }
 }

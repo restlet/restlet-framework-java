@@ -51,9 +51,6 @@ import org.restlet.ext.rdf.internal.RdfConstants;
  */
 public class RdfTurtleWriter extends GraphHandler {
 
-    /** Buffered writer. */
-    private Writer writer;
-
     /** The current context object. */
     private Context context;
 
@@ -62,6 +59,9 @@ public class RdfTurtleWriter extends GraphHandler {
 
     /** The preceding source used for factorization matter. */
     private Reference precSource;
+
+    /** Buffered writer. */
+    private Writer writer;
 
     /** Indicates if the end of the statement is to be written. */
     private boolean writingExtraDot;

@@ -97,9 +97,8 @@ public interface MessageBodyReader {
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
      */
-    Object readFrom(Class<?> type, Type genericType,
-            Annotation annotations[], MediaType mediaType,
-            CharacterSet characterSet,
+    Object readFrom(Class<?> type, Type genericType, Annotation annotations[],
+            MediaType mediaType, CharacterSet characterSet,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException,
             InvocationTargetException;

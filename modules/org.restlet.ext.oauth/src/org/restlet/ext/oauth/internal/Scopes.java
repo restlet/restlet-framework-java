@@ -47,40 +47,29 @@ import org.restlet.security.Role;
  */
 public class Scopes {
 
-    public static String toScope(List<Role> roles)
-            throws IllegalArgumentException {
-        if (roles == null || roles.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Role r : roles) {
-            String scope = toScope(r);
-            sb.append(' ');
-            sb.append(scope);
-
-        }
-        return sb.substring(1);
+    public static boolean isIdentical(String[] a, String[] b) {
+        List<String> al = Arrays.asList(a);
+        List<String> bl = Arrays.asList(b);
+        return al.containsAll(bl) && bl.containsAll(al);
     }
 
-    public static String toString(String[] scopes) {
-        StringBuilder sb = new StringBuilder();
-        for (String scope : scopes) {
-            sb.append(' ');
-            sb.append(scope);
+    public static String[] parseScope(List<Role> roles) {
+        String[] scopes = new String[roles.size()];
+        for (int i = 0; i < roles.size(); i++) {
+            scopes[i] = roles.get(i).getName();
         }
-        return sb.substring(1);
+        return scopes;
     }
 
-    public static String toScope(Role r) throws IllegalArgumentException {
-        String rname = r.getName();
-        if (rname == null)
-            throw new IllegalArgumentException("Role name cannot be null");
-        rname = rname.trim();
-        if (rname.length() < 1)
-            throw new IllegalArgumentException("Role name cannot be empty");
-        else if (rname.contains(" "))
-            throw new IllegalArgumentException("Role name cannot contain space");
-        return rname;
+    public static String[] parseScope(String scopes) {
+        if (scopes != null && scopes.length() > 0) {
+            StringTokenizer st = new StringTokenizer(scopes, " ");
+            String[] scope = new String[st.countTokens()];
+            for (int i = 0; st.hasMoreTokens(); i++)
+                scope[i] = st.nextToken();
+            return scope;
+        }
+        return new String[0];
     }
 
     @SuppressWarnings("deprecation")
@@ -100,28 +89,39 @@ public class Scopes {
         return toRet;
     }
 
-    public static String[] parseScope(String scopes) {
-        if (scopes != null && scopes.length() > 0) {
-            StringTokenizer st = new StringTokenizer(scopes, " ");
-            String[] scope = new String[st.countTokens()];
-            for (int i = 0; st.hasMoreTokens(); i++)
-                scope[i] = st.nextToken();
-            return scope;
+    public static String toScope(List<Role> roles)
+            throws IllegalArgumentException {
+        if (roles == null || roles.isEmpty()) {
+            return "";
         }
-        return new String[0];
+        StringBuilder sb = new StringBuilder();
+        for (Role r : roles) {
+            String scope = toScope(r);
+            sb.append(' ');
+            sb.append(scope);
+
+        }
+        return sb.substring(1);
     }
 
-    public static String[] parseScope(List<Role> roles) {
-        String[] scopes = new String[roles.size()];
-        for (int i = 0; i < roles.size(); i++) {
-            scopes[i] = roles.get(i).getName();
-        }
-        return scopes;
+    public static String toScope(Role r) throws IllegalArgumentException {
+        String rname = r.getName();
+        if (rname == null)
+            throw new IllegalArgumentException("Role name cannot be null");
+        rname = rname.trim();
+        if (rname.length() < 1)
+            throw new IllegalArgumentException("Role name cannot be empty");
+        else if (rname.contains(" "))
+            throw new IllegalArgumentException("Role name cannot contain space");
+        return rname;
     }
 
-    public static boolean isIdentical(String[] a, String[] b) {
-        List<String> al = Arrays.asList(a);
-        List<String> bl = Arrays.asList(b);
-        return al.containsAll(bl) && bl.containsAll(al);
+    public static String toString(String[] scopes) {
+        StringBuilder sb = new StringBuilder();
+        for (String scope : scopes) {
+            sb.append(' ');
+            sb.append(scope);
+        }
+        return sb.substring(1);
     }
 }

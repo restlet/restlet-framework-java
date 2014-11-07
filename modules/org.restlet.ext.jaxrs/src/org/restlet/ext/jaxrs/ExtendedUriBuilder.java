@@ -159,6 +159,36 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
 
     /** {@inheritDoc} */
     @Override
+    public URI build(Object... values) throws IllegalArgumentException,
+            UriBuilderException {
+        return super.build(values);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public URI buildFromEncoded(Object... values)
+            throws IllegalArgumentException, UriBuilderException {
+        return super.buildFromEncoded(values);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public URI buildFromEncodedMap(Map<String, ? extends Object> values)
+            throws IllegalArgumentException, UriBuilderException {
+        return super.buildFromEncodedMap(values);
+    }
+
+    /**
+     * @see javax.ws.rs.core.UriBuilder#buildFromMap(java.util.Map)
+     */
+    @Override
+    public URI buildFromMap(Map<String, ? extends Object> values)
+            throws IllegalArgumentException, UriBuilderException {
+        return super.buildFromMap(values);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public ExtendedUriBuilder clone() {
         ExtendedUriBuilder clone = new ExtendedUriBuilder();
         super.copyInto(clone);
@@ -431,6 +461,12 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
 
     /** {@inheritDoc} */
     @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public ExtendedUriBuilder uri(URI uri) throws IllegalArgumentException {
         super.uri(uri);
         return this;
@@ -441,41 +477,5 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
     public ExtendedUriBuilder userInfo(String ui) {
         super.userInfo(ui);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public URI build(Object... values) throws IllegalArgumentException,
-            UriBuilderException {
-        return super.build(values);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public URI buildFromEncoded(Object... values)
-            throws IllegalArgumentException, UriBuilderException {
-        return super.buildFromEncoded(values);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public URI buildFromEncodedMap(Map<String, ? extends Object> values)
-            throws IllegalArgumentException, UriBuilderException {
-        return super.buildFromEncodedMap(values);
-    }
-
-    /**
-     * @see javax.ws.rs.core.UriBuilder#buildFromMap(java.util.Map)
-     */
-    @Override
-    public URI buildFromMap(Map<String, ? extends Object> values)
-            throws IllegalArgumentException, UriBuilderException {
-        return super.buildFromMap(values);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

@@ -35,8 +35,8 @@ package org.restlet.ext.apispark.internal.agent;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.apispark.internal.agent.module.ModulesSettingsModule;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
+import org.restlet.ext.apispark.internal.agent.module.ModulesSettingsModule;
 import org.restlet.routing.Filter;
 
 public class AgentFilter extends Filter {
@@ -45,9 +45,9 @@ public class AgentFilter extends Filter {
 
     /**
      * Create a new AgentFilter with the specified configuration.
-     *
+     * 
      * @param agentConfig
-     *          The agent configuration.
+     *            The agent configuration.
      */
     public AgentFilter(AgentConfig agentConfig) {
         this(agentConfig, null);
@@ -55,11 +55,11 @@ public class AgentFilter extends Filter {
 
     /**
      * Create a new AgentFilter with the specified configuration.
-     *
+     * 
      * @param agentConfig
-     *          The agent configuration.
+     *            The agent configuration.
      * @param context
-     *          The context
+     *            The current context.
      */
     public AgentFilter(AgentConfig agentConfig, Context context) {
         super(context);
@@ -68,22 +68,23 @@ public class AgentFilter extends Filter {
 
     /**
      * Configure the filter with the specified configuration.
-     *
+     * 
      * Retrieve the modules settings from the service.
-     *
+     * 
      * @param agentConfig
-     *          The agent configuration.
+     *            The agent configuration.
      */
     public void configureAgent(AgentConfig agentConfig) {
         agentConfig.validate();
 
-        ModulesSettingsModule modulesSettingsModule = new ModulesSettingsModule(agentConfig);
-        ModulesSettings modulesSettings = modulesSettingsModule.getModulesSettings();
+        ModulesSettingsModule modulesSettingsModule = new ModulesSettingsModule(
+                agentConfig);
+        ModulesSettings modulesSettings = modulesSettingsModule
+                .getModulesSettings();
 
-        agentModulesConfigurer = AgentModulesHelper.buildFromSettings(agentConfig, modulesSettings, getContext());
+        agentModulesConfigurer = AgentModulesHelper.buildFromSettings(
+                agentConfig, modulesSettings, getContext());
     }
-
-
 
     @Override
     public Restlet getNext() {

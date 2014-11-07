@@ -63,11 +63,11 @@ public class JsonRepresentation extends WriterRepresentation {
     /** Number of spaces to use for indentation. */
     private int indentingSize;
 
-    /** The wrapped JSON value. */
-    private Object jsonValue;
-
     /** The wrapped JSON representation. */
     private Representation jsonRepresentation;
+
+    /** The wrapped JSON value. */
+    private Object jsonValue;
 
     /**
      * Constructor from a JSON array.

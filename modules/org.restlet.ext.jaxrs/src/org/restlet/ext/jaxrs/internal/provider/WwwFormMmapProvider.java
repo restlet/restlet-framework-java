@@ -77,6 +77,20 @@ public class WwwFormMmapProvider extends
     }
 
     /**
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
+     */
+    @Override
+    public MultivaluedMap<String, String> readFrom(
+            Class<MultivaluedMap<String, String>> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        Form form = WwwFormFormProvider.getForm(mediaType, entityStream);
+        return UnmodifiableMultivaluedMap.getFromSeries(form, false);
+    }
+
+    /**
      * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#supportedClass()
      */
     @Override
@@ -96,19 +110,5 @@ public class WwwFormMmapProvider extends
         Form form = Converter.toForm(mmap);
         Representation formRepr = form.getWebRepresentation();
         IoUtils.copy(formRepr.getStream(), entityStream);
-    }
-
-    /**
-     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
-     *      MultivaluedMap, InputStream)
-     */
-    @Override
-    public MultivaluedMap<String, String> readFrom(
-            Class<MultivaluedMap<String, String>> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException {
-        Form form = WwwFormFormProvider.getForm(mediaType, entityStream);
-        return UnmodifiableMultivaluedMap.getFromSeries(form, false);
     }
 }

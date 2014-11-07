@@ -70,6 +70,31 @@ import org.restlet.util.Series;
 public class JettyClientCall extends ClientCall {
 
     /**
+     * The associated HTTP client.
+     */
+    private final HttpClientHelper clientHelper;
+
+    /**
+     * The wrapped HTTP request.
+     */
+    private final HttpRequest httpRequest;
+
+    /**
+     * The wrapped HTTP response.
+     */
+    private volatile HttpResponse httpResponse;
+
+    /**
+     * The wrapped input stream response listener.
+     */
+    private volatile InputStreamResponseListener inputStreamResponseListener;
+
+    /**
+     * Indicates if the response headers were added.
+     */
+    private volatile boolean responseHeadersAdded;
+
+    /**
      * Constructor.
      * 
      * @param helper
@@ -286,29 +311,4 @@ public class JettyClientCall extends ClientCall {
             // Transmit to the callback, if any
             callback.handle(request, response);
     }
-
-    /**
-     * The associated HTTP client.
-     */
-    private final HttpClientHelper clientHelper;
-
-    /**
-     * The wrapped HTTP request.
-     */
-    private final HttpRequest httpRequest;
-
-    /**
-     * The wrapped input stream response listener.
-     */
-    private volatile InputStreamResponseListener inputStreamResponseListener;
-
-    /**
-     * The wrapped HTTP response.
-     */
-    private volatile HttpResponse httpResponse;
-
-    /**
-     * Indicates if the response headers were added.
-     */
-    private volatile boolean responseHeadersAdded;
 }

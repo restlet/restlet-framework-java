@@ -40,18 +40,18 @@ package org.restlet.ext.nio.internal.state;
  */
 public enum MessageState {
 
-    /** No message being processed. */
-    IDLE,
-
-    /** The start line is being processed. */
-    START,
-
-    /** The header lines are being processed. */
-    HEADERS,
-
     /** The body is being processed. */
     BODY,
 
     /** The end line is being processed. */
-    END;
+    END,
+
+    /** The header lines are being processed. */
+    HEADERS,
+
+    /** No message being processed. */
+    IDLE,
+
+    /** The start line is being processed. */
+    START;
 }

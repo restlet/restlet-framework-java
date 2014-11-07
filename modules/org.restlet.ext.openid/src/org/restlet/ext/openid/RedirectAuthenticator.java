@@ -228,6 +228,14 @@ public class RedirectAuthenticator extends Authenticator {
         return false;
     }
 
+    @Override
+    protected int authenticated(Request request, Response response) {
+        int ret = super.authenticated(request, response);
+        if (response != null && response.getStatus().isRedirection())
+            return STOP;
+        return ret;
+    }
+
     /**
      * Rejects the call due to a failed authentication or authorization. This
      * can be overridden to change the default behavior, for example to display
@@ -268,14 +276,6 @@ public class RedirectAuthenticator extends Authenticator {
     @Override
     protected int unauthenticated(Request request, Response response) {
         int ret = super.unauthenticated(request, response);
-        return ret;
-    }
-
-    @Override
-    protected int authenticated(Request request, Response response) {
-        int ret = super.authenticated(request, response);
-        if (response != null && response.getStatus().isRedirection())
-            return STOP;
         return ret;
     }
 

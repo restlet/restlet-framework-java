@@ -34,7 +34,6 @@
 package org.restlet.ext.apispark;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 import org.restlet.Context;
 import org.restlet.ext.apispark.internal.firewall.FirewallFilter;
 import org.restlet.ext.apispark.internal.firewall.handler.BlockingHandler;
-import org.restlet.ext.apispark.internal.firewall.handler.policy.PerValueLimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.RoleLimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.UniqueLimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.rule.ConcurrentFirewallCounterRule;
@@ -103,7 +101,6 @@ public class FirewallService extends Service {
      * @param limit
      *            The maximum number of requests allowed by host domain at the
      *            same time.
-     * @return The associated rule.
      */
     public void addHostDomainConcurrencyCounter(int limit) {
         FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
@@ -113,43 +110,40 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that limits the number of requests for a given period of
-     * time by request's host domain.
+     * Adds a rule that limits the number of requests for a given period of time
+     * by request's host domain.
      * 
      * @param period
      *            The period of time.
      * @param periodUnit
-     *            Period time unit associated to the {@link FirewallCounterRule}.
+     *            Period time unit associated to the rule.
      * @param limit
      *            The maximum number of requests allowed by host domain for the
      *            given period of time.
-     * @return The associated rule.
      */
     public void addHostDomainPeriodicCounter(int period, TimeUnit periodUnit,
-                                             int limit) {
+            int limit) {
         FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
                 periodUnit, new HostDomainCountingPolicy());
         rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
     }
 
     /**
-     * Returns a rule that forbids access to the given set of IP addresses.
-     *
+     * Adds a rule that forbids access to the given set of IP addresses.
+     * 
      * @param blackList
      *            The list of rejected IP addresses.
-     * @return The associated rule.
      */
     public void addIpAddressesBlackList(List<String> blackList) {
         add(new FirewallIpFilteringRule(blackList, false));
     }
 
     /**
-     * Returns a rule that restricts access according to the IP address of the
+     * Adds a rule that restricts access according to the IP address of the
      * request's client. A unique limit is applied for all IP addresses.
      * 
      * @param limit
      *            The maximum number of accepted concurrent requests.
-     * @return The associated rule.
      */
     public void addIpAddressesConcurrencyCounter(int limit) {
         FirewallCounterRule rule = new ConcurrentFirewallCounterRule(
@@ -159,53 +153,49 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access by period of time according to the
-     * IP address of the request's client. A unique limit is applied for all IP
+     * Adds a rule that restricts access by period of time according to the IP
+     * address of the request's client. A unique limit is applied for all IP
      * addresses.
      * 
      * @param period
      *            The period of time.
      * @param periodUnit
-     *            Period time unit associated to the {@link FirewallCounterRule}.
+     *            Period time unit associated to the rule.
      * @param limit
      *            The maximum number of accepted requests for a period of time.
-     * @return The associated rule.
      */
-    public void addIpAddressesPeriodicCounter(int period, TimeUnit periodUnit,  int limit) {
-        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period, periodUnit,
-                new IpAddressCountingPolicy());
+    public void addIpAddressesPeriodicCounter(int period, TimeUnit periodUnit,
+            int limit) {
+        FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
+                periodUnit, new IpAddressCountingPolicy());
         rule.addHandler(new BlockingHandler(new UniqueLimitPolicy(limit)));
         add(rule);
     }
 
     /**
-     * Returns a rule that restricts access to the given set of IP addresses.
-     *
+     * Adds a rule that restricts access to the given set of IP addresses.
+     * 
      * @param whiteList
      *            The list of accepted IP addresses.
-     * @return The associated rule.
      */
     public void addIpAddressesWhiteList(List<String> whiteList) {
         add(new FirewallIpFilteringRule(whiteList, true));
-
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case the access is forbidden.
      * 
      * @param limitsPerRole
      *            The limit assigned per role's name.
-     * 
-     * @return The associated rule.
      */
     public void addRolesConcurrencyCounter(Map<String, Integer> limitsPerRole) {
         addRolesConcurrencyCounter(limitsPerRole, 0);
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
      * 
@@ -214,7 +204,6 @@ public class FirewallService extends Service {
      * @param defaultLimit
      *            The limit assigned for any other roles, or for user without
      *            assigned role.
-     * @return The associated rule.
      */
     public void addRolesConcurrencyCounter(Map<String, Integer> limitsPerRole,
             int defaultLimit) {
@@ -226,42 +215,39 @@ public class FirewallService extends Service {
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of requests by period of time, in any other case the access is forbidden.
      * 
      * @param period
      *            The period of time.
      * @param periodUnit
-     *            Period time unit associated to the {@link FirewallCounterRule}.
+     *            Period time unit associated to the rule.
      * @param limitsPerRole
      *            The limit assigned per role's name.
-     * 
-     * @return The associated rule.
      */
     public void addRolesPeriodicCounter(int period, TimeUnit periodUnit,
-                                        Map<String, Integer> limitsPerRole) {
+            Map<String, Integer> limitsPerRole) {
         addRolesPeriodicCounter(period, periodUnit, limitsPerRole, 0);
     }
 
     /**
-     * Returns a rule that restricts access according to the {@link Role} of the
+     * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
      * 
      * @param period
      *            The period of time.
      * @param periodUnit
-     *            Period time unit associated to the {@link FirewallCounterRule}.
+     *            Period time unit associated to the rule.
      * @param limitsPerRole
      *            The limit assigned per role's name.
      * @param defaultLimit
      *            The limit assigned for any other roles, or for user without
      *            assigned role.
-     * @return The associated rule.
      */
     public void addRolesPeriodicCounter(int period, TimeUnit periodUnit,
-                                        Map<String, Integer> limitsPerRole, int defaultLimit) {
+            Map<String, Integer> limitsPerRole, int defaultLimit) {
         FirewallCounterRule rule = new PeriodicFirewallCounterRule(period,
                 periodUnit, new UserCountingPolicy());
         rule.addHandler(new BlockingHandler(new RoleLimitPolicy(limitsPerRole,

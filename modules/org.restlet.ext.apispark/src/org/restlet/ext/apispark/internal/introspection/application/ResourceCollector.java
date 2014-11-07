@@ -1,5 +1,13 @@
 package org.restlet.ext.apispark.internal.introspection.application;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -10,7 +18,7 @@ import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.DocumentedResource;
-import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.PayLoad;
@@ -28,14 +36,6 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
 import org.restlet.service.MetadataService;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.logging.Logger;
-
 /**
  * @author Manuel Boillod
  */
@@ -45,11 +45,13 @@ public class ResourceCollector {
     protected static Logger LOGGER = Logger.getLogger(ResourceCollector.class
             .getName());
 
-    private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
     private static final String SUFFIX_RESOURCE = "Resource";
 
+    private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
+
     public static void collectResourceForDirectory(CollectInfo collectInfo,
-            Directory directory, String basePath, ChallengeScheme scheme, List<? extends IntrospectorPlugin> introspectorPlugins) {
+            Directory directory, String basePath, ChallengeScheme scheme,
+            List<? extends IntrospectionHelper> introspectionHelper) {
         Resource resource = getResource(collectInfo, directory, basePath,
                 scheme);
 
@@ -62,8 +64,8 @@ public class ResourceCollector {
         }
         resource.setOperations(operations);
 
-        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-            introspectorPlugin.processResource(resource, directory.getClass());
+        for (IntrospectionHelper helper : introspectionHelper) {
+            helper.processResource(resource, directory.getClass());
         }
         collectInfo.addResource(resource);
     }
@@ -71,7 +73,7 @@ public class ResourceCollector {
     public static void collectResourceForServletResource(
             CollectInfo collectInfo, ServerResource sr, String basePath,
             ChallengeScheme scheme,
-            List<? extends IntrospectorPlugin> introspectorPlugins) {
+            List<? extends IntrospectionHelper> introspectionHelper) {
         Resource resource = getResource(collectInfo, sr, basePath, scheme);
 
         // add operations
@@ -104,10 +106,12 @@ public class ResourceCollector {
                     }
 
                     completeOperation(collectInfo, operation,
-                            methodAnnotationInfo, sr, introspectorPlugins);
+                            methodAnnotationInfo, sr, introspectionHelper);
 
-                    for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-                        introspectorPlugin.processOperation(resource, operation, sr.getClass(), methodAnnotationInfo.getJavaMethod());
+                    for (IntrospectionHelper helper : introspectionHelper) {
+                        helper.processOperation(resource, operation,
+                                sr.getClass(),
+                                methodAnnotationInfo.getJavaMethod());
                     }
                     operations.add(operation);
                 }
@@ -125,82 +129,9 @@ public class ResourceCollector {
                     + " has no methods.");
         }
 
-        for (IntrospectorPlugin introspectorPlugin : introspectorPlugins) {
-            introspectorPlugin.processResource(resource, sr.getClass());
+        for (IntrospectionHelper helper : introspectionHelper) {
+            helper.processResource(resource, sr.getClass());
         }
-    }
-
-    private static Resource getResource(CollectInfo collectInfo,
-            Object restlet, String basePath, ChallengeScheme scheme) {
-        Resource resource = new Resource();
-        resource.setResourcePath(basePath);
-
-        if (restlet instanceof Directory) {
-            Directory directory = (Directory) restlet;
-            resource.setName(directory.getName());
-            resource.setDescription(directory.getDescription());
-        }
-        if (restlet instanceof ServerResource) {
-            ServerResource serverResource = (ServerResource) restlet;
-            resource.setName(serverResource.getName());
-            resource.setDescription(serverResource.getDescription());
-        }
-        if (restlet instanceof DocumentedResource) {
-            DocumentedResource documentedServerResource = (DocumentedResource) restlet;
-            resource.setSections(documentedServerResource.getSections());
-        } else {
-            String sectionName = restlet.getClass().getPackage().getName();
-            resource.getSections().add(sectionName);
-        }
-
-        if (StringUtils.isNullOrEmpty(resource.getName())) {
-            String name = restlet.getClass().getSimpleName();
-            if (name.endsWith(SUFFIX_SERVER_RESOURCE) && name.length() > SUFFIX_SERVER_RESOURCE.length()) {
-                name = name.substring(0, name.length() - SUFFIX_SERVER_RESOURCE.length());
-            }
-            if (name.endsWith(SUFFIX_RESOURCE) && name.length() > SUFFIX_RESOURCE.length()) {
-                name = name.substring(0, name.length() - SUFFIX_RESOURCE.length());
-            }
-            resource.setName(name);
-        }
-
-        //add sections in collect info
-        for (String section : resource.getSections()) {
-            if (collectInfo.getSection(section) == null) {
-                collectInfo.addSection(new Section(section));
-            }
-        }
-
-        Template template = new Template(basePath);
-        for (String variable : template.getVariableNames()) {
-            PathVariable pathVariable = new PathVariable();
-            pathVariable.setName(variable);
-            resource.getPathVariables().add(pathVariable);
-        }
-
-        if (scheme != null) {
-            resource.setAuthenticationProtocol(scheme.getName());
-        }
-
-        return resource;
-    }
-
-    private static Operation getOperationFromMethod(Method method) {
-        Operation operation = new Operation();
-        operation.setMethod(method.getName());
-        return operation;
-    }
-
-    private static void sortOperationsByMethod(ArrayList<Operation> operations) {
-        Collections.sort(operations, new Comparator<Operation>() {
-            public int compare(Operation o1, Operation o2) {
-                int c = o1.getMethod().compareTo(o2.getMethod());
-                if (c == 0) {
-                    c = o1.getName().compareTo(o2.getName());
-                }
-                return c;
-            }
-        });
     }
 
     /**
@@ -210,7 +141,7 @@ public class ResourceCollector {
      */
     private static void completeOperation(CollectInfo collectInfo,
             Operation operation, MethodAnnotationInfo mai, ServerResource sr,
-            List<? extends IntrospectorPlugin> introspectorPlugins) {
+            List<? extends IntrospectionHelper> introspectionHelper) {
         // Loop over the annotated Java methods
         MetadataService metadataService = sr.getMetadataService();
 
@@ -226,18 +157,16 @@ public class ResourceCollector {
                     response.setCode(statusCode);
                     response.setMessage("Status " + statusCode);
 
-                    Class<?> outputPayloadType =
-                        statusAnnotation.isSerializable() ?
-                         thrownClass : StatusInfo.class;
+                    Class<?> outputPayloadType = statusAnnotation
+                            .isSerializable() ? thrownClass : StatusInfo.class;
 
                     RepresentationCollector.addRepresentation(collectInfo,
-                            outputPayloadType, null, introspectorPlugins);
+                            outputPayloadType, null, introspectionHelper);
 
                     PayLoad outputPayLoad = new PayLoad();
                     outputPayLoad.setType(outputPayloadType.getName());
                     response.setOutputPayLoad(outputPayLoad);
                     operation.getResponses().add(response);
-
 
                 }
             }
@@ -253,10 +182,11 @@ public class ResourceCollector {
             Type inputType = mai.getJavaMethod().getGenericParameterTypes()[0];
 
             RepresentationCollector.addRepresentation(collectInfo, inputClass,
-                    inputType, introspectorPlugins);
+                    inputType, introspectionHelper);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(inputType)));
+            inputEntity.setType(Types.convertPrimitiveType(ReflectUtils
+                    .getSimpleClass(inputType)));
             inputEntity.setArray(ReflectUtils.isListType(inputClass));
             operation.setInputPayLoad(inputEntity);
 
@@ -317,10 +247,11 @@ public class ResourceCollector {
         if (outputClass != Void.TYPE) {
             // Output representation
             RepresentationCollector.addRepresentation(collectInfo, outputClass,
-                    outputType, introspectorPlugins);
+                    outputType, introspectionHelper);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(Types.convertPrimitiveType(ReflectUtils.getSimpleClass(outputType)));
+            outputEntity.setType(Types.convertPrimitiveType(ReflectUtils
+                    .getSimpleClass(outputType)));
             outputEntity.setArray(ReflectUtils.isListType(outputClass));
 
             response.setOutputPayLoad(outputEntity);
@@ -358,5 +289,82 @@ public class ResourceCollector {
                 throw new ResourceException(e);
             }
         }
+    }
+
+    private static Operation getOperationFromMethod(Method method) {
+        Operation operation = new Operation();
+        operation.setMethod(method.getName());
+        return operation;
+    }
+
+    private static Resource getResource(CollectInfo collectInfo,
+            Object restlet, String basePath, ChallengeScheme scheme) {
+        Resource resource = new Resource();
+        resource.setResourcePath(basePath);
+
+        if (restlet instanceof Directory) {
+            Directory directory = (Directory) restlet;
+            resource.setName(directory.getName());
+            resource.setDescription(directory.getDescription());
+        }
+        if (restlet instanceof ServerResource) {
+            ServerResource serverResource = (ServerResource) restlet;
+            resource.setName(serverResource.getName());
+            resource.setDescription(serverResource.getDescription());
+        }
+        if (restlet instanceof DocumentedResource) {
+            DocumentedResource documentedServerResource = (DocumentedResource) restlet;
+            resource.setSections(documentedServerResource.getSections());
+        } else {
+            String sectionName = restlet.getClass().getPackage().getName();
+            resource.getSections().add(sectionName);
+        }
+
+        if (StringUtils.isNullOrEmpty(resource.getName())) {
+            String name = restlet.getClass().getSimpleName();
+            if (name.endsWith(SUFFIX_SERVER_RESOURCE)
+                    && name.length() > SUFFIX_SERVER_RESOURCE.length()) {
+                name = name.substring(0,
+                        name.length() - SUFFIX_SERVER_RESOURCE.length());
+            }
+            if (name.endsWith(SUFFIX_RESOURCE)
+                    && name.length() > SUFFIX_RESOURCE.length()) {
+                name = name.substring(0,
+                        name.length() - SUFFIX_RESOURCE.length());
+            }
+            resource.setName(name);
+        }
+
+        // add sections in collect info
+        for (String section : resource.getSections()) {
+            if (collectInfo.getSection(section) == null) {
+                collectInfo.addSection(new Section(section));
+            }
+        }
+
+        Template template = new Template(basePath);
+        for (String variable : template.getVariableNames()) {
+            PathVariable pathVariable = new PathVariable();
+            pathVariable.setName(variable);
+            resource.getPathVariables().add(pathVariable);
+        }
+
+        if (scheme != null) {
+            resource.setAuthenticationProtocol(scheme.getName());
+        }
+
+        return resource;
+    }
+
+    private static void sortOperationsByMethod(ArrayList<Operation> operations) {
+        Collections.sort(operations, new Comparator<Operation>() {
+            public int compare(Operation o1, Operation o2) {
+                int c = o1.getMethod().compareTo(o2.getMethod());
+                if (c == 0) {
+                    c = o1.getName().compareTo(o2.getName());
+                }
+                return c;
+            }
+        });
     }
 }

@@ -58,8 +58,10 @@ import org.restlet.routing.Filter;
  * @author Guillaume Blondeau
  */
 public abstract class FirewallCounterRule extends FirewallRule {
-    /** Indicates if an unknown counted value should be blocked by default.
-     * Default is true */
+    /**
+     * Indicates if an unknown counted value should be blocked by default.
+     * Default is true
+     */
     private boolean blockingUnknownCountedValue = true;
 
     /** The associated policy. */

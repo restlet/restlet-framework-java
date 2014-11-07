@@ -54,19 +54,21 @@ import org.restlet.data.MediaType;
 public interface MessageBodyWriter {
 
     /**
+     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @param mediaType
-     *            The JAX-RS MediaType
-     * @return true, if the wrapped writer could write an object of the given
-     *         class with the given annotations and media type.
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
-     *      Annotation[])
+     * @return the JAX-RS MessageBodyWriter
      */
-    boolean isWriteable(Class<?> type, Type genericType,
-            Annotation annotations[], javax.ws.rs.core.MediaType mediaType);
+    javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
+
+    /**
+     * Returns the list of produced {@link MediaType}s of the wrapped
+     * {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return List of produced Restlet {@link MediaType}s. If the entity
+     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
+     *         , '*<!---->/*' is returned.
+     */
+    List<MediaType> getProducedMimes();
 
     /**
      * Called before <code>writeTo</code> to ascertain the length in bytes of
@@ -89,42 +91,32 @@ public interface MessageBodyWriter {
             Annotation[] annotations, MediaType mediaType);
 
     /**
-     * @param object
+     * 
      * @param type
      * @param genericType
      * @param annotations
      * @param mediaType
-     *            The Restlet MediaType
-     * @param httpHeaders
-     * @param entityStream
-     * @throws IOException
-     * @throws WebApplicationException
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
-     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
-     *      OutputStream)
+     *            The JAX-RS MediaType
+     * @return true, if the wrapped writer could write an object of the given
+     *         class with the given annotations and media type.
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
+     *      Annotation[])
      */
-    void writeTo(Object object, Class<?> type, Type genericType,
-            Annotation annotations[], MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException;
+    boolean isWriteable(Class<?> type, Type genericType,
+            Annotation annotations[], javax.ws.rs.core.MediaType mediaType);
 
     /**
-     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * Checks, if this message body writer supports the given type (by the type
+     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
-     * @return the JAX-RS MessageBodyWriter
+     * @param entityClass
+     *            the type
+     * @param genericType
+     *            the generic type
+     * @return true, if this MessageBodyWriter supports the given type, false,
+     *         if not.
      */
-    javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
-
-    /**
-     * Returns the list of produced {@link MediaType}s of the wrapped
-     * {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * 
-     * @return List of produced Restlet {@link MediaType}s. If the entity
-     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
-     *         , '*<!---->/*' is returned.
-     */
-    List<MediaType> getProducedMimes();
+    boolean supportsWrite(Class<?> entityClass, Type genericType);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -149,15 +141,23 @@ public interface MessageBodyWriter {
     boolean supportsWrite(MediaType mediaType);
 
     /**
-     * Checks, if this message body writer supports the given type (by the type
-     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
-     * 
-     * @param entityClass
-     *            the type
+     * @param object
+     * @param type
      * @param genericType
-     *            the generic type
-     * @return true, if this MessageBodyWriter supports the given type, false,
-     *         if not.
+     * @param annotations
+     * @param mediaType
+     *            The Restlet MediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @throws IOException
+     * @throws WebApplicationException
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
+     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
+     *      OutputStream)
      */
-    boolean supportsWrite(Class<?> entityClass, Type genericType);
+    void writeTo(Object object, Class<?> type, Type genericType,
+            Annotation annotations[], MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException,
+            WebApplicationException;
 }

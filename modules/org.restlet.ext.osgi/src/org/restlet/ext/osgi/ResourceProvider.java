@@ -53,15 +53,15 @@ package org.restlet.ext.osgi;
 public interface ResourceProvider extends RestletProvider {
     /**
      * 
-     * @return the paths to the resource relative to the application alias. The
-     *         paths must start with '/'.
-     */
-    String[] getPaths();
-
-    /**
-     * 
      * @return the matching mode to be used for template routes. Defaults to
      *         Template.MODE_EQUALS.
      */
     int getMatchingMode();
+
+    /**
+     * 
+     * @return the paths to the resource relative to the application alias. The
+     *         paths must start with '/'.
+     */
+    String[] getPaths();
 }

@@ -55,15 +55,15 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class RdfXmlWriter extends GraphHandler {
 
+    /** The last source reference written, to try to factor statements. */
+    private Reference lastSource;
+
     /** URI of the RDF SYNTAX namespace. */
     private final String RDF_SYNTAX = RdfConstants.RDF_SYNTAX.toString(true,
             true);
 
     /** XML writer. */
     private XmlWriter writer;
-
-    /** The last source reference written, to try to factor statements. */
-    private Reference lastSource;
 
     /**
      * Constructor.

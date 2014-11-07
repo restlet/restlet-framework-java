@@ -73,13 +73,13 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
     private static final class RequestContext implements
             org.apache.commons.fileupload.RequestContext {
 
-        private final InputStream entityStream;
-
         private final String contentEncoding;
+
+        private final int contentLength;
 
         private final String contentType;
 
-        private final int contentLength;
+        private final InputStream entityStream;
 
         /**
          * @param entityStream

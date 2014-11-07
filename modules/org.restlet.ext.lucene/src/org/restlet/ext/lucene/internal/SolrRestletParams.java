@@ -62,21 +62,21 @@ public class SolrRestletParams extends SolrParams {
     }
 
     /**
-     * Returns the request query form.
-     * 
-     * @return The request query form.
-     */
-    protected Form getForm() {
-        return request.getResourceRef().getQueryAsForm();
-    }
-
-    /**
      * Reads parameter from the form returned {@link #getForm()}.
      * 
      */
     @Override
     public String get(String param) {
         return getForm().getFirstValue(param);
+    }
+
+    /**
+     * Returns the request query form.
+     * 
+     * @return The request query form.
+     */
+    protected Form getForm() {
+        return request.getResourceRef().getQueryAsForm();
     }
 
     /**

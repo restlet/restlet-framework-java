@@ -38,7 +38,7 @@ import java.util.Map;
 import org.restlet.ext.apispark.internal.model.Section;
 
 /**
- * Describes the sections of a Web API for documentation purpose.
+ * Completes an application for documentation purpose.
  * 
  * @author Cyprien Quilici
  * 
@@ -46,10 +46,10 @@ import org.restlet.ext.apispark.internal.model.Section;
 public interface DocumentedApplication {
 
     /**
-     * A list of the Sections of the Web API
+     * A list of the sections of the Web API.
      * 
-     * @return The Sections of the Web API
+     * @return The sections of the Web API.
      */
     Map<String, Section> getSections();
-    
+
 }

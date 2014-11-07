@@ -73,6 +73,19 @@ public class JsonProvider extends AbstractProvider<Object> {
     // NICE better JSON support planned for later.
 
     /**
+     * @return the character set of the current entity, or null, if no entity or
+     *         no character set is available.
+     */
+    private CharacterSet getCurrentRequestEntityCharacterSet() {
+        Representation entity = Request.getCurrent().getEntity();
+
+        if (entity == null)
+            return null;
+
+        return entity.getCharacterSet();
+    }
+
+    /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
@@ -103,19 +116,6 @@ public class JsonProvider extends AbstractProvider<Object> {
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return true;
-    }
-
-    /**
-     * @return the character set of the current entity, or null, if no entity or
-     *         no character set is available.
-     */
-    private CharacterSet getCurrentRequestEntityCharacterSet() {
-        Representation entity = Request.getCurrent().getEntity();
-
-        if (entity == null)
-            return null;
-
-        return entity.getCharacterSet();
     }
 
     /**

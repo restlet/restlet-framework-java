@@ -61,6 +61,16 @@ public class NamedObject {
         this.normalizedName = ReflectUtils.normalize(name);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = false;
+        if (obj instanceof NamedObject) {
+            NamedObject object = (NamedObject) obj;
+            result = object.getName().equals(this.name);
+        }
+        return result;
+    }
+
     /**
      * Returns the name.
      * 
@@ -80,16 +90,6 @@ public class NamedObject {
      */
     public String getNormalizedName() {
         return normalizedName;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        boolean result = false;
-        if (obj instanceof NamedObject) {
-            NamedObject object = (NamedObject) obj;
-            result = object.getName().equals(this.name);
-        }
-        return result;
     }
 
     @Override

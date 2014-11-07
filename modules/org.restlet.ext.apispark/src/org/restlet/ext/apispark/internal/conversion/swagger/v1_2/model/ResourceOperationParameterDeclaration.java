@@ -1,11 +1,11 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @JsonInclude(Include.NON_NULL)
 public class ResourceOperationParameterDeclaration {

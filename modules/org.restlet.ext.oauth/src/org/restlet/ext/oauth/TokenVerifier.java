@@ -35,6 +35,7 @@ package org.restlet.ext.oauth;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.Request;
@@ -73,18 +74,93 @@ public class TokenVerifier implements Verifier {
     // public static final ChallengeScheme HTTP_MAC =
     // new ChallengeScheme("HTTP_MAC", "MAC", "MAC Access Authentication");
 
-    private Reference authReference;
+    private static final Logger logger = Logger.getLogger(TokenVerifier.class
+            .getName());
+
+    private static JSONObject createBearerAuthRequest(String token)
+            throws JSONException {
+        JSONObject request = new JSONObject();
+        request.put(OAuthServerResource.TOKEN_TYPE,
+                OAuthServerResource.TOKEN_TYPE_BEARER);
+        request.put(OAuthServerResource.ACCESS_TOKEN, token);
+        return request;
+    }
 
     private boolean acceptBodyMethod = false; // 2.2. Form-Encoded Body
                                               // Parameter
 
     private boolean acceptQueryMethod = false; // 2.3. URI Query Parameter
 
-    private static final Logger logger = Logger.getLogger(TokenVerifier.class
-            .getName());
+    private Reference authReference;
 
     public TokenVerifier(Reference authReference) {
         this.authReference = authReference;
+    }
+
+    private String getAccessTokenFromBody(Request request) {
+        Method method = request.getMethod();
+        if (method.equals(Method.GET)) {
+            return null;
+        }
+
+        Representation entity = request.getEntity();
+        if (entity != null
+                && !MediaType.APPLICATION_WWW_FORM
+                        .equals(entity.getMediaType())) {
+            return null;
+        }
+
+        Form form = new Form(request.getEntity());
+        final String token = form
+                .getFirstValue(OAuthServerResource.ACCESS_TOKEN);
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+        // Restore the body
+        request.setEntity(form.getWebRepresentation());
+        logger.fine("Found Bearer Token in Body.");
+        return token;
+    }
+
+    private String getAccessTokenFromQuery(Request request) {
+        // Try to find token in URI query
+        Form params = request.getOriginalRef().getQueryAsForm();
+        String token = params.getFirstValue(OAuthServerResource.ACCESS_TOKEN);
+        if (token != null && !token.isEmpty()) {
+            logger.fine("Found Bearer Token in URI query.");
+            return token;
+        }
+        return null;
+    }
+
+    /**
+     * @return the acceptBodyMethod
+     */
+    public boolean isAcceptBodyMethod() {
+        return acceptBodyMethod;
+    }
+
+    /**
+     * @return the acceptQueryMethod
+     */
+    public boolean isAcceptQueryMethod() {
+        return acceptQueryMethod;
+    }
+
+    /**
+     * @param acceptBodyMethod
+     *            the acceptBodyMethod to set
+     */
+    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
+        this.acceptBodyMethod = acceptBodyMethod;
+    }
+
+    /**
+     * @param acceptQueryMethod
+     *            the acceptQueryMethod to set
+     */
+    public void setAcceptQueryMethod(boolean acceptQueryMethod) {
+        this.acceptQueryMethod = acceptQueryMethod;
     }
 
     public int verify(Request request, Response response) {
@@ -166,80 +242,5 @@ public class TokenVerifier implements Verifier {
         }
 
         return RESULT_VALID;
-    }
-
-    private static JSONObject createBearerAuthRequest(String token)
-            throws JSONException {
-        JSONObject request = new JSONObject();
-        request.put(OAuthServerResource.TOKEN_TYPE,
-                OAuthServerResource.TOKEN_TYPE_BEARER);
-        request.put(OAuthServerResource.ACCESS_TOKEN, token);
-        return request;
-    }
-
-    private String getAccessTokenFromQuery(Request request) {
-        // Try to find token in URI query
-        Form params = request.getOriginalRef().getQueryAsForm();
-        String token = params.getFirstValue(OAuthServerResource.ACCESS_TOKEN);
-        if (token != null && !token.isEmpty()) {
-            logger.fine("Found Bearer Token in URI query.");
-            return token;
-        }
-        return null;
-    }
-
-    private String getAccessTokenFromBody(Request request) {
-        Method method = request.getMethod();
-        if (method.equals(Method.GET)) {
-            return null;
-        }
-
-        Representation entity = request.getEntity();
-        if (entity != null
-                && !MediaType.APPLICATION_WWW_FORM
-                        .equals(entity.getMediaType())) {
-            return null;
-        }
-
-        Form form = new Form(request.getEntity());
-        final String token = form
-                .getFirstValue(OAuthServerResource.ACCESS_TOKEN);
-        if (token == null || token.isEmpty()) {
-            return null;
-        }
-        // Restore the body
-        request.setEntity(form.getWebRepresentation());
-        logger.fine("Found Bearer Token in Body.");
-        return token;
-    }
-
-    /**
-     * @return the acceptBodyMethod
-     */
-    public boolean isAcceptBodyMethod() {
-        return acceptBodyMethod;
-    }
-
-    /**
-     * @param acceptBodyMethod
-     *            the acceptBodyMethod to set
-     */
-    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
-        this.acceptBodyMethod = acceptBodyMethod;
-    }
-
-    /**
-     * @return the acceptQueryMethod
-     */
-    public boolean isAcceptQueryMethod() {
-        return acceptQueryMethod;
-    }
-
-    /**
-     * @param acceptQueryMethod
-     *            the acceptQueryMethod to set
-     */
-    public void setAcceptQueryMethod(boolean acceptQueryMethod) {
-        this.acceptQueryMethod = acceptQueryMethod;
     }
 }

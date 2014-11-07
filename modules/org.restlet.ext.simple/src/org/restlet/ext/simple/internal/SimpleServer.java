@@ -49,9 +49,9 @@ import org.simpleframework.transport.Socket;
  * @author Jerome Louvel
  */
 public class SimpleServer implements Server {
-    public static final String PROPERTY_SOCKET = "org.restlet.ext.simple.socket";
-
     public static final String PROPERTY_ENGINE = "org.restlet.ext.simple.engine";
+
+    public static final String PROPERTY_SOCKET = "org.restlet.ext.simple.socket";
 
     /**
      * This is the server to be used.

@@ -66,11 +66,11 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      */
     private final List<org.restlet.data.MediaType> consumedMimes;
 
-    private final List<org.restlet.data.MediaType> producedMimes;
-
     private final Class<?> genericMbrType;
 
     private final Class<?> genericMbwType;
+
+    private final List<org.restlet.data.MediaType> producedMimes;
 
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
@@ -201,34 +201,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     public abstract boolean isWriter();
 
     /**
-     * Checks, if this message body writer supports the given type (by the type
-     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
-     * 
-     * @param entityClass
-     *            the type
-     * @param genericType
-     *            the generic type
-     * @return true, if this MessageBodyWriter supports the given type, false,
-     *         if not.
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
-     *      java.lang.reflect.Type)
-     */
-    public boolean supportsWrite(Class<?> entityClass, Type genericType) {
-        if (entityClass == null) {
-            return false;
-        }
-        if (genericType == null) {
-            // LATER use Type instead of Class
-        }
-        if (this.genericMbwType == null) {
-            return false;
-        }
-        final boolean supportsWrite = this.genericMbwType
-                .isAssignableFrom(entityClass);
-        return supportsWrite;
-    }
-
-    /**
      * Checks, if this message body reader supports the given type (by the type
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
@@ -265,6 +237,34 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
                     || (mediaType == null);
         }
         return result;
+    }
+
+    /**
+     * Checks, if this message body writer supports the given type (by the type
+     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
+     * 
+     * @param entityClass
+     *            the type
+     * @param genericType
+     *            the generic type
+     * @return true, if this MessageBodyWriter supports the given type, false,
+     *         if not.
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
+     *      java.lang.reflect.Type)
+     */
+    public boolean supportsWrite(Class<?> entityClass, Type genericType) {
+        if (entityClass == null) {
+            return false;
+        }
+        if (genericType == null) {
+            // LATER use Type instead of Class
+        }
+        if (this.genericMbwType == null) {
+            return false;
+        }
+        final boolean supportsWrite = this.genericMbwType
+                .isAssignableFrom(entityClass);
+        return supportsWrite;
     }
 
     /**

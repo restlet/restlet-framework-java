@@ -106,6 +106,26 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
+     * @see JaxRsUriInfo#getBaseUri()
+     * @see UriInfo#getBaseUri()
+     */
+    public URI getBaseUri() {
+        return getCallContext().getBaseUri();
+    }
+
+    /**
+     * @see JaxRsUriInfo#getBaseUriBuilder()
+     * @see UriInfo#getBaseUriBuilder()
+     */
+    public UriBuilder getBaseUriBuilder() {
+        return getCallContext().getBaseUriBuilder();
+    }
+
+    protected CallContext getCallContext() throws IllegalStateException {
+        return this.tlContext.get();
+    }
+
+    /**
      * @see JaxRsUriInfo#getMatchedResources()
      * @see UriInfo#getMatchedResources()
      */
@@ -126,26 +146,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      */
     public List<String> getMatchedURIs(boolean decode) {
         return get().getUris(decode);
-    }
-
-    /**
-     * @see JaxRsUriInfo#getBaseUri()
-     * @see UriInfo#getBaseUri()
-     */
-    public URI getBaseUri() {
-        return getCallContext().getBaseUri();
-    }
-
-    /**
-     * @see JaxRsUriInfo#getBaseUriBuilder()
-     * @see UriInfo#getBaseUriBuilder()
-     */
-    public UriBuilder getBaseUriBuilder() {
-        return getCallContext().getBaseUriBuilder();
-    }
-
-    protected CallContext getCallContext() throws IllegalStateException {
-        return this.tlContext.get();
     }
 
     /**

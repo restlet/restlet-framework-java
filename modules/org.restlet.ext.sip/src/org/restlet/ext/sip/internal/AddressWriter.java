@@ -46,26 +46,6 @@ import org.restlet.ext.sip.Address;
  */
 public class AddressWriter extends HeaderWriter<Address> {
 
-    /** Indicates if the tag parameter should be included. */
-    private final boolean includingTag;
-
-    /**
-     * Default constructor.
-     */
-    public AddressWriter() {
-        this(true);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param includingTag
-     *            Indicates if the tag parameter should be included.
-     */
-    public AddressWriter(boolean includingTag) {
-        this.includingTag = includingTag;
-    }
-
     /**
      * Writes an address.
      * 
@@ -97,6 +77,26 @@ public class AddressWriter extends HeaderWriter<Address> {
      */
     public static String write(List<Address> addresses) {
         return new AddressWriter(true).append(addresses).toString();
+    }
+
+    /** Indicates if the tag parameter should be included. */
+    private final boolean includingTag;
+
+    /**
+     * Default constructor.
+     */
+    public AddressWriter() {
+        this(true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param includingTag
+     *            Indicates if the tag parameter should be included.
+     */
+    public AddressWriter(boolean includingTag) {
+        this.includingTag = includingTag;
     }
 
     @Override

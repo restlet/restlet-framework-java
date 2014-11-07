@@ -60,9 +60,19 @@ import org.restlet.util.Series;
  * @author Bruno Harbulot
  */
 public class PkixSslContextFactory extends SslContextFactory {
+    private PKIXSSLContextFactory sslContextFactory;
+
     private String sslProtocol = "TLS";
 
-    private PKIXSSLContextFactory sslContextFactory;
+    /**
+     * This class is likely to contain sensitive information; cloning is
+     * therefore not allowed.
+     */
+    @Override
+    protected final DefaultSslContextFactory clone()
+            throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
     /**
      * Creates a configured and initialised SSLContext by delegating the call to
@@ -278,15 +288,5 @@ public class PkixSslContextFactory extends SslContextFactory {
         } catch (UnsupportedCallbackException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * This class is likely to contain sensitive information; cloning is
-     * therefore not allowed.
-     */
-    @Override
-    protected final DefaultSslContextFactory clone()
-            throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
     }
 }

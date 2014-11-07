@@ -50,13 +50,6 @@ public interface Token {
     String getAccessToken();
 
     /**
-     * The type of the token.
-     * 
-     * @return
-     */
-    String getTokenType();
-
-    /**
      * The lifetime in seconds of the access token.
      * 
      * @return
@@ -76,5 +69,12 @@ public interface Token {
      * @return
      */
     String[] getScope();
+
+    /**
+     * The type of the token.
+     * 
+     * @return
+     */
+    String getTokenType();
 
 }

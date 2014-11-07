@@ -36,6 +36,7 @@ package org.restlet.ext.oauth.internal.memory;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.restlet.ext.oauth.internal.AbstractClientManager;
 import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.Client.ClientType;

@@ -33,9 +33,14 @@
 
 package org.restlet.ext.apispark.internal.conversion.raml;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.raml.model.Action;
 import org.raml.model.ActionType;
 import org.raml.model.MimeType;
@@ -56,13 +61,9 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 
 /**
  * Tools library for converting Restlet Web API Definition to and from RAML
@@ -77,14 +78,15 @@ public abstract class RamlTranslator {
             .getName());
 
     /**
-     * Returns the {@link org.restlet.ext.apispark.internal.model.PathVariable} as described by the given
-     * {@link org.raml.model.parameter.UriParameter}.
-     *
+     * Returns the {@link org.restlet.ext.apispark.internal.model.PathVariable}
+     * as described by the given {@link org.raml.model.parameter.UriParameter}.
+     * 
      * @param paramName
      *            The name of the path variable.
      * @param uriParameter
      *            The uri parameter.
-     * @return The {@link org.restlet.ext.apispark.internal.model.PathVariable} as described by the given
+     * @return The {@link org.restlet.ext.apispark.internal.model.PathVariable}
+     *         as described by the given
      *         {@link org.raml.model.parameter.UriParameter}.
      */
     private static PathVariable getPathVariable(String paramName,
@@ -97,13 +99,15 @@ public abstract class RamlTranslator {
     }
 
     /**
-     * Returns the list of {@link org.restlet.ext.apispark.internal.model.PathVariable} as defined by the given
-     * {@link org.raml.model.Resource}.
-     *
+     * Returns the list of
+     * {@link org.restlet.ext.apispark.internal.model.PathVariable} as defined
+     * by the given {@link org.raml.model.Resource}.
+     * 
      * @param resource
      *            The given resource.
-     * @return The list of {@link org.restlet.ext.apispark.internal.model.PathVariable} as defined by the given
-     *         {@link org.raml.model.Resource}.
+     * @return The list of
+     *         {@link org.restlet.ext.apispark.internal.model.PathVariable} as
+     *         defined by the given {@link org.raml.model.Resource}.
      */
     private static List<PathVariable> getPathVariables(
             org.raml.model.Resource resource) {

@@ -1,14 +1,22 @@
 package org.restlet.ext.apispark.internal.model;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by manu on 13/10/2014.
  */
 public abstract class Types {
 
+    private static final List<String> primitivesTypes = Arrays.asList("byte",
+            "short", "integer", "long", "float", "double", "boolean", "double",
+            "string", "date", "file");
 
     private static final Map<Class<?>, String> primitiveTypesByClass;
+
     static {
         primitiveTypesByClass = new HashMap<Class<?>, String>();
         primitiveTypesByClass.put(Byte.TYPE, "byte");
@@ -27,15 +35,12 @@ public abstract class Types {
         primitiveTypesByClass.put(Boolean.class, "boolean");
         primitiveTypesByClass.put(Double.TYPE, "double");
         primitiveTypesByClass.put(Double.class, "double");
-        primitiveTypesByClass.put(String.class, "string"); //others types could be considered as string
-        primitiveTypesByClass.put(Date.class, "date"); //others types could be considered as date
+        primitiveTypesByClass.put(String.class, "string"); // others types could
+                                                           // be considered as
+                                                           // string
+        primitiveTypesByClass.put(Date.class, "date"); // others types could be
+                                                       // considered as date
     }
-
-    private static final List<String> primitivesTypes = Arrays.asList(
-            "byte", "short", "integer", "long", "float",
-            "double", "boolean", "double", "string", "date",
-            "file"
-    );
 
     /**
      * Returns simple type name for primitive type or full name otherwise
@@ -48,21 +53,19 @@ public abstract class Types {
         if (CharSequence.class.isAssignableFrom(type)) {
             return "string";
         }
-        if(Date.class.isAssignableFrom(type)) {
+        if (Date.class.isAssignableFrom(type)) {
             return "date";
         }
-        if(Representation.class.isAssignableFrom(type)) {
+        if (Representation.class.isAssignableFrom(type)) {
             return "file";
         }
         return type.getName();
     }
 
-
     public static boolean isPrimitiveType(Class<?> type) {
-        return (
-                primitiveTypesByClass.get(type) != null ||
-                        CharSequence.class.isAssignableFrom(type) ||
-                        Date.class.isAssignableFrom(type));
+        return (primitiveTypesByClass.get(type) != null
+                || CharSequence.class.isAssignableFrom(type) || Date.class
+                    .isAssignableFrom(type));
     }
 
     public static boolean isPrimitiveType(String typename) {

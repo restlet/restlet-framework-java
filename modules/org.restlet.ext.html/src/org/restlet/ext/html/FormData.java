@@ -94,20 +94,6 @@ public class FormData implements NamedValue<String> {
     }
 
     /**
-     * Encodes the parameter as a string.
-     * 
-     * @param queryString
-     *            True if the target is a query string.
-     * @return The encoded string.
-     * @throws IOException
-     */
-    public String encode(boolean queryString) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        encode(sb, queryString);
-        return sb.toString();
-    }
-
-    /**
      * Encodes the parameter into the target buffer.
      * 
      * @param buffer
@@ -126,6 +112,20 @@ public class FormData implements NamedValue<String> {
                 buffer.append(Reference.encode(getValue(), queryString));
             }
         }
+    }
+
+    /**
+     * Encodes the parameter as a string.
+     * 
+     * @param queryString
+     *            True if the target is a query string.
+     * @return The encoded string.
+     * @throws IOException
+     */
+    public String encode(boolean queryString) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        encode(sb, queryString);
+        return sb.toString();
     }
 
     /**

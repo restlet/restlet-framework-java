@@ -69,11 +69,11 @@ public class EntryContentReader extends EntryReader {
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
-    /** The media type of the Content (for inline cases). */
-    private MediaType contentType;
-
     /** Mark the Content depth. */
     private int contentDepth;
+
+    /** The media type of the Content (for inline cases). */
+    private MediaType contentType;
 
     /** The currently parsed Category. */
     private Category currentCategory;

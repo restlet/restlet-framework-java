@@ -60,6 +60,12 @@ import org.restlet.util.Series;
  */
 public class JettyServerCall extends ServerCall {
 
+    /** The wrapped Jetty HTTP channel. */
+    private final HttpChannel<?> channel;
+
+    /** Indicates if the request headers were parsed and added. */
+    private volatile boolean requestHeadersAdded;
+
     /**
      * Constructor.
      * 
@@ -113,6 +119,15 @@ public class JettyServerCall extends ServerCall {
         return null;
     }
 
+    /**
+     * Returns the wrapped Jetty HTTP channel.
+     * 
+     * @return The wrapped Jetty HTTP channel.
+     */
+    public HttpChannel<?> getChannel() {
+        return this.channel;
+    }
+
     @Override
     public String getCipherSuite() {
         final Object cipherSuite = getChannel().getRequest().getAttribute(
@@ -130,15 +145,6 @@ public class JettyServerCall extends ServerCall {
     @Override
     public int getClientPort() {
         return getChannel().getRequest().getRemotePort();
-    }
-
-    /**
-     * Returns the wrapped Jetty HTTP channel.
-     * 
-     * @return The wrapped Jetty HTTP channel.
-     */
-    public HttpChannel<?> getChannel() {
-        return this.channel;
     }
 
     /**
@@ -291,10 +297,4 @@ public class JettyServerCall extends ServerCall {
             super.sendResponse(response);
         }
     }
-
-    /** The wrapped Jetty HTTP channel. */
-    private final HttpChannel<?> channel;
-
-    /** Indicates if the request headers were parsed and added. */
-    private volatile boolean requestHeadersAdded;
 }

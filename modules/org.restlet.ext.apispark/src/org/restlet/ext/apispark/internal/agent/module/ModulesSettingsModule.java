@@ -7,7 +7,7 @@ import org.restlet.ext.apispark.internal.agent.resource.ModulesSettingsResource;
 
 /**
  * Get modules settings from connector service
- *
+ * 
  * @author Manuel Boillod
  */
 public class ModulesSettingsModule {
@@ -17,11 +17,11 @@ public class ModulesSettingsModule {
     private ModulesSettings modulesSettings;
 
     public ModulesSettingsModule(AgentConfig agentConfig) {
-        ModulesSettingsResource modulesSettingsResource = AgentUtils.getConfiguredClientResource(
-                agentConfig, null, ModulesSettingsResource.class, MODULE_PATH);
+        ModulesSettingsResource modulesSettingsResource = AgentUtils
+                .getClientResource(agentConfig, null,
+                        ModulesSettingsResource.class, MODULE_PATH);
         modulesSettings = modulesSettingsResource.getSettings();
     }
-
 
     public ModulesSettings getModulesSettings() {
         return modulesSettings;

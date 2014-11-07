@@ -5,7 +5,7 @@ import org.restlet.resource.Get;
 
 /**
  * Resource used for communicate with apispark connector cell.
- *
+ * 
  * @author Manuel Boillod
  */
 public interface ModulesSettingsResource {

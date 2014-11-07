@@ -39,12 +39,12 @@ package org.restlet.ext.apispark.internal.model;
  * @author Cyprien Quilici
  */
 public class Contact {
-    
-    /** The name of the contact */
-    private String name;
 
     /** The e-mail to use to join the contact of the Web API. */
     private String email;
+
+    /** The name of the contact */
+    private String name;
 
     /** The URL on which information about the Web API is. */
     private String url;
@@ -53,23 +53,23 @@ public class Contact {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getName() {
+        return name;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

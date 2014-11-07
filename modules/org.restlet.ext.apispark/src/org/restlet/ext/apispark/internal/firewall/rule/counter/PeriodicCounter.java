@@ -53,14 +53,14 @@ public class PeriodicCounter extends Counter {
     /** The counter value. */
     protected final AtomicInteger counter;
 
+    /** Next counter reset time */
+    private final AtomicLong counterReset;
+
     /** The period associated to the Counter. */
     private final long period;
 
     /** Calculates periods duration and resets them. */
     private final Stopwatch stopwatch;
-
-    /** Next counter reset time */
-    private final AtomicLong counterReset;
 
     /**
      * Constructor.
@@ -88,7 +88,8 @@ public class PeriodicCounter extends Counter {
         synchronized (stopwatch) {
             elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
             if (elapsed > period) {
-                Context.getCurrentLogger().log(Level.FINE, "Period reinitialized.");
+                Context.getCurrentLogger().log(Level.FINE,
+                        "Period reinitialized.");
                 stopwatch.reset();
                 stopwatch.start();
                 counter.getAndSet(0);

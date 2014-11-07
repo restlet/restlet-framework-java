@@ -33,8 +33,6 @@
 
 package org.restlet.ext.apispark.internal.reflect;
 
-import org.restlet.Application;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -51,37 +49,6 @@ import java.util.logging.Logger;
  * @author Thierry Boileau
  */
 public class ReflectUtils {
-
-    /**
-     * Returns a new instance of classname and check that it's assignable from expected class
-     * @param className
-     *          The class Name
-     * @param instanceClazz
-     *          The expected class
-     * @param <T>
-     *          The expected class
-     */
-    public static <T> T newInstance(String className, Class<? extends T> instanceClazz) {
-        if (className == null) {
-            return null;
-        }
-
-        try {
-            Class<?> clazz = Class.forName(className);
-            if (instanceClazz.isAssignableFrom(clazz)) {
-                return (T) clazz.getConstructor().newInstance();
-            } else {
-                throw new RuntimeException(className
-                        + " does not seem to be a valid subclass of "
-                        + instanceClazz.getName() + " class.");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot locate the class " + className + " in the classpath.", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot instantiate the class. " +
-                    "Check that the class has an empty constructor.", e);
-        }
-    }
 
     @SuppressWarnings("rawtypes")
     public static Field[] getAllDeclaredFields(Class type) {
@@ -137,8 +104,9 @@ public class ReflectUtils {
             Class<?> c = (Class<?>) type;
             if (c.isArray()) {
                 return c.getComponentType();
-            } else if (Collection.class.isAssignableFrom(c)){
-                //Simple class that extends Collection<E>. Should inspect superclass.
+            } else if (Collection.class.isAssignableFrom(c)) {
+                // Simple class that extends Collection<E>. Should inspect
+                // superclass.
                 return getSimpleClass(c.getGenericSuperclass());
             } else {
                 return c;
@@ -186,6 +154,41 @@ public class ReflectUtils {
      */
     public static boolean isListType(Class<?> type) {
         return Collection.class.isAssignableFrom(type) || type.isArray();
+    }
+
+    /**
+     * Returns a new instance of classname and check that it's assignable from
+     * expected class
+     * 
+     * @param className
+     *            The class Name
+     * @param instanceClazz
+     *            The expected class
+     * @param <T>
+     *            The expected class
+     */
+    public static <T> T newInstance(String className,
+            Class<? extends T> instanceClazz) {
+        if (className == null) {
+            return null;
+        }
+
+        try {
+            Class<?> clazz = Class.forName(className);
+            if (instanceClazz.isAssignableFrom(clazz)) {
+                return (T) clazz.getConstructor().newInstance();
+            } else {
+                throw new RuntimeException(className
+                        + " does not seem to be a valid subclass of "
+                        + instanceClazz.getName() + " class.");
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Cannot locate the class " + className
+                    + " in the classpath.", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot instantiate the class. "
+                    + "Check that the class has an empty constructor.", e);
+        }
     }
 
     /**

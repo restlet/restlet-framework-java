@@ -84,9 +84,6 @@ class ContentReader extends DefaultHandler {
     /** Current data type. */
     private String currentDataType;
 
-    /** Current language. */
-    private ScopedProperty<Language> language;
-
     /** Current object. */
     private Object currentObject;
 
@@ -95,6 +92,9 @@ class ContentReader extends DefaultHandler {
 
     /** The graph handler to call when a link is detected. */
     private GraphHandler graphHandler;
+
+    /** Current language. */
+    private ScopedProperty<Language> language;
 
     /** Used to get the content of XMl literal. */
     private int nodeDepth;

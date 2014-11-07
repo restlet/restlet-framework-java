@@ -35,6 +35,7 @@ package org.restlet.ext.oauth;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Form;
@@ -50,35 +51,13 @@ public class OAuthException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private OAuthError error;
-
-    private String description;
-
-    private String errorUri;
-
-    public OAuthException(OAuthError error, String description, String errorUri) {
-        super(error.name());
-        this.error = error;
-        this.description = description;
-        this.errorUri = errorUri;
-    }
-
-    private OAuthException(OAuthError error) {
-        super(error.name());
-        this.error = error;
-    }
-
-    public static OAuthException toOAuthException(Throwable t) {
-        if (t instanceof OAuthException) {
-            return (OAuthException) t;
-        } else if (t.getCause() instanceof OAuthException) {
-            return (OAuthException) t.getCause();
-        } else {
-            Logger.getLogger(OAuthException.class.getName()).log(Level.SEVERE,
-                    "Internal Server Error", t);
-            return new OAuthException(OAuthError.server_error, t.getMessage(),
-                    null);
-        }
+    public static OAuthException toOAuthException(Form params) {
+        OAuthError error = Enum.valueOf(OAuthError.class,
+                params.getFirstValue(OAuthResourceDefs.ERROR));
+        OAuthException ex = new OAuthException(error);
+        ex.description = params.getFirstValue(OAuthResourceDefs.ERROR_DESC);
+        ex.errorUri = params.getFirstValue(OAuthResourceDefs.ERROR_URI);
+        return ex;
     }
 
     public static OAuthException toOAuthException(JSONObject result)
@@ -95,25 +74,35 @@ public class OAuthException extends Exception {
         return ex;
     }
 
-    public static OAuthException toOAuthException(Form params) {
-        OAuthError error = Enum.valueOf(OAuthError.class,
-                params.getFirstValue(OAuthResourceDefs.ERROR));
-        OAuthException ex = new OAuthException(error);
-        ex.description = params.getFirstValue(OAuthResourceDefs.ERROR_DESC);
-        ex.errorUri = params.getFirstValue(OAuthResourceDefs.ERROR_URI);
-        return ex;
+    public static OAuthException toOAuthException(Throwable t) {
+        if (t instanceof OAuthException) {
+            return (OAuthException) t;
+        } else if (t.getCause() instanceof OAuthException) {
+            return (OAuthException) t.getCause();
+        } else {
+            Logger.getLogger(OAuthException.class.getName()).log(Level.SEVERE,
+                    "Internal Server Error", t);
+            return new OAuthException(OAuthError.server_error, t.getMessage(),
+                    null);
+        }
     }
 
-    public OAuthError getError() {
-        return error;
+    private String description;
+
+    private OAuthError error;
+
+    private String errorUri;
+
+    private OAuthException(OAuthError error) {
+        super(error.name());
+        this.error = error;
     }
 
-    public String getErrorDescription() {
-        return description;
-    }
-
-    public String getErrorURI() {
-        return errorUri;
+    public OAuthException(OAuthError error, String description, String errorUri) {
+        super(error.name());
+        this.error = error;
+        this.description = description;
+        this.errorUri = errorUri;
     }
 
     public JSONObject createErrorDocument() throws JSONException {
@@ -128,5 +117,17 @@ public class OAuthException extends Exception {
         }
 
         return result;
+    }
+
+    public OAuthError getError() {
+        return error;
+    }
+
+    public String getErrorDescription() {
+        return description;
+    }
+
+    public String getErrorURI() {
+        return errorUri;
     }
 }

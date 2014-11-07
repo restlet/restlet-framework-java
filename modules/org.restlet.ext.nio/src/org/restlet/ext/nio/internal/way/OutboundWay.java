@@ -160,6 +160,13 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
+     * Flush buffers onto the network.
+     */
+    public void flushBuffer() {
+
+    }
+
+    /**
      * Returns the entity as a NIO readable byte channel.
      * 
      * @return The entity as a NIO readable byte channel.
@@ -251,96 +258,6 @@ public abstract class OutboundWay extends Way {
     protected boolean hasIoInterest() {
         return (getMessageState() == MessageState.START)
                 || getBuffer().canDrain();
-    }
-
-    /**
-     * Callback invoked when a message has been sent. Note that only the start
-     * line and the headers must have been sent, not the optional body.
-     */
-    @Override
-    public void onHeadersCompleted() throws IOException {
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Outbound message start line and headers sent");
-        }
-
-        // Prepare entity writing if available
-        if (getActualMessage().isEntityAvailable()) {
-            // Callback connector service before sending entity
-            ConnectorService connectorService = ConnectorHelper
-                    .getConnectorService();
-
-            if (connectorService != null) {
-                connectorService.afterSend(getActualMessage().getEntity());
-            }
-
-            setMessageState(MessageState.BODY);
-            ReadableByteChannel rbc = getActualMessage().getEntity()
-                    .getChannel();
-
-            if (rbc instanceof FileChannel) {
-                setEntityChannelType(EntityType.TRANSFERABLE);
-            } else if (rbc instanceof BlockableChannel) {
-                BlockableChannel bc = (BlockableChannel) rbc;
-
-                if (bc.isBlocking()) {
-                    setEntityChannelType(EntityType.BLOCKING);
-                } else {
-                    setEntityChannelType(EntityType.NON_BLOCKING);
-                }
-            } else if (rbc instanceof SelectableChannel) {
-                SelectableChannel sc = (SelectableChannel) rbc;
-
-                if (sc.isBlocking()) {
-                    setEntityChannelType(EntityType.BLOCKING);
-                } else {
-                    setEntityChannelType(EntityType.NON_BLOCKING);
-                }
-            } else {
-                setEntityChannelType(EntityType.BLOCKING);
-            }
-
-            if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
-                setEntityChannel(new ReadableChunkingChannel(rbc, getBuffer()
-                        .capacity()));
-            } else {
-                setEntityChannel(new ReadableSizedChannel(rbc,
-                        getActualMessage().getEntity().getAvailableSize()));
-            }
-
-        } else {
-            setMessageState(MessageState.END);
-        }
-    }
-
-    @Override
-    public void onMessageCompleted(boolean endReached) throws IOException {
-        if (getActualMessage() != null) {
-            Representation messageEntity = getActualMessage().getEntity();
-
-            if (getEntityChannel() != null) {
-                getEntityChannel().close();
-            }
-
-            // Release entity
-            if (messageEntity != null) {
-                messageEntity.release();
-            }
-
-            // Callback connector service after sending entity
-            ConnectorService connectorService = ConnectorHelper
-                    .getConnectorService();
-
-            if (connectorService != null) {
-                connectorService.afterSend(messageEntity);
-            }
-        }
-
-        super.onMessageCompleted(endReached);
-        setHeaderIndex(0);
-
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Outbound message completed");
-        }
     }
 
     @Override
@@ -440,6 +357,96 @@ public abstract class OutboundWay extends Way {
      * Called back when a fill operation returns with an EOF status.
      */
     public void onFillEof() {
+    }
+
+    /**
+     * Callback invoked when a message has been sent. Note that only the start
+     * line and the headers must have been sent, not the optional body.
+     */
+    @Override
+    public void onHeadersCompleted() throws IOException {
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Outbound message start line and headers sent");
+        }
+
+        // Prepare entity writing if available
+        if (getActualMessage().isEntityAvailable()) {
+            // Callback connector service before sending entity
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService();
+
+            if (connectorService != null) {
+                connectorService.afterSend(getActualMessage().getEntity());
+            }
+
+            setMessageState(MessageState.BODY);
+            ReadableByteChannel rbc = getActualMessage().getEntity()
+                    .getChannel();
+
+            if (rbc instanceof FileChannel) {
+                setEntityChannelType(EntityType.TRANSFERABLE);
+            } else if (rbc instanceof BlockableChannel) {
+                BlockableChannel bc = (BlockableChannel) rbc;
+
+                if (bc.isBlocking()) {
+                    setEntityChannelType(EntityType.BLOCKING);
+                } else {
+                    setEntityChannelType(EntityType.NON_BLOCKING);
+                }
+            } else if (rbc instanceof SelectableChannel) {
+                SelectableChannel sc = (SelectableChannel) rbc;
+
+                if (sc.isBlocking()) {
+                    setEntityChannelType(EntityType.BLOCKING);
+                } else {
+                    setEntityChannelType(EntityType.NON_BLOCKING);
+                }
+            } else {
+                setEntityChannelType(EntityType.BLOCKING);
+            }
+
+            if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
+                setEntityChannel(new ReadableChunkingChannel(rbc, getBuffer()
+                        .capacity()));
+            } else {
+                setEntityChannel(new ReadableSizedChannel(rbc,
+                        getActualMessage().getEntity().getAvailableSize()));
+            }
+
+        } else {
+            setMessageState(MessageState.END);
+        }
+    }
+
+    @Override
+    public void onMessageCompleted(boolean endReached) throws IOException {
+        if (getActualMessage() != null) {
+            Representation messageEntity = getActualMessage().getEntity();
+
+            if (getEntityChannel() != null) {
+                getEntityChannel().close();
+            }
+
+            // Release entity
+            if (messageEntity != null) {
+                messageEntity.release();
+            }
+
+            // Callback connector service after sending entity
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService();
+
+            if (connectorService != null) {
+                connectorService.afterSend(messageEntity);
+            }
+        }
+
+        super.onMessageCompleted(endReached);
+        setHeaderIndex(0);
+
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Outbound message completed");
+        }
     }
 
     @Override
@@ -596,12 +603,5 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected abstract void writeStartLine() throws IOException;
-
-    /**
-     * Flush buffers onto the network.
-     */
-    public void flushBuffer() {
-
-    }
 
 }

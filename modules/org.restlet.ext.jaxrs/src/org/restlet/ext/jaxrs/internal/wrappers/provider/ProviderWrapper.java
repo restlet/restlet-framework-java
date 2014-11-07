@@ -69,13 +69,6 @@ public interface ProviderWrapper {
     List<MediaType> getConsumedMimes();
 
     /**
-     * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
-     * @throws ProviderNotInitializableException
-     */
-    abstract ContextResolver getInitializedCtxResolver()
-            throws ProviderNotInitializableException;
-
-    /**
      * Beispiele:
      * <ul>
      * <li>ExceptionMapper&lt;IllegalArgumentException&gt; -&gt;
@@ -86,6 +79,13 @@ public interface ProviderWrapper {
      * @return the type the wrapped exception mapper could map.
      */
     Class<?> getExcMapperType();
+
+    /**
+     * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
+     * @throws ProviderNotInitializableException
+     */
+    abstract ContextResolver getInitializedCtxResolver()
+            throws ProviderNotInitializableException;
 
     /**
      * @return the initialized exception mapper

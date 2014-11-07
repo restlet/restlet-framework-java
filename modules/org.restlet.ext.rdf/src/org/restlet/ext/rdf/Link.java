@@ -50,15 +50,6 @@ import org.restlet.data.Reference;
  */
 public class Link {
 
-    /** The source object. */
-    private volatile Object source;
-
-    /** The type URI reference. */
-    private volatile Reference typeRef;
-
-    /** The target object. */
-    private volatile Object target;
-
     /**
      * Creates a reference to a blank node. In this API, we support RDF blank
      * nodes using the "_" namespace and local identifiers, in a way similar to
@@ -83,6 +74,15 @@ public class Link {
     public static boolean isBlankRef(Reference reference) {
         return ((reference != null) && ("_".equals(reference.getScheme())));
     }
+
+    /** The source object. */
+    private volatile Object source;
+
+    /** The target object. */
+    private volatile Object target;
+
+    /** The type URI reference. */
+    private volatile Reference typeRef;
 
     /**
      * Constructor. Leverages n3 reification feature where a graph itself can be

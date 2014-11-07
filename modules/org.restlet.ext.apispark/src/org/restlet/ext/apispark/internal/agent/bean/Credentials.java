@@ -35,9 +35,9 @@ package org.restlet.ext.apispark.internal.agent.bean;
 
 public class Credentials {
 
-    private String username;
-
     private char[] password;
+
+    private String username;
 
     public Credentials() {
     }
@@ -47,20 +47,20 @@ public class Credentials {
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public char[] getPassword() {
         return password;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void setPassword(char[] password) {
         this.password = password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }

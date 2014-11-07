@@ -42,19 +42,19 @@ import org.restlet.data.Reference;
  */
 public class EncodeOrCheck {
 
-    /** A table of hex digits */
-    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
-            '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
     /**
-     * the unreserved characters in URIs
+     * the characters forbidden in a fragment.
      */
-    public static final String UNRESERVED = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-._~";
+    public static final String FRAGMENT_FORBIDDEN;
 
     /**
      * the gen-delimiter characters in URIs
      */
     public static final String GEN_DELIMITERS = ":/?#[]@";
+
+    /** A table of hex digits */
+    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     /**
      * the sub-delimiter characters in URIs
@@ -72,9 +72,9 @@ public class EncodeOrCheck {
     public static final String RESERVED = GEN_DELIMITERS + SUB_DELIMITERS;
 
     /**
-     * the characters forbidden in a fragment.
+     * the unreserved characters in URIs
      */
-    public static final String FRAGMENT_FORBIDDEN;
+    public static final String UNRESERVED = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-._~";
     static {
         final StringBuilder stb = new StringBuilder();
         for (char c = 0; c < 256; c++) {

@@ -266,23 +266,25 @@ public class ParameterList {
                                     "Target object has no String constructor, valueOf or fromString method."));
         }
 
-        private void handleExceptionOnInvocation(String value, Exception e)
+        protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
-            final Throwable cause = e.getCause();
-            if (e instanceof WebApplicationException
-                    || cause instanceof WebApplicationException) {
-                throw (WebApplicationException) cause;
-
-                // swallow the typical invocation exceptions, convert real
-                // exceptions to ConvertParameterException
-            } else if (!(e instanceof NoSuchMethodException)
-                    && !(e instanceof IllegalAccessException)
-                    && !(e instanceof InvocationTargetException)
-                    && !(e instanceof InstantiationException)
-                    && !(e instanceof NoSuchMethodException)) {
-                throw ConvertParameterException
-                        .object(this.convertTo, value, e);
+            final Collection<Object> coll = createColl();
+            while (paramValueIter.hasNext()) {
+                final String queryParamValue = paramValueIter.next();
+                final Object convertedValue = convertParamValue(
+                        queryParamValue, null);
+                if (convertedValue != null) {
+                    coll.add(convertedValue);
+                }
             }
+            if (coll.isEmpty()) {
+                coll.add(convertParamValue(null));
+            }
+            if (this.isArray) {
+                return Util.toArray(coll, this.convertTo);
+            }
+
+            return unmodifiable(coll);
         }
 
         private Object convertWithConverterUtils(String paramValue) {
@@ -311,27 +313,6 @@ public class ParameterList {
             return result;
         }
 
-        protected Object convertParamValues(Iterator<String> paramValueIter)
-                throws ConvertParameterException {
-            final Collection<Object> coll = createColl();
-            while (paramValueIter.hasNext()) {
-                final String queryParamValue = paramValueIter.next();
-                final Object convertedValue = convertParamValue(
-                        queryParamValue, null);
-                if (convertedValue != null) {
-                    coll.add(convertedValue);
-                }
-            }
-            if (coll.isEmpty()) {
-                coll.add(convertParamValue(null));
-            }
-            if (this.isArray) {
-                return Util.toArray(coll, this.convertTo);
-            }
-
-            return unmodifiable(coll);
-        }
-
         /**
          * @return an new created instance of {@link #collType}. Returns null,
          *         if collType is null.
@@ -348,16 +329,6 @@ public class ParameterList {
                         "Could not instantiate the collection type "
                                 + this.collType, e);
             }
-        }
-
-        protected <A> Collection<A> unmodifiable(Collection<A> coll) {
-            if (coll instanceof List<?>)
-                return Collections.unmodifiableList((List<A>) coll);
-            if (coll instanceof SortedSet<?>)
-                return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
-            if (coll instanceof Set<?>)
-                return Collections.unmodifiableSet((Set<A>) coll);
-            return Collections.unmodifiableCollection(coll);
         }
 
         protected abstract boolean decoding();
@@ -449,6 +420,35 @@ public class ParameterList {
 
         public Object getValue() {
             return getParamValue();
+        }
+
+        private void handleExceptionOnInvocation(String value, Exception e)
+                throws ConvertParameterException {
+            final Throwable cause = e.getCause();
+            if (e instanceof WebApplicationException
+                    || cause instanceof WebApplicationException) {
+                throw (WebApplicationException) cause;
+
+                // swallow the typical invocation exceptions, convert real
+                // exceptions to ConvertParameterException
+            } else if (!(e instanceof NoSuchMethodException)
+                    && !(e instanceof IllegalAccessException)
+                    && !(e instanceof InvocationTargetException)
+                    && !(e instanceof InstantiationException)
+                    && !(e instanceof NoSuchMethodException)) {
+                throw ConvertParameterException
+                        .object(this.convertTo, value, e);
+            }
+        }
+
+        protected <A> Collection<A> unmodifiable(Collection<A> coll) {
+            if (coll instanceof List<?>)
+                return Collections.unmodifiableList((List<A>) coll);
+            if (coll instanceof SortedSet<?>)
+                return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
+            if (coll instanceof Set<?>)
+                return Collections.unmodifiableSet((Set<A>) coll);
+            return Collections.unmodifiableCollection(coll);
         }
     }
 
@@ -579,9 +579,9 @@ public class ParameterList {
 
     static class FormParamGetter extends FormOrQueryParamGetter {
 
-        private final FormParam formParam;
-
         private static Form form;
+
+        private final FormParam formParam;
 
         FormParamGetter(FormParam formParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,

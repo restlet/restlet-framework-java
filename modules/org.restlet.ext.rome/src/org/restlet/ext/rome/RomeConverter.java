@@ -85,6 +85,15 @@ public class RomeConverter extends ConverterHelper {
     }
 
     @Override
+    public float score(Object source, Variant target, Resource resource) {
+        if (source instanceof SyndFeed) {
+            return 1.0f;
+        }
+
+        return -1.0f;
+    }
+
+    @Override
     public <T> float score(Representation source, Class<T> target,
             Resource resource) {
         float result = -1.0F;
@@ -94,15 +103,6 @@ public class RomeConverter extends ConverterHelper {
         }
 
         return result;
-    }
-
-    @Override
-    public float score(Object source, Variant target, Resource resource) {
-        if (source instanceof SyndFeed) {
-            return 1.0f;
-        }
-
-        return -1.0f;
     }
 
     @Override

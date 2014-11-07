@@ -15,28 +15,16 @@ import org.restlet.ext.apispark.internal.model.Section;
  */
 public class CollectInfo {
 
+    private Map<String, Representation> representations = new HashMap<String, Representation>();
+
     private List<Resource> resources = new ArrayList<Resource>();
 
     private List<ChallengeScheme> schemes = new ArrayList<ChallengeScheme>();
 
-    private Map<String, Representation> representations = new HashMap<String, Representation>();
-
     private Map<String, Section> sections = new HashMap<String, Section>();
 
-    public List<Resource> getResources() {
-        return new ArrayList<Resource>(resources);
-    }
-
-    public List<ChallengeScheme> getSchemes() {
-        return new ArrayList<ChallengeScheme>(schemes);
-    }
-
-    public List<Representation> getRepresentations() {
-        return new ArrayList<Representation>(representations.values());
-    }
-
-    public List<Section> getSections() {
-        return new ArrayList<Section>(sections.values());
+    public void addRepresentation(Representation representation) {
+        representations.put(representation.getIdentifier(), representation);
     }
 
     public void addResource(Resource resource) {
@@ -58,20 +46,32 @@ public class CollectInfo {
         }
     }
 
+    public void addSection(Section section) {
+        sections.put(section.getName(), section);
+    }
+
     public Representation getRepresentation(String identifier) {
         return representations.get(identifier);
     }
 
-    public void addRepresentation(Representation representation) {
-        representations.put(representation.getIdentifier(), representation);
+    public List<Representation> getRepresentations() {
+        return new ArrayList<Representation>(representations.values());
+    }
+
+    public List<Resource> getResources() {
+        return new ArrayList<Resource>(resources);
+    }
+
+    public List<ChallengeScheme> getSchemes() {
+        return new ArrayList<ChallengeScheme>(schemes);
     }
 
     public Section getSection(String identifier) {
         return sections.get(identifier);
     }
 
-    public void addSection(Section section) {
-        sections.put(section.getName(), section);
+    public List<Section> getSections() {
+        return new ArrayList<Section>(sections.values());
     }
 
     public void setSections(Map<String, Section> sections) {

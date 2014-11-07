@@ -109,35 +109,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private final Collection<SubResourceLocator> subResourceLocators = new ArrayList<SubResourceLocator>();
 
     /**
-     * Creates a new root resource class wrapper. Will not set the path, because
-     * it is not available for a normal resource class.
-     * 
-     * @param jaxRsClass
-     * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param jaxRsProviders
-     *            all entity providers
-     * @param extensionBackwardMapping
-     *            the extension backward mapping
-     * @param logger
-     *            The logger to log warnings, if the class is not valid.
-     * @throws MissingAnnotationException
-     * @throws IllegalArgumentException
-     * @see ResourceClasses#getResourceClass(Class)
-     */
-    ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
-            throws IllegalArgumentException, MissingAnnotationException {
-        super();
-        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
-        this.jaxRsClass = jaxRsClass;
-        initResourceMethodsAndLocators(tlContext, jaxRsProviders,
-                extensionBackwardMapping, logger);
-    }
-
-    /**
      * Creates a new root resource class wrapper. To be used by subclass
      * {@link RootResourceClass}.
      * 
@@ -165,6 +136,35 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
         this.initResourceMethodsAndLocators(tlContext, jaxRsProviders,
+                extensionBackwardMapping, logger);
+    }
+
+    /**
+     * Creates a new root resource class wrapper. Will not set the path, because
+     * it is not available for a normal resource class.
+     * 
+     * @param jaxRsClass
+     * @param tlContext
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     * @param jaxRsProviders
+     *            all entity providers
+     * @param extensionBackwardMapping
+     *            the extension backward mapping
+     * @param logger
+     *            The logger to log warnings, if the class is not valid.
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
+     * @see ResourceClasses#getResourceClass(Class)
+     */
+    ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
+            JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            throws IllegalArgumentException, MissingAnnotationException {
+        super();
+        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
+        this.jaxRsClass = jaxRsClass;
+        initResourceMethodsAndLocators(tlContext, jaxRsProviders,
                 extensionBackwardMapping, logger);
     }
 

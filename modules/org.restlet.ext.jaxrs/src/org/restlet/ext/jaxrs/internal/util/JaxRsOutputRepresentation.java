@@ -60,15 +60,15 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
     private static final Logger LOGGER = Context.getCurrentLogger();
 
-    private final MessageBodyWriter mbw;
-
-    private final T object;
+    private final Annotation[] annotations;
 
     private final Type genericType;
 
-    private final Annotation[] annotations;
-
     private final MultivaluedMap<String, Object> httpHeaders;
+
+    private final MessageBodyWriter mbw;
+
+    private final T object;
 
     /**
      * Creates a new JaxRsOutputRepresentation.

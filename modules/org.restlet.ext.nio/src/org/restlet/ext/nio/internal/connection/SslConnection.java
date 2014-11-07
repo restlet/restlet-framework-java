@@ -69,6 +69,9 @@ import org.restlet.ext.nio.internal.state.IoState;
  */
 public class SslConnection<T extends Connector> extends Connection<T> {
 
+    /** Whether a handshake is in progress. */
+    private volatile boolean isHandshaking;
+
     /** The peer address. */
     private volatile InetSocketAddress peerAddress;
 
@@ -77,9 +80,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** The engine result. */
     private volatile SSLEngineResult sslEngineResult;
-
-    /** Whether a handshake is in progress. */
-    private volatile boolean isHandshaking;
 
     /**
      * Constructor.

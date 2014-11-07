@@ -113,27 +113,6 @@ public class Service extends SaxRepresentation {
     /**
      * Constructor.
      * 
-     * @param clientDispatcher
-     *            The client HTTP dispatcher.
-     * @param serviceUri
-     *            The service URI.
-     * @param xmlService
-     *            The XML introspection document.
-     * @throws IOException
-     */
-    public Service(Restlet clientDispatcher, String serviceUri,
-            Representation xmlService) throws IOException {
-        super(xmlService);
-        setNamespaceAware(true);
-        this.clientDispatcher = clientDispatcher;
-        this.reference = (serviceUri == null) ? null
-                : new Reference(serviceUri);
-        parse(new ServiceContentReader(this));
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param context
      *            The context from which the client dispatcher will be
      *            retrieved.
@@ -156,6 +135,27 @@ public class Service extends SaxRepresentation {
      */
     public Service(Representation xmlService) throws IOException {
         this(null, null, xmlService);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *            The client HTTP dispatcher.
+     * @param serviceUri
+     *            The service URI.
+     * @param xmlService
+     *            The XML introspection document.
+     * @throws IOException
+     */
+    public Service(Restlet clientDispatcher, String serviceUri,
+            Representation xmlService) throws IOException {
+        super(xmlService);
+        setNamespaceAware(true);
+        this.clientDispatcher = clientDispatcher;
+        this.reference = (serviceUri == null) ? null
+                : new Reference(serviceUri);
+        parse(new ServiceContentReader(this));
     }
 
     /**

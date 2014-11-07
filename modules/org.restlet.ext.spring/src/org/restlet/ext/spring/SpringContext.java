@@ -61,8 +61,8 @@ import org.springframework.context.support.GenericApplicationContext;
  * @author Jerome Louvel</a>
  */
 public class SpringContext extends GenericApplicationContext {
-    /** The parent Restlet context. */
-    private volatile Context restletContext;
+    /** Indicates if the context has been already loaded. */
+    private volatile boolean loaded;
 
     /**
      * The modifiable list of configuration URIs for beans definitions via
@@ -70,14 +70,14 @@ public class SpringContext extends GenericApplicationContext {
      */
     private volatile List<String> propertyConfigRefs;
 
+    /** The parent Restlet context. */
+    private volatile Context restletContext;
+
     /**
      * The modifiable list of configuration URIs for beans definitions via XML
      * representations.
      */
     private volatile List<String> xmlConfigRefs;
-
-    /** Indicates if the context has been already loaded. */
-    private volatile boolean loaded;
 
     /**
      * Constructor.

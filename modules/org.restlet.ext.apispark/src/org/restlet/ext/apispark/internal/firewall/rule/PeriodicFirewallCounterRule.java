@@ -64,11 +64,13 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
      *            Period associated to the {@link PeriodicFirewallCounterRule}.
      *            Each created {@link PeriodicCounter} will have this one.
      * @param periodUnit
-     *            Period time unit associated to the {@link FirewallCounterRule}.
+     *            Period time unit associated to the {@link FirewallCounterRule}
+     *            .
      * @param countingPolicy
      *            The associated counting policy.
      */
-    public PeriodicFirewallCounterRule(int period, TimeUnit periodUnit,  CountingPolicy countingPolicy) {
+    public PeriodicFirewallCounterRule(int period, TimeUnit periodUnit,
+            CountingPolicy countingPolicy) {
         super(countingPolicy);
         this.period = periodUnit.toSeconds(period);
         initializeCache();
@@ -95,12 +97,12 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
         };
 
         // do not set cache expiration below 1 minute
-        long cacheExpiration = 2 * period < TimeUnit.MINUTES.toSeconds(1) ?
-                TimeUnit.MINUTES.toSeconds(1) :
-                2 * period;
+        long cacheExpiration = 2 * period < TimeUnit.MINUTES.toSeconds(1) ? TimeUnit.MINUTES
+                .toSeconds(1) : 2 * period;
 
         cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(cacheExpiration, TimeUnit.SECONDS).build(loader);
+                .expireAfterAccess(cacheExpiration, TimeUnit.SECONDS)
+                .build(loader);
     }
 
 }

@@ -46,6 +46,42 @@ import org.restlet.representation.Representation;
 public class FacebookAccessTokenClientResource extends
         AccessTokenClientResource {
 
+    private static class FacebookTokenResponse implements Token {
+
+        public static FacebookTokenResponse parseResponse(Form result) {
+            FacebookTokenResponse token = new FacebookTokenResponse();
+            token.accessToken = result.getFirstValue(ACCESS_TOKEN);
+            token.expirePeriod = Integer.parseInt(result
+                    .getFirstValue("expires"));
+            return token;
+        }
+
+        private String accessToken;
+
+        private Integer expirePeriod;
+
+        public String getAccessToken() {
+            return accessToken;
+        }
+
+        public int getExpirePeriod() {
+            return expirePeriod;
+        }
+
+        public String getRefreshToken() {
+            return null;
+        }
+
+        public String[] getScope() {
+            return null;
+        }
+
+        public String getTokenType() {
+            return TOKEN_TYPE_BEARER;
+        }
+
+    }
+
     public FacebookAccessTokenClientResource(Reference tokenURI) {
         super(tokenURI);
     }
@@ -65,41 +101,5 @@ public class FacebookAccessTokenClientResource extends
         }
 
         return FacebookTokenResponse.parseResponse(result);
-    }
-
-    private static class FacebookTokenResponse implements Token {
-
-        private String accessToken;
-
-        private Integer expirePeriod;
-
-        public static FacebookTokenResponse parseResponse(Form result) {
-            FacebookTokenResponse token = new FacebookTokenResponse();
-            token.accessToken = result.getFirstValue(ACCESS_TOKEN);
-            token.expirePeriod = Integer.parseInt(result
-                    .getFirstValue("expires"));
-            return token;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public String getTokenType() {
-            return TOKEN_TYPE_BEARER;
-        }
-
-        public int getExpirePeriod() {
-            return expirePeriod;
-        }
-
-        public String getRefreshToken() {
-            return null;
-        }
-
-        public String[] getScope() {
-            return null;
-        }
-
     }
 }

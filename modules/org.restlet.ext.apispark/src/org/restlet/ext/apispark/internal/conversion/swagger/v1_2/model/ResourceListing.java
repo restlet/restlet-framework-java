@@ -1,10 +1,10 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class ResourceListing {
@@ -21,13 +21,6 @@ public class ResourceListing {
 
     private String swaggerVersion;
 
-    public List<ResourceListingApi> getApis() {
-        if (apis == null) {
-            apis = new ArrayList<ResourceListingApi>();
-        }
-        return apis;
-    }
-
     public ResourceListingApi getApi(String path) {
         for (ResourceListingApi api : apis) {
             if (path.equals(api.getPath())) {
@@ -35,6 +28,13 @@ public class ResourceListing {
             }
         }
         return null;
+    }
+
+    public List<ResourceListingApi> getApis() {
+        if (apis == null) {
+            apis = new ArrayList<ResourceListingApi>();
+        }
+        return apis;
     }
 
     public String getApiVersion() {

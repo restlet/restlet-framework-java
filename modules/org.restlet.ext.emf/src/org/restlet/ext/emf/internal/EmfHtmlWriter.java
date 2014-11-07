@@ -47,7 +47,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  * properties and can even generate HTML links when the proper EMF eAnnotation
  * is detected.
  * 
- * This is useful to be able to automatically navigate a web API whose resource
+ * This is useful to be able to automatically navigate a Web API whose resource
  * representations are defined using EMF.
  * 
  * @author Jerome Louvel
@@ -59,21 +59,21 @@ public class EmfHtmlWriter {
     private final EObject object;
 
     /**
-     * Returns the EMF object to write.
-     * 
-     * @return The EMF object to write.
-     */
-    public EObject getObject() {
-        return object;
-    }
-
-    /**
      * Constructor.
      * 
      * @param object
      */
     public EmfHtmlWriter(EObject object) {
         this.object = object;
+    }
+
+    /**
+     * Returns the EMF object to write.
+     * 
+     * @return The EMF object to write.
+     */
+    public EObject getObject() {
+        return object;
     }
 
     /**

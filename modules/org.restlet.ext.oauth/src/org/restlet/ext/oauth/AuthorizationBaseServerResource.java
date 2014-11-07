@@ -91,30 +91,6 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
     }
 
     /**
-     * Sets up a new authorization session.
-     * 
-     * @param redirectUri
-     *            The redirection URI.
-     */
-    protected AuthSession setupAuthSession(RedirectionURI redirectUri) {
-        getLogger().fine("Base ref = " + getReference().getParentRef());
-
-        AuthSession session = AuthSession.newAuthSession();
-        session.setRedirectionURI(redirectUri);
-
-        CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
-        // TODO create a secure mode setting, update all cookies
-        // cs.setAccessRestricted(true);
-        // cs.setSecure(true);
-        getCookieSettings().add(cs);
-        getLogger().fine("Setting cookie in SetupSession - " + session.getId());
-
-        getContext().getAttributes().put(session.getId(), session);
-
-        return session;
-    }
-
-    /**
      * Returns the current authorization session.
      * 
      * @return The current {@link AuthSession} instance.
@@ -144,16 +120,32 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
     }
 
     /**
-     * Unget current authorization session.
+     * Helper method to format error responses according to OAuth2 spec. (Non
+     * Redirect)
+     * 
+     * @param errPage
+     *            errorPage template name
+     * @param ex
+     *            Any OAuthException with error
      */
-    protected void ungetAuthSession() {
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
-        // cleanup cookie.
-        if (sessionId != null && sessionId.length() > 0) {
-            ConcurrentMap<String, Object> attribs = getContext()
-                    .getAttributes();
-            attribs.remove(sessionId);
-        }
+    protected Representation getErrorPage(String errPage, OAuthException ex) {
+        Configuration config = new Configuration();
+        config.setTemplateLoader(new ContextTemplateLoader(getContext(),
+                "clap:///"));
+        getLogger().fine("loading: " + errPage);
+        TemplateRepresentation response = new TemplateRepresentation(errPage,
+                config, MediaType.TEXT_HTML);
+
+        // Build the model
+        HashMap<String, Object> data = new HashMap<String, Object>();
+
+        data.put(ERROR, ex.getError().name());
+        data.put(ERROR_DESC, ex.getErrorDescription());
+        data.put(ERROR_URI, ex.getErrorURI());
+
+        response.setDataModel(data);
+
+        return response;
     }
 
     /**
@@ -192,31 +184,39 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
     }
 
     /**
-     * Helper method to format error responses according to OAuth2 spec. (Non
-     * Redirect)
+     * Sets up a new authorization session.
      * 
-     * @param errPage
-     *            errorPage template name
-     * @param ex
-     *            Any OAuthException with error
+     * @param redirectUri
+     *            The redirection URI.
      */
-    protected Representation getErrorPage(String errPage, OAuthException ex) {
-        Configuration config = new Configuration();
-        config.setTemplateLoader(new ContextTemplateLoader(getContext(),
-                "clap:///"));
-        getLogger().fine("loading: " + errPage);
-        TemplateRepresentation response = new TemplateRepresentation(errPage,
-                config, MediaType.TEXT_HTML);
+    protected AuthSession setupAuthSession(RedirectionURI redirectUri) {
+        getLogger().fine("Base ref = " + getReference().getParentRef());
 
-        // Build the model
-        HashMap<String, Object> data = new HashMap<String, Object>();
+        AuthSession session = AuthSession.newAuthSession();
+        session.setRedirectionURI(redirectUri);
 
-        data.put(ERROR, ex.getError().name());
-        data.put(ERROR_DESC, ex.getErrorDescription());
-        data.put(ERROR_URI, ex.getErrorURI());
+        CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
+        // TODO create a secure mode setting, update all cookies
+        // cs.setAccessRestricted(true);
+        // cs.setSecure(true);
+        getCookieSettings().add(cs);
+        getLogger().fine("Setting cookie in SetupSession - " + session.getId());
 
-        response.setDataModel(data);
+        getContext().getAttributes().put(session.getId(), session);
 
-        return response;
+        return session;
+    }
+
+    /**
+     * Unget current authorization session.
+     */
+    protected void ungetAuthSession() {
+        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        // cleanup cookie.
+        if (sessionId != null && sessionId.length() > 0) {
+            ConcurrentMap<String, Object> attribs = getContext()
+                    .getAttributes();
+            attribs.remove(sessionId);
+        }
     }
 }

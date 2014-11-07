@@ -100,6 +100,29 @@ public class ParameterInfo extends DocumentedInfo {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param required
+     *            True if thes parameter is required.
+     * @param type
+     *            The type of the parameter.
+     * @param style
+     *            The style of the parameter.
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ParameterInfo(String name, boolean required, String type,
+            ParameterStyle style, String documentation) {
+        super(documentation);
+        this.name = name;
+        this.required = required;
+        this.style = style;
+        this.type = type;
+    }
+
+    /**
      * Constructor with a single documentation element.
      * 
      * @param name
@@ -147,29 +170,6 @@ public class ParameterInfo extends DocumentedInfo {
         super(documentation);
         this.name = name;
         this.style = style;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The name of the parameter.
-     * @param required
-     *            True if thes parameter is required.
-     * @param type
-     *            The type of the parameter.
-     * @param style
-     *            The style of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ParameterInfo(String name, boolean required, String type,
-            ParameterStyle style, String documentation) {
-        super(documentation);
-        this.name = name;
-        this.required = required;
-        this.style = style;
-        this.type = type;
     }
 
     /**

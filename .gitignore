@@ -71,6 +71,8 @@
 /modules/org.restlet.test/bin
 /modules/org.restlet.test/velocity.log
 /modules/org.restlet.test/velocity.log.1
+/modules/org.restlet.ext.apispark-swagger-annotations-1_2/bin/
+/modules/org.restlet.ext.apispark-swagger-annotations-2_0/bin/
 /build/velocity.log
 /build/build.number
 .DS_Store

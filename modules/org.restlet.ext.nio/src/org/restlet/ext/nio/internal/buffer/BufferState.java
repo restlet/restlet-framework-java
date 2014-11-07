@@ -41,15 +41,15 @@ package org.restlet.ext.nio.internal.buffer;
  */
 public enum BufferState {
 
-    /** Buffer or builder idle. */
-    IDLE,
-
-    /** Filling the buffer or builder. */
-    FILLING,
+    /** Buffer or builder ready for reading or draining. */
+    DRAINING,
 
     /** End of filling detected but not yet ready for draining. */
     FILLED,
 
-    /** Buffer or builder ready for reading or draining. */
-    DRAINING;
+    /** Filling the buffer or builder. */
+    FILLING,
+
+    /** Buffer or builder idle. */
+    IDLE;
 }

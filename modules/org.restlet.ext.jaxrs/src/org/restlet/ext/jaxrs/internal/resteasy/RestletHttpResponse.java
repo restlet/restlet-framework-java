@@ -50,12 +50,6 @@ import org.restlet.data.CookieSetting;
  */
 public class RestletHttpResponse implements HttpResponse {
 
-    private final Response response;
-
-    public RestletHttpResponse(Response response) {
-        this.response = response;
-    }
-
     /**
      * Converts the Restlet {@link CookieSetting} to a JAX-RS {@link NewCookie}.
      * 
@@ -91,6 +85,12 @@ public class RestletHttpResponse implements HttpResponse {
                 newCookie.getValue(), newCookie.getPath(),
                 newCookie.getDomain(), newCookie.getComment(),
                 newCookie.getMaxAge(), newCookie.isSecure());
+    }
+
+    private final Response response;
+
+    public RestletHttpResponse(Response response) {
+        this.response = response;
     }
 
     @Override
