@@ -1,4 +1,4 @@
-<library id="swagger.core.1_5" symbolicName="com.wordnik.swagger.core">
+<library id="swagger.core_1.5" symbolicName="com.wordnik.swagger.core">
 	<name>Swagger</name>
 	<description>Swagger document your API with style. Swagger spec compatibility: 2.0</description>
 	<version>1.5</version>

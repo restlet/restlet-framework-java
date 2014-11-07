@@ -210,7 +210,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         Swagger swagger = Swagger2Translator.getSwagger(definition);
 
         // Then
-        assertEquals(Float.valueOf(2.0f), swagger.getSwagger());
+        assertEquals("2.0", swagger.getSwagger());
 
         Info infoSwagger = swagger.getInfo();
         assertEquals("version", infoSwagger.getVersion());
@@ -288,7 +288,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         assertTrue(op1Response2.getSchema() instanceof RefProperty);
         RefProperty op1Response2RefProperty = (RefProperty) op1Response2
                 .getSchema();
-        assertEquals("Entity2", op1Response2RefProperty.get$ref());
+        assertEquals("#/definitions/Entity2", op1Response2RefProperty.get$ref());
         // response 3
         com.wordnik.swagger.models.Response op1Response3 = path1Get
                 .getResponses().get("400");
@@ -332,7 +332,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         assertEquals("com.restlet.nameRepresentation1Property3",
                 model1Property3.getName());
         assertEquals("description", model1Property3.getDescription());
-        assertEquals("Entity", model1Property3.get$ref());
+        assertEquals("#/definitions/Entity", model1Property3.get$ref());
 
         // representation 2
         ModelImpl model2 = (ModelImpl) swagger.getDefinitions().get(

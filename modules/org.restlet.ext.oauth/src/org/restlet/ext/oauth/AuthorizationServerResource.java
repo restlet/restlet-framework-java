@@ -33,10 +33,10 @@
 
 package org.restlet.ext.oauth;
 
+import org.restlet.ext.oauth.internal.Client;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.AuthSession;
-import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.RedirectionURI;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.ServerToken;

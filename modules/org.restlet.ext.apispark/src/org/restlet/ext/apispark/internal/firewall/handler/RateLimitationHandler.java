@@ -71,11 +71,7 @@ public class RateLimitationHandler extends BlockingHandler {
     @SuppressWarnings("unchecked")
     public int handle(Request request, Response response,
             CounterResult counterResult) {
-        Series<Header> headers = (Series<Header>) response.getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
-        if (headers == null) {
-            headers = new Series<Header>(Header.class);
-        }
+        Series<Header> headers = response.getHeaders();
         headers.set(
                 "X-RateLimit-Remaining",
                 Integer.toString(getLimit(request,

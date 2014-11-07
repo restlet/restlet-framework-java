@@ -55,12 +55,12 @@ import java.lang.annotation.Target;
  *    ...
  * }
  * 
- * &#064;Status(404)
+ * &#064;Status(404, serialize = false)
  * public class MyNotFoundError extends RuntimeException{
  *    ...
  * }
- *
- * &#064;Status(value = 400, serializeProperties = true)
+ * 
+ * &#064;Status(value = 400)
  * public class MyBadParameterError extends RuntimeException{
  *    public String getParameterName() {
  *        ...
@@ -85,14 +85,12 @@ public @interface Status {
     int value() default 500;
 
     /**
-     * Indicates if the properties of the annotated {@link Throwable}
-     * should be serialized in the HTTP response.
-     * The properties of the class {@link Throwable}
-     * are not serialized.
-     *
-     * @return True if properties of the annotated {@link Throwable}
-     * should be serialized in the HTTP response.
+     * Indicates if the annotated {@link Throwable} should be serialized in the
+     * HTTP response entity.
+     * 
+     * @return True if {@link Throwable} should be serialized in the HTTP
+     *         response entity.
      */
-    boolean serializeProperties() default false;
+    boolean serialize() default true;
 
 }

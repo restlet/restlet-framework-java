@@ -33,8 +33,8 @@
 
 package org.restlet.ext.oauth;
 
+import org.restlet.ext.oauth.internal.Token;
 import java.io.IOException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.Response;
@@ -45,7 +45,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
-import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 

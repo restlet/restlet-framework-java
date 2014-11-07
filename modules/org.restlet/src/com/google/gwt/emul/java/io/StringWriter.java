@@ -62,6 +62,9 @@ public abstract class StringWriter implements Appendable {
         return sb.append(csq);
     }
 
+    public void close() throws IOException {
+    }
+
     @Override
     public String toString() {
         return sb.toString();

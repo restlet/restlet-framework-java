@@ -110,14 +110,14 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * <tr>
  * <td>idleTimeout</td>
  * <td>long</td>
- * <td>0</td>
+ * <td>60000</td>
  * <td>The max time in milliseconds a connection can be idle (that is, without
  * traffic of bytes in either direction)</td>
  * </tr>
  * <tr>
  * <td>maxConnectionsPerDestination</td>
  * <td>int</td>
- * <td>64</td>
+ * <td>10</td>
  * <td>Sets the max number of connections to open to each destination</td>
  * </tr>
  * <tr>
@@ -147,7 +147,7 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * <tr>
  * <td>stopTimeout</td>
  * <td>long</td>
- * <td>30000</td>
+ * <td>60000</td>
  * <td>Stop timeout in milliseconds; the maximum time allowed for the service to
  * shutdown</td>
  * </tr>
@@ -189,6 +189,11 @@ public class HttpClientHelper extends
         org.restlet.engine.adapter.HttpClientHelper {
 
     /**
+     * The wrapped Jetty HTTP client.
+     */
+    private volatile HttpClient httpClient;
+
+    /**
      * Constructor.
      * 
      * @param client
@@ -220,275 +225,6 @@ public class HttpClientHelper extends
         }
 
         return result;
-    }
-
-    /**
-     * Returns the wrapped Jetty HTTP client.
-     * 
-     * @return The wrapped Jetty HTTP client.
-     */
-    public HttpClient getHttpClient() {
-        return this.httpClient;
-    }
-
-    @Override
-    public void start() throws Exception {
-        super.start();
-
-        if (this.httpClient == null)
-            this.httpClient = createHttpClient();
-
-        final HttpClient httpClient = getHttpClient();
-        if (httpClient != null) {
-            getLogger().info("Starting a Jetty HTTP/HTTPS client");
-            httpClient.start();
-        }
-    }
-
-    @Override
-    public void stop() throws Exception {
-        final HttpClient httpClient = getHttpClient();
-        if (httpClient != null) {
-            getLogger().info("Stopping a Jetty HTTP/HTTPS client");
-            httpClient.stop();
-        }
-
-        super.stop();
-    }
-
-    /**
-     * The timeout in milliseconds for the DNS resolution of host addresses.
-     * Defaults to 15000.
-     * 
-     * @return The address resolution timeout.
-     */
-    public long getAddressResolutionTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "addressResolutionTimeout", "15000"));
-    }
-
-    /**
-     * The address to bind socket channels to. Default to null.
-     * 
-     * @return The bind address or null.
-     */
-    public SocketAddress getBindAddress() {
-        final String bindAddress = getHelpedParameters().getFirstValue(
-                "bindAddress", null);
-        final String bindPort = getHelpedParameters().getFirstValue("bindPort",
-                null);
-        if ((bindAddress != null) && (bindPort != null))
-            return new InetSocketAddress(bindAddress,
-                    Integer.parseInt(bindPort));
-        return null;
-    }
-
-    /**
-     * The max time in milliseconds a connection can take to connect to
-     * destinations. Defaults to 15000.
-     * 
-     * @return The connect timeout.
-     */
-    public long getConnectTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "connectTimeout", "15000"));
-    }
-
-    /**
-     * Whether to dispatch I/O operations from the selector thread to a
-     * different thread. Defaults to true.
-     * <p>
-     * This implementation never blocks on I/O operation, but invokes
-     * application callbacks that may take time to execute or block on other
-     * I/O. If application callbacks are known to take time or block on I/O,
-     * then this should be set to true. If application callbacks are known to be
-     * quick and never block on I/O, then this may be set to false.
-     * 
-     * @return Whether to dispatch I/O.
-     */
-    public boolean isDispatchIO() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "dispatchIo", "true"));
-    }
-
-    /**
-     * Whether to follow HTTP redirects. Defaults to true.
-     * 
-     * @return Whether to follow redirects.
-     */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "followRedirects", "true"));
-    }
-
-    /**
-     * The max time in milliseconds a connection can be idle (that is, without
-     * traffic of bytes in either direction). Defaults to 0.
-     * 
-     * @return The idle timeout.
-     */
-    public long getIdleTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "idleTimeout", "0"));
-    }
-
-    /**
-     * Sets the max number of connections to open to each destination. Defaults
-     * to 64.
-     * <p>
-     * RFC 2616 suggests that 2 connections should be opened per each
-     * destination, but browsers commonly open 6. If this client is used for
-     * load testing, it is common to have only one destination (the server to
-     * load test), and it is recommended to set this value to a high value (at
-     * least as much as the threads present in the {@link #getExecutor()
-     * executor}).
-     * 
-     * @return The maximum connections per destination.
-     */
-    public int getMaxConnectionsPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnectionsPerDestination", "64"));
-    }
-
-    /**
-     * The max number of HTTP redirects that are followed. Defaults to 8.
-     * 
-     * @return The maximum redirects.
-     */
-    public int getMaxRedirects() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRedirects", "8"));
-    }
-
-    /**
-     * Sets the max number of requests that may be queued to a destination.
-     * Defaults to 1024.
-     * <p>
-     * If this client performs a high rate of requests to a destination, and all
-     * the connections managed by that destination are busy with other requests,
-     * then new requests will be queued up in the destination. This parameter
-     * controls how many requests can be queued before starting to reject them.
-     * If this client is used for load testing, it is common to have this
-     * parameter set to a high value, although this may impact latency (requests
-     * sit in the queue for a long time before being sent).
-     * 
-     * @return The maximum requests queues per destination.
-     */
-    public int getMaxRequestsQueuedPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRequestsQueuedPerDestination", "1024"));
-    }
-
-    /**
-     * The size in bytes of the buffer used to write requests. Defaults to 4096.
-     * 
-     * @return The request buffer size.
-     */
-    public int getRequestBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "requestBufferSize", "4096"));
-    }
-
-    /**
-     * The size in bytes of the buffer used to read responses. Defaults to
-     * 16384.
-     * 
-     * @return The response buffer size.
-     */
-    public int getResponseBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "responseBufferSize", "16384"));
-    }
-
-    /**
-     * Stop timeout in milliseconds. Defaults to 30000.
-     * <p>
-     * The maximum time allowed for the service to shutdown.
-     * 
-     * @return The stop timeout.
-     */
-    public long getStopTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "stopTimeout", "30000"));
-    }
-
-    /**
-     * Whether request events must be strictly ordered. Defaults to false.
-     * <p>
-     * Client listeners may send a second request. If the second request is for
-     * the same destination, there is an inherent race condition for the use of
-     * the connection: the first request may still be associated with the
-     * connection, so the second request cannot use that connection and is
-     * forced to open another one.
-     * <p>
-     * From the point of view of connection usage, the connection is reusable
-     * just before the "complete" event, so it would be possible to reuse that
-     * connection from complete listeners; but in this case the second request's
-     * events will fire before the "complete" events of the first request.
-     * <p>
-     * This setting enforces strict event ordering so that a "begin" event of a
-     * second request can never fire before the "complete" event of a first
-     * request, but at the expense of an increased usage of connections.
-     * <p>
-     * When not enforced, a "begin" event of a second request may happen before
-     * the "complete" event of a first request and allow for better usage of
-     * connections.
-     * 
-     * @return Whether request events must be strictly ordered.
-     */
-    public boolean isStrictEventOrdering() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "strictEventOrdering", "false"));
-    }
-
-    /**
-     * Whether TCP_NODELAY is enabled. Defaults to true.
-     * 
-     * @return Whether TCP_NODELAY is enabled.
-     */
-    public boolean isTcpNoDelay() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "tcpNoDelay", "true"));
-    }
-
-    /**
-     * The "User-Agent" HTTP header string. When null, uses the Jetty default.
-     * Defaults to null.
-     * 
-     * @return The user agent field or null.
-     */
-    public String getUserAgentField() {
-        return getHelpedParameters().getFirstValue("userAgentField", null);
-    }
-
-    /**
-     * The cookie store. Defaults to null. When null, creates a new instance of
-     * {@link java.net.InMemoryCookieStore}.
-     * 
-     * @return The cookie store.
-     */
-    public CookieStore getCookieStore() {
-        return null;
-    }
-
-    /**
-     * The executor. Defaults to null. When null, creates a new instance of
-     * {@link QueuedThreadPool}.
-     * 
-     * @return The executor.
-     */
-    public Executor getExecutor() {
-        return null;
-    }
-
-    /**
-     * The scheduler. Defaults to null. When null, creates a new instance of
-     * {@link ScheduledExecutorScheduler}.
-     * 
-     * @return The scheduler.
-     */
-    public Scheduler getScheduler() {
-        return null;
     }
 
     /**
@@ -544,7 +280,271 @@ public class HttpClientHelper extends
     }
 
     /**
-     * The wrapped Jetty HTTP client.
+     * The timeout in milliseconds for the DNS resolution of host addresses.
+     * Defaults to 15000.
+     * 
+     * @return The address resolution timeout.
      */
-    private volatile HttpClient httpClient;
+    public long getAddressResolutionTimeout() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "addressResolutionTimeout", "15000"));
+    }
+
+    /**
+     * The address to bind socket channels to. Default to null.
+     * 
+     * @return The bind address or null.
+     */
+    public SocketAddress getBindAddress() {
+        final String bindAddress = getHelpedParameters().getFirstValue(
+                "bindAddress", null);
+        final String bindPort = getHelpedParameters().getFirstValue("bindPort",
+                null);
+        if ((bindAddress != null) && (bindPort != null))
+            return new InetSocketAddress(bindAddress,
+                    Integer.parseInt(bindPort));
+        return null;
+    }
+
+    /**
+     * The max time in milliseconds a connection can take to connect to
+     * destinations. Defaults to 15000.
+     * 
+     * @return The connect timeout.
+     */
+    public long getConnectTimeout() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "connectTimeout", "15000"));
+    }
+
+    /**
+     * The cookie store. Defaults to null. When null, creates a new instance of
+     * {@link java.net.InMemoryCookieStore}.
+     * 
+     * @return The cookie store.
+     */
+    public CookieStore getCookieStore() {
+        return null;
+    }
+
+    /**
+     * The executor. Defaults to null. When null, creates a new instance of
+     * {@link QueuedThreadPool}.
+     * 
+     * @return The executor.
+     */
+    public Executor getExecutor() {
+        return null;
+    }
+
+    /**
+     * Returns the wrapped Jetty HTTP client.
+     * 
+     * @return The wrapped Jetty HTTP client.
+     */
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    /**
+     * The max time in milliseconds a connection can be idle (that is, without
+     * traffic of bytes in either direction). Defaults to 60000.
+     * 
+     * @return The idle timeout.
+     */
+    public long getIdleTimeout() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "idleTimeout", "60000"));
+    }
+
+    /**
+     * Sets the max number of connections to open to each destination. Defaults
+     * to 10.
+     * <p>
+     * RFC 2616 suggests that 2 connections should be opened per each
+     * destination, but browsers commonly open 6. If this client is used for
+     * load testing, it is common to have only one destination (the server to
+     * load test), and it is recommended to set this value to a high value (at
+     * least as much as the threads present in the {@link #getExecutor()
+     * executor}).
+     * 
+     * @return The maximum connections per destination.
+     */
+    public int getMaxConnectionsPerDestination() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxConnectionsPerDestination", "10"));
+    }
+
+    /**
+     * The max number of HTTP redirects that are followed. Defaults to 8.
+     * 
+     * @return The maximum redirects.
+     */
+    public int getMaxRedirects() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxRedirects", "8"));
+    }
+
+    /**
+     * Sets the max number of requests that may be queued to a destination.
+     * Defaults to 1024.
+     * <p>
+     * If this client performs a high rate of requests to a destination, and all
+     * the connections managed by that destination are busy with other requests,
+     * then new requests will be queued up in the destination. This parameter
+     * controls how many requests can be queued before starting to reject them.
+     * If this client is used for load testing, it is common to have this
+     * parameter set to a high value, although this may impact latency (requests
+     * sit in the queue for a long time before being sent).
+     * 
+     * @return The maximum requests queues per destination.
+     */
+    public int getMaxRequestsQueuedPerDestination() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxRequestsQueuedPerDestination", "1024"));
+    }
+
+    /**
+     * The size in bytes of the buffer used to write requests. Defaults to 4096.
+     * 
+     * @return The request buffer size.
+     */
+    public int getRequestBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "requestBufferSize", "4096"));
+    }
+
+    /**
+     * The size in bytes of the buffer used to read responses. Defaults to
+     * 16384.
+     * 
+     * @return The response buffer size.
+     */
+    public int getResponseBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "responseBufferSize", "16384"));
+    }
+
+    /**
+     * The scheduler. Defaults to null. When null, creates a new instance of
+     * {@link ScheduledExecutorScheduler}.
+     * 
+     * @return The scheduler.
+     */
+    public Scheduler getScheduler() {
+        return null;
+    }
+
+    /**
+     * Stop timeout in milliseconds. Defaults to 60000.
+     * <p>
+     * The maximum time allowed for the service to shutdown.
+     * 
+     * @return The stop timeout.
+     */
+    public long getStopTimeout() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "stopTimeout", "60000"));
+    }
+
+    /**
+     * The "User-Agent" HTTP header string. When null, uses the Jetty default.
+     * Defaults to null.
+     * 
+     * @return The user agent field or null.
+     */
+    public String getUserAgentField() {
+        return getHelpedParameters().getFirstValue("userAgentField", null);
+    }
+
+    /**
+     * Whether to dispatch I/O operations from the selector thread to a
+     * different thread. Defaults to true.
+     * <p>
+     * This implementation never blocks on I/O operation, but invokes
+     * application callbacks that may take time to execute or block on other
+     * I/O. If application callbacks are known to take time or block on I/O,
+     * then this should be set to true. If application callbacks are known to be
+     * quick and never block on I/O, then this may be set to false.
+     * 
+     * @return Whether to dispatch I/O.
+     */
+    public boolean isDispatchIO() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "dispatchIo", "true"));
+    }
+
+    /**
+     * Whether to follow HTTP redirects. Defaults to true.
+     * 
+     * @return Whether to follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "followRedirects", "true"));
+    }
+
+    /**
+     * Whether request events must be strictly ordered. Defaults to false.
+     * <p>
+     * Client listeners may send a second request. If the second request is for
+     * the same destination, there is an inherent race condition for the use of
+     * the connection: the first request may still be associated with the
+     * connection, so the second request cannot use that connection and is
+     * forced to open another one.
+     * <p>
+     * From the point of view of connection usage, the connection is reusable
+     * just before the "complete" event, so it would be possible to reuse that
+     * connection from complete listeners; but in this case the second request's
+     * events will fire before the "complete" events of the first request.
+     * <p>
+     * This setting enforces strict event ordering so that a "begin" event of a
+     * second request can never fire before the "complete" event of a first
+     * request, but at the expense of an increased usage of connections.
+     * <p>
+     * When not enforced, a "begin" event of a second request may happen before
+     * the "complete" event of a first request and allow for better usage of
+     * connections.
+     * 
+     * @return Whether request events must be strictly ordered.
+     */
+    public boolean isStrictEventOrdering() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "strictEventOrdering", "false"));
+    }
+
+    /**
+     * Whether TCP_NODELAY is enabled. Defaults to true.
+     * 
+     * @return Whether TCP_NODELAY is enabled.
+     */
+    public boolean isTcpNoDelay() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "tcpNoDelay", "true"));
+    }
+
+    @Override
+    public void start() throws Exception {
+        super.start();
+
+        if (this.httpClient == null)
+            this.httpClient = createHttpClient();
+
+        final HttpClient httpClient = getHttpClient();
+        if (httpClient != null) {
+            getLogger().info("Starting a Jetty HTTP/HTTPS client");
+            httpClient.start();
+        }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        final HttpClient httpClient = getHttpClient();
+        if (httpClient != null) {
+            getLogger().info("Stopping a Jetty HTTP/HTTPS client");
+            httpClient.stop();
+        }
+
+        super.stop();
+    }
 }

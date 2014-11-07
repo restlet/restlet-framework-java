@@ -317,7 +317,7 @@ public abstract class ClientCall extends Call {
 
             // Now we can access the status code, this MUST happen after closing
             // any open request stream.
-            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+            result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()

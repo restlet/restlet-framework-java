@@ -1,33 +1,33 @@
 /**
  * Copyright 2005-2014 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
  * 1.0 (the "Licenses"). You can select the license that you prefer but you may
  * not use this file except in compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.opensource.org/licenses/lgpl-3.0
- * 
+ *
  * You can obtain a copy of the LGPL 2.1 license at
  * http://www.opensource.org/licenses/lgpl-2.1
- * 
+ *
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.opensource.org/licenses/cddl1
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -42,31 +42,33 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.engine.Engine;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
-import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
-import org.restlet.ext.apispark.internal.introspection.ComponentIntrospector;
+import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.introspection.application.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
+import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 /**
- * Publish the documentation of a Restlet-based Application to the APISpark
- * console.
- * 
+ * Extract and push the web API documentation of a Restlet API-based
+ * {@link Application} to the APISpark console.
+ *
  * @author Thierry Boileau
  */
-public class Introspector extends IntrospectionUtils {
+public class Introspector {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(Introspector.class
-            .getName());
+    private static Logger LOGGER = Context.getCurrentLogger();
 
     /**
      * Main class, invoke this class without argument to get help instructions.
-     * 
+     *
      * @param args Main arguments
      * @throws TranslationException
      */
@@ -143,14 +145,14 @@ public class Introspector extends IntrospectionUtils {
                 });
 
         LOGGER.fine("Check parameters");
-        if (isEmpty(serviceUrl)) {
+        if (StringUtils.isNullOrEmpty(serviceUrl)) {
             serviceUrl = "https://apispark.com/";
         }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";
         }
 
-        if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(defSource)) {
+        if (StringUtils.isNullOrEmpty(ulogin) || StringUtils.isNullOrEmpty(upwd) || StringUtils.isNullOrEmpty(defSource)) {
             printHelp();
             System.exit(1);
         }
@@ -183,9 +185,8 @@ public class Introspector extends IntrospectionUtils {
                         application, null, component,
                         introspectorPlugins);
             } else if (clazz != null) {
-                javax.ws.rs.core.Application jaxrsApplication = JaxrsIntrospector.getApplication(defSource);
-                JaxrsIntrospector jaxrsIntrospector = new JaxrsIntrospector(jaxrsApplication);
-                definition = jaxrsIntrospector.getDefinition();
+                javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector.getApplication(defSource);
+                definition = JaxRsIntrospector.getDefinition(jaxrsApplication, null, introspectorPlugins);
             } else {
                 LOGGER.log(Level.SEVERE,
                         "Class " + defSource + " is not supported");
@@ -202,12 +203,14 @@ public class Introspector extends IntrospectionUtils {
         }
 
         if (definition != null) {
-            sendDefinition(definition, descriptorId, versionId, ulogin, upwd,
+            IntrospectionUtils.sendDefinition(definition, descriptorId, versionId, ulogin, upwd,
                     serviceUrl, updateStrategy, create, newVersion, LOGGER);
         } else {
             LOGGER.severe("Please provide a valid application class name or definition URL.");
         }
     }
+
+
 
     /**
      * Prints the instructions necessary to launch this tool.
@@ -216,71 +219,71 @@ public class Introspector extends IntrospectionUtils {
         PrintStream o = System.out;
 
         o.println("SYNOPSIS");
-        printSynopsis(o, Introspector.class,
+        IntrospectionUtils.printSynopsis(o, Introspector.class,
                 "[options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(
+        IntrospectionUtils.printSynopsis(
                 o,
                 Introspector.class,
                 "--create [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(
+        IntrospectionUtils.printSynopsis(
                 o,
                 Introspector.class,
                 "--newVersion --descriptor descriptorId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        printSynopsis(
+        IntrospectionUtils.printSynopsis(
                 o,
                 Introspector.class,
                 "--updateStrategy strategy --descriptor descriptorId --version versionId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
 
         o.println("DESCRIPTION");
-        printSentence(
+        IntrospectionUtils.printSentence(
                 o,
                 "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
                 "the full name of your Restlet or JAX-RS application class or by the swagger definition available on the ",
                 "URL/PATH");
-        printSentence(
+        IntrospectionUtils.printSentence(
                 o,
                 "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
-        printOption(o, "-h, --help", "Prints this help.");
-        printOption(o, "-u, --username username",
+        IntrospectionUtils.printOption(o, "-h, --help", "Prints this help.");
+        IntrospectionUtils.printOption(o, "-u, --username username",
                 "The mandatory APISpark user name.");
-        printOption(o, "-p, --password password",
+        IntrospectionUtils.printOption(o, "-p, --password password",
                 "The mandatory APISpark user secret key.");
-        printOption(o, "-c, --component commponent class",
+        IntrospectionUtils.printOption(o, "-c, --component commponent class",
                 "The optional full name of your Restlet Component class.",
                 "This allows to collect some other data, such as the endpoint.");
-        printOption(o, "-C, --create",
+        IntrospectionUtils.printOption(o, "-C, --create",
                 "Creates a new descriptor from introspection.",
                 "Is set to true if neither newVersion nor updateStrategy are specified.");
-        printOption(o, "-n, --newVersion",
+        IntrospectionUtils.printOption(o, "-n, --newVersion",
                 "Creates a new version of the descriptor identified by descriptor");
-        printOption(
+        IntrospectionUtils.printOption(
                 o,
                 "-d, --descriptor descriptorId",
                 "The optional identifier of an existing descriptor hosted by APISpark you want to update with this new documentation.",
                 "Required if updateStrategy or newVersion are specified.");
-        printOption(
+        IntrospectionUtils.printOption(
                 o,
                 "-U, --updateStrategy strategy",
                 "Updates the descriptor version specified by descriptor and version with given strategy. If no strategy is specified, add strategy is selected by default. \n",
                 "Strategies available:\n",
                 "add: new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
                 "reset: deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
-        printOption(
+        IntrospectionUtils.printOption(
                 o,
                 "-v, --version versionId",
                 "The version of the descriptor to be updated. Required if updateStrategy is specified.");
-        printOption(
+        IntrospectionUtils.printOption(
                 o,
                 "-l, --language languageName",
                 "The optional name of the description language of the definition you want to upload. Possible value: swagger");
-        printOption(
+        IntrospectionUtils.printOption(
                 o,
                 "-i, --introspectorPlugins introspectorPluginClass",
                 "The optional class name of an introspector plugin. " +
                         "This options could be use several times for each plugin. " +
-                        "Example: 'org.restlet.ext.swagger.v2_0.introspector.SwaggerAnnotationIntrospectorPlugin'");
-        printOption(o, "-v, --verbose",
+                        "Example: '-i org.restlet.ext.swagger.v2_0.introspector.SwaggerAnnotationIntrospectorPlugin'");
+        IntrospectionUtils.printOption(o, "-v, --verbose",
                 "The optional parameter switching the process to a verbose mode");
     }
 

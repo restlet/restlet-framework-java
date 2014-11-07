@@ -1064,9 +1064,6 @@ public class ClientResource extends Resource {
      * @return The optional response entity.
      */
     protected Representation handle(Method method, Representation entity) {
-        Request request = createRequest();
-        request.setMethod(method);
-        request.setEntity(entity);
         return handle(method, entity, getClientInfo());
     }
 

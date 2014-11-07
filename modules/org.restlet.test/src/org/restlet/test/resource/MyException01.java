@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.restlet.resource.Status;
 
-@Status(400)
+@Status(value = 400, serialize = false)
 public class MyException01 extends Throwable {
 
     private static final long serialVersionUID = 1L;

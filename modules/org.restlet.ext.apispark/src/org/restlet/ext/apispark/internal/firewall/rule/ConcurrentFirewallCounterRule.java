@@ -34,9 +34,7 @@
 package org.restlet.ext.apispark.internal.firewall.rule;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.ext.apispark.internal.firewall.rule.counter.ConcurrentCounter;
 import org.restlet.ext.apispark.internal.firewall.rule.policy.CountingPolicy;
 
@@ -67,11 +65,6 @@ public class ConcurrentFirewallCounterRule extends FirewallCounterRule {
 
     @Override
     protected void decrementCounter(String countedValue) {
-        Context.getCurrentLogger().log(
-                Level.FINE,
-                "Counter " + this.getClass() + " decremented for value: "
-                        + countedValue);
-
         ConcurrentCounter counter = cache.getUnchecked(countedValue);
         counter.decrement();
     }

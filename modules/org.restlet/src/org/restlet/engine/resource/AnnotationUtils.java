@@ -27,7 +27,7 @@
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- *
+ * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -149,8 +149,8 @@ public class AnnotationUtils {
 
         if (annotation != null) {
             Status status = (Status) annotation;
-            result.add(new StatusAnnotationInfo(initialClass,
-                    status.value(), status.serializeProperties()));
+            result.add(new StatusAnnotationInfo(initialClass, status.value(),
+                    status.serialize()));
         }
 
         return result;

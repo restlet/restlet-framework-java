@@ -54,8 +54,8 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
     /** Cache of {@link PeriodicCounter}. */
     private LoadingCache<String, PeriodicCounter> cache;
 
-    /** Period associated to the {@link FirewallCounterRule} */
-    private int period;
+    /** Period in second associated to the {@link FirewallCounterRule} */
+    private long period;
 
     /**
      * Contructor.
@@ -63,12 +63,14 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
      * @param period
      *            Period associated to the {@link PeriodicFirewallCounterRule}.
      *            Each created {@link PeriodicCounter} will have this one.
+     * @param periodUnit
+     *            Period time unit associated to the {@link FirewallCounterRule}.
      * @param countingPolicy
      *            The associated counting policy.
      */
-    public PeriodicFirewallCounterRule(int period, CountingPolicy countingPolicy) {
+    public PeriodicFirewallCounterRule(int period, TimeUnit periodUnit,  CountingPolicy countingPolicy) {
         super(countingPolicy);
-        this.period = period;
+        this.period = periodUnit.toSeconds(period);
         initializeCache();
     }
 
@@ -77,10 +79,6 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
      */
     @Override
     protected void decrementCounter(String countedValue) {
-    }
-
-    protected int getPeriod() {
-        return this.period;
     }
 
     @Override
@@ -92,15 +90,17 @@ public class PeriodicFirewallCounterRule extends FirewallCounterRule {
     private void initializeCache() {
         CacheLoader<String, PeriodicCounter> loader = new CacheLoader<String, PeriodicCounter>() {
             public PeriodicCounter load(String key) {
-                return initializeCounter();
+                return new PeriodicCounter(period);
             }
         };
-        cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(2 * period, TimeUnit.SECONDS).build(loader);
-    }
 
-    public PeriodicCounter initializeCounter() {
-        return new PeriodicCounter(getPeriod());
+        // do not set cache expiration below 1 minute
+        long cacheExpiration = 2 * period < TimeUnit.MINUTES.toSeconds(1) ?
+                TimeUnit.MINUTES.toSeconds(1) :
+                2 * period;
+
+        cache = CacheBuilder.newBuilder()
+                .expireAfterAccess(cacheExpiration, TimeUnit.SECONDS).build(loader);
     }
 
 }

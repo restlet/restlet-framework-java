@@ -41,7 +41,7 @@ import org.restlet.engine.cors.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
-import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
+import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectorPlugin;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -56,21 +56,21 @@ import java.util.List;
  * Restlet that generates Swagger documentation in the format defined by the
  * swagger-spec project.<br>
  * It helps to generate the high level documentation for the whole API (set by
- * calling {@link #setApiInboundRoot(Application)} or
- * {@link #setApiInboundRoot(Restlet)} methods, and the documentation for each
+ * calling {@link #setApplication(Application)} or
+ * {@link #setApiInboundRoot(Application)} methods, and the documentation for each
  * resource.<br>
  * By default it instrospects the chain of Application's routers, filters,
  * restlet.<br>
- * Use the {@link JaxrsSwaggerSpecificationRestlet} restlet for Jax-RS
+ * Use the {@link JaxRsApplicationSwaggerSpecificationRestlet} restlet for Jax-RS
  * applications.
  *
  * <p>
  * Usage example:
  * <pre>
  * new SwaggerSpecificationRestlet()
- *      .setApiInboundRoot(this)
+ *      .setApplication(this) //this is the current Application
  *      .setBasePath("http://myapp.com/api/v1")
- *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by swagger-annotation extension
+ *      .addIntrospectorPlugin(new SwaggerAnnotationIntrospectorPlugin()) //provided by apispark-swagger-annotations-xx extension
  *      .attach(baseRouter);
  * </pre>
  * </p>
@@ -82,17 +82,17 @@ import java.util.List;
  */
 public class SwaggerSpecificationRestlet extends Restlet {
 
-    /** The version of Swagger. */
-    public static final String SWAGGER_VERSION = "1.2";
-
-    /** The root Restlet to describe. */
-    Restlet apiInboundRoot;
+    /**
+     * The version of the Swagger specification.
+     *  Default is {@link SwaggerTranslator#SWAGGER_VERSION}
+     */
+    private String swaggerVersion = SwaggerTranslator.SWAGGER_VERSION;
 
     /** The version of the API. */
     private String apiVersion;
 
     /** The Application to describe. */
-    Application application;
+    private Application application;
 
     /** The base path of the API. */
     private String basePath;
@@ -135,23 +135,19 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the API declaration.
      */
     public Representation getApiDeclaration(String category) {
-        return new JacksonRepresentation<ApiDeclaration>(
-                SwaggerTranslator.getApiDeclaration(category, getDefinition()));
+        ApiDeclaration apiDeclaration = SwaggerTranslator.getApiDeclaration(category, getDefinition());
+        apiDeclaration.setSwaggerVersion(swaggerVersion);
+        return new JacksonRepresentation<>(apiDeclaration);
     }
 
     /**
-     * Returns the root Restlet for the given application.
-     * 
-     * @return The root Restlet for the given application.
+     * Returns the version of the Swagger specification.
+     *  Default is {@link SwaggerTranslator#SWAGGER_VERSION}
+     *
+     * @return The version of the Swagger specification.
      */
-    public Restlet getApiInboundRoot() {
-        if (apiInboundRoot == null) {
-            if (application != null) {
-                apiInboundRoot = application.getInboundRoot();
-            }
-        }
-
-        return apiInboundRoot;
+    public String getSwaggerVersion() {
+        return swaggerVersion;
     }
 
     /**
@@ -202,8 +198,9 @@ public class SwaggerSpecificationRestlet extends Restlet {
      *         Application.
      */
     public Representation getResourceListing() {
-        return new JacksonRepresentation<ResourceListing>(
-                SwaggerTranslator.getResourcelisting(getDefinition()));
+        ResourceListing resourcelisting = SwaggerTranslator.getResourcelisting(getDefinition());
+        resourcelisting.setSwaggerVersion(swaggerVersion);
+        return new JacksonRepresentation<>(resourcelisting);
     }
 
     @Override
@@ -211,7 +208,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
         super.handle(request, response);
 
         // CORS support for Swagger-UI
-        corsResponseHelper.addCorsResponseHeaderIfCorsRequest(request, response);
+        corsResponseHelper.addCorsResponseHeaders(request, response);
 
         if (Method.GET.equals(request.getMethod())) {
             Object resource = request.getAttributes().get("resource");
@@ -272,12 +269,12 @@ public class SwaggerSpecificationRestlet extends Restlet {
 
     /**
      * Sets the root Restlet for the given application.
-     * 
-     * @param apiInboundRoot
-     *            The application's root Restlet.
+     *
+     * @param application
+     *            The application.
      */
-    public SwaggerSpecificationRestlet setApiInboundRoot(Restlet apiInboundRoot) {
-        this.apiInboundRoot = apiInboundRoot;
+    public SwaggerSpecificationRestlet setApplication(Application application) {
+        this.application = application;
         return this;
     }
 
@@ -290,6 +287,17 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public SwaggerSpecificationRestlet addIntrospectorPlugin(IntrospectorPlugin introspectorPlugin) {
         introspectorPlugins.add(introspectorPlugin);
+        return this;
+    }
+
+    /**
+     * Sets the version of the Swagger specification.
+     *
+     * @param swaggerVersion
+     *            The version of the Swagger specification.
+     */
+    public SwaggerSpecificationRestlet setSwaggerVersion(String swaggerVersion) {
+        this.swaggerVersion = swaggerVersion;
         return this;
     }
 

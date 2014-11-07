@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.introspection.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Header;
@@ -54,7 +53,7 @@ public class Swagger2Translator {
     protected static Logger LOGGER = Logger
             .getLogger(Swagger2Translator.class.getName());
 
-    public static final String SWAGGER_2_0_VERSION = "2.0";
+    public static final String SWAGGER_VERSION = "2.0";
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
@@ -67,7 +66,7 @@ public class Swagger2Translator {
 
         // conversion
         Swagger swagger = new Swagger();
-        swagger.setSwagger(SWAGGER_2_0_VERSION); // required
+        swagger.setSwagger(SWAGGER_VERSION); // required
 
         // fill swagger main attributes
         fillMainAttributes(definition, swagger);

@@ -34,6 +34,7 @@
 package org.restlet.ext.xdb.internal;
 
 import java.io.InputStream;
+
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;

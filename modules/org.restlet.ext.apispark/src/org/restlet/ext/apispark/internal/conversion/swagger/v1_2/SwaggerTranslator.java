@@ -95,7 +95,7 @@ public abstract class SwaggerTranslator {
             .getName());
 
     /** Supported version of Swagger. */
-    private static final String SWAGGER_VERSION = "1.2";
+    public static final String SWAGGER_VERSION = "1.2";
 
     /**
      * Fills Swagger resource listing main attributes from Restlet Web API

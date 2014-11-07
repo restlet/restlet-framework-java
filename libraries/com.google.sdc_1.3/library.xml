@@ -19,7 +19,7 @@
 	<dependency type="library" id="guice" />
 	<dependency type="library" id="gdata" />
 	<dependency type="library" id="protobuf" />
-	<dependency type="library" id="gcollections" />
+	<dependency type="library" id="guava" />
 	<dependency type="library" id="log4j" />
 	<dependency type="library" id="xstream" />
 </library>

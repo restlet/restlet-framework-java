@@ -46,12 +46,6 @@ import org.restlet.Client;
  * <th>Default value</th>
  * <th>Description</th>
  * </tr>
- * <tr>
- * <td>socketConnectTimeoutMs</td>
- * <td>int</td>
- * <td>0</td>
- * <td>The socket connection timeout or 0 for unlimited wait.</td>
- * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -66,22 +60,6 @@ public class ClientHelper extends ConnectorHelper<Client> {
      */
     public ClientHelper(Client client) {
         super(client);
-    }
-
-    /**
-     * Returns the connection timeout.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "0"));
-        }
-
-        return result;
     }
 
 }

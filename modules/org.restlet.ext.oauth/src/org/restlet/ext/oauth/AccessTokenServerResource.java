@@ -34,7 +34,6 @@
 package org.restlet.ext.oauth;
 
 import javax.naming.AuthenticationException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.CacheDirective;
@@ -45,9 +44,9 @@ import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.AuthSessionTimeoutException;
 import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.Client.ClientType;
-import org.restlet.ext.oauth.internal.ResourceOwnerManager;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.ResourceOwnerManager;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;

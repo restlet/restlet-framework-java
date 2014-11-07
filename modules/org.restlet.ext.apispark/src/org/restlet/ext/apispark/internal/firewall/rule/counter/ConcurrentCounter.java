@@ -35,6 +35,8 @@ package org.restlet.ext.apispark.internal.firewall.rule.counter;
 
 import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * {@link Counter} which counts concurrent requests.
  * 
@@ -42,16 +44,24 @@ import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;
  */
 public class ConcurrentCounter extends Counter {
 
+    /** The counter value. */
+    protected final AtomicInteger counter;
+
+    public ConcurrentCounter() {
+        this.counter = new AtomicInteger();
+    }
+
+
     @Override
-    public synchronized void decrement() {
-        value--;
+    public void decrement() {
+        counter.decrementAndGet();
     }
 
     @Override
-    public synchronized CounterResult increment() {
-        value++;
+    public CounterResult increment() {
+        int count = counter.incrementAndGet();
         CounterResult counterResult = new CounterResult();
-        counterResult.setConsumed(value);
+        counterResult.setConsumed(count);
         return counterResult;
     }
 

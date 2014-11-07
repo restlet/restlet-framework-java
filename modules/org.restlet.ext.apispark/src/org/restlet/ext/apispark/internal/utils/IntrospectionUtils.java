@@ -3,11 +3,13 @@ package org.restlet.ext.apispark.internal.utils;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -30,18 +32,12 @@ import org.restlet.resource.ResourceException;
  */
 public class IntrospectionUtils {
 
-    static ArrayList<String> STRATEGIES = new ArrayList<String>() {
-        private static final long serialVersionUID = 1L;
+    private static List<String> STRATEGIES = Arrays.asList("add", "reset");
 
-        {
-            add("add");
-            add("reset");
-        }
-    };
 
     /**
-     * Indicates if the given velue is either null or empty.
-     * 
+     * Indicates if the given value is either null or empty.
+     *
      * @param value
      *            The value.
      * @return True if the value is either null or empty.

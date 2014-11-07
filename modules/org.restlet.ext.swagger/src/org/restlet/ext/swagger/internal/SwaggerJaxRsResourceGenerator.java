@@ -1,33 +1,33 @@
 /**
  * Copyright 2005-2014 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
  * 1.0 (the "Licenses"). You can select the license that you prefer but you may
  * not use this file except in compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.opensource.org/licenses/lgpl-3.0
- * 
+ *
  * You can obtain a copy of the LGPL 2.1 license at
  * http://www.opensource.org/licenses/lgpl-2.1
- * 
+ *
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.opensource.org/licenses/cddl1
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -70,7 +70,7 @@ import com.wordnik.swagger.core.DocumentationSchema;
 
 /**
  * Parses JaxRs Class and generates DocumentationEndPoint for it
- * 
+ *
  * @author Grzegorz Godlewski
  */
 public class SwaggerJaxRsResourceGenerator {
@@ -86,7 +86,7 @@ public class SwaggerJaxRsResourceGenerator {
     private String resourcePath;
 
     private void addApiParamImplicit(List<DocumentationParameter> retVal,
-            ApiParamImplicit implicitParam) {
+                                     ApiParamImplicit implicitParam) {
         if (null == implicitParam)
             return;
 
@@ -112,7 +112,7 @@ public class SwaggerJaxRsResourceGenerator {
     }
 
     private void addParam(List<DocumentationParameter> retVal, String name,
-            String type, Class<?> parameterType, ApiParam apiParam) {
+                          String type, Class<?> parameterType, ApiParam apiParam) {
         DocumentationParameter documentationParameter = new DocumentationParameter();
 
         if (apiParam != null) {
@@ -208,7 +208,7 @@ public class SwaggerJaxRsResourceGenerator {
     }
 
     private void processJaxRsParam(List<DocumentationParameter> retVal,
-            Annotation[] parameterAnnotations, Class<?> parameterType) {
+                                   Annotation[] parameterAnnotations, Class<?> parameterType) {
         ApiParam apiParam = null;
         String name = null;
         String type = null;
@@ -260,6 +260,7 @@ public class SwaggerJaxRsResourceGenerator {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void processMethod(Method method, Class httpMethodClass) {
         String methodPath = resourcePath;
         Path pathAnnotation = method.getAnnotation(Path.class);

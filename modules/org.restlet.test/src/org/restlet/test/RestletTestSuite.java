@@ -54,6 +54,7 @@ import org.restlet.test.data.RecipientInfoTestCase;
 import org.restlet.test.data.ReferenceTestCase;
 import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
+import org.restlet.test.ext.apispark.ApiSparkTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.crypto.CryptoTestSuite;
 import org.restlet.test.ext.crypto.DigestVerifierTestCase;
@@ -139,6 +140,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTest(RegressionTestSuite.suite());
         addTest(CryptoTestSuite.suite());
+        addTest(ApiSparkTestSuite.suite());
         addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
 

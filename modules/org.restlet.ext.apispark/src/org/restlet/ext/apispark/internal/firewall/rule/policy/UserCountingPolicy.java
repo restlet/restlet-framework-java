@@ -48,8 +48,7 @@ public class UserCountingPolicy extends CountingPolicy {
         if (request.getClientInfo().getUser() != null) {
             return request.getClientInfo().getUser().getIdentifier();
         }
-        // TODO should return null instead.
-        // Need support of null counted values.
+        // Otherwise, use the IP address.
         return request.getClientInfo().getUpstreamAddress();
     }
 

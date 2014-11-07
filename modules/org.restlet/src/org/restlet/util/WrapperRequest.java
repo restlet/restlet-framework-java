@@ -44,7 +44,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
-import org.restlet.data.HeaderName;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -276,24 +275,23 @@ public class WrapperRequest extends Request {
         return this.wrappedRequest;
     }
 
-
     /**
      * Returns the access control request headers of the target resource.
-     *
+     * 
      * @return The access control request headers of the target resource.
      */
     @Override
-    public Set<HeaderName> getAccessControlRequestHeaders() {
+    public Set<String> getAccessControlRequestHeaders() {
         return wrappedRequest.getAccessControlRequestHeaders();
     }
 
     /**
      * Returns the access control request method of the target resource.
-     *
+     * 
      * @return The access control request method of the target resource.
      */
     @Override
-    public Set<Method> getAccessControlRequestMethod() {
+    public Method getAccessControlRequestMethod() {
         return wrappedRequest.getAccessControlRequestMethod();
     }
 
@@ -517,23 +515,24 @@ public class WrapperRequest extends Request {
 
     /**
      * Sets the access control request headers of the target resource.
-     *
+     * 
      * @param accessControlRequestHeaders
-     *              The access control request headers of the target resource.
+     *            The access control request headers of the target resource.
      */
     @Override
-    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
+    public void setAccessControlRequestHeaders(
+            Set<String> accessControlRequestHeaders) {
         super.setAccessControlRequestHeaders(accessControlRequestHeaders);
     }
 
     /**
      * Sets the access control request method of the target resource.
-     *
+     * 
      * @param accessControlRequestMethod
-     *              The access control request method of the target resource.
+     *            The access control request method of the target resource.
      */
     @Override
-    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
         super.setAccessControlRequestMethod(accessControlRequestMethod);
     }
 

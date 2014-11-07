@@ -71,7 +71,7 @@ import org.restlet.representation.InputRepresentation;
  * <tr>
  * <td>readTimeout</td>
  * <td>int</td>
- * <td>0</td>
+ * <td>60000</td>
  * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
@@ -108,29 +108,23 @@ public class FtpClientHelper extends ClientHelper {
      */
     public int getReadTimeout() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "readTimeout", "0"));
+                "readTimeout", "60000"));
     }
 
     /**
-     * Indicates if this URL is being examined in a context in which it makes
-     * sense to allow user interactions such as popping up an authentication
-     * dialog.
+     * Returns the connection timeout. Defaults to 15000.
      * 
-     * @return True if it makes sense to allow user interactions.
+     * @return The connection timeout.
      */
-    public boolean isAllowUserInteraction() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "allowUserInteraction", "false"));
-    }
+    public int getSocketConnectTimeoutMs() {
+        int result = 0;
 
-    /**
-     * Indicates if the protocol is allowed to use caching whenever it can.
-     * 
-     * @return True if the protocol is allowed to use caching whenever it can.
-     */
-    public boolean isUseCaches() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "useCaches", "false"));
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "15000"));
+        }
+
+        return result;
     }
 
     @Override
@@ -192,6 +186,28 @@ public class FtpClientHelper extends ClientHelper {
             getLogger().log(Level.WARNING, "FTP client error", e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
         }
+    }
+
+    /**
+     * Indicates if this URL is being examined in a context in which it makes
+     * sense to allow user interactions such as popping up an authentication
+     * dialog.
+     * 
+     * @return True if it makes sense to allow user interactions.
+     */
+    public boolean isAllowUserInteraction() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "allowUserInteraction", "false"));
+    }
+
+    /**
+     * Indicates if the protocol is allowed to use caching whenever it can.
+     * 
+     * @return True if the protocol is allowed to use caching whenever it can.
+     */
+    public boolean isUseCaches() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "useCaches", "false"));
     }
 
     @Override

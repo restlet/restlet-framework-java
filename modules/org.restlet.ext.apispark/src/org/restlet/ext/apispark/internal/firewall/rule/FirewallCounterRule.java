@@ -58,8 +58,9 @@ import org.restlet.routing.Filter;
  * @author Guillaume Blondeau
  */
 public abstract class FirewallCounterRule extends FirewallRule {
-    /** Indicates if an unknown counted value should be blocked by default. */
-    private boolean blockingUnknownCountedValue;
+    /** Indicates if an unknown counted value should be blocked by default.
+     * Default is true */
+    private boolean blockingUnknownCountedValue = true;
 
     /** The associated policy. */
     private CountingPolicy countingPolicy;
@@ -114,8 +115,8 @@ public abstract class FirewallCounterRule extends FirewallRule {
         String countedValue = this.countingPolicy.getCountedValue(request);
 
         if (countedValue == null) {
-            return isBlockingUnknownCountedValue() ? Filter.CONTINUE
-                    : Filter.SKIP;
+            return isBlockingUnknownCountedValue() ? Filter.SKIP
+                    : Filter.CONTINUE;
         }
 
         CounterResult counterResult = incrementCounter(countedValue);

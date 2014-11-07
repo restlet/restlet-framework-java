@@ -4,11 +4,45 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+    
+    - API changes
+      - Jackson representation now ignore null values by default in the
+        JSON/XML/CSV/YAML produced, leading to more compact representations.
+      - Added additional constructors to Status and ResourceException for convenience
+        purpose. Suggested by Kristoffer Gronowski.
 
-- 2.3 Milestone 2 (05/06/2014)
+    - Bugs fixed
+      -        
+
+- 2.3 Milestone 4 (10/31/2014)
+    - Enhancements
+      - Unified the HTTP client connector parameters (socket connection to 15s, 
+        idle socket to 60s, socket stop to 60s, max connections per host to 10, 
+        max total connections to 20). Suggested by Kristoffer Gronowski.
+      - Upgraded Jackson to version 2.4.3.
+      - Jackson representation now ignore empty value (null or empty collections)
+        by default in the JSON/XML/CSV/YAML produced, leading to more compact 
+        representations.
+     - Fixed log level (issue #777). Reported by marcus-nl.
+
+    - API changes
+      - Deprecated statusService property in Component to keep it only in Application.
+      - Added connegService, metadataService and converterService properties to StatusService
+        and pass them via the constructor instead of the toRepresentation and toStatus methods.
+      - Renamed @Status#serializeProperties (default to false) into serialize (default to true).
+      - Deprecated Component#statusService in favor of the Application#statusService property.
+
+    - Bugs fixed
+      - @Status now works with annotated methods on the server-side.
+      - Securing JaxRepresentation by default (issue #785).
+        Reported by Jim Trainor.
+      - OData Edm.DateTime properties are sometimes parsed as null (issue #946).
+        Reported and contributed by Emmanuel Liossis.
+
+- 2.3 Milestone 3 (09/18/2014)
     - New features
-      - Added Firewall feature.
-        Contributed by Guillaume Blondeau.
+      - Added API firewall feature to the APISpark extension.
       - Added RAML support in dedicated extension.
 
     - Enhancements
@@ -23,7 +57,7 @@ Changes log
         methods accepting 'null' string values to facilitate the processing of path 
         variables and query parameters.
       - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
-        toRepresentation(...) and toStatus(...), added additional parameters to allow
+        toRepresentation(...) and toStatus(...), added throwable parameters to allow
         access to throwable and converter service if available.
       - Aligned behavior of StatusService (underlying StatusFilter) with the behavior of
         the ServerResource#doCatch() method in case a throwable is intercepted.

@@ -65,7 +65,7 @@ public class BlockingHandler extends ThresholdHandler {
     protected int thresholdReached(Request request, Response response,
             CounterResult counterResult) {
         Context.getCurrentLogger().log(
-                Level.INFO,
+                Level.FINE,
                 "The current request has been blocked because \""
                         + counterResult.getCountedValue()
                         + "\" issued too many requests.");

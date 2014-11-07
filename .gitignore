@@ -73,5 +73,6 @@
 /modules/org.restlet.test/velocity.log.1
 /build/velocity.log
 /build/build.number
+.DS_Store
 *.iml
 .DS_Store

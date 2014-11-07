@@ -66,52 +66,52 @@ public class StatusServiceTestCase extends RestletTestCase {
     }
 
     public void testRepresentation() throws IOException {
-        StatusService ss = new StatusService();
         Status status = new Status(400, new MyException01(new Date()));
 
         ConverterService converterService = new ConverterService();
         ConnegService connegService = new ConnegService();
         MetadataService metadataService = new MetadataService();
+        StatusService ss = new StatusService(true, converterService,
+                metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status, null,
-                request, new Response(request),
-                converterService, connegService, metadataService);
+        Representation representation = ss.toRepresentation(status,
+                request, new Response(request));
 
-        //verify
+        // verify
         Status expectedStatus = Status.CLIENT_ERROR_BAD_REQUEST;
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();
         expectedRepresentationMap.put("code", expectedStatus.getCode());
-        expectedRepresentationMap.put("reasonPhrase", expectedStatus.getReasonPhrase());
-        expectedRepresentationMap.put("description", expectedStatus.getDescription());
-        String expectedJsonRepresentation =
-                new JacksonRepresentation<HashMap<String, Object>>(expectedRepresentationMap)
-                .getText();
+        expectedRepresentationMap.put("description",
+                expectedStatus.getDescription());
+        expectedRepresentationMap.put("reasonPhrase",
+                expectedStatus.getReasonPhrase());
+        String expectedJsonRepresentation = new JacksonRepresentation<HashMap<String, Object>>(
+                expectedRepresentationMap).getText();
 
         Status.CLIENT_ERROR_BAD_REQUEST.getCode();
         assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
-    public void testRepresentationWithExceptionPropertiesSerialized() throws IOException {
-        StatusService ss = new StatusService();
+    public void testSerializedException() throws IOException {
         Status status = new Status(400, new MyException02("test message"));
 
         ConverterService converterService = new ConverterService();
         ConnegService connegService = new ConnegService();
         MetadataService metadataService = new MetadataService();
+        StatusService ss = new StatusService(true, converterService,
+                metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status, null,
-                request, new Response(request),
-                converterService, connegService, metadataService);
+        Representation representation = ss.toRepresentation(status,
+                request, new Response(request));
 
-        //verify
+        // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();
         expectedRepresentationMap.put("customProperty", "test message");
-        String expectedJsonRepresentation =
-                new JacksonRepresentation<HashMap<String, Object>>(expectedRepresentationMap)
-                        .getText();
+        String expectedJsonRepresentation = new JacksonRepresentation<HashMap<String, Object>>(
+                expectedRepresentationMap).getText();
 
         Status.CLIENT_ERROR_BAD_REQUEST.getCode();
         assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());

@@ -62,6 +62,38 @@ public class ResourceException extends RuntimeException {
      * 
      * @param code
      *            The specification code of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The description of the encapsulated status.
+     * @param uri
+     *            The URI of the specification describing the method.
+     */
+    public ResourceException(int code, String reasonPhrase) {
+        this(new Status(code, reasonPhrase));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The description of the encapsulated status.
+     */
+    public ResourceException(int code, String reasonPhrase, String description) {
+        this(new Status(code, reasonPhrase, description));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code of the encapsulated status.
      * @param name
      *            The name of the encapsulated status.
      * @param description
@@ -79,8 +111,9 @@ public class ResourceException extends RuntimeException {
      * 
      * @param code
      *            The specification code of the encapsulated status.
-     * @param name
-     *            The name of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The description of the encapsulated status.
      * @param uri
@@ -88,9 +121,9 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(int code, String name, String description,
+    public ResourceException(int code, String reasonPhrase, String description,
             String uri, Throwable cause) {
-        this(new Status(code, cause, name, description, uri), cause);
+        this(new Status(code, cause, reasonPhrase, description, uri), cause);
     }
 
     /**
@@ -103,6 +136,59 @@ public class ResourceException extends RuntimeException {
      */
     public ResourceException(int code, Throwable cause) {
         this(new Status(code, cause), cause);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public ResourceException(int code, Throwable throwable, String reasonPhrase) {
+        this(new Status(code, throwable, reasonPhrase, null, null));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     */
+    public ResourceException(int code, Throwable throwable,
+            String reasonPhrase, String description) {
+        this(new Status(code, throwable, reasonPhrase, description, null));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     * @param uri
+     *            The URI of the specification describing the method.
+     */
+    public ResourceException(int code, Throwable throwable,
+            String reasonPhrase, String description, String uri) {
+        this(new Status(code, throwable, reasonPhrase, description, uri));
     }
 
     /**

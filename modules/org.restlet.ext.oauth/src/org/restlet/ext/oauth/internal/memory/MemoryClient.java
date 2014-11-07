@@ -35,7 +35,6 @@ package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Arrays;
 import java.util.Map;
-
 import org.restlet.ext.oauth.GrantType;
 import org.restlet.ext.oauth.ResponseType;
 import org.restlet.ext.oauth.internal.Client;

@@ -34,6 +34,8 @@
 package org.restlet.ext.apispark.internal.firewall.rule.counter;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -48,11 +50,17 @@ import com.google.common.base.Stopwatch;
  */
 public class PeriodicCounter extends Counter {
 
+    /** The counter value. */
+    protected final AtomicInteger counter;
+
     /** The period associated to the Counter. */
-    private int period;
+    private final long period;
 
     /** Calculates periods duration and resets them. */
-    private Stopwatch stopwatch;
+    private final Stopwatch stopwatch;
+
+    /** Next counter reset time */
+    private final AtomicLong counterReset;
 
     /**
      * Constructor.
@@ -60,9 +68,11 @@ public class PeriodicCounter extends Counter {
      * @param period
      *            The period associated to the counter.
      */
-    public PeriodicCounter(int period) {
+    public PeriodicCounter(long period) {
+        this.counter = new AtomicInteger();
         this.period = period;
         this.stopwatch = Stopwatch.createStarted();
+        this.counterReset = new AtomicLong();
     }
 
     @Override
@@ -70,19 +80,31 @@ public class PeriodicCounter extends Counter {
     }
 
     @Override
-    public synchronized CounterResult increment() {
-        if (stopwatch.elapsed(TimeUnit.SECONDS) > period) {
-            Context.getCurrentLogger().log(Level.FINE, "Period reinitialized.");
-            stopwatch.reset();
-            stopwatch.start();
-            value = 0;
+    public CounterResult increment() {
+        long elapsed;
+        long reset;
+
+        // if counter time is elapsed, reset it.
+        synchronized (stopwatch) {
+            elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
+            if (elapsed > period) {
+                Context.getCurrentLogger().log(Level.FINE, "Period reinitialized.");
+                stopwatch.reset();
+                stopwatch.start();
+                counter.getAndSet(0);
+                reset = System.currentTimeMillis() / 1000L + period;
+                counterReset.getAndSet(reset);
+                elapsed = 0;
+            } else {
+                reset = counterReset.get();
+            }
         }
-        value++;
+
+        int consumed = counter.incrementAndGet();
         CounterResult counterResult = new CounterResult();
-        counterResult.setConsumed(value);
-        counterResult.setElapsed(stopwatch.elapsed(TimeUnit.SECONDS));
-        counterResult.setReset(System.currentTimeMillis() / 1000L + period
-                - stopwatch.elapsed(TimeUnit.SECONDS));
+        counterResult.setConsumed(consumed);
+        counterResult.setElapsed(elapsed);
+        counterResult.setReset(reset);
         return counterResult;
     }
 

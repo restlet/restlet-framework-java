@@ -46,24 +46,7 @@ import java.util.List;
 public interface DocumentedResource {
 
     /**
-     * Name of the resource. When generating Restlet Framework client SDKs on <a
-     * href="https://apispark.com">APISpark</a>, the annotated interface will be
-     * named [name]Resource and the ClientResource [name]ClientResource.
-     *
-     * Can be overriden.
-     */
-    String getResourceName();
-
-    /**
-     * Description of the resource.
-     *
-     * @return The description of the resource
-     */
-    String getResourceDescription();
-
-    /**
      * Name of a section of your Web API. Used to tidy it in documentation.
-     * //todo section by method ??
      */
-    List<String> getResourceSections();
+    List<String> getSections();
 }

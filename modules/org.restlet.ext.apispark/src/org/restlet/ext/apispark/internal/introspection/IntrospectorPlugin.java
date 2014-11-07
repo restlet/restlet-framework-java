@@ -21,13 +21,11 @@ import java.lang.reflect.Method;
 public interface IntrospectorPlugin {
 
 
-    void processDefinition(Definition definition, Application application);
+    void processDefinition(Definition definition, Class<?> applicationClazz);
 
-    void processResource(Resource resource, ServerResource serverResource);
+    void processResource(Resource resource, Class<?> resourceClazz);
 
-    void processResource(Resource resource, Directory directory);
-
-    void processOperation(Operation operation, MethodAnnotationInfo methodAnnotationInfo);
+    void processOperation(Resource resource, Operation operation, Class<?> resourceClazz, Method operationMethod);
 
     void processRepresentation(Representation representation, Class<?> representationType);
 

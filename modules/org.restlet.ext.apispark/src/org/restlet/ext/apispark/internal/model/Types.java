@@ -51,6 +51,9 @@ public abstract class Types {
         if(Date.class.isAssignableFrom(type)) {
             return "date";
         }
+        if(Representation.class.isAssignableFrom(type)) {
+            return "file";
+        }
         return type.getName();
     }
 

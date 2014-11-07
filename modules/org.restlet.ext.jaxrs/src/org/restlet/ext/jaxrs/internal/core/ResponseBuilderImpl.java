@@ -50,8 +50,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Dimension;
 import org.restlet.ext.jaxrs.internal.util.Converter;

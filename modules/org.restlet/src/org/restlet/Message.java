@@ -272,8 +272,16 @@ public abstract class Message {
      */
     @SuppressWarnings("unchecked")
     public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
+        Series<Header> headers = (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
+        if (headers == null) {
+            // [ifndef gwt] instruction
+            headers = new Series<Header>(Header.class);
+            // [ifdef gwt] instruction uncomment
+            // headers = new org.restlet.engine.util.HeaderSeries();
+            getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+        }
+        return headers;
     }
 
     /**

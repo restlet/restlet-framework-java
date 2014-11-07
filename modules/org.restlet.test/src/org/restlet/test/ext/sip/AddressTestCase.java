@@ -33,6 +33,8 @@
 
 package org.restlet.test.ext.sip;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -97,7 +99,7 @@ public class AddressTestCase extends RestletTestCase {
     }
 
     @Test
-    public void testWriting() {
+    public void testWriting() throws IOException {
         Address a = new Address();
         a.setDisplayName("A. G. Bell");
         a.setReference(new Reference("sip:agb@bell-telephone.com"));
@@ -107,13 +109,17 @@ public class AddressTestCase extends RestletTestCase {
         assertEquals("\"A. G. Bell\" <sip:agb@bell-telephone.com> ;tag=a48s", w
                 .append(a).toString());
 
-        w = new AddressWriter();
-        a = new Address();
-        a.setDisplayName(null);
-        a.setReference(new Reference("sip:agb@bell-telephone.com"));
-        a.getParameters().add("tag", "a48s");
-        assertEquals("<sip:agb@bell-telephone.com> ;tag=a48s", w.append(a)
-                .toString());
+        try {
+            w = new AddressWriter();
+            a = new Address();
+            a.setDisplayName(null);
+            a.setReference(new Reference("sip:agb@bell-telephone.com"));
+            a.getParameters().add("tag", "a48s");
+            assertEquals("<sip:agb@bell-telephone.com> ;tag=a48s", w.append(a)
+                    .toString());
+        } finally {
+            w.close();
+        }
     }
 
 }

@@ -902,14 +902,14 @@ public class Engine {
         getRegisteredServers().add(
                 new org.restlet.engine.connector.HttpsServerHelper(null));
         // [enddef]
-        
+
         // [ifndef gae, gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.local.FileClientHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.ZipClientHelper(null));
         // [enddef]
-        
+
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(
         // new org.restlet.engine.adapter.GwtHttpClientHelper(null));

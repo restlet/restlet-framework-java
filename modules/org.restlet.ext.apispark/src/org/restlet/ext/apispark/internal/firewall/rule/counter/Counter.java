@@ -37,6 +37,8 @@ import org.restlet.ext.apispark.internal.firewall.rule.CounterResult;
 import org.restlet.ext.apispark.internal.firewall.rule.FirewallCounterRule;
 import org.restlet.ext.apispark.internal.firewall.rule.policy.CountingPolicy;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Counts requests. Is associated to a {@link FirewallCounterRule} and a counted
  * value (identifier returned by a {@link CountingPolicy}).
@@ -44,9 +46,6 @@ import org.restlet.ext.apispark.internal.firewall.rule.policy.CountingPolicy;
  * @author Guillaume Blondeau
  */
 public abstract class Counter {
-
-    /** The counter value. */
-    protected int value;
 
     /**
      * Decrements the counter.

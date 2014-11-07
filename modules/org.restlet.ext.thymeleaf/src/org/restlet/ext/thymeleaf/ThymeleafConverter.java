@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.thymeleaf.Template;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -44,7 +45,6 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
-import org.thymeleaf.Template;
 
 /**
  * Converter between the Thymeleaf Template objects and Representations. The

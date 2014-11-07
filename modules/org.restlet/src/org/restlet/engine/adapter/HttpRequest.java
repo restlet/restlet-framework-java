@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
@@ -48,7 +49,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Header;
-import org.restlet.data.HeaderName;
 import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
@@ -59,12 +59,11 @@ import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.header.HeaderNameReader;
 import org.restlet.engine.header.HeaderReader;
-import org.restlet.engine.header.MethodReader;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.header.RecipientInfoReader;
+import org.restlet.engine.header.StringReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -86,14 +85,25 @@ public class HttpRequest extends Request {
      *            The header name to add.
      * @param headerValue
      *            The header value to add.
+     * @deprecated Use {@link Message#getHeaders()} directly instead.
      */
+    @Deprecated
     public static void addHeader(Request request, String headerName,
             String headerValue) {
-        if (request instanceof HttpRequest) {
-            ((HttpRequest) request).getHeaders().add(
-                    new Header(headerName, headerValue));
-        }
+        request.getHeaders().add(new Header(headerName, headerValue));
     }
+
+    /**
+     * Indicates if the access control data for request headers was parsed and
+     * added
+     */
+    private volatile boolean accessControlRequestHeadersAdded;
+
+    /**
+     * Indicates if the access control data for request methods was parsed and
+     * added
+     */
+    private volatile boolean accessControlRequestMethodAdded;
 
     /** Indicates if the cache control data was parsed and added. */
     private volatile boolean cacheDirectivesAdded;
@@ -122,6 +132,9 @@ public class HttpRequest extends Request {
     /** Indicates if the ranges data was parsed and added. */
     private volatile boolean rangesAdded;
 
+    /** Indicates if the recipients info was parsed and added. */
+    private volatile boolean recipientsInfoAdded;
+
     /** Indicates if the referrer was parsed and added. */
     private volatile boolean referrerAdded;
 
@@ -130,15 +143,6 @@ public class HttpRequest extends Request {
 
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
-
-    /** Indicates if the recipients info was parsed and added. */
-    private volatile boolean recipientsInfoAdded;
-
-    /** Indicates if the access control request headers was parsed and added */
-    private volatile boolean accessControlRequestHeadersAdded;
-
-    /** Indicates if the access control request methods was parsed and added */
-    private volatile boolean accessControlRequestMethodAdded;
 
     /**
      * Constructor.
@@ -216,6 +220,37 @@ public class HttpRequest extends Request {
     @Override
     public void flushBuffers() throws IOException {
         getHttpCall().flushBuffers();
+    }
+
+    @Override
+    public Set<String> getAccessControlRequestHeaders() {
+        Set<String> result = super.getAccessControlRequestHeaders();
+        if (!accessControlRequestHeadersAdded) {
+            for (String header : getHttpCall()
+                    .getRequestHeaders()
+                    .getValuesArray(
+                            HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+                            true)) {
+                new StringReader(header).addValues(result);
+            }
+            accessControlRequestHeadersAdded = true;
+        }
+        return result;
+    }
+
+    @Override
+    public Method getAccessControlRequestMethod() {
+        Method result = super.getAccessControlRequestMethod();
+        if (!accessControlRequestMethodAdded) {
+            String header = getHttpCall().getRequestHeaders().getFirstValue(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD, true);
+            if (header != null) {
+                result = Method.valueOf(header);
+                super.setAccessControlRequestMethod(result);
+            }
+            accessControlRequestMethodAdded = true;
+        }
+        return result;
     }
 
     @Override
@@ -608,29 +643,16 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public Set<HeaderName> getAccessControlRequestHeaders() {
-        Set<HeaderName> result = super.getAccessControlRequestHeaders();
-        if (!accessControlRequestHeadersAdded) {
-            for (String header : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS, true)) {
-                new HeaderNameReader(header).addValues(result);
-            }
-            accessControlRequestHeadersAdded = true;
-        }
-        return result;
+    public void setAccessControlRequestHeaders(
+            Set<String> accessControlRequestHeaders) {
+        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
+        this.accessControlRequestHeadersAdded = true;
     }
 
     @Override
-    public Set<Method> getAccessControlRequestMethod() {
-        Set<Method> result = super.getAccessControlRequestMethod();
-        if (!accessControlRequestMethodAdded) {
-            for (String header : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD, true)) {
-                new MethodReader(header).addValues(result);
-            }
-            accessControlRequestMethodAdded = true;
-        }
-        return result;
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
+        super.setAccessControlRequestMethod(accessControlRequestMethod);
+        this.accessControlRequestMethodAdded = true;
     }
 
     @Override
@@ -661,17 +683,5 @@ public class HttpRequest extends Request {
     public void setWarnings(List<Warning> warnings) {
         super.setWarnings(warnings);
         this.warningsAdded = true;
-    }
-
-    @Override
-    public void setAccessControlRequestHeaders(Set<HeaderName> accessControlRequestHeaders) {
-        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
-        this.accessControlRequestHeadersAdded = true;
-    }
-
-    @Override
-    public void setAccessControlRequestMethod(Set<Method> accessControlRequestMethod) {
-        super.setAccessControlRequestMethod(accessControlRequestMethod);
-        this.accessControlRequestMethodAdded = true;
     }
 }
