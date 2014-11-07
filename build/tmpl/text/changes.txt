@@ -5,7 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
-    
+      - Added support of GWT 2.1.7.
+        Contributed by Koen.
+      - Enhanced introspection of Restlet and Jaxrs based applications in 
+        conjunction with Swagger and Raml annotations.
+      - Added APISpark agent service.
+
     - API changes
       - Jackson representation now ignore null values by default in the
         JSON/XML/CSV/YAML produced, leading to more compact representations.
