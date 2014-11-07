@@ -568,18 +568,22 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     protected void generateSerializers() throws UnableToCompleteException {
         try {
             try {
-                this.stob = getSerializableTypeOracleBuilder2_5();
-            } catch (Exception e2_5) {
-	            try {
-	                this.stob = getSerializableTypeOracleBuilder2_3();
-	            } catch (Exception e2_3) {
-	                try {
-	                    this.stob = getSerializableTypeOracleBuilder2_2();
-	                } catch (Exception e2_2) {
-	                    getLogger().log(TreeLogger.ERROR, "", e2_2);
-	                    throw new UnableToCompleteException();
-	                }
-	            }
+                this.stob = getSerializableTypeOracleBuilder2_7();
+            } catch(Exception e2_7) {
+                try {
+                    this.stob = getSerializableTypeOracleBuilder2_5();
+                } catch (Exception e2_5) {
+                    try {
+                        this.stob = getSerializableTypeOracleBuilder2_3();
+                    } catch (Exception e2_3) {
+                        try {
+                            this.stob = getSerializableTypeOracleBuilder2_2();
+                        } catch (Exception e2_2) {
+                            getLogger().log(TreeLogger.ERROR, "", e2_2);
+                            throw new UnableToCompleteException();
+                        }
+                    }
+                }
             }
 
 
@@ -827,6 +831,22 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
         return result;
     }
+
+    /**
+     * Instantiates a SerializableTypeOracleBuilder instance using the GWT2.7
+     * constructor.
+     * 
+     * @return An instance of a {@link SerializableTypeOracleBuilder}.
+     * @throws Exception
+     */
+    private SerializableTypeOracleBuilder getSerializableTypeOracleBuilder2_7() throws Exception {
+    	SerializableTypeOracleBuilder result = null;
+    		Constructor<SerializableTypeOracleBuilder> c = null;
+    	c = SerializableTypeOracleBuilder.class.getDeclaredConstructor(TreeLogger.class, GeneratorContext.class);
+    	result = c.newInstance(getLogger(), getContext());
+    		return result;
+    }
+
 
     /**
      * Returns the writer used for the content of the proxy class.
