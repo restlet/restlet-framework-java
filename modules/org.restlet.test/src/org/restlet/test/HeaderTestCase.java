@@ -98,9 +98,9 @@ public class HeaderTestCase extends RestletTestCase {
         return headers;
     }
 
-    private Component component;
-
     private Client client;
+
+    private Component component;
 
     /**
      * Handle a new request built according to the parameters and return the

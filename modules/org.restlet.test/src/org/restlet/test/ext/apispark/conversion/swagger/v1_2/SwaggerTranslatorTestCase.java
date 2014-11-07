@@ -37,8 +37,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
@@ -55,48 +56,24 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
- * Unit test for the {@link org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator} class.
+ * Unit test for the
+ * {@link org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator}
+ * class.
  * 
  * @author Cyprien Quilici
  */
 public class SwaggerTranslatorTestCase extends RestletTestCase {
 
-    /**
-     * Retrieves the Petstore from
-     * <a href="http://petstore.swagger.wordnik.com/api/api-docs">http://petstore.swagger.wordnik.com/api/api-doc</a>,
-     * and translates it to RWADef using SwaggerTranslater.
-     * 
-     * @throws TranslationException
-     * @throws IOException
-     */
-    public void testPetstoreSwaggerUrlToRwadef() throws TranslationException,
-            IOException {
-        Definition translatedDefinition = SwaggerUtils.getDefinition(
-                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
-        assertNotNull(translatedDefinition);
-        //could not check definitions attributes because content could be update by swagger
-    }
-    public void testPetstoreSwaggerJsonToRwadef() throws TranslationException,
-            IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ResourceListing resourceListing = objectMapper.readValue(getClass().getResource("api-docs.json"), ResourceListing.class);
-        ApiDeclaration petApiDeclaration = objectMapper.readValue(getClass().getResource("pet.json"), ApiDeclaration.class);
-        ApiDeclaration storeApiDeclaration = objectMapper.readValue(getClass().getResource("store.json"), ApiDeclaration.class);
-        ApiDeclaration userApiDeclaration = objectMapper.readValue(getClass().getResource("user.json"), ApiDeclaration.class);
-        Map<String, ApiDeclaration> apiDeclarations = new HashMap<String, ApiDeclaration>();
-        apiDeclarations.put("/pet", petApiDeclaration);
-        apiDeclarations.put("/store", storeApiDeclaration);
-        apiDeclarations.put("/user", userApiDeclaration);
-        Definition translatedDefinition = SwaggerTranslator.translate(resourceListing, apiDeclarations);
-        comparePetstoreDefinition(translatedDefinition);
-    }
-
-    private void comparePetstoreDefinition(Definition translatedDefinition) throws IOException {
+    private void comparePetstoreDefinition(Definition translatedDefinition)
+            throws IOException {
         Definition savedDefinition = new JacksonRepresentation<Definition>(
                 new FileRepresentation(getClass()
                         .getResource("Petstore.rwadef").getFile(),
@@ -134,7 +111,8 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         Representation savedRepresentation;
         for (Representation translatedRepresentation : translatedDefinition
                 .getContract().getRepresentations()) {
-            savedRepresentation = savedDefinition.getContract()
+            savedRepresentation = savedDefinition
+                    .getContract()
                     .getRepresentation(translatedRepresentation.getIdentifier());
             assertEquals(true, savedRepresentation != null);
 
@@ -348,5 +326,53 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                 }
             }
         }
+    }
+
+    protected void setUpEngine() {
+        super.setUpEngine();
+        // we control the available converters.
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().getRegisteredConverters()
+                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new DefaultConverter());
+    }
+
+    public void testPetstoreSwaggerJsonToRwadef() throws TranslationException,
+            IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResourceListing resourceListing = objectMapper.readValue(getClass()
+                .getResource("api-docs.json"), ResourceListing.class);
+        ApiDeclaration petApiDeclaration = objectMapper.readValue(getClass()
+                .getResource("pet.json"), ApiDeclaration.class);
+        ApiDeclaration storeApiDeclaration = objectMapper.readValue(getClass()
+                .getResource("store.json"), ApiDeclaration.class);
+        ApiDeclaration userApiDeclaration = objectMapper.readValue(getClass()
+                .getResource("user.json"), ApiDeclaration.class);
+        Map<String, ApiDeclaration> apiDeclarations = new HashMap<String, ApiDeclaration>();
+        apiDeclarations.put("/pet", petApiDeclaration);
+        apiDeclarations.put("/store", storeApiDeclaration);
+        apiDeclarations.put("/user", userApiDeclaration);
+        Definition translatedDefinition = SwaggerTranslator.translate(
+                resourceListing, apiDeclarations);
+        comparePetstoreDefinition(translatedDefinition);
+    }
+
+    /**
+     * Retrieves the Petstore from <a
+     * href="http://petstore.swagger.wordnik.com/api/api-docs"
+     * >http://petstore.swagger.wordnik.com/api/api-doc</a>, and translates it
+     * to RWADef using SwaggerTranslater.
+     * 
+     * @throws TranslationException
+     * @throws IOException
+     */
+    public void testPetstoreSwaggerUrlToRwadef() throws TranslationException,
+            IOException {
+        Definition translatedDefinition = SwaggerUtils.getDefinition(
+                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
+        assertNotNull(translatedDefinition);
+        // could not check definitions attributes because content could be
+        // update by swagger
     }
 }

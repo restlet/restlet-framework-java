@@ -45,14 +45,15 @@ import org.restlet.test.RestletTestCase;
  */
 public class RamlTranslaterTestCase extends RestletTestCase {
 
-	/**
-	 * Retrieves the Petstore from a file, and translates it to
-	 * RWADef using RamlTranslater.
-	 * 
-	 * @throws TranslationException
-	 * @throws IOException
-	 */
-	public void testPetstoreRamlToRwadef() throws TranslationException, IOException {
-		// TODO
-	}
+    /**
+     * Retrieves the Petstore from a file, and translates it to RWADef using
+     * RamlTranslater.
+     * 
+     * @throws TranslationException
+     * @throws IOException
+     */
+    public void testPetstoreRamlToRwadef() throws TranslationException,
+            IOException {
+        // TODO
+    }
 }

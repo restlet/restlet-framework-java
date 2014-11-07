@@ -46,13 +46,13 @@ import org.restlet.test.ext.apispark.conversion.swagger.v2_0.Swagger2TranslatorT
  */
 public class ApiSparkTestSuite extends TestCase {
 
-	public static Test suite() {
-		TestSuite result = new TestSuite();
-		result.setName("Swagger extension");
-		result.addTestSuite(AgentServiceTestCase.class);
-		result.addTestSuite(SwaggerTranslatorTestCase.class);
-		result.addTestSuite(Swagger2TranslatorTestCase.class);
-		return result;
-	}
+    public static Test suite() {
+        TestSuite result = new TestSuite();
+        result.setName("Swagger extension");
+        result.addTestSuite(AgentServiceTestCase.class);
+        result.addTestSuite(SwaggerTranslatorTestCase.class);
+        result.addTestSuite(Swagger2TranslatorTestCase.class);
+        return result;
+    }
 
 }

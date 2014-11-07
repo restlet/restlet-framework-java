@@ -75,8 +75,8 @@ public class StatusServiceTestCase extends RestletTestCase {
                 metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status,
-                request, new Response(request));
+        Representation representation = ss.toRepresentation(status, request,
+                new Response(request));
 
         // verify
         Status expectedStatus = Status.CLIENT_ERROR_BAD_REQUEST;
@@ -104,8 +104,8 @@ public class StatusServiceTestCase extends RestletTestCase {
                 metadataService, connegService);
 
         Request request = new Request();
-        Representation representation = ss.toRepresentation(status,
-                request, new Response(request));
+        Representation representation = ss.toRepresentation(status, request,
+                new Response(request));
 
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();

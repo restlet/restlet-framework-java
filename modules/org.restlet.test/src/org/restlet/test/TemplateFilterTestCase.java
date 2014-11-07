@@ -61,9 +61,9 @@ public class TemplateFilterTestCase extends RestletTestCase {
      * @author Thierry Boileau
      */
     private static class MyFreemakerApplication extends Application {
-        File testDirectory;
-
         Directory directory;
+
+        File testDirectory;
 
         /**
          * Constructor.
@@ -100,9 +100,9 @@ public class TemplateFilterTestCase extends RestletTestCase {
      * @author Thierry Boileau
      */
     private static class MyVelocityApplication extends Application {
-        File testDirectory;
-
         Directory directory;
+
+        File testDirectory;
 
         /**
          * Constructor.

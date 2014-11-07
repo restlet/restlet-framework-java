@@ -26,8 +26,8 @@ public interface EchoResource {
     @Path("point-query")
     @Consumes(MediaType.APPLICATION_JSON)
     Point echoPointQueryParam(/**
-     * using @Deprecated to test the annotation mapping
-     * logic
+     * using @Deprecated to test the annotation
+     * mapping logic
      */
     @Deprecated
     @QueryParam("point")

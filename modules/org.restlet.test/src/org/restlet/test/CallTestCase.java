@@ -135,6 +135,19 @@ public class CallTestCase extends RestletTestCase {
     }
 
     /**
+     * Tests client agent getting/setting.
+     */
+    public void testClientAgent() throws Exception {
+        final ClientInfo client = getRequest().getClientInfo();
+        String name = "Restlet";
+        client.setAgent(name);
+        assertEquals(name, client.getAgent());
+        name = "Restlet Client";
+        client.setAgent(name);
+        assertEquals(name, client.getAgent());
+    }
+
+    /**
      * Tests client addresses getting/setting.
      */
     public void testClientForwardedAddresses() throws Exception {
@@ -148,19 +161,6 @@ public class CallTestCase extends RestletTestCase {
         client.getForwardedAddresses().clear();
         client.getForwardedAddresses().addAll(addresses);
         assertEquals(addresses, client.getForwardedAddresses());
-    }
-
-    /**
-     * Tests client agent getting/setting.
-     */
-    public void testClientAgent() throws Exception {
-        final ClientInfo client = getRequest().getClientInfo();
-        String name = "Restlet";
-        client.setAgent(name);
-        assertEquals(name, client.getAgent());
-        name = "Restlet Client";
-        client.setAgent(name);
-        assertEquals(name, client.getAgent());
     }
 
     /**

@@ -614,8 +614,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
-        Swagger savedSwagger = new SwaggerLoader()
-                .read(refImpl.getFile());
+        Swagger savedSwagger = new SwaggerLoader().read(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }

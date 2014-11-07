@@ -202,6 +202,7 @@ public class AgentServiceTestCase extends RestletTestCase {
     }
 
     protected void setUpEngine() {
+        super.setUpEngine();
         // we control the available converters.
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().getRegisteredConverters()
