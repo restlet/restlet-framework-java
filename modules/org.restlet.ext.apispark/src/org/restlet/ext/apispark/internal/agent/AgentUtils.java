@@ -2,6 +2,7 @@ package org.restlet.ext.apispark.internal.agent;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
+import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
@@ -50,7 +51,8 @@ public abstract class AgentUtils {
         }
 
         ClientResource clientResource = new ClientResource(sb.toString());
-
+        clientResource.accept(MediaType.APPLICATION_JSON);
+        
         // add authentication scheme
         clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 agentConfig.getAgentUsername(), agentConfig.getAgentSecret());

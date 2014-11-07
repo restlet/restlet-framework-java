@@ -11,7 +11,9 @@ import org.restlet.resource.Get;
 public interface ModulesSettingsResource {
 
     /**
-     * Retrieve the modules settings from apispark connector cell.
+     * Returns the modules settings from apispark connector cell.
+     * 
+     * @return The modules settings of the current cell.
      */
     @Get
     ModulesSettings getSettings();

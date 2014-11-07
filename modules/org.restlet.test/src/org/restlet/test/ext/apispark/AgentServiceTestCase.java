@@ -2,20 +2,21 @@ package org.restlet.test.ext.apispark;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.AgentService;
 import org.restlet.ext.apispark.internal.agent.bean.Credentials;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallIpFilter;
@@ -33,6 +34,7 @@ import org.restlet.ext.apispark.internal.agent.resource.AuthenticationAuthentica
 import org.restlet.ext.apispark.internal.agent.resource.AuthorizationOperationsResource;
 import org.restlet.ext.apispark.internal.agent.resource.FirewallSettingsResource;
 import org.restlet.ext.apispark.internal.agent.resource.ModulesSettingsResource;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -52,10 +54,10 @@ public class AgentServiceTestCase extends RestletTestCase {
 
         @Get
         public void getCalled() {
-            logger.info("agent get method called " + getRequest());
+            getLogger().info("agent get method called " + getRequest());
             getRequest = getRequest();
         }
-    }
+    };
 
     public static class MockAuthenticationAuthenticateServerResource extends
             ServerResource implements AuthenticationAuthenticateResource {
@@ -73,7 +75,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 return user;
             }
             if (SERVER_ERROR_USERNAME.equals(credentials.getUsername())) {
-                throw new RuntimeException("Error username cause an exception");
+                throw new RuntimeException("Error username causes an exception");
             }
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
@@ -137,8 +139,6 @@ public class AgentServiceTestCase extends RestletTestCase {
 
     public static final int DEFAULT_TEST_PORT = 1337;
 
-    private static Logger logger = Context.getCurrentLogger();
-
     private static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
 
     private static final String ROOT_PATH = "/agent/cells/" + CELL_ID
@@ -151,11 +151,7 @@ public class AgentServiceTestCase extends RestletTestCase {
     public static final String VALID_USERNAME = "user13";
 
     private static int getTestPort() {
-        if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
-            return Integer.parseInt(System.getProperty(PROPERTY_TEST_PORT));
-        }
-
-        return DEFAULT_TEST_PORT;
+        return Integer.getInteger(PROPERTY_TEST_PORT, DEFAULT_TEST_PORT);
     }
 
     private Component agentComponent;
@@ -169,7 +165,7 @@ public class AgentServiceTestCase extends RestletTestCase {
     private Response callAgent(String path, String username, String password)
             throws Exception {
         Request request = new Request(Method.GET, AGENT_URL + path);
-
+        request.getClientInfo().accept(MediaType.APPLICATION_JAVA_OBJECT);
         if (username != null) {
             // add authentication scheme
             request.setChallengeResponse(new ChallengeResponse(
@@ -203,6 +199,15 @@ public class AgentServiceTestCase extends RestletTestCase {
         MockFirewallSettingsServerResource.FIREWALL_SETTINGS = new FirewallSettings();
         MockFirewallSettingsServerResource.GET_SETTINGS_COUNT = 0;
         MockAuthenticationAuthenticateServerResource.AUTHENTICATE_COUNT = 0;
+    }
+
+    protected void setUpEngine() {
+        // we control the available converters.
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().getRegisteredConverters()
+                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new DefaultConverter());
     }
 
     private void startAgent(AgentService agentService) throws Exception {
