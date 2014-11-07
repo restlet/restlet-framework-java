@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements
       - Added support of GWT 2.1.7.
