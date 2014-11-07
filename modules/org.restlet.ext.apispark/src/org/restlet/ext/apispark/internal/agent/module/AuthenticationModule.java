@@ -142,10 +142,8 @@ public class AuthenticationModule extends ChallengeAuthenticator {
             if (obj instanceof UserIdentifier) {
                 UserIdentifier userIdentifier = (UserIdentifier) obj;
                 return Objects.equals(identifier, userIdentifier.identifier);
-            } else {
-                return false;
             }
-
+            return false;
         }
 
         public String getIdentifier() {

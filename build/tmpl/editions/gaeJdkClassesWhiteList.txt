@@ -1438,3 +1438,4 @@ org.xml.sax.helpers.ParserFactory
 org.xml.sax.helpers.XMLFilterImpl
 org.xml.sax.helpers.XMLReaderAdapter
 org.xml.sax.helpers.XMLReaderFactory
+java.util.Objects
