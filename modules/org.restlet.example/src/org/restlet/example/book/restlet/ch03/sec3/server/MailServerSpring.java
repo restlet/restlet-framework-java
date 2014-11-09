@@ -34,9 +34,7 @@
 package org.restlet.example.book.restlet.ch03.sec3.server;
 
 import org.restlet.Component;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Creates a Restlet component and application based on a Spring XML
@@ -46,13 +44,13 @@ public class MailServerSpring {
 
     public static void main(String[] args) throws Exception {
         // Load the Spring container
-        ClassPathResource resource = new ClassPathResource(
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
                 "org/restlet/example/book/restlet/ch03/sec3/server/component-spring.xml");
-        BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component
-        Component component = factory.getBean("component", Component.class);
+        Component component = context.getBean("component", Component.class);
         component.start();
+        context.close();
     }
 
 }

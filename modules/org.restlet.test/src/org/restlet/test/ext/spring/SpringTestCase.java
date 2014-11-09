@@ -36,9 +36,7 @@ package org.restlet.test.ext.spring;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.test.RestletTestCase;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Unit test case for the Spring extension.
@@ -49,29 +47,26 @@ public class SpringTestCase extends RestletTestCase {
 
     public void testSpring() throws Exception {
         // Load the Spring container
-        ClassPathResource resource = new ClassPathResource(
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
                 "org/restlet/test/ext/spring/SpringTestCase.xml");
-        BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component
-        Component component = (Component) factory.getBean("component");
+        Component component = (Component) context.getBean("component");
         component.start();
         Thread.sleep(500);
         component.stop();
+        context.close();
     }
 
     public void testSpringServerProperties() {
-        ClassPathResource resource = new ClassPathResource(
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
                 "org/restlet/test/ext/spring/SpringTestCase.xml");
-        BeanFactory factory = new XmlBeanFactory(resource);
-
-        Server server = (Server) factory.getBean("server");
-
+        Server server = (Server) context.getBean("server");
         assertEquals("value1", server.getContext().getParameters()
                 .getFirstValue("key1"));
         assertEquals("value2", server.getContext().getParameters()
                 .getFirstValue("key2"));
-
+        context.close();
     }
 
 }
