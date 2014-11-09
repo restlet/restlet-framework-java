@@ -68,7 +68,6 @@ public class RateLimitationHandler extends BlockingHandler {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public int handle(Request request, Response response,
             CounterResult counterResult) {
         Series<Header> headers = response.getHeaders();

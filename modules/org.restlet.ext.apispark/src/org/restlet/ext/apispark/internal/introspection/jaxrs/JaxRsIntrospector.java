@@ -162,6 +162,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             return new LinkedHashMap<String, QueryParameter>(queryParameters);
         }
 
+        @SuppressWarnings("unused")
         public Resource getResource() {
             return resource;
         }
@@ -182,6 +183,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             this.produces = produces;
         }
 
+        @SuppressWarnings("unused")
         public void setResource(Resource resource) {
             this.resource = resource;
         }
@@ -707,7 +709,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         // Scan parameters
         Annotation[][] parameterAnnotations = constructor
                 .getParameterAnnotations();
-        Class[] parameterTypes = constructor.getParameterTypes();
+        Class<?>[] parameterTypes = constructor.getParameterTypes();
         Type[] genericParameterTypes = constructor.getGenericParameterTypes();
 
         scanParameters(clazzInfo, parameterAnnotations, parameterTypes,
@@ -757,7 +759,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanParameters(ClazzInfo clazzInfo,
-            Annotation[][] parameterAnnotations, Class[] parameterTypes,
+            Annotation[][] parameterAnnotations, Class<?>[] parameterTypes,
             Type[] genericParameterTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
             Annotation[] annotations = parameterAnnotations[i];
@@ -840,12 +842,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         Map<String, QueryParameter> queryParameters = clazzInfo
                 .getQueryParametersCopy();
 
-        List<Representation> representations = new ArrayList<>();
-
         // Scan method parameters
         // todo factorize code (OperationInfo create from ClazzInfo)
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        Class[] parameterTypes = method.getParameterTypes();
+        Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -1016,7 +1016,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         // Scan parameters
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        Class[] parameterTypes = method.getParameterTypes();
+        Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         scanParameters(clazzInfo, parameterAnnotations, parameterTypes,

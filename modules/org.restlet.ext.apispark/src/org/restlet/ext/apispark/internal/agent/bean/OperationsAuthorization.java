@@ -8,6 +8,8 @@ import java.util.Collection;
  */
 public class OperationsAuthorization extends ArrayList<OperationAuthorization> {
 
+    private static final long serialVersionUID = 1L;
+
     public OperationsAuthorization() {
     }
 

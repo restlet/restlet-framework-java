@@ -3,7 +3,6 @@ package org.restlet.ext.apispark.internal.agent.bean;
 /**
  * @author Manuel Boillod
  */
-@SuppressWarnings("ALL")
 public class ModulesSettings {
 
     boolean analyticsModuleEnabled;

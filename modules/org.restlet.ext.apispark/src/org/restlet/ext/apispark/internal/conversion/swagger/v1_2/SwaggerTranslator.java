@@ -905,12 +905,11 @@ public abstract class SwaggerTranslator {
             Operation operation, ResourceOperationDeclaration swaggerOperation,
             List<String> apiProduces, List<String> apiConsumes) {
         // Set variants
-        Representation representation;
-        boolean containsRawTypes = false;
         for (String produced : apiProduces.isEmpty() ? swaggerOperation
                 .getProduces() : apiProduces) {
             operation.getProduces().add(produced);
         }
+
         for (String consumed : apiConsumes.isEmpty() ? swaggerOperation
                 .getConsumes() : apiConsumes) {
             operation.getConsumes().add(consumed);
