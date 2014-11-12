@@ -64,6 +64,8 @@ import org.restlet.routing.Router;
  * of {@link SwaggerSpecificationRestlet}.
  * 
  * @author Thierry Boileau
+ * @see SwaggerSpecificationRestlet
+ * @see Swagger2SpecificationRestlet
  */
 public class SwaggerApplication extends Application implements
         DocumentedApplication {
