@@ -36,7 +36,7 @@ package org.restlet.service;
 import java.util.Set;
 
 import org.restlet.Context;
-import org.restlet.engine.cors.CorsFilter;
+import org.restlet.engine.application.CorsFilter;
 import org.restlet.engine.util.SetUtils;
 import org.restlet.routing.Filter;
 

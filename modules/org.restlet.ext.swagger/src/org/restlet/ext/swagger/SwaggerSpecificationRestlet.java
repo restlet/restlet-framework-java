@@ -44,7 +44,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.cors.CorsResponseHelper;
+import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;

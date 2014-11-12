@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.db4o"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.junit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.atom"/>
@@ -39,9 +38,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.testng"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mongodb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.guice"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.testng"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mongodb"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

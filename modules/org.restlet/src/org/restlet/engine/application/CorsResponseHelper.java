@@ -1,4 +1,4 @@
-package org.restlet.engine.cors;
+package org.restlet.engine.application;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package org.restlet.engine.cors;
+package org.restlet.engine.application;
 
 import java.util.Set;
 
@@ -124,7 +124,7 @@ public class CorsFilter extends Filter {
 
     /**
      * Returns a lazy-initialized instance of
-     * {@link org.restlet.engine.cors.CorsResponseHelper}.
+     * {@link org.restlet.engine.application.CorsResponseHelper}.
      */
     protected CorsResponseHelper getCorsResponseHelper() {
         if (corsResponseHelper == null) {
