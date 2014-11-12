@@ -34,6 +34,7 @@
 package org.restlet.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -264,6 +265,9 @@ public class StatusService extends Service {
             // converters to cope with conversions whereas they are not supposed
             // to. Should be updated when introducing strict mode of content
             // negotiation.
+            if (variants == null) {
+                variants = new ArrayList<>();
+            }
             if (!variants.contains(VARIANT_HTML)) {
                 variants.add(VARIANT_HTML);
             }
