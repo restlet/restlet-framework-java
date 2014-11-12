@@ -84,6 +84,7 @@
          <exclude name="src/org/restlet/engine/adapter/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/adapter/Server*.java" />
          <exclude name="src/org/restlet/engine/application/*Conneg.java" />
+         <exclude name="src/org/restlet/engine/application/Cors*" />
          <exclude name="src/org/restlet/engine/application/StatusFilter.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/connector/ConnectionClosingRepresentation*" />
@@ -93,7 +94,6 @@
          <exclude name="src/org/restlet/engine/connector/HttpUrlConnectionCall*" />
          <exclude name="src/org/restlet/engine/connector/*Server*" />
          <exclude name="src/org/restlet/engine/converter/**" />
-         <exclude name="src/org/restlet/engine/cors/**" />
          <exclude name="src/org/restlet/engine/header/ExpectationUtils.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationReader.java" />
          <exclude name="src/org/restlet/engine/header/ExpectationWriter.java" />
