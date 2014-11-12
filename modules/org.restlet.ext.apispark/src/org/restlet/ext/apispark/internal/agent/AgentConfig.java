@@ -1,5 +1,6 @@
 package org.restlet.ext.apispark.internal.agent;
 
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.AgentService;
 
 /**
@@ -22,6 +23,10 @@ public class AgentConfig {
 
     private Integer cellVersion;
 
+    private boolean redirectionEnabled;
+
+    private String redirectionUrl;
+
     public String getAgentSecret() {
         return agentSecret != null ? new String(agentSecret) : null;
     }
@@ -40,6 +45,14 @@ public class AgentConfig {
 
     public Integer getCellVersion() {
         return cellVersion;
+    }
+
+    public String getRedirectionUrl() {
+        return redirectionUrl;
+    }
+
+    public boolean isRedirectionEnabled() {
+        return redirectionEnabled;
     }
 
     public AgentConfig setAgentSecret(char[] agentSecret) {
@@ -73,6 +86,14 @@ public class AgentConfig {
         return this;
     }
 
+    public void setRedirectionEnabled(boolean redirectionEnabled) {
+        this.redirectionEnabled = redirectionEnabled;
+    }
+
+    public void setRedirectionUrl(String redirectionUrl) {
+        this.redirectionUrl = redirectionUrl;
+    }
+
     public void validate() {
         if (cell == null) {
             throw new IllegalArgumentException(
@@ -82,17 +103,22 @@ public class AgentConfig {
             throw new IllegalArgumentException(
                     "The cell version identifier is mandatory");
         }
-        if (agentServiceUrl == null) {
+        if (StringUtils.isNullOrEmpty(agentServiceUrl)) {
             throw new IllegalArgumentException(
                     "The agent service url is mandatory");
         }
-        if (agentUsername == null) {
+        if (StringUtils.isNullOrEmpty(agentUsername)) {
             throw new IllegalArgumentException(
                     "The agent username is mandatory");
         }
-        if (agentSecret == null) {
+        if (agentSecret == null || agentSecret.length == 0) {
             throw new IllegalArgumentException(
                     "The agent secret key is mandatory");
+        }
+
+        if (redirectionEnabled && StringUtils.isNullOrEmpty(redirectionUrl)) {
+            throw new IllegalArgumentException(
+                    "The redirection url is mandatory when redirection is enabled");
         }
     }
 
