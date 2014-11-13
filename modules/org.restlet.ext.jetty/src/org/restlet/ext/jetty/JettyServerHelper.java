@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
@@ -47,12 +46,8 @@ import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.spdy.server.NPNServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.PushStrategy;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
@@ -217,30 +212,9 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>Low resource monitor stop timeout in milliseconds; the maximum time
  * allowed for the service to shutdown</td>
  * </tr>
- * <tr>
- * <td>spdy.version</td>
- * <td>int</td>
- * <td>0</td>
- * <td>SPDY max version; can be 0, 2, or 3; if 0, SPDY is not used. Make sure to
- * install the NON boot jar for the matching JDK 1.7 version in the JVM boot
- * classpath in order to make it work.</td>
- * </tr>
- * <tr>
- * <td>spdy.pushStrategy</td>
- * <td>String</td>
- * <td>null</td>
- * <td>SPDY push strategy; can be null or "referrer" (shortcut for
- * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class name.</td>
- * </tr>
  * </table>
  * 
  * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
- * @see <a
- *      href="http://www.eclipse.org/jetty/documentation/current/spdy.html">Jetty
- *      SPDY page</a>
- * @see <a
- *      href="http://www.eclipse.org/jetty/documentation/current/npn-chapter.html">Jetty
- *      NPN configuration page</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -278,24 +252,8 @@ public abstract class JettyServerHelper extends
         @Override
         public void handle(HttpChannel<?> channel) throws IOException,
                 ServletException {
-            try {
-                helper.handle(new JettyServerCall(helper.getHelped(), channel));
-            } catch (Throwable e) {
-                channel.getEndPoint().close();
-                throw new IOException("Restlet exception", e);
-            }
-        }
-
-        @Override
-        public void handleAsync(HttpChannel<?> channel) throws IOException,
-                ServletException {
-            // TODO: should we handle async differently?
-            try {
-                helper.handle(new JettyServerCall(helper.getHelped(), channel));
-            } catch (Throwable e) {
-                channel.getEndPoint().close();
-                throw new IOException("Restlet exception", e);
-            }
+            this.helper.handle(new JettyServerCall(this.helper.getHelped(),
+                    channel));
         }
     }
 
@@ -333,65 +291,8 @@ public abstract class JettyServerHelper extends
      *            The HTTP configuration.
      * @return New internal Jetty connection factories.
      */
-    protected ConnectionFactory[] createConnectionFactories(
-            HttpConfiguration configuration) {
-        HttpConnectionFactory http = new HttpConnectionFactory(configuration);
-        int spdyVersion = getSpdyVersion();
-
-        if (spdyVersion == 0)
-            return new ConnectionFactory[] { http };
-        else {
-            /*
-             * try { SPDYServerConnectionFactory.
-             * checkProtocolNegotiationAvailable(); } catch( Exception e ) {
-             * getLogger().log( Level.WARNING,
-             * "Jetty NPN boot is not available in -Xbootclasspath", e ); return
-             * null; }
-             */
-
-            // Push strategy
-            String pushStrategyName = getSpdyPushStrategy();
-
-            if (pushStrategyName == null)
-                pushStrategyName = "org.eclipse.jetty.spdy.server.http.PushStrategy$None";
-            else if ("referrer".equalsIgnoreCase(pushStrategyName))
-                pushStrategyName = "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
-
-            PushStrategy pushStrategy;
-            try {
-                pushStrategy = (PushStrategy) Class.forName(pushStrategyName)
-                        .newInstance();
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Unable to create the Jetty SPDY push strategy", e);
-                return null;
-            }
-
-            // SDPY connection factories
-            HTTPSPDYServerConnectionFactory spdy3 = spdyVersion == 3 ? new HTTPSPDYServerConnectionFactory(
-                    3, configuration, pushStrategy) : null;
-            HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(
-                    2, configuration, pushStrategy);
-
-            // NPN connection factory
-            NPNServerConnectionFactory npn;
-
-            if (spdyVersion == 3)
-                npn = new NPNServerConnectionFactory(spdy3.getProtocol(),
-                        spdy2.getProtocol(), http.getProtocol());
-            else
-                npn = new NPNServerConnectionFactory(spdy2.getProtocol(),
-                        http.getProtocol());
-
-            npn.setDefaultProtocol(http.getProtocol());
-
-            // All factories
-            if (spdyVersion == 3)
-                return new ConnectionFactory[] { npn, spdy3, spdy2, http };
-            else
-                return new ConnectionFactory[] { npn, spdy2, http };
-        }
-    }
+    protected abstract ConnectionFactory[] createConnectionFactories(
+            HttpConfiguration configuration);
 
     /**
      * Creates a Jetty connector.
@@ -723,31 +624,6 @@ public abstract class JettyServerHelper extends
     public boolean getLowResourceMonitorThreads() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "lowResource.threads", "true"));
-    }
-
-    /**
-     * SPDY push strategy. Defaults to null.
-     * <p>
-     * Can be null or "referrer" (shortcut for
-     * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
-     * name.
-     * 
-     * @return SPDY push strategy or null.
-     */
-    public String getSpdyPushStrategy() {
-        return getHelpedParameters().getFirstValue("spdy.pushStrategy");
-    }
-
-    /**
-     * SPDY max version. Defaults to 0.
-     * <p>
-     * Can be 0, 2, or 3. If 0, SPDY is not used.
-     * 
-     * @return Low resource monitor stop timeout.
-     */
-    public int getSpdyVersion() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "spdy.version", "0"));
     }
 
     /**

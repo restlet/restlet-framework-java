@@ -5,9 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
-      - Upgraded Jetty to version 9.2.4
-	  - Added support for SPDY via the Jetty extension.
-	    Contributed by Tal Liron.
+      -        
 
     - API changes
       -        

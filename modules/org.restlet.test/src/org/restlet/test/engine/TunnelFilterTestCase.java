@@ -96,7 +96,6 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertEqualSet(this.accEncodings, encodings);
     }
 
-    @SuppressWarnings("unchecked")
     <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
             A... expected) {
         if (actual.size() != expected.length) {
