@@ -499,7 +499,11 @@ public abstract class SwaggerTranslator {
         for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
             ApiDeclaration apiDeclaration = entry.getValue();
             Section section = new Section();
-            section.setName(entry.getKey());
+            if (entry.getKey().startsWith("/")) {
+                section.setName(entry.getKey().substring(1));
+            } else {
+                section.setName(entry.getKey());
+            }
             section.setDescription(listing.getApi(entry.getKey())
                     .getDescription());
             contract.getSections().add(section);
