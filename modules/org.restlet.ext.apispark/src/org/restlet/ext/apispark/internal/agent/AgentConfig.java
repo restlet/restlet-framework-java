@@ -11,7 +11,7 @@ import org.restlet.ext.apispark.AgentService;
  */
 public class AgentConfig {
 
-    public static final String AGENT_VERSION = "1.0";
+    public static final String AGENT_VERSION = "1.0.0";
 
     private char[] agentSecret;
 
