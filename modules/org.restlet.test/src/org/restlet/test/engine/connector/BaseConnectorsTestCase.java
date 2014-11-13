@@ -83,12 +83,17 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         nre.registerDefaultAuthentications();
         nre.registerDefaultConverters();
 
-        String uri = start();
+        String host = start();
+        String uri = getCallUri(host);
         try {
             call(uri);
         } finally {
             stop();
         }
+    }
+
+    protected String getCallUri(String host) {
+        return host + "/test";
     }
 
     protected String start() throws Exception {
@@ -100,7 +105,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         this.component.getDefaultHost().attach(application);
         this.component.start();
 
-        return "http://localhost:" + server.getEphemeralPort() + "/test";
+        return "http://localhost:" + server.getEphemeralPort();
     }
 
     protected void stop() throws Exception {

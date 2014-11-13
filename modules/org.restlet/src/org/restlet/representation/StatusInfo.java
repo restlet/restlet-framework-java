@@ -2,13 +2,15 @@ package org.restlet.representation;
 
 import org.restlet.data.Status;
 
+import java.io.Serializable;
+
 /**
  * 
  * Representation of a {@link Status}.
  * 
  * @author Manuel Boillod
  */
-public class StatusInfo {
+public class StatusInfo implements Serializable {
 
     /** The specification code. */
     int code;

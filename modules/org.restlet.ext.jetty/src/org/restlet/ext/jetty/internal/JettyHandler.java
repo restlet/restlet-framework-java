@@ -111,7 +111,7 @@ public class JettyHandler extends AbstractHandler {
      * @param servletResponse
      *            The Servlet response.
      */
-    public void handle(String target, Request request,
+    public void handle(String target, Request arg1,
             HttpServletRequest servletRequest,
             HttpServletResponse servletResponse) throws IOException,
             ServletException {

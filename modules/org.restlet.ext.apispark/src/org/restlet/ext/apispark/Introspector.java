@@ -54,7 +54,6 @@ import org.restlet.ext.apispark.internal.introspection.application.ComponentIntr
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * Generates the Web API documentation of a Restlet based {@link Application}
@@ -210,10 +209,8 @@ public class Introspector {
                         "Cannot locate the application class.", e);
             }
             // Is Restlet application ?
-            if (JaxRsApplication.class.isAssignableFrom(clazz)) {
-                // TODO implement introspection of Restlet based JaxRs
-                // application.
-            } else if (Application.class.isAssignableFrom(clazz)) {
+            // TODO implement introspection of Restlet based JaxRs (org.restlet.ext.jaxrs.JaxRsApplication)
+            if (Application.class.isAssignableFrom(clazz)) {
                 Application application = ApplicationIntrospector
                         .getApplication(defSource);
                 Component component = ComponentIntrospector

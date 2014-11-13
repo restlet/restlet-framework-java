@@ -93,17 +93,15 @@ public class JettyServerCall extends ServerCall {
         // Flush the response
         try {
             getChannel().getResponse().flushBuffer();
-        } catch (IOException e) {
-            getLogger().log(Level.FINE, "Unable to flush the response", e);
-        } catch (IllegalStateException e) {
-            getLogger().log(Level.WARNING, "TODO 2");
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to flush the response", ex);
         }
 
         // Fully complete the response
         try {
             getChannel().getResponse().closeOutput();
-        } catch (IOException e) {
-            getLogger().log(Level.FINE, "Unable to complete the response", e);
+        } catch (IOException ex) {
+            getLogger().log(Level.FINE, "Unable to complete the response", ex);
         }
     }
 
@@ -209,7 +207,7 @@ public class JettyServerCall extends ServerCall {
      */
     @Override
     public String getRequestUri() {
-        return getChannel().getRequest().getRequestURI();
+        return getChannel().getRequest().getUri().toString();
     }
 
     /**
@@ -296,11 +294,7 @@ public class JettyServerCall extends ServerCall {
         } else {
             // Send the response entity
             getChannel().getResponse().setStatus(getStatusCode());
-            try {
-                super.sendResponse(response);
-            } catch (IllegalStateException e) {
-                getLogger().log(Level.WARNING, "TODO 1");
-            }
+            super.sendResponse(response);
         }
     }
 }

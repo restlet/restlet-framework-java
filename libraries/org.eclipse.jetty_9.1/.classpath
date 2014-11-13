@@ -6,10 +6,5 @@
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.util.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.server.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.io.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.spdy.client.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.spdy.core.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.spdy.http.common.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.spdy.http.server.jar"/>
-	<classpathentry exported="true" kind="lib" path="org.eclipse.jetty.spdy.server.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
