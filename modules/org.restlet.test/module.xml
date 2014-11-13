@@ -95,6 +95,7 @@
          <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingPutTestCase.java" />
          <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingTestCase.java" />
          <exclude name="src/org/restlet/test/engine/connector/GetChunkedTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/GetQueryParamTestCase.java" />
          <exclude name="src/org/restlet/test/engine/connector/GetTestCase.java" />
          <exclude name="src/org/restlet/test/engine/connector/PostPutTestCase.java" />
          <exclude name="src/org/restlet/test/engine/connector/RemoteClientAddressTestCase.java" />
