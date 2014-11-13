@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark_swagger_annotations_2_0;
+package org.restlet.ext.apispark.internal.introspection.helper;
 
 import java.lang.reflect.Method;
 
@@ -8,7 +8,6 @@ import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark_swagger_annotations_2_0.internal.util.SwaggerAnnotationUtils;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -20,12 +19,13 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 /**
- * Fulfills API Definition from Swagger annotation 2.0.
+ * Fulfills API Definition from Swagger annotation 1.2.
  * 
  * @author Manuel Boillod
  */
 public class SwaggerAnnotationIntrospectionHelper implements
         IntrospectionHelper {
+
     @Override
     public void processDefinition(Definition definition,
             Class<?> applicationClass) {
