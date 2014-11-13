@@ -502,6 +502,7 @@ public abstract class SwaggerTranslator {
             section.setName(entry.getKey());
             section.setDescription(listing.getApi(entry.getKey())
                     .getDescription());
+            contract.getSections().add(section);
 
             for (ResourceDeclaration api : apiDeclaration.getApis()) {
                 resource = new Resource();
