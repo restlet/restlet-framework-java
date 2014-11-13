@@ -33,6 +33,11 @@
 
 package org.restlet.test.engine.connector;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
 import org.junit.Assert;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -60,15 +65,30 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
     public static class RemoteClientAddressResource extends ServerResource {
 
         public RemoteClientAddressResource() {
-
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         @Override
         public Representation get(Variant variant) {
-            // TODO IP address could differ from 127.0.0.1
-//            Assert.assertEquals("127.0.0.1", getRequest().getClientInfo()
-//                    .getAddress());
+            boolean localAddress = false;
+            try {
+                Enumeration<NetworkInterface> n = NetworkInterface
+                        .getNetworkInterfaces();
+                for (; n.hasMoreElements();) {
+                    NetworkInterface e = n.nextElement();
+                    Enumeration<InetAddress> a = e.getInetAddresses();
+                    for (; a.hasMoreElements();) {
+                        InetAddress addr = a.nextElement();
+                        if (addr.getHostAddress().equals(
+                                getRequest().getClientInfo().getAddress())) {
+                            localAddress = true;
+                        }
+                    }
+                }
+            } catch (SocketException e1) {
+                // nothing
+            }
+            Assert.assertTrue(localAddress);
             Assert.assertTrue(getRequest().getClientInfo().getPort() > 0);
 
             return new StringRepresentation("OK");
