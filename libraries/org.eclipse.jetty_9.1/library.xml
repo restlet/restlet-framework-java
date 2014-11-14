@@ -6,7 +6,7 @@
 	<homeUri>http://www.eclipse.org/jetty/</homeUri>
 	<downloadUri>http://download.eclipse.org/jetty/</downloadUri>
 	<provider>The Eclipse Foundation</provider>
-	
+
 	<package id="jetty-continuation" name="org.eclipse.jetty.continuation">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
@@ -29,6 +29,12 @@
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-client" name="org.eclipse.jetty.client">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
 		</maven>
 	</package>
 	<package id="jetty-util" name="org.eclipse.jetty.util">
