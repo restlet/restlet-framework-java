@@ -65,13 +65,13 @@ public class AgentService extends Service {
     public static final String CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY = "agentConfiguration";
 
     /** The password used to connect to the APISpark platform. */
-    private char[] agentSecret;
+    private char[] agentPassword;
 
     /** The url of the APISpark service. */
     private String agentServiceUrl = DEFAULT_AGENT_SERVICE_URL;
 
     /** The login used to connect to the APISpark platform. */
-    private String agentUsername;
+    private String agentLogin;
 
     /**
      * The identifier of the cell configured on the APISpark platform for your
@@ -107,9 +107,9 @@ public class AgentService extends Service {
     /**
      * Constructor using the default APISpark service url.
      * 
-     * @param agentUsername
+     * @param agentLogin
      *            The login used to connect to the APISpark platform.
-     * @param agentSecret
+     * @param agentPassword
      *            The password used to connect to the APISpark platform.
      * @param cell
      *            The identifier of the cell configured on the APISpark platform
@@ -122,9 +122,9 @@ public class AgentService extends Service {
      * @param redirectionUrl
      *            The redirection URL.
      */
-    public AgentService(String agentUsername, char[] agentSecret, Integer cell,
+    public AgentService(String agentLogin, char[] agentPassword, Integer cell,
             Integer cellVersion, boolean redirectionEnabled, String redirectionUrl) {
-        this(DEFAULT_AGENT_SERVICE_URL, agentUsername, agentSecret, cell,
+        this(DEFAULT_AGENT_SERVICE_URL, agentLogin, agentPassword, cell,
                 cellVersion, redirectionEnabled, redirectionUrl);
     }
 
@@ -133,9 +133,9 @@ public class AgentService extends Service {
      * 
      * @param agentServiceUrl
      *            The url of the APISpark service.
-     * @param agentUsername
+     * @param agentLogin
      *            The login used to connect to the APISpark platform.
-     * @param agentSecret
+     * @param agentPassword
      *            The password used to connect to the APISpark platform.
      * @param cell
      *            The identifier of the cell configured on the APISpark platform
@@ -148,13 +148,13 @@ public class AgentService extends Service {
      * @param redirectionUrl
      *            The redirection URL.
      */
-    public AgentService(String agentServiceUrl, String agentUsername,
-            char[] agentSecret, Integer cell, Integer cellVersion,
+    public AgentService(String agentServiceUrl, String agentLogin,
+            char[] agentPassword, Integer cell, Integer cellVersion,
             boolean redirectionEnabled, String redirectionUrl) {
         super(true);
-        this.agentSecret = agentSecret;
+        this.agentPassword = agentPassword;
         this.agentServiceUrl = agentServiceUrl;
-        this.agentUsername = agentUsername;
+        this.agentLogin = agentLogin;
         this.cell = cell;
         this.cellVersion = cellVersion;
         this.redirectionEnabled = redirectionEnabled;
@@ -167,8 +167,8 @@ public class AgentService extends Service {
         agentConfig.setCell(cell);
         agentConfig.setCellVersion(cellVersion);
         agentConfig.setAgentServiceUrl(agentServiceUrl);
-        agentConfig.setAgentUsername(agentUsername);
-        agentConfig.setAgentSecret(agentSecret);
+        agentConfig.setAgentLogin(agentLogin);
+        agentConfig.setAgentPassword(agentPassword);
         agentConfig.setRedirectionEnabled(redirectionEnabled);
         agentConfig.setRedirectionUrl(redirectionUrl);
         return new AgentFilter(agentConfig, context);
@@ -179,8 +179,8 @@ public class AgentService extends Service {
      * 
      * @return The password used to connect to the APISpark platform.
      */
-    public String getAgentSecret() {
-        return new String(agentSecret);
+    public String getAgentPassword() {
+        return new String(agentPassword);
     }
 
     /**
@@ -197,8 +197,8 @@ public class AgentService extends Service {
      * 
      * @return The login used to connect to the APISpark platform.
      */
-    public String getAgentUsername() {
-        return agentUsername;
+    public String getAgentLogin() {
+        return agentLogin;
     }
 
     /**
@@ -282,9 +282,9 @@ public class AgentService extends Service {
         } catch (IOException e) {
             throw new IllegalArgumentException("Agent configuration file error. See exception for details.", e);
         }
-        this.agentSecret = getRequiredProperty(properties, "agent.secret").toCharArray();
         this.agentServiceUrl = properties.getProperty("agent.serviceUrl", DEFAULT_AGENT_SERVICE_URL);
-        this.agentUsername = properties.getProperty("agent.usernane");
+        this.agentLogin = properties.getProperty("agent.login");
+        this.agentPassword = getRequiredProperty(properties, "agent.password").toCharArray();
         this.cell = getRequiredIntegerProperty(properties, "agent.cell.id");
         this.cellVersion = getRequiredIntegerProperty(properties, "agent.cell.version");
         this.redirectionEnabled = Boolean.valueOf(getRequiredProperty(properties, "agent.redirection.enabled"));
@@ -324,11 +324,11 @@ public class AgentService extends Service {
     /**
      * Sets the password used to connect to the APISpark platform.
      * 
-     * @param agentSecret
+     * @param agentPassword
      *            The password used to connect to the APISpark platform.
      */
-    public void setAgentSecret(String agentSecret) {
-        this.agentSecret = agentSecret != null ? agentSecret.toCharArray()
+    public void setAgentPassword(String agentPassword) {
+        this.agentPassword = agentPassword != null ? agentPassword.toCharArray()
                 : null;
     }
 
@@ -345,11 +345,11 @@ public class AgentService extends Service {
     /**
      * Sets the login used to connect to the APISpark platform.
      * 
-     * @param agentUsername
+     * @param agentLogin
      *            The login used to connect to the APISpark platform.
      */
-    public void setAgentUsername(String agentUsername) {
-        this.agentUsername = agentUsername;
+    public void setAgentLogin(String agentLogin) {
+        this.agentLogin = agentLogin;
     }
 
     /**

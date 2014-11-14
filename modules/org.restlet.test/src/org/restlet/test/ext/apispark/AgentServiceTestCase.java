@@ -20,7 +20,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.AgentService;
-import org.restlet.ext.apispark.internal.agent.application.AgentApplication;
 import org.restlet.ext.apispark.internal.agent.bean.Credentials;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallIpFilter;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallRateLimit;
@@ -42,7 +41,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-import org.restlet.routing.VirtualHost;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
@@ -203,8 +201,8 @@ public class AgentServiceTestCase extends RestletTestCase {
     public AgentService getAgentService() {
         AgentService agentService = new AgentService();
         agentService.setAgentServiceUrl(AGENT_SERVICE_URL);
-        agentService.setAgentUsername(VALID_USERNAME);
-        agentService.setAgentSecret(VALID_PASSWORD);
+        agentService.setAgentLogin(VALID_USERNAME);
+        agentService.setAgentPassword(VALID_PASSWORD);
         agentService.setCell(CELL_ID);
         agentService.setCellVersion(CELL_VERSION);
         return agentService;
@@ -636,8 +634,8 @@ public class AgentServiceTestCase extends RestletTestCase {
         AgentService agentService = new AgentService();
         agentService.loadConfiguration();
 
-        assertEquals(VALID_USERNAME, agentService.getAgentUsername());
-        assertEquals(VALID_PASSWORD, agentService.getAgentSecret());
+        assertEquals(VALID_USERNAME, agentService.getAgentLogin());
+        assertEquals(VALID_PASSWORD, agentService.getAgentPassword());
         assertEquals(Integer.valueOf(CELL_ID), agentService.getCell());
         assertEquals(Integer.valueOf(CELL_VERSION), agentService.getCellVersion());
         assertTrue(agentService.isRedirectionEnabled());
