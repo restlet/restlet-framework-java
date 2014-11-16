@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
-      -        
+      - 422 unprocessable entity status returned when errors happens when
+        deserializing a representation.
 
     - API changes
       -        

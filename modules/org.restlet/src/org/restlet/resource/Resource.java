@@ -911,8 +911,11 @@ public abstract class Resource {
             try {
                 org.restlet.service.ConverterService cs = getConverterService();
                 result = cs.toObject(source, target, this);
+            } catch (ResourceException e) {
+                throw e;
             } catch (Exception e) {
-                throw new ResourceException(e);
+                throw new ResourceException(
+                        Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
             }
         }
 
