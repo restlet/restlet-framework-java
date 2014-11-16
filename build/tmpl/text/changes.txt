@@ -6,8 +6,10 @@ Changes log
 - @version-full@ (@release-date@)
     - Enhancements
       - Upgraded Jetty to version 9.2.4
-	  - Added support for SPDY via the Jetty extension.
-	    Contributed by Tal Liron.
+      - Added support for SPDY via the Jetty extension.
+        Contributed by Tal Liron.
+      - 422 unprocessable entity status returned when errors happens when
+        deserializing a representation.
 
     - API changes
       -        
