@@ -174,7 +174,7 @@ public class Introspector {
 
         LOGGER.fine("Check parameters");
         if (StringUtils.isNullOrEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/";
+            serviceUrl = "https://apispark.com/api/";
         }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";
