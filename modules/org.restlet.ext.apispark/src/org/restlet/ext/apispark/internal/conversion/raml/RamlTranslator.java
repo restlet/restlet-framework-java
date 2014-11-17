@@ -142,8 +142,9 @@ public abstract class RamlTranslator {
         Contract contract = definition.getContract();
 
         // No way to specify multiple endpoints in RAML so we take the first one
-        Endpoint endpoint = definition.getEndpoints().get(0);
+        Endpoint endpoint = null;
         if (!definition.getEndpoints().isEmpty()) {
+            endpoint = definition.getEndpoints().get(0);
             raml.setBaseUri(endpoint.computeUrl());
         } else {
             raml.setBaseUri("http://example.com/v1");

@@ -16,6 +16,7 @@ import org.restlet.ext.apispark.internal.agent.bean.OperationAuthorization;
 import org.restlet.ext.apispark.internal.agent.resource.AuthorizationOperationsResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.security.Role;
 
 /**
@@ -129,14 +130,16 @@ public class AuthorizationModule extends Filter {
     protected int beforeHandle(Request request, Response response) {
 
         // find the corresponding Operation
-        RestletOperationAuthorization restletOperationAuthorization = (RestletOperationAuthorization) router
+        TemplateRoute templateRoute = (TemplateRoute) router
                 .getNext(request, response);
 
         // check route exists
-        if (restletOperationAuthorization == null) {
+        if (templateRoute == null) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             return STOP;
         }
+        RestletOperationAuthorization restletOperationAuthorization =
+                (RestletOperationAuthorization) templateRoute.getNext();
 
         List<Role> userRoles = request.getClientInfo().getRoles();
 

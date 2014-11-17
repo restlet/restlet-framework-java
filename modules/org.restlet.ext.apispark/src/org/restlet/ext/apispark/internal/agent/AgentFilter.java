@@ -37,11 +37,18 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.ext.apispark.internal.agent.module.ModulesSettingsModule;
+import org.restlet.ext.apispark.internal.utils.RestletChain;
 import org.restlet.routing.Filter;
 
 public class AgentFilter extends Filter {
 
-    private AgentModulesConfigurer agentModulesConfigurer;
+
+    /** Default next restlet of filter. */
+    private Restlet agentFirstRestlet;
+    /** First restlet of the agent filter. */
+    private Restlet filterNext;
+    /** Last restlet of the agent filter. */
+    private Restlet agentLastRestlet;
 
     /**
      * Create a new AgentFilter with the specified configuration.
@@ -82,18 +89,27 @@ public class AgentFilter extends Filter {
         ModulesSettings modulesSettings = modulesSettingsModule
                 .getModulesSettings();
 
-        agentModulesConfigurer = AgentModulesHelper.buildFromSettings(
+        RestletChain agentRestletChain = AgentModulesHelper.buildFromSettings(
                 agentConfig, modulesSettings, getContext());
+        agentFirstRestlet = agentRestletChain.getFirst();
+        agentLastRestlet = agentRestletChain.getLast();
     }
 
     @Override
     public Restlet getNext() {
-        return agentModulesConfigurer.getNext();
+        return agentFirstRestlet != null ? agentFirstRestlet : filterNext;
     }
 
     @Override
     public void setNext(Restlet next) {
-        agentModulesConfigurer.setNext(next);
+        filterNext = next;
+        // If the agent has any restlet components, set the next on the last one.
+        if (agentLastRestlet != null) {
+            if (agentLastRestlet instanceof Filter) {
+                Filter filter = (Filter) agentLastRestlet;
+                filter.setNext(next);
+            }
+        }
     }
 
 }

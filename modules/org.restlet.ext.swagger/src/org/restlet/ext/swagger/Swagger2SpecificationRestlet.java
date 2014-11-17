@@ -33,9 +33,9 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Swagger;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -46,16 +46,11 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -111,9 +106,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The RWADef of the API. */
     private Definition definition;
 
-    /** List of additional introspector plugins to use */
-    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
-
     /**
      * The version of the Swagger specification. Default is
      * {@link Swagger2Translator#SWAGGER_VERSION}
@@ -139,18 +131,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
      */
     public Swagger2SpecificationRestlet(Context context) {
         super(context);
-    }
-
-    /**
-     * Adds an introspection helper.
-     * 
-     * @param helper
-     *            The introspection helper to add.
-     */
-    public Swagger2SpecificationRestlet addIntrospectionHelper(
-            IntrospectionHelper helper) {
-        introspectionHelpers.add(helper);
-        return this;
     }
 
     /**
@@ -210,7 +190,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (Swagger2SpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef, null, introspectionHelpers);
+                        baseRef, null);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");

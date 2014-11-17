@@ -33,11 +33,9 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.Application;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Swagger;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -46,16 +44,13 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
+import javax.ws.rs.core.Application;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -110,9 +105,6 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
     /** The RWADef of the API. */
     private Definition definition;
 
-    /** List of additional introspector plugins to use */
-    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
-
     /**
      * The version of the Swagger specification. Default is
      * {@link Swagger2Translator#SWAGGER_VERSION}
@@ -133,19 +125,6 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      */
     public JaxRsApplicationSwagger2SpecificationRestlet(Application application) {
         this.application = application;
-    }
-
-    /**
-     * Add an introspector plugin to default introspector
-     * 
-     * @param helper
-     *            Introspector Plugin to add
-     * 
-     */
-    public JaxRsApplicationSwagger2SpecificationRestlet addIntrospectorPlugin(
-            IntrospectionHelper helper) {
-        introspectionHelpers.add(helper);
-        return this;
     }
 
     /**
@@ -205,7 +184,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (JaxRsApplicationSwagger2SpecificationRestlet.class) {
                 definition = JaxRsIntrospector.getDefinition(application,
-                        baseRef, introspectionHelpers);
+                        baseRef);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");

@@ -55,7 +55,7 @@ public abstract class AgentUtils {
         
         // add authentication scheme
         clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                agentConfig.getAgentUsername(), agentConfig.getAgentSecret());
+                agentConfig.getAgentLogin(), agentConfig.getAgentPassword());
 
         // send agent version to apispark in headers
         Series<Header> headers = clientResource.getRequest().getHeaders();

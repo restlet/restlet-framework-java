@@ -54,7 +54,6 @@ import org.restlet.ext.apispark.internal.introspection.application.ComponentIntr
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * Generates the Web API documentation of a Restlet based {@link Application}
@@ -108,7 +107,6 @@ public class Introspector {
         String language = null;
         String versionId = null;
         String updateStrategy = null;
-        List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
         boolean newVersion = false;
         boolean create = false;
 
@@ -146,13 +144,6 @@ public class Introspector {
             } else {
                 defSource = args[i];
             }
-        }
-
-        // Discover introspection helpers
-        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
-                .load(IntrospectionHelper.class);
-        for (IntrospectionHelper helper : ihLoader) {
-            introspectionHelpers.add(helper);
         }
 
         if (newVersion && create) {
@@ -210,21 +201,19 @@ public class Introspector {
                         "Cannot locate the application class.", e);
             }
             // Is Restlet application ?
-            if (JaxRsApplication.class.isAssignableFrom(clazz)) {
-                // TODO implement introspection of Restlet based JaxRs
-                // application.
-            } else if (Application.class.isAssignableFrom(clazz)) {
+            // TODO implement introspection of Restlet based JaxRs (org.restlet.ext.jaxrs.JaxRsApplication)
+            if (Application.class.isAssignableFrom(clazz)) {
                 Application application = ApplicationIntrospector
                         .getApplication(defSource);
                 Component component = ComponentIntrospector
                         .getComponent(compName);
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null, component, introspectionHelpers);
+                        null, component);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, introspectionHelpers);
+                        null);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");

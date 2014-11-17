@@ -2,10 +2,12 @@ package org.restlet.test.ext.apispark;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -49,15 +51,25 @@ import org.restlet.test.RestletTestCase;
 public class AgentServiceTestCase extends RestletTestCase {
 
     public static class AgentServerResource extends ServerResource {
-
-        public Request getRequest;
+        public static int CALL_COUNT = 0;
+        public static Request LAST_REQUEST;
 
         @Get
         public void getCalled() {
-            getLogger().info("agent get method called " + getRequest());
-            getRequest = getRequest();
+            CALL_COUNT++;
+            LAST_REQUEST = getRequest();
         }
-    };
+    }
+
+    public static class UserApiApplication extends Application {
+        @Override
+        public Restlet createInboundRoot() {
+            Router router = new Router();
+            router.attach("/test", AgentServerResource.class);
+            router.attach("/admin/test", AgentServerResource.class);
+            return router;
+        }
+    }
 
     public static class MockAuthenticationAuthenticateServerResource extends
             ServerResource implements AuthenticationAuthenticateResource {
@@ -122,14 +134,18 @@ public class AgentServiceTestCase extends RestletTestCase {
         }
     }
 
-    public static int AGENT_PORT = getTestPort() + 1;
-
     public static int AGENT_SERVICE_PORT = getTestPort();
+
+    public static int AGENT_PORT = AGENT_SERVICE_PORT + 1;
+
+    public static int USER_WEBAPI_PORT = AGENT_SERVICE_PORT + 2;
 
     private static final String AGENT_SERVICE_URL = "http://localhost:"
             + AGENT_SERVICE_PORT;
 
     private static final String AGENT_URL = "http://localhost:" + AGENT_PORT;
+
+    private static final String USER_WEBAPI_URL = "http://localhost:" + USER_WEBAPI_PORT;
 
     public static final String BAD_PASSWORD = "dont remember my password";
 
@@ -157,6 +173,8 @@ public class AgentServiceTestCase extends RestletTestCase {
     private Component agentComponent;
 
     private Component agentServiceComponent;
+    
+    private Component userApiComponent;
 
     private Response callAgent(String path) throws Exception {
         return callAgent(path, null, null);
@@ -183,8 +201,8 @@ public class AgentServiceTestCase extends RestletTestCase {
     public AgentService getAgentService() {
         AgentService agentService = new AgentService();
         agentService.setAgentServiceUrl(AGENT_SERVICE_URL);
-        agentService.setAgentUsername(VALID_USERNAME);
-        agentService.setAgentSecret(VALID_PASSWORD);
+        agentService.setAgentLogin(VALID_USERNAME);
+        agentService.setAgentPassword(VALID_PASSWORD);
         agentService.setCell(CELL_ID);
         agentService.setCellVersion(CELL_VERSION);
         return agentService;
@@ -193,7 +211,9 @@ public class AgentServiceTestCase extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        startAgentService();
+        startAgentApiSparkService();
+        AgentServerResource.CALL_COUNT = 0;
+        AgentServerResource.LAST_REQUEST = null;
         MockModulesSettingsServerResource.MODULES_SETTINGS = new ModulesSettings();
         MockModulesSettingsServerResource.GET_SETTINGS_COUNT = 0;
         MockFirewallSettingsServerResource.FIREWALL_SETTINGS = new FirewallSettings();
@@ -211,27 +231,24 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .add(new DefaultConverter());
     }
 
-    private void startAgent(AgentService agentService) throws Exception {
+    private void startAgent(final AgentService agentService, boolean embedded) throws Exception {
         this.agentComponent = new Component();
         this.agentComponent.setName("agent");
         this.agentComponent.getServers().add(Protocol.HTTP, AGENT_PORT);
-        agentComponent.getServices().add(agentService);
+        this.agentComponent.getClients().add(Protocol.HTTP);
 
-        final Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                Router router = new Router();
-                router.attach("/test", AgentServerResource.class);
-                router.attach("/admin/test", AgentServerResource.class);
-                return router;
-            }
-        };
-
+        Application application;
+        if (embedded) {
+            application = new UserApiApplication();
+        } else {
+            application = new Application();
+        }
+        application.getServices().add(agentService);
         this.agentComponent.getDefaultHost().attach(application);
         this.agentComponent.start();
     }
 
-    public void startAgentService() throws Exception {
+    public void startAgentApiSparkService() throws Exception {
         this.agentServiceComponent = new Component();
         this.agentServiceComponent.setName("agent service");
         this.agentServiceComponent.getServers().add(Protocol.HTTP,
@@ -269,6 +286,15 @@ public class AgentServiceTestCase extends RestletTestCase {
         this.agentServiceComponent.start();
     }
 
+    public void startUserApi() throws Exception {
+        this.userApiComponent = new Component();
+        this.userApiComponent.setName("userapi");
+        this.userApiComponent.getServers().add(Protocol.HTTP,
+                USER_WEBAPI_PORT);
+        this.userApiComponent.getDefaultHost().attach(new UserApiApplication());
+        this.userApiComponent.start();
+    }
+
     public void stopAgent() throws Exception {
         if (this.agentComponent != null) {
             this.agentComponent.stop();
@@ -282,12 +308,19 @@ public class AgentServiceTestCase extends RestletTestCase {
         }
         this.agentServiceComponent = null;
     }
+    public void stopUserApi() throws Exception {
+        if (this.userApiComponent != null) {
+            this.userApiComponent.stop();
+        }
+        this.userApiComponent = null;
+    }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         stopAgentService();
         stopAgent();
+        stopUserApi();
     }
 
     public void testAuthentication_userRequestWithCredentials()
@@ -297,7 +330,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -328,7 +361,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -350,7 +383,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -370,7 +403,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setAuthorizationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -386,7 +419,7 @@ public class AgentServiceTestCase extends RestletTestCase {
     }
 
     public void testConfiguration_AllModulesDisabled() throws Exception {
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
     }
@@ -399,7 +432,7 @@ public class AgentServiceTestCase extends RestletTestCase {
 
         try {
             AgentService agentService = new AgentService();
-            startAgent(agentService);
+            startAgent(agentService, true);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // expected
@@ -409,7 +442,7 @@ public class AgentServiceTestCase extends RestletTestCase {
     public void testConfiguration_Null() throws Exception {
         try {
             AgentService agentService = new AgentService();
-            startAgent(agentService);
+            startAgent(agentService, true);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // expected
@@ -428,7 +461,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setIpFilters(Arrays.asList(firewallIpFilter));
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -445,7 +478,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setFirewallModuleEnabled(true);
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -473,7 +506,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -507,7 +540,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -541,7 +574,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService());
+        startAgent(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -554,5 +587,58 @@ public class AgentServiceTestCase extends RestletTestCase {
         // second api call
         response = callAgent("/test", VALID_USERNAME, VALID_PASSWORD);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+    }
+
+    public void testRedirection_noUrl() throws Exception {
+        // run
+        AgentService agentService = getAgentService();
+        agentService.setRedirectionEnabled(true);
+        try {
+            startAgent(agentService, true);
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            //expected
+        }
+    }
+
+    public void testRedirection() throws Exception {
+        Context.getCurrentLogger().setLevel(Level.FINE);
+        // run
+        AgentService agentService = getAgentService();
+        agentService.setRedirectionEnabled(true);
+        agentService.setRedirectionUrl(USER_WEBAPI_URL);
+        startAgent(agentService, false);
+        startUserApi();
+
+        // verify
+        assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
+
+        // call api
+        Response response = callAgent("/test", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(1, AgentServerResource.CALL_COUNT);
+        assertNotNull(AgentServerResource.LAST_REQUEST);
+        assertEquals(USER_WEBAPI_URL + "/test", AgentServerResource.LAST_REQUEST.getResourceRef().toString());
+
+        // call api
+        response = callAgent("/test?val1=a&val2=b", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(2, AgentServerResource.CALL_COUNT);
+        assertNotNull(AgentServerResource.LAST_REQUEST);
+        assertEquals(USER_WEBAPI_URL + "/test?val1=a&val2=b", AgentServerResource.LAST_REQUEST.getResourceRef().toString());
+    }
+
+
+    public void testLoadConfiguration() throws Exception {
+        System.setProperty(AgentService.CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY, getClass().getResource("agent-configuration.properties").getPath());
+        AgentService agentService = new AgentService();
+        agentService.loadConfiguration();
+
+        assertEquals(VALID_USERNAME, agentService.getAgentLogin());
+        assertEquals(VALID_PASSWORD, agentService.getAgentPassword());
+        assertEquals(Integer.valueOf(CELL_ID), agentService.getCell());
+        assertEquals(Integer.valueOf(CELL_VERSION), agentService.getCellVersion());
+        assertTrue(agentService.isRedirectionEnabled());
+        assertEquals("http://myrealapi.com/", agentService.getRedirectionUrl());
     }
 }

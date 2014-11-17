@@ -33,9 +33,6 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -48,7 +45,6 @@ import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -106,9 +102,6 @@ public class SwaggerSpecificationRestlet extends Restlet {
     /** The RWADef of the API. */
     private Definition definition;
 
-    /** List of additional introspector plugins to use */
-    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
-
     /**
      * The version of the Swagger specification. Default is
      * {@link SwaggerTranslator#SWAGGER_VERSION}
@@ -130,19 +123,6 @@ public class SwaggerSpecificationRestlet extends Restlet {
      */
     public SwaggerSpecificationRestlet(Context context) {
         super(context);
-    }
-
-    /**
-     * Add an introspector plugin to default introspector
-     * 
-     * @param helper
-     *            Introspector Plugin to add
-     * 
-     */
-    public SwaggerSpecificationRestlet addIntrospectorPlugin(
-            IntrospectionHelper helper) {
-        introspectionHelpers.add(helper);
-        return this;
     }
 
     /**
@@ -221,7 +201,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (SwaggerSpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef, null, introspectionHelpers);
+                        baseRef, null);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion(apiVersion != null ? apiVersion

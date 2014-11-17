@@ -472,15 +472,11 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      * 
      * @param application
      *            An application to introspect.
-     * @param introspectionHelpers
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef,
-            List<? extends IntrospectionHelper> introspectionHelpers) {
-        // initialize the list to avoid to add a null check statement
-        if (introspectionHelpers == null) {
-            introspectionHelpers = new ArrayList<>();
-        }
+            Reference baseRef) {
+
+        List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
         Definition definition = new Definition();
 
         CollectInfo collectInfo = new CollectInfo();

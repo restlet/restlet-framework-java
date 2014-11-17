@@ -12,10 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.Representation;
@@ -34,6 +36,21 @@ public class IntrospectionUtils {
 
     private static List<String> STRATEGIES = Arrays.asList("add", "reset");
 
+    /**
+     * Discover introspection helpers.
+     *
+     * @return the discovered introspection helpers.
+     */
+    public static List<IntrospectionHelper> getIntrospectionHelpers() {
+        List<IntrospectionHelper> introspectionHelpers = new ArrayList<>();
+
+        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
+                .load(IntrospectionHelper.class);
+        for (IntrospectionHelper helper : ihLoader) {
+            introspectionHelpers.add(helper);
+        }
+        return introspectionHelpers;
+    }
     /**
      * Indicates if the given value is either null or empty.
      * 
