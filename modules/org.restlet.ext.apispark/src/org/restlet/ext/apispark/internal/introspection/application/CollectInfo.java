@@ -15,13 +15,13 @@ import org.restlet.ext.apispark.internal.model.Section;
  */
 public class CollectInfo {
 
-    private Map<String, Representation> representations = new HashMap<String, Representation>();
+    private Map<String, Representation> representations = new HashMap<>();
 
-    private List<Resource> resources = new ArrayList<Resource>();
+    private List<Resource> resources = new ArrayList<>();
 
-    private List<ChallengeScheme> schemes = new ArrayList<ChallengeScheme>();
+    private List<ChallengeScheme> schemes = new ArrayList<>();
 
-    private Map<String, Section> sections = new HashMap<String, Section>();
+    private Map<String, Section> sections = new HashMap<>();
 
     private boolean useSectionNamingPackageStrategy;
 
@@ -57,15 +57,15 @@ public class CollectInfo {
     }
 
     public List<Representation> getRepresentations() {
-        return new ArrayList<Representation>(representations.values());
+        return new ArrayList<>(representations.values());
     }
 
     public List<Resource> getResources() {
-        return new ArrayList<Resource>(resources);
+        return new ArrayList<>(resources);
     }
 
     public List<ChallengeScheme> getSchemes() {
-        return new ArrayList<ChallengeScheme>(schemes);
+        return new ArrayList<>(schemes);
     }
 
     public Section getSection(String identifier) {
@@ -73,7 +73,7 @@ public class CollectInfo {
     }
 
     public List<Section> getSections() {
-        return new ArrayList<Section>(sections.values());
+        return new ArrayList<>(sections.values());
     }
 
     public boolean isUseSectionNamingPackageStrategy() {

@@ -500,7 +500,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
         scanResources(collectInfo, application, introspectionHelpers);
 
-        updateDefinitionContract(application, definition);
+        updateDefinitionContract(collectInfo, application, definition);
 
         Contract contract = definition.getContract();
         // add resources
@@ -1033,14 +1033,13 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 genericParameterTypes);
     }
 
-    private static void updateDefinitionContract(Application application,
-            Definition definition) {
+    private static void updateDefinitionContract(CollectInfo collectInfo, Application application,
+                                                 Definition definition) {
         // Contract
         Contract contract = new Contract();
         contract.setName(application.getClass().getName());
 
         // Sections
-        org.restlet.ext.apispark.internal.introspection.application.CollectInfo collectInfo = new org.restlet.ext.apispark.internal.introspection.application.CollectInfo();
         if (application instanceof DocumentedApplication) {
             DocumentedApplication documentedApplication = (DocumentedApplication) application;
             collectInfo.setSections(documentedApplication.getSections());
