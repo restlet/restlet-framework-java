@@ -249,12 +249,10 @@ public class CorsResponseHelper {
      *            True to copy the value of 'Access-Control-Request-Headers'
      *            request header into the 'Access-Control-Allow-Headers'
      *            response header. If false, use {@link #allowedHeaders}.
-     * @return Itself for chaining methods calls.
      */
-    public CorsResponseHelper setAllowAllRequestedHeaders(
+    public void setAllowAllRequestedHeaders(
             boolean allowAllRequestedHeaders) {
         this.allowAllRequestedHeaders = allowAllRequestedHeaders;
-        return this;
     }
 
     /**
@@ -262,11 +260,9 @@ public class CorsResponseHelper {
      * 
      * @param allowedCredentials
      *            True to add the 'Access-Control-Allow-Credentials' header.
-     * @return Itself for chaining methods calls.
      */
-    public CorsResponseHelper setAllowedCredentials(boolean allowedCredentials) {
+    public void setAllowedCredentials(boolean allowedCredentials) {
         this.allowedCredentials = allowedCredentials;
-        return this;
     }
 
     /**
@@ -275,11 +271,9 @@ public class CorsResponseHelper {
      * 
      * @param allowedHeaders
      *            The value of 'Access-Control-Allow-Headers' response header.
-     * @return Itself for chaining methods calls.
      */
-    public CorsResponseHelper setAllowedHeaders(Set<String> allowedHeaders) {
+    public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
-        return this;
     }
 
     /**
@@ -287,11 +281,9 @@ public class CorsResponseHelper {
      * 
      * @param allowedOrigins
      *            The value of 'Access-Control-Allow-Origin' header.
-     * @return Itself for chaining methods calls.
      */
-    public CorsResponseHelper setAllowedOrigins(Set<String> allowedOrigins) {
+    public void setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
-        return this;
     }
 
     /**
@@ -299,11 +291,9 @@ public class CorsResponseHelper {
      * 
      * @param exposedHeaders
      *            The value of 'Access-Control-Expose-Headers' response header.
-     * @return Itself for chaining methods calls.
      */
-    public CorsResponseHelper setExposedHeaders(Set<String> exposedHeaders) {
+    public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
-        return this;
     }
 
 }

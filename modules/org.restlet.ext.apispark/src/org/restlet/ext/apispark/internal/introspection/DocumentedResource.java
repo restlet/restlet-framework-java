@@ -31,31 +31,19 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.swagger.internal;
+package org.restlet.ext.apispark.internal.introspection;
 
-import java.util.Iterator;
-
-import org.restlet.Restlet;
+import java.util.List;
 
 /**
- * Restlet recursive iterable.
+ * Completes the documentation of a Resource so that introspection retrieves a
+ * more complete description of the Web API.
  * 
- * @author Grzegorz Godlewski
+ * @author Cyprien Quilici
+ * 
  */
-public class SwaggerRestletIterable implements Iterable<Restlet> {
-    private SwaggerRestletIterator iterator;
+public interface DocumentedResource {
 
-    public SwaggerRestletIterable(Restlet restlet) {
-        this.iterator = new SwaggerRestletIterator(restlet);
-    }
-
-    public String getCurrentPath() {
-        return iterator.getCurrentPath();
-    }
-
-    @Override
-    public Iterator<Restlet> iterator() {
-        return iterator;
-    }
-
+    /** List of sections that describe the resource. */
+    List<String> getSections();
 }

@@ -283,8 +283,8 @@ public abstract class JettyServerHelper extends
             } catch (Throwable e) {
                 channel.getEndPoint().close();
                 throw new IOException("Restlet exception", e);
-            }
         }
+    }
 
         @Override
         public void handleAsync(HttpChannel<?> channel) throws IOException,
@@ -731,7 +731,7 @@ public abstract class JettyServerHelper extends
      * Can be null or "referrer" (shortcut for
      * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
      * name.
-     * 
+     *
      * @return SPDY push strategy or null.
      */
     public String getSpdyPushStrategy() {
@@ -742,7 +742,7 @@ public abstract class JettyServerHelper extends
      * SPDY max version. Defaults to 0.
      * <p>
      * Can be 0, 2, or 3. If 0, SPDY is not used.
-     * 
+     *
      * @return Low resource monitor stop timeout.
      */
     public int getSpdyVersion() {

@@ -54,7 +54,6 @@ import org.restlet.ext.apispark.internal.introspection.application.ComponentIntr
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
-import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * Generates the Web API documentation of a Restlet based {@link Application}
@@ -99,6 +98,7 @@ public class Introspector {
      */
     public static void main(String[] args) throws TranslationException {
         Engine.register();
+        boolean useSectionNamingPackageStrategy = false;
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
@@ -108,7 +108,6 @@ public class Introspector {
         String language = null;
         String versionId = null;
         String updateStrategy = null;
-        List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
         boolean newVersion = false;
         boolean create = false;
 
@@ -140,19 +139,14 @@ public class Introspector {
                 create = true;
             } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
+            } else if ("--sections".equals(args[i])) {
+                useSectionNamingPackageStrategy = true;
             } else if ("-V".equals(args[i]) || "--verbose".equals(args[i])) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
             } else {
                 defSource = args[i];
             }
-        }
-
-        // Discover introspection helpers
-        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
-                .load(IntrospectionHelper.class);
-        for (IntrospectionHelper helper : ihLoader) {
-            introspectionHelpers.add(helper);
         }
 
         if (newVersion && create) {
@@ -210,21 +204,19 @@ public class Introspector {
                         "Cannot locate the application class.", e);
             }
             // Is Restlet application ?
-            if (JaxRsApplication.class.isAssignableFrom(clazz)) {
-                // TODO implement introspection of Restlet based JaxRs
-                // application.
-            } else if (Application.class.isAssignableFrom(clazz)) {
+            // TODO implement introspection of Restlet based JaxRs (org.restlet.ext.jaxrs.JaxRsApplication)
+            if (Application.class.isAssignableFrom(clazz)) {
                 Application application = ApplicationIntrospector
                         .getApplication(defSource);
                 Component component = ComponentIntrospector
                         .getComponent(compName);
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null, component, introspectionHelpers);
+                        null, component, useSectionNamingPackageStrategy);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, introspectionHelpers);
+                        null, useSectionNamingPackageStrategy);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");
@@ -323,6 +315,11 @@ public class Introspector {
                         "Strategies available:\n",
                         "\"add\": new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
                         "\"reset\": deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "--section",
+                        "Add resource section from java package");
         IntrospectionUtils
                 .printOption(
                         o,

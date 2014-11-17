@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark_swagger_annotations_1_2.internal.utils;
+package org.restlet.ext.apispark.internal.introspection.helper;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;

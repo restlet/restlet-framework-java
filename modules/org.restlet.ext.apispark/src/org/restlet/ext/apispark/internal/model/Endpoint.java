@@ -106,7 +106,7 @@ public class Endpoint {
 
     public String computeUrl() {
         return protocol + "://" + domain + (port != null ? ":" + port : "")
-                + basePath;
+                + (basePath != null ? basePath : "");
     }
 
     public String getAuthenticationProtocol() {

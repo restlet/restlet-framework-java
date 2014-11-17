@@ -18,9 +18,10 @@ import org.restlet.routing.Filter;
  * <pre>
  * Router router = new Router(getContext());
  * 
- * CorsFilter corsFilter = new CorsFilter(getContext(), router).setAllowedOrigins(
- *         new HashSet(Arrays.asList(&quot;http://server.com&quot;))).setAllowedCredentials(
- *         true);
+ * CorsFilter corsFilter = new CorsFilter(getContext(), router);
+ * corsFilter.setAllowedOrigins(
+ *         new HashSet(Arrays.asList(&quot;http://server.com&quot;)));
+ * corsFilter.setAllowedCredentials(true);
  * </pre>
  * 
  * @author Manuel Boillod
@@ -128,12 +129,12 @@ public class CorsFilter extends Filter {
      */
     protected CorsResponseHelper getCorsResponseHelper() {
         if (corsResponseHelper == null) {
-            corsResponseHelper = new CorsResponseHelper()
-                    .setAllowedCredentials(allowedCredentials)
-                    .setAllowedOrigins(allowedOrigins)
-                    .setAllowAllRequestedHeaders(allowAllRequestedHeaders)
-                    .setAllowedHeaders(allowedHeaders)
-                    .setExposedHeaders(exposedHeaders);
+            corsResponseHelper = new CorsResponseHelper();
+            corsResponseHelper.setAllowedCredentials(allowedCredentials);
+            corsResponseHelper.setAllowedOrigins(allowedOrigins);
+            corsResponseHelper.setAllowAllRequestedHeaders(allowAllRequestedHeaders);
+            corsResponseHelper.setAllowedHeaders(allowedHeaders);
+            corsResponseHelper.setExposedHeaders(exposedHeaders);
         }
         return corsResponseHelper;
     }

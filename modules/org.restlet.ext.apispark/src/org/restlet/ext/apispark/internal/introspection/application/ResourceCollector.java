@@ -17,7 +17,7 @@ import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.DocumentedResource;
+import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -315,7 +315,7 @@ public class ResourceCollector {
         if (restlet instanceof DocumentedResource) {
             DocumentedResource documentedServerResource = (DocumentedResource) restlet;
             resource.setSections(documentedServerResource.getSections());
-        } else {
+        } else if (collectInfo.isUseSectionNamingPackageStrategy()) {
             String sectionName = restlet.getClass().getPackage().getName();
             resource.getSections().add(sectionName);
         }

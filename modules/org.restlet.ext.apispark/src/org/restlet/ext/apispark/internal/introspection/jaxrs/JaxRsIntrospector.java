@@ -75,7 +75,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -201,6 +201,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         private Map<String, Section> sections = new HashMap<String, Section>();
 
+        private boolean useSectionNamingPackageStrategy;
+
         public void addRepresentation(Representation representation) {
             representations.put(representation.getIdentifier(), representation);
         }
@@ -260,12 +262,20 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             return new ArrayList<Section>(sections.values());
         }
 
+        public boolean isUseSectionNamingPackageStrategy() {
+            return useSectionNamingPackageStrategy;
+        }
+
         public void setApplicationPath(String applicationPath) {
             this.applicationPath = applicationPath;
         }
 
         public void setSections(Map<String, Section> sections) {
             this.sections = sections;
+        }
+
+        public void setUseSectionNamingPackageStrategy(boolean useSectionNamingPackageStrategy) {
+            this.useSectionNamingPackageStrategy = useSectionNamingPackageStrategy;
         }
     }
 
@@ -472,18 +482,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      * 
      * @param application
      *            An application to introspect.
-     * @param introspectionHelpers
      */
     public static Definition getDefinition(Application application,
             Reference baseRef,
-            List<? extends IntrospectionHelper> introspectionHelpers) {
-        // initialize the list to avoid to add a null check statement
-        if (introspectionHelpers == null) {
-            introspectionHelpers = new ArrayList<>();
-        }
+            boolean useSectionNamingPackageStrategy) {
+
+        List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
         Definition definition = new Definition();
 
         CollectInfo collectInfo = new CollectInfo();
+        collectInfo.setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
 
         ApplicationPath applicationPath = application.getClass().getAnnotation(
                 ApplicationPath.class);
@@ -967,8 +975,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             resource.getPathVariables().addAll(pathVariables.values());
 
             // set section from package
-            String sectionName = clazzInfo.getClazz().getPackage().getName();
-            resource.getSections().add(sectionName);
+            if (collectInfo.isUseSectionNamingPackageStrategy()) {
+                String sectionName = clazzInfo.getClazz().getPackage().getName();
+                resource.getSections().add(sectionName);
+            }
 
             collectInfo.addResource(resource);
 

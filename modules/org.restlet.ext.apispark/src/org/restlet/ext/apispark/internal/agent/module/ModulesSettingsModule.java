@@ -1,6 +1,7 @@
 package org.restlet.ext.apispark.internal.agent.module;
 
 import org.restlet.ext.apispark.internal.agent.AgentConfig;
+import org.restlet.ext.apispark.internal.agent.AgentConfigurationException;
 import org.restlet.ext.apispark.internal.agent.AgentUtils;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.ext.apispark.internal.agent.resource.ModulesSettingsResource;
@@ -20,7 +21,11 @@ public class ModulesSettingsModule {
         ModulesSettingsResource modulesSettingsResource = AgentUtils
                 .getClientResource(agentConfig, null,
                         ModulesSettingsResource.class, MODULE_PATH);
-        modulesSettings = modulesSettingsResource.getSettings();
+        try {
+            modulesSettings = modulesSettingsResource.getSettings();
+        } catch (Exception e) {
+            throw new AgentConfigurationException("Unable to retrieve agent settings from apispark", e);
+        }
     }
 
     public ModulesSettings getModulesSettings() {

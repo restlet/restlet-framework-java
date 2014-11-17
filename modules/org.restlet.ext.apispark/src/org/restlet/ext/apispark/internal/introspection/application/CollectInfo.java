@@ -23,6 +23,8 @@ public class CollectInfo {
 
     private Map<String, Section> sections = new HashMap<String, Section>();
 
+    private boolean useSectionNamingPackageStrategy;
+
     public void addRepresentation(Representation representation) {
         representations.put(representation.getIdentifier(), representation);
     }
@@ -74,7 +76,15 @@ public class CollectInfo {
         return new ArrayList<Section>(sections.values());
     }
 
+    public boolean isUseSectionNamingPackageStrategy() {
+        return useSectionNamingPackageStrategy;
+    }
+
     public void setSections(Map<String, Section> sections) {
         this.sections = sections;
+    }
+
+    public void setUseSectionNamingPackageStrategy(boolean useSectionNamingPackageStrategy) {
+        this.useSectionNamingPackageStrategy = useSectionNamingPackageStrategy;
     }
 }
