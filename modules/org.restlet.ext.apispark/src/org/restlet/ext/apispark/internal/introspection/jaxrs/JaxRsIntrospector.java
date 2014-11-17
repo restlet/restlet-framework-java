@@ -201,6 +201,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         private Map<String, Section> sections = new HashMap<String, Section>();
 
+        private boolean useSectionNamingPackageStrategy;
+
         public void addRepresentation(Representation representation) {
             representations.put(representation.getIdentifier(), representation);
         }
@@ -260,12 +262,20 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             return new ArrayList<Section>(sections.values());
         }
 
+        public boolean isUseSectionNamingPackageStrategy() {
+            return useSectionNamingPackageStrategy;
+        }
+
         public void setApplicationPath(String applicationPath) {
             this.applicationPath = applicationPath;
         }
 
         public void setSections(Map<String, Section> sections) {
             this.sections = sections;
+        }
+
+        public void setUseSectionNamingPackageStrategy(boolean useSectionNamingPackageStrategy) {
+            this.useSectionNamingPackageStrategy = useSectionNamingPackageStrategy;
         }
     }
 
@@ -474,12 +484,14 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef) {
+            Reference baseRef,
+            boolean useSectionNamingPackageStrategy) {
 
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
         Definition definition = new Definition();
 
         CollectInfo collectInfo = new CollectInfo();
+        collectInfo.setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
 
         ApplicationPath applicationPath = application.getClass().getAnnotation(
                 ApplicationPath.class);
@@ -963,8 +975,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             resource.getPathVariables().addAll(pathVariables.values());
 
             // set section from package
-            String sectionName = clazzInfo.getClazz().getPackage().getName();
-            resource.getSections().add(sectionName);
+            if (collectInfo.isUseSectionNamingPackageStrategy()) {
+                String sectionName = clazzInfo.getClazz().getPackage().getName();
+                resource.getSections().add(sectionName);
+            }
 
             collectInfo.addResource(resource);
 

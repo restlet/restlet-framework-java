@@ -124,18 +124,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application) {
-        return getDefinition(application, null, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param application
-     *            An application to introspect.
-     */
-    public static Definition getDefinition(Application application,
-            Reference baseRef) {
-        return getDefinition(application, baseRef, null);
+        return getDefinition(application, null, null, false);
     }
 
     /**
@@ -152,7 +141,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      * @return An application description.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef, Component component) {
+            Reference baseRef, Component component, boolean useSectionNamingPackageStrategy) {
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
 
         // initialize the list to avoid to add a null check statement
@@ -176,6 +165,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 
         // Sections
         CollectInfo collectInfo = new CollectInfo();
+        collectInfo.setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
+
         if (application instanceof DocumentedApplication) {
             DocumentedApplication documentedApplication = (DocumentedApplication) application;
             collectInfo.setSections(documentedApplication.getSections());

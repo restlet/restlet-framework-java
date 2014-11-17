@@ -201,7 +201,7 @@ public class SwaggerSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (SwaggerSpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef, null);
+                        baseRef, null, false);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion(apiVersion != null ? apiVersion

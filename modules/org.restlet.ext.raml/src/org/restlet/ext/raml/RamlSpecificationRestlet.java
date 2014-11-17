@@ -188,7 +188,7 @@ public class RamlSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (RamlSpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef, null);
+                        baseRef, null, false);
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
                 }

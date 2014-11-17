@@ -98,6 +98,7 @@ public class Introspector {
      */
     public static void main(String[] args) throws TranslationException {
         Engine.register();
+        boolean useSectionNamingPackageStrategy = false;
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
@@ -138,6 +139,8 @@ public class Introspector {
                 create = true;
             } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
                 language = getParameter(args, ++i).toLowerCase();
+            } else if ("--sections".equals(args[i])) {
+                useSectionNamingPackageStrategy = true;
             } else if ("-V".equals(args[i]) || "--verbose".equals(args[i])) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
@@ -208,12 +211,12 @@ public class Introspector {
                 Component component = ComponentIntrospector
                         .getComponent(compName);
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null, component);
+                        null, component, useSectionNamingPackageStrategy);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null);
+                        null, useSectionNamingPackageStrategy);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");
@@ -312,6 +315,11 @@ public class Introspector {
                         "Strategies available:\n",
                         "\"add\": new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
                         "\"reset\": deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
+        IntrospectionUtils
+                .printOption(
+                        o,
+                        "--section",
+                        "Add resource section from java package");
         IntrospectionUtils
                 .printOption(
                         o,

@@ -315,7 +315,7 @@ public class ResourceCollector {
         if (restlet instanceof DocumentedResource) {
             DocumentedResource documentedServerResource = (DocumentedResource) restlet;
             resource.setSections(documentedServerResource.getSections());
-        } else {
+        } else if (collectInfo.isUseSectionNamingPackageStrategy()) {
             String sectionName = restlet.getClass().getPackage().getName();
             resource.getSections().add(sectionName);
         }
