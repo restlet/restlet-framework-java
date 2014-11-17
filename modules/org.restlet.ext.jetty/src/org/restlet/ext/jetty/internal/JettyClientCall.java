@@ -198,7 +198,9 @@ public class JettyClientCall extends ClientCall {
     @Override
     public Representation getResponseEntity(Response response) {
         Representation responseEntity = super.getResponseEntity(response);
-        responseEntity.getEncodings().clear();
+        if (responseEntity != null && !responseEntity.getEncodings().isEmpty()) {
+            responseEntity.getEncodings().clear();
+        }
         return responseEntity;
     }
 
