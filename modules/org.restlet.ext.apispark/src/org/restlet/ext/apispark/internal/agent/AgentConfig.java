@@ -55,35 +55,29 @@ public class AgentConfig {
         return redirectionEnabled;
     }
 
-    public AgentConfig setAgentPassword(char[] agentPassword) {
+    public void setAgentPassword(char[] agentPassword) {
         this.agentPassword = agentPassword;
-        return this;
     }
 
-    public AgentConfig setAgentSecret(String agentSecret) {
+    public void setAgentSecret(String agentSecret) {
         this.agentPassword = agentSecret != null ? agentSecret.toCharArray()
                 : null;
-        return this;
     }
 
-    public AgentConfig setAgentServiceUrl(String agentServiceUrl) {
+    public void setAgentServiceUrl(String agentServiceUrl) {
         this.agentServiceUrl = agentServiceUrl;
-        return this;
     }
 
-    public AgentConfig setAgentLogin(String agentLogin) {
+    public void setAgentLogin(String agentLogin) {
         this.agentLogin = agentLogin;
-        return this;
     }
 
-    public AgentConfig setCell(Integer cell) {
+    public void setCell(Integer cell) {
         this.cell = cell;
-        return this;
     }
 
-    public AgentConfig setCellVersion(Integer cellVersion) {
+    public void setCellVersion(Integer cellVersion) {
         this.cellVersion = cellVersion;
-        return this;
     }
 
     public void setRedirectionEnabled(boolean redirectionEnabled) {

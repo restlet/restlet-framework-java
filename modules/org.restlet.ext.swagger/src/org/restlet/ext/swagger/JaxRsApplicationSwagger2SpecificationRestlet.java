@@ -72,9 +72,10 @@ import javax.ws.rs.core.Application;
  * or
  * 
  * <pre>
- * new Swagger2SpecificationRestlet().setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .setApplication(this) // this is the current Application
- *         .attach(baseRouter);
+ * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet();
+ * swagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * swagger2SpecificationRestlet.setApplication(this); // this is the current Application
+ * swagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -245,10 +246,9 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setApiVersion(
+    public void setApiVersion(
             String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -257,10 +257,9 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setApplication(
+    public void setApplication(
             Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -269,12 +268,11 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setBasePath(
+    public void setBasePath(
             String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -283,22 +281,8 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setSwaggerVersion(
+    public void setSwaggerVersion(
             String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
-        return this;
     }
-
-    /**
-     * Sets the root Restlet for the given application.
-     * 
-     * @param application
-     *            The application.
-     */
-    public JaxRsApplicationSwagger2SpecificationRestlet Swagger2SpecificationRestlet(
-            Application application) {
-        this.application = application;
-        return this;
-    }
-
 }

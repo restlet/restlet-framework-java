@@ -63,9 +63,10 @@ import org.restlet.routing.Router;
  * Usage example:
  * 
  * <pre>
- * new RamlSpecificationRestlet().setApiInboundRoot(this)
- *         .setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .attach(baseRouter);
+ * RamlSpecificationRestlet ramlSpecificationRestlet = new RamlSpecificationRestlet();
+ * ramlSpecificationRestlet.setApiInboundRoot(this);
+ * ramlSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * ramlSpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -233,9 +234,8 @@ public class RamlSpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public RamlSpecificationRestlet setApiInboundRoot(Application application) {
+    public void setApiInboundRoot(Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -244,9 +244,8 @@ public class RamlSpecificationRestlet extends Restlet {
      * @param apiInboundRoot
      *            The application's root Restlet.
      */
-    public RamlSpecificationRestlet setApiInboundRoot(Restlet apiInboundRoot) {
+    public void setApiInboundRoot(Restlet apiInboundRoot) {
         this.apiInboundRoot = apiInboundRoot;
-        return this;
     }
 
     /**
@@ -255,9 +254,8 @@ public class RamlSpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public RamlSpecificationRestlet setApiVersion(String apiVersion) {
+    public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -266,11 +264,10 @@ public class RamlSpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public RamlSpecificationRestlet setBasePath(String basePath) {
+    public void setBasePath(String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -279,9 +276,8 @@ public class RamlSpecificationRestlet extends Restlet {
      * @param ramlVersion
      *            The version of RAML.
      */
-    public RamlSpecificationRestlet setRamlVersion(String ramlVersion) {
+    public void setRamlVersion(String ramlVersion) {
         this.ramlVersion = ramlVersion;
-        return this;
     }
 
 }

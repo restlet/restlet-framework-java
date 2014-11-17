@@ -75,7 +75,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;

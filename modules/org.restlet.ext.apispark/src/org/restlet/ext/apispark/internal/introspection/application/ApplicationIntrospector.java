@@ -43,7 +43,7 @@ import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;

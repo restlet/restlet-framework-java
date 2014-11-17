@@ -67,9 +67,10 @@ import javax.ws.rs.core.Application;
  * Usage example:
  * 
  * <pre>
- * new SwaggerSpecificationRestlet().setApiInboundRoot(this)
- *         .setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .attach(baseRouter);
+ * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet();
+ * swaggerSpecificationRestlet.setApiInboundRoot(this);
+ * swaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * swaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -263,10 +264,9 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApiInboundRoot(
+    public void setApiInboundRoot(
             Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -275,10 +275,9 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApiVersion(
+    public void setApiVersion(
             String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -287,10 +286,9 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param application
      *            The application
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setApplication(
+    public void setApplication(
             Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -299,12 +297,11 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setBasePath(
+    public void setBasePath(
             String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -313,10 +310,9 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet setSwaggerVersion(
+    public void setSwaggerVersion(
             String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
-        return this;
     }
 
 }

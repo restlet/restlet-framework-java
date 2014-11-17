@@ -67,10 +67,10 @@ import org.restlet.routing.Router;
  * Usage example:
  * 
  * <pre>
- * new SwaggerSpecificationRestlet().setApplication(this)
- *         // this is the current Application
- *         .setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .attach(baseRouter);
+ * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet();
+ * swaggerSpecificationRestlet.setApplication(this); // this is the current Application
+ * swaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * swaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -264,9 +264,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public SwaggerSpecificationRestlet setApiInboundRoot(Application application) {
+    public void setApiInboundRoot(Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -275,9 +274,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public SwaggerSpecificationRestlet setApiVersion(String apiVersion) {
+    public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -286,9 +284,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public SwaggerSpecificationRestlet setApplication(Application application) {
+    public void setApplication(Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -297,11 +294,10 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public SwaggerSpecificationRestlet setBasePath(String basePath) {
+    public void setBasePath(String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -310,9 +306,8 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public SwaggerSpecificationRestlet setSwaggerVersion(String swaggerVersion) {
+    public void setSwaggerVersion(String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
-        return this;
     }
 
 }

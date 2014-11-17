@@ -31,19 +31,25 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark;
+package org.restlet.ext.apispark.internal.introspection;
 
-import java.util.List;
+import java.util.Map;
+
+import org.restlet.ext.apispark.internal.model.Section;
 
 /**
- * Completes the documentation of a Resource so that introspection retrieves a
- * more complete description of the Web API.
+ * Completes an application for documentation purpose.
  * 
  * @author Cyprien Quilici
  * 
  */
-public interface DocumentedResource {
+public interface DocumentedApplication {
 
-    /** List of sections that describe the resource. */
-    List<String> getSections();
+    /**
+     * A list of the sections of the Web API.
+     * 
+     * @return The sections of the Web API.
+     */
+    Map<String, Section> getSections();
+
 }
