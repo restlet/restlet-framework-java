@@ -38,7 +38,7 @@ import java.util.Map;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;

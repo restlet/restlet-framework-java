@@ -71,10 +71,12 @@ public class RepresentationCollector {
                     .convertPrimitiveType(representationType));
 
             // Sections
-            String packageName = clazz.getPackage().getName();
-            representation.getSections().add(packageName);
-            if (collectInfo.getSection(packageName) == null) {
-                collectInfo.addSection(new Section(packageName));
+            if (collectInfo.isUseSectionNamingPackageStrategy()) {
+                String packageName = clazz.getPackage().getName();
+                representation.getSections().add(packageName);
+                if (collectInfo.getSection(packageName) == null) {
+                    collectInfo.addSection(new Section(packageName));
+                }
             }
             // Example: "Contact"
             representation.setName(representationType.getSimpleName());

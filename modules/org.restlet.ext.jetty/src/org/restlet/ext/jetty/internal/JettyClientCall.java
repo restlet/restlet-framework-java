@@ -187,7 +187,7 @@ public class JettyClientCall extends ClientCall {
      * associated by default, you have to manually set them from your headers.
      *
      * As jetty client decode the input stream on the fly in
-     * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer)}
+     * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer, org.eclipse.jetty.util.Callback)}
      * we have to clear the {@link org.restlet.representation.Representation#getEncodings()}
      * to avoid decoding the input stream another time.
 
@@ -198,7 +198,9 @@ public class JettyClientCall extends ClientCall {
     @Override
     public Representation getResponseEntity(Response response) {
         Representation responseEntity = super.getResponseEntity(response);
-        responseEntity.getEncodings().clear();
+        if (responseEntity != null && !responseEntity.getEncodings().isEmpty()) {
+            responseEntity.getEncodings().clear();
+        }
         return responseEntity;
     }
 
@@ -280,7 +282,7 @@ public class JettyClientCall extends ClientCall {
             this.inputStreamResponseListener = new InputStreamResponseListener();
             this.httpRequest.send(this.inputStreamResponseListener);
             long timeout = 5000;
-            this.httpResponse = (org.eclipse.jetty.client.api.Response) this.inputStreamResponseListener
+            this.httpResponse = this.inputStreamResponseListener
                     .get(timeout, TimeUnit.MILLISECONDS);
 
             result = new Status(getStatusCode(), getReasonPhrase());

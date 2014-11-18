@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -43,7 +42,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
@@ -53,6 +51,7 @@ import org.restlet.ext.apispark.internal.introspection.application.ApplicationIn
 import org.restlet.ext.apispark.internal.introspection.application.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.utils.CliUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 /**
@@ -64,7 +63,7 @@ import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 public class Introspector {
 
     /** Internal logger. */
-    private static Logger LOGGER = Context.getCurrentLogger();
+    private static Logger LOGGER = Engine.getLogger(Introspector.class);
 
     /**
      * Returns the value according to its index.
@@ -97,71 +96,153 @@ public class Introspector {
      * @throws TranslationException
      */
     public static void main(String[] args) throws TranslationException {
+        try {
+            process(args);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Introspection error", e);
+            System.exit(1);
+        }
+        System.exit(0);
+    }
+
+    public static void process(String[] args) throws TranslationException {
         Engine.register();
         String ulogin = null;
         String upwd = null;
         String serviceUrl = null;
         String defSource = null;
         String compName = null;
-        String descriptorId = null;
         String language = null;
-        String versionId = null;
-        String updateStrategy = null;
-        List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
-        boolean newVersion = false;
-        boolean create = false;
 
-        // TODO add option for enable ou disable swagger annotation support
+        String cellId = null;
+        String cellVersion = null;
+        String cellType = null;
+
+        boolean createNewCell = false;
+        boolean createNewVersion = false;
+        boolean updateCell = false;
+        String updateStrategy = "update";
+        
+        boolean useSectionNamingPackageStrategy = false;
+
         // (default ?)
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
-            if ("-h".equals(args[i])) {
+            String arg = args[i];
+            if ("-h".equals(arg) || "--help".equals(arg)) {
                 printHelp();
                 System.exit(0);
-            } else if ("-u".equals(args[i]) || "--username".equals(args[i])) {
+            } else if ("-u".equals(arg) || "--username".equals(arg)) {
                 ulogin = getParameter(args, ++i);
-            } else if ("-p".equals(args[i]) || "--password".equals(args[i])) {
+            } else if ("-p".equals(arg) || "--password".equals(arg)) {
                 upwd = getParameter(args, ++i);
-            } else if ("-s".equals(args[i]) || "--service".equals(args[i])) {
+            } else if ("-S".equals(arg) || "--service".equals(arg)) {
                 serviceUrl = getParameter(args, ++i);
-            } else if ("-c".equals(args[i]) || "--component".equals(args[i])) {
+            } else if ("-c".equals(arg) || "--create-connector".equals(arg)) {
+                createNewCell = true;
+                cellType = "webapiconnector";
+            } else if ("-d".equals(arg) || "--create-descriptor".equals(arg)) {
+                createNewCell = true;
+                cellType = "webapidescriptor";
+            } else if ("--component".equals(arg)) {
                 compName = getParameter(args, ++i);
-            } else if ("-d".equals(args[i]) || "--descriptor".equals(args[i])) {
-                descriptorId = getParameter(args, ++i);
-            } else if ("-v".equals(args[i]) || "--version".equals(args[i])) {
-                versionId = getParameter(args, ++i);
-            } else if ("-U".equals(args[i])
-                    || "--updateStrategy".equals(args[i])) {
+            } else if ("-i".equals(arg) || "--id".equals(arg)) {
+                cellId = getParameter(args, ++i);
+            } else if ("-v".equals(arg) || "--version".equals(arg)) {
+                cellVersion = getParameter(args, ++i);
+            } else if ("-U".equals(arg)
+                    || "--update".equals(arg)) {
+                updateCell = true;
+            } else if ("-s".equals(arg)
+                    || "--update-strategy".equals(arg)) {
                 updateStrategy = getParameter(args, ++i).toLowerCase();
-            } else if ("-n".equals(args[i]) || "--newVersion".equals(args[i])) {
-                newVersion = true;
-            } else if ("-C".equals(args[i]) || "--create".equals(args[i])) {
-                create = true;
-            } else if ("-l".equals(args[i]) || "--language".equals(args[i])) {
+            } else if ("-n".equals(arg) || "--new-version".equals(arg)) {
+                createNewVersion = true;
+            } else if ("-l".equals(arg) || "--language".equals(arg)) {
                 language = getParameter(args, ++i).toLowerCase();
-            } else if ("-V".equals(args[i]) || "--verbose".equals(args[i])) {
+            } else if ("--sections".equals(arg)) {
+                useSectionNamingPackageStrategy = true;
+            } else if ("-V".equals(arg) || "--verbose".equals(arg)) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
             } else {
-                defSource = args[i];
+                defSource = arg;
             }
         }
 
-        // Discover introspection helpers
-        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
-                .load(IntrospectionHelper.class);
-        for (IntrospectionHelper helper : ihLoader) {
-            introspectionHelpers.add(helper);
+        if (!createNewCell && !createNewVersion && !updateCell) {
+            LOGGER.severe("You should specify the wanted action among -d (--create-descriptor), -c (--create-connector), " +
+                    "-U (--update) or -n (--new-version). " +
+                    "Use parameter --help for help.");
+            System.exit(1);
         }
 
-        if (newVersion && create) {
-            LOGGER.severe("You can't use newVersion and create at the same time. Use parameter --help for help.");
-        } else if (create && updateStrategy != null) {
-            LOGGER.severe("You can't use create and updateStrategy at the same time. Use parameter --help for help.");
-        } else if (newVersion && updateStrategy != null) {
-            LOGGER.severe("You can't use newVersion and updateStrategy at the same time. Use parameter --help for help.");
-        } else if (!newVersion && updateStrategy == null) {
-            create = true;
+        if (createNewCell) {
+            if (createNewVersion || updateCell) {
+                LOGGER.severe("In create new cell mode, you can't use -U (--update) or -n (--new-version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+            if (cellId != null || cellVersion != null) {
+                LOGGER.severe("In create new cell mode, you can't use -i (--id) or -v (--version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+        }
+        if (createNewVersion) {
+            if (createNewCell || updateCell) {
+                LOGGER.severe("In create new version mode, you can't use -d (--create-descriptor), -c (--create-connector) or -n (--new-version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+            if (cellId == null) {
+                LOGGER.severe("In create new version mode, you should specify the cell id with -i (--id). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+            if (cellVersion != null) {
+                LOGGER.severe("In create new version mode, you can't use -v (--version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+        }
+        if (updateCell) {
+            if (createNewCell || createNewVersion) {
+                LOGGER.severe("In update mode, you can't use -d (--create-descriptor), -c (--create-connector) or -N (--new-version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+            if (cellId == null || cellVersion == null) {
+                LOGGER.severe("In update mode, you should specify the cell id with -i (--id) and the cell version with -v (--version). " +
+                        "Use parameter --help for help.");
+                System.exit(1);
+            }
+            if (!IntrospectionUtils.STRATEGIES.contains(updateStrategy)) {
+                LOGGER.severe("The strategy: "
+                        + updateStrategy
+                        + " is not available. Use parameter --help for help.");
+                System.exit(1);
+            }
+        }
+
+        if (StringUtils.isNullOrEmpty(ulogin)
+                || StringUtils.isNullOrEmpty(upwd)) {
+            LOGGER.severe("You should specify your API spark login and password with -U (--username) and -p (--password). "
+                + "Use parameter --help for help.");
+            System.exit(1);
+        }
+
+        if (StringUtils.isNullOrEmpty(defSource)) {
+            LOGGER.severe("You should specify the definition source to use (value no prefixed by any option). "
+                    + "Use parameter --help for help.");
+            System.exit(1);
+        }
+
+        if (StringUtils.isNullOrEmpty(serviceUrl)) {
+            serviceUrl = "https://apispark.com/";
+        }
+        if (!serviceUrl.endsWith("/")) {
+            serviceUrl += "/";
         }
 
         Engine.getLogger("").getHandlers()[0]
@@ -172,27 +253,13 @@ public class Introspector {
                     }
                 });
 
-        LOGGER.fine("Check parameters");
-        if (StringUtils.isNullOrEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/api/";
+        // Discover introspection helpers
+        List<IntrospectionHelper> introspectionHelpers = new ArrayList<>();
+        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
+                .load(IntrospectionHelper.class);
+        for (IntrospectionHelper helper : ihLoader) {
+            introspectionHelpers.add(helper);
         }
-        if (!serviceUrl.endsWith("/")) {
-            serviceUrl += "/";
-        }
-
-        if (StringUtils.isNullOrEmpty(ulogin)
-                || StringUtils.isNullOrEmpty(upwd)
-                || StringUtils.isNullOrEmpty(defSource)) {
-            printHelp();
-            System.exit(1);
-        }
-
-        // TODO validate the definition URL:
-        // * accept absolute urls
-        // * accept relative urls such as /definitions/{id} and concatenate with
-        // the serviceUrl
-        // * accept relative urls such as {id} and concatenate with the
-        // serviceUrl
 
         // Validate the application class name
         Definition definition = null;
@@ -205,8 +272,7 @@ public class Introspector {
             } catch (ClassNotFoundException e) {
                 LOGGER.log(Level.SEVERE,
                         "Cannot locate the application class.", e);
-                throw new RuntimeException(
-                        "Cannot locate the application class.", e);
+                System.exit(1);
             }
             // Is Restlet application ?
             // TODO implement introspection of Restlet based JaxRs (org.restlet.ext.jaxrs.JaxRsApplication)
@@ -216,17 +282,16 @@ public class Introspector {
                 Component component = ComponentIntrospector
                         .getComponent(compName);
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null, component, introspectionHelpers);
+                        null, component, useSectionNamingPackageStrategy);
             } else if (clazz != null) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, introspectionHelpers);
+                        null, useSectionNamingPackageStrategy);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");
-                throw new RuntimeException("Class " + defSource
-                        + " is not supported");
+                System.exit(1);
             }
         } else {
             if ("swagger".equals(language)) {
@@ -235,110 +300,133 @@ public class Introspector {
             } else {
                 LOGGER.log(Level.SEVERE, "Language " + language
                         + " is not supported");
-                throw new RuntimeException("Language " + language
-                        + " is not supported");
+                System.exit(1);
             }
         }
 
-        if (definition != null) {
-            IntrospectionUtils.sendDefinition(definition, descriptorId,
-                    versionId, ulogin, upwd, serviceUrl, updateStrategy,
-                    create, newVersion, LOGGER);
-
-        } else {
+        if (definition == null) {
             LOGGER.severe("Please provide a valid application class name or definition URL.");
+            System.exit(1);
         }
+
+        IntrospectionUtils.sendDefinition(definition, ulogin, upwd, serviceUrl,
+                cellType, cellId, cellVersion,
+                createNewCell, createNewVersion, updateCell, updateStrategy,
+                LOGGER);
+
+        LOGGER.info("Instrospection complete");
     }
 
     /**
      * Prints the instructions necessary to launch this tool.
      */
     private static void printHelp() {
-        PrintStream o = System.out;
+        CliUtils cli = new CliUtils(System.out, 100);
+        cli.print();
+        cli.print0("SYNOPSIS");
+        cli.print1(
+                "org.restlet.ext.apispark.Introspector [credentials] [actions] [options] [--language swagger SWAGGER_DEFINITION_URL_OR_PATH | APPLICATION]"
+        );
 
-        o.println("SYNOPSIS");
-        IntrospectionUtils
-                .printSynopsis(o, Introspector.class,
-                        "[options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        IntrospectionUtils
-                .printSynopsis(
-                        o,
-                        Introspector.class,
-                        "--create [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        IntrospectionUtils
-                .printSynopsis(
-                        o,
-                        Introspector.class,
-                        "--newVersion --descriptor descriptorId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
-        IntrospectionUtils
-                .printSynopsis(
-                        o,
-                        Introspector.class,
-                        "--updateStrategy strategy --descriptor descriptorId --version versionId [options] [--language swagger SWAGGER DEFINITION URL/PATH | APPLICATION]");
+        cli.print();
+        cli.print0("DESCRIPTION");
+        cli.print1(
+                "Publish to the APISpark platform the description of your Web API, represented by APPLICATION, the full name of your Restlet or JAX-RS application class or by the Swagger definition available at URL/PATH",
+                "If the whole process is successful, it displays the url of the corresponding descriptor or connector cell."
+        );
 
-        o.println("DESCRIPTION");
-        IntrospectionUtils
-                .printSentence(
-                        o,
-                        "Publish to the APISpark platform the description of your Web API, represented by APPLICATION,",
-                        "the full name of your Restlet or JAX-RS application class or by the Swagger definition available at ",
-                        "URL/PATH");
-        IntrospectionUtils
-                .printSentence(
-                        o,
-                        "If the whole process is successfull, it displays the url of the corresponding documentation.");
-        o.println("OPTIONS");
-        IntrospectionUtils.printOption(o, "-h, --help", "Prints this help.");
-        IntrospectionUtils.printOption(o, "-u, --username username",
-                "The mandatory APISpark user name.");
-        IntrospectionUtils.printOption(o, "-p, --password password",
-                "The mandatory APISpark user secret key.");
-        IntrospectionUtils
-                .printOption(
-                        o,
-                        "-c, --component commponent class",
-                        "The optional full name of your Restlet Component class.",
-                        "This allows to collect some other data, such as the endpoint.");
-        IntrospectionUtils
-                .printOption(o, "-C, --create",
-                        "Creates a new descriptor from introspection.",
-                        "Is set to true if neither --newVersion nor --updateStrategy are specified.");
-        IntrospectionUtils
-                .printOption(o, "-n, --newVersion",
-                        "Creates a new version of the descriptor identified by the --descriptor option");
-        IntrospectionUtils
-                .printOption(
-                        o,
-                        "-d, --descriptor descriptorId",
-                        "The optional identifier of an existing descriptor hosted by APISpark you want to update with this new documentation.",
-                        "Required if --updateStrategy or --newVersion options are specified.");
-        IntrospectionUtils
-                .printOption(
-                        o,
-                        "-U, --updateStrategy strategy",
-                        "Updates the descriptor version specified by the --descriptor and --version options with the given strategy. If no strategy is specified, the \"add\" strategy is selected by default. \n",
-                        "Strategies available:\n",
-                        "\"add\": new objects will be added to the APISpark's descriptor, primitive fields of existing objects will be updated. Nothing will be deleted.\n",
-                        "\"reset\": deletes all the information in the descriptor on APISpark's and fills it again with introspected definition.");
-        IntrospectionUtils
-                .printOption(
-                        o,
-                        "-v, --version versionId",
-                        "The version of the descriptor to be updated. Required if --updateStrategy is specified.");
-        IntrospectionUtils
-                .printOption(
-                        o,
-                        "-l, --language languageName",
-                        "The optional name of the description language of the definition you want to upload. Possible value: \"swagger\"");
-        IntrospectionUtils
-                .printOption(o, "-v, --verbose",
-                        "The optional parameter switching the process to a verbose mode");
-        o.println("ENHANCE INTROSPECTION");
-        IntrospectionUtils
-                .printSentence(
-                        o,
-                        "You can extend the basic introspection and enrich the generated documentation by providing dedicated helpers to the introspector.",
-                        "For example, if you are using Swagger annotations inside your code, complete the classpath by adding the jar either ",
-                        "of the org.restlet.ext.apispark-swagger-annotation-2_0 extension or the the org.restlet.ext.apispark-swagger-annotation-1_2 extension. \n");
+        cli.print();
+        cli.print0("EXAMPLES");
+        cli.print1(
+                "org.restlet.ext.apispark.Introspector -u 1234 -p Xy12 --create-descriptor com.acme.Application",
+                "org.restlet.ext.apispark.Introspector -u 1234 -p Xy12 --new-version --id 60 com.acme.Application",
+                "org.restlet.ext.apispark.Introspector -u 1234 -p Xy12 --update --update-strategy replace --id 60 --version 1 --language swagger http://acme.com/api/swagger"
+        );
+
+        cli.print();
+        cli.print0("OPTIONS");
+        cli.print12(
+                "-h, --help" +
+                        "Prints this help."
+        );
+        cli.print();
+        cli.print1("[credentials]");
+        cli.print12(
+                "-u, --username username",
+                "The mandatory APISpark user name."
+        );
+        cli.print12(
+                "-p, --password password",
+                "The mandatory APISpark user secret key."
+        );
+        cli.print();
+        cli.print1("[actions]");
+        cli.print12(
+                "-d, --create-descriptor",
+                "Creates a new descriptor from introspection."
+        );
+        cli.print12(
+                "-c, --create-connector",
+                "Creates a new connector from introspection."
+        );
+        cli.print12(
+                "-n, --new-version",
+                "Creates a new version of the descriptor/connector identified by the -i (--id) option"
+        );
+        cli.print12(
+                "-U, --update",
+                "Updates the cell descriptor/connector specified by the -i (--id) and -v (--version) options.",
+                "Use the default update strategy (update) except if -S (--update-strategy) option is specified."
+        );
+        cli.print();
+        cli.print1("[options]");
+        cli.print12(
+                "-i, --id cellId",
+                "The identifier of an existing cell hosted by APISpark you want to update with this new documentation.",
+                "Required if -n (--new-version) or -U (--update) options are specified."
+        );
+        cli.print12(
+                "-v, --version cellVersion",
+                "The version of the cell to be updated.",
+                "Required if -U (--update) option is specified."
+        );
+        cli.print12(
+                "-s, --update-strategy strategy",
+                "Specifies the update strategy.",
+                "Available strategies:",
+                "- update: (default) new objects will be added to the APISpark's descriptor/connector, primitive fields of existing objects will be updated. Nothing will be deleted.",
+                "- replace: deletes all the information in the descriptor/connector on APISpark's and fills it again with introspected definition."
+        );
+        cli.print12(
+                "--component componentClass",
+                "The optional full name of your Restlet Component class. This allows to collect some",
+                "other data, such as the endpoint."
+        );
+        cli.print12(
+                "-l, --language languageName",
+                "The optional name of the description language of the definition you want to upload.",
+                "Possible value:",
+                "- swagger: Swagger 1.2 specification."
+        );
+        cli.print12(
+                "--sections",
+                "Set section of introspected resources from java package name."
+        );
+        cli.print12(
+                "-v, --verbose",
+                "The optional parameter switching the process to a verbose mode"
+        );
+
+        cli.print();
+        cli.print0("ENHANCE INTROSPECTION");
+        cli.print1(
+                "You can extend the basic introspection and enrich the generated documentation by providing",
+                "dedicated helpers to the introspector.",
+                "By default, swagger annotation are supported.",
+                "Introspection use the Java Service Loader system.",
+                "To add a new helper, create a",
+                "'META-INF/services/org.restlet.ext.apispark.internal.introspection.IntrospectionHelper' file",
+                "with the name of your implementation class."
+        );
     }
 }

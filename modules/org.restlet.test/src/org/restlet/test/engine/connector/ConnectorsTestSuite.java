@@ -62,6 +62,7 @@ public class ConnectorsTestSuite extends TestSuite {
         addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(GetTestCase.class);
         addTestSuite(GetChunkedTestCase.class);
+        addTestSuite(GetQueryParamTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
         addTestSuite(SslClientContextGetTestCase.class);
