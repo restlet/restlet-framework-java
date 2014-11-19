@@ -44,7 +44,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -100,9 +99,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
 
     /** The base reference of the API. */
     private Reference baseRef;
-
-    /** Helper used to add CORS response headers */
-    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
 
     /** The RWADef of the API. */
     private Definition definition;
@@ -234,9 +230,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
-
-        // CORS support for Swagger-UI
-        corsResponseHelper.addCorsResponseHeaders(request, response);
 
         if (Method.GET.equals(request.getMethod())) {
             response.setEntity(getSwagger());
