@@ -89,17 +89,7 @@ public class ReflectUtils {
         return segment;
     }
 
-    public static Class<?> getSimpleClass(Field field) {
-        Type genericFieldType = field.getGenericType();
-
-        if (genericFieldType != null) {
-            return getSimpleClass(genericFieldType);
-        }
-
-        return field.getType();
-    }
-
-    public static Class<?> getSimpleClass(java.lang.reflect.Type type) {
+    public static Class<?> getComponentClass(java.lang.reflect.Type type) {
         if (type instanceof Class<?>) {
             Class<?> c = (Class<?>) type;
             if (c.isArray()) {
@@ -107,21 +97,22 @@ public class ReflectUtils {
             } else if (Collection.class.isAssignableFrom(c)) {
                 // Simple class that extends Collection<E>. Should inspect
                 // superclass.
-                return getSimpleClass(c.getGenericSuperclass());
+                return getComponentClass(c.getGenericSuperclass());
             } else {
                 return c;
             }
         } else if (type instanceof GenericArrayType) {
             GenericArrayType gat = (GenericArrayType) type;
-            return getSimpleClass(gat.getGenericComponentType());
+            return getComponentClass(gat.getGenericComponentType());
         } else if (type instanceof ParameterizedType) {
             ParameterizedType t = (ParameterizedType) type;
             if (t.getActualTypeArguments().length == 1) {
-                return getSimpleClass(t.getActualTypeArguments()[0]);
+                return getComponentClass(t.getActualTypeArguments()[0]);
             } else {
                 Logger.getLogger(ReflectUtils.class.getName())
                         .warning(
                                 "We don't support generic types with several arguments.");
+                return null;
             }
         }
         return (type != null) ? type.getClass() : null;

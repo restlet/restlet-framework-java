@@ -1,15 +1,28 @@
-package org.restlet.ext.apispark.internal.model;
+package org.restlet.ext.apispark.internal.introspection.application;
 
+import com.google.common.collect.Maps;
+import org.restlet.ext.apispark.internal.introspection.application.TypeInfo;
+import org.restlet.ext.apispark.internal.model.Representation;
+
+import java.beans.BeanInfo;
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
- * Created by manu on 13/10/2014.
+ * @author Manuel Boillod
  */
 public abstract class Types {
+
+    /** TypeInfo cache. */
+    private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
             "short", "integer", "long", "float", "double", "boolean", "double",
@@ -42,6 +55,17 @@ public abstract class Types {
                                                        // considered as date
     }
 
+    public static TypeInfo getTypeInfo(Class<?> clazz, Type type){
+        TypeInfoKey key = new TypeInfoKey(clazz, type);
+        TypeInfo typeInfo = cache.get(key);
+
+        if (typeInfo == null) {
+            typeInfo = new TypeInfo(clazz, type);
+            cache.put(key, typeInfo);
+        }
+        return typeInfo;
+    }
+
     /**
      * Returns simple type name for primitive type or full name otherwise
      */
@@ -56,7 +80,8 @@ public abstract class Types {
         if (Date.class.isAssignableFrom(type)) {
             return "date";
         }
-        if (Representation.class.isAssignableFrom(type)) {
+        if (Representation.class.isAssignableFrom(type) ||
+                File.class.isAssignableFrom(type)) {
             return "file";
         }
         return type.getName();
@@ -70,5 +95,32 @@ public abstract class Types {
 
     public static boolean isPrimitiveType(String typename) {
         return primitivesTypes.contains(typename);
+    }
+
+
+    private static class TypeInfoKey {
+
+        private final Class<?> clazz;
+        private final Type type;
+
+        public TypeInfoKey(Class<?> clazz, Type type) {
+            this.clazz = clazz;
+            this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof TypeInfoKey) {
+                TypeInfoKey that = (TypeInfoKey) obj;
+                return Objects.equals(this.clazz, that.clazz)
+                        && Objects.equals(this.type, that.type);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clazz, type);
+        }
     }
 }

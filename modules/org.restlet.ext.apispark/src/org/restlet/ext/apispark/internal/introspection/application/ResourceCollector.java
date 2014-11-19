@@ -1,13 +1,5 @@
 package org.restlet.ext.apispark.internal.introspection.application;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -26,8 +18,6 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.model.Types;
-import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.StatusInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
@@ -35,6 +25,13 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
 import org.restlet.service.MetadataService;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Manuel Boillod
@@ -109,9 +106,18 @@ public class ResourceCollector {
                             methodAnnotationInfo, sr, introspectionHelper);
 
                     for (IntrospectionHelper helper : introspectionHelper) {
-                        helper.processOperation(resource, operation,
+                        List<Class<?>> representationClasses = helper.processOperation(resource, operation,
                                 sr.getClass(),
                                 methodAnnotationInfo.getJavaMethod());
+                        if (representationClasses != null && !representationClasses.isEmpty()) {
+                            for (Class<?> representationClazz : representationClasses) {
+                                TypeInfo typeInfo = Types.getTypeInfo(representationClazz, null);
+                                RepresentationCollector.addRepresentation(collectInfo,
+                                        typeInfo, introspectionHelper);
+
+                            }
+
+                        }
                     }
                     operations.add(operation);
                 }
@@ -159,9 +165,9 @@ public class ResourceCollector {
 
                     Class<?> outputPayloadType = statusAnnotation
                             .isSerializable() ? thrownClass : StatusInfo.class;
-
+                    TypeInfo outputTypeInfo = Types.getTypeInfo(outputPayloadType, null);
                     RepresentationCollector.addRepresentation(collectInfo,
-                            outputPayloadType, null, introspectionHelper);
+                            outputTypeInfo, introspectionHelper);
 
                     PayLoad outputPayLoad = new PayLoad();
                     outputPayLoad.setType(outputPayloadType.getName());
@@ -178,16 +184,14 @@ public class ResourceCollector {
 
             // Input representation
             // Handles only the first method parameter
-            Class<?> inputClass = inputClasses[0];
-            Type inputType = mai.getJavaMethod().getGenericParameterTypes()[0];
+            TypeInfo inputTypeInfo = Types.getTypeInfo(inputClasses[0],
+                    mai.getJavaMethod().getGenericParameterTypes()[0]);
 
-            RepresentationCollector.addRepresentation(collectInfo, inputClass,
-                    inputType, introspectionHelper);
+            RepresentationCollector.addRepresentation(collectInfo, inputTypeInfo, introspectionHelper);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(Types.convertPrimitiveType(ReflectUtils
-                    .getSimpleClass(inputType)));
-            inputEntity.setArray(ReflectUtils.isListType(inputClass));
+            inputEntity.setType(inputTypeInfo.getIdentifier());
+            inputEntity.setArray(inputTypeInfo.isList());
             operation.setInputPayLoad(inputEntity);
 
             // Consumes
@@ -241,24 +245,20 @@ public class ResourceCollector {
 
         Response response = new Response();
 
-        Class<?> outputClass = mai.getJavaMethod().getReturnType();
-        Type outputType = mai.getJavaMethod().getGenericReturnType();
-
-        if (outputClass != Void.TYPE) {
+        if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
+            TypeInfo outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(), mai.getJavaMethod().getGenericReturnType());
             // Output representation
-            RepresentationCollector.addRepresentation(collectInfo, outputClass,
-                    outputType, introspectionHelper);
+            RepresentationCollector.addRepresentation(collectInfo, outputTypeInfo, introspectionHelper);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(Types.convertPrimitiveType(ReflectUtils
-                    .getSimpleClass(outputType)));
-            outputEntity.setArray(ReflectUtils.isListType(outputClass));
+            outputEntity.setType(outputTypeInfo.getIdentifier());
+            outputEntity.setArray(outputTypeInfo.isList());
 
             response.setOutputPayLoad(outputEntity);
         }
 
         response.setCode(Status.SUCCESS_OK.getCode());
-        response.setName("Success");
+        response.setName(Status.SUCCESS_OK.getReasonPhrase());
         response.setDescription("");
         response.setMessage(Status.SUCCESS_OK.getDescription());
         operation.getResponses().add(response);

@@ -1,6 +1,8 @@
 package org.restlet.ext.apispark.internal.introspection.helper;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -33,21 +35,23 @@ public class SwaggerAnnotationIntrospectionHelper implements
     }
 
     @Override
-    public void processOperation(Resource resource, Operation operation,
-            Class<?> resourceClass, Method javaMethod) {
+    public java.util.List<Class<?>> processOperation(Resource resource, Operation operation,
+                                                     Class<?> resourceClass, Method javaMethod) {
+        List<Class<?>> representationsUsed = new ArrayList<>();
+
         ApiOperation apiOperation = javaMethod
                 .getAnnotation(ApiOperation.class);
         if (apiOperation != null) {
-            SwaggerAnnotationUtils.processApiOperation(apiOperation, operation);
+            SwaggerAnnotationUtils.processApiOperation(apiOperation, resource, operation);
         }
         ApiResponses apiResponses = javaMethod
                 .getAnnotation(ApiResponses.class);
         if (apiResponses != null) {
-            SwaggerAnnotationUtils.processApiResponses(apiResponses, operation);
+            SwaggerAnnotationUtils.processApiResponses(apiResponses, operation, representationsUsed);
         }
         ApiResponse apiResponse = javaMethod.getAnnotation(ApiResponse.class);
         if (apiResponse != null) {
-            SwaggerAnnotationUtils.processApiResponse(apiResponse, operation);
+            SwaggerAnnotationUtils.processApiResponse(apiResponse, operation, representationsUsed);
         }
         ApiImplicitParams apiImplicitParams = javaMethod
                 .getAnnotation(ApiImplicitParams.class);
@@ -61,6 +65,7 @@ public class SwaggerAnnotationIntrospectionHelper implements
             SwaggerAnnotationUtils.processApiImplicitParam(apiImplicitParam,
                     operation);
         }
+        return representationsUsed;
     }
 
     @Override

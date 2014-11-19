@@ -79,7 +79,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.model.Types;
+import org.restlet.ext.apispark.internal.introspection.application.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**

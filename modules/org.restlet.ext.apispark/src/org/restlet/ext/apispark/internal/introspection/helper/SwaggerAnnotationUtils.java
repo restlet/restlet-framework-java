@@ -1,19 +1,8 @@
 package org.restlet.ext.apispark.internal.introspection.helper;
 
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.Parameter;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Types;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -23,10 +12,24 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.Parameter;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.introspection.application.Types;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Tools for Swagger annotations.
- * 
+ *
  * @author Manuel Boillod.
  */
 public class SwaggerAnnotationUtils {
@@ -37,7 +40,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link Api} annotation to the resource.
-     * 
+     *
      * @param api
      *            The {@link Api} annotation.
      * @param resource
@@ -54,7 +57,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiImplicitParam} annotation to the operation.
-     * 
+     *
      * @param apiImplicitParam
      *            The {@link ApiImplicitParam} annotation.
      * @param operation
@@ -80,7 +83,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiImplicitParams} annotation to the operation.
-     * 
+     *
      * @param apiImplicitParams
      *            The {@link ApiImplicitParams} annotation.
      * @param operation
@@ -95,14 +98,13 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiModel} annotation to the representation.
-     * 
+     *
      * @param apiModel
      *            The {@link ApiModel} annotation.
-     * @param representation
-     *            The {@link Representation} to update.
+     * @param representation The {@link Representation} to update.
      */
     public static void processApiModel(ApiModel apiModel,
-            Representation representation) {
+                                       Representation representation) {
         if (!StringUtils.isNullOrEmpty(apiModel.value())) {
             representation.setName(apiModel.value());
         }
@@ -118,7 +120,7 @@ public class SwaggerAnnotationUtils {
     /**
      * Adds data from the {@link ApiModelProperty} annotation to the
      * representation property.
-     * 
+     *
      * @param apiModelProperty
      *            The {@link ApiModelProperty} annotation.
      * @param property
@@ -140,14 +142,16 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiModelProperty} annotation to the operation.
-     * 
+     *
      * @param apiOperation
-     *            The {@link ApiOperation} annotation.
+     *              The {@link com.wordnik.swagger.annotations.ApiOperation} annotation.
+     * @param resource
+     *              The {@link org.restlet.ext.apispark.internal.model.Resource} to update.
      * @param operation
-     *            The {@link Operation} to update.
+     *              The {@link org.restlet.ext.apispark.internal.model.Operation} to update.
      */
     public static void processApiOperation(ApiOperation apiOperation,
-            Operation operation) {
+                                           Resource resource, Operation operation) {
         if (!StringUtils.isNullOrEmpty(apiOperation.value())) {
             operation.setName(apiOperation.value());
         }
@@ -157,10 +161,14 @@ public class SwaggerAnnotationUtils {
         if (!StringUtils.isNullOrEmpty(apiOperation.httpMethod())) {
             operation.setMethod(apiOperation.httpMethod());
         }
-        // not implemented
-        // if (!StringUtils.isNullOrEmpty(apiOperation.tags())) {
-        // operation.setSections(apiOperation.tags());
-        // }
+        if (!StringUtils.isNullOrEmpty(apiOperation.tags())) {
+            List<String> tags = StringUtils.splitAndTrim(apiOperation.tags());
+            for (String tag : tags) {
+                if (!resource.getSections().contains(tag)) {
+                    resource.getSections().add(tag);
+                }
+            }
+        }
         if (!StringUtils.isNullOrEmpty(apiOperation.consumes())) {
             operation.setConsumes(StringUtils.splitAndTrim(apiOperation
                     .consumes()));
@@ -173,14 +181,14 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiParam} annotation to the parameter.
-     * 
+     *
      * @param apiParam
      *            The {@link ApiParam} annotation.
      * @param parameter
      *            The {@link Parameter} to update.
      */
     public static void processApiParameter(ApiParam apiParam,
-            Parameter parameter) {
+                                           Parameter parameter) {
         if (!StringUtils.isNullOrEmpty(apiParam.name())) {
             parameter.setName(apiParam.name());
         }
@@ -196,42 +204,69 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiResponse} annotation to the operation.
-     * 
+     *
      * @param apiResponse
      *            The {@link ApiResponse} annotation.
      * @param operation
      *            The {@link Operation} to update.
+     * @param representationsUsed
+     *            The {@link java.lang.Class} of representation used.
      */
     public static void processApiResponse(ApiResponse apiResponse,
-            Operation operation) {
-        if (operation.getResponses() == null) {
-            operation.setResponses(new ArrayList<Response>());
+                                          Operation operation, List<Class<?>> representationsUsed) {
+        List<Response> responses = operation.getResponses();
+        if (responses == null) {
+            responses = new ArrayList<>();
+            operation.setResponses(responses);
         }
-        Response response = new Response();
-        response.setCode(apiResponse.code());
+        final int code = apiResponse.code();
+
+        Optional<Response> existingResponse = Iterables.tryFind(responses, new Predicate<Response>() {
+            @Override
+            public boolean apply(Response response) {
+                return response.getCode() == code;
+            }
+        });
+        boolean responseExists = existingResponse.isPresent();
+        Response response;
+        if (responseExists) {
+            response = existingResponse.get();
+        } else {
+            response = new Response();
+            response.setCode(code);
+        }
+
+        response.setCode(code);
         if (!StringUtils.isNullOrEmpty(apiResponse.message())) {
             response.setDescription(apiResponse.message());
         }
-        if (apiResponse.response() != null) {
+        Class<?> responseClazz = apiResponse.response();
+        if (responseClazz != null && responseClazz != Void.TYPE && responseClazz != Void.class) {
+            representationsUsed.add(responseClazz);
             PayLoad payLoad = new PayLoad();
-            payLoad.setType(Types.convertPrimitiveType(apiResponse.response()));
+            payLoad.setType(Types.convertPrimitiveType(responseClazz));
             response.setOutputPayLoad(payLoad);
         }
-        operation.getResponses().add(response);
+
+        if (!responseExists) {
+            responses.add(response);
+        }
     }
 
     /**
      * Adds data from the {@link ApiResponses} annotation to the operation.
-     * 
+     *
      * @param apiResponses
      *            The {@link ApiResponses} annotation.
      * @param operation
      *            The {@link Operation} to update.
+     * @param representationsUsed
+     *            The {@link java.lang.Class} of representation used.
      */
     public static void processApiResponses(ApiResponses apiResponses,
-            Operation operation) {
+                                           Operation operation, List<Class<?>> representationsUsed) {
         for (ApiResponse apiResponse : apiResponses.value()) {
-            processApiResponse(apiResponse, operation);
+            processApiResponse(apiResponse, operation, representationsUsed);
         }
     }
 }

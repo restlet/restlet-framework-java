@@ -1,6 +1,7 @@
 package org.restlet.ext.apispark.internal.introspection;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Operation;
@@ -37,8 +38,12 @@ public interface IntrospectionHelper {
      *            The class of resource to instrospect.
      * @param javaMethod
      *            The Java method to instrospect.
+     *
+     * @return
+     *          List of representation classes used.
+     *          If not null or empty, representations are added in api definition.
      */
-    void processOperation(Resource resource, Operation operation,
+    List<Class<?>> processOperation(Resource resource, Operation operation,
             Class<?> resourceClass, Method javaMethod);
 
     /**
