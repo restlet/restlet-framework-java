@@ -12,7 +12,7 @@ Changes log
         deserializing a representation.
 
     - API changes
-      -        
+      -  Added getName() and getDescription() methods in ServerResource for documentation purpose.      
 
     - Bugs fixed
       -        
