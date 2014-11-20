@@ -164,6 +164,12 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * <td>Whether TCP_NODELAY is enabled</td>
  * </tr>
  * <tr>
+ * <td>timeout</td>
+ * <td>long</td>
+ * <td>60000</td>
+ * <td>The read timeout in milliseconds</td>
+ * </tr>
+ * <tr>
  * <td>userAgentField</td>
  * <td>String</td>
  * <td>null</td>
@@ -445,6 +451,17 @@ public class HttpClientHelper extends
     public long getStopTimeout() {
         return Long.parseLong(getHelpedParameters().getFirstValue(
                 "stopTimeout", "60000"));
+    }
+
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout. Defaults to 60000.
+     *
+     * @return The read timeout value.
+     */
+    public long getTimeout() {
+        return Long.parseLong(getHelpedParameters().getFirstValue(
+                "timeout", "60000"));
     }
 
     /**
