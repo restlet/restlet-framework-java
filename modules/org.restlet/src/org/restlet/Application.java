@@ -165,7 +165,7 @@ public class Application extends Restlet {
         ConverterService converterService = new ConverterService();
         MetadataService metadataService = new MetadataService();
 
-        this.debugging = true;
+        this.debugging = false;
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
