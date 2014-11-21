@@ -2,11 +2,16 @@ package org.restlet.ext.apispark.internal.introspection.application;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Section;
@@ -15,6 +20,7 @@ import org.restlet.ext.apispark.internal.model.Section;
  * @author Manuel Boillod
  */
 public class RepresentationCollector {
+    private static Logger LOGGER = Engine.getLogger(Introspector.class);
 
     /**
      * Returns the description of the given class as a {@link Representation}.
@@ -85,8 +91,16 @@ public class RepresentationCollector {
                         .getBeanInfo(typeInfo.getRepresentationClazz());
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
 
-                    TypeInfo propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod().getReturnType(),
-                            pd.getReadMethod().getGenericReturnType());
+                    TypeInfo propertyTypeInfo;
+                    try {
+                        propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod().getReturnType(),
+                                pd.getReadMethod().getGenericReturnType());
+                    } catch (UnsupportedTypeException e) {
+                        LOGGER.warning("Could not add property " + pd.getName() +
+                                " of representation " + typeInfo.getIdentifier() + ". " +
+                                e.getMessage());
+                        continue;
+                    }
 
 //                    Types
                     Property property = new Property();

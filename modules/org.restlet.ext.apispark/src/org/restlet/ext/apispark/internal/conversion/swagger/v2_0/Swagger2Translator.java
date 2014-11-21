@@ -18,7 +18,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.introspection.application.Types;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;

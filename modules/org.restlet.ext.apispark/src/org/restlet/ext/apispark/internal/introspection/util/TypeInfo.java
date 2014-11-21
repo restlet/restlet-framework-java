@@ -1,4 +1,4 @@
-package org.restlet.ext.apispark.internal.introspection.application;
+package org.restlet.ext.apispark.internal.introspection.util;
 
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.Representation;
@@ -40,6 +40,10 @@ public class TypeInfo {
         isList = ReflectUtils.isListType(clazz);
 
         if (isList) {
+            if (componentClazz == null || !Types.isPrimitiveType(componentClazz)) {
+              throw new UnsupportedTypeException("Type " + Types.toString(clazz, type) +
+                      " is a list/array and its component type is unknown or not supported");
+            }
             componentTypeInfo = Types.getTypeInfo(componentClazz,
                     null);
         } else {

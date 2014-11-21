@@ -33,6 +33,8 @@
 
 package org.restlet.ext.apispark.internal.reflect;
 
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -109,10 +111,7 @@ public class ReflectUtils {
             if (t.getActualTypeArguments().length == 1) {
                 return getComponentClass(t.getActualTypeArguments()[0]);
             } else {
-                Logger.getLogger(ReflectUtils.class.getName())
-                        .warning(
-                                "We don't support generic types with several arguments.");
-                return null;
+                throw new UnsupportedTypeException("Type " + type + " is a generic type with several arguments. This is not supported.");
             }
         }
         return (type != null) ? type.getClass() : null;

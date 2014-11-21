@@ -1,10 +1,7 @@
-package org.restlet.ext.apispark.internal.introspection.application;
+package org.restlet.ext.apispark.internal.introspection.util;
 
-import com.google.common.collect.Maps;
-import org.restlet.ext.apispark.internal.introspection.application.TypeInfo;
 import org.restlet.ext.apispark.internal.model.Representation;
 
-import java.beans.BeanInfo;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -97,6 +94,13 @@ public abstract class Types {
         return primitivesTypes.contains(typename);
     }
 
+    public static String toString(Class<?> clazz, Type type) {
+        if (type == null) {
+            return clazz.toString();
+        } else {
+            return type.toString();
+        }
+    }
 
     private static class TypeInfoKey {
 

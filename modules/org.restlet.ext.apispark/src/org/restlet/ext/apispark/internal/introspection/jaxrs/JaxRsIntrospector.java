@@ -77,7 +77,8 @@ import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
-import org.restlet.ext.apispark.internal.introspection.application.TypeInfo;
+import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -91,7 +92,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.introspection.application.Types;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
@@ -358,9 +359,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 BeanInfo beanInfo = BeanInfoUtils
                         .getBeanInfo(typeInfo.getRepresentationClazz());
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
-                    TypeInfo propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod().getReturnType(),
-                            pd.getReadMethod().getGenericReturnType());
-
+                    TypeInfo propertyTypeInfo;
+                    try {
+                        propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod().getReturnType(),
+                                pd.getReadMethod().getGenericReturnType());
+                    } catch (UnsupportedTypeException e) {
+                        LOGGER.warning("Could not add property " + pd.getName() +
+                                " of representation " + typeInfo.getIdentifier() + ". " +
+                                e.getMessage());
+                        continue;
+                    }
                     Property property = new Property();
                     property.setName(pd.getName());
                     property.setDescription("");
@@ -705,8 +713,14 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanField(Field field, ClazzInfo clazzInfo) {
-        TypeInfo typeInfo = Types.getTypeInfo(field.getType(), field.getGenericType());
-        // Introduced by Jax-rs 2.0
+        TypeInfo typeInfo;
+        try {
+            typeInfo = Types.getTypeInfo(field.getType(), field.getGenericType());
+        } catch (UnsupportedTypeException e) {
+            LOGGER.warning("Could not add field " + field + ". " +
+                    e.getMessage());
+            return;
+        }        // Introduced by Jax-rs 2.0
         // BeanParam beanparam = field.getAnnotation(BeanParam.class);
 
         DefaultValue defaultvalue = field.getAnnotation(DefaultValue.class);
@@ -746,8 +760,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             Type[] genericParameterTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
             Annotation[] annotations = parameterAnnotations[i];
-            TypeInfo typeInfo = Types.getTypeInfo(parameterTypes[i],
-                    genericParameterTypes[i]);
+            TypeInfo typeInfo;
+            try {
+                typeInfo = Types.getTypeInfo(parameterTypes[i],
+                        genericParameterTypes[i]);
+            } catch (UnsupportedTypeException e) {
+                LOGGER.warning("Could not scan parameter " + Types.toString(parameterTypes[i],
+                        genericParameterTypes[i]) + ". " +
+                        e.getMessage());
+                continue;
+            }
 
             for (Annotation annotation : annotations) {
                 String defaultValue = null;
@@ -827,15 +849,23 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 .getQueryParametersCopy();
 
         // Scan method parameters
-        // todo factorize code (OperationInfo create from ClazzInfo)
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         for (int i = 0; i < parameterTypes.length; i++) {
             Annotation[] annotations = parameterAnnotations[i];
-            TypeInfo typeInfo = Types.getTypeInfo(parameterTypes[i],
-                    genericParameterTypes[i]);
+            TypeInfo typeInfo;
+            try {
+                typeInfo = Types.getTypeInfo(parameterTypes[i],
+                        genericParameterTypes[i]);
+            } catch (UnsupportedTypeException e) {
+                LOGGER.warning("Could not scan parameter " + Types.toString(parameterTypes[i],
+                        genericParameterTypes[i]) +
+                        " of method " + method + ". " +
+                        e.getMessage());
+                continue;
+            }
 
             for (Annotation annotation : annotations) {
                 String defaultValue = null;

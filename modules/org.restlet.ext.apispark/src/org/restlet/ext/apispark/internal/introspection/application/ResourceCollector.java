@@ -9,8 +9,12 @@ import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.PayLoad;
@@ -39,7 +43,7 @@ import java.util.logging.Logger;
 public class ResourceCollector {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(ResourceCollector.class
+    protected static Logger LOGGER = Logger.getLogger(Introspector.class
             .getName());
 
     private static final String SUFFIX_RESOURCE = "Resource";
@@ -86,18 +90,11 @@ public class ResourceCollector {
 
                     Method method = methodAnnotationInfo.getRestletMethod();
 
-                    if ("OPTIONS".equals(method.getName())
-                            || "PATCH".equals(method.getName())) {
-                        LOGGER.fine("Method " + method.getName() + " ignored.");
-                        continue;
-                    }
-
                     Operation operation = getOperationFromMethod(method);
 
                     if (StringUtils.isNullOrEmpty(operation.getName())) {
                         LOGGER.warning("Java method "
-                                + methodAnnotationInfo.getJavaMethod()
-                                        .getName() + " has no Method name.");
+                                + methodAnnotationInfo.getJavaMethod() + " has no Method name.");
                         operation.setName(methodAnnotationInfo.getJavaMethod()
                                 .getName());
                     }
@@ -111,7 +108,14 @@ public class ResourceCollector {
                                 methodAnnotationInfo.getJavaMethod());
                         if (representationClasses != null && !representationClasses.isEmpty()) {
                             for (Class<?> representationClazz : representationClasses) {
-                                TypeInfo typeInfo = Types.getTypeInfo(representationClazz, null);
+                                TypeInfo typeInfo;
+                                try {
+                                    typeInfo = Types.getTypeInfo(representationClazz, null);
+                                } catch (UnsupportedTypeException e) {
+                                    LOGGER.warning("Could not add representation class " + representationClazz.getName() +
+                                            ". " + e.getMessage());
+                                    continue;
+                                }
                                 RepresentationCollector.addRepresentation(collectInfo,
                                         typeInfo, introspectionHelper);
 
@@ -152,6 +156,23 @@ public class ResourceCollector {
         MetadataService metadataService = sr.getMetadataService();
 
         // Retrieve thrown classes
+        completeOperationThrows(collectInfo, operation, mai, introspectionHelper);
+
+        // Describe the input
+        completeOperationInput(collectInfo, operation, mai, sr, introspectionHelper, metadataService);
+
+        // Describe query parameters, if any.
+        completeOperationQueryParameter(operation, mai);
+
+        // Describe the success response
+
+        completeOperationOutput(collectInfo, operation, mai, introspectionHelper);
+
+        // Produces
+        completeOperationProduces(operation, mai, sr, metadataService);
+    }
+
+    private static void completeOperationThrows(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
@@ -165,27 +186,42 @@ public class ResourceCollector {
 
                     Class<?> outputPayloadType = statusAnnotation
                             .isSerializable() ? thrownClass : StatusInfo.class;
-                    TypeInfo outputTypeInfo = Types.getTypeInfo(outputPayloadType, null);
+                    TypeInfo outputTypeInfo = null;
+                    try {
+                        outputTypeInfo = Types.getTypeInfo(outputPayloadType, null);
+                    } catch (UnsupportedTypeException e) {
+                        LOGGER.warning("Could not add output payload for exception " +
+                                thrownClass + " throws by method " + mai.getJavaMethod() + ". " + e.getMessage());
+                        continue;
+                    }
                     RepresentationCollector.addRepresentation(collectInfo,
                             outputTypeInfo, introspectionHelper);
 
                     PayLoad outputPayLoad = new PayLoad();
-                    outputPayLoad.setType(outputPayloadType.getName());
+                    outputPayLoad.setType(outputTypeInfo.getIdentifier());
                     response.setOutputPayLoad(outputPayLoad);
                     operation.getResponses().add(response);
 
                 }
             }
         }
+    }
 
-        // Describe the input
+    private static void completeOperationInput(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, ServerResource sr, List<? extends IntrospectionHelper> introspectionHelper, MetadataService metadataService) {
         Class<?>[] inputClasses = mai.getJavaMethod().getParameterTypes();
         if (inputClasses != null && inputClasses.length > 0) {
 
             // Input representation
             // Handles only the first method parameter
-            TypeInfo inputTypeInfo = Types.getTypeInfo(inputClasses[0],
-                    mai.getJavaMethod().getGenericParameterTypes()[0]);
+            TypeInfo inputTypeInfo;
+            try {
+                inputTypeInfo = Types.getTypeInfo(inputClasses[0],
+                        mai.getJavaMethod().getGenericParameterTypes()[0]);
+            } catch (UnsupportedTypeException e) {
+                LOGGER.warning("Could not add input representation of method" +
+                        mai.getJavaMethod() + ". " + e.getMessage());
+                return;
+            }
 
             RepresentationCollector.addRepresentation(collectInfo, inputTypeInfo, introspectionHelper);
 
@@ -202,8 +238,8 @@ public class ResourceCollector {
                             metadataService, sr.getConverterService());
 
                     if (requestVariants == null || requestVariants.isEmpty()) {
-                        LOGGER.warning("Method has no requested variant: "
-                                + mai);
+                        LOGGER.warning("Could not add consumes of method " + mai.getJavaMethod() +
+                                ". There is no requested variant");
                         return;
                     }
 
@@ -224,8 +260,9 @@ public class ResourceCollector {
                 }
             }
         }
+    }
 
-        // Describe query parameters, if any.
+    private static void completeOperationQueryParameter(Operation operation, MethodAnnotationInfo mai) {
         if (mai.getQuery() != null) {
             Form form = new Form(mai.getQuery());
             for (org.restlet.data.Parameter parameter : form) {
@@ -240,13 +277,20 @@ public class ResourceCollector {
                 operation.getQueryParameters().add(queryParameter);
             }
         }
+    }
 
-        // Describe the success response
-
+    private static void completeOperationOutput(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
         Response response = new Response();
 
         if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
-            TypeInfo outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(), mai.getJavaMethod().getGenericReturnType());
+            TypeInfo outputTypeInfo;
+            try {
+                outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(), mai.getJavaMethod().getGenericReturnType());
+            } catch (UnsupportedTypeException e) {
+                LOGGER.warning("Could not add output representation of method " +
+                        mai.getJavaMethod() + ". " + e.getMessage());
+                return;
+            }
             // Output representation
             RepresentationCollector.addRepresentation(collectInfo, outputTypeInfo, introspectionHelper);
 
@@ -262,15 +306,16 @@ public class ResourceCollector {
         response.setDescription("");
         response.setMessage(Status.SUCCESS_OK.getDescription());
         operation.getResponses().add(response);
+    }
 
-        // Produces
+    private static void completeOperationProduces(Operation operation, MethodAnnotationInfo mai, ServerResource sr, MetadataService metadataService) {
         if (metadataService != null) {
             try {
                 List<Variant> responseVariants = mai.getResponseVariants(
                         metadataService, sr.getConverterService());
 
                 if (responseVariants == null || responseVariants.isEmpty()) {
-                    LOGGER.warning("Method has no response variant: " + mai);
+                    LOGGER.warning("Method has no response variant: " + mai.getJavaMethod());
                     return;
                 }
 
