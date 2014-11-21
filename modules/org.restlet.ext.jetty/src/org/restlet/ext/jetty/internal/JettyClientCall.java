@@ -282,7 +282,7 @@ public class JettyClientCall extends ClientCall {
             this.inputStreamResponseListener = new InputStreamResponseListener();
             this.httpRequest.send(this.inputStreamResponseListener);
             this.httpResponse = this.inputStreamResponseListener
-                    .get(clientHelper.getTimeout(), TimeUnit.MILLISECONDS);
+                    .get(clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
 
             result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException e) {
