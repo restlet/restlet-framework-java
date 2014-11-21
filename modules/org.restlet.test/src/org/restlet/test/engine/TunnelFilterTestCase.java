@@ -246,6 +246,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        Application.setCurrent(null);
         this.tunnelFilter = null;
         this.request = null;
         this.response = null;

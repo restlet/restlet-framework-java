@@ -259,6 +259,12 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
         this.uriBuilderWithVars.extension("{extension}");
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        Application.setCurrent(null);
+        super.tearDown();
+    }
+
     /**
      * Test method for {@link ExtendedUriBuilder#build(String[])}.
      */
