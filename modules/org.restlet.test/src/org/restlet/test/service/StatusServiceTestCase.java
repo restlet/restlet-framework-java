@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -59,13 +60,25 @@ import org.restlet.test.resource.MyException02;
  */
 public class StatusServiceTestCase extends RestletTestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        Application.setCurrent(new Application());
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        Application.setCurrent(null);
+        super.tearDown();
+    }
+
     public void testAnnotation() {
         StatusService ss = new StatusService();
         Status status = ss.toStatus(new MyException01(new Date()), null, null);
         assertEquals(400, status.getCode());
     }
 
-    public void off_testRepresentation() throws IOException {
+    public void testRepresentation() throws IOException {
         Status status = new Status(400, new MyException01(new Date()));
 
         ConverterService converterService = new ConverterService();
@@ -80,13 +93,15 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         // verify
         Status expectedStatus = Status.CLIENT_ERROR_BAD_REQUEST;
-        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();
+        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
         expectedRepresentationMap.put("code", expectedStatus.getCode());
         expectedRepresentationMap.put("description",
                 expectedStatus.getDescription());
         expectedRepresentationMap.put("reasonPhrase",
                 expectedStatus.getReasonPhrase());
-        String expectedJsonRepresentation = new JacksonRepresentation<HashMap<String, Object>>(
+        expectedRepresentationMap.put("uri",
+                expectedStatus.getUri());
+        String expectedJsonRepresentation = new JacksonRepresentation<>(
                 expectedRepresentationMap).getText();
 
         Status.CLIENT_ERROR_BAD_REQUEST.getCode();
@@ -94,8 +109,10 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
+    //TODO activate test
     public void off_testSerializedException() throws IOException {
-        Status status = new Status(400, new MyException02("test message"));
+        Throwable exception = new MyException02("test message");
+        Status status = new Status(400, exception);
 
         ConverterService converterService = new ConverterService();
         ConnegService connegService = new ConnegService();
@@ -108,9 +125,37 @@ public class StatusServiceTestCase extends RestletTestCase {
                 new Response(request));
 
         // verify
-        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<String, Object>();
+        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
         expectedRepresentationMap.put("customProperty", "test message");
-        String expectedJsonRepresentation = new JacksonRepresentation<HashMap<String, Object>>(
+        String expectedJsonRepresentation = new JacksonRepresentation<>(
+                expectedRepresentationMap).getText();
+
+        Status.CLIENT_ERROR_BAD_REQUEST.getCode();
+        assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());
+        assertEquals(expectedJsonRepresentation, representation.getText());
+    }
+
+    //TODO activate test
+    public void off_testSerializedExceptionWithCause() throws IOException {
+
+        Throwable rootCause = new IOException("File '/toto.txt' is not readable");
+        Throwable exception = new MyException02("test message", rootCause);
+        Status status = new Status(400, exception);
+
+        ConverterService converterService = new ConverterService();
+        ConnegService connegService = new ConnegService();
+        MetadataService metadataService = new MetadataService();
+        StatusService ss = new StatusService(true, converterService,
+                metadataService, connegService);
+
+        Request request = new Request();
+        Representation representation = ss.toRepresentation(status, request,
+                new Response(request));
+
+        // verify
+        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
+        expectedRepresentationMap.put("customProperty", "test message");
+        String expectedJsonRepresentation = new JacksonRepresentation<>(
                 expectedRepresentationMap).getText();
 
         Status.CLIENT_ERROR_BAD_REQUEST.getCode();

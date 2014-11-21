@@ -13,6 +13,11 @@ public class MyException02 extends Throwable {
         this.customProperty = customProperty;
     }
 
+    public MyException02(String customProperty, Throwable cause) {
+        super(cause);
+        this.customProperty = customProperty;
+    }
+
     public String getCustomProperty() {
         return customProperty;
     }
