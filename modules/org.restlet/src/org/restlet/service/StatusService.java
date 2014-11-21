@@ -233,11 +233,11 @@ public class StatusService extends Service {
             Throwable cause = status.getThrowable();
 
             if (cause != null) {
-                org.restlet.engine.resource.ThrowableAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
                         .getInstance().getThrowableAnnotationInfo(
                                 cause.getClass());
 
-                if (sai != null && sai.isSerializable()) {
+                if (tai != null && tai.isSerializable()) {
                     if (!Application.getCurrent().isDebugging()) {
                         // We clear the stack trace to prevent technical
                         // information leak
@@ -319,11 +319,11 @@ public class StatusService extends Service {
 
         // [ifndef gwt]
         // look for Status annotation
-        org.restlet.engine.resource.ThrowableAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+        org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
                 .getInstance().getThrowableAnnotationInfo(t.getClass());
 
-        if (sai != null) {
-            result = new Status(sai.getStatus(), t);
+        if (tai != null) {
+            result = new Status(tai.getStatus(), t);
         } else {
             result = new Status(defaultStatus, t);
         }
