@@ -12,11 +12,16 @@ Changes log
         deserializing a representation.
 	  - Exceptions annotated with @Status are now automatically serialized
 	    using ConverterService on both client-side and server-side.
-		Client-side resource proxy automatically re-throw the deserialized
-		exception back to the API call invoker.
+		Client-side resource proxy automatically re-throw the de-serialized
+		exception back to the API call invoker. Note that when the application
+		is not in debugging mode, the stacktrace is cleared before
+		serialization and a warning is triggered if a cause is available in
+		the exception.
 
     - API changes
-      -    
+      - Deprecated protected LogService#debugging property.
+	  - Added Application#debugging Boolean property and a start message 
+	    indicating in which mode your application is.
 
     - Bugs fixed
       -        

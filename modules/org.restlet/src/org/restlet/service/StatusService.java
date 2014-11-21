@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -243,6 +244,18 @@ public class StatusService extends Service {
                                 cause.getClass());
 
                 if (sai != null && sai.isSerializable()) {
+                    if (!Application.getCurrent().isDebugging()) {
+                        // We clear the stack trace to prevent technical
+                        // information leak
+                        cause.setStackTrace(new StackTraceElement[] {});
+
+                        if (cause.getCause() != null) {
+                            Context.getCurrentLogger()
+                                    .log(Level.WARNING,
+                                            "The cause of the exception should be null except in debug mode");
+                        }
+                    }
+
                     representationObject = cause;
                 }
             }
@@ -257,10 +270,8 @@ public class StatusService extends Service {
                         .getVariants(representationObject.getClass(), null);
                 // TODO This seems to be a workaround in order to prevent
                 // zealous converters to cope with conversions whereas they are
-                // not
-                // supposed to. Should be updated when introducing strict mode
-                // of content
-                // negotiation.
+                // not supposed to. Should be updated when introducing strict
+                // mode of content negotiation.
                 if (variants == null) {
                     variants = new ArrayList<>();
                 }

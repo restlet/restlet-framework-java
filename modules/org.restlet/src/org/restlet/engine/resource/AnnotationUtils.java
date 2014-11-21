@@ -61,13 +61,6 @@ public class AnnotationUtils {
     /** Current instance. */
     private static AnnotationUtils instance = new AnnotationUtils();
 
-    /**
-     * Clears the annotation descriptors cache.
-     */
-    public static void clearCache() {
-        cache.clear();
-    }
-
     /** Returns the current instance of AnnotationUtils. */
     public static AnnotationUtils getInstance() {
         return instance;
@@ -236,6 +229,13 @@ public class AnnotationUtils {
     }
 
     /**
+     * Clears the annotation descriptors cache.
+     */
+    public void clearCache() {
+        cache.clear();
+    }
+
+    /**
      * Returns the annotation descriptors for the given resource class.
      * 
      * @param clazz
@@ -382,9 +382,32 @@ public class AnnotationUtils {
      * @return The {@link Throwable} class matching the given error code if
      *         present or null.
      */
+    public ThrowableAnnotationInfo getThrowableAnnotationInfo(
+            java.lang.reflect.Method javaMethod, int errorCode) {
+        for (Class<?> clazz : javaMethod.getExceptionTypes()) {
+            ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
+
+            if (tai.getStatus().getCode() == errorCode) {
+                return tai;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the {@link Throwable} class matching the given error code if
+     * present or null.
+     * 
+     * @param javaMethod
+     *            The method that holds {@link Throwable}.
+     * @param errorCode
+     *            The error code to match.
+     * @return The {@link Throwable} class matching the given error code if
+     *         present or null.
+     */
     public Class<?> getThrowableClass(java.lang.reflect.Method javaMethod,
             int errorCode) {
-
         for (Class<?> clazz : javaMethod.getExceptionTypes()) {
             ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
 

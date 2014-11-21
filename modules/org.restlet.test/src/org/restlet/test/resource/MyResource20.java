@@ -33,6 +33,7 @@
 
 package org.restlet.test.resource;
 
+import org.restlet.resource.ClientProxy;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 
