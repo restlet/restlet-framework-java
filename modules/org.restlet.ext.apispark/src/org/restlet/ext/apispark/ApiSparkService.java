@@ -35,8 +35,9 @@ package org.restlet.ext.apispark;
 
 import org.restlet.Context;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.agent.AgentConfig;
-import org.restlet.ext.apispark.internal.agent.AgentFilter;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
+import org.restlet.ext.apispark.internal.ApiSparkFilter;
+import org.restlet.ext.apispark.internal.firewall.rule.FirewallRule;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
 
@@ -45,6 +46,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -57,12 +60,19 @@ import java.util.Properties;
  * @author Cyprien Quilici
  * @author Manuel Boillod
  */
-public class AgentService extends Service {
+public class ApiSparkService extends Service {
+
     /** The URL of the remote service used by default. */
     public static final String DEFAULT_AGENT_SERVICE_URL = "https://apispark.restlet.com";
 
     /** The system property key for agent configuration file. */
-    public static final String CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY = "agentConfiguration";
+    public static final String CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY = "apiSparkServiceConfig";
+
+    /**
+     * Indicates if the APISpark agent is enabled.
+     */
+    private boolean agentEnabled;
+
 
     /** The password used to connect to the APISpark platform. */
     private char[] agentPassword;
@@ -77,30 +87,47 @@ public class AgentService extends Service {
      * The identifier of the cell configured on the APISpark platform for your
      * application.
      */
-    private Integer cell;
+    private Integer agentCellId;
 
     /**
      * The identifier of the cell version configured on the APISpark platform
      * for your application.
      */
-    private Integer cellVersion;
+    private Integer agentCellVersion;
+
+
+    /**
+     * The list of associated {@link org.restlet.ext.apispark.internal.firewall.rule.FirewallRule}.
+     */
+    private List<FirewallRule> firewallRules = new ArrayList<>();
+
+    /**
+     * Indicates if the firewall is enabled.
+     * Add firewall rules with {@link #firewallConfig}.
+     */
+    private boolean firewallEnabled;
+
+    /**
+     * Firewall configuration
+     */
+    private FirewallConfig firewallConfig = new FirewallConfig(firewallRules);
 
     /**
      * Indicates if the request redirection is enabled.
-     * If true, the {@link #redirectionUrl} should be set.
+     * If true, the {@link #reverseProxyTargetUrl} should be set.
      */
-    private boolean redirectionEnabled;
+    private boolean reverseProxyEnabled;
 
     /**
-     * The redirection URL. Used if {@link #redirectionEnabled}
+     * The redirection URL. Used if {@link #reverseProxyEnabled}
      * is true.
      */
-    private String redirectionUrl;
+    private String reverseProxyTargetUrl;
 
     /**
      * Default constructor.
      */
-    public AgentService() {
+    public ApiSparkService() {
         super(true);
     }
 
@@ -111,21 +138,21 @@ public class AgentService extends Service {
      *            The login used to connect to the APISpark platform.
      * @param agentPassword
      *            The password used to connect to the APISpark platform.
-     * @param cell
+     * @param agentCellId
      *            The identifier of the cell configured on the APISpark platform
      *            for your application.
-     * @param cellVersion
+     * @param agentCellVersion
      *            The identifier of the cell version configured on the APISpark
      *            platform for your application.
-     * @param redirectionEnabled
+     * @param reverseProxyEnabled
      *            Indicates if the request redirection is enabled.
-     * @param redirectionUrl
+     * @param reverseProxyTargetUrl
      *            The redirection URL.
      */
-    public AgentService(String agentLogin, char[] agentPassword, Integer cell,
-            Integer cellVersion, boolean redirectionEnabled, String redirectionUrl) {
-        this(DEFAULT_AGENT_SERVICE_URL, agentLogin, agentPassword, cell,
-                cellVersion, redirectionEnabled, redirectionUrl);
+    public ApiSparkService(String agentLogin, char[] agentPassword, Integer agentCellId,
+                           Integer agentCellVersion, boolean reverseProxyEnabled, String reverseProxyTargetUrl) {
+        this(DEFAULT_AGENT_SERVICE_URL, agentLogin, agentPassword, agentCellId,
+                agentCellVersion, reverseProxyEnabled, reverseProxyTargetUrl);
     }
 
     /**
@@ -137,41 +164,44 @@ public class AgentService extends Service {
      *            The login used to connect to the APISpark platform.
      * @param agentPassword
      *            The password used to connect to the APISpark platform.
-     * @param cell
+     * @param agentCellId
      *            The identifier of the cell configured on the APISpark platform
      *            for your application.
-     * @param cellVersion
+     * @param agentCellVersion
      *            The identifier of the cell version configured on the APISpark
      *            platform for your application.
-     * @param redirectionEnabled
+     * @param reverseProxyEnabled
      *            Indicates if the request redirection is enabled.
-     * @param redirectionUrl
+     * @param reverseProxyTargetUrl
      *            The redirection URL.
      */
-    public AgentService(String agentServiceUrl, String agentLogin,
-            char[] agentPassword, Integer cell, Integer cellVersion,
-            boolean redirectionEnabled, String redirectionUrl) {
+    public ApiSparkService(String agentServiceUrl, String agentLogin,
+                           char[] agentPassword, Integer agentCellId, Integer agentCellVersion,
+                           boolean reverseProxyEnabled, String reverseProxyTargetUrl) {
         super(true);
         this.agentPassword = agentPassword;
         this.agentServiceUrl = agentServiceUrl;
         this.agentLogin = agentLogin;
-        this.cell = cell;
-        this.cellVersion = cellVersion;
-        this.redirectionEnabled = redirectionEnabled;
-        this.redirectionUrl = redirectionUrl;
+        this.agentCellId = agentCellId;
+        this.agentCellVersion = agentCellVersion;
+        this.reverseProxyEnabled = reverseProxyEnabled;
+        this.reverseProxyTargetUrl = reverseProxyTargetUrl;
     }
 
     @Override
     public Filter createInboundFilter(Context context) {
-        AgentConfig agentConfig = new AgentConfig();
-        agentConfig.setCell(cell);
-        agentConfig.setCellVersion(cellVersion);
-        agentConfig.setAgentServiceUrl(agentServiceUrl);
-        agentConfig.setAgentLogin(agentLogin);
-        agentConfig.setAgentPassword(agentPassword);
-        agentConfig.setRedirectionEnabled(redirectionEnabled);
-        agentConfig.setRedirectionUrl(redirectionUrl);
-        return new AgentFilter(agentConfig, context);
+        ApiSparkConfig apiSparkConfig = new ApiSparkConfig();
+        apiSparkConfig.setAgentCellId(agentCellId);
+        apiSparkConfig.setAgentCellVersion(agentCellVersion);
+        apiSparkConfig.setAgentServiceUrl(agentServiceUrl);
+        apiSparkConfig.setAgentLogin(agentLogin);
+        apiSparkConfig.setAgentPassword(agentPassword);
+        apiSparkConfig.setReverseProxyEnabled(reverseProxyEnabled);
+        apiSparkConfig.setReverseProxyTargetUrl(reverseProxyTargetUrl);
+
+        return new ApiSparkFilter(context,
+            apiSparkConfig, agentEnabled, firewallEnabled, firewallRules, firewallConfig
+        );
     }
 
     /**
@@ -208,8 +238,8 @@ public class AgentService extends Service {
      * @return The identifier of the cell configured on the APISpark platform
      *         for your application.
      */
-    public Integer getCell() {
-        return cell;
+    public Integer getAgentCellId() {
+        return agentCellId;
     }
 
     /**
@@ -219,23 +249,58 @@ public class AgentService extends Service {
      * @return The identifier of the cell version configured on the APISpark
      *         platform for your application.
      */
-    public Integer getCellVersion() {
-        return cellVersion;
+    public Integer getAgentCellVersion() {
+        return agentCellVersion;
+    }
+
+
+    public FirewallConfig getFirewallConfig() {
+        return firewallConfig;
     }
 
     /**
-     * Returns the redirection URL. Used if {@link #isRedirectionEnabled()}
+     * Returns the redirection URL. Used if {@link #isReverseProxyEnabled()}
      * returns true.
      *
      * @return The redirection URL.
      */
-    public String getRedirectionUrl() {
-        return redirectionUrl;
+    public String getReverseProxyTargetUrl() {
+        return reverseProxyTargetUrl;
+    }
+
+    /**
+     * Indicates if the APISpark agent is enabled.
+     *
+     * @return True if the APISpark agent is enabled.
+     */
+    public boolean isAgentEnabled() {
+        return agentEnabled;
+    }
+
+    /**
+     * Indicates if the firewall is enabled.
+     * Add firewall rules with {@link #firewallConfig}.
+     *
+     * @return True if the firewall is enabled.
+     */
+    public boolean isFirewallEnabled() {
+        return firewallEnabled;
+    }
+
+    /**
+     * Indicates if the request redirection is enabled.
+     * If true, the redirection URL should be set with
+     * {@link #setReverseProxyTargetUrl(String)}.
+     *
+     * @return True if the request redirection is enabled.
+     */
+    public boolean isReverseProxyEnabled() {
+        return reverseProxyEnabled;
     }
 
     /**
      * Load the agent configuration from the file set by the
-     * system property 'agentConfiguration'.
+     * system property 'apiSparkServiceConfig'.
      *
      * @see #CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY
      */
@@ -257,15 +322,15 @@ public class AgentService extends Service {
      */
     public void loadConfiguration(File configurationFile) {
         if (configurationFile == null) {
-            throw new IllegalArgumentException("Agent configuration file is null.");
+            throw new IllegalArgumentException("APISpark configuration file is null.");
         }
         if (!configurationFile.exists()) {
-            throw new IllegalArgumentException("Agent configuration file does not exist: " + configurationFile.getAbsolutePath());
+            throw new IllegalArgumentException("APISpark configuration file does not exist: " + configurationFile.getAbsolutePath());
         }
         try {
             loadConfiguration(new FileInputStream(configurationFile));
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("Agent configuration file error. See exception for details.", e);
+            throw new IllegalArgumentException("APISpark configuration file error. See exception for details.", e);
         }
     }
 
@@ -280,23 +345,23 @@ public class AgentService extends Service {
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Agent configuration file error. See exception for details.", e);
+            throw new IllegalArgumentException("APISpark configuration file error. See exception for details.", e);
         }
         this.agentServiceUrl = properties.getProperty("agent.serviceUrl", DEFAULT_AGENT_SERVICE_URL);
         this.agentLogin = properties.getProperty("agent.login");
         this.agentPassword = getRequiredProperty(properties, "agent.password").toCharArray();
-        this.cell = getRequiredIntegerProperty(properties, "agent.cell.id");
-        this.cellVersion = getRequiredIntegerProperty(properties, "agent.cell.version");
-        this.redirectionEnabled = Boolean.valueOf(getRequiredProperty(properties, "agent.redirection.enabled"));
-        if (this.redirectionEnabled) {
-            this.redirectionUrl = getRequiredProperty(properties, "agent.redirection.redirectionUrl");
+        this.agentCellId = getRequiredIntegerProperty(properties, "agent.cellId");
+        this.agentCellVersion = getRequiredIntegerProperty(properties, "agent.cellVersion");
+        this.reverseProxyEnabled = Boolean.valueOf(getRequiredProperty(properties, "reverseProxy.enabled"));
+        if (this.reverseProxyEnabled) {
+            this.reverseProxyTargetUrl = getRequiredProperty(properties, "reverseProxy.targetUrl");
         }
     }
 
     private String getRequiredProperty(Properties properties, String key) {
         String value = properties.getProperty(key);
         if (StringUtils.isNullOrEmpty(value)) {
-            throw new IllegalArgumentException("Agent configuration file error. The property '" + key + "' is required");
+            throw new IllegalArgumentException("APISpark configuration file error. The property '" + key + "' is required");
         }
         return value;
     }
@@ -306,19 +371,8 @@ public class AgentService extends Service {
         try {
             return Integer.valueOf(value);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Agent configuration file error. The property '" + key + "' should be a number", e);
+            throw new IllegalArgumentException("APISpark configuration file error. The property '" + key + "' should be a number", e);
         }
-    }
-
-    /**
-     * Indicates if the request redirection is enabled.
-     * If true, the redirection URL should be set with
-     * {@link #setRedirectionUrl(String)}.
-     *
-     * @return True if the request redirection is enabled.
-     */
-    public boolean isRedirectionEnabled() {
-        return redirectionEnabled;
     }
 
     /**
@@ -333,10 +387,10 @@ public class AgentService extends Service {
     }
 
     /**
-     * Sets the url of the APISpark service.
+     * Sets the url of the APISpark agent service.
      * 
      * @param agentServiceUrl
-     *            The url of the APISpark service.
+     *            The url of the APISpark agent service.
      */
     public void setAgentServiceUrl(String agentServiceUrl) {
         this.agentServiceUrl = agentServiceUrl;
@@ -356,46 +410,66 @@ public class AgentService extends Service {
      * Sets the identifier of the cell configured on the APISpark platform for
      * your application.
      * 
-     * @param cell
+     * @param agentCellId
      *            The identifier of the cell configured on the APISpark platform
      *            for your application.
      */
-    public void setCell(Integer cell) {
-        this.cell = cell;
+    public void setAgentCellId(Integer agentCellId) {
+        this.agentCellId = agentCellId;
     }
 
     /**
      * Sets the identifier of the cell version configured on the APISpark
      * platform for your application.
      * 
-     * @param cellVersion
-     *            The identifier of the cell version configured on the APISpark
+     * @param agentCellVersion
+     *            The version of the cell configured on the APISpark
      *            platform for your application.
      */
-    public void setCellVersion(Integer cellVersion) {
-        this.cellVersion = cellVersion;
+    public void setAgentCellVersion(Integer agentCellVersion) {
+        this.agentCellVersion = agentCellVersion;
     }
 
     /**
-     * Indicates if the request redirection is enabled.
-     * If true, the redirection URL should be set with
-     * {@link #setRedirectionUrl(String)}.
+     * Indicates if the APISpark agent is enabled.
      *
-     * @param redirectionEnabled
-     *          True if the redirection is enabled.
+     * @param agentEnabled
+     *      True if the APISpark agent is enabled.
      */
-    public void setRedirectionEnabled(boolean redirectionEnabled) {
-        this.redirectionEnabled = redirectionEnabled;
+    public void setAgentEnabled(boolean agentEnabled) {
+        this.agentEnabled = agentEnabled;
     }
 
     /**
-     * Set the redirection URL. Used if {@link #isRedirectionEnabled()}
-     * returns true.
+     * Indicates if the firewall is enabled.
      *
-     * @param redirectionUrl
-     *          The redirection URL.
+     * @param firewallEnabled
+     *      True if the firewall is enabled.
      */
-    public void setRedirectionUrl(String redirectionUrl) {
-        this.redirectionUrl = redirectionUrl;
+    public void setFirewallEnabled(boolean firewallEnabled) {
+        this.firewallEnabled = firewallEnabled;
+    }
+
+    /**
+     * Indicates if the reverse proxy is enabled.
+     * If true, the target URL should be set with
+     * {@link #setReverseProxyTargetUrl(String)}.
+     *
+     * @param reverseProxyEnabled
+     *          True if the reverse proxy is enabled.
+     */
+    public void setReverseProxyEnabled(boolean reverseProxyEnabled) {
+        this.reverseProxyEnabled = reverseProxyEnabled;
+    }
+
+    /**
+     * Set the target URL of the reverse proxy. Used if {@link #isReverseProxyEnabled()}
+     * is true.
+     *
+     * @param reverseProxyTargetUrl
+     *          The target URL.
+     */
+    public void setReverseProxyTargetUrl(String reverseProxyTargetUrl) {
+        this.reverseProxyTargetUrl = reverseProxyTargetUrl;
     }
 }

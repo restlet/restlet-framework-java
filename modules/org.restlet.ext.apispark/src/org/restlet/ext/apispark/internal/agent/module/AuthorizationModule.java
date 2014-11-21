@@ -8,7 +8,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.agent.AgentConfig;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.AgentConfigurationException;
 import org.restlet.ext.apispark.internal.agent.AgentUtils;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
@@ -68,32 +68,32 @@ public class AuthorizationModule extends Filter {
     /**
      * Create a new Authorization module with the specified settings.
      * 
-     * @param agentConfig
+     * @param apiSparkConfig
      *            The agent configuration.
      * @param modulesSettings
      *            The modules settings.
      */
-    public AuthorizationModule(AgentConfig agentConfig,
+    public AuthorizationModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings) {
-        this(agentConfig, modulesSettings, null);
+        this(apiSparkConfig, modulesSettings, null);
     }
 
     /**
      * Create a new Authorization module with the specified settings.
      * 
-     * @param agentConfig
+     * @param apiSparkConfig
      *            The agent configuration.
      * @param modulesSettings
      *            The modules settings.
      * @param context
      *            The context
      */
-    public AuthorizationModule(AgentConfig agentConfig,
+    public AuthorizationModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings, Context context) {
         super(context);
 
         AuthorizationOperationsResource authorizationOperationsClientResource = AgentUtils
-                .getClientResource(agentConfig, modulesSettings,
+                .getClientResource(apiSparkConfig, modulesSettings,
                         AuthorizationOperationsResource.class,
                         OPERATIONS_AUTHORIZATIONS_PATH);
 

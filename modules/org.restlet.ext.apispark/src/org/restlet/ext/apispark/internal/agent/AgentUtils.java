@@ -3,6 +3,8 @@ package org.restlet.ext.apispark.internal.agent;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.ApiSparkService;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
@@ -18,7 +20,7 @@ public abstract class AgentUtils {
      * Returns a client resource configured to communicate with the apispark
      * connector cell.
      * 
-     * @param agentConfig
+     * @param apiSparkConfig
      *            The agent configuration.
      * @param modulesSettings
      *            The optional modules settings.
@@ -30,19 +32,19 @@ public abstract class AgentUtils {
      * @return A client resource configured to communicate with the apispark
      *         connector cell.
      */
-    public static <T> T getClientResource(AgentConfig agentConfig,
+    public static <T> T getClientResource(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings, Class<T> resourceClass,
             String resourcePath) {
 
-        StringBuilder sb = new StringBuilder(agentConfig.getAgentServiceUrl());
-        if (!agentConfig.getAgentServiceUrl().endsWith("/")) {
+        StringBuilder sb = new StringBuilder(apiSparkConfig.getAgentServiceUrl());
+        if (!apiSparkConfig.getAgentServiceUrl().endsWith("/")) {
             sb.append("/");
         }
         sb.append("agent");
         sb.append("/cells/");
-        sb.append(agentConfig.getCell());
+        sb.append(apiSparkConfig.getAgentCellId());
         sb.append("/versions/");
-        sb.append(agentConfig.getCellVersion());
+        sb.append(apiSparkConfig.getAgentCellVersion());
         if (resourcePath != null) {
             if (!resourcePath.startsWith("/")) {
                 sb.append("/");
@@ -55,12 +57,12 @@ public abstract class AgentUtils {
         
         // add authentication scheme
         clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                agentConfig.getAgentLogin(), agentConfig.getAgentPassword());
+                apiSparkConfig.getAgentLogin(), apiSparkConfig.getAgentPassword());
 
         // send agent version to apispark in headers
         Series<Header> headers = clientResource.getRequest().getHeaders();
         headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_AGENT_VERSION,
-                AgentConfig.AGENT_VERSION);
+                AgentConstants.AGENT_VERSION);
 
         // send connector cell revision to apispark in headers
         if (modulesSettings != null) {

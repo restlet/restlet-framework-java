@@ -1,16 +1,10 @@
 package org.restlet.ext.apispark.internal.agent.module;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.ext.apispark.FirewallService;
-import org.restlet.ext.apispark.internal.agent.AgentConfig;
+import com.google.common.base.Function;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
+import org.restlet.ext.apispark.FirewallConfig;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.AgentConfigurationException;
 import org.restlet.ext.apispark.internal.agent.AgentUtils;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallIpFilter;
@@ -18,38 +12,30 @@ import org.restlet.ext.apispark.internal.agent.bean.FirewallRateLimit;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallSettings;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.ext.apispark.internal.agent.resource.FirewallSettingsResource;
-import org.restlet.ext.apispark.internal.firewall.FirewallFilter;
-import org.restlet.routing.Filter;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Manuel Boillod
  */
-public class FirewallModule extends Filter {
+public class FirewallModule {
 
     public static final String MODULE_PATH = "/firewall";
 
     public static final String SETTINGS_PATH = MODULE_PATH + "/settings";
 
-    private final FirewallFilter firewallFilter;
+    FirewallSettings firewallSettings;
 
-    public FirewallModule(AgentConfig agentConfig,
+    public FirewallModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings) {
-        this(agentConfig, modulesSettings, null);
-    }
-
-    public FirewallModule(AgentConfig agentConfig,
-            ModulesSettings modulesSettings, Context context) {
-        super(context);
-
         FirewallSettingsResource firewallSettingsClientResource = AgentUtils
-                .getClientResource(agentConfig, modulesSettings,
+                .getClientResource(apiSparkConfig, modulesSettings,
                         FirewallSettingsResource.class, SETTINGS_PATH);
 
-        FirewallSettings firewallSettings;
         try {
             firewallSettings = firewallSettingsClientResource.getSettings();
         } catch (Exception e) {
@@ -57,25 +43,28 @@ public class FirewallModule extends Filter {
                     "Could not get firewall module configuration from APISpark connector service",
                     e);
         }
+    }
 
-        firewallFilter = createFirewallFilter(firewallSettings);
+    public void updateFirewallConfig(FirewallConfig firewallConfig) {
+        addIpFilterRules(firewallSettings, firewallConfig);
+        addRateLimitationRules(firewallSettings, firewallConfig);
     }
 
     private void addIpFilterRules(FirewallSettings firewallSettings,
-            FirewallService firewallService) {
+                                  FirewallConfig firewallConfig) {
         if (firewallSettings.getIpFilters() != null) {
             for (FirewallIpFilter ipFilter : firewallSettings.getIpFilters()) {
                 if (ipFilter.isWhiteList()) {
-                    firewallService.addIpAddressesWhiteList(ipFilter.getIps());
+                    firewallConfig.addIpAddressesWhiteList(ipFilter.getIps());
                 } else {
-                    firewallService.addIpAddressesBlackList(ipFilter.getIps());
+                    firewallConfig.addIpAddressesBlackList(ipFilter.getIps());
                 }
             }
         }
     }
 
     private void addRateLimitationRules(FirewallSettings firewallSettings,
-            FirewallService firewallService) {
+                                        FirewallConfig firewallConfig) {
         if (firewallSettings.getRateLimits() != null) {
             List<FirewallRateLimit> rateLimits = firewallSettings
                     .getRateLimits();
@@ -94,31 +83,10 @@ public class FirewallModule extends Filter {
                     }
                 }
 
-                firewallService.addRolesPeriodicCounter(period,
+                firewallConfig.addRolesPeriodicCounter(period,
                         TimeUnit.SECONDS, limitsPerRole, defaultRateLimit);
             }
         }
-    }
-
-    @Override
-    protected void afterHandle(Request request, Response response) {
-        firewallFilter.afterHandle(request, response);
-    }
-
-    @Override
-    protected int beforeHandle(Request request, Response response) {
-        return firewallFilter.beforeHandle(request, response);
-    }
-
-    private FirewallFilter createFirewallFilter(
-            FirewallSettings firewallSettings) {
-        FirewallService firewallService = new FirewallService();
-
-        addIpFilterRules(firewallSettings, firewallService);
-        addRateLimitationRules(firewallSettings, firewallService);
-
-        return (FirewallFilter) firewallService
-                .createInboundFilter(getContext());
     }
 
     private Map<Integer, java.util.Collection<FirewallRateLimit>> sortRateLimitsByPeriod(
@@ -133,4 +101,5 @@ public class FirewallModule extends Filter {
                 });
         return rateLimitsByPeriod.asMap();
     }
+
 }

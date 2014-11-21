@@ -13,7 +13,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.agent.AgentConfig;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.AgentException;
 import org.restlet.ext.apispark.internal.agent.AgentUtils;
 import org.restlet.ext.apispark.internal.agent.bean.AuthenticationSettings;
@@ -202,33 +202,33 @@ public class AuthenticationModule extends ChallengeAuthenticator {
     /**
      * Create a new Authentication module with the specified settings.
      * 
-     * @param agentConfig
+     * @param apiSparkConfig
      *            The agent configuration.
      * @param modulesSettings
      *            The modules settings.
      */
-    public AuthenticationModule(AgentConfig agentConfig,
+    public AuthenticationModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings) {
-        this(agentConfig, modulesSettings, null);
+        this(apiSparkConfig, modulesSettings, null);
     }
 
     /**
      * Create a new Authentication module with the specified settings.
      * 
-     * @param agentConfig
+     * @param apiSparkConfig
      *            The agent configuration.
      * @param modulesSettings
      *            The modules settings.
      * @param context
      *            The context
      */
-    public AuthenticationModule(AgentConfig agentConfig,
+    public AuthenticationModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings, Context context) {
         super(context, ChallengeScheme.HTTP_BASIC, "realm");
 
         authenticationSettings = new AuthenticationSettings();
 
-        authenticateClientResource = AgentUtils.getClientResource(agentConfig,
+        authenticateClientResource = AgentUtils.getClientResource(apiSparkConfig,
                 modulesSettings, AuthenticationAuthenticateResource.class,
                 AUTHENTICATE_PATH);
 

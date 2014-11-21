@@ -33,13 +33,6 @@
 
 package org.restlet.ext.apispark;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.restlet.Context;
-import org.restlet.ext.apispark.internal.firewall.FirewallFilter;
 import org.restlet.ext.apispark.internal.firewall.handler.BlockingHandler;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.RoleLimitPolicy;
 import org.restlet.ext.apispark.internal.firewall.handler.policy.UniqueLimitPolicy;
@@ -51,38 +44,32 @@ import org.restlet.ext.apispark.internal.firewall.rule.PeriodicFirewallCounterRu
 import org.restlet.ext.apispark.internal.firewall.rule.policy.HostDomainCountingPolicy;
 import org.restlet.ext.apispark.internal.firewall.rule.policy.IpAddressCountingPolicy;
 import org.restlet.ext.apispark.internal.firewall.rule.policy.UserCountingPolicy;
-import org.restlet.routing.Filter;
 import org.restlet.security.Role;
 import org.restlet.security.User;
-import org.restlet.service.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Service that controls the incoming requests by applying a set of rules.
+ * Configuration methods for the Firewall.
  * 
  * @author Guillaume Blondeau
  */
-public class FirewallService extends Service {
+public class FirewallConfig {
 
     /** The list of associated {@link FirewallRule}. */
     private List<FirewallRule> rules;
 
     /**
-     * Constructor. Enables the firewall by default.
+     * Private Constructor.
      */
-    public FirewallService() {
-        this(true);
+    @SuppressWarnings("unchecked")
+    FirewallConfig(List rules) {
+        //does not expose in Javadoc FirewallRule
+        this.rules = (List<FirewallRule>) rules;
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param enabled
-     *            True if the service has been enabled.
-     */
-    public FirewallService(boolean enabled) {
-        super(enabled);
-        this.rules = new ArrayList<FirewallRule>();
-    }
 
     /**
      * Adds a rule to the firewall.
@@ -254,10 +241,4 @@ public class FirewallService extends Service {
                 defaultLimit)));
         add(rule);
     }
-
-    @Override
-    public Filter createInboundFilter(Context context) {
-        return new FirewallFilter(context, this.rules);
-    }
-
 }

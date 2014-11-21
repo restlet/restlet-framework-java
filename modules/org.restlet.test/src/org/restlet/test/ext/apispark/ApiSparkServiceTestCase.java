@@ -19,7 +19,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
-import org.restlet.ext.apispark.AgentService;
+import org.restlet.ext.apispark.ApiSparkService;
+import org.restlet.ext.apispark.internal.agent.AgentConfigurationException;
 import org.restlet.ext.apispark.internal.agent.bean.Credentials;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallIpFilter;
 import org.restlet.ext.apispark.internal.agent.bean.FirewallRateLimit;
@@ -48,7 +49,7 @@ import org.restlet.test.RestletTestCase;
 /**
  * @author Manuel Boillod
  */
-public class AgentServiceTestCase extends RestletTestCase {
+public class ApiSparkServiceTestCase extends RestletTestCase {
 
     public static class AgentServerResource extends ServerResource {
         public static int CALL_COUNT = 0;
@@ -198,14 +199,15 @@ public class AgentServiceTestCase extends RestletTestCase {
         }
     }
 
-    public AgentService getAgentService() {
-        AgentService agentService = new AgentService();
-        agentService.setAgentServiceUrl(AGENT_SERVICE_URL);
-        agentService.setAgentLogin(VALID_USERNAME);
-        agentService.setAgentPassword(VALID_PASSWORD);
-        agentService.setCell(CELL_ID);
-        agentService.setCellVersion(CELL_VERSION);
-        return agentService;
+    public ApiSparkService getAgentService() {
+        ApiSparkService apiSparkService = new ApiSparkService();
+        apiSparkService.setAgentEnabled(true);
+        apiSparkService.setAgentServiceUrl(AGENT_SERVICE_URL);
+        apiSparkService.setAgentLogin(VALID_USERNAME);
+        apiSparkService.setAgentPassword(VALID_PASSWORD);
+        apiSparkService.setAgentCellId(CELL_ID);
+        apiSparkService.setAgentCellVersion(CELL_VERSION);
+        return apiSparkService;
     }
 
     @Override
@@ -231,7 +233,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .add(new DefaultConverter());
     }
 
-    private void startAgent(final AgentService agentService, boolean embedded) throws Exception {
+    private void startApiSparkService(final ApiSparkService apiSparkService, boolean embedded) throws Exception {
         this.agentComponent = new Component();
         this.agentComponent.setName("agent");
         this.agentComponent.getServers().add(Protocol.HTTP, AGENT_PORT);
@@ -243,7 +245,7 @@ public class AgentServiceTestCase extends RestletTestCase {
         } else {
             application = new Application();
         }
-        application.getServices().add(agentService);
+        application.getServices().add(apiSparkService);
         this.agentComponent.getDefaultHost().attach(application);
         this.agentComponent.start();
     }
@@ -323,14 +325,14 @@ public class AgentServiceTestCase extends RestletTestCase {
         stopUserApi();
     }
 
-    public void testAuthentication_userRequestWithCredentials()
+    public void testAgent_Authentication_userRequestWithCredentials()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -354,14 +356,14 @@ public class AgentServiceTestCase extends RestletTestCase {
                 MockAuthenticationAuthenticateServerResource.AUTHENTICATE_COUNT);
     }
 
-    public void testAuthentication_userRequestWithCredentials_butServiceError()
+    public void testAgent_Authentication_userRequestWithCredentials_butServiceError()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -376,14 +378,14 @@ public class AgentServiceTestCase extends RestletTestCase {
                 MockAuthenticationAuthenticateServerResource.AUTHENTICATE_COUNT);
     }
 
-    public void testAuthentication_userRequestWithoutCredentials()
+    public void testAgent_Authentication_userRequestWithoutCredentials()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setAuthenticationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -395,7 +397,7 @@ public class AgentServiceTestCase extends RestletTestCase {
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
-    public void testAuthorization_unknownResource() throws Exception {
+    public void testAgent_Authorization_unknownResource() throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setAuthenticationModuleEnabled(true);
@@ -403,7 +405,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setAuthorizationModuleEnabled(true);
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -418,38 +420,45 @@ public class AgentServiceTestCase extends RestletTestCase {
                 MockAuthenticationAuthenticateServerResource.AUTHENTICATE_COUNT);
     }
 
-    public void testConfiguration_AllModulesDisabled() throws Exception {
-        startAgent(getAgentService(), true);
+    public void testAgent_Configuration_AllModulesDisabled() throws Exception {
+        startApiSparkService(getAgentService(), true);
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
     }
 
-    public void testConfiguration_AuthorizationWithoutAuthentication()
+    public void testAgent_Configuration_AuthorizationWithoutAuthentication()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setAuthorizationModuleEnabled(true);
 
         try {
-            AgentService agentService = new AgentService();
-            startAgent(agentService, true);
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
-            // expected
+            ApiSparkService apiSparkService = getAgentService();
+            startApiSparkService(apiSparkService, true);
+            fail("AgentConfigurationException expected");
+        } catch (AgentConfigurationException e) {
+            assertEquals(
+                    "The authorization module requires the authentication module which is not enabled",
+                    e.getMessage()
+            );
         }
     }
 
-    public void testConfiguration_Null() throws Exception {
+    public void testAgent_Configuration_Null() throws Exception {
         try {
-            AgentService agentService = new AgentService();
-            startAgent(agentService, true);
+            ApiSparkService apiSparkService = new ApiSparkService();
+            apiSparkService.setAgentEnabled(true);
+            startApiSparkService(apiSparkService, true);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-            // expected
+            assertEquals(
+                    "The cell identifier is mandatory",
+                    e.getMessage()
+            );
         }
     }
 
-    public void testFirewall_ipFilter_blocking() throws Exception {
+    public void testAgent_Firewall_ipFilter_blocking() throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setFirewallModuleEnabled(true);
@@ -461,7 +470,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setIpFilters(Arrays.asList(firewallIpFilter));
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -472,13 +481,13 @@ public class AgentServiceTestCase extends RestletTestCase {
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
-    public void testFirewall_noConfig() throws Exception {
+    public void testAgent_Firewall_noConfig() throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
                 .setFirewallModuleEnabled(true);
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -489,7 +498,7 @@ public class AgentServiceTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
     }
 
-    public void testFirewall_rateLimitation_blocking_anonymous_user_second_call()
+    public void testAgent_Firewall_rateLimitation_blocking_anonymous_user_second_call()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
@@ -506,7 +515,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -522,7 +531,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 response.getStatus());
     }
 
-    public void testFirewall_rateLimitation_blocking_userrole_second_call()
+    public void testAgent_Firewall_rateLimitation_blocking_userrole_second_call()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
@@ -540,7 +549,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -556,7 +565,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 response.getStatus());
     }
 
-    public void testFirewall_rateLimitation_noblocking_userrole_because_another_group()
+    public void testAgent_Firewall_rateLimitation_noblocking_userrole_because_another_group()
             throws Exception {
         // configure
         MockModulesSettingsServerResource.MODULES_SETTINGS
@@ -574,7 +583,7 @@ public class AgentServiceTestCase extends RestletTestCase {
                 .setRateLimits(Arrays.asList(firewallRateLimit));
 
         // run
-        startAgent(getAgentService(), true);
+        startApiSparkService(getAgentService(), true);
 
         // verify
         assertEquals(1, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
@@ -589,25 +598,25 @@ public class AgentServiceTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
     }
 
-    public void testRedirection_noUrl() throws Exception {
+    public void testAgent_Redirection_noUrl() throws Exception {
         // run
-        AgentService agentService = getAgentService();
-        agentService.setRedirectionEnabled(true);
+        ApiSparkService apiSparkService = getAgentService();
+        apiSparkService.setReverseProxyEnabled(true);
         try {
-            startAgent(agentService, true);
+            startApiSparkService(apiSparkService, true);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             //expected
         }
     }
 
-    public void testRedirection() throws Exception {
+    public void testAgent_ReverseProxy() throws Exception {
         Context.getCurrentLogger().setLevel(Level.FINE);
         // run
-        AgentService agentService = getAgentService();
-        agentService.setRedirectionEnabled(true);
-        agentService.setRedirectionUrl(USER_WEBAPI_URL);
-        startAgent(agentService, false);
+        ApiSparkService apiSparkService = getAgentService();
+        apiSparkService.setReverseProxyEnabled(true);
+        apiSparkService.setReverseProxyTargetUrl(USER_WEBAPI_URL);
+        startApiSparkService(apiSparkService, false);
         startUserApi();
 
         // verify
@@ -628,17 +637,72 @@ public class AgentServiceTestCase extends RestletTestCase {
         assertEquals(USER_WEBAPI_URL + "/test?val1=a&val2=b", AgentServerResource.LAST_REQUEST.getResourceRef().toString());
     }
 
+    public void testReverseProxy() throws Exception {
+        Context.getCurrentLogger().setLevel(Level.FINE);
+        // run
+        ApiSparkService apiSparkService = new ApiSparkService();
+        apiSparkService.setReverseProxyEnabled(true);
+        apiSparkService.setReverseProxyTargetUrl(USER_WEBAPI_URL);
+        startApiSparkService(apiSparkService, false);
+        startUserApi();
+
+        // verify
+        assertEquals(0, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
+
+        // call api
+        Response response = callAgent("/test", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(1, AgentServerResource.CALL_COUNT);
+        assertNotNull(AgentServerResource.LAST_REQUEST);
+        assertEquals(USER_WEBAPI_URL + "/test", AgentServerResource.LAST_REQUEST.getResourceRef().toString());
+
+        // call api
+        response = callAgent("/test?val1=a&val2=b", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(2, AgentServerResource.CALL_COUNT);
+        assertNotNull(AgentServerResource.LAST_REQUEST);
+        assertEquals(USER_WEBAPI_URL + "/test?val1=a&val2=b", AgentServerResource.LAST_REQUEST.getResourceRef().toString());
+    }
+
+    public void testFirewall() throws Exception {
+        Context.getCurrentLogger().setLevel(Level.FINE);
+        // run
+        ApiSparkService apiSparkService = new ApiSparkService();
+        apiSparkService.setFirewallEnabled(true);
+        apiSparkService.getFirewallConfig().addRolesPeriodicCounter(
+                1, TimeUnit.MINUTES,
+                null, 1
+        );
+
+        // run
+        startApiSparkService(apiSparkService, true);
+
+        // verify
+        assertEquals(0, MockModulesSettingsServerResource.GET_SETTINGS_COUNT);
+        assertEquals(0, MockFirewallSettingsServerResource.GET_SETTINGS_COUNT);
+
+        // call api
+        Response response = callAgent("/test", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+
+        // second api call
+        response = callAgent("/test", VALID_USERNAME, VALID_PASSWORD);
+        assertEquals(Status.CLIENT_ERROR_TOO_MANY_REQUESTS,
+                response.getStatus());
+    }
+
 
     public void testLoadConfiguration() throws Exception {
-        System.setProperty(AgentService.CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY, getClass().getResource("agent-configuration.properties").getPath());
-        AgentService agentService = new AgentService();
-        agentService.loadConfiguration();
+        System.setProperty(ApiSparkService.CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY, getClass().getResource("agent-configuration.properties").getPath());
+        ApiSparkService apiSparkService = new ApiSparkService();
+        apiSparkService.setAgentEnabled(true);
+        apiSparkService.loadConfiguration();
 
-        assertEquals(VALID_USERNAME, agentService.getAgentLogin());
-        assertEquals(VALID_PASSWORD, agentService.getAgentPassword());
-        assertEquals(Integer.valueOf(CELL_ID), agentService.getCell());
-        assertEquals(Integer.valueOf(CELL_VERSION), agentService.getCellVersion());
-        assertTrue(agentService.isRedirectionEnabled());
-        assertEquals("http://myrealapi.com/", agentService.getRedirectionUrl());
+        assertEquals(VALID_USERNAME, apiSparkService.getAgentLogin());
+        assertEquals(VALID_PASSWORD, apiSparkService.getAgentPassword());
+        assertEquals(Integer.valueOf(CELL_ID), apiSparkService.getAgentCellId());
+        assertEquals(Integer.valueOf(CELL_VERSION), apiSparkService.getAgentCellVersion());
+        assertTrue(apiSparkService.isReverseProxyEnabled());
+        assertEquals("http://myrealapi.com/", apiSparkService.getReverseProxyTargetUrl());
     }
 }

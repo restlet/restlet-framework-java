@@ -1,7 +1,7 @@
 package org.restlet.ext.apispark.internal.agent.module;
 
 import org.restlet.Context;
-import org.restlet.ext.apispark.internal.agent.AgentConfig;
+import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.routing.Filter;
 
@@ -9,12 +9,12 @@ import org.restlet.routing.Filter;
  * @author Manuel Boillod
  */
 public class AnalyticsModule extends Filter {
-    public AnalyticsModule(AgentConfig agentConfig,
+    public AnalyticsModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings) {
-        this(agentConfig, modulesSettings, null);
+        this(apiSparkConfig, modulesSettings, null);
     }
 
-    public AnalyticsModule(AgentConfig agentConfig,
+    public AnalyticsModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings, Context context) {
         super(context);
     }
