@@ -159,15 +159,15 @@ public abstract class AnnotationInfo {
      *            The annotated Java class or parent Java class.
      * @param javaMethod
      *            The annotated Java method.
-     * @param value
+     * @param annotationValue
      *            The annotation value.
      */
     public AnnotationInfo(Class<?> javaClass,
-            java.lang.reflect.Method javaMethod, String value) {
+            java.lang.reflect.Method javaMethod, String annotationValue) {
         super();
         this.javaClass = javaClass;
         this.javaMethod = javaMethod;
-        this.annotationValue = value;
+        this.annotationValue = annotationValue;
         java.lang.reflect.Method m = null;
 
         try {
@@ -182,6 +182,18 @@ public abstract class AnnotationInfo {
         } else {
             this.javaMethodImpl = javaMethod;
         }
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param javaClass
+     *            The annotated Java class or parent Java class.
+     * @param annotationValue
+     *            The annotation value.
+     */
+    public AnnotationInfo(Class<?> javaClass, String annotationValue) {
+        this(javaClass, null, annotationValue);
     }
 
     /**

@@ -34,15 +34,14 @@
 package org.restlet.test.resource;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StatusInfo;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
@@ -92,9 +91,11 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         } catch (ResourceException e) {
             assertEquals(400, e.getStatus().getCode());
             Representation responseEntity = clientResource.getResponseEntity();
+
             if (responseEntity instanceof JacksonRepresentation) {
                 assertTrue(JacksonRepresentation.class
                         .isAssignableFrom(responseEntity.getClass()));
+
                 @SuppressWarnings("rawtypes")
                 JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
                 Object entity = jacksonRepresentation.getObject();
@@ -121,11 +122,10 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
             @SuppressWarnings("rawtypes")
             JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
             Object entity = jacksonRepresentation.getObject();
-            assertTrue(Map.class.isAssignableFrom(entity.getClass()));
+            assertTrue(MyException02.class.isAssignableFrom(entity.getClass()));
 
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) entity;
-            assertEquals("my custom error", map.get("customProperty"));
+            MyException02 myException02 = (MyException02) entity;
+            assertEquals("my custom error", myException02.getCustomProperty());
         }
     }
 }

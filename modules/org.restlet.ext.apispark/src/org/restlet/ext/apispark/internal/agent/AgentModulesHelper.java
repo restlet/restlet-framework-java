@@ -1,5 +1,7 @@
 package org.restlet.ext.apispark.internal.agent;
 
+import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.ext.apispark.internal.agent.module.AnalyticsModule;
@@ -8,9 +10,6 @@ import org.restlet.ext.apispark.internal.agent.module.AuthorizationModule;
 import org.restlet.ext.apispark.internal.agent.module.FirewallModule;
 import org.restlet.ext.apispark.internal.utils.RestletChain;
 import org.restlet.routing.Redirector;
-
-import java.net.URI;
-import java.util.logging.Logger;
 
 /**
  * Utilities for creating agents modules.

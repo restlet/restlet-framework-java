@@ -58,7 +58,6 @@ public class IllegalConstructorTest extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-            @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
                 return Util.createSet(IllegalConstructorResource.class,
                         ParamConstructorProvider.class,

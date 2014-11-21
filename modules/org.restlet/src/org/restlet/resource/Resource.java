@@ -202,10 +202,7 @@ public abstract class Resource {
 
     /**
      * Invoked when a {@link Throwable} is caught during initialization,
-     * handling or releasing. By default, updates the responses's status with
-     * the result of
-     * {@link org.restlet.service.StatusService#getStatus(Throwable, Resource)}
-     * .
+     * handling or releasing.
      * 
      * @param throwable
      *            The caught error or exception.

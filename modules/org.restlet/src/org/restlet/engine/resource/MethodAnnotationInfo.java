@@ -68,7 +68,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     private final String query;
 
     /** The matching Restlet method. */
-    final Method restletMethod;
+    private final Method restletMethod;
 
     /**
      * Constructor.
@@ -79,33 +79,33 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      *            The matching Restlet method.
      * @param javaMethod
      *            The annotated Java method.
-     * @param value
+     * @param annotationValue
      *            The annotation value.
      */
     public MethodAnnotationInfo(Class<?> javaClass, Method restletMethod,
-            java.lang.reflect.Method javaMethod, String value) {
-        super(javaClass, javaMethod, value);
+            java.lang.reflect.Method javaMethod, String annotationValue) {
+        super(javaClass, javaMethod, annotationValue);
         this.restletMethod = restletMethod;
 
         // Parse the main components of the annotation value
-        if ((value != null) && !value.equals("")) {
-            int queryIndex = value.indexOf('?');
+        if ((annotationValue != null) && !annotationValue.equals("")) {
+            int queryIndex = annotationValue.indexOf('?');
 
             if (queryIndex != -1) {
-                this.query = value.substring(queryIndex + 1);
-                value = value.substring(0, queryIndex);
+                this.query = annotationValue.substring(queryIndex + 1);
+                annotationValue = annotationValue.substring(0, queryIndex);
             } else {
                 this.query = null;
             }
 
-            int ioSeparatorIndex = value.indexOf(':');
+            int ioSeparatorIndex = annotationValue.indexOf(':');
 
             if (ioSeparatorIndex != -1) {
-                this.input = value.substring(0, ioSeparatorIndex);
-                this.output = value.substring(ioSeparatorIndex + 1);
+                this.input = annotationValue.substring(0, ioSeparatorIndex);
+                this.output = annotationValue.substring(ioSeparatorIndex + 1);
             } else {
-                this.input = value;
-                this.output = value;
+                this.input = annotationValue;
+                this.output = annotationValue;
             }
 
         } else {

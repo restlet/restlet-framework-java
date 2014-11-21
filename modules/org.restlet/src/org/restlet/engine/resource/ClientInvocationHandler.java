@@ -66,11 +66,11 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /** The annotations of the resource interface. */
     private final List<AnnotationInfo> annotations;
 
-    /** The associated client resource. */
-    private final ClientResource clientResource;
-
     /** The associated annotation utils. */
     private AnnotationUtils annotationUtils;
+
+    /** The associated client resource. */
+    private final ClientResource clientResource;
 
     /**
      * Constructor.
@@ -100,9 +100,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
             AnnotationUtils annotationUtils) {
         this.clientResource = clientResource;
         this.annotationUtils = annotationUtils;
+
         // Introspect the interface for Restlet annotations
-        this.annotations = this.annotationUtils
-                .getAnnotations(resourceInterface);
+        this.annotations = getAnnotationUtils().getAnnotations(
+                resourceInterface);
     }
 
     /**
@@ -112,6 +113,15 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      */
     public List<AnnotationInfo> getAnnotations() {
         return annotations;
+    }
+
+    /**
+     * Returns the associated annotation utils.
+     * 
+     * @return The associated annotation utils.
+     */
+    public AnnotationUtils getAnnotationUtils() {
+        return annotationUtils;
     }
 
     /**
@@ -146,7 +156,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            MethodAnnotationInfo annotationInfo = annotationUtils
+            MethodAnnotationInfo annotationInfo = getAnnotationUtils()
                     .getMethodAnnotation(annotations, javaMethod);
 
             if (annotationInfo != null) {
@@ -261,11 +271,24 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
                 // Handle the response
                 if (isSynchronous) {
-                    if (response.getStatus().isError()) {
-                        getClientResource().doError(response.getStatus());
-                    }
+                    if ((response != null) && response.getStatus().isError()) {
+                        if (response.isEntityAvailable()) {
+                            Class<?> throwableClazz = getAnnotationUtils()
+                                    .getThrowableClass(javaMethod,
+                                            response.getStatus().getCode());
 
-                    if (!annotationInfo.getJavaOutputType().equals(void.class)) {
+                            if (throwableClazz != null) {
+                                Throwable t = (Throwable) getClientResource()
+                                        .toObject(response.getEntity(),
+                                                throwableClazz);
+                                throw t;
+                            } else {
+                                getClientResource().doError(
+                                        response.getStatus());
+                            }
+                        }
+                    } else if (!annotationInfo.getJavaOutputType().equals(
+                            void.class)) {
                         result = getClientResource()
                                 .toObject(
                                         (response == null ? null
@@ -278,5 +301,4 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
         return result;
     }
-
 }
