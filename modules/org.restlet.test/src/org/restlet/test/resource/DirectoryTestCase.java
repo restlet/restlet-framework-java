@@ -97,12 +97,23 @@ public class DirectoryTestCase extends RestletTestCase {
             final String rootIdentifier = LocalReference.createFileReference(
                     testDirectory).getIdentifier();
 
+            resetDirectoryToDefault();
+
             if (rootIdentifier.endsWith("/")) {
                 this.directory.setRootRef(new Reference(rootIdentifier));
             } else {
                 this.directory.setRootRef(new Reference(rootIdentifier + "/"));
             }
         }
+
+        private void resetDirectoryToDefault() {
+            this.directory.setDeeplyAccessible(true);
+            this.directory.setIndexName("index");
+            this.directory.setListingAllowed(false);
+            this.directory.setModifiable(false);
+            this.directory.setNegotiatingContent(true);
+        }
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -140,7 +151,7 @@ public class DirectoryTestCase extends RestletTestCase {
     /**
      * Helper for the test
      * 
-     * @param directory
+     * @param application
      * @param baseRef
      * @param resourceRef
      * @param method
@@ -157,7 +168,7 @@ public class DirectoryTestCase extends RestletTestCase {
     /**
      * Helper for the test
      * 
-     * @param directory
+     * @param application
      * @param baseRef
      * @param resourceRef
      * @param method
@@ -276,6 +287,7 @@ public class DirectoryTestCase extends RestletTestCase {
                 .createTempFile("test", ".txt", testDirectory);
 
         directory.setDeeplyAccessible(true);
+        directory.setListingAllowed(true);
         Response response = handle(application, this.webSiteURL,
                 this.webSiteURL.concat("dir/subDir/"), Method.GET, null,
                 "deep access 1");
