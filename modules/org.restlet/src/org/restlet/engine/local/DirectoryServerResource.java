@@ -211,13 +211,8 @@ public class DirectoryServerResource extends ServerResource {
 
             // The target URI does not take into account the query and fragment
             // parts of the resource.
-            this.targetUri = new Reference(directory.getRootRef().toString()
-                    + this.relativePart).normalize().toString(false, false);
-            if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
-                // Prevent the client from accessing resources in upper
-                // directories
-                this.targetUri = directory.getRootRef().toString();
-            }
+            this.targetUri = new Reference(directory.getRootRef().toString() + this.relativePart).toString(false, false);
+            preventUpperDirectoryAccess();
 
             if (getClientDispatcher() == null) {
                 getLogger().warning(
@@ -401,6 +396,17 @@ public class DirectoryServerResource extends ServerResource {
             getLogger().fine("Converted base name : " + this.baseName);
         } catch (IOException ioe) {
             throw new ResourceException(ioe);
+        }
+    }
+
+    /**
+     *  Prevent the client from accessing resources in upper
+     *  directories
+     */
+    public void preventUpperDirectoryAccess() {
+        String targetUriPath = new Reference(Reference.decode(targetUri)).normalize().toString();
+        if (!targetUriPath.startsWith(directory.getRootRef().toString())) {
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
     }
 
