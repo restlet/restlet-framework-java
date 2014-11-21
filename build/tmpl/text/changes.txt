@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- 2.3 Milestone 6 (11/21/2014)
+- 2.3 Release Candidate 1 (11/21/2014)
     - Enhancements
       - Upgraded Jetty to version 9.2.4
       - Added support for SPDY via the Jetty extension.
