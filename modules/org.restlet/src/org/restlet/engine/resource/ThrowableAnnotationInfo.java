@@ -41,7 +41,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public class StatusAnnotationInfo extends AnnotationInfo {
+public class ThrowableAnnotationInfo extends AnnotationInfo {
 
     /** The status parsed from the annotation value. */
     private final Status status;
@@ -52,19 +52,19 @@ public class StatusAnnotationInfo extends AnnotationInfo {
     /**
      * Constructor.
      * 
-     * @param javaClass
+     * @param throwableClass
      *            The class or interface that hosts the annotated Java method.
-     * @param code
-     *            The status code
+     * @param annotationValue
+     *            The annotation value containing the HTTP error code.
      * @param serializable
      *            Indicates if the {@link Throwable} should be serialized.
      */
-    public StatusAnnotationInfo(Class<?> javaClass, int code,
-            boolean serializable) {
-        super(javaClass, null, Integer.toString(code));
+    public ThrowableAnnotationInfo(Class<?> throwableClass,
+            int annotationValue, boolean serializable) {
+        super(throwableClass, Integer.toString(annotationValue));
 
         // Parse the main components of the annotation value
-        this.status = Status.valueOf(code);
+        this.status = Status.valueOf(annotationValue);
         this.serializable = serializable;
     }
 
@@ -77,10 +77,10 @@ public class StatusAnnotationInfo extends AnnotationInfo {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = (other instanceof StatusAnnotationInfo);
+        boolean result = (other instanceof ThrowableAnnotationInfo);
 
         if (result && (other != this)) {
-            StatusAnnotationInfo otherAnnotation = (StatusAnnotationInfo) other;
+            ThrowableAnnotationInfo otherAnnotation = (ThrowableAnnotationInfo) other;
             result = super.equals(otherAnnotation);
 
             // Compare the Restlet method
@@ -114,9 +114,8 @@ public class StatusAnnotationInfo extends AnnotationInfo {
 
     @Override
     public String toString() {
-        return "StatusAnnotationInfo [javaMethod: " + javaMethod
-                + ", javaClass: " + getJavaClass() + ", status: " + status
-                + ", serializeProperties: " + serializable + "]";
+        return "ExceptionAnnotationInfo [status=" + status + ", serializable="
+                + serializable + "]";
     }
 
 }

@@ -38,12 +38,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ClientProxy;
@@ -66,11 +70,11 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /** The annotations of the resource interface. */
     private final List<AnnotationInfo> annotations;
 
-    /** The associated client resource. */
-    private final ClientResource clientResource;
-
     /** The associated annotation utils. */
     private AnnotationUtils annotationUtils;
+
+    /** The associated client resource. */
+    private final ClientResource clientResource;
 
     /**
      * Constructor.
@@ -100,9 +104,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
             AnnotationUtils annotationUtils) {
         this.clientResource = clientResource;
         this.annotationUtils = annotationUtils;
+
         // Introspect the interface for Restlet annotations
-        this.annotations = this.annotationUtils
-                .getAnnotations(resourceInterface);
+        this.annotations = getAnnotationUtils().getAnnotations(
+                resourceInterface);
     }
 
     /**
@@ -112,6 +117,15 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      */
     public List<AnnotationInfo> getAnnotations() {
         return annotations;
+    }
+
+    /**
+     * Returns the associated annotation utils.
+     * 
+     * @return The associated annotation utils.
+     */
+    public AnnotationUtils getAnnotationUtils() {
+        return annotationUtils;
     }
 
     /**
@@ -146,7 +160,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            MethodAnnotationInfo annotationInfo = annotationUtils
+            MethodAnnotationInfo annotationInfo = getAnnotationUtils()
                     .getMethodAnnotation(annotations, javaMethod);
 
             if (annotationInfo != null) {
@@ -261,11 +275,59 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
                 // Handle the response
                 if (isSynchronous) {
-                    if (response.getStatus().isError()) {
-                        getClientResource().doError(response.getStatus());
-                    }
+                    if ((response != null) && response.getStatus().isError()) {
+                        ThrowableAnnotationInfo tai = getAnnotationUtils()
+                                .getThrowableAnnotationInfo(javaMethod,
+                                        response.getStatus().getCode());
 
-                    if (!annotationInfo.getJavaOutputType().equals(void.class)) {
+                        if (tai != null) {
+                            Class<?> throwableClazz = tai.getJavaClass();
+                            Throwable t = null;
+
+                            if (tai.isSerializable()
+                                    && response.isEntityAvailable()) {
+                                t = (Throwable) getClientResource().toObject(
+                                        response.getEntity(), throwableClazz);
+                            } else {
+                                try {
+                                    t = (Throwable) throwableClazz
+                                            .newInstance();
+                                } catch (Exception e) {
+                                    Context.getCurrentLogger()
+                                            .log(Level.FINE,
+                                                    "Unable to instantiate the client-side exception using the default constructor.");
+                                }
+
+                                if (response.isEntityAvailable()) {
+                                    StatusInfo si = getClientResource()
+                                            .toObject(response.getEntity(),
+                                                    StatusInfo.class);
+
+                                    if (si != null) {
+                                        response.setStatus(new Status(si
+                                                .getCode(), si
+                                                .getReasonPhrase(), si
+                                                .getDescription()));
+                                    }
+                                }
+                            }
+
+                            if (t != null) {
+                                throw t;
+                            }
+                        } else if (response.isEntityAvailable()) {
+                            StatusInfo si = getClientResource().toObject(
+                                    response.getEntity(), StatusInfo.class);
+
+                            if (si != null) {
+                                response.setStatus(new Status(si.getCode(), si
+                                        .getReasonPhrase(), si.getDescription()));
+                            }
+                        }
+
+                        getClientResource().doError(response.getStatus());
+                    } else if (!annotationInfo.getJavaOutputType().equals(
+                            void.class)) {
                         result = getClientResource()
                                 .toObject(
                                         (response == null ? null
@@ -278,5 +340,4 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
         return result;
     }
-
 }

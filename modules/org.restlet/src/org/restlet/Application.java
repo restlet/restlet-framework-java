@@ -36,6 +36,7 @@ package org.restlet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Filter;
+import java.util.logging.Level;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
@@ -114,6 +115,9 @@ public class Application extends Restlet {
         CURRENT.set(application);
     }
 
+    /** Indicates if the debugging mode is enabled. */
+    private volatile boolean debugging;
+
     /** The helper provided by the implementation. */
     private volatile ApplicationHelper helper;
 
@@ -161,6 +165,7 @@ public class Application extends Restlet {
         ConverterService converterService = new ConverterService();
         MetadataService metadataService = new MetadataService();
 
+        this.debugging = true;
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
@@ -394,6 +399,15 @@ public class Application extends Restlet {
     }
 
     /**
+     * Indicates if the debugging mode is enabled. False by default.
+     * 
+     * @return True if the debugging mode is enabled.
+     */
+    public boolean isDebugging() {
+        return debugging;
+    }
+
+    /**
      * Sets the connector service.
      * 
      * @param connectorService
@@ -428,6 +442,16 @@ public class Application extends Restlet {
      */
     public void setConverterService(ConverterService converterService) {
         getServices().set(converterService);
+    }
+
+    /**
+     * Indicates if the debugging mode is enabled.
+     * 
+     * @param debugging
+     *            True if the debugging mode is enabled.
+     */
+    public void setDebugging(boolean debugging) {
+        this.debugging = debugging;
     }
 
     /**
@@ -577,6 +601,16 @@ public class Application extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
+            if (isDebugging()) {
+                getLogger().log(
+                        Level.INFO,
+                        "Starting " + getClass().getSimpleName()
+                                + " application in debug mode");
+            } else {
+                getLogger().log(Level.INFO,
+                        "Starting " + getClass().getName() + " application");
+            }
+
             if (getHelper() != null) {
                 getHelper().start();
             }

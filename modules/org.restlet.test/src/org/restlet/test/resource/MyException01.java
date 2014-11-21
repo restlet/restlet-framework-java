@@ -11,6 +11,9 @@ public class MyException01 extends Throwable {
 
     private Date date;
 
+    public MyException01() {
+    }
+
     public MyException01(Date date) {
         this.date = date;
     }

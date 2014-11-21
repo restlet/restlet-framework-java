@@ -1,13 +1,21 @@
 package org.restlet.ext.apispark.internal.introspection.application;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.engine.resource.StatusAnnotationInfo;
+import org.restlet.engine.resource.ThrowableAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
@@ -22,20 +30,12 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.representation.StatusInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
 import org.restlet.service.MetadataService;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Manuel Boillod
@@ -176,8 +176,8 @@ public class ResourceCollector {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
-                StatusAnnotationInfo statusAnnotation = AnnotationUtils
-                        .getInstance().getStatusAnnotationInfo(thrownClass);
+                ThrowableAnnotationInfo statusAnnotation = AnnotationUtils
+                        .getInstance().getThrowableAnnotationInfo(thrownClass);
                 if (statusAnnotation != null) {
                     int statusCode = statusAnnotation.getStatus().getCode();
                     Response response = new Response();
