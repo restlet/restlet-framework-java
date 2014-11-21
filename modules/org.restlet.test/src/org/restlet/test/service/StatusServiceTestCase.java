@@ -63,7 +63,9 @@ public class StatusServiceTestCase extends RestletTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Application.setCurrent(new Application());
+        Application application = new Application();
+        application.setDebugging(false);
+        Application.setCurrent(application);
     }
 
     @Override

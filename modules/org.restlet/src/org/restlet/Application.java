@@ -165,7 +165,7 @@ public class Application extends Restlet {
         ConverterService converterService = new ConverterService();
         MetadataService metadataService = new MetadataService();
 
-        this.debugging = false;
+        this.debugging = true;
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
@@ -399,7 +399,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Indicates if the debugging mode is enabled. False by default.
+     * Indicates if the debugging mode is enabled. True by default.
      * 
      * @return True if the debugging mode is enabled.
      */
