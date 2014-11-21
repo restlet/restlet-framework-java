@@ -33,9 +33,10 @@
 
 package org.restlet.engine.application;
 
-import org.restlet.data.Status;
-
 import java.io.Serializable;
+
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 
 /**
  * 
@@ -48,19 +49,22 @@ public class StatusInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** The specification code. */
-    int code;
+    private volatile int code;
+
+    /** The email address of the administrator to contact in case of error. */
+    private volatile String contactEmail;
 
     /** The longer description. */
-    String description;
+    private volatile String description;
+
+    /** The home URI to propose in case of error. */
+    private volatile Reference homeRef;
 
     /** The short reason phrase. */
-    String reasonPhrase;
+    private volatile String reasonPhrase;
 
-    /**
-     * Constructor
-     */
-    public StatusInfo() {
-    }
+    /** The URI of the specification describing the method. */
+    private final String uri;
 
     /**
      * Constructor.
@@ -73,9 +77,33 @@ public class StatusInfo implements Serializable {
      *            The short reason phrase.
      */
     public StatusInfo(int code, String description, String reasonPhrase) {
+        this(code, description, reasonPhrase, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param description
+     *            The longer description.
+     * @param reasonPhrase
+     *            The short reason phrase.
+     * @param contactEmail
+     *            The email address of the administrator to contact in case of
+     *            error.
+     * @param homeRef
+     *            The home URI to propose in case of error.
+     */
+    public StatusInfo(int code, String description, String reasonPhrase,
+            String uri, String contactEmail, Reference homeRef) {
+        super();
         this.code = code;
         this.description = description;
         this.reasonPhrase = reasonPhrase;
+        this.uri = uri;
+        this.contactEmail = contactEmail;
+        this.homeRef = homeRef;
     }
 
     /**
@@ -85,9 +113,8 @@ public class StatusInfo implements Serializable {
      *            The represented status.
      */
     public StatusInfo(Status status) {
-        this.code = status.getCode();
-        this.reasonPhrase = status.getReasonPhrase();
-        this.description = status.getDescription();
+        this(status.getCode(), status.getDescription(), status
+                .getReasonPhrase(), status.getUri(), null, null);
     }
 
     /**
@@ -100,6 +127,16 @@ public class StatusInfo implements Serializable {
     }
 
     /**
+     * Returns the email address of the administrator to contact in case of
+     * error.
+     * 
+     * @return The email address.
+     */
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    /**
      * Returns the description of the status.
      * 
      * @return The description of the status.
@@ -109,12 +146,30 @@ public class StatusInfo implements Serializable {
     }
 
     /**
+     * Returns the home URI to propose in case of error.
+     * 
+     * @return The home URI.
+     */
+    public Reference getHomeRef() {
+        return homeRef;
+    }
+
+    /**
      * Returns the short description of the status.
      * 
      * @return The short description of the status.
      */
     public String getReasonPhrase() {
         return reasonPhrase;
+    }
+
+    /**
+     * Returns the URI of the specification describing the status.
+     * 
+     * @return The URI of the specification describing the status.
+     */
+    public String getUri() {
+        return this.uri;
     }
 
     /**
@@ -128,6 +183,16 @@ public class StatusInfo implements Serializable {
     }
 
     /**
+     * Sets the email address of the administrator to contact in case of error.
+     * 
+     * @param email
+     *            The email address.
+     */
+    public void setContactEmail(String email) {
+        this.contactEmail = email;
+    }
+
+    /**
      * Sets the description of the status.
      * 
      * @param code
@@ -135,6 +200,16 @@ public class StatusInfo implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Sets the home URI to propose in case of error.
+     * 
+     * @param homeRef
+     *            The home URI.
+     */
+    public void setHomeRef(Reference homeRef) {
+        this.homeRef = homeRef;
     }
 
     /**

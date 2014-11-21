@@ -41,7 +41,6 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.application.StatusInfo;
@@ -76,11 +75,6 @@ import org.restlet.resource.ResourceException;
  * @author Jerome Louvel
  */
 public class StatusService extends Service {
-
-    // [ifndef gwt] member
-    /** HTML Variant */
-    private static final org.restlet.engine.resource.VariantInfo VARIANT_HTML = new org.restlet.engine.resource.VariantInfo(
-            MediaType.TEXT_HTML);
 
     // [ifndef gwt] member
     /** The service used to select the preferred variant. */
@@ -229,12 +223,12 @@ public class StatusService extends Service {
         Representation result = null;
 
         // [ifndef gwt]
-        // do content negotiation for status
+        // Do content negotiation for status
         if (converterService != null && connegService != null
                 && metadataService != null) {
             Object representationObject = null;
 
-            // serialize exception if any and if {@link
+            // Serialize exception if any and if {@link
             // org.restlet.resource.Status} annotation ask for it
             Throwable cause = status.getThrowable();
 
@@ -261,23 +255,15 @@ public class StatusService extends Service {
             }
 
             try {
-                // default representation match with the status properties
+                // Default representation match with the status properties
                 if (representationObject == null) {
                     representationObject = new StatusInfo(status);
                 }
 
                 List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
                         .getVariants(representationObject.getClass(), null);
-                // TODO This seems to be a workaround in order to prevent
-                // zealous converters to cope with conversions whereas they are
-                // not supposed to. Should be updated when introducing strict
-                // mode of content negotiation.
                 if (variants == null) {
                     variants = new ArrayList<>();
-                }
-
-                if (!variants.contains(VARIANT_HTML)) {
-                    variants.add(VARIANT_HTML);
                 }
 
                 Variant variant = connegService.getPreferredVariant(variants,
@@ -288,7 +274,8 @@ public class StatusService extends Service {
                 Context.getCurrentLogger().log(
                         Level.WARNING,
                         "Could not serialize throwable class "
-                                + cause.getClass(), e);
+                                + ((cause == null) ? null : cause.getClass()),
+                        e);
             }
         }
         // [enddef]

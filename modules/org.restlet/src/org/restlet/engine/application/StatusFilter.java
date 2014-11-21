@@ -38,12 +38,8 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Filter;
 import org.restlet.service.StatusService;
 
@@ -64,11 +60,6 @@ import org.restlet.service.StatusService;
  * @author Jerome Louvel
  */
 public class StatusFilter extends Filter {
-    /** The email address of the administrator to contact in case of error. */
-    private volatile String contactEmail;
-
-    /** The home URI to propose in case of error. */
-    private volatile Reference homeRef;
 
     /** Indicates if existing representations should be overwritten. */
     private volatile boolean overwriting;
@@ -84,18 +75,11 @@ public class StatusFilter extends Filter {
      * @param overwriting
      *            Indicates whether an existing representation should be
      *            overwritten.
-     * @param email
-     *            Email address of the administrator to contact in case of
-     *            error.
-     * @param homeRef
-     *            The home URI to propose in case of error.
      */
     public StatusFilter(Context context, boolean overwriting, String email,
             Reference homeRef) {
         super(context);
         this.overwriting = overwriting;
-        this.contactEmail = email;
-        this.homeRef = homeRef;
         this.statusService = null;
     }
 
@@ -136,24 +120,15 @@ public class StatusFilter extends Filter {
         }
 
         // Do we need to get a representation for the current status?
-        if (response.getStatus().isError()
-                && ((response.getEntity() == null) || isOverwriting())) {
-
-            Representation representation = null;
-
-            try {
-                representation = getStatusService().toRepresentation(
-                        response.getStatus(), request, response);
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Unable to get the custom status representation", e);
+        try {
+            if (response.getStatus().isError()
+                    && ((response.getEntity() == null) || isOverwriting())) {
+                response.setEntity(getStatusService().toRepresentation(
+                        response.getStatus(), request, response));
             }
-
-            if (representation == null) {
-                representation = getDefaultRepresentation(response.getStatus(),
-                        request, response);
-            }
-            response.setEntity(representation);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get the custom status representation", e);
         }
     }
 
@@ -198,93 +173,6 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Returns the email address of the administrator to contact in case of
-     * error.
-     * 
-     * @return The email address.
-     */
-    public String getContactEmail() {
-        return contactEmail;
-    }
-
-    /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Representation getDefaultRepresentation(Status status,
-            Request request, Response response) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<html>\n");
-        sb.append("<head>\n");
-        sb.append("   <title>Status page</title>\n");
-        sb.append("</head>\n");
-        sb.append("<body style=\"font-family: sans-serif;\">\n");
-
-        sb.append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
-        sb.append(StringUtils.htmlEscape(getStatusInfo(status)));
-        sb.append("</p>\n");
-        if (status.getDescription() != null) {
-            sb.append("<p>");
-            sb.append(StringUtils.htmlEscape(status.getDescription()));
-            sb.append("</p>\n");
-        }
-
-        sb.append("<p>You can get technical details <a href=\"");
-        sb.append(status.getUri());
-        sb.append("\">here</a>.<br>\n");
-
-        if (getContactEmail() != null) {
-            sb.append("For further assistance, you can contact the <a href=\"mailto:");
-            sb.append(getContactEmail());
-            sb.append("\">administrator</a>.<br>\n");
-        }
-
-        if (getHomeRef() != null) {
-            sb.append("Please continue your visit at our <a href=\"");
-            sb.append(getHomeRef());
-            sb.append("\">home page</a>.\n");
-        }
-
-        sb.append("</p>\n");
-        sb.append("</body>\n");
-        sb.append("</html>\n");
-
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
-    }
-
-    /**
-     * Returns the home URI to propose in case of error.
-     * 
-     * @return The home URI.
-     */
-    public Reference getHomeRef() {
-        return homeRef;
-    }
-
-    /**
-     * Returns the status information to display in the default representation.
-     * By default it returns the status's reason phrase.
-     * 
-     * @param status
-     *            The status.
-     * @return The status information.
-     * @see #getDefaultRepresentation(Status, Request, Response)
-     */
-    protected String getStatusInfo(Status status) {
-        return (status.getReasonPhrase() != null) ? status.getReasonPhrase()
-                : "No information available for this result status";
-    }
-
-    /**
      * Returns the helped status service.
      * 
      * @return The helped status service.
@@ -300,26 +188,6 @@ public class StatusFilter extends Filter {
      */
     public boolean isOverwriting() {
         return overwriting;
-    }
-
-    /**
-     * Sets the email address of the administrator to contact in case of error.
-     * 
-     * @param email
-     *            The email address.
-     */
-    public void setContactEmail(String email) {
-        this.contactEmail = email;
-    }
-
-    /**
-     * Sets the home URI to propose in case of error.
-     * 
-     * @param homeRef
-     *            The home URI.
-     */
-    public void setHomeRef(Reference homeRef) {
-        this.homeRef = homeRef;
     }
 
     /**
