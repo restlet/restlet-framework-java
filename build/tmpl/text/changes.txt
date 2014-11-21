@@ -3,35 +3,34 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.3 Milestone 6 (11/21/2014)
     - Enhancements
       - Upgraded Jetty to version 9.2.4
       - Added support for SPDY via the Jetty extension.
         Contributed by Tal Liron.
       - 422 unprocessable entity status returned when errors happens when
         deserializing a representation.
-	  - Exceptions annotated with @Status are now automatically serialized
-	    using ConverterService on both client-side and server-side.
-		Client-side resource proxy automatically re-throw the de-serialized
-		exception back to the API call invoker. Note that when the application
-		is not in debugging mode, the stacktrace is cleared before
-		serialization and a warning is triggered if a cause is available in
-		the exception.
+      - Exceptions annotated with @Status are now automatically serialized
+        using ConverterService on both client-side and server-side.
+        Client-side resource proxy automatically re-throw the de-serialized
+        exception back to the API call invoker. Note that when the application
+        is not in debugging mode, the stacktrace is cleared before
+        serialization and a warning is triggered if a cause is available in
+        the exception.
 
     - API changes
       - Deprecated protected LogService#debugging property.
-	  - Added Application#debugging Boolean property and a start message 
-	    indicating in which mode your application is.
+      - Added Application#debugging Boolean property and a start message 
+        indicating in which mode your application is.
       - Added getName() and getDescription() methods in ServerResource for documentation purpose.      
 
     - Bugs fixed
-      -        
-	  
-	- Misc
-	  - Remove the outdated example based on the O'Reilly's book
-	    "RESTful Web Services" and the related db4o dependency.
-		Issue reported by Thomas Munz.
-	  - 
+      -
+      
+    - Misc
+      - Remove the outdated example based on the O'Reilly's book
+        "RESTful Web Services" and the related db4o dependency.
+        Issue reported by Thomas Munz.
 
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements
