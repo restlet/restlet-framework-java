@@ -3,6 +3,16 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+    - Enhancements
+	  - 
+
+    - Bugs fixed
+      - 
+      
+    - Misc
+      - 
+
 - 2.3 Release Candidate 1 (11/21/2014)
     - Enhancements
       - Upgraded Jetty to version 9.2.4
@@ -23,9 +33,6 @@ Changes log
       - Added Application#debugging Boolean property and a start message 
         indicating in which mode your application is.
       - Added getName() and getDescription() methods in ServerResource for documentation purpose.      
-
-    - Bugs fixed
-      -
       
     - Misc
       - Remove the outdated example based on the O'Reilly's book

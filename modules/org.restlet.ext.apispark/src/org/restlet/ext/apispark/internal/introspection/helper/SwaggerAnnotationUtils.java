@@ -1,3 +1,36 @@
+/**
+ * Copyright 2005-2014 Restlet
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
 package org.restlet.ext.apispark.internal.introspection.helper;
 
 import com.google.common.base.Optional;
@@ -101,10 +134,11 @@ public class SwaggerAnnotationUtils {
      *
      * @param apiModel
      *            The {@link ApiModel} annotation.
-     * @param representation The {@link Representation} to update.
+     * @param representation
+     *            The {@link Representation} to update.
      */
     public static void processApiModel(ApiModel apiModel,
-                                       Representation representation) {
+            Representation representation) {
         if (!StringUtils.isNullOrEmpty(apiModel.value())) {
             representation.setName(apiModel.value());
         }
@@ -144,14 +178,17 @@ public class SwaggerAnnotationUtils {
      * Adds data from the {@link ApiModelProperty} annotation to the operation.
      *
      * @param apiOperation
-     *              The {@link com.wordnik.swagger.annotations.ApiOperation} annotation.
+     *            The {@link com.wordnik.swagger.annotations.ApiOperation}
+     *            annotation.
      * @param resource
-     *              The {@link org.restlet.ext.apispark.internal.model.Resource} to update.
+     *            The {@link org.restlet.ext.apispark.internal.model.Resource}
+     *            to update.
      * @param operation
-     *              The {@link org.restlet.ext.apispark.internal.model.Operation} to update.
+     *            The {@link org.restlet.ext.apispark.internal.model.Operation}
+     *            to update.
      */
     public static void processApiOperation(ApiOperation apiOperation,
-                                           Resource resource, Operation operation) {
+            Resource resource, Operation operation) {
         if (!StringUtils.isNullOrEmpty(apiOperation.value())) {
             operation.setName(apiOperation.value());
         }
@@ -188,7 +225,7 @@ public class SwaggerAnnotationUtils {
      *            The {@link Parameter} to update.
      */
     public static void processApiParameter(ApiParam apiParam,
-                                           Parameter parameter) {
+            Parameter parameter) {
         if (!StringUtils.isNullOrEmpty(apiParam.name())) {
             parameter.setName(apiParam.name());
         }
@@ -213,7 +250,7 @@ public class SwaggerAnnotationUtils {
      *            The {@link java.lang.Class} of representation used.
      */
     public static void processApiResponse(ApiResponse apiResponse,
-                                          Operation operation, List<Class<?>> representationsUsed) {
+            Operation operation, List<Class<?>> representationsUsed) {
         List<Response> responses = operation.getResponses();
         if (responses == null) {
             responses = new ArrayList<>();
@@ -221,12 +258,13 @@ public class SwaggerAnnotationUtils {
         }
         final int code = apiResponse.code();
 
-        Optional<Response> existingResponse = Iterables.tryFind(responses, new Predicate<Response>() {
-            @Override
-            public boolean apply(Response response) {
-                return response.getCode() == code;
-            }
-        });
+        Optional<Response> existingResponse = Iterables.tryFind(responses,
+                new Predicate<Response>() {
+                    @Override
+                    public boolean apply(Response response) {
+                        return response.getCode() == code;
+                    }
+                });
         boolean responseExists = existingResponse.isPresent();
         Response response;
         if (responseExists) {
@@ -241,7 +279,8 @@ public class SwaggerAnnotationUtils {
             response.setDescription(apiResponse.message());
         }
         Class<?> responseClazz = apiResponse.response();
-        if (responseClazz != null && responseClazz != Void.TYPE && responseClazz != Void.class) {
+        if (responseClazz != null && responseClazz != Void.TYPE
+                && responseClazz != Void.class) {
             representationsUsed.add(responseClazz);
             PayLoad payLoad = new PayLoad();
             payLoad.setType(Types.convertPrimitiveType(responseClazz));
@@ -264,7 +303,7 @@ public class SwaggerAnnotationUtils {
      *            The {@link java.lang.Class} of representation used.
      */
     public static void processApiResponses(ApiResponses apiResponses,
-                                           Operation operation, List<Class<?>> representationsUsed) {
+            Operation operation, List<Class<?>> representationsUsed) {
         for (ApiResponse apiResponse : apiResponses.value()) {
             processApiResponse(apiResponse, operation, representationsUsed);
         }
