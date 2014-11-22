@@ -40,7 +40,9 @@ import java.util.List;
  * Described an event type. Used by the SIP "Event" and "Allow-Events" headers.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class EventType {
 
     /** The package name. */

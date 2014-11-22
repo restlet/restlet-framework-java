@@ -49,7 +49,9 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3261#section-17.1.1.3">RFC 3261 -
  *      17.1.1.3 Construction of the ACK Request</a>
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

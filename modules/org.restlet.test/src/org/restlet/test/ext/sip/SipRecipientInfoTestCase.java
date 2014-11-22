@@ -44,8 +44,8 @@ import org.restlet.test.RestletTestCase;
  * Test case for the Via header.
  * 
  * @author Thierry Boileau
- * 
  */
+@Deprecated
 public class SipRecipientInfoTestCase extends RestletTestCase {
 
     @Test

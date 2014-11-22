@@ -54,7 +54,9 @@ import org.restlet.util.Series;
  * SIP client inbound way.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipClientInboundWay extends ClientInboundWay {
     /**
      * Constructor.

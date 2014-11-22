@@ -42,6 +42,7 @@ import junit.framework.TestSuite;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public class SipTestSuite extends TestCase {
 
     public static Test suite() {

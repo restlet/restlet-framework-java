@@ -70,7 +70,9 @@ import org.restlet.resource.ResourceException;
  * lower-level {@link Client} class instead.
  * 
  * @author Thierry Boileau, Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipClientResource extends ClientResource {
 
     /**

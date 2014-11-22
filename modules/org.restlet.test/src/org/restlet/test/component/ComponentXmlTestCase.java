@@ -47,6 +47,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Thierry Boileau
  */
+@Deprecated
 public class ComponentXmlTestCase extends RestletTestCase {
 
     private final int port = TEST_PORT;

@@ -46,7 +46,9 @@ import org.restlet.ext.sip.SipRecipientInfo;
  * Via header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
 
     /**

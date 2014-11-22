@@ -42,7 +42,9 @@ import org.restlet.util.Series;
  * Describes a SIP intermediary such as a proxy. Used by the SIP "Via" header.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipRecipientInfo extends RecipientInfo {
 
     /** The list of recipient info parameters. */

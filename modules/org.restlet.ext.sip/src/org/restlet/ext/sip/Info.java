@@ -49,7 +49,9 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc2976">RFC 2976 - The SIP INFO
  *      Method</a>
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

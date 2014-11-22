@@ -45,7 +45,9 @@ import org.restlet.util.Series;
  * href="http://code.google.com/p/jsslutils/">jSSLutils</a>.
  * 
  * @author Bruno Harbulot
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class JsslutilsSslContextFactory extends SslContextFactory {
     /**
      * The wrapped SSLContextFactory.

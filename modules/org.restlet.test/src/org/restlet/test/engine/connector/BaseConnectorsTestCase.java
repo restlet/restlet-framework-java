@@ -49,6 +49,7 @@ import org.restlet.test.RestletTestCase;
  * @author Kevin Conaway
  * @author Jerome Louvel
  */
+@SuppressWarnings("unused")
 public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;

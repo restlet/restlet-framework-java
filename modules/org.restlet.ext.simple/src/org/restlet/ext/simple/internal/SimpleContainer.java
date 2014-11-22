@@ -44,7 +44,10 @@ import org.simpleframework.http.core.Container;
  * Simple container delegating the calls to the Restlet server helper.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions such as
+ *             Jetty and Netty, allowing more control at the Restlet API level.
  */
+@Deprecated
 public class SimpleContainer implements Container {
     /** The delegate Restlet server helper. */
     private volatile SimpleServerHelper helper;

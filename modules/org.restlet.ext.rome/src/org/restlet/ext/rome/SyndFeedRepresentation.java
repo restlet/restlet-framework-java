@@ -57,7 +57,9 @@ import com.sun.syndication.io.SyndFeedOutput;
  * 
  * @author Tal Liron
  * @see <a href="http://java.net/projects/rome/">ROME home</a>
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class SyndFeedRepresentation extends WriterRepresentation {
 
     /**

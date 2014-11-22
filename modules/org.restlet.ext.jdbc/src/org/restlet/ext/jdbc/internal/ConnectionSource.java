@@ -42,7 +42,10 @@ import org.restlet.ext.jdbc.JdbcClientHelper;
  * Pooling data source which remembers its connection properties and URI.
  * 
  * @author Jerome Louvel
+ * @deprecated Use a persistence technology such as Mybatis or Hibernate instead.
  */
+@Deprecated
+
 public class ConnectionSource extends PoolingDataSource {
     /** The connection properties. */
     protected Properties properties;

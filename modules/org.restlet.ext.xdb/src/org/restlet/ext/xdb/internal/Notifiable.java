@@ -39,7 +39,9 @@ package org.restlet.ext.xdb.internal;
  * stream events.
  * 
  * @author Jerome Louvel
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public interface Notifiable {
 
     /**

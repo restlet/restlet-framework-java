@@ -55,7 +55,9 @@ import org.restlet.ext.sip.SipStatus;
  * Standalone SIP client helper.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipClientHelper extends ClientConnectionHelper {
 
     /** The map of managed transactions represented by their initial request. */

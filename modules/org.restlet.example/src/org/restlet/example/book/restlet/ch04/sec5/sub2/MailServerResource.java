@@ -48,6 +48,7 @@ import org.restlet.resource.ServerResource;
  * Resource corresponding to a mail received or sent with the parent mail
  * account. Leverages Jackson extension.
  */
+@Deprecated
 public class MailServerResource extends ServerResource {
 
     @Override

@@ -39,8 +39,9 @@ import org.restlet.resource.ResourceException;
 
 /**
  * @author Bryan Hunt
- * 
+ * @deprecated 
  */
+@Deprecated
 public class InjectedWadlServerResource extends WadlServerResource implements
         InjectedResource {
     private IEclipseContext eclipseContext;

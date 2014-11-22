@@ -51,7 +51,9 @@ import org.restlet.util.Series;
  * SIP client outbound way.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipClientOutboundWay extends ClientOutboundWay {
 
     /**

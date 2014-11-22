@@ -91,7 +91,9 @@ import org.restlet.ext.xdb.internal.XdbServletCall;
  * </pre>
  * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class XdbServletAdapter extends ServerAdapter {
     /** Connection to the XMLDB repository. */
     private volatile Connection conn;

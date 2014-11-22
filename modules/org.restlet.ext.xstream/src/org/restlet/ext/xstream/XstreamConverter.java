@@ -74,7 +74,9 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
  * org.restlet.engine.Engine#getRegisteredConverters method).
  * 
  * @author Jerome Louvel
+ * @deprecated Use an XML serialization technology such as Jackson instead.
  */
+@Deprecated
 public class XstreamConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(

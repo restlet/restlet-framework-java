@@ -50,8 +50,9 @@ import com.sun.syndication.feed.synd.SyndFeed;
  * Converter of SyndFeed objects into Representation instances.
  * 
  * @author Thierry Boileau
- * 
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class RomeConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_ATOM = new VariantInfo(

@@ -42,7 +42,9 @@ import org.restlet.ext.sip.OptionTag;
  * Option tag like header writer.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class OptionTagWriter extends HeaderWriter<OptionTag> {
 
     /**

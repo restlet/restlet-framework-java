@@ -43,7 +43,9 @@ import org.restlet.ext.sip.Subscription;
  * Subscription state header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SubscriptionReader extends HeaderReader<Subscription> {
 
     /**

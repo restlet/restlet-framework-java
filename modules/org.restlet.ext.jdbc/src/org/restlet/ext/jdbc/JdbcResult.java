@@ -43,7 +43,10 @@ import java.sql.Statement;
  * of JDBC calls.
  * 
  * @author Jerome Louvel
+ * @deprecated Use a persistence technology such as Mybatis or Hibernate
+ *             instead.
  */
+@Deprecated
 public class JdbcResult implements Serializable {
     private static final long serialVersionUID = 1L;
 

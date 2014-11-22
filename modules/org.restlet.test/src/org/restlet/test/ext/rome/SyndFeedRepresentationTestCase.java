@@ -47,6 +47,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public class SyndFeedRepresentationTestCase extends RestletTestCase {
 
     public void testParsing() throws IOException {

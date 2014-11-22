@@ -36,7 +36,9 @@ import org.restlet.data.Method;
  * Constants for WebDAV methods.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public final class WebDavMethod {
 
     private static final String BASE_WEBDAV = "http://tools.ietf.org/html/rfc4918";

@@ -55,7 +55,10 @@ import org.restlet.representation.WriterRepresentation;
  * @see WebRowSet
  * @author Thierry Boileau
  * @author Jerome Louvel
+ * @deprecated Use a persistence technology such as Mybatis or Hibernate
+ *             instead.
  */
+@Deprecated
 public class RowSetRepresentation extends WriterRepresentation {
     /**
      * Creates a WebRowSet from a ResultSet.

@@ -52,6 +52,7 @@ import org.restlet.ext.sip.SipStatus;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public class UacServerResource extends SipServerResource implements UacResource {
 
     private static long SLEEP_TIME;

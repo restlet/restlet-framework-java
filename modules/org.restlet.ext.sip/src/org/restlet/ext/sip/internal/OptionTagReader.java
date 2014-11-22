@@ -42,7 +42,9 @@ import org.restlet.ext.sip.OptionTag;
  * Option tag like header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class OptionTagReader extends HeaderReader<OptionTag> {
 
     /**

@@ -39,7 +39,9 @@ import org.restlet.data.Method;
  * Constants for SIP methods.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public final class SipMethod {
 
     private static final String _BASE_SIP = "http://tools.ietf.org/html/rfc3261";

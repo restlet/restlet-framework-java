@@ -69,7 +69,9 @@ import org.restlet.service.MetadataService;
  * located at /home/ANONYMOUS/wars
  * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class XdbServletWarClientHelper extends ServletWarClientHelper {
 
     /**

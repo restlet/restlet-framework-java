@@ -8,8 +8,26 @@ Changes log
 	  - 
 
     - Bugs fixed
-      - 
-      
+      - Restored HTML variant of error status representations returned by default.
+	    Now handled by the ConverterService via a StatusInfoHtmlConverter in engine.
+
+    - Deprecations
+	  - Deprecated org.restlet.Component XML configuration.
+	    Usage of XML support in Spring extension is recommended instead.
+      - Deprecated e4 extension.
+	    Usage of Guice or Spring extensions is recommended instead.
+      - Deprecated JDBC extension. 
+	    Use a persistence technology such as Mybatis or Hibernate instead.
+      - Deprecated JiBX and XStream extensions.
+        Use an XML serialization technology such as Jackson instead.
+      - Deprecated jSSLUtils, ROME, XDB extensions.
+		Libraries not actively developed anymore.
+      - Deprecated Apache HTTP Client and Simple extensions.
+        Will be removed to favor lower-level network extensions such as
+        Jetty and Netty, allowing more control at the Restlet API level. 
+      - Deprecated SIP, WebDAV extensions.
+	    Will be removed to focus on Web APIs.
+		
     - Misc
       - 
 
@@ -32,7 +50,9 @@ Changes log
       - Deprecated protected LogService#debugging property.
       - Added Application#debugging Boolean property and a start message 
         indicating in which mode your application is.
-      - Added getName() and getDescription() methods in ServerResource for documentation purpose.      
+      - Added getName() and getDescription() methods in ServerResource for
+	    documentation purpose. Note that this could conflict with existing
+		subclasses.
       
     - Misc
       - Remove the outdated example based on the O'Reilly's book

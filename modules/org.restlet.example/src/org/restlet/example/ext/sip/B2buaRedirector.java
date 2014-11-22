@@ -53,6 +53,7 @@ import org.restlet.routing.Template;
 /**
  * Redirector that implements the B2BUA scenario.
  */
+@Deprecated
 public class B2buaRedirector extends Redirector {
 
     public static void main(String[] args) throws Exception {

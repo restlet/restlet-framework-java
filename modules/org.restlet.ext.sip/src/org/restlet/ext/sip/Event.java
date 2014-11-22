@@ -41,7 +41,9 @@ import org.restlet.util.Series;
  * Describes a SIP event. Used by the SIP "Event" header.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class Event {
 
     /** The event identifier. */

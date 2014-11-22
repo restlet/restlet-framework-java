@@ -47,7 +47,10 @@ import org.simpleframework.transport.Socket;
  * pipeline for later retrieval.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions such as
+ *             Jetty and Netty, allowing more control at the Restlet API level.
  */
+@Deprecated
 public class SimpleServer implements Server {
     public static final String PROPERTY_ENGINE = "org.restlet.ext.simple.engine";
 

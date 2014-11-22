@@ -47,6 +47,7 @@ import org.restlet.ext.sip.SipClientResource;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public class UacClientResource implements UacResource {
 
     public static void main(String[] args) {

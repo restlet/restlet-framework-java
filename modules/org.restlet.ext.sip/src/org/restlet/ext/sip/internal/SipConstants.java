@@ -37,7 +37,9 @@ package org.restlet.ext.sip.internal;
  * Constants related to the SIP protocol.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public final class SipConstants {
 
     // ---------------------

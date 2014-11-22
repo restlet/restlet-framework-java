@@ -49,7 +49,9 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3265#section-3.1">RFC 3265 - 3.1.
  *      Description of SUBSCRIBE Behavior</a>
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

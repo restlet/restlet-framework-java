@@ -36,10 +36,10 @@ package org.restlet.ext.e4;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 /**
- * 
- * 
  * @author Bryan Hunt
+ * @deprecated Usage of Guice or Spring extensions is recommended instead.
  */
+@Deprecated
 public interface InjectedResource {
     void setEclipseContext(IEclipseContext eclipseContext);
 }

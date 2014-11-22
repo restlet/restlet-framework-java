@@ -49,7 +49,9 @@ import org.restlet.ext.sip.Address;
  * Address like header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class AddressReader extends HeaderReader<Address> {
 
     /**

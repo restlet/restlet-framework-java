@@ -57,7 +57,9 @@ import org.restlet.representation.WriterRepresentation;
  *            The type to wrap.
  * @author Florian Schwarz
  * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
+ * @deprecated Use an XML serialization technology such as Jackson instead.
  */
+@Deprecated
 public class JibxRepresentation<T> extends WriterRepresentation {
 
     /**

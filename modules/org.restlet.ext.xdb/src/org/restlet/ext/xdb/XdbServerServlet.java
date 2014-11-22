@@ -105,7 +105,9 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;

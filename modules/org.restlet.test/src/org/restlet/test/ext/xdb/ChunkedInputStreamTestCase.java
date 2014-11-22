@@ -48,6 +48,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
+@Deprecated
 public class ChunkedInputStreamTestCase extends RestletTestCase {
 
     private String read(InputStream input) throws IOException {

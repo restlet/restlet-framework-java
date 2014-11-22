@@ -43,7 +43,9 @@ import org.restlet.ext.sip.Address;
  * Address like header writer.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class AddressWriter extends HeaderWriter<Address> {
 
     /**
