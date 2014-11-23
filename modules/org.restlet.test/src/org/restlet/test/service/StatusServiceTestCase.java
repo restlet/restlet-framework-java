@@ -68,12 +68,6 @@ public class StatusServiceTestCase extends RestletTestCase {
         Application.setCurrent(application);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        Application.setCurrent(null);
-        super.tearDown();
-    }
-
     public void testAnnotation() {
         StatusService ss = new StatusService();
         Status status = ss.toStatus(new MyException01(new Date()), null, null);
