@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.3 Release Candidate 1 (11/21/2014)
     - Enhancements
       - Upgraded Jetty to version 9.2.4
