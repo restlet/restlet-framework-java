@@ -34,9 +34,10 @@
 package org.restlet.test.service;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.restlet.Application;
 import org.restlet.Request;
@@ -45,13 +46,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.service.ConnegService;
-import org.restlet.service.ConverterService;
-import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.test.RestletTestCase;
-import org.restlet.test.resource.MyException01;
-import org.restlet.test.resource.MyException02;
 
 /**
  * Unit tests for the status service.
@@ -70,18 +66,14 @@ public class StatusServiceTestCase extends RestletTestCase {
 
     public void testAnnotation() {
         StatusService ss = new StatusService();
-        Status status = ss.toStatus(new MyException01(new Date()), null, null);
+        Status status = ss.toStatus(new Status400Exception("test message", 50), null, null);
         assertEquals(400, status.getCode());
     }
 
-    public void testRepresentation() throws IOException {
-        Status status = new Status(400, new MyException01(new Date()));
+    public void testStatusSerialization() throws IOException {
+        StatusService ss = new StatusService();
 
-        ConverterService converterService = new ConverterService();
-        ConnegService connegService = new ConnegService();
-        MetadataService metadataService = new MetadataService();
-        StatusService ss = new StatusService(true, converterService,
-                metadataService, connegService);
+        Status status = new Status(400, new Status400Exception("test message", 50));
 
         Request request = new Request();
         Representation representation = ss.toRepresentation(status, request,
@@ -105,16 +97,11 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
-    //TODO activate test
-    public void off_testSerializedException() throws IOException {
-        Throwable exception = new MyException02("test message");
+    public void testSerializedException() throws IOException {
+        Throwable exception = new Status401SerializableException("test message", 50);
         Status status = new Status(400, exception);
 
-        ConverterService converterService = new ConverterService();
-        ConnegService connegService = new ConnegService();
-        MetadataService metadataService = new MetadataService();
-        StatusService ss = new StatusService(true, converterService,
-                metadataService, connegService);
+        StatusService ss = new StatusService();
 
         Request request = new Request();
         Representation representation = ss.toRepresentation(status, request,
@@ -122,7 +109,11 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
-        expectedRepresentationMap.put("customProperty", "test message");
+        expectedRepresentationMap.put("stackTrace", new String[0]);
+        expectedRepresentationMap.put("value", 50);
+        expectedRepresentationMap.put("message", "test message");
+        expectedRepresentationMap.put("localizedMessage", "test message");
+        expectedRepresentationMap.put("suppressed", new String[0]);
         String expectedJsonRepresentation = new JacksonRepresentation<>(
                 expectedRepresentationMap).getText();
 
@@ -131,18 +122,13 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
-    //TODO activate test
-    public void off_testSerializedExceptionWithCause() throws IOException {
+    public void testSerializedExceptionWithCause() throws IOException {
 
         Throwable rootCause = new IOException("File '/toto.txt' is not readable");
-        Throwable exception = new MyException02("test message", rootCause);
+        Throwable exception = new Status401SerializableException("test message", 50, rootCause);
         Status status = new Status(400, exception);
 
-        ConverterService converterService = new ConverterService();
-        ConnegService connegService = new ConnegService();
-        MetadataService metadataService = new MetadataService();
-        StatusService ss = new StatusService(true, converterService,
-                metadataService, connegService);
+        StatusService ss = new StatusService();
 
         Request request = new Request();
         Representation representation = ss.toRepresentation(status, request,
@@ -150,7 +136,12 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
-        expectedRepresentationMap.put("customProperty", "test message");
+        expectedRepresentationMap.put("cause", exception.getCause());
+        expectedRepresentationMap.put("stackTrace", new String[0]);
+        expectedRepresentationMap.put("value", 50);
+        expectedRepresentationMap.put("message", "test message");
+        expectedRepresentationMap.put("localizedMessage", "test message");
+        expectedRepresentationMap.put("suppressed", new String[0]);
         String expectedJsonRepresentation = new JacksonRepresentation<>(
                 expectedRepresentationMap).getText();
 
@@ -159,4 +150,119 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedJsonRepresentation, representation.getText());
     }
 
+    public void testSerializedBusinessException() throws IOException {
+        Throwable exception = new Status402SerializableBusinessException("test message", 50);
+        Status status = new Status(400, exception);
+
+        StatusService ss = new StatusService();
+
+        Request request = new Request();
+        Representation representation = ss.toRepresentation(status, request,
+                new Response(request));
+
+        // verify
+        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
+        expectedRepresentationMap.put("value", 50);
+        String expectedJsonRepresentation = new JacksonRepresentation<>(
+                expectedRepresentationMap).getText();
+
+        Status.CLIENT_ERROR_BAD_REQUEST.getCode();
+        assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());
+        assertEquals(expectedJsonRepresentation, representation.getText());
+    }
+
+    public void testSerializedBusinessExceptionWithCause() throws IOException {
+
+        Throwable rootCause = new IOException("File '/toto.txt' is not readable");
+        Throwable exception = new Status402SerializableBusinessException("test message", 50, rootCause);
+        Status status = new Status(400, exception);
+
+        StatusService ss = new StatusService();
+
+        Request request = new Request();
+        Representation representation = ss.toRepresentation(status, request,
+                new Response(request));
+
+        // verify
+        HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
+        expectedRepresentationMap.put("value", 50);
+        String expectedJsonRepresentation = new JacksonRepresentation<>(
+                expectedRepresentationMap).getText();
+
+        Status.CLIENT_ERROR_BAD_REQUEST.getCode();
+        assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());
+        assertEquals(expectedJsonRepresentation, representation.getText());
+    }
+
+    @org.restlet.resource.Status(value = 400, serialize = false)
+    private static class Status400Exception extends Throwable {
+
+        private static final long serialVersionUID = 1L;
+
+        private int value;
+
+        public Status400Exception(String message, int value) {
+            super(message);
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    @org.restlet.resource.Status(value = 401)
+    private static class Status401SerializableException extends Throwable {
+
+        private static final long serialVersionUID = 1L;
+
+        private int value;
+
+        public Status401SerializableException(String message, int value){
+            super(message);
+            this.value = value;
+        }
+
+        public Status401SerializableException(String message, int value, Throwable cause) {
+            super(message, cause);
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    @JsonIgnoreProperties({"cause", "localizedMessage", "message", "stackTrace", "suppressed"})
+    private static class StatusBusinessException extends Throwable {
+        private StatusBusinessException(String message) {
+            super(message);
+        }
+
+        private StatusBusinessException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    @org.restlet.resource.Status(value = 402)
+    private static class Status402SerializableBusinessException extends StatusBusinessException {
+
+        private static final long serialVersionUID = 1L;
+
+        private int value;
+
+        public Status402SerializableBusinessException(String message, int value){
+            super(message);
+            this.value = value;
+        }
+
+        public Status402SerializableBusinessException(String message, int value, Throwable cause) {
+            super(message, cause);
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 }
