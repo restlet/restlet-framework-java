@@ -44,6 +44,8 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.StatusService;
@@ -60,8 +62,19 @@ public class StatusServiceTestCase extends RestletTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Application application = new Application();
-        application.setDebugging(false);
         Application.setCurrent(application);
+    }
+
+    protected void setUpEngine() {
+        Engine.clearThreadLocalVariables();
+
+        // Restore a clean engine
+        org.restlet.engine.Engine.register(false);
+
+        // Prefer the internal connectors
+        Engine.getInstance()
+                .getRegisteredConverters()
+                .add(0, new JacksonConverter());
     }
 
     public void testAnnotation() {
@@ -109,7 +122,7 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
-        expectedRepresentationMap.put("stackTrace", new String[0]);
+        expectedRepresentationMap.put("stackTrace", exception.getStackTrace());
         expectedRepresentationMap.put("value", 50);
         expectedRepresentationMap.put("message", "test message");
         expectedRepresentationMap.put("localizedMessage", "test message");
@@ -137,7 +150,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
         expectedRepresentationMap.put("cause", exception.getCause());
-        expectedRepresentationMap.put("stackTrace", new String[0]);
+        expectedRepresentationMap.put("stackTrace", exception.getStackTrace());
         expectedRepresentationMap.put("value", 50);
         expectedRepresentationMap.put("message", "test message");
         expectedRepresentationMap.put("localizedMessage", "test message");
