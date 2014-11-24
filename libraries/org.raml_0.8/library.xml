@@ -19,9 +19,17 @@
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<maven-repository>
-		<id>mulesoft-releases</id>
-		<name>MuleSoft Releases Repository</name>
-		<url>https://repository-master.mulesoft.org/releases/</url>
-	</maven-repository>
+
+	<mavenDistributionManagement>
+		<repository>
+			<id>mulesoft-releases</id>
+			<name>MuleSoft Releases Repository</name>
+			<url>https://repository-master.mulesoft.org/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>mulesoft-snapshots</id>
+			<name>MuleSoft Snapshots Repository</name>
+			<url>https://repository-master.mulesoft.org/snapshots/</url>
+		</snapshotRepository>
+	</mavenDistributionManagement>
 </library>

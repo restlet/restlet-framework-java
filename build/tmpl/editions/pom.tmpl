@@ -7,7 +7,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet.${edition.id}</groupId>
-	<artifactId>org.restlet.lib.<#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+	<artifactId>${package.mavenArtifactId}</artifactId>
 		<#if package.mavenVersion??>
 	<version>${package.mavenVersion}</version>
 		<#else>
@@ -30,7 +30,7 @@
 		<dependency>
 					<#if dependency.library.distributions?contains("maven")>
 			<groupId>org.restlet.${edition.id}</groupId>
-			<artifactId>org.restlet.lib.<#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+			<artifactId>${package.mavenArtifactId}</artifactId>
 			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
 					<#else>
 			<groupId>${package.mavenGroupId}</groupId>
@@ -82,7 +82,7 @@
 			<groupId>${package.name}</groupId>
 					</#if>
 				</#if>
-			<artifactId><#if dependency.library.distributions?contains("maven")>org.restlet.lib.</#if><#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+			<artifactId>${package.mavenArtifactId}</artifactId>
 				<#if dependency.library.distributions?contains("maven")>
 			<version><#noparse>${lib-</#noparse>${dependency.library.id}-version}</version>
 				<#else>

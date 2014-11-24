@@ -14,8 +14,8 @@
 			<version>1.5.0-SNAPSHOT</version>
 		</maven>
 	</package>
-
 	<distributions>
 		<distribution id="classic" />
+		<distribution id="maven" />
 	</distributions>
 </library>

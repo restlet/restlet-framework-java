@@ -10,7 +10,7 @@
 	<package id="swagger-core" name="com.wordnik.swagger.core">
 		<maven>
 			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-core</artifactId>
+			<artifactId>swagger-core_2.10</artifactId>
 			<version>1.3.10</version>
 		</maven>
 	</package>
