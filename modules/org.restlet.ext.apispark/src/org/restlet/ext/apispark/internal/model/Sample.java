@@ -34,7 +34,6 @@
 package org.restlet.ext.apispark.internal.model;
 
 /**
- * 
  * @author Cyprien Quilici
  */
 public class Sample {

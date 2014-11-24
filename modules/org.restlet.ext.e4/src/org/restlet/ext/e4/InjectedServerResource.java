@@ -38,10 +38,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 /**
- * 
- * 
  * @author Bryan Hunt
+ * @deprecated Usage of Guice or Spring extensions is recommended instead.
  */
+@Deprecated
 public class InjectedServerResource extends ServerResource implements
         InjectedResource {
     private IEclipseContext eclipseContext;

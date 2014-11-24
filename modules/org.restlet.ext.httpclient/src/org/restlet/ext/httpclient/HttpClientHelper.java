@@ -194,8 +194,10 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  *      href="http://download.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing
+ *             more control at the Restlet API level.
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public class HttpClientHelper extends
         org.restlet.engine.adapter.HttpClientHelper {
     private volatile DefaultHttpClient httpClient;

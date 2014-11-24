@@ -58,7 +58,9 @@ import org.restlet.util.Series;
  * configured via parameters.
  * 
  * @author Bruno Harbulot
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class PkixSslContextFactory extends SslContextFactory {
     private PKIXSSLContextFactory sslContextFactory;
 

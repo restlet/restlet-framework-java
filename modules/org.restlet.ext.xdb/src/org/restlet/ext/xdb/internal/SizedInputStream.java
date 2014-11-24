@@ -41,7 +41,9 @@ import java.io.InputStream;
  * Input stream based on a source stream that must only be partially read.
  * 
  * @author Jerome Louvel
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class SizedInputStream extends InputEntityStream {
 
     /** The total size that should be read from the source stream. */

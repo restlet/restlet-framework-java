@@ -44,7 +44,9 @@ import org.restlet.ext.sip.ContactInfo;
  * Contact header writer.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class ContactInfoWriter extends HeaderWriter<ContactInfo> {
 
     /**

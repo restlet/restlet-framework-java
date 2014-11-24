@@ -38,7 +38,6 @@ package org.restlet.ext.apispark.internal.model;
  * and should be used to tidy it.
  * 
  * @author Cyprien Quilici
- * 
  */
 public class Section {
 

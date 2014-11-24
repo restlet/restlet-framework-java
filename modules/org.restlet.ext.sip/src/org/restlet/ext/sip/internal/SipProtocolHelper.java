@@ -41,8 +41,9 @@ import org.restlet.ext.sip.SipMethod;
  * Protocol helper for the SIP protocol.
  * 
  * @author Thierry Boileau
- * 
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipProtocolHelper extends ProtocolHelper {
 
     @Override

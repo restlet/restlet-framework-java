@@ -42,7 +42,9 @@ import org.restlet.resource.ServerResource;
  * SIP server resource handling a received SIP transaction.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipServerResource extends ServerResource {
 
     /**

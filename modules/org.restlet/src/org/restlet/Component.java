@@ -42,7 +42,6 @@ import java.util.logging.Level;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentHelper;
-import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.engine.component.InternalRouter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -127,7 +126,9 @@ public class Component extends Restlet {
      * 
      * @param args
      *            The list of in-line parameters.
+     * @deprecated Use XML support in the Spring extension instead.
      */
+    @Deprecated
     public static void main(String[] args) throws Exception {
         try {
             if ((args == null) || (args.length != 1)) {
@@ -208,7 +209,9 @@ public class Component extends Restlet {
      * 
      * @param xmlConfigRef
      *            The URI reference to the XML configuration file.
+     * @deprecated Use XML support in the Spring extension instead.
      */
+    @Deprecated
     public Component(Reference xmlConfigRef) {
         this();
 
@@ -220,7 +223,8 @@ public class Component extends Restlet {
             xmlConfigRepresentation = cr.get();
 
             if (xmlConfigRepresentation != null) {
-                new ComponentXmlParser(this, xmlConfigRepresentation).parse();
+                new org.restlet.engine.component.ComponentXmlParser(this,
+                        xmlConfigRepresentation).parse();
             } else {
                 getLogger().log(
                         Level.WARNING,
@@ -235,12 +239,15 @@ public class Component extends Restlet {
      * 
      * @param xmlConfigRepresentation
      *            The representation of the XML configuration file.
+     * @deprecated Use XML support in the Spring extension instead.
      */
+    @Deprecated
     public Component(Representation xmlConfigRepresentation) {
         this();
 
         if (xmlConfigRepresentation != null) {
-            new ComponentXmlParser(this, xmlConfigRepresentation).parse();
+            new org.restlet.engine.component.ComponentXmlParser(this,
+                    xmlConfigRepresentation).parse();
         } else {
             getLogger().log(Level.WARNING,
                     "Unable to parse the Component XML configuration.");
@@ -252,7 +259,9 @@ public class Component extends Restlet {
      * 
      * @param xmlConfigurationRef
      *            The URI reference to the XML configuration file.
+     * @deprecated Use XML support in the Spring extension instead.
      */
+    @Deprecated
     public Component(String xmlConfigurationRef) {
         this((xmlConfigurationRef == null) ? null : new Reference(
                 xmlConfigurationRef));

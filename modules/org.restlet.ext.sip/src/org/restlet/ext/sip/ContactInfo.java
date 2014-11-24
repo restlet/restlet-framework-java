@@ -39,7 +39,9 @@ import org.restlet.data.Reference;
  * Information on a SIP contact. Used by the SIP "Contact" header.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class ContactInfo extends Address {
 
     /** The delay of expiration. */

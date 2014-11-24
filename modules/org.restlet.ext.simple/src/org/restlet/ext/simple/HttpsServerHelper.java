@@ -75,7 +75,10 @@ import org.simpleframework.transport.connect.SocketConnection;
  * 
  * @author Lars Heuer
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing
+ *             more control at the Restlet API level.
  */
+@Deprecated
 public class HttpsServerHelper extends SimpleServerHelper {
 
     /**

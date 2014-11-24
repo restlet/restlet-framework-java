@@ -122,7 +122,9 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  * @author Thierry Boileau
+ * @deprecated Use a persistence technology such as Mybatis or Hibernate instead.
  */
+@Deprecated
 public class JdbcClientHelper extends ClientHelper {
     /**
      * Creates an uniform call.

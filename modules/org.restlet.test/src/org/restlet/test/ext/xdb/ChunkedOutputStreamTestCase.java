@@ -45,6 +45,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
+@Deprecated
 public class ChunkedOutputStreamTestCase extends RestletTestCase {
 
     public void testCallCloseTwice() throws IOException {

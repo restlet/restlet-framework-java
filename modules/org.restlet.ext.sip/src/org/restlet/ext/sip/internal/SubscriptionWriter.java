@@ -41,7 +41,9 @@ import org.restlet.ext.sip.Subscription;
  * Subscription state header writer.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SubscriptionWriter extends HeaderWriter<Subscription> {
 
     /**

@@ -52,7 +52,9 @@ import org.restlet.resource.Resource;
  * using several binding names.
  * 
  * @author Thierry Boileau
+ * @deprecated Use an XML serialization technology such as Jackson instead.
  */
+@Deprecated
 public class JibxConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(

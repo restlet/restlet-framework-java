@@ -51,7 +51,9 @@ import org.restlet.resource.Resource;
  * {@link ResultSet} objects to Representation.
  * 
  * @author Thierry Boileau
+ * @deprecated Use a persistence technology such as Mybatis or Hibernate instead.
  */
+@Deprecated
 public class JdbcConverter extends ConverterHelper {
 
     @Override

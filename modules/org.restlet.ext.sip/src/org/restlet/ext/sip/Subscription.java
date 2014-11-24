@@ -41,7 +41,9 @@ import org.restlet.util.Series;
  * header.
  * 
  * @author Thierry Boileau
+ * @deprecated Not enough in the Web API focus.
  */
+@Deprecated
 public class Subscription {
 
     /**

@@ -16,6 +16,10 @@
 	<bean id="component.context"
 		class="org.springframework.beans.factory.config.PropertyPathFactoryBean" />
 
+    <bean id="componentChildContext" class="org.restlet.Context">
+        <lookup-method name="createChildContext" bean="component.context" />
+    </bean>
+
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
 		<constructor-arg value="8111" />
@@ -37,10 +41,6 @@
 		-->
 
 		<property name="defaultAttachment" ref="mailServerApplication" />
-	</bean>
-
-	<bean id="componentChildContext" class="org.restlet.Context">
-		<lookup-method name="createChildContext" bean="component.context" />
 	</bean>
 
 	<bean id="mailServerApplication" class="org.restlet.Application">

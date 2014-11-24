@@ -47,7 +47,9 @@ import org.restlet.representation.Representation;
  * Request part of a SIP transaction.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipRequest extends Request {
 
     /** The default time out (32s). */

@@ -60,7 +60,9 @@ import org.restlet.util.Series;
  * 
  * @see org.restlet.ext.servlet.internal.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class XdbServletCall extends ServerCall {
     /** The HTTP Servlet request to wrap. */
     private volatile HttpServletRequest request;

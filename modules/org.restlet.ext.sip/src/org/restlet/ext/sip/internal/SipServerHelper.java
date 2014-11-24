@@ -49,7 +49,9 @@ import org.restlet.ext.nio.internal.way.ServerInboundWay;
  * Standalone SIP server helper.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipServerHelper extends ServerConnectionHelper {
 
     /**

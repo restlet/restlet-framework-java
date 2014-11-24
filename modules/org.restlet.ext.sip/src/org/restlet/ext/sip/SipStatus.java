@@ -39,7 +39,9 @@ import org.restlet.data.Status;
  * Constants for SIP statuses.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public final class SipStatus {
 
     private static final String BASE_SIP = "http://tools.ietf.org/html/rfc3261#section-21";

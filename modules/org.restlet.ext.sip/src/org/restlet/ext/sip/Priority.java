@@ -40,7 +40,9 @@ import java.util.Map;
  * Describes level of SIP message importance. Used by the SIP "Priority" header.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class Priority {
 
     /**

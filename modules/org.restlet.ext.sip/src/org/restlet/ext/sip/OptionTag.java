@@ -41,7 +41,9 @@ import java.util.Map;
  * "proxy-require", "require" headers.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class OptionTag {
 
     /**

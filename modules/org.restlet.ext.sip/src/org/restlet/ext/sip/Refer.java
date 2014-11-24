@@ -49,7 +49,9 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3515">RFC 3515 - The SIP REFER
  *      method</a>
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

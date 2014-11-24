@@ -44,7 +44,9 @@ import org.restlet.util.Series;
  * "Error-info", "From", "Record-Route", "Reply-To", "Route" and "To" headers.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class Address implements Cloneable {
 
     /** The optional name displayed. */

@@ -154,7 +154,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>trustStorePath</td>
  * <td>String</td>
- * <td>null</td>
+ * <td>System property "javax.net.ssl.trustStore"</td>
  * <td>Path to trust store</td>
  * </tr>
  * <tr>

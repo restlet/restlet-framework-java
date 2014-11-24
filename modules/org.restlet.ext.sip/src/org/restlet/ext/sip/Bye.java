@@ -50,7 +50,9 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3261#section-15.1">RFC 3261 -
  *      15.1 Terminating a Session with a BYE Request</a>
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

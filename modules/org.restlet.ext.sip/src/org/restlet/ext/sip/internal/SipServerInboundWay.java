@@ -44,7 +44,9 @@ import org.restlet.ext.sip.SipResponse;
  * SIP server inbound way.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipServerInboundWay extends ServerInboundWay {
 
     /**

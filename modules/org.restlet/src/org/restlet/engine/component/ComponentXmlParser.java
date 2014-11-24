@@ -73,7 +73,9 @@ import org.xml.sax.InputSource;
  * 
  * @author Jerome Louvel
  * @see Component
+ * @deprecated Use XML support in the Spring extension instead.
  */
+@Deprecated
 public class ComponentXmlParser {
 
     /**
@@ -440,7 +442,6 @@ public class ComponentXmlParser {
     /**
      * Parse a configuration file and update the component's configuration.
      */
-    @SuppressWarnings("deprecation")
     public void parse() {
         try {
             // Parse and validate the XML configuration

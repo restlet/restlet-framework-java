@@ -45,7 +45,9 @@ import org.restlet.ext.sip.internal.AddressWriter;
  * Response part of a SIP transaction.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class SipResponse extends Response {
 
     /** Alternative ring tone for the UAC. */

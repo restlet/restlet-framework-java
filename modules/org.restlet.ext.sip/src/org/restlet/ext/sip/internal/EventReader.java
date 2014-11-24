@@ -47,7 +47,9 @@ import org.restlet.ext.sip.EventType;
  * Event header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class EventReader extends HeaderReader<Event> {
 
     /**

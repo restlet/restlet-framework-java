@@ -77,7 +77,9 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
+ * @deprecated Use an XML serialization technology such as Jackson instead.
  */
+@Deprecated
 public class XstreamRepresentation<T> extends WriterRepresentation {
 
     /** The XStream JSON driver class. */

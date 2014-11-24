@@ -51,7 +51,9 @@ import org.restlet.ext.sip.ContactInfo;
  * Contact header reader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class ContactInfoReader extends HeaderReader<ContactInfo> {
 
     /**

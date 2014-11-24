@@ -47,7 +47,9 @@ import org.restlet.engine.util.StringUtils;
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1
  *      Protocol</a>
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public class ChunkedOutputStream extends OutputStream {
 
     /** Default size of a chunk. */

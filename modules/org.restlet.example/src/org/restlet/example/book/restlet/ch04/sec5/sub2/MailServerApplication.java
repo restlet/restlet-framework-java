@@ -42,6 +42,7 @@ import org.restlet.routing.Router;
 /**
  * Routing to annotated server resources.
  */
+@Deprecated
 public class MailServerApplication extends Application {
 
     /**

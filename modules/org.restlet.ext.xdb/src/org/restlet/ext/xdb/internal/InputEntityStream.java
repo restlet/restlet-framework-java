@@ -39,7 +39,9 @@ import java.sql.Connection;
 /**
  * Input stream that synchronizes the state of a connection instance and an
  * input stream.
+ * @deprecated Not actively developed anymore.
  */
+@Deprecated
 public abstract class InputEntityStream extends InputStream {
 
     /** The inbound stream. */

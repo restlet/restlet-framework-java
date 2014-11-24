@@ -97,7 +97,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
-            A... expected) {
+            @SuppressWarnings("unchecked") A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
             System.out.println("Should: " + Arrays.asList(expected));
@@ -246,7 +246,6 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        Application.setCurrent(null);
         this.tunnelFilter = null;
         this.request = null;
         this.response = null;

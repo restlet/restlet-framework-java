@@ -44,6 +44,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.data.Reference;
+import org.restlet.engine.Engine;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.test.ext.jaxrs.services.car.CarListResource;
 import org.restlet.test.ext.jaxrs.services.car.CarResource;
@@ -261,7 +262,7 @@ public class ExtendedJaxRsUriBuilderTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        Application.setCurrent(null);
+        Engine.clearThreadLocalVariables();
         super.tearDown();
     }
 

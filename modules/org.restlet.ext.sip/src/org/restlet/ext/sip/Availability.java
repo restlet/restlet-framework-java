@@ -42,7 +42,9 @@ import org.restlet.util.Series;
  * header.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 public class Availability {
 
     /** Indicates additional information about the time of callback. */

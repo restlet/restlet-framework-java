@@ -60,7 +60,10 @@ import org.simpleframework.http.Response;
  * 
  * @author Lars Heuer
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions such as
+ *             Jetty and Netty, allowing more control at the Restlet API level.
  */
+@Deprecated
 public class SimpleCall extends ServerCall {
 
     /** Simple Request. */

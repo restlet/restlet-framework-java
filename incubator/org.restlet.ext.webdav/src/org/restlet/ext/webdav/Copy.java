@@ -44,7 +44,9 @@ import org.restlet.service.MetadataService;
  * semantics is equivalent to a WebDAV COPY method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

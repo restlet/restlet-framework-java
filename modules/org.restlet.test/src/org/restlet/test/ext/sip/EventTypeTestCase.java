@@ -42,8 +42,8 @@ import org.restlet.test.RestletTestCase;
  * Test case for the Event type like headers.
  * 
  * @author Thierry Boileau
- * 
  */
+@Deprecated
 public class EventTypeTestCase extends RestletTestCase {
 
     @Test
