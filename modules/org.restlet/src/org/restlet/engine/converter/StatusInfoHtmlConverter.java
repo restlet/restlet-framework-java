@@ -63,6 +63,17 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_TEXT_HTML = new VariantInfo(
             MediaType.TEXT_HTML);
 
+    @Override
+    public List<Class<?>> getObjectClasses(Variant source) {
+        List<Class<?>> result = null;
+
+        if (isCompatible(source)) {
+            result = addObjectClass(result, StatusInfo.class);
+        }
+
+        return result;
+    }
+
     /**
      * Returns the status information to display in the default representation.
      * By default it returns the status's reason phrase.
@@ -75,6 +86,50 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
     protected String getStatusLabel(StatusInfo status) {
         return (status.getReasonPhrase() != null) ? status.getReasonPhrase()
                 : "No information available for this result status";
+    }
+
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) throws IOException {
+        List<VariantInfo> result = null;
+
+        if (source != null && StatusInfo.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_TEXT_HTML);
+            result = addVariant(result, VARIANT_APPLICATION_XHTML);
+        }
+
+        return result;
+    }
+
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     *
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_APPLICATION_XHTML
+                        .isCompatible(variant));
+    }
+
+    @Override
+    public float score(Object source, Variant target, Resource resource) {
+        float result = -1.0F;
+
+        if (source instanceof StatusInfo && isCompatible(target)) {
+            result = 1.0F;
+        }
+
+        return result;
+    }
+
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            Resource resource) {
+        return -1.0F;
     }
 
     /**
@@ -124,61 +179,6 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
         sb.append("</html>\n");
 
         return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
-    }
-
-    @Override
-    public List<Class<?>> getObjectClasses(Variant source) {
-        List<Class<?>> result = null;
-
-        if (isCompatible(source)) {
-            result = addObjectClass(result, StatusInfo.class);
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<VariantInfo> getVariants(Class<?> source) throws IOException {
-        List<VariantInfo> result = null;
-
-        if (source != null && StatusInfo.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_TEXT_HTML);
-            result = addVariant(result, VARIANT_APPLICATION_XHTML);
-        }
-
-        return result;
-    }
-
-    /**
-     * Indicates if the given variant is compatible with the media types
-     * supported by this converter.
-     *
-     * @param variant
-     *            The variant.
-     * @return True if the given variant is compatible with the media types
-     *         supported by this converter.
-     */
-    protected boolean isCompatible(Variant variant) {
-        return (variant != null)
-                && (VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_APPLICATION_XHTML
-                        .isCompatible(variant));
-    }
-
-    @Override
-    public float score(Object source, Variant target, Resource resource) {
-        float result = -1.0F;
-
-        if (source instanceof StatusInfo && isCompatible(target)) {
-            result = 1.0F;
-        }
-
-        return result;
-    }
-
-    @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
-        return -1.0F;
     }
 
     @Override

@@ -229,7 +229,7 @@ public class StatusService extends Service {
             Object representationObject = null;
 
             // Serialize exception if any and if {@link
-            // org.restlet.resource.Status} annotation ask for it
+            // org.restlet.resource.Status} annotation asks for it
             Throwable cause = status.getThrowable();
 
             if (cause != null) {
