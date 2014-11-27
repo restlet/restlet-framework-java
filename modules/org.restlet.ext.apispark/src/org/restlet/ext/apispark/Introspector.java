@@ -236,7 +236,7 @@ public class Introspector {
         }
 
         if (StringUtils.isNullOrEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/";
+            serviceUrl = "https://apispark.restlet.com/";
         }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";

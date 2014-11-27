@@ -45,6 +45,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import org.restlet.data.Status;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.Parameter;
@@ -275,6 +276,7 @@ public class SwaggerAnnotationUtils {
         }
 
         response.setCode(code);
+        response.setName(Status.valueOf(code).getReasonPhrase());
         if (!StringUtils.isNullOrEmpty(apiResponse.message())) {
             response.setDescription(apiResponse.message());
         }

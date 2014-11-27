@@ -73,7 +73,8 @@ public class TypeInfo {
         isList = ReflectUtils.isListType(clazz);
 
         if (isList) {
-            if (componentClazz == null || !Types.isPrimitiveType(componentClazz)) {
+            //Don't know how to instrospect the list if the componentClazz is null or a JDK class which is not a primitive
+            if (componentClazz == null || (!Types.isPrimitiveType(componentClazz) && ReflectUtils.isJdkClass(componentClazz))) {
               throw new UnsupportedTypeException("Type " + Types.toString(clazz, type) +
                       " is a list/array and its component type is unknown or not supported");
             }

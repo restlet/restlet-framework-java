@@ -120,6 +120,7 @@ public abstract class Types {
     public static boolean isPrimitiveType(Class<?> type) {
         return (primitiveTypesByClass.get(type) != null
                 || CharSequence.class.isAssignableFrom(type) || Date.class
+                    .isAssignableFrom(type) || Representation.class
                     .isAssignableFrom(type));
     }
 
