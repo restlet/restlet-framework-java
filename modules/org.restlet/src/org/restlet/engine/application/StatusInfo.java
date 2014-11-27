@@ -33,10 +33,9 @@
 
 package org.restlet.engine.application;
 
-import java.io.Serializable;
-
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -58,13 +57,19 @@ public class StatusInfo implements Serializable {
     private volatile String description;
 
     /** The home URI to propose in case of error. */
-    private volatile Reference homeRef;
+    private volatile String homeRef;
 
     /** The short reason phrase. */
     private volatile String reasonPhrase;
 
     /** The URI of the specification describing the method. */
-    private final String uri;
+    private volatile String uri;
+
+    /**
+     * Empty Constructor
+     */
+    public StatusInfo() {
+    }
 
     /**
      * Constructor.
@@ -96,7 +101,7 @@ public class StatusInfo implements Serializable {
      *            The home URI to propose in case of error.
      */
     public StatusInfo(int code, String description, String reasonPhrase,
-            String uri, String contactEmail, Reference homeRef) {
+            String uri, String contactEmail, String homeRef) {
         super();
         this.code = code;
         this.description = description;
@@ -150,7 +155,7 @@ public class StatusInfo implements Serializable {
      * 
      * @return The home URI.
      */
-    public Reference getHomeRef() {
+    public String getHomeRef() {
         return homeRef;
     }
 
@@ -195,7 +200,7 @@ public class StatusInfo implements Serializable {
     /**
      * Sets the description of the status.
      * 
-     * @param code
+     * @param description
      *            The description of the status.
      */
     public void setDescription(String description) {
@@ -208,14 +213,14 @@ public class StatusInfo implements Serializable {
      * @param homeRef
      *            The home URI.
      */
-    public void setHomeRef(Reference homeRef) {
+    public void setHomeRef(String homeRef) {
         this.homeRef = homeRef;
     }
 
     /**
      * Sets the short description of the status.
      * 
-     * @param code
+     * @param reasonPhrase
      *            The short description of the status.
      */
     public void setReasonPhrase(String reasonPhrase) {
