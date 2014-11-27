@@ -83,15 +83,11 @@
 					</#if>
 				</#if>
 			<artifactId>${package.mavenArtifactId}</artifactId>
-				<#if dependency.library.distributions?contains("maven")>
-			<version><#noparse>${lib-</#noparse>${dependency.library.id}-version}</version>
-				<#else>
-					<#if package.mavenVersion??>
+				<#if package.mavenVersion??>
 			<version>${package.mavenVersion}</version>
-					<#else>
+				<#else>
 			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
-      	          </#if>
-				</#if>
+ 				</#if>
 				<#if dependency.mavenScope??><scope>${dependency.mavenScope}</scope></#if>
 		</dependency>
 			</#list>
