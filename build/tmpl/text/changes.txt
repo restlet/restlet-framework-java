@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.2.3 (11/27/2014)
     - Bugs fixed
       - Fixed potential NPE in odata extension when schema ComplexType in a 
