@@ -1,6 +1,6 @@
 <module id="swagger" excludes="android,gwt" type="integration" package="org.restlet.ext.swagger">
 	<name>Restlet Extension - Swagger</name>
-	<description>Support for the Swagger specification.</description>
+	<description>Integration with Simple framework.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
@@ -10,13 +10,14 @@
 	<dependencies>
 		<dependency type="library" id="scala" />
 		<dependency type="library" id="slf4j" />
+		<dependency type="library" id="e4" />
 		<dependency type="library" id="swagger" />
 		<dependency type="library" id="jaxrs" />
 		<dependency type="library" id="jackson" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
-		<dependency type="module" id="apispark" />
+		<dependency type="module" id="e4" />
 	</dependencies>
 	<wikiUri>xx-tobedefined</wikiUri>
 <!-- Remove some classes to be refactored. -->
