@@ -135,6 +135,9 @@ public class IntrospectionUtils {
 
             logger.fine("Call success to "+ cr.getRequest());
 
+            if (!cr.getResponse().getStatus().isSuccess()) {
+                throw new RuntimeException("Request failed with following status: " + cr.getResponse().getStatus());
+            }
             // This is not printed by a logger which may be muted.
             if (cr.getResponseEntity() != null
                     && cr.getResponseEntity().isAvailable()) {

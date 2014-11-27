@@ -126,8 +126,6 @@ public class ResourceCollector {
                     Operation operation = getOperationFromMethod(method);
 
                     if (StringUtils.isNullOrEmpty(operation.getName())) {
-                        LOGGER.warning("Java method "
-                                + methodAnnotationInfo.getJavaMethod() + " has no Method name.");
                         operation.setName(methodAnnotationInfo.getJavaMethod()
                                 .getName());
                     }
@@ -198,7 +196,6 @@ public class ResourceCollector {
         completeOperationQueryParameter(operation, mai);
 
         // Describe the success response
-
         completeOperationOutput(collectInfo, operation, mai, introspectionHelper);
 
         // Produces
@@ -332,12 +329,18 @@ public class ResourceCollector {
             outputEntity.setArray(outputTypeInfo.isList());
 
             response.setOutputPayLoad(outputEntity);
+
+            response.setCode(Status.SUCCESS_OK.getCode());
+            response.setName(Status.SUCCESS_OK.getReasonPhrase());
+            response.setDescription("");
+            response.setMessage(Status.SUCCESS_OK.getDescription());
+        } else {
+            response.setCode(Status.SUCCESS_NO_CONTENT.getCode());
+            response.setName(Status.SUCCESS_NO_CONTENT.getReasonPhrase());
+            response.setDescription("");
+            response.setMessage(Status.SUCCESS_NO_CONTENT.getDescription());
         }
 
-        response.setCode(Status.SUCCESS_OK.getCode());
-        response.setName(Status.SUCCESS_OK.getReasonPhrase());
-        response.setDescription("");
-        response.setMessage(Status.SUCCESS_OK.getDescription());
         operation.getResponses().add(response);
     }
 
@@ -348,7 +351,9 @@ public class ResourceCollector {
                         metadataService, sr.getConverterService());
 
                 if (responseVariants == null || responseVariants.isEmpty()) {
-                    LOGGER.warning("Method has no response variant: " + mai.getJavaMethod());
+                    if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
+                        LOGGER.warning("Method has no response variant: " + mai.getJavaMethod());
+                    }
                     return;
                 }
 
