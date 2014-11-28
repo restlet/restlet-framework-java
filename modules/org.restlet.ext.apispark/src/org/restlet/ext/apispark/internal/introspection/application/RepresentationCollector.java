@@ -35,9 +35,15 @@ package org.restlet.ext.apispark.internal.introspection.application;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.ext.apispark.Introspector;
@@ -122,7 +128,21 @@ public class RepresentationCollector {
 
                 BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
                         .getRepresentationClazz());
+
+                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass.construct(typeInfo.getRepresentationClazz(), new JacksonAnnotationIntrospector(), null).getAnnotation(JsonIgnoreProperties.class);
+                List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
+
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+
+                    if (jsonIgnoreProperties != null && jsonIgnoreProperties.contains(pd.getName())) {
+                        //ignore this field
+                        continue;
+                    }
+                    JsonIgnore jsonIgnore = pd.getReadMethod().getAnnotation(JsonIgnore.class);
+                    if (jsonIgnore != null && jsonIgnore.value()) {
+                        //ignore this field
+                        continue;
+                    }
 
                     TypeInfo propertyTypeInfo;
                     try {
@@ -137,13 +157,16 @@ public class RepresentationCollector {
                         continue;
                     }
 
+                    JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
+                    String propertyName = jsonProperty == null ? pd.getName() : jsonProperty.value();
+
                     // Types
                     Property property = new Property();
-                    property.setName(pd.getName());
+                    property.setName(propertyName);
                     property.setDescription("");
                     property.setType(propertyTypeInfo.getIdentifier());
                     property.setMinOccurs(0);
-                    property.setMaxOccurs(typeInfo.isList() ? -1 : 1);
+                    property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
                     addRepresentation(collectInfo, propertyTypeInfo,
                             introspectionHelper);

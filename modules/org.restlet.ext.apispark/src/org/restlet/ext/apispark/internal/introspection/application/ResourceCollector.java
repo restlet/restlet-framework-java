@@ -206,15 +206,15 @@ public class ResourceCollector {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
-                ThrowableAnnotationInfo statusAnnotation = AnnotationUtils
+                ThrowableAnnotationInfo throwableAnnotationInfo = AnnotationUtils
                         .getInstance().getThrowableAnnotationInfo(thrownClass);
-                if (statusAnnotation != null) {
-                    int statusCode = statusAnnotation.getStatus().getCode();
+                if (throwableAnnotationInfo != null) {
+                    int statusCode = throwableAnnotationInfo.getStatus().getCode();
                     Response response = new Response();
                     response.setCode(statusCode);
                     response.setMessage("Status " + statusCode);
 
-                    Class<?> outputPayloadType = statusAnnotation
+                    Class<?> outputPayloadType = throwableAnnotationInfo
                             .isSerializable() ? thrownClass : StatusInfo.class;
                     TypeInfo outputTypeInfo = null;
                     try {
@@ -224,6 +224,7 @@ public class ResourceCollector {
                                 thrownClass + " throws by method " + mai.getJavaMethod() + ". " + e.getMessage());
                         continue;
                     }
+
                     RepresentationCollector.addRepresentation(collectInfo,
                             outputTypeInfo, introspectionHelper);
 
