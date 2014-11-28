@@ -4,20 +4,25 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - 
+    - Enhancements
+      - 
 
 - 2.2.3 (11/27/2014)
     - Bugs fixed
-      - Fixed potential NPE in odata extension when schema ComplexType in a 
+      - Fixed potential NPE in OData extension when schema ComplexType in a 
         document does not declare a schema attribute (issue #932).
       - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
         Issue #931. Reported and contributed by Tal Liron.
-      - The Restlet internal connector only serves from one thread (issue #937).
-      - Securing JaxRepresentation by default (issue #785).
-        Reported by Jim Trainor.
+      - Securing JaxRepresentation by default (issue #785). Reported by Jim Trainor.
       - OData Edm.DateTime properties are sometimes parsed as null (issue #946).
         Reported and contributed by Emmanuel Liossis.
+      - Prevent potential security issue with Directory class.
+        Contributed by Andrew Hughes.
 
     - Enhancements
+      - The internal HTTP/HTTPS connector now serves from multiple threads (issue #937).
       - Added targetRef support to templates, allow reference variables to 
         resolve to the full reference (issue #935).
         Contributed by Jeremy Gustie.
