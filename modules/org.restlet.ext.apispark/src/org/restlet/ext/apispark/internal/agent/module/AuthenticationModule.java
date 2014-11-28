@@ -273,6 +273,13 @@ public class AuthenticationModule extends ChallengeAuthenticator {
         initializeCache();
     }
 
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        int status = super.beforeHandle(request, response);
+        request.getHeaders().removeAll("Authorization");
+        return status;
+    }
+
     /**
      * Initializes the user cache and the cache loader instance.
      */
