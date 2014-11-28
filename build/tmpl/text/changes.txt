@@ -54,6 +54,10 @@ Changes log
       - Added getName() and getDescription() methods in ServerResource for
         documentation purpose. Note that this could conflict with existing
         subclasses.
+
+    - Bugs fixed
+      - Prevent potential security issue with Directory class.
+        Contributed by Andrew Hughes.
       
     - Misc
       - Remove the outdated example based on the O'Reilly's book
