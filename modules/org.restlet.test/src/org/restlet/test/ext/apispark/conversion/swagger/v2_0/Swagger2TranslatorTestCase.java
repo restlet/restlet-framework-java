@@ -170,14 +170,13 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         // representation 1
         Representation representation1 = new Representation();
         definition.getContract().getRepresentations().add(representation1);
-        representation1.setIdentifier("com.restlet.nameRepresentation1");
         representation1.setName("nameRepresentation1");
 
         // representation 1 : property 1
         Property representation1Property1 = new Property();
         representation1.getProperties().add(representation1Property1);
         representation1Property1
-                .setName("com.restlet.nameRepresentation1Property1");
+                .setName("nameRepresentation1Property1");
         representation1Property1.setType("integer");
         representation1Property1.setMin("1.0");
         representation1Property1.setMax("2.0");
@@ -187,7 +186,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         Property representation1Property2 = new Property();
         representation1.getProperties().add(representation1Property2);
         representation1Property2
-                .setName("com.restlet.nameRepresentation1Property2");
+                .setName("nameRepresentation1Property2");
         representation1Property2.setMaxOccurs(-1);
         representation1Property2.setType("string");
         representation1Property2.setDescription("description");
@@ -196,14 +195,13 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         Property representation1Property3 = new Property();
         representation1.getProperties().add(representation1Property3);
         representation1Property3
-                .setName("com.restlet.nameRepresentation1Property3");
+                .setName("nameRepresentation1Property3");
         representation1Property3.setType("Entity");
         representation1Property3.setDescription("description");
 
         // representation 2
         Representation representation2 = new Representation();
         definition.getContract().getRepresentations().add(representation2);
-        representation2.setIdentifier("com.restlet.nameRepresentation2");
         representation2.setName("nameRepresentation2");
 
         // When
@@ -302,42 +300,42 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
 
         // representation 1
         ModelImpl model1 = (ModelImpl) swagger.getDefinitions().get(
-                "com.restlet.nameRepresentation1");
-        assertEquals("com.restlet.nameRepresentation1", model1.getName());
+                "nameRepresentation1");
+        assertEquals("nameRepresentation1", model1.getName());
         // representation 1 : property 1
         assertTrue(model1.getProperties().get(
-                "com.restlet.nameRepresentation1Property1") instanceof IntegerProperty);
+                "nameRepresentation1Property1") instanceof IntegerProperty);
         IntegerProperty model1Property1 = (IntegerProperty) model1
                 .getProperties()
-                .get("com.restlet.nameRepresentation1Property1");
-        assertEquals("com.restlet.nameRepresentation1Property1",
+                .get("nameRepresentation1Property1");
+        assertEquals("nameRepresentation1Property1",
                 model1Property1.getName());
         assertEquals("description", model1Property1.getDescription());
         assertEquals(1.0d, model1Property1.getMinimum());
         assertEquals(2.0d, model1Property1.getMaximum());
         // representation 1 : property 2
         assertTrue(model1.getProperties().get(
-                "com.restlet.nameRepresentation1Property2") instanceof ArrayProperty);
+                "nameRepresentation1Property2") instanceof ArrayProperty);
         ArrayProperty model1Property2 = (ArrayProperty) model1.getProperties()
-                .get("com.restlet.nameRepresentation1Property2");
-        assertEquals("com.restlet.nameRepresentation1Property2",
+                .get("nameRepresentation1Property2");
+        assertEquals("nameRepresentation1Property2",
                 model1Property2.getName());
         assertEquals("description", model1Property2.getDescription());
         assertTrue(model1Property2.getItems() instanceof StringProperty);
         // representation 1 : property 3
         assertTrue(model1.getProperties().get(
-                "com.restlet.nameRepresentation1Property3") instanceof RefProperty);
+                "nameRepresentation1Property3") instanceof RefProperty);
         RefProperty model1Property3 = (RefProperty) model1.getProperties().get(
-                "com.restlet.nameRepresentation1Property3");
-        assertEquals("com.restlet.nameRepresentation1Property3",
+                "nameRepresentation1Property3");
+        assertEquals("nameRepresentation1Property3",
                 model1Property3.getName());
         assertEquals("description", model1Property3.getDescription());
         assertEquals("#/definitions/Entity", model1Property3.get$ref());
 
         // representation 2
         ModelImpl model2 = (ModelImpl) swagger.getDefinitions().get(
-                "com.restlet.nameRepresentation2");
-        assertEquals("com.restlet.nameRepresentation2", model2.getName());
+                "nameRepresentation2");
+        assertEquals("nameRepresentation2", model2.getName());
 
     }
 

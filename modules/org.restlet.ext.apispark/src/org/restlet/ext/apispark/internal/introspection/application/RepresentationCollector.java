@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.engine.Engine;
@@ -92,12 +93,12 @@ public class RepresentationCollector {
         }
 
         if (typeInfo.isFile()) {
-            representation.setIdentifier("file");
             representation.setName("file");
         } else {
-            // type is an Entity
-            // Example: "java.util.Contact" or "String"
-            representation.setIdentifier(typeInfo.getIdentifier());
+            if (!typeInfo.isPrimitive()) {
+                // Example: "java.util.Contact" or "String"
+                representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+            }
 
             // Sections
             if (collectInfo.isUseSectionNamingPackageStrategy()) {
@@ -108,14 +109,16 @@ public class RepresentationCollector {
                 }
             }
             // Example: "Contact"
-            representation.setName(typeInfo.getRepresentationClazz()
-                    .getSimpleName());
+            JsonTypeName jsonType = typeInfo.getClazz().getAnnotation(JsonTypeName.class);
+            String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
+                    .getSimpleName() : jsonType.value();
+            representation.setName(typeName);
         }
         representation.setRaw(typeInfo.isRaw());
 
         // at this point, identifier is known - we check if it exists in cache
         boolean notInCache = collectInfo.getRepresentation(representation
-                .getIdentifier()) == null;
+                .getName()) == null;
 
         if (notInCache) {
 
@@ -152,7 +155,7 @@ public class RepresentationCollector {
                     } catch (UnsupportedTypeException e) {
                         LOGGER.warning("Could not add property " + pd.getName()
                                 + " of representation "
-                                + typeInfo.getIdentifier() + ". "
+                                + typeInfo.getRepresentationClazz().getName() + ". "
                                 + e.getMessage());
                         continue;
                     }
@@ -164,7 +167,7 @@ public class RepresentationCollector {
                     Property property = new Property();
                     property.setName(propertyName);
                     property.setDescription("");
-                    property.setType(propertyTypeInfo.getIdentifier());
+                    property.setType(propertyTypeInfo.getRepresentationName());
                     property.setMinOccurs(0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
@@ -185,6 +188,6 @@ public class RepresentationCollector {
             }
 
         }
-        return representation.getIdentifier();
+        return representation.getName();
     }
 }

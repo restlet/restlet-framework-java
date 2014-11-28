@@ -128,7 +128,7 @@ public class Swagger2Translator {
                 continue;
             }
 
-            if (StringUtils.isNullOrEmpty(representation.getIdentifier())) {
+            if (StringUtils.isNullOrEmpty(representation.getName())) {
                 LOGGER.warning("A representation should have an identifier:"
                         + representation.getName());
                 continue;
@@ -136,7 +136,7 @@ public class Swagger2Translator {
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getIdentifier());
+            modelSwagger.setName(representation.getName());
             modelSwagger.setDescription(representation.getDescription());
 
             /* Property -> Property */
@@ -278,7 +278,7 @@ public class Swagger2Translator {
 
             if (representation != null && representation.isRaw()) {
                 ModelImpl modelImpl = new ModelImpl();
-                modelImpl.setType(representation.getIdentifier());
+                modelImpl.setType(representation.getName());
                 modelImpl.setDescription(representation.getDescription());
                 bodyParameterSwagger.setSchema(modelImpl);
             } else {

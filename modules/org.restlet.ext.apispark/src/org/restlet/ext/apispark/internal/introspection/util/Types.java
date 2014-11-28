@@ -114,7 +114,7 @@ public abstract class Types {
                 File.class.isAssignableFrom(type)) {
             return "file";
         }
-        return type.getName();
+        return type.getSimpleName();
     }
 
     public static boolean isPrimitiveType(Class<?> type) {

@@ -49,9 +49,6 @@ public class Representation {
     /** Reference to its parent type if any. */
     private String extendedType;
 
-    /** Identifier of the representation. */
-    private String identifier;
-
     /** Name of the representation. */
     private String name;
 
@@ -70,10 +67,6 @@ public class Representation {
 
     public String getExtendedType() {
         return extendedType;
-    }
-
-    public String getIdentifier() {
-        return identifier;
     }
 
     public String getName() {
@@ -113,10 +106,6 @@ public class Representation {
 
     public void setExtendedType(String extendedType) {
         this.extendedType = extendedType;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     public void setName(String name) {

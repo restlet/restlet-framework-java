@@ -1053,7 +1053,6 @@ public abstract class SwaggerTranslator {
     private static Representation toRepresentation(ModelDeclaration model,
             String name) {
         Representation result = new Representation();
-        result.setIdentifier(name);
         result.setName(name);
         result.setDescription(model.getDescription());
 

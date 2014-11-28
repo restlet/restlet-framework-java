@@ -46,7 +46,7 @@ public class TypeInfo {
 
     private final Class<?> clazz;
     private final Type type;
-    private final String identifier;
+    private final String representationName;
     private final Class<?> representationClazz;
 
     private final boolean isList;
@@ -68,7 +68,7 @@ public class TypeInfo {
         Class<?> componentClazz = ReflectUtils.getComponentClass(type);
         //representation class is the component class (for list, array, class that extends list, ...) or the class itself
         representationClazz = (componentClazz != null) ? componentClazz : clazz;
-        identifier = Types.convertPrimitiveType(representationClazz);
+        representationName = Types.convertPrimitiveType(representationClazz);
 
         isList = ReflectUtils.isListType(clazz);
 
@@ -99,10 +99,6 @@ public class TypeInfo {
         return type;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
     public boolean isList() {
         return isList;
     }
@@ -113,6 +109,10 @@ public class TypeInfo {
 
     public Class<?> getRepresentationClazz() {
         return representationClazz;
+    }
+
+    public String getRepresentationName() {
+        return representationName;
     }
 
     public boolean isPrimitive() {

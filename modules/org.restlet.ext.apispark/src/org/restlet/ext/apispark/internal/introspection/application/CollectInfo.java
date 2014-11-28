@@ -59,7 +59,7 @@ public class CollectInfo {
     private boolean useSectionNamingPackageStrategy;
 
     public void addRepresentation(Representation representation) {
-        representations.put(representation.getIdentifier(), representation);
+        representations.put(representation.getName(), representation);
     }
 
     public void addResource(Resource resource) {

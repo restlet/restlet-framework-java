@@ -113,14 +113,12 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                 .getContract().getRepresentations()) {
             savedRepresentation = savedDefinition
                     .getContract()
-                    .getRepresentation(translatedRepresentation.getIdentifier());
+                    .getRepresentation(translatedRepresentation.getName());
             assertEquals(true, savedRepresentation != null);
 
             if (savedRepresentation != null) {
                 assertEquals(savedRepresentation.getDescription(),
                         translatedRepresentation.getDescription());
-                assertEquals(savedRepresentation.getIdentifier(),
-                        translatedRepresentation.getIdentifier());
                 assertEquals(savedRepresentation.getName(),
                         translatedRepresentation.getName());
                 assertEquals(savedRepresentation.getExtendedType(),

@@ -229,7 +229,7 @@ public class ResourceCollector {
                             outputTypeInfo, introspectionHelper);
 
                     PayLoad outputPayLoad = new PayLoad();
-                    outputPayLoad.setType(outputTypeInfo.getIdentifier());
+                    outputPayLoad.setType(outputTypeInfo.getRepresentationName());
                     response.setOutputPayLoad(outputPayLoad);
                     operation.getResponses().add(response);
 
@@ -257,7 +257,7 @@ public class ResourceCollector {
             RepresentationCollector.addRepresentation(collectInfo, inputTypeInfo, introspectionHelper);
 
             PayLoad inputEntity = new PayLoad();
-            inputEntity.setType(inputTypeInfo.getIdentifier());
+            inputEntity.setType(inputTypeInfo.getRepresentationName());
             inputEntity.setArray(inputTypeInfo.isList());
             operation.setInputPayLoad(inputEntity);
 
@@ -326,7 +326,7 @@ public class ResourceCollector {
             RepresentationCollector.addRepresentation(collectInfo, outputTypeInfo, introspectionHelper);
 
             PayLoad outputEntity = new PayLoad();
-            outputEntity.setType(outputTypeInfo.getIdentifier());
+            outputEntity.setType(outputTypeInfo.getRepresentationName());
             outputEntity.setArray(outputTypeInfo.isList());
 
             response.setOutputPayLoad(outputEntity);

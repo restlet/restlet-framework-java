@@ -33,21 +33,37 @@
 
 package org.restlet.ext.apispark.internal.introspection.jaxrs;
 
-import java.beans.BeanInfo;
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
+import org.restlet.ext.apispark.internal.model.Contract;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.model.Header;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
+import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
@@ -69,37 +85,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.engine.util.BeanInfoUtils;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
-import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
-import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
-import org.restlet.ext.apispark.internal.model.Contract;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Endpoint;
-import org.restlet.ext.apispark.internal.model.Header;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.PathVariable;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.introspection.util.Types;
-import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
-import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
+import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Publish the documentation of a Jaxrs-based Application to the APISpark
@@ -211,7 +211,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         private boolean useSectionNamingPackageStrategy;
 
         public void addRepresentation(Representation representation) {
-            representations.put(representation.getIdentifier(), representation);
+            representations.put(representation.getName(), representation);
         }
 
         public void addResource(Resource resource) {
@@ -331,12 +331,12 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         if (typeInfo.isFile()) {
-            representation.setIdentifier("file");
             representation.setName("file");
         } else {
-            // type is an Entity
-            // Example: "java.util.Contact" or "String"
-            representation.setIdentifier(typeInfo.getIdentifier());
+            if (!typeInfo.isPrimitive()) {
+                // Example: "java.util.Contact" or "String"
+                representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+            }
 
             // Sections
             String packageName = typeInfo.getClazz().getPackage().getName();
@@ -345,13 +345,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 collectInfo.addSection(new Section(packageName));
             }
             // Example: "Contact"
-            representation.setName(typeInfo.getRepresentationClazz().getSimpleName());
+            JsonTypeName jsonType = typeInfo.getClazz().getAnnotation(JsonTypeName.class);
+            String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
+                    .getSimpleName() : jsonType.value();
+            representation.setName(typeName);
         }
         representation.setRaw(typeInfo.isRaw());
 
         // at this point, identifier is known - we check if it exists in cache
         boolean notInCache = collectInfo.getRepresentation(representation
-                .getIdentifier()) == null;
+                .getName()) == null;
 
         if (notInCache) {
 
@@ -385,7 +388,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                                 pd.getReadMethod().getGenericReturnType());
                     } catch (UnsupportedTypeException e) {
                         LOGGER.warning("Could not add property " + pd.getName() +
-                                " of representation " + typeInfo.getIdentifier() + ". " +
+                                " of representation " + typeInfo.getRepresentationClazz().getName() + ". " +
                                 e.getMessage());
                         continue;
                     }
@@ -396,7 +399,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     Property property = new Property();
                     property.setName(propertyName);
                     property.setDescription("");
-                    property.setType(propertyTypeInfo.getIdentifier());
+                    property.setType(propertyTypeInfo.getRepresentationName());
                     property.setMinOccurs(0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
@@ -544,7 +547,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             String defaultValue, HeaderParam headerParam) {
         Header header = new Header();
         header.setName(headerParam.value());
-        header.setType(typeInfo.getIdentifier());
+        header.setType(typeInfo.getRepresentationName());
         header.setAllowMultiple(typeInfo.isList());
         header.setRequired(false);
         header.setDescription(StringUtils.isNullOrEmpty(defaultValue) ? ""
@@ -564,14 +567,14 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     private static PathVariable getPathVariable(TypeInfo typeInfo, PathParam pathParam) {
         PathVariable pathVariable = new PathVariable();
         pathVariable.setName(pathParam.value());
-        pathVariable.setType(typeInfo.getIdentifier());
+        pathVariable.setType(typeInfo.getRepresentationName());
         return pathVariable;
     }
 
     private static QueryParameter getQueryParameter(TypeInfo typeInfo, String defaultValue, QueryParam queryParam) {
         QueryParameter queryParameter = new QueryParameter();
         queryParameter.setName(queryParam.value());
-        queryParameter.setType(typeInfo.getIdentifier());
+        queryParameter.setType(typeInfo.getRepresentationName());
         queryParameter.setAllowMultiple(typeInfo.isList());
         queryParameter.setRequired(false);
         queryParameter
@@ -942,7 +945,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     addRepresentation(collectInfo, typeInfo, introspectionHelper);
 
                     PayLoad inputEntity = new PayLoad();
-                    inputEntity.setType(typeInfo.getIdentifier());
+                    inputEntity.setType(typeInfo.getRepresentationName());
                     inputEntity.setArray(ReflectUtils
                             .isListType(parameterTypes[i]));
                     operation.setInputPayLoad(inputEntity);
@@ -967,7 +970,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             if (javax.ws.rs.core.Response.class.isAssignableFrom(outputTypeInfo.getRepresentationClazz())) {
                 outputEntity.setType("file");
             } else {
-                outputEntity.setType(outputTypeInfo.getIdentifier());
+                outputEntity.setType(outputTypeInfo.getRepresentationName());
             }
             outputEntity.setArray(outputTypeInfo.isList());
 
