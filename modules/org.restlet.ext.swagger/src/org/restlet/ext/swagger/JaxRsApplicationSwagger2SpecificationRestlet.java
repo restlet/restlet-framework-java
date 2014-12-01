@@ -36,6 +36,7 @@ package org.restlet.ext.swagger;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.models.Swagger;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -71,10 +72,9 @@ import javax.ws.rs.core.Application;
  * or
  * 
  * <pre>
- * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet();
- * swagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
- * swagger2SpecificationRestlet.setApplication(this); // this is the current Application
- * swagger2SpecificationRestlet.attach(baseRouter);
+ * JaxRsApplicationSwagger2SpecificationRestlet jaxrsSwagger2SpecificationRestlet = new JaxRsApplicationSwagger2SpecificationRestlet(this); // this is the current Application
+ * jaxrsSwagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * jaxrsSwagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -109,18 +109,25 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
     private String swaggerVersion = Swagger2Translator.SWAGGER_VERSION;
 
     /**
-     * Default constructor.<br>
-     */
-    public JaxRsApplicationSwagger2SpecificationRestlet() {
-    }
-
-    /**
      * Constructor.<br>
      * 
      * @param application
      *            The application to describe.
      */
     public JaxRsApplicationSwagger2SpecificationRestlet(Application application) {
+        this(null, application);
+    }
+
+    /**
+     * Constructor.<br>
+     *
+     * @param context
+     *            The context.
+     * @param application
+     *            The application to describe.
+     */
+    public JaxRsApplicationSwagger2SpecificationRestlet(Context context, Application application) {
+        super(context);
         this.application = application;
     }
 

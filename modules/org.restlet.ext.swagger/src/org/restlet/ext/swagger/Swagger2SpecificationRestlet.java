@@ -72,9 +72,8 @@ import org.restlet.routing.Router;
  * or
  * 
  * <pre>
- * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet();
+ * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet(this); // this is the current Application
  * swagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
- * swagger2SpecificationRestlet.setApplication(this); // this is the current Application
  * swagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
@@ -118,16 +117,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
     public Swagger2SpecificationRestlet(Application application) {
         super(application.getContext());
         this.application = application;
-    }
-
-    /**
-     * Constructor.<br>
-     * 
-     * @param context
-     *            The context.
-     */
-    public Swagger2SpecificationRestlet(Context context) {
-        super(context);
     }
 
     /**

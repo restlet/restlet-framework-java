@@ -66,8 +66,7 @@ import org.restlet.routing.Router;
  * Usage example:
  * 
  * <pre>
- * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet();
- * swaggerSpecificationRestlet.setApplication(this); // this is the current Application
+ * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet(this); // this is the current Application
  * swaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
  * swaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
@@ -108,7 +107,17 @@ public class SwaggerSpecificationRestlet extends Restlet {
      * Default constructor.<br>
      */
     public SwaggerSpecificationRestlet() {
-        this(null);
+    }
+
+    /**
+     * Constructor.<br>
+     *
+     * @param application
+     *            The application to describe.
+     */
+    public SwaggerSpecificationRestlet(Application application) {
+        super(application.getContext());
+        this.application = application;
     }
 
     /**

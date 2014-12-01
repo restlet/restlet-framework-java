@@ -66,10 +66,9 @@ import javax.ws.rs.core.Application;
  * Usage example:
  * 
  * <pre>
- * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet();
- * swaggerSpecificationRestlet.setApiInboundRoot(this);
- * swaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
- * swaggerSpecificationRestlet.attach(baseRouter);
+ * JaxRsApplicationSwaggerSpecificationRestlet jaxrsSwaggerSpecificationRestlet = new JaxRsApplicationSwaggerSpecificationRestlet(this); // this is the current Application
+ * jaxrsSwaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * jaxrsSwaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -105,10 +104,13 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
     private String swaggerVersion = SwaggerTranslator.SWAGGER_VERSION;
 
     /**
-     * Default constructor.<br>
+     * Constructor.<br>
+     *
+     * @param application
+     *            The application to describe.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet() {
-        this(null);
+    public JaxRsApplicationSwaggerSpecificationRestlet(Application application) {
+        this(null, application);
     }
 
     /**
@@ -116,9 +118,12 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * 
      * @param context
      *            The context.
+     * @param application
+     *            The application to describe.
      */
-    public JaxRsApplicationSwaggerSpecificationRestlet(Context context) {
+    public JaxRsApplicationSwaggerSpecificationRestlet(Context context, Application application) {
         super(context);
+        this.application = application;
     }
 
     /**
