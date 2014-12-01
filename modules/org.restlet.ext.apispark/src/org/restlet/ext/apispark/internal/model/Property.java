@@ -95,6 +95,11 @@ public class Property {
      * supposed to be unique or not
      */
     private boolean uniqueItems;
+    
+    /**
+     * An example of the property's value.
+     */
+    private String example;
 
     public String getDefaultValue() {
         return defaultValue;
@@ -177,5 +182,13 @@ public class Property {
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
+    }
+
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
     }
 }

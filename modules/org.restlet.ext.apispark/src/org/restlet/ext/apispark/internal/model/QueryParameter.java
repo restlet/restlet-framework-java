@@ -46,12 +46,25 @@ public class QueryParameter extends Parameter {
      */
     private Character separator;
 
+    /**
+     * An example of the parameter's value.
+     */
+    private String example;
+
     public Character getSeparator() {
         return separator;
     }
 
     public void setSeparator(Character separator) {
         this.separator = separator;
+    }
+
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
     }
 
 }
