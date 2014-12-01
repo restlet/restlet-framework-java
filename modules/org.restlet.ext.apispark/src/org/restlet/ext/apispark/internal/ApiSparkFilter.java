@@ -106,7 +106,6 @@ public class ApiSparkFilter extends Filter {
             }
 
             if (modulesSettings.isFirewallModuleEnabled()) {
-                LOGGER.info("Add firewall module");
                 firewallEnabled = true;
                 FirewallModule firewallModule = new FirewallModule(apiSparkConfig, modulesSettings);
                 firewallModule.updateFirewallConfig(firewallConfig);
