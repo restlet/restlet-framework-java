@@ -43,6 +43,7 @@ import org.restlet.ext.apispark.internal.agent.module.AuthenticationModule;
 import org.restlet.ext.apispark.internal.agent.module.AuthorizationModule;
 import org.restlet.ext.apispark.internal.agent.module.FirewallModule;
 import org.restlet.ext.apispark.internal.agent.module.ModulesSettingsModule;
+import org.restlet.ext.apispark.internal.agent.module.ReverseProxyModule;
 import org.restlet.ext.apispark.internal.firewall.FirewallFilter;
 import org.restlet.ext.apispark.internal.firewall.rule.FirewallRule;
 import org.restlet.ext.apispark.internal.utils.RestletChain;
@@ -77,6 +78,8 @@ public class ApiSparkFilter extends Filter {
                           FirewallConfig firewallConfig) {
         super(context);
 
+        boolean authenticationEnabled = false;
+
         RestletChain restletChain = new RestletChain();
 
         validateRedirection(apiSparkConfig);
@@ -88,6 +91,7 @@ public class ApiSparkFilter extends Filter {
 
             if (modulesSettings.isAuthenticationModuleEnabled()) {
                 LOGGER.info("Add authentication module");
+                authenticationEnabled = true;
                 restletChain.add(new AuthenticationModule(apiSparkConfig, modulesSettings,
                         context));
             }
@@ -124,7 +128,7 @@ public class ApiSparkFilter extends Filter {
         if (apiSparkConfig.isReverserProxyEnabled()) {
             LOGGER.info("Add redirection module");
             String redirectorUrl = apiSparkConfig.getReverseProxyTargetUrl() + "{rr}";
-            Redirector redirector = new Redirector(context, redirectorUrl, Redirector.MODE_SERVER_OUTBOUND);
+            Redirector redirector = new ReverseProxyModule(context, redirectorUrl, authenticationEnabled);
             restletChain.add(redirector);
         }
 
