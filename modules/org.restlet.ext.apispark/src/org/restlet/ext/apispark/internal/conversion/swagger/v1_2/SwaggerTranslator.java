@@ -524,6 +524,41 @@ public abstract class SwaggerTranslator {
     }
 
     /**
+     * Fills Restlet Web API definition's Contract from Swagger 1.2 API
+     * declaration
+     * 
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param apiDeclarations
+     *            The Swagger ApiDeclaration
+     */
+    private static void fillContract(Contract contract,
+            ApiDeclaration apiDeclaration) {
+        // Resource listing
+        Resource resource;
+        Section section = new Section();
+        if (apiDeclaration.getResourcePath().startsWith("/")) {
+            section.setName(apiDeclaration.getResourcePath().substring(1));
+        } else {
+            section.setName(apiDeclaration.getResourcePath());
+        }
+        contract.getSections().add(section);
+
+        for (ResourceDeclaration api : apiDeclaration.getApis()) {
+            resource = new Resource();
+            resource.setResourcePath(api.getPath());
+
+            List<String> declaredPathVariables = new ArrayList<String>();
+            fillOperations(resource, apiDeclaration, api, contract, section,
+                    declaredPathVariables);
+
+            resource.getSections().add(section.getName());
+            contract.getResources().add(resource);
+            LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
+        }
+    }
+
+    /**
      * Fills Restlet Web API definition's main attributes from Swagger 1.2
      * definition
      * 
@@ -1123,6 +1158,40 @@ public abstract class SwaggerTranslator {
                     "Definition successfully retrieved from Swagger definition");
             return definition;
         } catch (Exception e) {
+            if (e instanceof FileNotFoundException) {
+                throw new TranslationException("file", e.getMessage(), e);
+            } else {
+                throw new TranslationException(
+                        "compliance",
+                        "Impossible to read your API definition, check your Swagger specs compliance",
+                        e);
+            }
+        }
+    }
+
+    /**
+     * Translates a Swagger API declaration to a Restlet Web API definition.
+     * 
+     * @param apiDeclaration
+     *            The Swagger API declaration
+     * @return the Restlet Web API definition
+     * @throws TranslationException
+     */
+    public static Definition translate(ApiDeclaration apiDeclaration)
+            throws TranslationException {
+        try {
+            Definition definition = new Definition();
+            definition.setContract(new Contract());
+            definition.getEndpoints().add(
+                    new Endpoint(apiDeclaration.getBasePath()));
+
+            fillContract(definition.getContract(), apiDeclaration);
+
+            LOGGER.log(Level.FINE,
+                    "Definition successfully retrieved from Swagger definition");
+            return definition;
+        } catch (Exception e) {
+            e.printStackTrace();
             if (e instanceof FileNotFoundException) {
                 throw new TranslationException("file", e.getMessage(), e);
             } else {
