@@ -496,6 +496,7 @@ public abstract class SwaggerTranslator {
 
         // Resource listing
         Resource resource;
+        List<String> declaredTypes = new ArrayList<String>();
         for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
             ApiDeclaration apiDeclaration = entry.getValue();
             Section section = new Section();
@@ -514,7 +515,7 @@ public abstract class SwaggerTranslator {
 
                 List<String> declaredPathVariables = new ArrayList<String>();
                 fillOperations(resource, apiDeclaration, api, contract,
-                        section, declaredPathVariables);
+                        section, declaredPathVariables, declaredTypes);
 
                 resource.getSections().add(section.getName());
                 contract.getResources().add(resource);
@@ -536,6 +537,7 @@ public abstract class SwaggerTranslator {
             ApiDeclaration apiDeclaration) {
         // Resource listing
         Resource resource;
+        List<String> declaredTypes = new ArrayList<String>();
         Section section = new Section();
         if (apiDeclaration.getResourcePath().startsWith("/")) {
             section.setName(apiDeclaration.getResourcePath().substring(1));
@@ -550,7 +552,7 @@ public abstract class SwaggerTranslator {
 
             List<String> declaredPathVariables = new ArrayList<String>();
             fillOperations(resource, apiDeclaration, api, contract, section,
-                    declaredPathVariables);
+                    declaredPathVariables, declaredTypes);
 
             resource.getSections().add(section.getName());
             contract.getResources().add(resource);
@@ -617,15 +619,16 @@ public abstract class SwaggerTranslator {
      *            The Restlet Web API definition's current Section
      * @param declaredPathVariables
      *            The list of all declared path variables for the Resource
+     * @param declaredTypes
+     *            The list of all declared types for the Contract
      */
     private static void fillOperations(Resource resource,
             ApiDeclaration apiDeclaration, ResourceDeclaration api,
             Contract contract, Section section,
-            List<String> declaredPathVariables) {
+            List<String> declaredPathVariables, List<String> declaredTypes) {
 
         List<String> apiProduces = apiDeclaration.getProduces();
         List<String> apiConsumes = apiDeclaration.getConsumes();
-        List<String> declaredTypes = new ArrayList<String>();
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
         Representation representation;
 
