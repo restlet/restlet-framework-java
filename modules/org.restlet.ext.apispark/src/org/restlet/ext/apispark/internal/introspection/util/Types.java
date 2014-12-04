@@ -33,30 +33,52 @@
 
 package org.restlet.ext.apispark.internal.introspection.util;
 
-import org.restlet.ext.apispark.internal.model.Representation;
-
 import java.io.File;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.restlet.ext.apispark.internal.model.Representation;
 
 /**
  * @author Manuel Boillod
  */
 public abstract class Types {
 
+    private static DateFormat DATE_FORMATTER = DateFormat.getDateInstance(
+            DateFormat.DEFAULT, Locale.US);
+
     /** TypeInfo cache. */
     private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
-            "short", "integer", "long", "float", "double", "boolean", "double",
-            "string", "date", "file");
+            "short", "integer", "long", "float", "double", "boolean", "string",
+            "date", "file");
+
+    static HashMap<String, Object> defaultSampleValues = new HashMap<String, Object>() {
+        private static final long serialVersionUID = -3812943288508629242L;
+
+        {
+            put("byte", "");
+            put("short", "");
+            put("integer", new Integer(0));
+            put("long", new Long(0));
+            put("float", new Float(0.24));
+            put("double", new Double(2));
+            put("boolean", new Boolean(false));
+            put("string", new String("example"));
+            put("date", DATE_FORMATTER.format(new Date()));
+            put("file", new File(""));
+        }
+    };
 
     private static final Map<Class<?>, String> primitiveTypesByClass;
 
@@ -85,7 +107,7 @@ public abstract class Types {
                                                        // considered as date
     }
 
-    public static TypeInfo getTypeInfo(Class<?> clazz, Type type){
+    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
         TypeInfoKey key = new TypeInfoKey(clazz, type);
         TypeInfo typeInfo = cache.get(key);
 
@@ -110,8 +132,8 @@ public abstract class Types {
         if (Date.class.isAssignableFrom(type)) {
             return "date";
         }
-        if (Representation.class.isAssignableFrom(type) ||
-                File.class.isAssignableFrom(type)) {
+        if (Representation.class.isAssignableFrom(type)
+                || File.class.isAssignableFrom(type)) {
             return "file";
         }
         return type.getSimpleName();
@@ -119,13 +141,17 @@ public abstract class Types {
 
     public static boolean isPrimitiveType(Class<?> type) {
         return (primitiveTypesByClass.get(type) != null
-                || CharSequence.class.isAssignableFrom(type) || Date.class
-                    .isAssignableFrom(type) || Representation.class
+                || CharSequence.class.isAssignableFrom(type)
+                || Date.class.isAssignableFrom(type) || Representation.class
                     .isAssignableFrom(type));
     }
 
     public static boolean isPrimitiveType(String typename) {
         return primitivesTypes.contains(typename);
+    }
+
+    public static Object getDefaultSampleValue(String typename) {
+        return defaultSampleValues.get(typename);
     }
 
     public static String toString(Class<?> clazz, Type type) {
@@ -139,6 +165,7 @@ public abstract class Types {
     private static class TypeInfoKey {
 
         private final Class<?> clazz;
+
         private final Type type;
 
         public TypeInfoKey(Class<?> clazz, Type type) {
