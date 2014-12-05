@@ -33,6 +33,7 @@
 
 package org.restlet.ext.apispark.internal.conversion.raml;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.utils.SampleUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -125,6 +127,22 @@ public abstract class RamlTranslator {
     }
 
     /**
+     * Builds a sample map for each Representation of the Contract
+     * 
+     * @param contract
+     *            The Restlet Web API Contract
+     * @return A map of representations' names and sample maps
+     */
+    private static Map<String, Map<String, Object>> getSamples(Contract contract) {
+        Map<String, Map<String, Object>> samples = new HashMap<>();
+        for (Representation representation : contract.getRepresentations()) {
+            samples.put(representation.getName(),
+                    SampleUtils.buildSampleContent(representation));
+        }
+        return samples;
+    }
+
+    /**
      * Retrieves the RAML API declaration corresponding to a category of the
      * given Restlet Web API Definition.
      * 
@@ -135,11 +153,14 @@ public abstract class RamlTranslator {
     public static Raml getRaml(Definition definition) {
         Raml raml = new Raml();
         ObjectMapper m = new ObjectMapper();
+
         // TODO see how to translate it (1.0.0 to v1 ???)
         if (definition.getVersion() != null) {
             raml.setVersion(definition.getVersion());
         }
         Contract contract = definition.getContract();
+
+        Map<String, Map<String, Object>> samples = getSamples(contract);
 
         // No way to specify multiple endpoints in RAML so we take the first one
         Endpoint endpoint = null;
@@ -212,6 +233,7 @@ public abstract class RamlTranslator {
                 uiParam.setDisplayName(pathVariable.getName());
                 uiParam.setDescription(pathVariable.getDescription());
                 uiParam.setType(RamlUtils.getParamType(pathVariable.getType()));
+                uiParam.setExample(pathVariable.getExample());
                 ramlResource.getUriParameters().put(pathVariable.getName(),
                         uiParam);
             }
@@ -251,8 +273,26 @@ public abstract class RamlTranslator {
                                 .getInputPayLoad().getType());
                     }
                     action.setBody(new HashMap<String, MimeType>());
+                    MimeType ramlInRepresentationWithMediaType;
                     for (String mediaType : operation.getConsumes()) {
-                        action.getBody().put(mediaType, ramlInRepresentation);
+                        ramlInRepresentationWithMediaType = new MimeType();
+                        ramlInRepresentationWithMediaType
+                                .setSchema(ramlInRepresentation.getSchema());
+                        try {
+                            String representationType = operation
+                                    .getInputPayLoad().getType();
+                            ramlInRepresentationWithMediaType
+                                    .setExample(SampleUtils
+                                            .buildSampleAsString(samples
+                                                    .get(representationType),
+                                                    mediaType,
+                                                    representationType));
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING,
+                                    "Error when writting sample.", e);
+                        }
+                        action.getBody().put(mediaType,
+                                ramlInRepresentationWithMediaType);
                     }
                 }
 
@@ -268,6 +308,7 @@ public abstract class RamlTranslator {
                     ramlQueryParameter.setDescription(queryParameter
                             .getDescription());
                     ramlQueryParameter.setRequired(queryParameter.isRequired());
+                    ramlQueryParameter.setExample(queryParameter.getExample());
                     // TODO when enumerations have been added in RWADef
                     // ramlQueryParameter.setEnumeration(queryParameter.getEnumeration());
                     ramlQueryParameter.setDefaultValue(queryParameter
@@ -312,9 +353,26 @@ public abstract class RamlTranslator {
                                     .getOutputPayLoad().getType());
                         }
                     }
+                    MimeType ramlOutRepresentationWithMediaType;
                     for (String mediaType : operation.getProduces()) {
+                        ramlOutRepresentationWithMediaType = new MimeType();
+                        ramlOutRepresentationWithMediaType
+                                .setSchema(ramlOutRepresentation.getSchema());
+                        try {
+                            String representationType = response
+                                    .getOutputPayLoad().getType();
+                            ramlOutRepresentationWithMediaType
+                                    .setExample(SampleUtils
+                                            .buildSampleAsString(samples
+                                                    .get(representationType),
+                                                    mediaType,
+                                                    representationType));
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING,
+                                    "Error when writting sample.", e);
+                        }
                         ramlResponse.getBody().put(mediaType,
-                                ramlOutRepresentation);
+                                ramlOutRepresentationWithMediaType);
                     }
                     action.getResponses().put(
                             Integer.toString(response.getCode()), ramlResponse);

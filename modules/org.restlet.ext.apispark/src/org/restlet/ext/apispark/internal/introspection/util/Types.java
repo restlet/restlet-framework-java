@@ -33,8 +33,6 @@
 
 package org.restlet.ext.apispark.internal.introspection.util;
 
-import org.restlet.ext.apispark.internal.model.Representation;
-
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -46,6 +44,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.restlet.ext.apispark.internal.model.Representation;
+
 /**
  * @author Manuel Boillod
  */
@@ -55,8 +55,8 @@ public abstract class Types {
     private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
-            "short", "integer", "long", "float", "double", "boolean", "double",
-            "string", "date", "file");
+            "short", "integer", "long", "float", "double", "boolean", "string",
+            "date", "file");
 
     private static final Map<Class<?>, String> primitiveTypesByClass;
 
@@ -85,7 +85,7 @@ public abstract class Types {
                                                        // considered as date
     }
 
-    public static TypeInfo getTypeInfo(Class<?> clazz, Type type){
+    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
         TypeInfoKey key = new TypeInfoKey(clazz, type);
         TypeInfo typeInfo = cache.get(key);
 
@@ -110,8 +110,8 @@ public abstract class Types {
         if (Date.class.isAssignableFrom(type)) {
             return "date";
         }
-        if (Representation.class.isAssignableFrom(type) ||
-                File.class.isAssignableFrom(type)) {
+        if (Representation.class.isAssignableFrom(type)
+                || File.class.isAssignableFrom(type)) {
             return "file";
         }
         return type.getSimpleName();
@@ -119,8 +119,8 @@ public abstract class Types {
 
     public static boolean isPrimitiveType(Class<?> type) {
         return (primitiveTypesByClass.get(type) != null
-                || CharSequence.class.isAssignableFrom(type) || Date.class
-                    .isAssignableFrom(type) || Representation.class
+                || CharSequence.class.isAssignableFrom(type)
+                || Date.class.isAssignableFrom(type) || Representation.class
                     .isAssignableFrom(type));
     }
 
@@ -139,6 +139,7 @@ public abstract class Types {
     private static class TypeInfoKey {
 
         private final Class<?> clazz;
+
         private final Type type;
 
         public TypeInfoKey(Class<?> clazz, Type type) {
