@@ -137,7 +137,7 @@ public abstract class RamlTranslator {
         Map<String, Map<String, Object>> samples = new HashMap<>();
         for (Representation representation : contract.getRepresentations()) {
             samples.put(representation.getName(),
-                    SampleUtils.buildContent(representation));
+                    SampleUtils.buildSampleContent(representation));
         }
         return samples;
     }
@@ -293,7 +293,7 @@ public abstract class RamlTranslator {
                                     .getInputPayLoad().getType();
                             ramlInRepresentationWithMediaType
                                     .setExample(SampleUtils
-                                            .buildSampleRepresentation(samples
+                                            .buildSampleAsString(samples
                                                     .get(representationType),
                                                     mediaType,
                                                     representationType));
@@ -373,7 +373,7 @@ public abstract class RamlTranslator {
                                     .getOutputPayLoad().getType();
                             ramlOutRepresentationWithMediaType
                                     .setExample(SampleUtils
-                                            .buildSampleRepresentation(samples
+                                            .buildSampleAsString(samples
                                                     .get(representationType),
                                                     mediaType,
                                                     representationType));
