@@ -35,7 +35,6 @@ package org.restlet.ext.apispark.internal.utils;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +90,7 @@ public class SampleUtils {
         return content;
     }
 
-    private static Object getSampleValue(Property property, String value) {
+    public static Object getSampleValue(Property property, String value) {
         Object result;
         String propertyType = property.getType();
 
