@@ -31,8 +31,10 @@ public class BeanInfoUtils {
         if (result == null) {
             // Inspect the class itself for annotations
 
+            Class<?> stopClass = Throwable.class.isAssignableFrom(clazz) ? Throwable.class
+                    : Object.class;
             try {
-                result = Introspector.getBeanInfo(clazz, Object.class,
+                result = Introspector.getBeanInfo(clazz, stopClass,
                         Introspector.IGNORE_ALL_BEANINFO);
             } catch (IntrospectionException e) {
                 throw new RuntimeException("Could not get BeanInfo of class "
