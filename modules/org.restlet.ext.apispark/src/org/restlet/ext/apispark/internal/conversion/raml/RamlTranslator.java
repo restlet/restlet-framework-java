@@ -264,20 +264,10 @@ public abstract class RamlTranslator {
                             ramlInRepresentation
                                     .setSchema(m
                                             .writeValueAsString(inRepresentationSchema));
-                            /*
-                             * ramlInRepresentation .setExample(SampleUtils
-                             * .buildSampleRepresentation(
-                             * samples.get(inRepresentationPrimitive
-                             * .getType()), MediaType.APPLICATION_JSON
-                             * .getName()) .getText());
-                             */
                         } catch (JsonProcessingException e) {
                             LOGGER.log(Level.WARNING,
                                     "Error when setting mime type schema.", e);
-                        } /*
-                           * catch (IOException e) { LOGGER.log(Level.WARNING,
-                           * "Error when writting sample.", e); }
-                           */
+                        }
                     } else {
                         ramlInRepresentation.setSchema(operation
                                 .getInputPayLoad().getType());
