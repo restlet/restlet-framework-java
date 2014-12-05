@@ -496,6 +496,7 @@ public abstract class SwaggerTranslator {
 
         // Resource listing
         Resource resource;
+        List<String> declaredTypes = new ArrayList<String>();
         for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
             ApiDeclaration apiDeclaration = entry.getValue();
             Section section = new Section();
@@ -514,12 +515,48 @@ public abstract class SwaggerTranslator {
 
                 List<String> declaredPathVariables = new ArrayList<String>();
                 fillOperations(resource, apiDeclaration, api, contract,
-                        section, declaredPathVariables);
+                        section, declaredPathVariables, declaredTypes);
 
                 resource.getSections().add(section.getName());
                 contract.getResources().add(resource);
                 LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
             }
+        }
+    }
+
+    /**
+     * Fills Restlet Web API definition's Contract from Swagger 1.2 API
+     * declaration
+     * 
+     * @param contract
+     *            The Restlet Web API definition's Contract
+     * @param apiDeclarations
+     *            The Swagger ApiDeclaration
+     */
+    private static void fillContract(Contract contract,
+            ApiDeclaration apiDeclaration) {
+        // Resource listing
+        Resource resource;
+        List<String> declaredTypes = new ArrayList<String>();
+        Section section = new Section();
+        if (apiDeclaration.getResourcePath().startsWith("/")) {
+            section.setName(apiDeclaration.getResourcePath().substring(1));
+        } else {
+            section.setName(apiDeclaration.getResourcePath());
+        }
+        contract.getSections().add(section);
+
+        for (ResourceDeclaration api : apiDeclaration.getApis()) {
+            resource = new Resource();
+            resource.setResourcePath(api.getPath());
+
+            List<String> declaredPathVariables = new ArrayList<String>();
+            fillOperations(resource, apiDeclaration, api, contract, section,
+                    declaredPathVariables, declaredTypes);
+
+            resource.getSections().add(section.getName());
+            contract.getResources().add(resource);
+            LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
         }
     }
 
@@ -582,15 +619,16 @@ public abstract class SwaggerTranslator {
      *            The Restlet Web API definition's current Section
      * @param declaredPathVariables
      *            The list of all declared path variables for the Resource
+     * @param declaredTypes
+     *            The list of all declared types for the Contract
      */
     private static void fillOperations(Resource resource,
             ApiDeclaration apiDeclaration, ResourceDeclaration api,
             Contract contract, Section section,
-            List<String> declaredPathVariables) {
+            List<String> declaredPathVariables, List<String> declaredTypes) {
 
         List<String> apiProduces = apiDeclaration.getProduces();
         List<String> apiConsumes = apiDeclaration.getConsumes();
-        List<String> declaredTypes = new ArrayList<String>();
         Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
         Representation representation;
 
@@ -1123,6 +1161,40 @@ public abstract class SwaggerTranslator {
                     "Definition successfully retrieved from Swagger definition");
             return definition;
         } catch (Exception e) {
+            if (e instanceof FileNotFoundException) {
+                throw new TranslationException("file", e.getMessage(), e);
+            } else {
+                throw new TranslationException(
+                        "compliance",
+                        "Impossible to read your API definition, check your Swagger specs compliance",
+                        e);
+            }
+        }
+    }
+
+    /**
+     * Translates a Swagger API declaration to a Restlet Web API definition.
+     * 
+     * @param apiDeclaration
+     *            The Swagger API declaration
+     * @return the Restlet Web API definition
+     * @throws TranslationException
+     */
+    public static Definition translate(ApiDeclaration apiDeclaration)
+            throws TranslationException {
+        try {
+            Definition definition = new Definition();
+            definition.setContract(new Contract());
+            definition.getEndpoints().add(
+                    new Endpoint(apiDeclaration.getBasePath()));
+
+            fillContract(definition.getContract(), apiDeclaration);
+
+            LOGGER.log(Level.FINE,
+                    "Definition successfully retrieved from Swagger definition");
+            return definition;
+        } catch (Exception e) {
+            e.printStackTrace();
             if (e instanceof FileNotFoundException) {
                 throw new TranslationException("file", e.getMessage(), e);
             } else {
