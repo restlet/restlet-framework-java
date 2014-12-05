@@ -33,17 +33,17 @@
 
 package org.restlet.ext.apispark.internal.utils;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.service.MetadataService;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SampleUtils {
 
@@ -53,49 +53,41 @@ public class SampleUtils {
     private static final List<String> numberTypes = Arrays.asList("byte",
             "short", "integer", "long", "float", "double");
 
-    public static String buildSampleAsString(Map<String, Object> content,
-            String mediaTypeAsString, String representationType)
+    public static String convertSampleAccordingToMediaType(Map<String, Object> content,
+                                                  String mediaTypeAsString,
+                                                  String representationName)
             throws IOException {
         MetadataService ms = new MetadataService();
         MediaType mediaType = MediaType.valueOf(mediaTypeAsString);
         if (!supportedExtensions.contains(ms.getExtension(mediaType))) {
             return null;
         }
-        org.restlet.representation.Representation result = buildSampleRepresentation(
-                content, mediaType, representationType);
-        System.out.println(result.getText());
+        String text = new JacksonRepresentation<>(mediaType, content).getText();
         if (ms.getAllMediaTypes("xml").contains(mediaType)) {
-            return result.getText().replaceAll("HashMap", representationType);
+            text = text.replaceAll("HashMap", representationName);
         }
-        return result.getText();
+        return text;
     }
 
-    public static org.restlet.representation.Representation buildSampleRepresentation(
-            Map<String, Object> content, MediaType mediaType,
-            String representationType) throws IOException {
-        JacksonRepresentation<Map<String, Object>> result = new JacksonRepresentation<Map<String, Object>>(
-                mediaType, content);
-        return result;
-    }
-
-    public static Map<String, Object> buildSampleContent(
+    public static Map<String, Object> getRepresentationSample(
             Representation representation) {
         List<Property> properties = representation.getProperties();
-        Map<String, Object> content = new HashMap<String, Object>();
+        Map<String, Object> content = new HashMap<>();
         for (Property property : properties) {
             String fieldName = property.getName();
-            Object fieldValue = getSampleValue(property, property.getExample());
+            Object fieldValue = property.getExample() != null ?
+                    property.getExample() :
+                    getSampleValue(property.getType(), property.getName(), property.getMaxOccurs() != 1);
             content.put(fieldName, fieldValue);
         }
         return content;
     }
 
-    public static Object getSampleValue(Property property, String value) {
+    public static Object getSampleValue(String propertyType, String propertyName, boolean isList) {
         Object result;
-        String propertyType = property.getType();
 
         if ("string".equals(propertyType)) {
-            result = "sample " + property.getName();
+            result = "sample " + propertyName;
         } else if (numberTypes.contains(propertyType)) {
             result = 0;
         } else if ("boolean".equals(propertyType)) {
@@ -106,7 +98,7 @@ public class SampleUtils {
             result = null;
         }
 
-        if (property.getMaxOccurs() != 1) {
+        if (isList) {
             result = Arrays.asList(result);
         }
 

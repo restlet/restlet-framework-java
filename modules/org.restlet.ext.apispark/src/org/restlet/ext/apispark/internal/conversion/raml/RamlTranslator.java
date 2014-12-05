@@ -137,7 +137,7 @@ public abstract class RamlTranslator {
         Map<String, Map<String, Object>> samples = new HashMap<>();
         for (Representation representation : contract.getRepresentations()) {
             samples.put(representation.getName(),
-                    SampleUtils.buildSampleContent(representation));
+                    SampleUtils.getRepresentationSample(representation));
         }
         return samples;
     }
@@ -160,7 +160,7 @@ public abstract class RamlTranslator {
         }
         Contract contract = definition.getContract();
 
-        Map<String, Map<String, Object>> samples = getSamples(contract);
+        Map<String, Map<String, Object>> representationSamples = getSamples(contract);
 
         // No way to specify multiple endpoints in RAML so we take the first one
         Endpoint endpoint = null;
@@ -281,10 +281,11 @@ public abstract class RamlTranslator {
                         try {
                             String representationType = operation
                                     .getInputPayLoad().getType();
+                            Map<String, Object> representationSample = representationSamples
+                                    .get(representationType);
                             ramlInRepresentationWithMediaType
                                     .setExample(SampleUtils
-                                            .buildSampleAsString(samples
-                                                    .get(representationType),
+                                            .convertSampleAccordingToMediaType(representationSample,
                                                     mediaType,
                                                     representationType));
                         } catch (IOException e) {
@@ -361,10 +362,11 @@ public abstract class RamlTranslator {
                         try {
                             String representationType = response
                                     .getOutputPayLoad().getType();
+                            Map<String, Object> representationSample = representationSamples
+                                    .get(representationType);
                             ramlOutRepresentationWithMediaType
                                     .setExample(SampleUtils
-                                            .buildSampleAsString(samples
-                                                    .get(representationType),
+                                            .convertSampleAccordingToMediaType(representationSample,
                                                     mediaType,
                                                     representationType));
                         } catch (IOException e) {
