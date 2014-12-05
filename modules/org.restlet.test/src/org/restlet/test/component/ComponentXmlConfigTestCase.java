@@ -75,6 +75,7 @@ import org.restlet.util.ServerList;
  *     &quot;http://restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
  * </pre>
  */
+@Deprecated
 public class ComponentXmlConfigTestCase extends RestletTestCase {
     private static final String A_PARAM_NAME = "attachParamName";
 

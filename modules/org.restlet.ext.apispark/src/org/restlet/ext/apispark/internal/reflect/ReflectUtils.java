@@ -36,12 +36,12 @@ package org.restlet.ext.apispark.internal.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeException;
 
 /**
  * Handles Java reflection operations.
@@ -89,17 +89,7 @@ public class ReflectUtils {
         return segment;
     }
 
-    public static Class<?> getSimpleClass(Field field) {
-        Type genericFieldType = field.getGenericType();
-
-        if (genericFieldType != null) {
-            return getSimpleClass(genericFieldType);
-        }
-
-        return field.getType();
-    }
-
-    public static Class<?> getSimpleClass(java.lang.reflect.Type type) {
+    public static Class<?> getComponentClass(java.lang.reflect.Type type) {
         if (type instanceof Class<?>) {
             Class<?> c = (Class<?>) type;
             if (c.isArray()) {
@@ -107,21 +97,19 @@ public class ReflectUtils {
             } else if (Collection.class.isAssignableFrom(c)) {
                 // Simple class that extends Collection<E>. Should inspect
                 // superclass.
-                return getSimpleClass(c.getGenericSuperclass());
+                return getComponentClass(c.getGenericSuperclass());
             } else {
                 return c;
             }
         } else if (type instanceof GenericArrayType) {
             GenericArrayType gat = (GenericArrayType) type;
-            return getSimpleClass(gat.getGenericComponentType());
+            return getComponentClass(gat.getGenericComponentType());
         } else if (type instanceof ParameterizedType) {
             ParameterizedType t = (ParameterizedType) type;
             if (t.getActualTypeArguments().length == 1) {
-                return getSimpleClass(t.getActualTypeArguments()[0]);
+                return getComponentClass(t.getActualTypeArguments()[0]);
             } else {
-                Logger.getLogger(ReflectUtils.class.getName())
-                        .warning(
-                                "We don't support generic types with several arguments.");
+                throw new UnsupportedTypeException("Type " + type + " is a generic type with several arguments. This is not supported.");
             }
         }
         return (type != null) ? type.getClass() : null;
@@ -167,6 +155,7 @@ public class ReflectUtils {
      * @param <T>
      *            The expected class
      */
+    @SuppressWarnings("unchecked")
     public static <T> T newInstance(String className,
             Class<? extends T> instanceClazz) {
         if (className == null) {

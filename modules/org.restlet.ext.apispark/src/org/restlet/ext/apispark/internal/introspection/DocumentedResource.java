@@ -31,43 +31,19 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.swagger.internal;
+package org.restlet.ext.apispark.internal.introspection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Swagger tooling class.
+ * Completes the documentation of a Resource so that introspection retrieves a
+ * more complete description of the Web API.
  * 
- * @author Grzegorz Godlewski
+ * @author Cyprien Quilici
+ * 
  */
-public class SwaggerUtils {
+public interface DocumentedResource {
 
-    public static String cleanSlashes(String path) {
-        path = path.replaceAll("/+", "/");
-
-        return path;
-    }
-
-    public static String leaveOnlyPathParamNames(String path) {
-        path = path.replaceAll(":[^}]*\\}", "}");
-
-        return path;
-    }
-
-    public static List<String> toList(String csvString) {
-        if (csvString == null || csvString.isEmpty()) {
-            return new ArrayList<String>();
-        }
-        return Arrays.asList(csvString.split(","));
-    }
-
-    /**
-     * Private constructor for tooling class.
-     */
-    private SwaggerUtils() {
-
-    }
-
+    /** List of sections that describe the resource. */
+    List<String> getSections();
 }

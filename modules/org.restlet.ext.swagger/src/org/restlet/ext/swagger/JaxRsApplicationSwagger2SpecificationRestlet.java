@@ -33,29 +33,24 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.core.Application;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Swagger;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
+import javax.ws.rs.core.Application;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -77,9 +72,9 @@ import com.wordnik.swagger.models.Swagger;
  * or
  * 
  * <pre>
- * new Swagger2SpecificationRestlet().setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .setApplication(this) // this is the current Application
- *         .attach(baseRouter);
+ * JaxRsApplicationSwagger2SpecificationRestlet jaxrsSwagger2SpecificationRestlet = new JaxRsApplicationSwagger2SpecificationRestlet(this); // this is the current Application
+ * jaxrsSwagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * jaxrsSwagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -104,14 +99,8 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
     /** The base reference of the API. */
     private Reference baseRef;
 
-    /** Helper used to add CORS response headers */
-    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
-
     /** The RWADef of the API. */
     private Definition definition;
-
-    /** List of additional introspector plugins to use */
-    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
 
     /**
      * The version of the Swagger specification. Default is
@@ -120,32 +109,26 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
     private String swaggerVersion = Swagger2Translator.SWAGGER_VERSION;
 
     /**
-     * Default constructor.<br>
-     */
-    public JaxRsApplicationSwagger2SpecificationRestlet() {
-    }
-
-    /**
      * Constructor.<br>
      * 
      * @param application
      *            The application to describe.
      */
     public JaxRsApplicationSwagger2SpecificationRestlet(Application application) {
-        this.application = application;
+        this(null, application);
     }
 
     /**
-     * Add an introspector plugin to default introspector
-     * 
-     * @param helper
-     *            Introspector Plugin to add
-     * 
+     * Constructor.<br>
+     *
+     * @param context
+     *            The context.
+     * @param application
+     *            The application to describe.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet addIntrospectorPlugin(
-            IntrospectionHelper helper) {
-        introspectionHelpers.add(helper);
-        return this;
+    public JaxRsApplicationSwagger2SpecificationRestlet(Context context, Application application) {
+        super(context);
+        this.application = application;
     }
 
     /**
@@ -205,7 +188,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (JaxRsApplicationSwagger2SpecificationRestlet.class) {
                 definition = JaxRsIntrospector.getDefinition(application,
-                        baseRef, introspectionHelpers);
+                        baseRef, false);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
@@ -249,9 +232,6 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        // CORS support for Swagger-UI
-        corsResponseHelper.addCorsResponseHeaders(request, response);
-
         if (Method.GET.equals(request.getMethod())) {
             response.setEntity(getSwagger());
         } else {
@@ -266,10 +246,9 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setApiVersion(
+    public void setApiVersion(
             String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -278,10 +257,9 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setApplication(
+    public void setApplication(
             Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -290,12 +268,11 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setBasePath(
+    public void setBasePath(
             String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -304,22 +281,8 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet setSwaggerVersion(
+    public void setSwaggerVersion(
             String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
-        return this;
     }
-
-    /**
-     * Sets the root Restlet for the given application.
-     * 
-     * @param application
-     *            The application.
-     */
-    public JaxRsApplicationSwagger2SpecificationRestlet Swagger2SpecificationRestlet(
-            Application application) {
-        this.application = application;
-        return this;
-    }
-
 }

@@ -62,6 +62,7 @@ import org.restlet.util.Series;
  * @author Bruno Harbulot
  * @author Jerome Louvel
  */
+@SuppressWarnings("unused")
 public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;

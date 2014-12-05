@@ -31,31 +31,27 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.swagger.internal;
-
-import java.util.Iterator;
-
-import org.restlet.Restlet;
+package org.restlet.ext.apispark.internal.introspection.util;
 
 /**
- * Restlet recursive iterable.
- * 
- * @author Grzegorz Godlewski
+ * @author Manuel Boillod
  */
-public class SwaggerRestletIterable implements Iterable<Restlet> {
-    private SwaggerRestletIterator iterator;
+public class UnsupportedTypeException extends RuntimeException {
 
-    public SwaggerRestletIterable(Restlet restlet) {
-        this.iterator = new SwaggerRestletIterator(restlet);
+    private static final long serialVersionUID = 1L;
+
+    public UnsupportedTypeException() {
     }
 
-    public String getCurrentPath() {
-        return iterator.getCurrentPath();
+    public UnsupportedTypeException(String message) {
+        super(message);
     }
 
-    @Override
-    public Iterator<Restlet> iterator() {
-        return iterator;
+    public UnsupportedTypeException(String message, Throwable cause) {
+        super(message, cause);
     }
 
+    public UnsupportedTypeException(Throwable cause) {
+        super(cause);
+    }
 }

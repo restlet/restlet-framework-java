@@ -8,7 +8,8 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.fasterxml.jackson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.raml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.google.guava"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.models_1.5"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.wordnik.swagger.annotations_1.3"/>
+    <classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger.models_1.5"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

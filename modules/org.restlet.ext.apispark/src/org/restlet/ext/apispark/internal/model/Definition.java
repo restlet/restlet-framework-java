@@ -44,7 +44,7 @@ import java.util.List;
 public class Definition {
 
     /** RWADef version of the definition */
-    public static final String SPEC_VERSION = "0.9.0";
+    public static final String SPEC_VERSION = "1.0.0";
 
     /** Company or individual's name */
     private String attribution;

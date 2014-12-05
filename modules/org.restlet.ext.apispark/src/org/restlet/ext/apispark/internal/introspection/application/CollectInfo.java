@@ -1,3 +1,36 @@
+/**
+ * Copyright 2005-2014 Restlet
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
 package org.restlet.ext.apispark.internal.introspection.application;
 
 import java.util.ArrayList;
@@ -15,16 +48,18 @@ import org.restlet.ext.apispark.internal.model.Section;
  */
 public class CollectInfo {
 
-    private Map<String, Representation> representations = new HashMap<String, Representation>();
+    private Map<String, Representation> representations = new HashMap<>();
 
-    private List<Resource> resources = new ArrayList<Resource>();
+    private List<Resource> resources = new ArrayList<>();
 
-    private List<ChallengeScheme> schemes = new ArrayList<ChallengeScheme>();
+    private List<ChallengeScheme> schemes = new ArrayList<>();
 
-    private Map<String, Section> sections = new HashMap<String, Section>();
+    private Map<String, Section> sections = new HashMap<>();
+
+    private boolean useSectionNamingPackageStrategy;
 
     public void addRepresentation(Representation representation) {
-        representations.put(representation.getIdentifier(), representation);
+        representations.put(representation.getName(), representation);
     }
 
     public void addResource(Resource resource) {
@@ -55,15 +90,15 @@ public class CollectInfo {
     }
 
     public List<Representation> getRepresentations() {
-        return new ArrayList<Representation>(representations.values());
+        return new ArrayList<>(representations.values());
     }
 
     public List<Resource> getResources() {
-        return new ArrayList<Resource>(resources);
+        return new ArrayList<>(resources);
     }
 
     public List<ChallengeScheme> getSchemes() {
-        return new ArrayList<ChallengeScheme>(schemes);
+        return new ArrayList<>(schemes);
     }
 
     public Section getSection(String identifier) {
@@ -71,10 +106,18 @@ public class CollectInfo {
     }
 
     public List<Section> getSections() {
-        return new ArrayList<Section>(sections.values());
+        return new ArrayList<>(sections.values());
+    }
+
+    public boolean isUseSectionNamingPackageStrategy() {
+        return useSectionNamingPackageStrategy;
     }
 
     public void setSections(Map<String, Section> sections) {
         this.sections = sections;
+    }
+
+    public void setUseSectionNamingPackageStrategy(boolean useSectionNamingPackageStrategy) {
+        this.useSectionNamingPackageStrategy = useSectionNamingPackageStrategy;
     }
 }

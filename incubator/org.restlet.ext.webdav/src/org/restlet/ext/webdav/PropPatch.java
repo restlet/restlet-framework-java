@@ -45,7 +45,9 @@ import org.restlet.service.MetadataService;
  * method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

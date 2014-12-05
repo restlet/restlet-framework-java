@@ -15,4 +15,7 @@
 		</maven>
 	</package>
 	<dependency type="library" id="scala" />
+	<distributions>
+		<distribution id="maven" />
+	</distributions>
 </library>

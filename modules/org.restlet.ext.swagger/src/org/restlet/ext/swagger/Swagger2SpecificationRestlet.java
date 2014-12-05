@@ -33,9 +33,9 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Swagger;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -44,18 +44,12 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.application.CorsResponseHelper;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -78,9 +72,9 @@ import com.wordnik.swagger.models.Swagger;
  * or
  * 
  * <pre>
- * new Swagger2SpecificationRestlet().setBasePath(&quot;http://myapp.com/api/v1&quot;)
- *         .setApplication(this) // this is the current Application
- *         .attach(baseRouter);
+ * Swagger2SpecificationRestlet swagger2SpecificationRestlet = new Swagger2SpecificationRestlet(this); // this is the current Application
+ * swagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
+ * swagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
  * 
  * </p>
@@ -105,14 +99,8 @@ public class Swagger2SpecificationRestlet extends Restlet {
     /** The base reference of the API. */
     private Reference baseRef;
 
-    /** Helper used to add CORS response headers */
-    private CorsResponseHelper corsResponseHelper = new CorsResponseHelper();
-
     /** The RWADef of the API. */
     private Definition definition;
-
-    /** List of additional introspector plugins to use */
-    private List<IntrospectionHelper> introspectionHelpers = new ArrayList<IntrospectionHelper>();
 
     /**
      * The version of the Swagger specification. Default is
@@ -129,28 +117,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
     public Swagger2SpecificationRestlet(Application application) {
         super(application.getContext());
         this.application = application;
-    }
-
-    /**
-     * Constructor.<br>
-     * 
-     * @param context
-     *            The context.
-     */
-    public Swagger2SpecificationRestlet(Context context) {
-        super(context);
-    }
-
-    /**
-     * Adds an introspection helper.
-     * 
-     * @param helper
-     *            The introspection helper to add.
-     */
-    public Swagger2SpecificationRestlet addIntrospectionHelper(
-            IntrospectionHelper helper) {
-        introspectionHelpers.add(helper);
-        return this;
     }
 
     /**
@@ -210,7 +176,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (Swagger2SpecificationRestlet.class) {
                 definition = ApplicationIntrospector.getDefinition(application,
-                        baseRef, null, introspectionHelpers);
+                        baseRef, null, false);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");
@@ -254,9 +220,6 @@ public class Swagger2SpecificationRestlet extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        // CORS support for Swagger-UI
-        corsResponseHelper.addCorsResponseHeaders(request, response);
-
         if (Method.GET.equals(request.getMethod())) {
             response.setEntity(getSwagger());
         } else {
@@ -271,9 +234,8 @@ public class Swagger2SpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public Swagger2SpecificationRestlet setApiVersion(String apiVersion) {
+    public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
-        return this;
     }
 
     /**
@@ -282,9 +244,8 @@ public class Swagger2SpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public Swagger2SpecificationRestlet setApplication(Application application) {
+    public void setApplication(Application application) {
         this.application = application;
-        return this;
     }
 
     /**
@@ -293,11 +254,10 @@ public class Swagger2SpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public Swagger2SpecificationRestlet setBasePath(String basePath) {
+    public void setBasePath(String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
-        return this;
     }
 
     /**
@@ -306,21 +266,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public Swagger2SpecificationRestlet setSwaggerVersion(String swaggerVersion) {
+    public void setSwaggerVersion(String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
-        return this;
     }
-
-    /**
-     * Sets the root Restlet for the given application.
-     * 
-     * @param application
-     *            The application.
-     */
-    public Swagger2SpecificationRestlet Swagger2SpecificationRestlet(
-            Application application) {
-        this.application = application;
-        return this;
-    }
-
 }

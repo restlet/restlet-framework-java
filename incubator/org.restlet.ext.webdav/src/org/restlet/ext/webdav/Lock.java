@@ -44,7 +44,9 @@ import org.restlet.service.MetadataService;
  * equivalent to a WebDAV LOCK method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to focus on Web APIs.
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

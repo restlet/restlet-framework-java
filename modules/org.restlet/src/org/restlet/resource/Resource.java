@@ -202,10 +202,7 @@ public abstract class Resource {
 
     /**
      * Invoked when a {@link Throwable} is caught during initialization,
-     * handling or releasing. By default, updates the responses's status with
-     * the result of
-     * {@link org.restlet.service.StatusService#getStatus(Throwable, Resource)}
-     * .
+     * handling or releasing.
      * 
      * @param throwable
      *            The caught error or exception.
@@ -911,8 +908,11 @@ public abstract class Resource {
             try {
                 org.restlet.service.ConverterService cs = getConverterService();
                 result = cs.toObject(source, target, this);
+            } catch (ResourceException e) {
+                throw e;
             } catch (Exception e) {
-                throw new ResourceException(e);
+                throw new ResourceException(
+                        Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
             }
         }
 

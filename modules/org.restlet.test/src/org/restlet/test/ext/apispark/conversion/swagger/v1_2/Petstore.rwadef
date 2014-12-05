@@ -9,7 +9,6 @@
     "representations": [
       {
         "description": null,
-        "identifier": "Tag",
         "name": "Tag",
         "extendedType": null,
         "properties": [
@@ -42,7 +41,6 @@
       },
       {
         "description": null,
-        "identifier": "Pet",
         "name": "Pet",
         "extendedType": null,
         "properties": [
@@ -123,7 +121,6 @@
       },
       {
         "description": null,
-        "identifier": "Category",
         "name": "Category",
         "extendedType": null,
         "properties": [
@@ -156,7 +153,6 @@
       },
       {
         "description": null,
-        "identifier": "Order",
         "name": "Order",
         "extendedType": null,
         "properties": [
@@ -225,7 +221,6 @@
       },
       {
         "description": null,
-        "identifier": "User",
         "name": "User",
         "extendedType": null,
         "properties": [

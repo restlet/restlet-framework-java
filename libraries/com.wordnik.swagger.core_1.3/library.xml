@@ -10,8 +10,8 @@
 	<package id="swagger-core" name="com.wordnik.swagger.core">
 		<maven>
 			<groupId>com.wordnik</groupId>
-			<artifactId>swagger-core_2.9.1</artifactId>
-			<version>1.2.5</version>
+			<artifactId>swagger-core_2.10</artifactId>
+			<version>1.3.10</version>
 		</maven>
 	</package>
 	<dependency type="library" id="scala" />

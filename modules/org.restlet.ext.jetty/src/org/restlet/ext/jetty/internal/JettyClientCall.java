@@ -44,7 +44,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 import org.eclipse.jetty.client.HttpRequest;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpField;
@@ -82,7 +81,7 @@ public class JettyClientCall extends ClientCall {
     /**
      * The wrapped HTTP response.
      */
-    private volatile HttpResponse httpResponse;
+    private volatile org.eclipse.jetty.client.api.Response httpResponse;
 
     /**
      * The wrapped input stream response listener.
@@ -137,7 +136,7 @@ public class JettyClientCall extends ClientCall {
      * 
      * @return The HTTP response.
      */
-    public HttpResponse getHttpResponse() {
+    public org.eclipse.jetty.client.api.Response getHttpResponse() {
         return this.httpResponse;
     }
 
@@ -157,7 +156,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        final HttpResponse httpResponse = getHttpResponse();
+        final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
         return httpResponse == null ? null : httpResponse.getReason();
     }
 
@@ -193,7 +192,7 @@ public class JettyClientCall extends ClientCall {
         final Series<Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            final HttpResponse httpResponse = getHttpResponse();
+            final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
             if (httpResponse != null) {
                 final HttpFields headers = httpResponse.getHeaders();
                 if (headers != null) {
@@ -226,7 +225,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public int getStatusCode() {
-        final HttpResponse httpResponse = getHttpResponse();
+        final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
         return httpResponse == null ? null : httpResponse.getStatus();
     }
 
@@ -246,7 +245,7 @@ public class JettyClientCall extends ClientCall {
             final Representation entity = request.getEntity();
 
             // Request entity
-            if (entity != null)
+            if (entity != null && entity.isAvailable())
                 this.httpRequest.content(new InputStreamContentProvider(entity
                         .getStream()));
 
@@ -260,9 +259,8 @@ public class JettyClientCall extends ClientCall {
             // Ensure that the connection is active
             this.inputStreamResponseListener = new InputStreamResponseListener();
             this.httpRequest.send(this.inputStreamResponseListener);
-            long timeout = 5000;
-            this.httpResponse = (HttpResponse) this.inputStreamResponseListener
-                    .get(timeout, TimeUnit.MILLISECONDS);
+            this.httpResponse = this.inputStreamResponseListener
+                    .get(clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
 
             result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException e) {

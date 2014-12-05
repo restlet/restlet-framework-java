@@ -43,7 +43,7 @@ import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.DocumentedApplication;
+import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -124,18 +124,7 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application) {
-        return getDefinition(application, null, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param application
-     *            An application to introspect.
-     */
-    public static Definition getDefinition(Application application,
-            Reference baseRef) {
-        return getDefinition(application, baseRef, null);
+        return getDefinition(application, null, null, false);
     }
 
     /**
@@ -152,29 +141,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
      * @return An application description.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef, Component component) {
-        return getDefinition(application, baseRef, component, null);
-    }
-
-    /**
-     * Returns a APISpark description of the current application. By default,
-     * this method discovers all the resources attached to this application. It
-     * can be overridden to add documentation, list of representations, etc.
-     * 
-     * @param application
-     *            An application to introspect.
-     * @param component
-     *            An component to introspect in order to get extra details such
-     *            as the endpoint.
-     * 
-     * @param introspectionHelpers
-     *            Optional list of introspector plugins
-     * 
-     * @return An application description.
-     */
-    public static Definition getDefinition(Application application,
-            Reference baseRef, Component component,
-            List<? extends IntrospectionHelper> introspectionHelpers) {
+            Reference baseRef, Component component, boolean useSectionNamingPackageStrategy) {
+        List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
 
         // initialize the list to avoid to add a null check statement
         if (introspectionHelpers == null) {
@@ -197,6 +165,8 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 
         // Sections
         CollectInfo collectInfo = new CollectInfo();
+        collectInfo.setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
+
         if (application instanceof DocumentedApplication) {
             DocumentedApplication documentedApplication = (DocumentedApplication) application;
             collectInfo.setSections(documentedApplication.getSections());

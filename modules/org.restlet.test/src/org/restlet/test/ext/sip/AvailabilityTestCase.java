@@ -43,8 +43,8 @@ import org.restlet.test.RestletTestCase;
  * Test case for the Availability reader and writer.
  * 
  * @author Thierry Boileau
- * 
  */
+@Deprecated
 public class AvailabilityTestCase extends RestletTestCase {
 
     @Test

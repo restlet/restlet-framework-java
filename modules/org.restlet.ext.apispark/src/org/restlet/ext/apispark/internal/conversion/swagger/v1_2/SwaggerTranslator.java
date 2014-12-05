@@ -79,7 +79,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.model.Types;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**
@@ -1053,7 +1053,6 @@ public abstract class SwaggerTranslator {
     private static Representation toRepresentation(ModelDeclaration model,
             String name) {
         Representation result = new Representation();
-        result.setIdentifier(name);
         result.setName(name);
         result.setDescription(model.getDescription());
 

@@ -48,6 +48,7 @@ import org.restlet.test.RestletTestCase;
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  * @author Jerome Louvel
  */
+@Deprecated
 public class InputEntityStreamTestCase extends RestletTestCase {
 
     public void testRead() {

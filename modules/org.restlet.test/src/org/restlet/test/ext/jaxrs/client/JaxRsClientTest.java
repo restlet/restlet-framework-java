@@ -44,7 +44,6 @@ import javax.ws.rs.core.Application;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
-import org.restlet.ext.xstream.XstreamConverter;
 import org.restlet.test.ext.jaxrs.services.echo.EchoResource;
 import org.restlet.test.ext.jaxrs.services.echo.EchoResourceImpl;
 import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
@@ -142,6 +141,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
     // });
     // }
 
+    @SuppressWarnings("deprecation")
     private JaxRsClientTest startSocketServerDaemon()
             throws InterruptedException {
 
@@ -151,7 +151,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
                 .getRegisteredConverters();
         for (int i = registeredConverters.size() - 1; i >= 0; i--) {
             ConverterHelper converterHelper = registeredConverters.get(i);
-            if (!(converterHelper instanceof XstreamConverter)) {
+            if (!(converterHelper instanceof org.restlet.ext.xstream.XstreamConverter)) {
                 registeredConverters.remove(i);
             }
         }

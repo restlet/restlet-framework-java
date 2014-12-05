@@ -72,9 +72,9 @@ public class Contract {
         return name;
     }
 
-    public Representation getRepresentation(String identifier) {
+    public Representation getRepresentation(String name) {
         for (Representation result : getRepresentations()) {
-            if (identifier.equals(result.getIdentifier())) {
+            if (name.equals(result.getName())) {
                 return result;
             }
         }
@@ -83,7 +83,7 @@ public class Contract {
 
     public List<Representation> getRepresentations() {
         if (representations == null) {
-            representations = new ArrayList<Representation>();
+            representations = new ArrayList<>();
         }
         return representations;
     }
@@ -99,7 +99,7 @@ public class Contract {
 
     public List<Resource> getResources() {
         if (resources == null) {
-            resources = new ArrayList<Resource>();
+            resources = new ArrayList<>();
         }
         return resources;
     }
@@ -115,7 +115,7 @@ public class Contract {
 
     public List<Section> getSections() {
         if (sections == null) {
-            sections = new ArrayList<Section>();
+            sections = new ArrayList<>();
         }
         return sections;
     }

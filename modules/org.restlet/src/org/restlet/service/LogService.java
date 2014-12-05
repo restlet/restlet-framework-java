@@ -36,6 +36,7 @@ package org.restlet.service;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -152,126 +153,120 @@ public class LogService extends Service {
             int duration) {
         StringBuilder sb = new StringBuilder();
         Request request = response.getRequest();
+        long currentTime = System.currentTimeMillis();
 
-        if (isDebugging()) {
+        // Append the date of the request
+        sb.append(String.format("%tF", currentTime));
+        sb.append('\t');
 
+        // Append the time of the request
+        sb.append(String.format("%tT", currentTime));
+        sb.append('\t');
+
+        // Append the client IP address
+        String clientAddress = request.getClientInfo().getUpstreamAddress();
+        sb.append((clientAddress == null) ? "-" : clientAddress);
+        sb.append('\t');
+
+        // Append the user name (via IDENT protocol)
+        if (isIdentityCheck()) {
+            // [ifndef gae]
+            org.restlet.engine.log.IdentClient ic = new org.restlet.engine.log.IdentClient(
+                    request.getClientInfo().getUpstreamAddress(), request
+                            .getClientInfo().getPort(), response
+                            .getServerInfo().getPort());
+            sb.append((ic.getUserIdentifier() == null) ? "-" : ic
+                    .getUserIdentifier());
+        } else if ((request.getChallengeResponse() != null)
+                && (request.getChallengeResponse().getIdentifier() != null)) {
+            sb.append(request.getChallengeResponse().getIdentifier());
         } else {
-            long currentTime = System.currentTimeMillis();
+            // [enddef]
+            sb.append('-');
+        }
 
-            // Append the date of the request
-            sb.append(String.format("%tF", currentTime));
-            sb.append('\t');
+        sb.append('\t');
 
-            // Append the time of the request
-            sb.append(String.format("%tT", currentTime));
-            sb.append('\t');
+        // Append the server IP address
+        String serverAddress = response.getServerInfo().getAddress();
+        sb.append((serverAddress == null) ? "-" : serverAddress);
+        sb.append('\t');
 
-            // Append the client IP address
-            String clientAddress = request.getClientInfo().getUpstreamAddress();
-            sb.append((clientAddress == null) ? "-" : clientAddress);
-            sb.append('\t');
+        // Append the server port
+        Integer serverport = response.getServerInfo().getPort();
+        sb.append((serverport == null) ? "-" : serverport.toString());
+        sb.append('\t');
 
-            // Append the user name (via IDENT protocol)
-            if (isIdentityCheck()) {
-                // [ifndef gae]
-                org.restlet.engine.log.IdentClient ic = new org.restlet.engine.log.IdentClient(
-                        request.getClientInfo().getUpstreamAddress(), request
-                                .getClientInfo().getPort(), response
-                                .getServerInfo().getPort());
-                sb.append((ic.getUserIdentifier() == null) ? "-" : ic
-                        .getUserIdentifier());
-            } else if ((request.getChallengeResponse() != null)
-                    && (request.getChallengeResponse().getIdentifier() != null)) {
-                sb.append(request.getChallengeResponse().getIdentifier());
-            } else {
-                // [enddef]
-                sb.append('-');
-            }
+        // Append the method name
+        String methodName = (request.getMethod() == null) ? "-" : request
+                .getMethod().getName();
+        sb.append((methodName == null) ? "-" : methodName);
 
-            sb.append('\t');
+        // Append the resource path
+        sb.append('\t');
+        String resourcePath = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getPath();
+        sb.append((resourcePath == null) ? "-" : resourcePath);
 
-            // Append the server IP address
-            String serverAddress = response.getServerInfo().getAddress();
-            sb.append((serverAddress == null) ? "-" : serverAddress);
-            sb.append('\t');
+        // Append the resource query
+        sb.append('\t');
+        String resourceQuery = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getQuery();
+        sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
-            // Append the server port
-            Integer serverport = response.getServerInfo().getPort();
-            sb.append((serverport == null) ? "-" : serverport.toString());
-            sb.append('\t');
+        // Append the status code
+        sb.append('\t');
+        sb.append((response.getStatus() == null) ? "-" : Integer
+                .toString(response.getStatus().getCode()));
 
-            // Append the method name
-            String methodName = (request.getMethod() == null) ? "-" : request
-                    .getMethod().getName();
-            sb.append((methodName == null) ? "-" : methodName);
+        // Append the returned size
+        sb.append('\t');
 
-            // Append the resource path
-            sb.append('\t');
-            String resourcePath = (request.getResourceRef() == null) ? "-"
-                    : request.getResourceRef().getPath();
-            sb.append((resourcePath == null) ? "-" : resourcePath);
+        if (!response.isEntityAvailable()
+                || Status.REDIRECTION_NOT_MODIFIED.equals(response.getStatus())
+                || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
+                || Method.HEAD.equals(request.getMethod())) {
+            sb.append('0');
+        } else {
+            sb.append((response.getEntity().getSize() == -1) ? "-" : Long
+                    .toString(response.getEntity().getSize()));
+        }
 
-            // Append the resource query
-            sb.append('\t');
-            String resourceQuery = (request.getResourceRef() == null) ? "-"
-                    : request.getResourceRef().getQuery();
-            sb.append((resourceQuery == null) ? "-" : resourceQuery);
+        // Append the received size
+        sb.append('\t');
 
-            // Append the status code
-            sb.append('\t');
-            sb.append((response.getStatus() == null) ? "-" : Integer
-                    .toString(response.getStatus().getCode()));
-
-            // Append the returned size
-            sb.append('\t');
-
-            if (!response.isEntityAvailable()
-                    || Status.REDIRECTION_NOT_MODIFIED.equals(response
-                            .getStatus())
-                    || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
-                    || Method.HEAD.equals(request.getMethod())) {
+        try {
+            if (request.getEntity() == null) {
                 sb.append('0');
             } else {
-                sb.append((response.getEntity().getSize() == -1) ? "-" : Long
-                        .toString(response.getEntity().getSize()));
+                sb.append((request.getEntity().getSize() == -1) ? "-" : Long
+                        .toString(request.getEntity().getSize()));
             }
-
-            // Append the received size
-            sb.append('\t');
-
-            try {
-                if (request.getEntity() == null) {
-                    sb.append('0');
-                } else {
-                    sb.append((request.getEntity().getSize() == -1) ? "-"
-                            : Long.toString(request.getEntity().getSize()));
-                }
-            } catch (Throwable t) {
-                // Error while getting the request's entity, cf issue #931
-                Engine.getLogger(LogService.class).log(Level.SEVERE,
-                        "Cannot retrieve size of request's entity", t);
-                sb.append("-");
-            }
-
-            // Append the duration
-            sb.append('\t');
-            sb.append(duration);
-
-            // Append the host reference
-            sb.append('\t');
-            sb.append((request.getHostRef() == null) ? "-" : request
-                    .getHostRef().toString());
-
-            // Append the agent name
-            sb.append('\t');
-            String agentName = request.getClientInfo().getAgent();
-            sb.append((agentName == null) ? "-" : agentName);
-
-            // Append the referrer
-            sb.append('\t');
-            sb.append((request.getReferrerRef() == null) ? "-" : request
-                    .getReferrerRef().getIdentifier());
+        } catch (Throwable t) {
+            // Error while getting the request's entity, cf issue #931
+            Engine.getLogger(LogService.class).log(Level.SEVERE,
+                    "Cannot retrieve size of request's entity", t);
+            sb.append("-");
         }
+
+        // Append the duration
+        sb.append('\t');
+        sb.append(duration);
+
+        // Append the host reference
+        sb.append('\t');
+        sb.append((request.getHostRef() == null) ? "-" : request.getHostRef()
+                .toString());
+
+        // Append the agent name
+        sb.append('\t');
+        String agentName = request.getClientInfo().getAgent();
+        sb.append((agentName == null) ? "-" : agentName);
+
+        // Append the referrer
+        sb.append('\t');
+        sb.append((request.getReferrerRef() == null) ? "-" : request
+                .getReferrerRef().getIdentifier());
 
         return sb.toString();
     }
@@ -348,7 +343,9 @@ public class LogService extends Service {
      * Indicates if the debugging mode is enabled. False by default.
      * 
      * @return True if the debugging mode is enabled.
+     * @deprecated Rely on {@link Application#isDebugging()} instead.
      */
+    @Deprecated
     protected boolean isDebugging() {
         return debugging;
     }
@@ -382,7 +379,9 @@ public class LogService extends Service {
      * 
      * @param debugging
      *            True if the debugging mode is enabled.
+     * @deprecated Rely on {@link Application#setDebugging(boolean)} instead.
      */
+    @Deprecated
     protected void setDebugging(boolean debugging) {
         this.debugging = debugging;
     }

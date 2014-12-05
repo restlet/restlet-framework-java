@@ -47,8 +47,8 @@ import org.restlet.test.RestletTestCase;
  * Test case for the Address reader and writer.
  * 
  * @author Thierry Boileau
- * 
  */
+@Deprecated
 public class AddressTestCase extends RestletTestCase {
 
     @Test
@@ -98,6 +98,7 @@ public class AddressTestCase extends RestletTestCase {
         assertEquals("a48s", parameter.getValue());
     }
 
+    @SuppressWarnings("resource")
     @Test
     public void testWriting() throws IOException {
         Address a = new Address();

@@ -61,7 +61,7 @@ public class HttpServerHelper extends JettyServerHelper {
 
     /**
      * Creates new internal Jetty connection factories.
-     * 
+     *
      * @param configuration
      *            The HTTP configuration.
      * @return New internal Jetty connection factories.

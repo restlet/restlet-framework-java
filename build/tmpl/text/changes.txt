@@ -4,17 +4,65 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-    - Enhancements
-      -        
 
-    - API changes
-      -        
+    - Enhancements
+      - 
 
     - Bugs fixed
-      -        
-	  
-	- Misc
-	  - 
+      - Restored HTML variant of error status representations returned by default.
+        Now handled by the ConverterService via a StatusInfoHtmlConverter in engine.
+
+    - Deprecations
+      - Deprecated org.restlet.Component XML configuration.
+        Usage of XML support in Spring extension is recommended instead.
+      - Deprecated e4 extension.
+        Usage of Guice or Spring extensions is recommended instead.
+      - Deprecated JDBC extension. 
+        Use a persistence technology such as Mybatis or Hibernate instead.
+      - Deprecated JiBX and XStream extensions.
+        Use an XML serialization technology such as Jackson instead.
+      - Deprecated jSSLUtils, ROME, XDB extensions.
+        Libraries not actively developed anymore.
+      - Deprecated Apache HTTP Client and Simple extensions.
+        Will be removed to favor lower-level network extensions such as
+        Jetty and Netty, allowing more control at the Restlet API level. 
+      - Deprecated SIP, WebDAV extensions.
+        Will be removed to focus on Web APIs.
+        
+    - Misc
+      - 
+
+- 2.3 Release Candidate 1 (11/21/2014)
+    - Enhancements
+      - Upgraded Jetty to version 9.2.4
+      - Added support for SPDY via the Jetty extension.
+        Contributed by Tal Liron.
+      - 422 unprocessable entity status returned when errors happens when
+        deserializing a representation.
+      - Exceptions annotated with @Status are now automatically serialized
+        using ConverterService on both client-side and server-side.
+        Client-side resource proxy automatically re-throw the de-serialized
+        exception back to the API call invoker. Note that when the application
+        is not in debugging mode, the stacktrace is cleared before
+        serialization and a warning is triggered if a cause is available in
+        the exception.
+
+    - API changes
+      - Deprecated protected LogService#debugging property.
+      - Added Application#debugging Boolean property and a start message 
+        indicating in which mode your application is.
+      - Added getName() and getDescription() methods in ServerResource for
+        documentation purpose. Note that this could conflict with existing
+        subclasses.
+
+    - Bugs fixed
+      - Prevent potential security issue with Directory class.
+        Contributed by Andrew Hughes.
+      
+    - Misc
+      - Remove the outdated example based on the O'Reilly's book
+        "RESTful Web Services" and the related db4o dependency.
+        Issue reported by Thomas Munz.
 
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements

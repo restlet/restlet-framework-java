@@ -93,15 +93,17 @@ public class JettyServerCall extends ServerCall {
         // Flush the response
         try {
             getChannel().getResponse().flushBuffer();
-        } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to flush the response", ex);
+        } catch (IOException e) {
+            getLogger().log(Level.FINE, "Unable to flush the response", e);
+        } catch (IllegalStateException e) {
+            getLogger().log(Level.WARNING, "Unable to flush the response", e);
         }
 
         // Fully complete the response
         try {
             getChannel().getResponse().closeOutput();
-        } catch (IOException ex) {
-            getLogger().log(Level.FINE, "Unable to complete the response", ex);
+        } catch (IOException e) {
+            getLogger().log(Level.FINE, "Unable to complete the response", e);
         }
     }
 

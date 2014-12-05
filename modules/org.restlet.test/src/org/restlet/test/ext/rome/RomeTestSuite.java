@@ -42,6 +42,7 @@ import junit.framework.TestSuite;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public class RomeTestSuite extends TestCase {
 
     public static Test suite() {

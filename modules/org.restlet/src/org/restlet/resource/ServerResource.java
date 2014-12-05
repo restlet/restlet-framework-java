@@ -276,6 +276,9 @@ public abstract class ServerResource extends Resource {
 
         if (getResponse() != null) {
             getResponse().setStatus(status);
+            Representation errorEntity = getStatusService().toRepresentation(
+                    status, this);
+            getResponse().setEntity(errorEntity);
         }
     }
 

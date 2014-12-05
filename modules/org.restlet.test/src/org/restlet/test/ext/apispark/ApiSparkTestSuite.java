@@ -49,7 +49,6 @@ public class ApiSparkTestSuite extends TestCase {
     public static Test suite() {
         TestSuite result = new TestSuite();
         result.setName("Swagger extension");
-        result.addTestSuite(AgentServiceTestCase.class);
         result.addTestSuite(SwaggerTranslatorTestCase.class);
         result.addTestSuite(Swagger2TranslatorTestCase.class);
         return result;

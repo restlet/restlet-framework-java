@@ -93,6 +93,7 @@ import org.restlet.test.util.TemplateTestCase;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class RestletTestSuite extends TestSuite {
 
     /**

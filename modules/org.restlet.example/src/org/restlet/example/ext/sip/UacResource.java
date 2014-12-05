@@ -42,6 +42,7 @@ import org.restlet.ext.sip.Invite;
  * 
  * @author Jerome Louvel
  */
+@Deprecated
 public interface UacResource {
 
     @Ack
