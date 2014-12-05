@@ -35,6 +35,7 @@ package org.restlet.ext.apispark.internal.utils;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class SampleUtils {
         } else if ("boolean".equals(propertyType)) {
             result = false;
         } else if ("date".equals(propertyType)) {
-            result = "12/10/2014";
+            result = "Sun, 06 Nov 1994 08:49:37 GMT";
         } else {
             result = null;
         }
