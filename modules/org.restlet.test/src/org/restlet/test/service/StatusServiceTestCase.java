@@ -96,8 +96,10 @@ public class StatusServiceTestCase extends RestletTestCase {
         Status expectedStatus = Status.CLIENT_ERROR_BAD_REQUEST;
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
         expectedRepresentationMap.put("code", expectedStatus.getCode());
+        expectedRepresentationMap.put("contactEmail", null);
         expectedRepresentationMap.put("description",
                 expectedStatus.getDescription());
+        expectedRepresentationMap.put("homeRef", null);
         expectedRepresentationMap.put("reasonPhrase",
                 expectedStatus.getReasonPhrase());
         expectedRepresentationMap.put("uri",
@@ -122,6 +124,7 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         // verify
         HashMap<String, Object> expectedRepresentationMap = new LinkedHashMap<>();
+        expectedRepresentationMap.put("cause", null);
         expectedRepresentationMap.put("stackTrace", exception.getStackTrace());
         expectedRepresentationMap.put("value", 50);
         expectedRepresentationMap.put("message", "test message");
