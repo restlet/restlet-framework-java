@@ -55,14 +55,18 @@ public class SampleUtils {
 
     public static String convertSampleAccordingToMediaType(Map<String, Object> content,
                                                   String mediaTypeAsString,
-                                                  String representationName)
-            throws IOException {
+                                                  String representationName) {
         MetadataService ms = new MetadataService();
         MediaType mediaType = MediaType.valueOf(mediaTypeAsString);
         if (!supportedExtensions.contains(ms.getExtension(mediaType))) {
             return null;
         }
-        String text = new JacksonRepresentation<>(mediaType, content).getText();
+        String text = null;
+        try {
+            text = new JacksonRepresentation<>(mediaType, content).getText();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (ms.getAllMediaTypes("xml").contains(mediaType)) {
             text = text.replaceAll("HashMap", representationName);
         }

@@ -288,7 +288,7 @@ public abstract class RamlTranslator {
                                             .convertSampleAccordingToMediaType(representationSample,
                                                     mediaType,
                                                     representationType));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             LOGGER.log(Level.WARNING,
                                     "Error when writting sample.", e);
                         }
@@ -369,7 +369,7 @@ public abstract class RamlTranslator {
                                             .convertSampleAccordingToMediaType(representationSample,
                                                     mediaType,
                                                     representationType));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             LOGGER.log(Level.WARNING,
                                     "Error when writting sample.", e);
                         }
