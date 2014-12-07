@@ -1194,7 +1194,6 @@ public abstract class SwaggerTranslator {
                     "Definition successfully retrieved from Swagger definition");
             return definition;
         } catch (Exception e) {
-            e.printStackTrace();
             if (e instanceof FileNotFoundException) {
                 throw new TranslationException("file", e.getMessage(), e);
             } else {
