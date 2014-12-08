@@ -345,27 +345,29 @@ public abstract class RamlTranslator {
                                     .getOutputPayLoad().getType());
                         }
                     }
-                    MimeType ramlOutRepresentationWithMediaType;
-                    for (String mediaType : operation.getProduces()) {
-                        ramlOutRepresentationWithMediaType = new MimeType();
-                        ramlOutRepresentationWithMediaType
-                                .setSchema(ramlOutRepresentation.getSchema());
-                        try {
-                            String representationType = response
-                                    .getOutputPayLoad().getType();
-                            Map<String, Object> representationSample = representationSamples
-                                    .get(representationType);
+                    if (response.getOutputPayLoad() != null) {
+                        MimeType ramlOutRepresentationWithMediaType;
+                        for (String mediaType : operation.getProduces()) {
+                            ramlOutRepresentationWithMediaType = new MimeType();
                             ramlOutRepresentationWithMediaType
-                                    .setExample(SampleUtils
-                                            .convertSampleAccordingToMediaType(representationSample,
-                                                    mediaType,
-                                                    representationType));
-                        } catch (Exception e) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error when writting sample.", e);
+                                    .setSchema(ramlOutRepresentation.getSchema());
+                            try {
+                                String representationType = response
+                                        .getOutputPayLoad().getType();
+                                Map<String, Object> representationSample = representationSamples
+                                        .get(representationType);
+                                ramlOutRepresentationWithMediaType
+                                        .setExample(SampleUtils
+                                                .convertSampleAccordingToMediaType(representationSample,
+                                                        mediaType,
+                                                        representationType));
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING,
+                                        "Error when writting sample.", e);
+                            }
+                            ramlResponse.getBody().put(mediaType,
+                                    ramlOutRepresentationWithMediaType);
                         }
-                        ramlResponse.getBody().put(mediaType,
-                                ramlOutRepresentationWithMediaType);
                     }
                     action.getResponses().put(
                             Integer.toString(response.getCode()), ramlResponse);
