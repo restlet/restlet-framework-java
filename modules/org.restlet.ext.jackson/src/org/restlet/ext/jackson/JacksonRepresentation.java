@@ -35,7 +35,6 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -230,7 +229,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             result = new ObjectMapper(jsonFactory);
         }
 
-        result.setSerializationInclusion(Include.NON_NULL);
         return result;
     }
 
