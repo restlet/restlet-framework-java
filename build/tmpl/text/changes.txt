@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-      - 
+      - Fixed bug in OData extension when looping through a multi pages collection.
+        Reported by Vishnu Perabathini.
     - Enhancements
       - 
 
