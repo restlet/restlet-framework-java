@@ -29,25 +29,17 @@ import java.io.OutputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
@@ -70,17 +62,19 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * True for expanding entity references when parsing XML representations;
      * default value provided by system property
      * "org.restlet.ext.xml.expandingEntityRefs", false by default.
+     * @deprecated Use {@link org.restlet.ext.jackson.ObjectMappers.XmlMapperFactory#XML_EXPANDING_ENTITY_REFS}
      */
-    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
-            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+    @Deprecated
+    public static boolean XML_EXPANDING_ENTITY_REFS = ObjectMappers.XmlMapperFactory.XML_EXPANDING_ENTITY_REFS;
 
     /**
      * True for validating DTD documents when parsing XML representations;
      * default value provided by system property
      * "org.restlet.ext.xml.validatingDtd", false by default.
+     * @deprecated Use {@link org.restlet.ext.jackson.ObjectMappers.XmlMapperFactory#XML_VALIDATING_DTD}
      */
-    public static boolean XML_VALIDATING_DTD = Boolean
-            .getBoolean("org.restlet.ext.xml.validatingDtd");
+    @Deprecated
+    public static boolean XML_VALIDATING_DTD = ObjectMappers.XmlMapperFactory.XML_VALIDATING_DTD;
 
     /** The modifiable Jackson CSV schema. */
     private CsvSchema csvSchema;
@@ -192,46 +186,31 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * @return The Jackson object mapper.
      */
     protected ObjectMapper createObjectMapper() {
-        ObjectMapper result = null;
-
         if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
-            JsonFactory jsonFactory = new JsonFactory();
-            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(jsonFactory);
+            return ObjectMappers.getDefaultJsonMapperFactory().newObjectMapper();
         } else if (MediaType.APPLICATION_JSON_SMILE
                 .isCompatible(getMediaType())) {
-            SmileFactory smileFactory = new SmileFactory();
-            smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(smileFactory);
+            return ObjectMappers.getDefaultJsonSmileMapperFactory().newObjectMapper();
         } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
                 || MediaType.TEXT_XML.isCompatible(getMediaType())) {
-            XMLInputFactory xif = XMLInputFactory.newFactory();
-            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
-                    isExpandingEntityRefs());
-            xif.setProperty(XMLInputFactory.SUPPORT_DTD,
-                    isExpandingEntityRefs());
-            xif.setProperty(XMLInputFactory.IS_VALIDATING, isValidatingDtd());
-            XMLOutputFactory xof = XMLOutputFactory.newFactory();
-            XmlFactory xmlFactory = new XmlFactory(xif, xof);
-            xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new XmlMapper(xmlFactory);
+            ObjectMapper objectMapper = ObjectMappers.getDefaultXmlMapperFactory().newObjectMapper();
+            //for backward compatibility (deprecated)
+            if (objectMapper instanceof XmlMapper) {
+                XmlMapper xmlMapper = (XmlMapper) objectMapper;
+                XMLInputFactory xif = xmlMapper.getFactory().getXMLInputFactory();
+                xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, isExpandingEntityRefs());
+                xif.setProperty(XMLInputFactory.SUPPORT_DTD, isExpandingEntityRefs());
+                xif.setProperty(XMLInputFactory.IS_VALIDATING, isValidatingDtd());
+            }
+            return objectMapper;
         } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())
                 || MediaType.TEXT_YAML.isCompatible(getMediaType())) {
-            YAMLFactory yamlFactory = new YAMLFactory();
-            yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(yamlFactory);
+            return ObjectMappers.getDefaultYamlMapperFactory().newObjectMapper();
         } else if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
-            CsvFactory csvFactory = new CsvFactory();
-            csvFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new CsvMapper(csvFactory);
+            return ObjectMappers.getDefaultCsvMapperFactory().newObjectMapper();
         } else {
-            JsonFactory jsonFactory = new JsonFactory();
-            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-            result = new ObjectMapper(jsonFactory);
+            return ObjectMappers.getDefaultJsonMapperFactory().newObjectMapper();
         }
-
-        result.setSerializationInclusion(Include.NON_NULL);
-        return result;
     }
 
     /**
@@ -363,7 +342,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * the value of this is set to true.
      * 
      * @return True if the parser will expand entity reference nodes.
+     * @deprecated configure it globally in {@link ObjectMappers.XmlMapperFactory}
+     *          or override {@link #createObjectMapper()} to configure it for an instance only.
      */
+    @Deprecated
     public boolean isExpandingEntityRefs() {
         return expandingEntityRefs;
     }
@@ -373,7 +355,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * against an XML schema if one is referenced within the contents.
      * 
      * @return True if the schema-based validation is enabled.
+     * @deprecated configure it globally in {@link ObjectMappers.XmlMapperFactory}
+     *          or override {@link #createObjectMapper()} to configure it for an instance only.
      */
+    @Deprecated
     public boolean isValidatingDtd() {
         return validatingDtd;
     }
@@ -394,7 +379,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * 
      * @param expandEntityRefs
      *            True if the parser will expand entity reference nodes.
+     * @deprecated configure it globally in {@link ObjectMappers.XmlMapperFactory}
+     *              or override {@link #createObjectMapper()} to configure it for an instance only.
      */
+    @Deprecated
     public void setExpandingEntityRefs(boolean expandEntityRefs) {
         this.expandingEntityRefs = expandEntityRefs;
     }
@@ -455,7 +443,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * 
      * @param validating
      *            The new validation flag to set.
+     * @deprecated configure it globally in {@link ObjectMappers.XmlMapperFactory}
+     *              or override {@link #createObjectMapper()} to configure it for an instance only.
      */
+    @Deprecated
     public void setValidatingDtd(boolean validating) {
         this.validatingDtd = validating;
     }
