@@ -3,8 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
-
+- 2.3 Release Candidate 2 (12/08/2014)
     - Enhancements
       - 
 
