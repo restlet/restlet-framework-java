@@ -305,19 +305,25 @@ public class Query<T> implements Iterable<T> {
      */
     protected String createTargetUri() {
         String service = getService().getServiceRef().toString();
-        StringBuilder result = new StringBuilder(service);
+        StringBuilder result = new StringBuilder();
         String subpath = (getSubpath() == null) ? "" : getSubpath();
-        if (service.endsWith("/")) {
-            if (subpath.startsWith("/")) {
-                result.append(subpath.substring(1));
-            } else {
-                result.append(subpath);
-            }
+        Reference ref = new Reference(subpath);
+        if (ref.isAbsolute()) {
+            result = new StringBuilder(subpath);
         } else {
-            if (subpath.startsWith("/")) {
-                result.append(subpath);
+            result = new StringBuilder(service);
+            if (service.endsWith("/")) {
+                if (subpath.startsWith("/")) {
+                    result.append(subpath.substring(1));
+                } else {
+                    result.append(subpath);
+                }
             } else {
-                result.append("/").append(subpath);
+                if (subpath.startsWith("/")) {
+                    result.append(subpath);
+                } else {
+                    result.append("/").append(subpath);
+                }
             }
         }
         if (getQuery() != null) {

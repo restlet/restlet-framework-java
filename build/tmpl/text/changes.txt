@@ -11,6 +11,8 @@ Changes log
     - Bugs fixed
       - Restored HTML variant of error status representations returned by default.
         Now handled by the ConverterService via a StatusInfoHtmlConverter in engine.
+      - Fixed bug in OData extension when looping through a multi pages collection.
+        Reported by Vishnu Perabathini.
 
     - Deprecations
       - Deprecated org.restlet.Component XML configuration.
