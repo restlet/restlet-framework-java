@@ -30,7 +30,7 @@ Changes log
         Will be removed to focus on Web APIs.
         
     - Misc
-      - 
+      - Removed the Tanuki's Java Service Wrapper library.
 
 - 2.3 Release Candidate 1 (11/21/2014)
     - Enhancements
