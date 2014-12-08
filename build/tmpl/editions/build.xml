@@ -875,17 +875,6 @@
 		<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
 		<mkdir dir="${dist-classic}/src" />
 
-		<!-- Copy the binaries -->
-		<if>
-			<equals arg1="${edition}" arg2="jse" />
-			<then>
-				<mkdir dir="${dist-classic}/bin" />
-				<copy todir="${dist-classic}/bin">
-					<fileset dir="${bin}" />
-				</copy>
-			</then>
-		</if>
-
 		<!-- Copy the Javadoc -->
 		<if>
 			<istrue value="${do-javadoc}" />
