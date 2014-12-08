@@ -51,7 +51,9 @@ public class SampleUtils {
             "xml", "yaml", "json", "jsonsmile");
 
     private static final List<String> numberTypes = Arrays.asList("byte",
-            "short", "integer", "long", "float", "double");
+            "short", "integer", "long");
+
+    private static final List<String> decimalTypes = Arrays.asList("float", "double");
 
     public static String convertSampleAccordingToMediaType(Map<String, Object> content,
                                                   String mediaTypeAsString,
@@ -61,7 +63,7 @@ public class SampleUtils {
         if (!supportedExtensions.contains(ms.getExtension(mediaType))) {
             return null;
         }
-        String text = null;
+        String text;
         try {
             text = new JacksonRepresentation<>(mediaType, content).getText();
         } catch (IOException e) {
@@ -78,34 +80,57 @@ public class SampleUtils {
         List<Property> properties = representation.getProperties();
         Map<String, Object> content = new HashMap<>();
         for (Property property : properties) {
-            String fieldName = property.getName();
-            Object fieldValue = property.getExample() != null ?
-                    property.getExample() :
-                    getSampleValue(property.getType(), property.getName(), property.getMaxOccurs() != 1);
-            content.put(fieldName, fieldValue);
+            content.put(property.getName(), getFieldSampleValue(property));
         }
         return content;
     }
 
-    public static Object getSampleValue(String propertyType, String propertyName, boolean isList) {
-        Object result;
+    private static Object getFieldSampleValue(Property property) {
+        Object sampleValue = property.getExample() != null ?
+                convertSampleValue(property.getType(), property.getExample()) :
+                getPropertyDefaultSampleValue(property.getType(), property.getName());
 
+        if (property.getMaxOccurs() != 1) {
+            if (sampleValue != null) {
+                sampleValue = Arrays.asList(sampleValue);
+            } else {
+                sampleValue = Arrays.asList();
+            }
+        }
+        return sampleValue;
+    }
+
+    public static Object getPropertyDefaultSampleValue(String propertyType, String propertyName) {
         if ("string".equals(propertyType)) {
-            result = "sample " + propertyName;
+            return "sample " + propertyName;
         } else if (numberTypes.contains(propertyType)) {
-            result = 0;
+            return 1;
+        } else if (decimalTypes.contains(propertyType)) {
+            return 1.1F;
         } else if ("boolean".equals(propertyType)) {
-            result = false;
+            return false;
         } else if ("date".equals(propertyType)) {
-            result = "Sun, 06 Nov 1994 08:49:37 GMT";
+            //do not set default value for date because we don't know the expected type
+            return null;
         } else {
-            result = null;
+            return null;
         }
+    }
 
-        if (isList) {
-            result = Arrays.asList(result);
+    public static Object convertSampleValue(String propertyType, String sampleValue) {
+        if ("string".equals(propertyType)) {
+            return sampleValue;
+        } else if (numberTypes.contains(propertyType)) {
+            return Long.parseLong(sampleValue);
+        } else if (decimalTypes.contains(propertyType)) {
+            return Double.parseDouble(sampleValue);
+        } else if ("boolean".equals(propertyType)) {
+            return Boolean.parseBoolean(sampleValue);
+        } else if ("date".equals(propertyType)) {
+            //do not convert date sample because we don't know the expected type
+            return sampleValue;
+        } else {
+            return null;
         }
-
-        return result;
     }
 }
