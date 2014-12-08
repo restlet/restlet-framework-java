@@ -31,6 +31,8 @@ Changes log
         
     - Misc
       - Removed the Tanuki's Java Service Wrapper library.
+      - Removed the CDDL and LGPL licences, kept Apache License, Version 2.0 and
+        Eclipse Public License -v 1.0.
 
 - 2.3 Release Candidate 1 (11/21/2014)
     - Enhancements
