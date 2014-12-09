@@ -408,17 +408,8 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Component or null if unable to create.
      */
-
-    /**
-     * Creates the single Component used by this Servlet.
-     * 
-     * @return The newly created Component or null if unable to create.
-     */
-    @SuppressWarnings("deprecation")
     protected Component createComponent() {
-        // Detect both customized Component and configuration with restlet.xml
-        // file.
-        Client warClient = createWarClient(new Context(), getServletConfig());
+        // Detect customized Component
         String componentClassName = getInitParameter(COMPONENT_KEY, null);
         Class<?> targetClass = null;
         Component component = null;
@@ -431,46 +422,56 @@ public class ServerServlet extends HttpServlet {
                         + componentClassName, e);
             }
         }
+        log("[Restlet] ServerServlet: component class is " + componentClassName);
 
-        // Look for the Component XML configuration file.
+        // Detect the configuration of Component using restlet.xml file.
+        Client warClient = createWarClient(new Context(), getServletConfig());
         Response response = warClient.handle(new Request(Method.GET,
                 "war:///WEB-INF/restlet.xml"));
 
-        try {
-            log("[Restlet] ServerServlet: component class is "
-                    + componentClassName);
-            if (response.getStatus().isSuccess()
-                    && response.isEntityAvailable()) {
-                if (targetClass != null) {
+        boolean xmlConfiguration = response.getStatus().isSuccess()
+                && response.isEntityAvailable();
+
+        if (targetClass != null) {
+            try {
+                if (xmlConfiguration) {
                     @SuppressWarnings("unchecked")
                     Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
                             .getConstructor(Representation.class);
 
-                    log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
+                    log("[Restlet] ServerServlet: configuring custom component from war:///WEB-INF/restlet.xml");
                     component = (Component) ctor.newInstance(response
                             .getEntity());
                 } else {
-                    component = new Component(response.getEntity());
+                    @SuppressWarnings("unchecked")
+                    Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
+                            .getConstructor();
+
+                    log("[Restlet] ServerServlet: instantiating custom component");
+                    component = (Component) ctor.newInstance();
                 }
+            } catch (IllegalAccessException e) {
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
+                        + componentClassName, e);
+            } catch (InvocationTargetException e) {
+                log("[Restlet] ServerServlet encountered an exception instantiating the target class "
+                        + componentClassName, e.getTargetException());
+            } catch (InstantiationException e) {
+                log(String.format(
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                        componentClassName,
+                        ((xmlConfiguration) ? "a constructor taking a Representation as single parameter"
+                                : "an empty constructor")), e);
+            } catch (NoSuchMethodException e) {
+                log(String.format(
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                        componentClassName,
+                        ((xmlConfiguration) ? "a constructor taking Representation as single parameter"
+                                : "an empty constructor")), e);
             }
-        } catch (IllegalAccessException e) {
-            log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
-                    + componentClassName, e);
-        } catch (InvocationTargetException e) {
-            log("[Restlet] ServerServlet encountered an exception instantiating the target class "
-                    + componentClassName, e.getTargetException());
-        } catch (InstantiationException e) {
-            log(String.format(
-                    "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
-                    componentClassName,
-                    ((response.getStatus().isSuccess()) ? "a constructor taking a Representation as single parameter"
-                            : "an empty constructor")), e);
-        } catch (NoSuchMethodException e) {
-            log(String.format(
-                    "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
-                    componentClassName,
-                    ((response.getStatus().isSuccess()) ? "a constructor taking Representation as single parameter"
-                            : "an empty constructor")), e);
+        } else if (xmlConfiguration) {
+            log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
+            component = new Component(response.getEntity());
         }
 
         // Create the default Component

@@ -4,11 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - Fixed usage of custom Component with ServerServlet (issue #926).
+        Reported by Graham Smith.
 
 - 2.3 Release Candidate 2 (12/08/2014)
-    - Enhancements
-      - 
-
     - Bugs fixed
       - Restored HTML variant of error status representations returned by default.
         Now handled by the ConverterService via a StatusInfoHtmlConverter in engine.
