@@ -94,7 +94,6 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedStatus.getCode(), map.get("code"));
         assertEquals(expectedStatus.getDescription(), map.get("description"));
         assertEquals(expectedStatus.getReasonPhrase(), map.get("reasonPhrase"));
-        assertEquals(expectedStatus.getUri(), map.get("uri"));
     }
 
     public void testSerializedException() throws IOException {
@@ -109,7 +108,6 @@ public class StatusServiceTestCase extends RestletTestCase {
                 new Response(request));
 
         // verify
-
         assertEquals(MediaType.APPLICATION_JSON, representation.getMediaType());
         Status401SerializableException e = new JacksonRepresentation<>(
                 representation, Status401SerializableException.class)
