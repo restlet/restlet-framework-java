@@ -25,7 +25,6 @@
 package org.restlet.service;
 
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 import org.restlet.Application;
 import org.restlet.Context;
@@ -464,15 +463,16 @@ public class LogService extends Service {
 
         this.responseLogTemplate = (getResponseLogFormat() == null) ? null
                 : new Template(getResponseLogFormat());
-
+        // [ifndef gae]
         if (getLogPropertiesRef() != null) {
             Representation logProperties = new ClientResource(getContext(),
                     getLogPropertiesRef()).get();
 
             if (logProperties != null) {
-                LogManager.getLogManager().readConfiguration(
+                java.util.logging.LogManager.getLogManager().readConfiguration(
                         logProperties.getStream());
             }
         }
+        // [enddef]
     }
 }

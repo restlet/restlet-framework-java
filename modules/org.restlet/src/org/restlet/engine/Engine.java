@@ -1032,7 +1032,7 @@ public class Engine {
         }
     }
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     /**
      * Registers a factory that is used by the URL class to create the
      * {@link java.net.URLConnection} instances when the
