@@ -24,11 +24,6 @@
 
 package org.restlet.engine.converter;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.application.StatusInfo;
@@ -38,6 +33,9 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Converter for the {@link StatusInfo} class.
@@ -53,6 +51,31 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
     /** Variant with media type text/html. */
     private static final VariantInfo VARIANT_TEXT_HTML = new VariantInfo(
             MediaType.TEXT_HTML);
+
+    /** The email address of the administrator to contact in case of error. */
+    private String contactEmail;
+
+    /** The home URI to propose in case of error. */
+    private String homeRef;
+
+    /**
+     * Returns the email address of the administrator to contact in case of
+     * error.
+     *
+     * @return The email address.
+     */
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    /**
+     * Returns the home URI to propose in case of error.
+     *
+     * @return The home URI.
+     */
+    public String getHomeRef() {
+        return homeRef;
+    }
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
@@ -72,7 +95,7 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
      * @param status
      *            The status.
      * @return The status information.
-     * @see #getDefaultRepresentation(Status, Request, Response)
+     * @see #toHtml(org.restlet.engine.application.StatusInfo)
      */
     protected String getStatusLabel(StatusInfo status) {
         return (status.getReasonPhrase() != null) ? status.getReasonPhrase()
@@ -124,15 +147,36 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
     }
 
     /**
+     * Sets the email address of the administrator to contact in case of error.
+     *
+     * @param email
+     *            The email address.
+     */
+    public void setContactEmail(String email) {
+        this.contactEmail = email;
+    }
+
+    /**
+     * Sets the home URI to propose in case of error.
+     *
+     * @param homeRef
+     *            The home URI.
+     */
+    public void setHomeRef(String homeRef) {
+        this.homeRef = homeRef;
+    }
+
+    /**
      * Returns a representation for the given status.<br>
      * In order to customize the default representation, this method can be
      * overridden.
      * 
-     * @param status
+     * @param statusInfo
      *            The status info to represent.
      * @return The representation of the given status.
      */
-    protected Representation toHtml(StatusInfo status) {
+    protected Representation toHtml(StatusInfo statusInfo) {
+        Status status = Status.valueOf(statusInfo.getCode());
         final StringBuilder sb = new StringBuilder();
         sb.append("<html>\n");
         sb.append("<head>\n");
@@ -141,11 +185,11 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
         sb.append("<body style=\"font-family: sans-serif;\">\n");
 
         sb.append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
-        sb.append(StringUtils.htmlEscape(getStatusLabel(status)));
+        sb.append(StringUtils.htmlEscape(getStatusLabel(statusInfo)));
         sb.append("</p>\n");
-        if (status.getDescription() != null) {
+        if (statusInfo.getDescription() != null) {
             sb.append("<p>");
-            sb.append(StringUtils.htmlEscape(status.getDescription()));
+            sb.append(StringUtils.htmlEscape(statusInfo.getDescription()));
             sb.append("</p>\n");
         }
 
@@ -153,15 +197,15 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
         sb.append(status.getUri());
         sb.append("\">here</a>.<br>\n");
 
-        if (status.getContactEmail() != null) {
+        if (getContactEmail() != null) {
             sb.append("For further assistance, you can contact the <a href=\"mailto:");
-            sb.append(status.getContactEmail());
+            sb.append(getContactEmail());
             sb.append("\">administrator</a>.<br>\n");
         }
 
-        if (status.getHomeRef() != null) {
+        if (getHomeRef() != null) {
             sb.append("Please continue your visit at our <a href=\"");
-            sb.append(status.getHomeRef());
+            sb.append(getHomeRef());
             sb.append("\">home page</a>.\n");
         }
 
