@@ -248,7 +248,8 @@ public class StatusService extends Service {
             try {
                 // Default representation match with the status properties
                 if (representationObject == null) {
-                    representationObject = new StatusInfo(status);
+                    representationObject = new StatusInfo(status,
+                            getContactEmail(), getHomeRef().toString());
                 }
 
                 List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils

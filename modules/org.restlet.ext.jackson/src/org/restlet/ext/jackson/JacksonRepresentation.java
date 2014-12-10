@@ -91,22 +91,22 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     private volatile boolean expandingEntityRefs;
 
     /** The (parsed) object to format. */
-    private T object;
+    private volatile T object;
 
     /** The object class to instantiate. */
-    private Class<T> objectClass;
+    private volatile Class<T> objectClass;
 
     /** The modifiable Jackson object mapper. */
-    private ObjectMapper objectMapper;
+    private volatile ObjectMapper objectMapper;
 
     /** The modifiable Jackson object reader. */
-    private ObjectReader objectReader;
+    private volatile ObjectReader objectReader;
 
     /** The modifiable Jackson object writer. */
-    private ObjectWriter objectWriter;
+    private volatile ObjectWriter objectWriter;
 
     /** The representation to parse. */
-    private Representation representation;
+    private volatile Representation representation;
 
     /**
      * Indicates the desire for validating this type of XML representations

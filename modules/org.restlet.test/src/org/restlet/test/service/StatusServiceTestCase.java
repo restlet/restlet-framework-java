@@ -26,7 +26,6 @@ package org.restlet.test.service;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import org.restlet.Application;
 import org.restlet.Request;

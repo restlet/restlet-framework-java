@@ -95,6 +95,7 @@ public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
                 }
             }
             result.setRawValue(w.toString());
+            w.close();
         }
 
         return result;

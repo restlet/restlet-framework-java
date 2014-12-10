@@ -109,8 +109,23 @@ public class StatusInfo implements Serializable {
      *            The represented status.
      */
     public StatusInfo(Status status) {
+        this(status, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The represented status.
+     * @param contactEmail
+     *            The email address of the administrator to contact in case of
+     *            error.
+     * @param homeRef
+     *            The home URI to propose in case of error.
+     */
+    public StatusInfo(Status status, String contactEmail, String homeRef) {
         this(status.getCode(), status.getDescription(), status
-                .getReasonPhrase(), status.getUri(), null, null);
+                .getReasonPhrase(), status.getUri(), contactEmail, homeRef);
     }
 
     /**
