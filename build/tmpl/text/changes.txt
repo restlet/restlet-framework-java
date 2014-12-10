@@ -9,6 +9,10 @@ Changes log
         Reported by Vishnu Perabathini.
       - Fixed usage of custom Component with ServerServlet (issue #926).
         Reported by Graham Smith.
+      - Removed XML serialization using Jackson extension from Android edition as 
+        it depends on classes not supported by Android SDK (issue #964).
+        Reported by Ralph van Etten.
+
     - Enhancements
       - 
 

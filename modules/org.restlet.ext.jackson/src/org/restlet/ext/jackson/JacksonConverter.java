@@ -52,6 +52,7 @@ import org.restlet.resource.Resource;
  * @author Thierry Boileau
  */
 public class JacksonConverter extends ConverterHelper {
+    // [ifndef android] instruction
     /** Variant with media type application/xml. */
     private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
             MediaType.APPLICATION_XML);
@@ -72,6 +73,7 @@ public class JacksonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_TEXT_CSV = new VariantInfo(
             MediaType.TEXT_CSV);
 
+    // [ifndef android] instruction
     /** Variant with media type text/xml. */
     private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
             MediaType.TEXT_XML);
@@ -128,7 +130,9 @@ public class JacksonConverter extends ConverterHelper {
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_JSON_SMILE);
+            // [ifndef android] instruction
             result = addVariant(result, VARIANT_APPLICATION_XML);
+            // [ifndef android] instruction
             result = addVariant(result, VARIANT_TEXT_XML);
             result = addVariant(result, VARIANT_APPLICATION_YAML);
             result = addVariant(result, VARIANT_TEXT_YAML);
@@ -151,7 +155,9 @@ public class JacksonConverter extends ConverterHelper {
         return (variant != null)
                 && (VARIANT_JSON.isCompatible(variant)
                         || VARIANT_JSON_SMILE.isCompatible(variant)
+                        // [ifndef android] line
                         || VARIANT_APPLICATION_XML.isCompatible(variant)
+                        // [ifndef android] line
                         || VARIANT_TEXT_XML.isCompatible(variant)
                         || VARIANT_APPLICATION_YAML.isCompatible(variant)
                         || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
@@ -245,7 +251,9 @@ public class JacksonConverter extends ConverterHelper {
             Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
+        // [ifndef android] instruction
         updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+        // [ifndef android] instruction
         updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_YAML, 1.0F);
         updatePreferences(preferences, MediaType.TEXT_YAML, 1.0F);
