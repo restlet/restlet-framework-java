@@ -8,9 +8,12 @@ Changes log
       - Fixed usage of custom Component with ServerServlet (issue #926).
         Reported by Graham Smith.
       - StatusService didn't copy the contactEmail and homeRef property
-	    to the internal serialized status object.
+        to the internal serialized status object.
       - JacksonRepresentation fields are now thread safe.
-	    Reported by Tim Peierls.
+        Reported by Tim Peierls.
+      - Removed XML serialization using Jackson extension from Android edition as 
+        it depends on classes not supported by Android SDK (issue #964).
+        Reported by Ralph van Etten.
 
 - 2.3 Release Candidate 2 (12/08/2014)
     - Bugs fixed
