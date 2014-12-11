@@ -474,53 +474,43 @@ public class IoUtils {
             final org.restlet.representation.WriterRepresentation representation)
             throws IOException {
         Reader result = null;
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
+        final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
 
-            @SuppressWarnings("resource")
-            java.io.PipedReader pipedReader = new java.io.PipedReader(
-                    pipedWriter);
+        @SuppressWarnings("resource")
+        java.io.PipedReader pipedReader = new java.io.PipedReader(pipedWriter);
 
-            // Gets a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Runnable task = new org.restlet.engine.util.ContextualRunnable() {
-                public void run() {
+        // Gets a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        Runnable task = new org.restlet.engine.util.ContextualRunnable() {
+            public void run() {
+                try {
+                    representation.write(pipedWriter);
+                    pipedWriter.flush();
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Error while writing to the piped reader.", ioe);
+                } finally {
                     try {
-                        representation.write(pipedWriter);
-                        pipedWriter.flush();
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger()
-                                .log(Level.WARNING,
-                                        "Error while writing to the piped reader.",
-                                        ioe);
-                    } finally {
-                        try {
-                            pipedWriter.close();
-                        } catch (IOException ioe2) {
-                            Context.getCurrentLogger().log(Level.WARNING,
-                                    "Error while closing the pipe.", ioe2);
-                        }
+                        pipedWriter.close();
+                    } catch (IOException ioe2) {
+                        Context.getCurrentLogger().log(Level.WARNING,
+                                "Error while closing the pipe.", ioe2);
                     }
                 }
-            };
-
-            org.restlet.Context context = org.restlet.Context.getCurrent();
-
-            if (context != null && context.getExecutorService() != null) {
-                context.getExecutorService().execute(task);
-            } else {
-                Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
-                        .start();
             }
+        };
 
-            result = pipedReader;
-            // [enddef]
+        org.restlet.Context context = org.restlet.Context.getCurrent();
+
+        if (context != null && context.getExecutorService() != null) {
+            context.getExecutorService().execute(task);
         } else {
-            Context.getCurrentLogger()
-                    .log(Level.WARNING,
-                            "The GAE edition is unable to return a reader for a writer representation.");
+            Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
+                    .start();
         }
+
+        result = pipedReader;
+
         return result;
 
     }
@@ -597,54 +587,45 @@ public class IoUtils {
     public static InputStream getStream(final Representation representation) {
         InputStream result = null;
 
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            if (representation == null) {
-                return null;
-            }
+        if (representation == null) {
+            return null;
+        }
 
-            final PipeStream pipe = new PipeStream();
-            final java.io.OutputStream os = pipe.getOutputStream();
+        final PipeStream pipe = new PipeStream();
+        final java.io.OutputStream os = pipe.getOutputStream();
 
-            // Creates a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Runnable task = new org.restlet.engine.util.ContextualRunnable() {
-                public void run() {
+        // Creates a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        Runnable task = new org.restlet.engine.util.ContextualRunnable() {
+            public void run() {
+                try {
+                    representation.write(os);
+                    os.flush();
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Error while writing to the piped input stream.",
+                            ioe);
+                } finally {
                     try {
-                        representation.write(os);
-                        os.flush();
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger()
-                                .log(Level.WARNING,
-                                        "Error while writing to the piped input stream.",
-                                        ioe);
-                    } finally {
-                        try {
-                            os.close();
-                        } catch (IOException ioe2) {
-                            Context.getCurrentLogger().log(Level.WARNING,
-                                    "Error while closing the pipe.", ioe2);
-                        }
+                        os.close();
+                    } catch (IOException ioe2) {
+                        Context.getCurrentLogger().log(Level.WARNING,
+                                "Error while closing the pipe.", ioe2);
                     }
                 }
-            };
-
-            org.restlet.Context context = org.restlet.Context.getCurrent();
-
-            if (context != null && context.getExecutorService() != null) {
-                context.getExecutorService().execute(task);
-            } else {
-                Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
-                        .start();
             }
+        };
 
-            result = pipe.getInputStream();
-            // [enddef]
+        org.restlet.Context context = org.restlet.Context.getCurrent();
+
+        if (context != null && context.getExecutorService() != null) {
+            context.getExecutorService().execute(task);
         } else {
-            Context.getCurrentLogger()
-                    .log(Level.WARNING,
-                            "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
+            Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
+                    .start();
         }
+
+        result = pipe.getInputStream();
 
         return result;
     }

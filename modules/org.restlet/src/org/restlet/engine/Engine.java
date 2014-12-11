@@ -156,7 +156,7 @@ public class Engine {
                 .getCurrent();
         final Response currentResponse = Response.getCurrent();
 
-        return new Thread(new Runnable() {
+        Runnable r = new Runnable() {
 
             @Override
             public void run() {
@@ -174,7 +174,13 @@ public class Engine {
                 }
             }
 
-        }, name);
+        };
+
+        // [ifndef gae] instruction
+        return new Thread(r, name);
+        // [ifdef gae] instruction uncomment
+        // return
+        // com.google.appengine.api.ThreadManager.createThreadForCurrentRequest(r);
     }
 
     // [ifndef gwt] method
