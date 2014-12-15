@@ -24,6 +24,7 @@
 
 package org.restlet.ext.swagger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.restlet.Application;
@@ -209,6 +210,9 @@ public class SwaggerApplication extends Application implements
 
     @Override
     public Map<String, Section> getSections() {
+        if (sections == null) {
+            sections = new HashMap<String, Section>();
+        }
         return sections;
     }
 

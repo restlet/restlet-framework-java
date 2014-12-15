@@ -893,7 +893,7 @@ public class Engine {
                 new org.restlet.engine.local.RiapServerHelper(null));
         // [enddef]
 
-        // [ifndef android, gae, gwt]
+        // [ifndef android, gae, gwt, jee]
         getRegisteredServers().add(
                 new org.restlet.engine.connector.HttpServerHelper(null));
         getRegisteredServers().add(
