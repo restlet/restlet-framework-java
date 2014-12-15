@@ -272,9 +272,14 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                                 Variant entryVariant = entry.getVariant();
 
                                 if (entityVariant.isCompatible(entryVariant)) {
-                                    // The right representation has been found.
-                                    uniqueVariant = entry;
-                                    break;
+                                    if (uniqueVariant != null) {
+                                        // There are multiple compatible representations.
+                                        uniqueVariant = null;
+                                        break;
+                                    } else {
+                                        // The right representation has been found.
+                                        uniqueVariant = entry;
+                                    }
                                 }
                             }
                         }
