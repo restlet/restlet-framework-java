@@ -160,7 +160,9 @@ public class ApplicationIntrospector extends IntrospectionUtils {
 
         if (application instanceof DocumentedApplication) {
             DocumentedApplication documentedApplication = (DocumentedApplication) application;
-            collectInfo.setSections(documentedApplication.getSections());
+            if (documentedApplication.getSections() != null) {
+                collectInfo.setSections(documentedApplication.getSections());
+            }
         }
         definition.setContract(contract);
 

@@ -1062,7 +1062,9 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         // Sections
         if (application instanceof DocumentedApplication) {
             DocumentedApplication documentedApplication = (DocumentedApplication) application;
-            collectInfo.setSections(documentedApplication.getSections());
+            if (documentedApplication.getSections() != null) {
+                collectInfo.setSections(documentedApplication.getSections());
+            }
         }
         definition.setContract(contract);
     }
