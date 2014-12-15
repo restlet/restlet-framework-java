@@ -207,6 +207,12 @@ public class SwaggerApplication extends Application implements
         return inboundRoot;
     }
 
+    /**
+     * The sections of the Web API.
+     * The key of the map is the section name and the value is the optional description.
+     *
+     * @return The sections of the Web API.
+     */
     @Override
     public Map<String, Section> getSections() {
         return sections;
@@ -225,5 +231,13 @@ public class SwaggerApplication extends Application implements
                 context);
         result.setApiInboundRoot(this);
         return result;
+    }
+
+    /**
+     * Set the sections of the Web API.
+     * The key of the map is the section name and the value is the optional description.
+     */
+    public void setSections(Map<String, Section> sections) {
+        this.sections = sections;
     }
 }

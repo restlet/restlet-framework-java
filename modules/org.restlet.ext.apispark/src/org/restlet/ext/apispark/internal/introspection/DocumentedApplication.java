@@ -37,7 +37,8 @@ import org.restlet.ext.apispark.internal.model.Section;
 public interface DocumentedApplication {
 
     /**
-     * A list of the sections of the Web API.
+     * The sections of the Web API.
+     * The key of the map is the section name and the value is the optional description.
      * 
      * @return The sections of the Web API.
      */
