@@ -83,8 +83,8 @@ Changes log
 
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements
-      - Added support of GWT 2.7. Contributed by Koen.
-      - Enhanced introspection of Restlet and Jaxrs based applications in 
+      - Added support of GWT 2.7. Contributed by Koen Maes.
+      - Enhanced introspection of Restlet and JAX-RS based applications in 
         conjunction with Swagger and Raml annotations.
       - Added APISpark agent service.
 
@@ -103,7 +103,7 @@ Changes log
       - Jackson representation now ignore empty value (null or empty collections)
         by default in the JSON/XML/CSV/YAML produced, leading to more compact 
         representations.
-     - Fixed log level (issue #777). Reported by marcus-nl.
+     - Fixed log level (issue #777). Reported by Marcus NL.
 
     - API changes
       - Deprecated statusService property in Component to keep it only in Application.

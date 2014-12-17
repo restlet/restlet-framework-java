@@ -408,6 +408,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Component or null if unable to create.
      */
+    @SuppressWarnings("deprecation")
     protected Component createComponent() {
         // Detect customized Component
         String componentClassName = getInitParameter(COMPONENT_KEY, null);

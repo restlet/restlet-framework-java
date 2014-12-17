@@ -476,7 +476,6 @@ public class IoUtils {
         Reader result = null;
         final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
 
-        @SuppressWarnings("resource")
         java.io.PipedReader pipedReader = new java.io.PipedReader(pipedWriter);
 
         // Gets a thread that will handle the task of continuously
