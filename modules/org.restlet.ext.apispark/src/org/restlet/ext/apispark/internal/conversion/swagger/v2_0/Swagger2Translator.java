@@ -42,6 +42,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.utils.SampleUtils;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 
 import com.wordnik.swagger.models.ArrayModel;
@@ -134,6 +135,11 @@ public class Swagger2Translator {
             for (Property property : representation.getProperties()) {
 
                 com.wordnik.swagger.models.properties.Property propertySwagger;
+
+                Object exampleObject = SampleUtils
+                        .getFieldSampleValue(property);
+                String example = exampleObject == null ? null : exampleObject
+                        .toString();
 
                 // property type
                 if (property.getMaxOccurs() != null

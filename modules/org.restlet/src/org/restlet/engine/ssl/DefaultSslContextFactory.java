@@ -527,7 +527,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Returns the selected SSL protocols. The selection is the subset of
      * supported protocols whose name starts with the name of of
-     * {@link #getSslProtocol()} name.
+     * {@link #getEnabledProtocols()} name.
      * 
      * @param supportedProtocols
      *            The selected SSL protocols.
