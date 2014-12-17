@@ -50,6 +50,7 @@ public class SampleUtils {
     public static String convertSampleAccordingToMediaType(
             Map<String, Object> content, String mediaTypeAsString,
             String representationName) {
+
         MetadataService ms = new MetadataService();
         MediaType mediaType = MediaType.valueOf(mediaTypeAsString);
         if (!supportedExtensions.contains(ms.getExtension(mediaType))) {
