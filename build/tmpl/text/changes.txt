@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.3.0 (12/17/2014)
     - Bugs fixed
       - Fixed usage of custom Component with ServerServlet (issue #926).
         Reported by Graham Smith.
@@ -19,6 +19,10 @@ Changes log
 
     - Enhancements
       - Upgraded Google App Engine API to version 1.9.15.
+      - Upgraded Jackson to version 2.4.4.
+      - Upgraded Woodstox to version 4.3.0.
+      - Upgraded GSon to version 2.3.1.
+      - Upgraded Jetty to version 9.2.6.
 
 - 2.3 Release Candidate 2 (12/08/2014)
     - Bugs fixed
