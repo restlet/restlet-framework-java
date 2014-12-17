@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -632,8 +633,6 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
-        System.out.println(new JacksonRepresentation<>(Swagger2Translator.getSwagger(savedDefinition)).getText());
-        
         Swagger translatedSwagger = Swagger2Translator
                 .getSwagger(savedDefinition);
 
