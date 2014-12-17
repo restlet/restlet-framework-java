@@ -38,6 +38,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+import org.restlet.service.StatusService;
 
 /**
  * Converter for the {@link StatusInfo} class.
@@ -72,7 +73,7 @@ public class StatusInfoHtmlConverter extends ConverterHelper {
      * @param status
      *            The status.
      * @return The status information.
-     * @see #getDefaultRepresentation(Status, Request, Response)
+     * @see StatusService#toRepresentation(Status, Request, Response)
      */
     protected String getStatusLabel(StatusInfo status) {
         return (status.getReasonPhrase() != null) ? status.getReasonPhrase()

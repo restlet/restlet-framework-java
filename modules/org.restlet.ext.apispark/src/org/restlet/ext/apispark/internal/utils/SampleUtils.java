@@ -24,17 +24,17 @@
 
 package org.restlet.ext.apispark.internal.utils;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.service.MetadataService;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.service.MetadataService;
 
 public class SampleUtils {
 
@@ -76,13 +76,13 @@ public class SampleUtils {
         return content;
     }
 
-    private static Object getFieldSampleValue(Property property) {
+    public static Object getFieldSampleValue(Property property) {
         Object sampleValue = property.getExample() != null ? convertSampleValue(
                 property.getType(), property.getExample())
                 : getPropertyDefaultSampleValue(property.getType(),
                         property.getName());
 
-        if (property.getMaxOccurs() != 1) {
+        if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
             if (sampleValue != null) {
                 sampleValue = Arrays.asList(sampleValue);
             } else {

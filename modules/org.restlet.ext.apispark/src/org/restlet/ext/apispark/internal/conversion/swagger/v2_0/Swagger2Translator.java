@@ -130,8 +130,8 @@ public class Swagger2Translator {
 
                 com.wordnik.swagger.models.properties.Property propertySwagger;
 
-                Object exampleObject = SampleUtils.convertSampleValue(
-                        property.getType(), property.getExample());
+                Object exampleObject = SampleUtils
+                        .getFieldSampleValue(property);
                 String example = exampleObject == null ? null : exampleObject
                         .toString();
 

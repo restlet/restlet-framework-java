@@ -93,9 +93,7 @@ public class StatusFilter extends Filter {
      * is not set, set {@link org.restlet.data.Status#SUCCESS_OK} by default.
      * 
      * If this is an error status, try to get a representation of it with
-     * {@link org.restlet.service.StatusService#toStatus(Throwable, org.restlet.Request, org.restlet.Response)}
-     * . If the representation is null, get a default one with
-     * {@link #getDefaultRepresentation(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}
+     * {@link org.restlet.service.StatusService#toRepresentation(Status, Request, Response)}
      * .
      * 
      * @param request

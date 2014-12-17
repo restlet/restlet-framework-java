@@ -112,7 +112,7 @@ public class CertificateAuthenticator extends Authenticator {
      * 
      * It uses the certificate chain in the request's
      * "org.restlet.https.clientCertificates" attribute, adds the principal
-     * returned from this chain by {@link #getPrincipal(List)} to the request's
+     * returned from this chain by {@link #getPrincipals(List)} to the request's
      * ClientInfo and set the user to the result of {@link #getUser(Principal)}
      * if that user is non-null.
      * 

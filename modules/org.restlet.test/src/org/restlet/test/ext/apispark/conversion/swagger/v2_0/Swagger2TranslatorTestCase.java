@@ -632,6 +632,8 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
+        System.out.println(new JacksonRepresentation<>(Swagger2Translator.getSwagger(savedDefinition)).getText());
+        
         Swagger translatedSwagger = Swagger2Translator
                 .getSwagger(savedDefinition);
 
