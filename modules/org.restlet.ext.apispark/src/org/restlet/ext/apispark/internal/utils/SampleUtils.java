@@ -48,7 +48,7 @@ public class SampleUtils {
             "double");
 
     public static String convertSampleAccordingToMediaType(
-            Map<String, Object> content, String mediaTypeAsString,
+            Object content, String mediaTypeAsString,
             String representationName) {
 
         MetadataService ms = new MetadataService();
