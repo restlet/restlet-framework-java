@@ -24,14 +24,9 @@
 
 package org.restlet.ext.swagger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.apispark.internal.introspection.DocumentedApplication;
-import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
@@ -59,8 +54,7 @@ import org.restlet.routing.Router;
  * @see SwaggerSpecificationRestlet
  * @see Swagger2SpecificationRestlet
  */
-public class SwaggerApplication extends Application implements
-        DocumentedApplication {
+public class SwaggerApplication extends Application {
 
     /**
      * Returns the next router available.
@@ -114,11 +108,6 @@ public class SwaggerApplication extends Application implements
 
     /** Indicates if this application can document herself. */
     private boolean documented;
-
-    /**
-     * The Sections of the Web API
-     */
-    private Map<String, Section> sections;
 
     /**
      * Defines two routes, one for the high level "Resource listing", and the
@@ -209,20 +198,6 @@ public class SwaggerApplication extends Application implements
     }
 
     /**
-     * The sections of the Web API.
-     * The key of the map is the section name and the value is the optional description.
-     *
-     * @return The sections of the Web API.
-     */
-    @Override
-    public Map<String, Section> getSections() {
-        if (sections == null) {
-            sections = new HashMap<String, Section>();
-        }
-        return sections;
-    }
-
-    /**
      * The dedicated {@link Restlet} able to generate the Swagger specification
      * formats.
      * 
@@ -237,11 +212,4 @@ public class SwaggerApplication extends Application implements
         return result;
     }
 
-    /**
-     * Set the sections of the Web API.
-     * The key of the map is the section name and the value is the optional description.
-     */
-    public void setSections(Map<String, Section> sections) {
-        this.sections = sections;
-    }
 }
