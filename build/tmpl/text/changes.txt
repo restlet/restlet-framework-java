@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - 
+    - Enhancements
+      - 
 
 - 2.3.0 (12/17/2014)
     - Bugs fixed
