@@ -58,7 +58,7 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
  * arbitrary code or shell commands in the context of the server running the
  * XStream process.<br>
  * You can configure the Xstream object used by this representation (cf
- * {@link #createXstream()} or {@link #getXstream()}) and apply security
+ * {@link #createXstream(MediaType)} or {@link #getXstream()}) and apply security
  * permissions. You can find more documentation about the security fix and how
  * to configure the XStream object from here: <a href=
  * "https://github.com/restlet/restlet-framework-java/wiki/XStream-security-enhancements"

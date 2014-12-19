@@ -317,7 +317,6 @@ public class TemplateRepresentation extends WriterRepresentation {
      * 
      * @param dataModel
      *            The template's data model.
-     * @param locale
      */
     public void setDataModel(Map<String, Object> dataModel) {
         Context ctx = new Context(locale);

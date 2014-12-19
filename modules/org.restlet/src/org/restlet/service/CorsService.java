@@ -52,7 +52,7 @@ public class CorsService extends Service {
      * header into the 'Access-Control-Allow-Headers' response header. If false,
      * use {@link #allowedHeaders}. Default is true.
      */
-    public boolean allowAllRequestedHeaders = true;
+    public boolean allowingAllRequestedHeaders = true;
 
     /**
      * If true, add 'Access-Control-Allow-Credentials' header. Default is false.
@@ -61,7 +61,7 @@ public class CorsService extends Service {
 
     /**
      * The value of 'Access-Control-Allow-Headers' response header. Used only if
-     * {@link #allowAllRequestedHeaders} is false.
+     * {@link #allowingAllRequestedHeaders} is false.
      */
     public Set<String> allowedHeaders = null;
 
@@ -92,7 +92,7 @@ public class CorsService extends Service {
     public Filter createInboundFilter(Context context) {
         return new CorsFilter().setAllowedCredentials(allowedCredentials)
                 .setAllowedOrigins(allowedOrigins)
-                .setAllowAllRequestedHeaders(allowAllRequestedHeaders)
+                .setAllowingAllRequestedHeaders(allowingAllRequestedHeaders)
                 .setAllowedHeaders(allowedHeaders)
                 .setExposedHeaders(exposedHeaders);
     }
@@ -139,9 +139,11 @@ public class CorsService extends Service {
      * If true, indicates that the value of 'Access-Control-Request-Headers'
      * request header will be copied into the 'Access-Control-Allow-Headers'
      * response header. If false, use {@link #allowedHeaders}.
+     * 
+     * @return True to copy the value 
      */
-    public boolean isAllowAllRequestedHeaders() {
-        return allowAllRequestedHeaders;
+    public boolean isAllowingAllRequestedHeaders() {
+        return allowingAllRequestedHeaders;
     }
 
     /**
@@ -159,14 +161,13 @@ public class CorsService extends Service {
      * header into the 'Access-Control-Allow-Headers' response header. If false,
      * use {@link #allowedHeaders}.
      * 
-     * @param allowAllRequestedHeaders
+     * @param allowingAllRequestedHeaders
      *            True to copy the value of 'Access-Control-Request-Headers'
      *            request header into the 'Access-Control-Allow-Headers'
      *            response header. If false, use {@link #allowedHeaders}.
-     * @return Itself for chaining methods calls.
      */
-    public void setAllowAllRequestedHeaders(boolean allowAllRequestedHeaders) {
-        this.allowAllRequestedHeaders = allowAllRequestedHeaders;
+    public void setAllowingAllRequestedHeaders(boolean allowingAllRequestedHeaders) {
+        this.allowingAllRequestedHeaders = allowingAllRequestedHeaders;
     }
 
     /**
@@ -174,7 +175,6 @@ public class CorsService extends Service {
      * 
      * @param allowedCredentials
      *            True to add the 'Access-Control-Allow-Credentials' header.
-     * @return Itself for chaining methods calls.
      */
     public void setAllowedCredentials(boolean allowedCredentials) {
         this.allowedCredentials = allowedCredentials;
@@ -182,11 +182,10 @@ public class CorsService extends Service {
 
     /**
      * Sets the value of the 'Access-Control-Allow-Headers' response header.
-     * Used only if {@link #allowAllRequestedHeaders} is false.
+     * Used only if {@link #allowingAllRequestedHeaders} is false.
      * 
      * @param allowedHeaders
      *            The value of 'Access-Control-Allow-Headers' response header.
-     * @return Itself for chaining methods calls.
      */
     public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
@@ -197,7 +196,6 @@ public class CorsService extends Service {
      * 
      * @param allowedOrigins
      *            The value of 'Access-Control-Allow-Origin' header.
-     * @return Itself for chaining methods calls.
      */
     public void setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
@@ -208,7 +206,6 @@ public class CorsService extends Service {
      * 
      * @param exposedHeaders
      *            The value of 'Access-Control-Expose-Headers' response header.
-     * @return Itself for chaining methods calls.
      */
     public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;

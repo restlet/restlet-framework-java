@@ -247,7 +247,7 @@ public class TunnelFilter extends Filter {
      *            unconditionnaly set.
      * @param newHeaderName
      *            The name of the property that gives the replacement value.
-     * @return
+     * @return The list of new header values.
      */
     private List<HeaderReplacer> getheaderReplacers(
             final URL userAgentPropertiesUrl, String oldHeaderName,

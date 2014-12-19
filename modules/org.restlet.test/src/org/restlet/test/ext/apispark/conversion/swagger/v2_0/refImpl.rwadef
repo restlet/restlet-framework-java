@@ -357,10 +357,7 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid tag value",
@@ -402,20 +399,14 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid ID supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "Pet not found",
@@ -439,20 +430,14 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid pet value",
@@ -489,10 +474,7 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid tag value",
@@ -519,20 +501,14 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 405,
                 "description": null,
                 "message": "Invalid input",
@@ -574,20 +550,14 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 405,
                 "description": null,
                 "message": "Invalid input",
@@ -617,40 +587,28 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid ID supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "Pet not found",
                 "name": "Error 404"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 405,
                 "description": null,
                 "message": "Validation exception",
@@ -705,10 +663,7 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid status value",
@@ -740,10 +695,7 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
@@ -777,30 +729,21 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid ID supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "Order not found",
@@ -831,20 +774,14 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid ID supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "Order not found",
@@ -881,20 +818,14 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid order",
@@ -926,10 +857,7 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
@@ -961,10 +889,7 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
@@ -996,10 +921,7 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
@@ -1031,30 +953,21 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid username supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "User not found",
@@ -1075,30 +988,21 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid username supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "User not found",
@@ -1129,20 +1033,14 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid username supplied",
                 "name": "Error 400"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 404,
                 "description": null,
                 "message": "User not found",
@@ -1203,10 +1101,7 @@
                 "name": "Success"
               },
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": null
-                },
+                "outputPayLoad": null,
                 "code": 400,
                 "description": null,
                 "message": "Invalid username and password combination",
@@ -1235,10 +1130,7 @@
             "queryParameters": [],
             "responses": [
               {
-                "outputPayLoad": {
-                  "array": false,
-                  "type": "void"
-                },
+                "outputPayLoad": null,
                 "code": 200,
                 "description": "Success",
                 "message": "The request has succeeded",

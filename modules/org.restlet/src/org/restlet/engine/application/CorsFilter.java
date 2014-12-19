@@ -43,8 +43,7 @@ import org.restlet.routing.Filter;
  * Router router = new Router(getContext());
  * 
  * CorsFilter corsFilter = new CorsFilter(getContext(), router);
- * corsFilter.setAllowedOrigins(
- *         new HashSet(Arrays.asList(&quot;http://server.com&quot;)));
+ * corsFilter.setAllowedOrigins(new HashSet(Arrays.asList(&quot;http://server.com&quot;)));
  * corsFilter.setAllowedCredentials(true);
  * </pre>
  * 
@@ -156,7 +155,8 @@ public class CorsFilter extends Filter {
             corsResponseHelper = new CorsResponseHelper();
             corsResponseHelper.setAllowedCredentials(allowedCredentials);
             corsResponseHelper.setAllowedOrigins(allowedOrigins);
-            corsResponseHelper.setAllowAllRequestedHeaders(allowAllRequestedHeaders);
+            corsResponseHelper
+                    .setAllowAllRequestedHeaders(allowAllRequestedHeaders);
             corsResponseHelper.setAllowedHeaders(allowedHeaders);
             corsResponseHelper.setExposedHeaders(exposedHeaders);
         }
@@ -200,15 +200,15 @@ public class CorsFilter extends Filter {
      * header into the 'Access-Control-Allow-Headers' response header. If false,
      * use {@link #allowedHeaders}.
      * 
-     * @param allowAllRequestedHeaders
+     * @param allowingAllRequestedHeaders
      *            True to copy the value of 'Access-Control-Request-Headers'
      *            request header into the 'Access-Control-Allow-Headers'
      *            response header. If false, use {@link #allowedHeaders}.
      * @return Itself for chaining methods calls.
      */
-    public CorsFilter setAllowAllRequestedHeaders(
-            boolean allowAllRequestedHeaders) {
-        this.allowAllRequestedHeaders = allowAllRequestedHeaders;
+    public CorsFilter setAllowingAllRequestedHeaders(
+            boolean allowingAllRequestedHeaders) {
+        this.allowAllRequestedHeaders = allowingAllRequestedHeaders;
         return this;
     }
 

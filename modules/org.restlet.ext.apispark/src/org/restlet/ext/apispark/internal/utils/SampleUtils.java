@@ -24,17 +24,17 @@
 
 package org.restlet.ext.apispark.internal.utils;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.service.MetadataService;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.service.MetadataService;
 
 public class SampleUtils {
 
@@ -44,11 +44,13 @@ public class SampleUtils {
     private static final List<String> numberTypes = Arrays.asList("byte",
             "short", "integer", "long");
 
-    private static final List<String> decimalTypes = Arrays.asList("float", "double");
+    private static final List<String> decimalTypes = Arrays.asList("float",
+            "double");
 
-    public static String convertSampleAccordingToMediaType(Map<String, Object> content,
-                                                  String mediaTypeAsString,
-                                                  String representationName) {
+    public static String convertSampleAccordingToMediaType(
+            Object content, String mediaTypeAsString,
+            String representationName) {
+
         MetadataService ms = new MetadataService();
         MediaType mediaType = MediaType.valueOf(mediaTypeAsString);
         if (!supportedExtensions.contains(ms.getExtension(mediaType))) {
@@ -76,12 +78,13 @@ public class SampleUtils {
         return content;
     }
 
-    private static Object getFieldSampleValue(Property property) {
-        Object sampleValue = property.getExample() != null ?
-                convertSampleValue(property.getType(), property.getExample()) :
-                getPropertyDefaultSampleValue(property.getType(), property.getName());
+    public static Object getFieldSampleValue(Property property) {
+        Object sampleValue = property.getExample() != null ? convertSampleValue(
+                property.getType(), property.getExample())
+                : getPropertyDefaultSampleValue(property.getType(),
+                        property.getName());
 
-        if (property.getMaxOccurs() != 1) {
+        if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
             if (sampleValue != null) {
                 sampleValue = Arrays.asList(sampleValue);
             } else {
@@ -91,7 +94,8 @@ public class SampleUtils {
         return sampleValue;
     }
 
-    public static Object getPropertyDefaultSampleValue(String propertyType, String propertyName) {
+    public static Object getPropertyDefaultSampleValue(String propertyType,
+            String propertyName) {
         if ("string".equals(propertyType)) {
             return "sample " + propertyName;
         } else if (numberTypes.contains(propertyType)) {
@@ -101,14 +105,16 @@ public class SampleUtils {
         } else if ("boolean".equals(propertyType)) {
             return false;
         } else if ("date".equals(propertyType)) {
-            //do not set default value for date because we don't know the expected type
+            // do not set default value for date because we don't know the
+            // expected type
             return null;
         } else {
             return null;
         }
     }
 
-    public static Object convertSampleValue(String propertyType, String sampleValue) {
+    public static Object convertSampleValue(String propertyType,
+            String sampleValue) {
         if ("string".equals(propertyType)) {
             return sampleValue;
         } else if (numberTypes.contains(propertyType)) {
@@ -118,7 +124,8 @@ public class SampleUtils {
         } else if ("boolean".equals(propertyType)) {
             return Boolean.parseBoolean(sampleValue);
         } else if ("date".equals(propertyType)) {
-            //do not convert date sample because we don't know the expected type
+            // do not convert date sample because we don't know the expected
+            // type
             return sampleValue;
         } else {
             return null;

@@ -25,6 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.raml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,13 @@ import org.raml.model.parameter.UriParameter;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
+import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
@@ -269,15 +272,10 @@ public abstract class RamlTranslator {
                         ramlInRepresentationWithMediaType
                                 .setSchema(ramlInRepresentation.getSchema());
                         try {
-                            String representationType = operation
-                                    .getInputPayLoad().getType();
-                            Map<String, Object> representationSample = representationSamples
-                                    .get(representationType);
                             ramlInRepresentationWithMediaType
-                                    .setExample(SampleUtils
-                                            .convertSampleAccordingToMediaType(representationSample,
-                                                    mediaType,
-                                                    representationType));
+                                    .setExample(getExampleFromPayLoad(
+                                            operation.getInputPayLoad(),
+                                            representationSamples, mediaType));
                         } catch (Exception e) {
                             LOGGER.log(Level.WARNING,
                                     "Error when writting sample.", e);
@@ -349,17 +347,14 @@ public abstract class RamlTranslator {
                         for (String mediaType : operation.getProduces()) {
                             ramlOutRepresentationWithMediaType = new MimeType();
                             ramlOutRepresentationWithMediaType
-                                    .setSchema(ramlOutRepresentation.getSchema());
+                                    .setSchema(ramlOutRepresentation
+                                            .getSchema());
                             try {
-                                String representationType = response
-                                        .getOutputPayLoad().getType();
-                                Map<String, Object> representationSample = representationSamples
-                                        .get(representationType);
                                 ramlOutRepresentationWithMediaType
-                                        .setExample(SampleUtils
-                                                .convertSampleAccordingToMediaType(representationSample,
-                                                        mediaType,
-                                                        representationType));
+                                        .setExample(getExampleFromPayLoad(
+                                                response.getOutputPayLoad(),
+                                                representationSamples,
+                                                mediaType));
                             } catch (Exception e) {
                                 LOGGER.log(Level.WARNING,
                                         "Error when writting sample.", e);
@@ -526,6 +521,36 @@ public abstract class RamlTranslator {
         }
 
         return definition;
+    }
+
+    /**
+     * Returns an example in provided media Type of the entity in the given
+     * PayLoad.
+     * 
+     * @param payLoad
+     *            The PayLoad.
+     * @param representationSamples
+     *            The map of samples by representations.
+     * @param mediaType
+     *            The media type as String.
+     * @return An example in provided media Type of the entity in the given
+     *         PayLoad.
+     */
+    private static String getExampleFromPayLoad(PayLoad payLoad,
+            Map<String, Map<String, Object>> representationSamples,
+            String mediaType) {
+        if (Types.isPrimitiveType(payLoad.getType())) {
+            Object sample = SampleUtils.getPropertyDefaultSampleValue(
+                    payLoad.getType(), "value");
+            return sample == null ? null : sample.toString();
+        } else {
+            Object sample = representationSamples.get(payLoad.getType());
+            if (payLoad.isArray()) {
+                sample = Arrays.asList(sample);
+            }
+            return SampleUtils.convertSampleAccordingToMediaType(sample,
+                    mediaType, payLoad.getType());
+        }
     }
 
     /**

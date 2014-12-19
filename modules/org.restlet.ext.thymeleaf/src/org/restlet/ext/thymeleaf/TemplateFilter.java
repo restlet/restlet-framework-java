@@ -41,7 +41,7 @@ import org.restlet.util.Resolver;
  * Filters response's entity and wraps it with a Thymeleaf's template
  * representation. By default, the template representation provides a data model
  * based on the request and response objects. In order for the wrapping to
- * happen, the representations must have the {@link Encoding#THYMELEAF} encoding
+ * happen, the representations must have the {@link #THYMELEAF} encoding
  * set.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by

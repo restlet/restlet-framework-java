@@ -56,10 +56,6 @@ public class ResourceException extends RuntimeException {
      * @param reasonPhrase
      *            The short reason phrase displayed next to the status code in a
      *            HTTP response.
-     * @param description
-     *            The description of the encapsulated status.
-     * @param uri
-     *            The URI of the specification describing the method.
      */
     public ResourceException(int code, String reasonPhrase) {
         this(new Status(code, reasonPhrase));

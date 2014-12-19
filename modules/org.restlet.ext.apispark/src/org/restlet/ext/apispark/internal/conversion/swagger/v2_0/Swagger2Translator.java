@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Header;
@@ -42,7 +43,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.utils.SampleUtils;
 
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;
@@ -62,6 +63,7 @@ import com.wordnik.swagger.models.properties.ArrayProperty;
 import com.wordnik.swagger.models.properties.BooleanProperty;
 import com.wordnik.swagger.models.properties.DateProperty;
 import com.wordnik.swagger.models.properties.DoubleProperty;
+import com.wordnik.swagger.models.properties.FileProperty;
 import com.wordnik.swagger.models.properties.FloatProperty;
 import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.LongProperty;
@@ -78,13 +80,6 @@ public class Swagger2Translator {
         private ByteProperty() {
             setType("string");
             setFormat("byte");
-        }
-    }
-
-    // TODO wait for Swagger class
-    private static class FileProperty extends AbstractProperty {
-        private FileProperty() {
-            setType("file");
         }
     }
 
@@ -135,16 +130,24 @@ public class Swagger2Translator {
 
                 com.wordnik.swagger.models.properties.Property propertySwagger;
 
+                Object exampleObject = SampleUtils
+                        .getFieldSampleValue(property);
+                String example = exampleObject == null ? null : exampleObject
+                        .toString();
+
                 // property type
                 if (property.getMaxOccurs() != null
                         && (property.getMaxOccurs() > 1 || property
                                 .getMaxOccurs() == -1)) {
                     ArrayProperty arrayProperty = new ArrayProperty();
-                    arrayProperty.setItems(newPropertyForType(property
-                            .getType()));
+                    com.wordnik.swagger.models.properties.Property itemProperty = newPropertyForType(property
+                            .getType());
+                    itemProperty.setExample(example);
+                    arrayProperty.setItems(itemProperty);
                     propertySwagger = arrayProperty;
                 } else {
                     propertySwagger = newPropertyForType(property.getType());
+                    propertySwagger.setExample(example);
                 }
                 propertySwagger.setName(property.getName());
                 propertySwagger.setDescription(property.getDescription());
@@ -255,6 +258,8 @@ public class Swagger2Translator {
             pathParameterSwagger.setFormat(swaggerTypeFormat.getFormat());
             pathParameterSwagger.setName(pathVariable.getName()); // required
             pathParameterSwagger.setDescription(pathVariable.getDescription());
+            // TODO: add when implemented
+            // pathParameterSwagger.setDefaultValue(pathVariable.getDefaultValue());
             operationSwagger.addParameter(pathParameterSwagger);
         }
 
@@ -298,6 +303,8 @@ public class Swagger2Translator {
         for (QueryParameter queryParameter : operation.getQueryParameters()) {
             com.wordnik.swagger.models.parameters.QueryParameter queryParameterSwagger = new com.wordnik.swagger.models.parameters.QueryParameter();
             queryParameterSwagger.setRequired(queryParameter.isRequired());
+            queryParameterSwagger.setDefaultValue(queryParameter
+                    .getDefaultValue());
             if (queryParameter.isAllowMultiple()) {
                 queryParameterSwagger.setType("array");
                 queryParameterSwagger
@@ -319,6 +326,7 @@ public class Swagger2Translator {
         for (Header header : operation.getHeaders()) {
             HeaderParameter headerParameterSwagger = new HeaderParameter();
             headerParameterSwagger.setRequired(header.isRequired());
+            headerParameterSwagger.setDefaultValue(header.getDefaultValue());
             headerParameterSwagger.setType(SwaggerTypes.toSwaggerType(
                     header.getType()).getType());
             headerParameterSwagger.setFormat(SwaggerTypes.toSwaggerType(
@@ -346,7 +354,6 @@ public class Swagger2Translator {
                         .getRepresentation(entity.getType());
 
                 if (representation != null && representation.isRaw()) {
-                    // TODO wait for the swagger class
                     FileProperty fileProperty = new FileProperty();
                     fileProperty
                             .setDescription(representation.getDescription());

@@ -13,3 +13,5 @@ For more information:
 https://helloreverb.com/developers/swagger
 
 Swagger spec compatibility: 2.0
+
+Build from commit 8eb19af5cb735c3cc05b5a4f50b17263ea351a21
