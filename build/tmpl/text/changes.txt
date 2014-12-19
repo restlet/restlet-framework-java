@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-      - 
+      - Reintroduced registration by default of the internal HTTP server 
+        connectors in JEE edition.
     - Enhancements
       - 
 
