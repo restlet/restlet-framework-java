@@ -29,22 +29,18 @@
 		<dependency type="module" id="jaxb" />
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="jetty" includes="jse" />
-		<dependency type="module" id="jsslutils" includes="jse" />
 		<dependency type="module" id="json" />
 		<dependency type="module" id="lucene" />
+		<dependency type="module" id="nio" />
 		<dependency type="module" id="oauth" includes="jse" />
 		<dependency type="module" id="odata" />
 		<dependency type="module" id="rdf" />
-		<dependency type="module" id="rome" />
 		<dependency type="module" id="simple" includes="jse" />
-		<dependency type="module" id="sip" includes="jse" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="thymeleaf" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="wadl" />
-		<dependency type="module" id="xdb" includes="jee" />
 		<dependency type="module" id="xml" />
-		<dependency type="module" id="xstream" />
 		<dependency type="module" id="apispark" />
 		<dependency type="module" id="raml" />
 		<dependency type="module" id="swagger" />

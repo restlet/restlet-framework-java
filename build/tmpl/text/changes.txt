@@ -4,4 +4,6 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, ROME, SIP, WebDAV, XDB, XStream).
 

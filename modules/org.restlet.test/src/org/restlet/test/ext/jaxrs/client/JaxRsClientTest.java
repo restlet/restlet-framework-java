@@ -132,17 +132,16 @@ public class JaxRsClientTest extends JaxRsTestCase {
     // });
     // }
 
-    @SuppressWarnings("deprecation")
     private JaxRsClientTest startSocketServerDaemon()
             throws InterruptedException {
 
         // there are a bunch of converters registered in the unit test project,
-        // we only want xstream
+        // we only want jackson
         List<ConverterHelper> registeredConverters = Engine.getInstance()
                 .getRegisteredConverters();
         for (int i = registeredConverters.size() - 1; i >= 0; i--) {
             ConverterHelper converterHelper = registeredConverters.get(i);
-            if (!(converterHelper instanceof org.restlet.ext.xstream.XstreamConverter)) {
+            if (!(converterHelper instanceof org.restlet.ext.jackson.JacksonConverter)) {
                 registeredConverters.remove(i);
             }
         }
