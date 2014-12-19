@@ -5,5 +5,8 @@ Changes log
 
 - 2.3m1 (12/19/2014)
     - API changes
-       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, ROME, SIP, WebDAV, XDB, XStream).
-
+       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
+         ROME, SIP, WebDAV, XDB, XStream).
+    - Bugs
+       - Reintroduced registration by default of the internal HTTP server 
+         connectors in JEE edition.
