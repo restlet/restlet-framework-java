@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.3m1 (12/19/2014)
     - API changes
        - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, ROME, SIP, WebDAV, XDB, XStream).
 
