@@ -35,11 +35,10 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.engine.resource.ThrowableAnnotationInfo;
+import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
@@ -54,6 +53,7 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
+import org.restlet.representation.StatusInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
@@ -197,8 +197,8 @@ public class ResourceCollector {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
-                ThrowableAnnotationInfo throwableAnnotationInfo = AnnotationUtils
-                        .getInstance().getThrowableAnnotationInfo(thrownClass);
+                StatusAnnotationInfo throwableAnnotationInfo = AnnotationUtils
+                        .getInstance().getStatusAnnotationInfo(thrownClass);
                 if (throwableAnnotationInfo != null) {
                     int statusCode = throwableAnnotationInfo.getStatus().getCode();
                     Response response = new Response();

@@ -178,7 +178,7 @@ public class JettyClientCall extends ClientCall {
      * associated by default, you have to manually set them from your headers.
      *
      * As jetty client decode the input stream on the fly in
-     * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer, org.eclipse.jetty.util.Callback)}
+     * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer)}
      * we have to clear the {@link org.restlet.representation.Representation#getEncodings()}
      * to avoid decoding the input stream another time.
 

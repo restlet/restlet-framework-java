@@ -87,7 +87,7 @@ public class AnnotationUtils {
             }
 
             // Inspect the current class
-            addThrowableAnnotationDescriptors(result, clazz, initialClass);
+            addStatusAnnotationDescriptors(result, clazz, initialClass);
 
             if (clazz.isInterface()) {
                 for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
@@ -114,6 +114,34 @@ public class AnnotationUtils {
 
             // Add the annotations from the super class.
             addAnnotations(result, clazz.getSuperclass(), initialClass);
+        }
+
+        return result;
+    }
+
+    /**
+     * Computes the annotation descriptors for the given Java method.
+     * 
+     * @param descriptors
+     *            The annotation descriptors to update or null to create a new
+     *            one.
+     * @param clazz
+     *            The class or interface that hosts the javaMethod.
+     * @param initialClass
+     *            The class or interface that runs the javaMethod.
+     * @return The annotation descriptors.
+     */
+    private List<AnnotationInfo> addStatusAnnotationDescriptors(
+            List<AnnotationInfo> descriptors, Class<?> clazz,
+            Class<?> initialClass) {
+        List<AnnotationInfo> result = descriptors;
+        Annotation annotation = clazz
+                .getAnnotation(org.restlet.resource.Status.class);
+
+        if (annotation != null) {
+            Status status = (Status) annotation;
+            result.add(new StatusAnnotationInfo(initialClass, status.value(),
+                    status.serialize()));
         }
 
         return result;
@@ -168,54 +196,6 @@ public class AnnotationUtils {
             }
         }
 
-        for (Class<?> exceptionClass : javaMethod.getExceptionTypes()) {
-            for (Annotation annotation : exceptionClass.getAnnotations()) {
-                org.restlet.resource.Status statusAnnotation = annotation
-                        .annotationType().getAnnotation(
-                                org.restlet.resource.Status.class);
-
-                if (statusAnnotation != null) {
-                    int code = statusAnnotation.value();
-                    boolean serializable = statusAnnotation.serialize();
-
-                    if (result == null) {
-                        result = new CopyOnWriteArrayList<AnnotationInfo>();
-                    }
-
-                    result.add(new ThrowableAnnotationInfo(initialClass, code,
-                            serializable));
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Computes the annotation descriptors for the given Java method.
-     * 
-     * @param descriptors
-     *            The annotation descriptors to update or null to create a new
-     *            one.
-     * @param clazz
-     *            The class or interface that hosts the javaMethod.
-     * @param initialClass
-     *            The class or interface that runs the javaMethod.
-     * @return The annotation descriptors.
-     */
-    private List<AnnotationInfo> addThrowableAnnotationDescriptors(
-            List<AnnotationInfo> descriptors, Class<?> clazz,
-            Class<?> initialClass) {
-        List<AnnotationInfo> result = descriptors;
-        Annotation annotation = clazz
-                .getAnnotation(org.restlet.resource.Status.class);
-
-        if (annotation != null) {
-            Status status = (Status) annotation;
-            result.add(new ThrowableAnnotationInfo(initialClass,
-                    status.value(), status.serialize()));
-        }
-
         return result;
     }
 
@@ -224,6 +204,25 @@ public class AnnotationUtils {
      */
     public void clearCache() {
         cache.clear();
+    }
+
+    /**
+     * Returns the status annotation descriptor if present of null.
+     * 
+     * @param clazz
+     *            The class with the status attached.
+     * @return The status annotation descriptor if present of null.
+     */
+    public StatusAnnotationInfo getStatusAnnotationInfo(Class<?> clazz) {
+        List<AnnotationInfo> annotationInfos = getAnnotations(clazz);
+
+        for (AnnotationInfo annotationInfo : annotationInfos) {
+            if (annotationInfo instanceof StatusAnnotationInfo) {
+                return (StatusAnnotationInfo) annotationInfo;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -341,73 +340,6 @@ public class AnnotationUtils {
         return (methodAnnotation == null) ? null
                 : Method.valueOf(((org.restlet.engine.connector.Method) methodAnnotation)
                         .value());
-    }
-
-    /**
-     * Returns the status annotation descriptor if present or null.
-     * 
-     * @param clazz
-     *            The class with the status attached.
-     * @return The status annotation descriptor if present or null.
-     */
-    public ThrowableAnnotationInfo getThrowableAnnotationInfo(Class<?> clazz) {
-        List<AnnotationInfo> annotationInfos = getAnnotations(clazz);
-
-        for (AnnotationInfo annotationInfo : annotationInfos) {
-            if (annotationInfo instanceof ThrowableAnnotationInfo) {
-                return (ThrowableAnnotationInfo) annotationInfo;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the {@link Throwable} class matching the given error code if
-     * present or null.
-     * 
-     * @param javaMethod
-     *            The method that holds {@link Throwable}.
-     * @param errorCode
-     *            The error code to match.
-     * @return The {@link Throwable} class matching the given error code if
-     *         present or null.
-     */
-    public ThrowableAnnotationInfo getThrowableAnnotationInfo(
-            java.lang.reflect.Method javaMethod, int errorCode) {
-        for (Class<?> clazz : javaMethod.getExceptionTypes()) {
-            ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
-
-            if (tai.getStatus().getCode() == errorCode) {
-                return tai;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the {@link Throwable} class matching the given error code if
-     * present or null.
-     * 
-     * @param javaMethod
-     *            The method that holds {@link Throwable}.
-     * @param errorCode
-     *            The error code to match.
-     * @return The {@link Throwable} class matching the given error code if
-     *         present or null.
-     */
-    public Class<?> getThrowableClass(java.lang.reflect.Method javaMethod,
-            int errorCode) {
-        for (Class<?> clazz : javaMethod.getExceptionTypes()) {
-            ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
-
-            if (tai.getStatus().getCode() == errorCode) {
-                return clazz;
-            }
-        }
-
-        return null;
     }
 
 }

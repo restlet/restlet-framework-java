@@ -24,18 +24,19 @@
 
 package org.restlet.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.application.StatusInfo;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StatusInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
@@ -66,6 +67,11 @@ import org.restlet.resource.ResourceException;
  * @author Jerome Louvel
  */
 public class StatusService extends Service {
+
+    // [ifndef gwt] member
+    /** HTML Variant */
+    private static final org.restlet.engine.resource.VariantInfo VARIANT_HTML = new org.restlet.engine.resource.VariantInfo(
+            MediaType.TEXT_HTML);
 
     // [ifndef gwt] member
     /** The service used to select the preferred variant. */
@@ -224,50 +230,46 @@ public class StatusService extends Service {
             Throwable cause = status.getThrowable();
 
             if (cause != null) {
-                org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
-                        .getInstance().getThrowableAnnotationInfo(
-                                cause.getClass());
-
-                if (tai != null && tai.isSerializable()) {
-                    if (!Application.getCurrent().isDebugging()) {
-                        // We clear the stack trace to prevent technical
-                        // information leak
-                        cause.setStackTrace(new StackTraceElement[] {});
-
-                        if (cause.getCause() != null) {
-                            Context.getCurrentLogger()
-                                    .log(Level.WARNING,
-                                            "The cause of the exception should be null except in debug mode");
-                        }
+                org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                        .getInstance()
+                        .getStatusAnnotationInfo(cause.getClass());
+                if (sai != null && sai.isSerializable()) {
+                    try {
+                        representationObject = org.restlet.engine.util.ThrowableSerializer
+                                .serializeToMap(cause);
+                    } catch (Exception e) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Could not serialize throwable class "
+                                        + cause.getClass(), e);
                     }
-
-                    representationObject = cause;
                 }
             }
 
+            // Default representation match with the status properties
+            if (representationObject == null) {
+                representationObject = new StatusInfo(status);
+            }
+
+            List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
+                    .getVariants(representationObject.getClass(), null);
+            // TODO This seems to be a workaround in order to prevent zealous
+            // converters to cope with conversions whereas they are not supposed
+            // to. Should be updated when introducing strict mode of content
+            // negotiation.
+            if (variants == null) {
+                variants = new ArrayList<>();
+            }
+            if (!variants.contains(VARIANT_HTML)) {
+                variants.add(VARIANT_HTML);
+            }
+            Variant variant = connegService.getPreferredVariant(variants,
+                    request, metadataService);
             try {
-                // Default representation match with the status properties
-                if (representationObject == null) {
-                    representationObject = new StatusInfo(status,
-                            getContactEmail(), getHomeRef().toString());
-                }
-
-                List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
-                        .getVariants(representationObject.getClass(), null);
-                if (variants == null) {
-                    variants = new ArrayList<>();
-                }
-
-                Variant variant = connegService.getPreferredVariant(variants,
-                        request, metadataService);
                 result = converterService.toRepresentation(
                         representationObject, variant);
-            } catch (Exception e) {
-                Context.getCurrentLogger().log(
-                        Level.WARNING,
-                        "Could not serialize throwable class "
-                                + ((cause == null) ? null : cause.getClass()),
-                        e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
         // [enddef]
@@ -311,11 +313,11 @@ public class StatusService extends Service {
 
         // [ifndef gwt]
         // look for Status annotation
-        org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
-                .getInstance().getThrowableAnnotationInfo(t.getClass());
+        org.restlet.engine.resource.StatusAnnotationInfo sai = org.restlet.engine.resource.AnnotationUtils
+                .getInstance().getStatusAnnotationInfo(t.getClass());
 
-        if (tai != null) {
-            result = new Status(tai.getStatus(), t);
+        if (sai != null) {
+            result = new Status(sai.getStatus(), t);
         } else {
             result = new Status(defaultStatus, t);
         }
