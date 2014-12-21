@@ -24,13 +24,6 @@
 
 package org.restlet.ext.jackson;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +36,13 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.internal.XmlFactoryProvider;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
@@ -78,6 +78,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     public static boolean XML_VALIDATING_DTD = Boolean
             .getBoolean("org.restlet.ext.xml.validatingDtd");
+
 
     /** The modifiable Jackson CSV schema. */
     private CsvSchema csvSchema;
@@ -209,8 +210,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             // [ifndef android]
         } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
                 || MediaType.TEXT_XML.isCompatible(getMediaType())) {
-            javax.xml.stream.XMLInputFactory xif = javax.xml.stream.XMLInputFactory
-                    .newFactory();
+            javax.xml.stream.XMLInputFactory xif = XmlFactoryProvider.newInputFactory();
             xif.setProperty(
                     javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
                     isExpandingEntityRefs());
@@ -218,8 +218,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
                     isExpandingEntityRefs());
             xif.setProperty(javax.xml.stream.XMLInputFactory.IS_VALIDATING,
                     isValidatingDtd());
-            javax.xml.stream.XMLOutputFactory xof = javax.xml.stream.XMLOutputFactory
-                    .newFactory();
+            javax.xml.stream.XMLOutputFactory xof = XmlFactoryProvider.newOutputFactory();
             XmlFactory xmlFactory = new XmlFactory(xif, xof);
             xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new XmlMapper(xmlFactory);
