@@ -18,7 +18,6 @@
         <files-sets>
             <![CDATA[
          <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
-         <exclude name="src/org/restlet/ext/jackson/internal/XmlFactoryProvider.java" />
 ]]>
         </files-sets>
     </source>
