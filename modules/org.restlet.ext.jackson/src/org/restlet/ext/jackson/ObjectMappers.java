@@ -22,6 +22,8 @@ import javax.xml.stream.XMLOutputFactory;
  */
 public class ObjectMappers {
 
+    public static JsonInclude.Include DEFAULT_SERIALIZATION_INCLUSION = JsonInclude.Include.ALWAYS;
+
     /**
      * Simple {@link ObjectMapper} factory
      */
@@ -100,7 +102,7 @@ public class ObjectMappers {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
             ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            objectMapper.setSerializationInclusion(DEFAULT_SERIALIZATION_INCLUSION);
             return objectMapper;
         }
     }
@@ -112,7 +114,7 @@ public class ObjectMappers {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
             ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            objectMapper.setSerializationInclusion(DEFAULT_SERIALIZATION_INCLUSION);
             return objectMapper;
         }
     }
@@ -145,7 +147,7 @@ public class ObjectMappers {
             XmlFactory xmlFactory = new XmlFactory(xif, xof);
             xmlFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
             ObjectMapper objectMapper = new XmlMapper(xmlFactory);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            objectMapper.setSerializationInclusion(DEFAULT_SERIALIZATION_INCLUSION);
             return objectMapper;
         }
     }
@@ -157,7 +159,7 @@ public class ObjectMappers {
             YAMLFactory yamlFactory = new YAMLFactory();
             yamlFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
             ObjectMapper objectMapper = new ObjectMapper(yamlFactory);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            objectMapper.setSerializationInclusion(DEFAULT_SERIALIZATION_INCLUSION);
             return objectMapper;
         }
     }
@@ -169,7 +171,7 @@ public class ObjectMappers {
             CsvFactory csvFactory = new CsvFactory();
             csvFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
             ObjectMapper objectMapper = new CsvMapper(csvFactory);
-            objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+            objectMapper.setSerializationInclusion(DEFAULT_SERIALIZATION_INCLUSION);
             return objectMapper;
         }
     }
