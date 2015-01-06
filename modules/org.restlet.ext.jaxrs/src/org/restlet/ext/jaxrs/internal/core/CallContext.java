@@ -1289,7 +1289,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
             Logger logger, String logMessage) throws WebApplicationException {
         logger.log(Level.WARNING, logMessage, exc);
-        exc.printStackTrace();
         throw new WebApplicationException(exc,
                 javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR);
     }
