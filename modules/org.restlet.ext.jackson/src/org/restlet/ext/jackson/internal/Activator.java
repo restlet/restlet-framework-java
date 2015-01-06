@@ -43,7 +43,9 @@ public class Activator implements BundleActivator {
                 switch (serviceEvent.getType()) {
                     case ServiceEvent.REGISTERED:
                     case ServiceEvent.MODIFIED:
-                        registerInputFactory((Stax2InputFactoryProvider) serviceEvent.getSource());
+                        ServiceReference serviceReference = serviceEvent.getServiceReference();
+                        Stax2InputFactoryProvider factoryProvider = (Stax2InputFactoryProvider)bundleContext.getService(serviceReference);
+                        registerInputFactory(factoryProvider);
                         break;
 
                     case ServiceEvent.UNREGISTERING:
@@ -60,7 +62,9 @@ public class Activator implements BundleActivator {
                 switch (serviceEvent.getType()) {
                     case ServiceEvent.REGISTERED:
                     case ServiceEvent.MODIFIED:
-                        registerOutputFactory((Stax2OutputFactoryProvider) serviceEvent.getSource());
+                        ServiceReference serviceReference = serviceEvent.getServiceReference();
+                        Stax2OutputFactoryProvider factoryProvider = (Stax2OutputFactoryProvider)bundleContext.getService(serviceReference);
+                        registerOutputFactory(factoryProvider);
                         break;
 
                     case ServiceEvent.UNREGISTERING:
