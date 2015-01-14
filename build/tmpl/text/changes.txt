@@ -7,6 +7,7 @@ Changes log
     - API changes
        - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
          ROME, SIP, WebDAV, XDB, XStream).
+       - Enhanced HTML extension (moved StatusInfoConverter). Issue #1005.
     - Bugs
        - Reintroduced registration by default of the internal HTTP server 
          connectors in JEE edition.
