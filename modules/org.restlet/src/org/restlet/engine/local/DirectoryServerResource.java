@@ -202,7 +202,8 @@ public class DirectoryServerResource extends ServerResource {
 
             // The target URI does not take into account the query and fragment
             // parts of the resource.
-            this.targetUri = new Reference(directory.getRootRef().toString() + this.relativePart).toString(false, false);
+            this.targetUri = new Reference(directory.getRootRef().toString()
+                    + this.relativePart).toString(false, false);
             preventUpperDirectoryAccess();
 
             if (getClientDispatcher() == null) {
@@ -391,11 +392,11 @@ public class DirectoryServerResource extends ServerResource {
     }
 
     /**
-     *  Prevent the client from accessing resources in upper
-     *  directories
+     * Prevent the client from accessing resources in upper directories
      */
     public void preventUpperDirectoryAccess() {
-        String targetUriPath = new Reference(Reference.decode(targetUri)).normalize().toString();
+        String targetUriPath = new Reference(Reference.decode(targetUri))
+                .normalize().toString();
         if (!targetUriPath.startsWith(directory.getRootRef().toString())) {
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
@@ -411,29 +412,27 @@ public class DirectoryServerResource extends ServerResource {
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else if (variants.size() == 1) {
+            result = (Representation) variants.get(0);
         } else {
-            if (variants.size() == 1) {
-                result = (Representation) variants.get(0);
-            } else {
-                ReferenceList variantRefs = new ReferenceList();
+            ReferenceList variantRefs = new ReferenceList();
 
-                for (Variant variant : variants) {
-                    if (variant.getLocationRef() != null) {
-                        variantRefs.add(variant.getLocationRef());
-                    } else {
-                        getLogger()
-                                .warning(
-                                        "A resource with multiple variants should provide a location for each variant when content negotiation is turned off");
-                    }
-                }
-
-                if (variantRefs.size() > 0) {
-                    // Return the list of variants
-                    setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    result = variantRefs.getTextRepresentation();
+            for (Variant variant : variants) {
+                if (variant.getLocationRef() != null) {
+                    variantRefs.add(variant.getLocationRef());
                 } else {
-                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    getLogger()
+                            .warning(
+                                    "A resource with multiple variants should provide a location for each variant when content negotiation is turned off");
                 }
+            }
+
+            if (!variantRefs.isEmpty()) {
+                // Return the list of variants
+                setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                result = variantRefs.getTextRepresentation();
+            } else {
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
 
