@@ -11,3 +11,6 @@ Changes log
     - Bugs
        - Reintroduced registration by default of the internal HTTP server 
          connectors in JEE edition.
+       - FormDataSet not properly serializing text/plain files. Issue #1006.
+         Reported by johnjaylward. 
+
