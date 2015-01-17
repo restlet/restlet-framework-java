@@ -130,7 +130,7 @@ public class HttpsServerHelper extends NetServerHelper {
         server.setExecutor(createThreadPool());
         server.start();
 
-        setConfidential(false);
+        setConfidential(true);
         setEphemeralPort(server.getAddress().getPort());
         super.start();
     }

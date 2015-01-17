@@ -8,6 +8,8 @@ Changes log
        - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
          ROME, SIP, WebDAV, XDB, XStream).
        - Enhanced HTML extension (moved StatusInfoConverter). Issue #1005.
+       - Reference scheme reverts to http when using https. Issue #998.
+         Reported by Stephen C. Pope.
     - Bugs
        - Reintroduced registration by default of the internal HTTP server 
          connectors in JEE edition.
