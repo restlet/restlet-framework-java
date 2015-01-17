@@ -52,7 +52,12 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RestletFileUpload extends FileUpload {
+public class RestletFileUpload extends
+// [ifndef gae,jee] line
+        FileUpload
+// [ifdef gae,jee] line uncomment
+// org.apache.commons.fileupload.servlet.ServletFileUpload
+{
     /**
      * Constructs an uninitialized instance of this class. A factory must be
      * configured, using <code>setFileItemFactory()</code>, before attempting to
@@ -95,6 +100,7 @@ public class RestletFileUpload extends FileUpload {
         return getItemIterator(new RepresentationContext(multipartForm));
     }
 
+    // [ifndef gae] method
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation. Note
@@ -113,6 +119,7 @@ public class RestletFileUpload extends FileUpload {
         return parseRequest(new RepresentationContext(multipartForm));
     }
 
+    // [ifndef gae] method
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation. Note
@@ -128,7 +135,11 @@ public class RestletFileUpload extends FileUpload {
      */
     public List<FileItem> parseRequest(Request request)
             throws FileUploadException {
+        // [ifndef jee] instruction
         return parseRequest(new RepresentationContext(request.getEntity()));
+        // [ifdef jee] instruction uncomment
+        // return
+        // parseRequest(org.restlet.ext.servlet.ServletUtils.getRequest(request));
     }
 
 }
