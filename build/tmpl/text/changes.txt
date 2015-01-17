@@ -12,6 +12,8 @@ Changes log
       - Fixed fileupload extension for GAE and JEE editions.
       - Fixed potential NPE. Issue #1004.
         Reported by philippeu.
+      - Reference scheme reverts to http when using https. Issue #998.
+        Reported by Stephen C. Pope.
     - Enhancements
       - 
 
