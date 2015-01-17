@@ -378,7 +378,7 @@ public class AnnotationUtils {
         for (Class<?> clazz : javaMethod.getExceptionTypes()) {
             ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
 
-            if (tai.getStatus().getCode() == errorCode) {
+            if (tai != null && tai.getStatus().getCode() == errorCode) {
                 return tai;
             }
         }
@@ -402,7 +402,7 @@ public class AnnotationUtils {
         for (Class<?> clazz : javaMethod.getExceptionTypes()) {
             ThrowableAnnotationInfo tai = getThrowableAnnotationInfo(clazz);
 
-            if (tai.getStatus().getCode() == errorCode) {
+            if (tai != null && tai.getStatus().getCode() == errorCode) {
                 return clazz;
             }
         }
