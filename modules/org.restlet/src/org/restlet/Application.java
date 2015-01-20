@@ -595,7 +595,7 @@ public class Application extends Restlet {
             if (isDebugging()) {
                 getLogger().log(
                         Level.INFO,
-                        "Starting " + getClass().getSimpleName()
+                        "Starting " + getClass().getName()
                                 + " application in debug mode");
             } else {
                 getLogger().log(Level.INFO,
