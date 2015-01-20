@@ -219,6 +219,7 @@ public class StatusService extends Service {
                 && metadataService != null) {
             Object representationObject = null;
 
+            Application application = Application.getCurrent();
             // Serialize exception if any and if {@link
             // org.restlet.resource.Status} annotation asks for it
             Throwable cause = status.getThrowable();
@@ -229,7 +230,7 @@ public class StatusService extends Service {
                                 cause.getClass());
 
                 if (tai != null && tai.isSerializable()) {
-                    if (!Application.getCurrent().isDebugging()) {
+                    if (application != null && !application.isDebugging()) {
                         // We clear the stack trace to prevent technical
                         // information leak
                         cause.setStackTrace(new StackTraceElement[] {});
@@ -253,7 +254,8 @@ public class StatusService extends Service {
                 }
 
                 List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
-                        .getVariants(representationObject.getClass(), null);
+                        .getVariants(representationObject.getClass(), null,
+                                converterService.getConverters());
                 if (variants == null) {
                     variants = new ArrayList<>();
                 }

@@ -29,7 +29,6 @@ import java.io.IOException;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -49,14 +48,11 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
-                .add(new JacksonConverter());
-        Engine.getInstance().registerDefaultConverters();
 
         // Hosts resources into an Application because we need some services for
         // handling content negotiation, conversion of exceptions, etc.
         Application application = new Application();
+        application.getConverters().add(new JacksonConverter());
         application.setInboundRoot(MyServerResource20.class);
 
         this.clientResource = new ClientResource("http://local");

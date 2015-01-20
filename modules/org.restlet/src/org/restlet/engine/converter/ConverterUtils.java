@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.engine.Engine;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -43,7 +43,8 @@ import org.restlet.resource.Resource;
 public class ConverterUtils {
 
     /**
-     * Returns the best converter helper matching the given parameters.
+     * Returns the best converter helper matching the given parameters. It
+     * leverages the current application, if any. Otherwise, it returns null.
      * 
      * @param source
      *            The object to convert to a representation.
@@ -55,12 +56,35 @@ public class ConverterUtils {
      */
     public static ConverterHelper getBestHelper(Object source, Variant target,
             Resource resource) {
+        Application application = Application.getCurrent();
+        if (application != null) {
+            return getBestHelper(source, target, resource,
+                    application.getConverters());
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the best converter helper matching the given parameters.
+     * 
+     * @param source
+     *            The object to convert to a representation.
+     * @param target
+     *            The target representation variant.
+     * @param resource
+     *            The optional parent resource.
+     * @param helpers
+     *            The list of available converter helpers.
+     * @return The matched converter helper or null.
+     */
+    public static ConverterHelper getBestHelper(Object source, Variant target,
+            Resource resource, List<ConverterHelper> helpers) {
         ConverterHelper result = null;
         float bestScore = -1.0F;
         float currentScore;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
+        for (ConverterHelper ch : helpers) {
             if (ch != null) {
                 try {
                     currentScore = ch.score(source, target, resource);
@@ -82,7 +106,8 @@ public class ConverterUtils {
     }
 
     /**
-     * Returns the best converter helper matching the given parameters.
+     * Returns the best converter helper matching the given parameters. It
+     * leverages the current application, if any. Otherwise, it returns null.
      * 
      * @param <T>
      *            The target class.
@@ -96,12 +121,37 @@ public class ConverterUtils {
      */
     public static <T> ConverterHelper getBestHelper(Representation source,
             Class<T> target, Resource resource) {
+        Application application = Application.getCurrent();
+        if (application != null) {
+            return getBestHelper(source, target, resource,
+                    application.getConverters());
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the best converter helper matching the given parameters.
+     * 
+     * @param <T>
+     *            The target class.
+     * @param source
+     *            The source representation variant.
+     * @param target
+     *            The target class.
+     * @param resource
+     *            The parent resource.
+     * @param helpers
+     *            The list of available converter helpers.
+     * @return The matched converter helper or null.
+     */
+    public static <T> ConverterHelper getBestHelper(Representation source,
+            Class<T> target, Resource resource, List<ConverterHelper> helpers) {
         ConverterHelper result = null;
         float bestScore = -1.0F;
         float currentScore;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
+        for (ConverterHelper ch : helpers) {
             if (ch != null) {
                 currentScore = ch.score(source, target, resource);
 
@@ -117,7 +167,8 @@ public class ConverterUtils {
 
     /**
      * Returns the list of variants that can be converted from a given object
-     * class.
+     * class. It leverages the current application, if any. Otherwise, it
+     * returns null.
      * 
      * @param sourceClass
      *            The source class.
@@ -127,10 +178,32 @@ public class ConverterUtils {
      */
     public static List<VariantInfo> getVariants(Class<?> sourceClass,
             Variant targetVariant) {
+        Application application = Application.getCurrent();
+        if (application != null) {
+            return getVariants(sourceClass, targetVariant,
+                    application.getConverters());
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the list of variants that can be converted from a given object
+     * class.
+     * 
+     * @param sourceClass
+     *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
+     * @param helpers
+     *            The list of available converter helpers.
+     * @return The list of variants that can be converted.
+     */
+    public static List<VariantInfo> getVariants(Class<?> sourceClass,
+            Variant targetVariant, List<ConverterHelper> helpers) {
         List<VariantInfo> result = null;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
+        for (ConverterHelper ch : helpers) {
             if (ch != null) {
                 try {
                     result = ch.addVariants(sourceClass, targetVariant, result);

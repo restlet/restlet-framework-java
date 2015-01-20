@@ -42,7 +42,6 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
@@ -443,16 +442,8 @@ public class Engine {
     /** The logger facade to use. */
     private LoggerFacade loggerFacade;
 
-    // [ifndef gwt] member
-    /** List of available authenticator helpers. */
-    private final List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators;
-
     /** List of available client connectors. */
     private final List<org.restlet.engine.connector.ConnectorHelper<Client>> registeredClients;
-
-    // [ifndef gwt] member
-    /** List of available converter helpers. */
-    private final List<org.restlet.engine.converter.ConverterHelper> registeredConverters;
 
     /** List of available protocol helpers. */
     private final List<org.restlet.engine.connector.ProtocolHelper> registeredProtocols;
@@ -509,19 +500,12 @@ public class Engine {
 
         // [ifndef gwt]
         this.registeredServers = new CopyOnWriteArrayList<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>>();
-        this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
-        this.registeredConverters = new CopyOnWriteArrayList<org.restlet.engine.converter.ConverterHelper>();
         // [enddef]
 
         if (discoverHelpers) {
             try {
                 discoverConnectors();
                 discoverProtocols();
-
-                // [ifndef gwt]
-                discoverAuthenticators();
-                discoverConverters();
-                // [enddef]
             } catch (IOException e) {
                 Context.getCurrentLogger()
                         .log(Level.WARNING,
@@ -669,18 +653,6 @@ public class Engine {
         return result;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Discovers the authenticator helpers and register the default helpers.
-     * 
-     * @throws IOException
-     */
-    private void discoverAuthenticators() throws IOException {
-        registerHelpers(DESCRIPTOR_AUTHENTICATOR_PATH,
-                getRegisteredAuthenticators(), null);
-        registerDefaultAuthentications();
-    }
-
     /**
      * Discovers the server and client connectors and register the default
      * connectors.
@@ -695,18 +667,6 @@ public class Engine {
                 org.restlet.Server.class);
         // [enddef]
         registerDefaultConnectors();
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Discovers the converter helpers and register the default helpers.
-     * 
-     * @throws IOException
-     */
-    private void discoverConverters() throws IOException {
-        registerHelpers(DESCRIPTOR_CONVERTER_PATH, getRegisteredConverters(),
-                null);
-        registerDefaultConverters();
     }
 
     /**
@@ -730,38 +690,6 @@ public class Engine {
     public org.restlet.engine.converter.ConverterHelper findHelper() {
 
         return null;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Finds the authenticator helper supporting the given scheme.
-     * 
-     * @param challengeScheme
-     *            The challenge scheme to match.
-     * @param clientSide
-     *            Indicates if client side support is required.
-     * @param serverSide
-     *            Indicates if server side support is required.
-     * @return The authenticator helper or null.
-     */
-    public org.restlet.engine.security.AuthenticatorHelper findHelper(
-            ChallengeScheme challengeScheme, boolean clientSide,
-            boolean serverSide) {
-        org.restlet.engine.security.AuthenticatorHelper result = null;
-        List<org.restlet.engine.security.AuthenticatorHelper> helpers = getRegisteredAuthenticators();
-        org.restlet.engine.security.AuthenticatorHelper current;
-
-        for (int i = 0; (result == null) && (i < helpers.size()); i++) {
-            current = helpers.get(i);
-
-            if (current.getChallengeScheme().equals(challengeScheme)
-                    && ((clientSide && current.isClientSide()) || !clientSide)
-                    && ((serverSide && current.isServerSide()) || !serverSide)) {
-                result = helpers.get(i);
-            }
-        }
-
-        return result;
     }
 
     // [ifndef gwt] method
@@ -804,16 +732,6 @@ public class Engine {
         return line.trim();
     }
 
-    // [ifndef gwt] method
-    /**
-     * Returns the list of available authentication helpers.
-     * 
-     * @return The list of available authentication helpers.
-     */
-    public List<org.restlet.engine.security.AuthenticatorHelper> getRegisteredAuthenticators() {
-        return this.registeredAuthenticators;
-    }
-
     /**
      * Returns the list of available client connectors.
      * 
@@ -821,16 +739,6 @@ public class Engine {
      */
     public List<org.restlet.engine.connector.ConnectorHelper<Client>> getRegisteredClients() {
         return this.registeredClients;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the list of available converters.
-     * 
-     * @return The list of available converters.
-     */
-    public List<org.restlet.engine.converter.ConverterHelper> getRegisteredConverters() {
-        return registeredConverters;
     }
 
     /**
@@ -861,17 +769,6 @@ public class Engine {
      */
     public ClassLoader getUserClassLoader() {
         return userClassLoader;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Registers the default authentication helpers.
-     */
-    public void registerDefaultAuthentications() {
-        getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.HttpBasicHelper());
-        getRegisteredAuthenticators().add(
-                new org.restlet.engine.security.SmtpPlainHelper());
     }
 
     /**
@@ -911,15 +808,6 @@ public class Engine {
         // getRegisteredClients().add(
         // new org.restlet.engine.adapter.GwtHttpClientHelper(null));
         // [enddef]
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Registers the default converters.
-     */
-    public void registerDefaultConverters() {
-        getRegisteredConverters().add(
-                new org.restlet.engine.converter.DefaultConverter());
     }
 
     /**
@@ -1121,27 +1009,6 @@ public class Engine {
         this.loggerFacade = loggerFacade;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Sets the list of available authentication helpers.
-     * 
-     * @param registeredAuthenticators
-     *            The list of available authentication helpers.
-     */
-    public void setRegisteredAuthenticators(
-            List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators) {
-        synchronized (this.registeredAuthenticators) {
-            if (registeredAuthenticators != this.registeredAuthenticators) {
-                this.registeredAuthenticators.clear();
-
-                if (registeredAuthenticators != null) {
-                    this.registeredAuthenticators
-                            .addAll(registeredAuthenticators);
-                }
-            }
-        }
-    }
-
     /**
      * Sets the list of available client helpers.
      * 
@@ -1156,26 +1023,6 @@ public class Engine {
 
                 if (registeredClients != null) {
                     this.registeredClients.addAll(registeredClients);
-                }
-            }
-        }
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets the list of available converter helpers.
-     * 
-     * @param registeredConverters
-     *            The list of available converter helpers.
-     */
-    public void setRegisteredConverters(
-            List<org.restlet.engine.converter.ConverterHelper> registeredConverters) {
-        synchronized (this.registeredConverters) {
-            if (registeredConverters != this.registeredConverters) {
-                this.registeredConverters.clear();
-
-                if (registeredConverters != null) {
-                    this.registeredConverters.addAll(registeredConverters);
                 }
             }
         }

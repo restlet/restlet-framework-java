@@ -62,7 +62,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         org.restlet.engine.Engine.register(false);
 
         // Prefer the internal connectors
-        Engine.getInstance().getRegisteredConverters()
+        Engine.getInstance().getConverters()
                 .add(0, new JacksonConverter());
     }
 

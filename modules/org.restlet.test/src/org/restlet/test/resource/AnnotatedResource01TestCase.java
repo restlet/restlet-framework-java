@@ -50,8 +50,8 @@ public class AnnotatedResource01TestCase extends RestletTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
+
+        Engine.getInstance().getConverters()
                 .add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();

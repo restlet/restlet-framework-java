@@ -24,11 +24,13 @@
 
 package org.restlet;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Filter;
 import java.util.logging.Level;
 
+import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
@@ -73,6 +75,17 @@ import org.restlet.util.ServiceList;
  * parameters.</li>
  * </ul>
  * 
+ * Since release 3.0, an application has the full control on the list of
+ * converters and authenticators it supports. The automagic discover of the
+ * available converters and authenticators has been removed by default. The list
+ * of available converters and authenticators can be handled via the
+ * {@link #getConverters()} and {@link #getAuthenticators()}
+ * methods. The converters and authenticators provided by the core module of
+ * Restlet Framework are added are added by default, but can added via the
+ * {@link #registerDefaultConverters()} and
+ * {@link #registerDefaultAuthenticators()}. The automagic discover can be
+ * activated via the {@link #discoverConverters()} and
+ * {@link #discoverAuthenticators()} methods.<br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
@@ -105,6 +118,10 @@ public class Application extends Restlet {
     public static void setCurrent(Application application) {
         CURRENT.set(application);
     }
+
+    // [ifndef gwt] instruction
+    /** List of available authenticator helpers. */
+    private List<org.restlet.engine.security.AuthenticatorHelper> authenticators;
 
     /** Indicates if the debugging mode is enabled. */
     private volatile boolean debugging;
@@ -175,6 +192,9 @@ public class Application extends Restlet {
         // [ifndef gae]
         this.services.add(new org.restlet.service.TaskService(false));
         // [enddef]
+        this.authenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
+        registerDefaultConverters();
+        registerDefaultAuthenticators();
     }
 
     /**
@@ -205,6 +225,58 @@ public class Application extends Restlet {
      */
     public Restlet createOutboundRoot() {
         return getHelper().getFirstOutboundFilter();
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Discovers the authenticator helpers and register the default helpers.
+     * 
+     * @throws IOException
+     */
+    public void discoverAuthenticators() throws IOException {
+        Engine.getInstance().registerHelpers(
+                Engine.DESCRIPTOR_AUTHENTICATOR_PATH,
+                getAuthenticators(), null);
+        registerDefaultAuthenticators();
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Discovers the converter helpers and register the default helpers.
+     * 
+     * @throws IOException
+     */
+    public void discoverConverters() throws IOException {
+        Engine.getInstance().registerHelpers(Engine.DESCRIPTOR_CONVERTER_PATH,
+                getConverters(), null);
+        registerDefaultConverters();
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Finds the authenticator helper supporting the given scheme.
+     * 
+     * @param challengeScheme
+     *            The challenge scheme to match.
+     * @param clientSide
+     *            Indicates if client side support is required.
+     * @param serverSide
+     *            Indicates if server side support is required.
+     * @return The authenticator helper or null.
+     */
+    public org.restlet.engine.security.AuthenticatorHelper findHelper(
+            ChallengeScheme challengeScheme, boolean clientSide,
+            boolean serverSide) {
+
+        for (org.restlet.engine.security.AuthenticatorHelper helper : getAuthenticators()) {
+            if (helper.getChallengeScheme().equals(challengeScheme)
+                    && ((clientSide && helper.isClientSide()) || !clientSide)
+                    && ((serverSide && helper.isServerSide()) || !serverSide)) {
+                return helper;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -314,6 +386,26 @@ public class Application extends Restlet {
         return getServices().get(RangeService.class);
     }
 
+    // [ifndef gwt] method
+    /**
+     * Returns the list of available authentication helpers.
+     * 
+     * @return The list of available authentication helpers.
+     */
+    public List<org.restlet.engine.security.AuthenticatorHelper> getAuthenticators() {
+        return this.authenticators;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the list of available converters.
+     * 
+     * @return The list of available converters.
+     */
+    public List<org.restlet.engine.converter.ConverterHelper> getConverters() {
+        return getConverterService().getConverters();
+    }
+
     /**
      * Returns the role associated to the given name.
      * 
@@ -396,6 +488,26 @@ public class Application extends Restlet {
      */
     public boolean isDebugging() {
         return debugging;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Registers the default authentication helpers.
+     */
+    public void registerDefaultAuthenticators() {
+        getAuthenticators().add(
+                new org.restlet.engine.security.HttpBasicHelper());
+        getAuthenticators().add(
+                new org.restlet.engine.security.SmtpPlainHelper());
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Registers the default converters.
+     */
+    public void registerDefaultConverters() {
+        getConverters().add(
+                new org.restlet.engine.converter.DefaultConverter());
     }
 
     /**
@@ -533,6 +645,39 @@ public class Application extends Restlet {
      */
     public void setRangeService(RangeService rangeService) {
         getServices().set(rangeService);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the list of available authentication helpers.
+     * 
+     * @param authenticators
+     *            The list of available authentication helpers.
+     */
+    public void setAuthenticators(
+            List<org.restlet.engine.security.AuthenticatorHelper> authenticators) {
+        synchronized (this.authenticators) {
+            if (authenticators != this.authenticators) {
+                this.authenticators.clear();
+
+                if (authenticators != null) {
+                    this.authenticators
+                            .addAll(authenticators);
+                }
+            }
+        }
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the list of available converter helpers.
+     * 
+     * @param converters
+     *            The list of available converter helpers.
+     */
+    public void setConverters(
+            List<org.restlet.engine.converter.ConverterHelper> converters) {
+        getConverterService().setConverters(converters);
     }
 
     /**

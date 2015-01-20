@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -39,7 +40,6 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.Engine;
 import org.restlet.engine.header.ChallengeRequestReader;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
@@ -176,7 +176,9 @@ public class AuthenticatorUtils {
             if (challenge.getRawValue() != null) {
                 cw.append(challenge.getRawValue());
             } else {
-                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                Application application = Application.getCurrent();
+                // TODO case when the application is null?
+                AuthenticatorHelper helper = application.findHelper(
                         challenge.getScheme(), false, true);
 
                 if (helper != null) {
@@ -191,9 +193,12 @@ public class AuthenticatorUtils {
                     }
                 } else {
                     result = "?";
-                    Context.getCurrentLogger().warning(
-                            "Challenge scheme " + challenge.getScheme()
-                                    + " not supported by the Restlet engine.");
+                    Context.getCurrentLogger()
+                            .warning(
+                                    "Challenge scheme "
+                                            + challenge.getScheme()
+                                            + " not supported by the Restlet engine. "
+                                            + "Check the authenticators configured by the current application.");
                 }
             }
 
@@ -242,7 +247,9 @@ public class AuthenticatorUtils {
             if (challenge.getRawValue() != null) {
                 cw.append(challenge.getRawValue());
             } else {
-                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                Application application = Application.getCurrent();
+                // TODO case when the application is null?
+                AuthenticatorHelper helper = application.findHelper(
                         challenge.getScheme(), true, false);
 
                 if (helper != null) {
@@ -256,9 +263,12 @@ public class AuthenticatorUtils {
                                         + challenge, e);
                     }
                 } else {
-                    Context.getCurrentLogger().warning(
-                            "Challenge scheme " + challenge.getScheme()
-                                    + " not supported by the Restlet engine.");
+                    Context.getCurrentLogger()
+                            .warning(
+                                    "Challenge scheme "
+                                            + challenge.getScheme()
+                                            + " not supported by the Restlet engine. "
+                                            + "Check the authenticators configured by the current application.");
                 }
             }
 
@@ -347,15 +357,20 @@ public class AuthenticatorUtils {
             for (ChallengeRequest cr : result) {
                 // Give a chance to the authenticator helper to do further
                 // parsing
-                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                Application application = Application.getCurrent();
+                // TODO case where the application is null?
+                AuthenticatorHelper helper = application.findHelper(
                         cr.getScheme(), true, false);
 
                 if (helper != null) {
                     helper.parseRequest(cr, response, httpHeaders);
                 } else {
-                    Context.getCurrentLogger().warning(
-                            "Couldn't find any helper support the "
-                                    + cr.getScheme() + " challenge scheme.");
+                    Context.getCurrentLogger()
+                            .warning(
+                                    "Couldn't find any helper support the "
+                                            + cr.getScheme()
+                                            + " challenge scheme. "
+                                            + "Check the authenticators configured by the current application.");
                 }
             }
         }
@@ -394,15 +409,20 @@ public class AuthenticatorUtils {
 
         if (result != null) {
             // Give a chance to the authenticator helper to do further parsing
-            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+            Application application = Application.getCurrent();
+            // TODO case where the applicatin is null?
+            AuthenticatorHelper helper = application.findHelper(
                     result.getScheme(), true, false);
 
             if (helper != null) {
                 helper.parseResponse(result, request, httpHeaders);
             } else {
-                Context.getCurrentLogger().warning(
-                        "Couldn't find any helper support the "
-                                + result.getScheme() + " challenge scheme.");
+                Context.getCurrentLogger()
+                        .warning(
+                                "Couldn't find any helper support the "
+                                        + result.getScheme()
+                                        + " challenge scheme. "
+                                        + "Check the authenticators configured by the current application.");
             }
         }
 
@@ -465,16 +485,21 @@ public class AuthenticatorUtils {
     public static Reference updateReference(Reference resourceRef,
             ChallengeResponse challengeResponse, Request request) {
         if (challengeResponse != null) {
-            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+            Application application = Application.getCurrent();
+            // TODO case where the application is null?
+            AuthenticatorHelper helper = application.findHelper(
                     challengeResponse.getScheme(), true, false);
 
             if (helper != null) {
                 resourceRef = helper.updateReference(resourceRef,
                         challengeResponse, request);
             } else {
-                Context.getCurrentLogger().warning(
-                        "Challenge scheme " + challengeResponse.getScheme()
-                                + " not supported by the Restlet engine.");
+                Context.getCurrentLogger()
+                        .warning(
+                                "Challenge scheme "
+                                        + challengeResponse.getScheme()
+                                        + " not supported by the Restlet engine. "
+                                        + "Check the authenticators configured by the current application.");
             }
         }
 

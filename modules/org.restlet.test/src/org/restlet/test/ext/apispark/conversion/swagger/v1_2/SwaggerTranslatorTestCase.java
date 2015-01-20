@@ -320,10 +320,10 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
     protected void setUpEngine() {
         super.setUpEngine();
         // we control the available converters.
-        Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
+        Engine.getInstance().getConverters().clear();
+        Engine.getInstance().getConverters()
                 .add(new JacksonConverter());
-        Engine.getInstance().getRegisteredConverters()
+        Engine.getInstance().getConverters()
                 .add(new DefaultConverter());
     }
 

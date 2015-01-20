@@ -78,7 +78,7 @@ public class JsonTest extends JaxRsTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // Explicitly promote the Jackson converter
-        Engine.getInstance().getRegisteredConverters()
+        Engine.getInstance().getConverters()
                 .add(0, new JacksonConverter());
     }
 

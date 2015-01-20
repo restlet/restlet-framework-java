@@ -54,7 +54,7 @@ public class QueryTestCase extends BaseConnectorsTestCase {
         super.setUp();
 
         // Explicitly promote the Jackson converter
-        Engine.getInstance().getRegisteredConverters()
+        Engine.getInstance().getConverters()
                 .add(0, new JacksonConverter());
         Engine.setLogLevel(Level.FINE);
     }

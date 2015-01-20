@@ -138,7 +138,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
         // there are a bunch of converters registered in the unit test project,
         // we only want jackson
         List<ConverterHelper> registeredConverters = Engine.getInstance()
-                .getRegisteredConverters();
+                .getConverters();
         for (int i = registeredConverters.size() - 1; i >= 0; i--) {
             ConverterHelper converterHelper = registeredConverters.get(i);
             if (!(converterHelper instanceof org.restlet.ext.jackson.JacksonConverter)) {

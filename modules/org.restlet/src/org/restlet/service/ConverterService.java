@@ -27,12 +27,12 @@ package org.restlet.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.engine.resource.VariantInfo;
@@ -54,11 +54,14 @@ import org.restlet.resource.Resource;
  */
 public class ConverterService extends Service {
 
+    /** List of available converter helpers. */
+    private List<ConverterHelper> converters;
+
     /**
      * Constructor.
      */
     public ConverterService() {
-        super();
+        this(true);
     }
 
     /**
@@ -69,6 +72,7 @@ public class ConverterService extends Service {
      */
     public ConverterService(boolean enabled) {
         super(enabled);
+        this.converters = new CopyOnWriteArrayList<ConverterHelper>();
     }
 
     /**
@@ -119,8 +123,7 @@ public class ConverterService extends Service {
         List<Class<?>> result = null;
         List<Class<?>> helperObjectClasses = null;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
+        for (ConverterHelper ch : getConverters()) {
             helperObjectClasses = ch.getObjectClasses(source);
 
             if (helperObjectClasses != null) {
@@ -149,6 +152,15 @@ public class ConverterService extends Service {
     }
 
     /**
+     * Returns the list of available converters.
+     * 
+     * @return The list of available converters.
+     */
+    public List<ConverterHelper> getConverters() {
+        return converters;
+    }
+
+    /**
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
@@ -161,7 +173,7 @@ public class ConverterService extends Service {
      */
     public List<? extends Variant> getVariants(Class<?> source, Variant target)
             throws IOException {
-        return ConverterUtils.getVariants(source, target);
+        return ConverterUtils.getVariants(source, target, getConverters());
     }
 
     /**
@@ -181,6 +193,25 @@ public class ConverterService extends Service {
             Representation patch) throws IOException {
 
         return null;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the list of available converter helpers.
+     * 
+     * @param converters
+     *            The list of available converter helpers.
+     */
+    public void setConverters(List<ConverterHelper> converters) {
+        synchronized (this.converters) {
+            if (converters != this.converters) {
+                this.converters.clear();
+
+                if (converters != null) {
+                    this.converters.addAll(converters);
+                }
+            }
+        }
     }
 
     /**
@@ -216,7 +247,7 @@ public class ConverterService extends Service {
 
         if ((source != null) && source.isAvailable() && (source.getSize() != 0)) {
             ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
-                    resource);
+                    resource, getConverters());
 
             if (ch != null) {
                 if (loggable
@@ -242,9 +273,15 @@ public class ConverterService extends Service {
                 }
             } else {
                 if (loggable) {
-                    Context.getCurrentLogger().warning(
-                            "Unable to find a converter for this representation : "
-                                    + source);
+                    StringBuilder sb = new StringBuilder(
+                            "Unable to find a converter for this representation: ");
+                    sb.append(source);
+                    if (getConverters().isEmpty()) {
+                        sb.append(". No converter has been defined.");
+                    } else {
+                        sb.append(". Check the list of registered converters.");
+                    }
+                    Context.getCurrentLogger().warning(sb.toString());
                 }
             }
         }
@@ -312,7 +349,7 @@ public class ConverterService extends Service {
         Representation result = null;
         boolean loggable = (resource == null) ? true : resource.isLoggable();
         ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
-                resource);
+                resource, getConverters());
 
         if (ch != null) {
             if (loggable && Context.getCurrentLogger().isLoggable(Level.FINE)) {
@@ -370,9 +407,15 @@ public class ConverterService extends Service {
             }
         } else {
             if (loggable) {
-                Context.getCurrentLogger().warning(
-                        "Unable to find a converter for this object : "
-                                + source);
+                StringBuilder sb = new StringBuilder(
+                        "Unable to find a converter for this object: ");
+                sb.append(source);
+                if (getConverters().isEmpty()) {
+                    sb.append(". No converter has been defined.");
+                } else {
+                    sb.append(". Check the list of registered converters.");
+                }
+                Context.getCurrentLogger().warning(sb.toString());
             }
         }
 
@@ -390,8 +433,7 @@ public class ConverterService extends Service {
      */
     public void updatePreferences(List<Preference<MediaType>> preferences,
             Class<?> entity) {
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
+        for (ConverterHelper ch : getConverters()) {
             ch.updatePreferences(preferences, entity);
         }
     }

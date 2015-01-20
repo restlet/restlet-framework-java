@@ -111,7 +111,7 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
 
     protected void setUpCommon() throws Exception {
         Engine.setLogLevel(Level.INFO);
-        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().getConverters().clear();
         Engine.getInstance().registerDefaultConverters();
     }
 

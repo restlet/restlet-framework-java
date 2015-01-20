@@ -107,15 +107,6 @@ public class Activator implements BundleActivator {
         // Register client helpers
         registerHelper(bundle, Engine.getInstance().getRegisteredClients(),
                 Client.class, Engine.DESCRIPTOR_CLIENT_PATH);
-
-        // Register authentication helpers
-        registerHelper(bundle, Engine.getInstance()
-                .getRegisteredAuthenticators(), null,
-                Engine.DESCRIPTOR_AUTHENTICATOR_PATH);
-
-        // Register converter helpers
-        registerHelper(bundle, Engine.getInstance().getRegisteredConverters(),
-                null, Engine.DESCRIPTOR_CONVERTER_PATH);
     }
 
     /**
@@ -149,8 +140,6 @@ public class Activator implements BundleActivator {
         });
 
         Engine.getInstance().registerDefaultConnectors();
-        Engine.getInstance().registerDefaultAuthentications();
-        Engine.getInstance().registerDefaultConverters();
     }
 
     /**
