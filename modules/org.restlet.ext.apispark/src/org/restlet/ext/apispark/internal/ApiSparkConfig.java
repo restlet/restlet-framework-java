@@ -24,8 +24,6 @@
 
 package org.restlet.ext.apispark.internal;
 
-import org.restlet.ext.apispark.ApiSparkService;
-
 /**
  * TODO I'm not convinced by the presence of such configuration bean. The
  * service really hosts the configuration.
@@ -36,7 +34,7 @@ public class ApiSparkConfig {
 
     private char[] agentPassword;
 
-    private String agentServiceUrl = ApiSparkService.DEFAULT_AGENT_SERVICE_URL;
+    private String agentServiceUrl;
 
     private String agentLogin;
 
@@ -47,6 +45,10 @@ public class ApiSparkConfig {
     private boolean reverseProxyEnabled;
 
     private String reverseProxyTargetUrl;
+
+    private int agentAnalyticsBufferSize;
+
+    private long agentAnalyticsPostPeriodInSecond;
 
     public String getAgentPassword() {
         return agentPassword != null ? new String(agentPassword) : null;
@@ -107,6 +109,22 @@ public class ApiSparkConfig {
 
     public void setReverseProxyTargetUrl(String reverseProxyTargetUrl) {
         this.reverseProxyTargetUrl = reverseProxyTargetUrl;
+    }
+
+    public int getAgentAnalyticsBufferSize() {
+        return agentAnalyticsBufferSize;
+    }
+
+    public void setAgentAnalyticsBufferSize(int agentAnalyticsBufferSize) {
+        this.agentAnalyticsBufferSize = agentAnalyticsBufferSize;
+    }
+
+    public long getAgentAnalyticsPostPeriodInSecond() {
+        return agentAnalyticsPostPeriodInSecond;
+    }
+
+    public void setAgentAnalyticsPostPeriodInSecond(long agentAnalyticsPostPeriodInSecond) {
+        this.agentAnalyticsPostPeriodInSecond = agentAnalyticsPostPeriodInSecond;
     }
 
 }
