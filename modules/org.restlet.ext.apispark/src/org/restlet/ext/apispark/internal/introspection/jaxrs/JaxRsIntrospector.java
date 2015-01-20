@@ -27,7 +27,8 @@ package org.restlet.ext.apispark.internal.introspection.jaxrs;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.data.ChallengeScheme;
@@ -336,7 +337,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 collectInfo.addSection(new Section(packageName));
             }
             // Example: "Contact"
-            JsonTypeName jsonType = typeInfo.getClazz().getAnnotation(JsonTypeName.class);
+            JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
             String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
                     .getSimpleName() : jsonType.value();
             representation.setName(typeName);
@@ -385,13 +386,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     }
 
                     JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
-                    String propertyName = jsonProperty == null ? pd.getName() : jsonProperty.value();
+                    String propertyName = jsonProperty != null && !StringUtils.isNullOrEmpty(jsonProperty.value()) ?
+                            jsonProperty.value() : pd.getName();
+
+                    JsonPropertyDescription jsonPropertyDescription = pd.getReadMethod().getAnnotation(JsonPropertyDescription.class);
 
                     Property property = new Property();
                     property.setName(propertyName);
-                    property.setDescription("");
+                    property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription.value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(0);
+                    property.setMinOccurs(jsonProperty != null && jsonProperty.required() ? 1 : 0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
                     addRepresentation(collectInfo, propertyTypeInfo,

@@ -33,11 +33,13 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
@@ -100,7 +102,7 @@ public class RepresentationCollector {
                 }
             }
             // Example: "Contact"
-            JsonTypeName jsonType = typeInfo.getClazz().getAnnotation(JsonTypeName.class);
+            JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
             String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
                     .getSimpleName() : jsonType.value();
             representation.setName(typeName);
@@ -152,14 +154,17 @@ public class RepresentationCollector {
                     }
 
                     JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
-                    String propertyName = jsonProperty == null ? pd.getName() : jsonProperty.value();
+                    String propertyName = jsonProperty != null && !StringUtils.isNullOrEmpty(jsonProperty.value()) ?
+                            jsonProperty.value() : pd.getName();
+
+                    JsonPropertyDescription jsonPropertyDescription = pd.getReadMethod().getAnnotation(JsonPropertyDescription.class);
 
                     // Types
                     Property property = new Property();
                     property.setName(propertyName);
-                    property.setDescription("");
+                    property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription.value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(0);
+                    property.setMinOccurs(jsonProperty != null && jsonProperty.required() ? 1 : 0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
                     addRepresentation(collectInfo, propertyTypeInfo,
