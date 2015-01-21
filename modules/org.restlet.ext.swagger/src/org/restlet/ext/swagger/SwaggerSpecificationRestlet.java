@@ -57,7 +57,8 @@ import org.restlet.routing.Router;
  * Usage example:
  * 
  * <pre>
- * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet(this); // this is the current Application
+ * // this is the current Application
+ * SwaggerSpecificationRestlet swaggerSpecificationRestlet = new SwaggerSpecificationRestlet(this);
  * swaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
  * swaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
