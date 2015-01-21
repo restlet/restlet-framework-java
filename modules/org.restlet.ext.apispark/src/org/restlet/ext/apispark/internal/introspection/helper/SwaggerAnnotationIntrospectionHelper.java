@@ -59,23 +59,26 @@ public class SwaggerAnnotationIntrospectionHelper implements
     }
 
     @Override
-    public java.util.List<Class<?>> processOperation(Resource resource, Operation operation,
-                                                     Class<?> resourceClass, Method javaMethod) {
+    public java.util.List<Class<?>> processOperation(Resource resource,
+            Operation operation, Class<?> resourceClass, Method javaMethod) {
         List<Class<?>> representationsUsed = new ArrayList<>();
 
         ApiOperation apiOperation = javaMethod
                 .getAnnotation(ApiOperation.class);
         if (apiOperation != null) {
-            SwaggerAnnotationUtils.processApiOperation(apiOperation, resource, operation);
+            SwaggerAnnotationUtils.processApiOperation(apiOperation, resource,
+                    operation);
         }
         ApiResponses apiResponses = javaMethod
                 .getAnnotation(ApiResponses.class);
         if (apiResponses != null) {
-            SwaggerAnnotationUtils.processApiResponses(apiResponses, operation, representationsUsed);
+            SwaggerAnnotationUtils.processApiResponses(apiResponses, operation,
+                    representationsUsed);
         }
         ApiResponse apiResponse = javaMethod.getAnnotation(ApiResponse.class);
         if (apiResponse != null) {
-            SwaggerAnnotationUtils.processApiResponse(apiResponse, operation, representationsUsed);
+            SwaggerAnnotationUtils.processApiResponse(apiResponse, operation,
+                    representationsUsed);
         }
         ApiImplicitParams apiImplicitParams = javaMethod
                 .getAnnotation(ApiImplicitParams.class);
@@ -114,6 +117,15 @@ public class SwaggerAnnotationIntrospectionHelper implements
     @Override
     public void processResource(Resource resource, Class<?> resourceClass) {
         Api api = resourceClass.getAnnotation(Api.class);
+        if (api == null) {
+            // the JDK does get annotations on implemented interfaces
+            for (Class<?> i : resourceClass.getInterfaces()) {
+                api = i.getAnnotation(Api.class);
+                if (api != null) {
+                    break;
+                }
+            }
+        }
         if (api != null) {
             SwaggerAnnotationUtils.processApi(api, resource);
         }

@@ -74,7 +74,7 @@ public class ResourceCollector {
 
     private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
 
-    public static void collectResourceForDirectory(CollectInfo collectInfo,
+    public static void collectResource(CollectInfo collectInfo,
             Directory directory, String basePath, ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
         Resource resource = getResource(collectInfo, directory, basePath,
@@ -95,7 +95,7 @@ public class ResourceCollector {
         collectInfo.addResource(resource);
     }
 
-    public static void collectResourceForServletResource(
+    public static void collectResource(
             CollectInfo collectInfo, ServerResource sr, String basePath,
             ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
@@ -203,6 +203,7 @@ public class ResourceCollector {
                     int statusCode = throwableAnnotationInfo.getStatus().getCode();
                     Response response = new Response();
                     response.setCode(statusCode);
+                    response.setName(Status.valueOf(statusCode).getReasonPhrase());
                     response.setMessage("Status " + statusCode);
 
                     Class<?> outputPayloadType = throwableAnnotationInfo
