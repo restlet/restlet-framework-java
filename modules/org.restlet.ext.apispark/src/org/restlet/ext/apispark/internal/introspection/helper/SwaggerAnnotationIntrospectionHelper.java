@@ -118,7 +118,7 @@ public class SwaggerAnnotationIntrospectionHelper implements
     public void processResource(Resource resource, Class<?> resourceClass) {
         Api api = resourceClass.getAnnotation(Api.class);
         if (api == null) {
-            // the JDK does get annotations on implemented interfaces
+            // the JDK doesn't retrieve annotations on implemented interfaces
             for (Class<?> i : resourceClass.getInterfaces()) {
                 api = i.getAnnotation(Api.class);
                 if (api != null) {
