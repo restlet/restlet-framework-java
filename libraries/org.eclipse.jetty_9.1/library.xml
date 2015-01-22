@@ -6,11 +6,11 @@
 	<homeUri>http://www.eclipse.org/jetty/</homeUri>
 	<downloadUri>http://download.eclipse.org/jetty/</downloadUri>
 	<provider>The Eclipse Foundation</provider>
-	
-	<package id="jetty-continuation" name="org.eclipse.jetty.continuation">
+
+	<package id="jetty-client" name="org.eclipse.jetty.client">
 		<maven>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-continuation</artifactId>
+			<artifactId>jetty-client</artifactId>
 		</maven>
 	</package>
 	<package id="jetty-http" name="org.eclipse.jetty.http">
