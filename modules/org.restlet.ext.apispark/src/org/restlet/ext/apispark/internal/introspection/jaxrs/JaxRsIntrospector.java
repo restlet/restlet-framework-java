@@ -283,7 +283,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             this.sections = sections;
         }
 
-        public void setUseSectionNamingPackageStrategy(boolean useSectionNamingPackageStrategy) {
+        public void setUseSectionNamingPackageStrategy(
+                boolean useSectionNamingPackageStrategy) {
             this.useSectionNamingPackageStrategy = useSectionNamingPackageStrategy;
         }
     }
@@ -325,8 +326,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             return;
         }
 
-        if (typeInfo.isPrimitive()
-                || typeInfo.isJdkClass()) {
+        if (typeInfo.isPrimitive() || typeInfo.isJdkClass()) {
             // primitives and jdk classes are not collected
             return;
         }
@@ -336,7 +336,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         } else {
             if (!typeInfo.isPrimitive()) {
                 // Example: "java.util.Contact" or "String"
-                representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+                representation.setDescription("Java type: "
+                        + typeInfo.getRepresentationClazz().getName());
             }
 
             // Sections
@@ -346,9 +347,11 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 collectInfo.addSection(new Section(packageName));
             }
             // Example: "Contact"
-            JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
-            String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
-                    .getSimpleName() : jsonType.value();
+            JsonRootName jsonType = typeInfo.getClazz().getAnnotation(
+                    JsonRootName.class);
+            String typeName = jsonType == null ? typeInfo
+                    .getRepresentationClazz().getSimpleName() : jsonType
+                    .value();
             representation.setName(typeName);
         }
         representation.setRaw(typeInfo.isRaw());
@@ -365,46 +368,60 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
             if (!typeInfo.isRaw()) {
                 // add properties definition
-                BeanInfo beanInfo = BeanInfoUtils
-                        .getBeanInfo(typeInfo.getRepresentationClazz());
+                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
+                        .getRepresentationClazz());
 
-                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass.construct(typeInfo.getRepresentationClazz(), new JacksonAnnotationIntrospector(), null).getAnnotation(JsonIgnoreProperties.class);
-                List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
+                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass
+                        .construct(typeInfo.getRepresentationClazz(),
+                                new JacksonAnnotationIntrospector(), null)
+                        .getAnnotation(JsonIgnoreProperties.class);
+                List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null
+                        : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
 
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
 
-                    if (jsonIgnoreProperties != null && jsonIgnoreProperties.contains(pd.getName())) {
-                        //ignore this field
+                    if (jsonIgnoreProperties != null
+                            && jsonIgnoreProperties.contains(pd.getName())) {
+                        // ignore this field
                         continue;
                     }
-                    JsonIgnore jsonIgnore = pd.getReadMethod().getAnnotation(JsonIgnore.class);
+                    JsonIgnore jsonIgnore = pd.getReadMethod().getAnnotation(
+                            JsonIgnore.class);
                     if (jsonIgnore != null && jsonIgnore.value()) {
-                        //ignore this field
+                        // ignore this field
                         continue;
                     }
 
                     TypeInfo propertyTypeInfo;
                     try {
-                        propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod().getReturnType(),
-                                pd.getReadMethod().getGenericReturnType());
+                        propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod()
+                                .getReturnType(), pd.getReadMethod()
+                                .getGenericReturnType());
                     } catch (UnsupportedTypeException e) {
-                        LOGGER.warning("Could not add property " + pd.getName() +
-                                " of representation " + typeInfo.getRepresentationClazz().getName() + ". " +
-                                e.getMessage());
+                        LOGGER.warning("Could not add property " + pd.getName()
+                                + " of representation "
+                                + typeInfo.getRepresentationClazz().getName()
+                                + ". " + e.getMessage());
                         continue;
                     }
 
-                    JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
-                    String propertyName = jsonProperty != null && !StringUtils.isNullOrEmpty(jsonProperty.value()) ?
-                            jsonProperty.value() : pd.getName();
+                    JsonProperty jsonProperty = pd.getReadMethod()
+                            .getAnnotation(JsonProperty.class);
+                    String propertyName = jsonProperty != null
+                            && !StringUtils.isNullOrEmpty(jsonProperty.value()) ? jsonProperty
+                            .value() : pd.getName();
 
-                    JsonPropertyDescription jsonPropertyDescription = pd.getReadMethod().getAnnotation(JsonPropertyDescription.class);
+                    JsonPropertyDescription jsonPropertyDescription = pd
+                            .getReadMethod().getAnnotation(
+                                    JsonPropertyDescription.class);
 
                     Property property = new Property();
                     property.setName(propertyName);
-                    property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription.value() : "");
+                    property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription
+                            .value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(jsonProperty != null && jsonProperty.required() ? 1 : 0);
+                    property.setMinOccurs(jsonProperty != null
+                            && jsonProperty.required() ? 1 : 0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
                     addRepresentation(collectInfo, propertyTypeInfo,
@@ -419,7 +436,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             }
 
             for (IntrospectionHelper helper : introspectionHelper) {
-                helper.processRepresentation(representation, typeInfo.getRepresentationClazz());
+                helper.processRepresentation(representation,
+                        typeInfo.getRepresentationClazz());
             }
         }
     }
@@ -511,11 +529,13 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             Reference baseRef, boolean useSectionNamingPackageStrategy,
             String applicationName, String applicationPathValue) {
 
-        List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
+        List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils
+                .getIntrospectionHelpers();
         Definition definition = new Definition();
 
         CollectInfo collectInfo = new CollectInfo();
-        collectInfo.setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
+        collectInfo
+                .setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
 
         ApplicationPath applicationPath = application.getClass().getAnnotation(
                 ApplicationPath.class);
@@ -555,8 +575,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         return definition;
     }
 
-    private static Header getHeader(TypeInfo typeInfo,
-            String defaultValue, HeaderParam headerParam) {
+    private static Header getHeader(TypeInfo typeInfo, String defaultValue,
+            HeaderParam headerParam) {
         Header header = new Header();
         header.setName(headerParam.value());
         header.setType(typeInfo.getRepresentationName());
@@ -576,14 +596,16 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
     }
 
-    private static PathVariable getPathVariable(TypeInfo typeInfo, PathParam pathParam) {
+    private static PathVariable getPathVariable(TypeInfo typeInfo,
+            PathParam pathParam) {
         PathVariable pathVariable = new PathVariable();
         pathVariable.setName(pathParam.value());
         pathVariable.setType(typeInfo.getRepresentationName());
         return pathVariable;
     }
 
-    private static QueryParameter getQueryParameter(TypeInfo typeInfo, String defaultValue, QueryParam queryParam) {
+    private static QueryParameter getQueryParameter(TypeInfo typeInfo,
+            String defaultValue, QueryParam queryParam) {
         QueryParameter queryParameter = new QueryParameter();
         queryParameter.setName(queryParam.value());
         queryParameter.setType(typeInfo.getRepresentationName());
@@ -754,12 +776,13 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     private static void scanField(Field field, ClazzInfo clazzInfo) {
         TypeInfo typeInfo;
         try {
-            typeInfo = Types.getTypeInfo(field.getType(), field.getGenericType());
+            typeInfo = Types.getTypeInfo(field.getType(),
+                    field.getGenericType());
         } catch (UnsupportedTypeException e) {
-            LOGGER.warning("Could not add field " + field + ". " +
-                    e.getMessage());
+            LOGGER.warning("Could not add field " + field + ". "
+                    + e.getMessage());
             return;
-        }        // Introduced by Jax-rs 2.0
+        } // Introduced by Jax-rs 2.0
         // BeanParam beanparam = field.getAnnotation(BeanParam.class);
 
         DefaultValue defaultvalue = field.getAnnotation(DefaultValue.class);
@@ -777,8 +800,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         HeaderParam headerParam = field.getAnnotation(HeaderParam.class);
         if (headerParam != null) {
-            Header header = getHeader(typeInfo,
-                    defaultValueString, headerParam);
+            Header header = getHeader(typeInfo, defaultValueString, headerParam);
             clazzInfo.addHeader(header);
         }
 
@@ -789,7 +811,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
         QueryParam queryParam = field.getAnnotation(QueryParam.class);
         if (queryParam != null) {
-            QueryParameter queryParameter = getQueryParameter(typeInfo, defaultValueString, queryParam);
+            QueryParameter queryParameter = getQueryParameter(typeInfo,
+                    defaultValueString, queryParam);
             clazzInfo.addQueryParameter(queryParameter);
         }
     }
@@ -804,9 +827,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 typeInfo = Types.getTypeInfo(parameterTypes[i],
                         genericParameterTypes[i]);
             } catch (UnsupportedTypeException e) {
-                LOGGER.warning("Could not scan parameter " + Types.toString(parameterTypes[i],
-                        genericParameterTypes[i]) + ". " +
-                        e.getMessage());
+                LOGGER.warning("Could not scan parameter "
+                        + Types.toString(parameterTypes[i],
+                                genericParameterTypes[i]) + ". "
+                        + e.getMessage());
                 continue;
             }
 
@@ -822,14 +846,12 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     clazzInfo.addHeader(header);
                 }
                 if (annotation instanceof PathParam) {
-                    PathVariable pathVariable = getPathVariable(
-                            typeInfo,
+                    PathVariable pathVariable = getPathVariable(typeInfo,
                             (PathParam) annotation);
                     clazzInfo.addPathVariable(pathVariable);
                 }
                 if (annotation instanceof QueryParam) {
-                    QueryParameter queryParameter = getQueryParameter(
-                            typeInfo,
+                    QueryParameter queryParameter = getQueryParameter(typeInfo,
                             defaultValue, (QueryParam) annotation);
                     clazzInfo.addQueryParameter(queryParameter);
                 }
@@ -899,10 +921,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 typeInfo = Types.getTypeInfo(parameterTypes[i],
                         genericParameterTypes[i]);
             } catch (UnsupportedTypeException e) {
-                LOGGER.warning("Could not scan parameter " + Types.toString(parameterTypes[i],
-                        genericParameterTypes[i]) +
-                        " of method " + method + ". " +
-                        e.getMessage());
+                LOGGER.warning("Could not scan parameter "
+                        + Types.toString(parameterTypes[i],
+                                genericParameterTypes[i]) + " of method "
+                        + method + ". " + e.getMessage());
                 continue;
             }
 
@@ -916,7 +938,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 }
                 if (annotation instanceof FormParam) {
                     isEntity = false;
-                    addRepresentation(collectInfo, typeInfo, introspectionHelper);
+                    addRepresentation(collectInfo, typeInfo,
+                            introspectionHelper);
                 }
                 if (annotation instanceof HeaderParam) {
                     isEntity = false;
@@ -926,15 +949,13 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 }
                 if (annotation instanceof PathParam) {
                     isEntity = false;
-                    PathVariable pathVariable = getPathVariable(
-                            typeInfo,
+                    PathVariable pathVariable = getPathVariable(typeInfo,
                             (PathParam) annotation);
                     pathVariables.put(pathVariable.getName(), pathVariable);
                 }
                 if (annotation instanceof QueryParam) {
                     isEntity = false;
-                    QueryParameter queryParameter = getQueryParameter(
-                            typeInfo,
+                    QueryParameter queryParameter = getQueryParameter(typeInfo,
                             defaultValue, (QueryParam) annotation);
                     queryParameters.put(queryParameter.getName(),
                             queryParameter);
@@ -954,7 +975,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
                 // check if the parameter is an entity (no annotation)
                 if (isEntity) {
-                    addRepresentation(collectInfo, typeInfo, introspectionHelper);
+                    addRepresentation(collectInfo, typeInfo,
+                            introspectionHelper);
 
                     PayLoad inputEntity = new PayLoad();
                     inputEntity.setType(typeInfo.getRepresentationName());
@@ -973,13 +995,14 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         Response response = new Response();
 
         if (method.getReturnType() != Void.TYPE) {
-            TypeInfo outputTypeInfo = Types.getTypeInfo(method.getReturnType(), method.getGenericReturnType());
+            TypeInfo outputTypeInfo = Types.getTypeInfo(method.getReturnType(),
+                    method.getGenericReturnType());
             // Output representation
-            addRepresentation(collectInfo, outputTypeInfo,
-                    introspectionHelper);
+            addRepresentation(collectInfo, outputTypeInfo, introspectionHelper);
 
             PayLoad outputEntity = new PayLoad();
-            if (javax.ws.rs.core.Response.class.isAssignableFrom(outputTypeInfo.getRepresentationClazz())) {
+            if (javax.ws.rs.core.Response.class.isAssignableFrom(outputTypeInfo
+                    .getRepresentationClazz())) {
                 outputEntity.setType("file");
             } else {
                 outputEntity.setType(outputTypeInfo.getRepresentationName());
@@ -1017,7 +1040,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
             // set section from package
             if (collectInfo.isUseSectionNamingPackageStrategy()) {
-                String sectionName = clazzInfo.getClazz().getPackage().getName();
+                String sectionName = clazzInfo.getClazz().getPackage()
+                        .getName();
                 resource.getSections().add(sectionName);
             }
 
@@ -1074,8 +1098,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 genericParameterTypes);
     }
 
-    private static void updateDefinitionContract(CollectInfo collectInfo, Application application,
-                                                 Definition definition) {
+    private static void updateDefinitionContract(CollectInfo collectInfo,
+            Application application, Definition definition) {
         // Contract
         Contract contract = new Contract();
         contract.setName(collectInfo.getApplicationName());
