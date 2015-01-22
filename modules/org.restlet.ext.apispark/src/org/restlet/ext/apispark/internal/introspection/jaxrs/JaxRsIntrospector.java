@@ -316,33 +316,26 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             return;
         }
 
-        if (typeInfo.isPrimitive()
-                || typeInfo.isJdkClass()) {
-            // primitives and jdk classes are not collected
+        if (typeInfo.isPrimitive() || typeInfo.isFile()) {
+            // primitives and files are not collected
             return;
         }
 
-        if (typeInfo.isFile()) {
-            representation.setName("file");
-        } else {
-            if (!typeInfo.isPrimitive()) {
-                // Example: "java.util.Contact" or "String"
-                representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
-            }
+        // Example: "java.util.Contact" or "String"
+        representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
 
-            // Sections
-            String packageName = typeInfo.getClazz().getPackage().getName();
-            representation.getSections().add(packageName);
-            if (collectInfo.getSection(packageName) == null) {
-                collectInfo.addSection(new Section(packageName));
-            }
-            // Example: "Contact"
-            JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
-            String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
-                    .getSimpleName() : jsonType.value();
-            representation.setName(typeName);
+        // Sections
+        String packageName = typeInfo.getClazz().getPackage().getName();
+        representation.getSections().add(packageName);
+        if (collectInfo.getSection(packageName) == null) {
+            collectInfo.addSection(new Section(packageName));
         }
-        representation.setRaw(typeInfo.isRaw());
+        // Example: "Contact"
+        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
+        String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
+                .getSimpleName() : jsonType.value();
+        representation.setName(typeName);
+        representation.setRaw(false);
 
         // at this point, identifier is known - we check if it exists in cache
         boolean notInCache = collectInfo.getRepresentation(representation
@@ -354,7 +347,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             // loop
             collectInfo.addRepresentation(representation);
 
-            if (!typeInfo.isRaw()) {
+            if (typeInfo.isPojo()) {
                 // add properties definition
                 BeanInfo beanInfo = BeanInfoUtils
                         .getBeanInfo(typeInfo.getRepresentationClazz());
