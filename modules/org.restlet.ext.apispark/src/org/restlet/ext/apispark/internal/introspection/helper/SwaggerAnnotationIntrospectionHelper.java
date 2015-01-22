@@ -24,6 +24,7 @@
 
 package org.restlet.ext.apispark.internal.introspection.helper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,7 @@ public class SwaggerAnnotationIntrospectionHelper implements
     @Override
     public void processRepresentation(Representation representation,
             Class<?> representationClass) {
-        ApiModel apiModel = representationClass.getAnnotation(ApiModel.class);
+        ApiModel apiModel = getAnnotation(representationClass, ApiModel.class);
         if (apiModel != null) {
             SwaggerAnnotationUtils.processApiModel(apiModel, representation);
         }
@@ -116,18 +117,31 @@ public class SwaggerAnnotationIntrospectionHelper implements
 
     @Override
     public void processResource(Resource resource, Class<?> resourceClass) {
-        Api api = resourceClass.getAnnotation(Api.class);
-        if (api == null) {
+        Api api = getAnnotation(resourceClass, Api.class);
+        if (api != null) {
+            SwaggerAnnotationUtils.processApi(api, resource);
+        }
+    }
+
+    /**
+     * Look for expected annotation on the class and its interfaces
+     *
+     * @param resourceClass
+     *      The resource class
+     * @param annotationClass
+     *      The annotation class
+     */
+    public <T extends Annotation> T getAnnotation(Class<?> resourceClass, Class<T> annotationClass) {
+        T annotation = resourceClass.getAnnotation(annotationClass);
+        if (annotation == null) {
             // the JDK doesn't retrieve annotations on implemented interfaces
             for (Class<?> i : resourceClass.getInterfaces()) {
-                api = i.getAnnotation(Api.class);
-                if (api != null) {
+                annotation = i.getAnnotation(annotationClass);
+                if (annotation != null) {
                     break;
                 }
             }
         }
-        if (api != null) {
-            SwaggerAnnotationUtils.processApi(api, resource);
-        }
+        return annotation;
     }
 }
