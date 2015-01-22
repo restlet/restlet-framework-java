@@ -190,6 +190,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     public static class CollectInfo {
 
+        private String applicationName;
+
         private String applicationPath;
 
         private Map<String, Representation> representations = new HashMap<String, Representation>();
@@ -227,6 +229,14 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         public void addSection(Section section) {
             sections.put(section.getName(), section);
+        }
+
+        public String getApplicationName() {
+            return applicationName;
+        }
+
+        public void setApplicationName(String applicationName) {
+            this.applicationName = applicationName;
         }
 
         public String getApplicationPath() {
@@ -286,12 +296,11 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
 
-    private static void addEndpoints(Application application,
+    private static void addEndpoints(CollectInfo collectInfo,
             Reference baseRef, Definition definition) {
-        ApplicationPath ap = application.getClass().getAnnotation(
-                ApplicationPath.class);
+        String ap = collectInfo.getApplicationPath();
         if (ap != null) {
-            Endpoint endpoint = new Endpoint(ap.value());
+            Endpoint endpoint = new Endpoint(ap);
             definition.getEndpoints().add(endpoint);
         }
         if (baseRef != null) {
@@ -499,8 +508,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef,
-            boolean useSectionNamingPackageStrategy) {
+            Reference baseRef, boolean useSectionNamingPackageStrategy,
+            String applicationName, String applicationPathValue) {
 
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils.getIntrospectionHelpers();
         Definition definition = new Definition();
@@ -510,10 +519,18 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         ApplicationPath applicationPath = application.getClass().getAnnotation(
                 ApplicationPath.class);
-        if (applicationPath != null) {
+        if (applicationPathValue != null) {
+            collectInfo.setApplicationPath(applicationPathValue);
+        } else if (applicationPath != null) {
             collectInfo.setApplicationPath(applicationPath.value());
         }
         scanResources(collectInfo, application, introspectionHelpers);
+
+        if (applicationName != null) {
+            collectInfo.setApplicationName(applicationName);
+        } else {
+            collectInfo.setApplicationName(application.getClass().getName());
+        }
 
         updateDefinitionContract(collectInfo, application, definition);
 
@@ -525,7 +542,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         // add sections
         contract.setSections(collectInfo.getSections());
 
-        addEndpoints(application, baseRef, definition);
+        addEndpoints(collectInfo, baseRef, definition);
 
         sortDefinition(definition);
 
@@ -1061,7 +1078,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                                                  Definition definition) {
         // Contract
         Contract contract = new Contract();
-        contract.setName(application.getClass().getName());
+        contract.setName(collectInfo.getApplicationName());
 
         // Sections
         if (application instanceof DocumentedApplication) {

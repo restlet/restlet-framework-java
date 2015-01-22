@@ -25,8 +25,11 @@
 package org.restlet.ext.apispark;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -116,6 +119,10 @@ public class Introspector {
 
         boolean useSectionNamingPackageStrategy = false;
 
+        String applicationName = null;
+        String applicationPath = null;
+        List<String> classesList = new ArrayList<>();
+
         // (default ?)
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
@@ -154,6 +161,12 @@ public class Introspector {
             } else if ("-V".equals(arg) || "--verbose".equals(arg)) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
+            } else if ("-N".equals(arg) || "--application-name".equals(arg)) {
+                applicationName = getParameter(args, ++i);
+            } else if ("-e".equals(arg) || "--endpoint".equals(arg)) {
+                applicationPath = getParameter(args, ++i);
+            } else if ("-L".equals(arg) || "--class-list".equals(arg)) {
+                classesList = Arrays.asList(getParameter(args, ++i).split(","));
             } else {
                 defSource = arg;
             }
@@ -220,8 +233,20 @@ public class Introspector {
             System.exit(1);
         }
 
-        if (StringUtils.isNullOrEmpty(defSource)) {
+        if (StringUtils.isNullOrEmpty(defSource) && classesList.isEmpty()) {
             LOGGER.severe("You should specify the definition source to use (value no prefixed by any option). "
+                    + "Use parameter --help for help.");
+            System.exit(1);
+        }
+
+        if (defSource != null && !classesList.isEmpty()) {
+            LOGGER.severe("You cannot use both an application and a list of classes. "
+                    + "Use parameter --help for help.");
+            System.exit(1);
+        }
+
+        if (!classesList.isEmpty() && StringUtils.isNullOrEmpty(applicationName)) {
+            LOGGER.severe("You must specify an application name (parameter -N). "
                     + "Use parameter --help for help.");
             System.exit(1);
         }
@@ -276,7 +301,24 @@ public class Introspector {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, useSectionNamingPackageStrategy);
+                        null, useSectionNamingPackageStrategy, applicationName,
+                        applicationPath);
+            } else if (!classesList.isEmpty()) {
+                javax.ws.rs.core.Application jaxrsApplication = new javax.ws.rs.core.Application();
+                Set<Class<?>> classes = new HashSet<>();
+                try {
+                    for (String c : classesList) {
+                        classes.add(Class.forName(c));
+                    }
+                } catch (ClassNotFoundException e) {
+                    LOGGER.log(Level.SEVERE,
+                            "Cannot locate the JAXRS resource class.", e);
+                    System.exit(1);
+                }
+                jaxrsApplication.getClasses().addAll(classes);
+                definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
+                        null, useSectionNamingPackageStrategy, applicationName,
+                        applicationPath);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");
@@ -375,7 +417,15 @@ public class Introspector {
         cli.print12("--sections",
                 "Set section of introspected resources from java package name.");
         cli.print12("-v, --verbose",
-                "The optional parameter switching the process to a verbose mode");
+                "The optional parameter switching the process to a verbose mode.");
+        cli.print12("-N, --application-name name",
+                "The optional parameter overriding the name of the API.");
+        cli.print12("-e, --endpoint endpoint",
+                "The optional parameter overriding the endpoint of the API.");
+        cli.print12(
+                "-L, --class-list class1,class2..",
+                "The optional parameter providing the list of classes that should be introspected.",
+                "Replaces javax.ws.rs.core.Application#getClasses.");
 
         cli.print();
         cli.print0("ENHANCE INTROSPECTION");
