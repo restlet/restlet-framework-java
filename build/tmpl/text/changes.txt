@@ -3,5 +3,18 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
-
+- 2.3m1 (12/19/2014)
+    - API changes
+       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
+         ROME, SIP, WebDAV, XDB, XStream).
+       - Enhanced HTML extension (moved StatusInfoConverter). Issue #1005.
+       - Reference scheme reverts to http when using https. Issue #998.
+         Reported by Stephen C. Pope.
+    - Bugs
+       - Reintroduced registration by default of the internal HTTP server 
+         connectors in JEE edition.
+       - FormDataSet not properly serializing text/plain files. Issue #1006.
+         Reported by johnjaylward.
+       - Fixed fileupload extension for GAE and JEE editions.
+       - Fixed potential NPE. Issue #1004.
+         Reported by philippeu.

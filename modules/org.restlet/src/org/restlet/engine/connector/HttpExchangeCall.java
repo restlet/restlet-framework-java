@@ -58,8 +58,21 @@ public class HttpExchangeCall extends ServerCall {
      * @param exchange
      */
     public HttpExchangeCall(Server server, HttpExchange exchange) {
+        this(server, exchange, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param server
+     * @param exchange
+     * @param confidential
+     */
+    public HttpExchangeCall(Server server, HttpExchange exchange,
+            boolean confidential) {
         super(server);
         this.exchange = exchange;
+        setConfidential(confidential);
     }
 
     @Override

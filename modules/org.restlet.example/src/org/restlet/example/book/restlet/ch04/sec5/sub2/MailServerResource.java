@@ -29,7 +29,6 @@ import java.io.IOException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.ext.xstream.XstreamRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -61,14 +60,8 @@ public class MailServerResource extends ServerResource {
         mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
                 .toString());
 
-        if (MediaType.APPLICATION_XML.isCompatible(variant.getMediaType())) {
-            // Wraps the bean with an XStream representation
-            result = new XstreamRepresentation<Mail>(mail);
-        } else if (MediaType.APPLICATION_JSON.isCompatible(variant
-                .getMediaType())) {
-            // Wraps the bean with a Jackson representation
-            result = new JacksonRepresentation<Mail>(mail);
-        }
+        // Wraps the bean with a Jackson representation
+        result = new JacksonRepresentation<Mail>(mail);
 
         return result;
     }
@@ -79,19 +72,10 @@ public class MailServerResource extends ServerResource {
         Mail mail = null;
 
         try {
-            if (MediaType.APPLICATION_XML.isCompatible(representation
-                    .getMediaType())) {
-                // Parse the XML representation to get the mail bean
-                mail = new XstreamRepresentation<Mail>(representation,
-                        Mail.class).getObject();
-                System.out.println("XML representation received");
-            } else if (MediaType.APPLICATION_JSON.isCompatible(representation
-                    .getMediaType())) {
-                // Parse the JSON representation to get the mail bean
-                mail = new JacksonRepresentation<Mail>(representation,
-                        Mail.class).getObject();
-                System.out.println("JSON representation received");
-            }
+            // Parse the JSON representation to get the mail bean
+            mail = new JacksonRepresentation<Mail>(representation, Mail.class)
+                    .getObject();
+            System.out.println("JSON representation received");
 
             if (mail != null) {
                 // Output the mail bean

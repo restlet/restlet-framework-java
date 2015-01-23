@@ -176,7 +176,6 @@ public class ExceptionHandler {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         this.logger.log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 
@@ -203,7 +202,6 @@ public class ExceptionHandler {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         this.logger.log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 
@@ -397,7 +395,6 @@ public class ExceptionHandler {
         }
         this.logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage,
                 exception);
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 

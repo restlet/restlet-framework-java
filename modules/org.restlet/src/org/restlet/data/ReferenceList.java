@@ -40,6 +40,15 @@ import org.restlet.util.WrapperList;
  * @author Jerome Louvel
  */
 public class ReferenceList extends WrapperList<Reference> {
+
+    private static final String webPageStyle = "h1{border-bottom:1px solid silver;margin-bottom:10px;padding-bottom:10px;white-space:nowrap}"
+            + "thead tr{font-weight:700}td.detailsColumn{-webkit-padding-start:2em;-moz-padding-start:2em;text-align:end;white-space:nowrap}"
+            + "a.icon{-webkit-padding-start:1.5em;-moz-padding-start:1.5em;text-decoration:none}"
+            + "a.icon:hover{text-decoration:underline}"
+            + "a.file{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1QQWFA84umAmQgAAANpJREFUOMutkj1uhDAQhb8HSLtbISGfgZ+zbJkix0HmFhwhUdocBnMBGvqtTIqIFSReWKK8aix73nwzHrVt+zEMwwvH9FrX9TsA1trpqKy10+yUzME4jnjvAZB0LzXHkojjmDRNVyh3A+89zrlVwlKSqKrqVy/J8lAUxSZBSMny4ZLgp54iyPM8UPHGNJ2IomibAKDv+9VlWZbABbgB5/0WQgSSkC4PF2JF4JzbHN430c4vhAm0TyCJruuClefph4yCBCGT3T3Isoy/KDHGfDZNcz2SZIx547/0BVRRX7n8uT/sAAAAAElFTkSuQmCC) left top no-repeat}"
+            + "a.dir{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHCSURBVDiNpZAxa5NRFIafc+9XLCni4BC6FBycMnbrLpkcgtDVX6C70D/g4lZX/4coxLlgxFkpiiSSUGm/JiXfveee45AmNlhawXc53HvPee55X+l2u/yPqt3d3Tfu/viatwt3fzIYDI5uBJhZr9fr3TMzzAx3B+D09PR+v98/7HQ6z5fNOWdCCGU4HH6s67oAVDlnV1UmkwmllBUkhMD29nYHeLuEAkyn06qU8qqu64MrgIyqYmZrkHa73drc3KTVahFjJITAaDRiPB4/XFlQVVMtHH5IzJo/P4EA4MyB+erWPQB7++zs7ccYvlU5Z08pMW2cl88eIXLZeDUpXzsBkNQ5eP1+p0opmaoCTgzw6fjs6gLLsp58FB60t0DcK1Ul54yIEIMQ43Uj68pquDmCeJVztpwzuBNE2LgBoMVpslHMCUEAFgDVxQbzVAiA+aK5uGPmmDtZF3VpoUm2ArhqQaRiUjcMf81p1G60UEVhcjZfAFTVUkrgkS+jc06mDX9nvq4YhJ9nlxZExMwMEaHJRutOdWuIIsJFUoBSuTvHJ4YIfP46unV4qdlsjsBRZRtb/XfHd5+C8+P7+J8BIoxFwovfRxYhnhxjpzEAAAAASUVORK5CYII=) left top no-repeat}"
+            + "a.up{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIkSURBVDiNpZJNa1NBFIafM3Nr08SqWDDEQsFF7SIboeKie8mqiyB06y/QvdA/4MZd3fo3RBTiTigY7cYilVYpTUmoNrdpmzszd46LfLSB4sazGebMOc/5eEdqtRr/Y8ny8vIbVV294u1MVZ80m83NfwJijPV6vX4zxkiMEVUF4Pj4eK7RaGxUq9Xno2DvPcaY/ODg4HOapjlA4r3XEAKdToc8z8cQYwyVSqUKvBtBAXq9XpLn+as0TdcvATwhBGKME5ByuVwsFAoUi0WstRhjaLVatNvtxfEIIYQYQs7GR8dpdlEJBAClD/THXlUDrKyxsLJmrfmZeO/VOUcvU14+e4zIMPDypnTiBoALyvrrDwuJcy6GEADFGviy273cwOiY3LwV7pVLIKpJCAHvPSKCNYK1FynXCwmPFm+TGOHT99+k536gRohoVATRxHsfvfegihFhygrGCPcr11m6O4s1A2DtQZlv+ylf97q4oJiBfwAIYdBB3+XcuTHN0vwsM9csZy4fj6+qzM/NcKs0xdZel8zFMUBDyBFJ6KQZ2/snbO78YfVhZVRlsAuBzEfeNg+xRliYmxkAQgjROQdq2WmdcNTLUOCo58aKjJbpQiQ991gjHHaHI4hIjDEiImQ+UpxOAOj7fJh4QcmjUppOEBHOXADIE1Vl9ygiAls/WuPg7b3DSQmH7Yy+9elpH4HNJE6VGu93Z5+Csv+rfYXqV5sIbRHz4i/uqzb/IJewTwAAAABJRU5ErkJggg==) left top no-repeat}";
+
     /** The list's identifier. */
     private volatile Reference identifier;
 
@@ -128,6 +137,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Returns a representation of the list in the "text/uri-list" format.
      * 
      * @return A representation of the list in the "text/uri-list" format.
+     * @see http://amundsen.com/hypermedia/urilist/
      */
     public Representation getTextRepresentation() {
         final StringBuilder sb = new StringBuilder();
@@ -151,24 +161,38 @@ public class ReferenceList extends WrapperList<Reference> {
     public Representation getWebRepresentation() {
         // Create a simple HTML list
         final StringBuilder sb = new StringBuilder();
-        sb.append("<html><body style=\"font-family: sans-serif;\">\n");
+        sb.append("<html><head><meta charset=\"utf-8\">");
+        sb.append("<style>").append(webPageStyle).append("</style>");
+        sb.append("</head>");
+        sb.append("<body>");
 
         if (getIdentifier() != null) {
-            sb.append("<h2>Listing of \"" + getIdentifier().getPath()
-                    + "\"</h2>\n");
-            final Reference parentRef = getIdentifier().getParentRef();
-
-            if (!parentRef.equals(getIdentifier())) {
-                sb.append("<a href=\"" + parentRef + "\">..</a><br>\n");
+            sb.append("<h1>Index of \"").append(getIdentifier().getPath())
+                    .append("\"</h1>\n");
+        }
+        sb.append("<table><thead><tr><td>Name</td></tr></thead>");
+        sb.append("<tbody>");
+        if (getIdentifier() != null) {
+            Reference parentRef = getIdentifier().getParentRef();
+            if (!getIdentifier().equals(parentRef)) {
+                sb.append("<tr><td><a class=\"icon up\" href=\"");
+                sb.append(parentRef.toString());
+                sb.append("\">[parent directory]</a></td></tr>");
             }
-        } else {
-            sb.append("<h2>List of references</h2>\n");
         }
-
-        for (final Reference ref : this) {
-            sb.append("<a href=\"" + ref.toString() + "\">"
-                    + ref.getRelativeRef(getIdentifier()) + "</a><br>\n");
+        for (Reference ref : this) {
+            String str = ref.toString();
+            if (str.endsWith("/")) {
+                sb.append("<tr><td><a class=\"icon dir\" href=\"");
+            } else {
+                sb.append("<tr><td><a class=\"icon file\" href=\"");
+            }
+            sb.append(str);
+            sb.append("\">");
+            sb.append(ref.getRelativeRef(getIdentifier()));
+            sb.append("</td></tr>");
         }
+        sb.append("</tbody></table>\n");
         sb.append("</body></html>\n");
 
         return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);

@@ -60,7 +60,6 @@ import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.json.JsonTestSuite;
 import org.restlet.test.ext.odata.ODataTestSuite;
-import org.restlet.test.ext.sip.SipTestSuite;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestSuite;
@@ -147,13 +146,6 @@ public class RestletTestSuite extends TestSuite {
         addTest(org.restlet.test.resource.ResourceTestSuite.suite());
         // [enddef]
 
-        // Tests based on extension only supported by the JEE edition.
-        // [ifdef jee]
-        addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
-        addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
-        addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
-        // [enddef]
-
         // TODO Fix Zip client test case
         // addTestSuite(ZipClientTestCase.class);
 
@@ -171,7 +163,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(SecurityTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
 
-        addTest(SipTestSuite.suite());
         addTest(SpringTestSuite.suite());
         addTest(EngineTestSuite.suite());
         // [enddef]

@@ -32,9 +32,6 @@ import org.restlet.ext.atom.Entry;
 import org.restlet.ext.atom.Feed;
 import org.restlet.resource.ClientResource;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-
 /**
  * Mail client.
  */
@@ -81,17 +78,6 @@ public class MailClient {
             System.out.println("Summary: " + entry.getSummary());
         }
 
-        // Display the retrieved RSS feed and entries
-        SyndFeed rssFeed = mailClient.get(SyndFeed.class);
-        System.out.println("\nRSS feed: " + rssFeed.getTitle() + "\n");
-
-        @SuppressWarnings("unchecked")
-        List<SyndEntry> entries = (List<SyndEntry>) rssFeed.getEntries();
-
-        for (SyndEntry entry : entries) {
-            System.out.println("Title  : " + entry.getTitle());
-            System.out.println("Summary: " + entry.getDescription().getValue());
-        }
     }
 
 }
