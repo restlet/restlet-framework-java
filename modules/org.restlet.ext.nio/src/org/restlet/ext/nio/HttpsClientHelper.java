@@ -70,6 +70,13 @@ import org.restlet.ext.nio.internal.way.OutboundWay;
  */
 public class HttpsClientHelper extends ClientConnectionHelper {
 
+    /**
+     * Let you specify a {@link SslContextFactory} qualified class name as a
+     * parameter, or an instance as an attribute for a more complete and
+     * flexible SSL context setting.
+     */
+    private String sslContextFactory;
+
     /** The SSL context. */
     private volatile SSLContext sslContext;
 
@@ -124,6 +131,24 @@ public class HttpsClientHelper extends ClientConnectionHelper {
     }
 
     /**
+     * Returns a {@link SslContextFactory} qualified class name as a parameter,
+     * or an instance as an attribute for a more complete and flexible SSL
+     * context setting.
+     * 
+     * @return A {@link SslContextFactory} qualified class name as a parameter,
+     *         or an instance as an attribute for a more complete and flexible
+     *         SSL context setting.
+     */
+    public String getSslContextFactory() {
+        if (sslContextFactory == null) {
+            sslContextFactory = getHelpedParameters().getFirstValue(
+                    "sslContextFactory",
+                    "org.restlet.engine.ssl.DefaultSslContextFactory");
+        }
+        return sslContextFactory;
+    }
+
+    /**
      * Sets the SSL context.
      * 
      * @param sslContext
@@ -131,6 +156,19 @@ public class HttpsClientHelper extends ClientConnectionHelper {
      */
     protected void setSslContext(SSLContext sslContext) {
         this.sslContext = sslContext;
+    }
+
+    /**
+     * Sets the {@link SslContextFactory} qualified class name as a parameter,
+     * or an instance as an attribute for a more complete and flexible SSL
+     * context setting.
+     * 
+     * @param sslContextFactory
+     *            The {@link SslContextFactory} qualified class name as a
+     *            parameter.
+     */
+    public void setSslContextFactory(String sslContextFactory) {
+        this.sslContextFactory = sslContextFactory;
     }
 
     @Override

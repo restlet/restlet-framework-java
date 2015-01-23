@@ -76,6 +76,15 @@ import org.restlet.ext.nio.internal.state.ConnectionState;
  */
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
+    /** The host name of the HTTP proxy. */
+    private String proxyHost;
+
+    /** The port of the HTTP proxy. */
+    private Integer proxyPort;
+
+    /** The socket connection timeout or 0 for unlimited wait. */
+    private Integer socketConnectTimeoutMs;
+
     protected static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
 
     /**
@@ -323,8 +332,11 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        return getHelpedParameters().getFirstValue("proxyHost",
-                System.getProperty("http.proxyHost"));
+        if (proxyHost == null) {
+            proxyHost = getHelpedParameters().getFirstValue("proxyHost",
+                    System.getProperty("http.proxyHost"));
+        }
+        return proxyHost;
     }
 
     /**
@@ -333,14 +345,16 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        String proxyPort = getHelpedParameters().getFirstValue("proxyPort",
-                System.getProperty("http.proxyPort"));
-
         if (proxyPort == null) {
-            proxyPort = "3128";
-        }
+            String str = getHelpedParameters().getFirstValue("proxyPort",
+                    System.getProperty("http.proxyPort"));
 
-        return Integer.parseInt(proxyPort);
+            if (str == null) {
+                str = "3128";
+            }
+            proxyPort = Integer.parseInt(str);
+        }
+        return proxyPort;
     }
 
     /**
@@ -407,14 +421,11 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return The socket connection timeout.
      */
     public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "0"));
+        if (socketConnectTimeoutMs == null) {
+            socketConnectTimeoutMs = Integer.parseInt(getHelpedParameters()
+                    .getFirstValue("socketConnectTimeoutMs", "0"));
         }
-
-        return result;
+        return socketConnectTimeoutMs;
     }
 
     @Override
@@ -468,6 +479,36 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     public boolean isProxying() {
         return getProxyHost() != null;
+    }
+
+    /**
+     * Sets the The host name of the HTTP proxy.
+     * 
+     * @param proxyHost
+     *            The The host name of the HTTP proxy.
+     */
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    /**
+     * Sets the The port of the HTTP proxy.
+     * 
+     * @param proxyPort
+     *            The The port of the HTTP proxy.
+     */
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    /**
+     * Sets the The socket connection timeout or 0 for unlimited wait.
+     * 
+     * @param socketConnectTimeoutMs
+     *            The The socket connection timeout or 0 for unlimited wait.
+     */
+    public void setSocketConnectTimeoutMs(int socketConnectTimeoutMs) {
+        this.socketConnectTimeoutMs = socketConnectTimeoutMs;
     }
 
     @Override
