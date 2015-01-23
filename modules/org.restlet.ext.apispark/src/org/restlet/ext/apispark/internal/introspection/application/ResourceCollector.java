@@ -92,6 +92,7 @@ public class ResourceCollector {
         for (IntrospectionHelper helper : introspectionHelper) {
             helper.processResource(resource, directory.getClass());
         }
+        addSectionsForResource(collectInfo, resource);
         collectInfo.addResource(resource);
     }
 
@@ -151,6 +152,7 @@ public class ResourceCollector {
             if (!operations.isEmpty()) {
                 sortOperationsByMethod(operations);
                 resource.setOperations(operations);
+                addSectionsForResource(collectInfo, resource);
                 collectInfo.addResource(resource);
             } else {
                 LOGGER.warning("Resource " + resource.getName()
@@ -411,13 +413,6 @@ public class ResourceCollector {
             resource.setName(name);
         }
 
-        // add sections in collect info
-        for (String section : resource.getSections()) {
-            if (collectInfo.getSection(section) == null) {
-                collectInfo.addSection(new Section(section));
-            }
-        }
-
         Template template = new Template(basePath);
         for (String variable : template.getVariableNames()) {
             PathVariable pathVariable = new PathVariable();
@@ -430,6 +425,15 @@ public class ResourceCollector {
         }
 
         return resource;
+    }
+
+    private static void addSectionsForResource(CollectInfo collectInfo,
+            Resource resource) {
+        for (String section : resource.getSections()) {
+            if (collectInfo.getSection(section) == null) {
+                collectInfo.addSection(new Section(section));
+            }
+        }
     }
 
     private static void sortOperationsByMethod(ArrayList<Operation> operations) {
