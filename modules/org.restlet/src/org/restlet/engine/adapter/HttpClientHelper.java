@@ -50,6 +50,12 @@ import org.restlet.engine.connector.ClientHelper;
  * <td>Class name of the adapter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
+ * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>15000</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -58,6 +64,9 @@ public abstract class HttpClientHelper extends ClientHelper {
 
     /** The adapter from uniform calls to HTTP calls. */
     private volatile ClientAdapter adapter;
+
+    /** The socket connection timeout or 0 for unlimited wait. */
+    private int socketConnectTimeoutMs = 15000;
 
     /**
      * Constructor.
@@ -106,14 +115,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * @return The connection timeout.
      */
     public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "15000"));
-        }
-
-        return result;
+        return socketConnectTimeoutMs;
     }
 
     @Override
@@ -136,5 +138,15 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public void setAdapter(ClientAdapter adapter) {
         this.adapter = adapter;
+    }
+
+    /**
+     * Sets the socket connection timeout or 0 for unlimited wait.
+     * 
+     * @param socketConnectTimeoutMs
+     *            The socket connection timeout or 0 for unlimited wait.
+     */
+    public void setSocketConnectTimeoutMs(int socketConnectTimeoutMs) {
+        this.socketConnectTimeoutMs = socketConnectTimeoutMs;
     }
 }

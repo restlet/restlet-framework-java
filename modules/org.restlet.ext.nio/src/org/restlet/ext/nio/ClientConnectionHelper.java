@@ -61,13 +61,13 @@ import org.restlet.ext.nio.internal.state.ConnectionState;
  * <tr>
  * <td>proxyPort</td>
  * <td>int</td>
- * <td>System property "http.proxyPort"</td>
+ * <td>System property "http.proxyPort" or 3128</td>
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
  * <td>socketConnectTimeoutMs</td>
  * <td>int</td>
- * <td>0</td>
+ * <td>15000</td>
  * <td>The socket connection timeout or 0 for unlimited wait.</td>
  * </tr>
  * </table>
@@ -77,15 +77,21 @@ import org.restlet.ext.nio.internal.state.ConnectionState;
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     /** The host name of the HTTP proxy. */
-    private String proxyHost;
+    private String proxyHost = System.getProperty("http.proxyHost");
 
     /** The port of the HTTP proxy. */
-    private Integer proxyPort;
+    private int proxyPort = Integer.getInteger("http.proxyHost", 3128);
 
     /** The socket connection timeout or 0 for unlimited wait. */
-    private Integer socketConnectTimeoutMs;
+    private int socketConnectTimeoutMs = 15000;
 
     protected static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
+
+    /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     */
+    private Boolean controllerDaemon;
 
     /**
      * Constructor.
@@ -332,10 +338,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        if (proxyHost == null) {
-            proxyHost = getHelpedParameters().getFirstValue("proxyHost",
-                    System.getProperty("http.proxyHost"));
-        }
         return proxyHost;
     }
 
@@ -345,15 +347,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        if (proxyPort == null) {
-            String str = getHelpedParameters().getFirstValue("proxyPort",
-                    System.getProperty("http.proxyPort"));
-
-            if (str == null) {
-                str = "3128";
-            }
-            proxyPort = Integer.parseInt(str);
-        }
         return proxyPort;
     }
 
@@ -421,10 +414,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return The socket connection timeout.
      */
     public int getSocketConnectTimeoutMs() {
-        if (socketConnectTimeoutMs == null) {
-            socketConnectTimeoutMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("socketConnectTimeoutMs", "0"));
-        }
         return socketConnectTimeoutMs;
     }
 
@@ -472,13 +461,28 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public boolean isControllerDaemon() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "controllerDaemon", "true"));
+        if (controllerDaemon == null) {
+            controllerDaemon = Boolean.parseBoolean(getHelpedParameters()
+                    .getFirstValue("controllerDaemon", "true"));
+        }
+        return controllerDaemon;
     }
 
     @Override
     public boolean isProxying() {
         return getProxyHost() != null;
+    }
+
+    /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     * 
+     * @param controllerDaemon
+     *            True if the controller thread should be a daemon (not blocking
+     *            JVM exit).
+     */
+    public void setControllerDaemon(boolean controllerDaemon) {
+        this.controllerDaemon = controllerDaemon;
     }
 
     /**

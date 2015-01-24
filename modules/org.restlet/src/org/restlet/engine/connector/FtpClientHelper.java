@@ -67,6 +67,12 @@ import org.restlet.representation.InputRepresentation;
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
  * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
+ * <tr>
  * <td>useCaches</td>
  * <td>boolean</td>
  * <td>false</td>

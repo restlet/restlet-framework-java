@@ -53,7 +53,7 @@ import org.restlet.ext.nio.internal.request.InboundRequest;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>useForwardedForHeader</td>
+ * <td>usingForwardedForHeader</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Lookup the "X-Forwarded-For" header supported by popular proxies and
@@ -63,7 +63,7 @@ import org.restlet.ext.nio.internal.request.InboundRequest;
  * header and should not be trusted for serious security checks.</td>
  * </tr>
  * <tr>
- * <td>reuseAddress</td>
+ * <td>socketReuseAddress</td>
  * <td>boolean</td>
  * <td>true</td>
  * <td>Enable/disable the SO_REUSEADDR socket option. See
@@ -76,19 +76,29 @@ import org.restlet.ext.nio.internal.request.InboundRequest;
 public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     /**
-     * Lookup the "X-Forwarded-For" header supported by popular proxies and
-     * caches and uses it to populate the Request.getClientAddresses() method
-     * result. This information is only safe for intermediary components within
-     * your local network. Other addresses could easily be changed by setting a
-     * fake header and should not be trusted for serious security checks.
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
      */
-    private Boolean useForwardedForHeader;
+    private Boolean controllerDaemon;
 
-    /** Enable/disable the SO_REUSEADDR socket option. */
-    private Boolean reuseAddress;
+    /**
+     * Enable/disable the SO_REUSEADDR socket option.
+     * See java.io.ServerSocket#reuseAddress property for additional details.
+     */
+    private boolean socketReuseAddress = true;
 
     /** The server socket channel. */
     private volatile ServerSocketChannel serverSocketChannel;
+
+    /**
+     * Lookup the "X-Forwarded-For" header supported by popular proxies
+     * andcaches and uses it to populate the Request.getClientAddresses()
+     * methodresult. This information is only safe for intermediary components
+     * within yourlocal network. Other addresses could easily be changed by
+     * setting a fakeheader and should not be trusted for serious security
+     * checks.
+     */
+    private boolean usingForwardedForHeader = false;
 
     /**
      * Constructor.
@@ -104,7 +114,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     }
 
     /**
-     * Indicates if the connection can handle the given response at this point
+     * Indicates if the connection can handle the giveorg.restlet.ext.nio.ServerConnectionHelperorg.restlet.ext.nio.ServerConnectionHelpern response at this point
      * in time.
      * 
      * @param connection
@@ -276,8 +286,11 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     public boolean isControllerDaemon() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "controllerDaemon", "false"));
+        if (controllerDaemon == null) {
+            controllerDaemon = Boolean.parseBoolean(getHelpedParameters()
+                    .getFirstValue("controllerDaemon", "false"));
+        }
+        return controllerDaemon;
     }
 
     @Override
@@ -289,26 +302,41 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
      * Indicates if the SO_REUSEADDR socket option is enabled.
      * 
      * @return True if the SO_REUSEADDR socket option is enabled.
+     * @deprecated Use isSocketReuseAddress instead.
      */
+    @Deprecated
     public boolean isReuseAddress() {
-        if (reuseAddress == null) {
-            reuseAddress = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("reuseAddress", "true"));
-        }
-        return reuseAddress;
+        return socketReuseAddress;
     }
 
     /**
-     * Indicates if the lookup for the "X-Forwarded-For" header is supported.
+     * Indicates if the SO_REUSEADDR socket option is enabled.
      * 
-     * @return True if the lookup for the "X-Forwarded-For" header is supported.
+     * @return True if the SO_REUSEADDR socket option is enabled.
      */
-    public boolean isUseForwardedForHeader() {
-        if (useForwardedForHeader == null) {
-            useForwardedForHeader = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("useForwardedForHeader", "false"));
-        }
-        return useForwardedForHeader;
+    public boolean isSocketReuseAddress() {
+        return socketReuseAddress;
+    }
+
+    /**
+     * Indicates if the lookup of the "X-Forwarded-For" header is supported.
+     * 
+     * @return true if the lookup of the "X-Forwarded-For" header is supported.
+     */
+    public boolean isUsingForwardedForHeader() {
+        return usingForwardedForHeader;
+    }
+
+    /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     * 
+     * @param controllerDaemon
+     *            True if the controller thread should be a daemon (not blocking
+     *            JVM exit).
+     */
+    public void setControllerDaemon(boolean controllerDaemon) {
+        this.controllerDaemon = controllerDaemon;
     }
 
     /**
@@ -336,24 +364,25 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     }
 
     /**
-     * Enable/disable the SO_REUSEADDR socket option. See
-     * java.io.ServerSocket#reuseAddress property for additional details.
+     * Enables/disables the SO_REUSEADDR socket option.
+     * 
+     * @See java.io.ServerSocket#reuseAddress property for additional details.
      * 
      * @param reuseAddress
      *            True to enable the SO_REUSEADDR socket option.
      */
-    public void setReuseAddress(boolean reuseAddress) {
-        this.reuseAddress = reuseAddress;
+    public void setSocketReuseAddress(boolean socketReuseAddress) {
+        this.socketReuseAddress = socketReuseAddress;
     }
 
     /**
-     * Sets the Lookup the "X-Forwarded-For" header.
+     * Sets the support of lookup of the "X-Forwarded-For" header.
      * 
-     * @param useForwardedForHeader
-     *            True Lookup the "X-Forwarded-For" header.
+     * @param usingForwardedForHeader
+     *            True to support the Lookup of the "X-Forwarded-For" header.
      */
-    public void setUseForwardedForHeader(boolean useForwardedForHeader) {
-        this.useForwardedForHeader = useForwardedForHeader;
+    public void setUsingForwardedForHeader(boolean usingForwardedForHeader) {
+        this.usingForwardedForHeader = usingForwardedForHeader;
     }
 
     @Override

@@ -98,8 +98,6 @@ import org.restlet.util.Series;
  * Defaults to "login". This resource will be accessed using riap, i.e.
  * riap://application/+loginPage</td>
  * </tr>
- * 
- * </td>
  * </table>
  * 
  * @author Kristoffer Gronowski

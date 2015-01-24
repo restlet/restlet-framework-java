@@ -45,7 +45,7 @@ import org.simpleframework.transport.connect.Connection;
  * <tr>
  * <td>defaultThreads</td>
  * <td>int</td>
- * <td>20</td>
+ * <td>5</td>
  * <td>Default number of polling threads for a handler object.</td>
  * </tr>
  * <tr>
@@ -63,25 +63,24 @@ import org.simpleframework.transport.connect.Connection;
  */
 @Deprecated
 public abstract class SimpleServerHelper extends HttpServerHelper {
-    /**
-     * Socket this server is listening to.
-     */
+
+    /** Socket this server is listening to. */
     private volatile InetSocketAddress address;
 
-    /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
-     */
+    /** Indicates if this service is acting in HTTP or HTTPS mode. */
     private volatile boolean confidential;
 
-    /**
-     * Simple connection.
-     */
+    /** Simple connection. */
     private volatile Connection connection;
 
-    /**
-     * Simple container server.
-     */
+    /** Simple container server. */
     private volatile ContainerServer containerServer;
+
+    /** Default number of polling threads for a handler object. */
+    private int defaultThreads = 5;
+
+    /** Maximum waiting time between polls of the input. */
+    private int maxWaitTimeMs = 200;
 
     /**
      * Constructor.
@@ -126,8 +125,16 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The default number of polling threads for a handler object.
      */
     public int getDefaultThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "defaultThreads", "5"));
+        return defaultThreads;
+    }
+
+    /**
+     * Returns the maximum waiting time between polls of the input.
+     * 
+     * @return The maximum waiting time between polls of the input.
+     */
+    public int getMaxWaitTimeMs() {
+        return maxWaitTimeMs;
     }
 
     /**
@@ -177,6 +184,26 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      */
     protected void setContainerServer(ContainerServer container) {
         this.containerServer = container;
+    }
+
+    /**
+     * Sets the default number of polling threads for a handler object.
+     * 
+     * @param defaultThreads
+     *            The Default number of polling threads for a handler object.
+     */
+    public void setDefaultThreads(int defaultThreads) {
+        this.defaultThreads = defaultThreads;
+    }
+
+    /**
+     * Sets the maximum waiting time between polls of the input.
+     * 
+     * @param maxWaitTimeMs
+     *            The maximum waiting time between polls of the input.
+     */
+    public void setMaxWaitTimeMs(int maxWaitTimeMs) {
+        this.maxWaitTimeMs = maxWaitTimeMs;
     }
 
     @Override

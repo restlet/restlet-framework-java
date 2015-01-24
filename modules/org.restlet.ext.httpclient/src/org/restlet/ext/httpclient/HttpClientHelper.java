@@ -142,12 +142,6 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * constructor</td>
  * </tr>
  * <tr>
- * <td>socketConnectTimeoutMs</td>
- * <td>int</td>
- * <td>15000</td>
- * <td>The socket connection timeout or 0 for unlimited wait.</td>
- * </tr>
- * <tr>
  * <td>socketTimeout</td>
  * <td>int</td>
  * <td>60000</td>
@@ -444,22 +438,6 @@ public class HttpClientHelper extends
      */
     public String getRetryHandler() {
         return getHelpedParameters().getFirstValue("retryHandler", null);
-    }
-
-    /**
-     * Returns the connection timeout. Defaults to 15000.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "15000"));
-        }
-
-        return result;
     }
 
     /**

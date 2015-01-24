@@ -175,32 +175,46 @@ import org.restlet.ext.nio.internal.controller.ConnectionController;
 public abstract class BaseHelper<T extends Connector> extends
         ConnectorHelper<T> {
 
+    /** Indicates if it is helping a client connector. */
+    protected final boolean clientSide;
+
+    /** The controller task. */
+    protected final ConnectionController controller;
+
+    /** The controller service. */
+    private volatile ExecutorService controllerService;
+
     /**
      * Time for the controller thread to sleep between each control. A value
      * strictly superior to 0 is required.
      */
-    private Integer controllerSleepTimeMs;
+    private int controllerSleepTimeMs = 60000;
 
     /**
-     * Minimum number of worker threads waiting to service calls, even if they
-     * are idle. Technically speaking, this is a core number of threads that are
-     * pre-started.
+     * Indicates if direct NIO buffers should be allocated instead of regular
+     * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be
+     * disabled to use direct buffers.
      */
-    private Integer minThreads;
+    private boolean directBuffers = false;
+
+    /** Size of the content buffer for receiving messages. */
+    private int inboundBufferSize = 161024;
+
+    /** The queue of inbound messages. */
+    protected final Queue<Response> inboundMessages;
 
     /**
      * Number of worker threads determining when the connector is considered
      * overloaded. This triggers some protection actions such as not accepting
      * new connections.
      */
-    private Integer lowThreads;
+    private int lowThreads = 8;
 
     /**
-     * Maximum number of worker threads that can service calls. If this number
-     * is reached then additional calls are queued if the "maxQueued" value
-     * hasn't been reached.
+     * Maximum time for an idle IO connection or request to wait for an
+     * operation before being closed. For an unlimited wait, use '0' as value.
      */
-    private Integer maxThreads;
+    private int maxIoIdleTimeMs = 60;
 
     /**
      * Maximum number of calls that can be queued if there aren't any worker
@@ -213,19 +227,45 @@ public abstract class BaseHelper<T extends Connector> extends
      * {@link #getMinThreads()} and the behavior of the
      * {@link ThreadPoolExecutor} configured internally.
      */
-    private Integer maxQueued;
-
-    /**
-     * Maximum time for an idle IO connection or request to wait for an
-     * operation before being closed. For an unlimited wait, use '0' as value.
-     */
-    private Integer maxIoIdleTimeMs;
+    private int maxQueued = 0;
 
     /** Time for an idle thread to wait for an operation before being collected. */
-    private Integer maxThreadIdleTimeMs;
+    private int maxThreadIdleTimeMs = 300;
+
+    /**
+     * Maximum number of worker threads that can service calls. If this number
+     * is reached then additional calls are queued if the "maxQueued" value
+     * hasn't been reached.
+     */
+    private int maxThreads = 10;
+
+    /**
+     * Minimum number of worker threads waiting to service calls, even if they
+     * are idle. Technically speaking, this is a core number of threads that are
+     * pre-started.
+     */
+    private int minThreads = 1;
+
+    /** Size of the content buffer for sending messages. */
+    private int outboundBufferSize = 321024;
+
+    /** The queue of outbound messages. */
+    protected final Queue<Response> outboundMessages;
+
+    /**
+     * Time to wait between socket write operations in milliseconds. Can prevent
+     * TCP buffer overflows.
+     */
+    private int throttleTimeMs = 0;
 
     /** Indicates if all messages should be printed on the standard console. */
-    private Boolean tracing;
+    private boolean tracing = false;
+
+    /** Indicates the transport protocol such as TCP or UDP. */
+    private String transport = "TCP";
+
+    /** The worker service. */
+    private volatile ThreadPoolExecutor workerService;
 
     /**
      * Indicates if the processing of calls should be done via threads provided
@@ -233,47 +273,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * false, calls will be processed a single IO selector thread, which should
      * never block, otherwise the other connections would hang.
      */
-    private Boolean workerThreads;
-
-    /** Size of the content buffer for receiving messages. */
-    private Integer inboundBufferSize;
-
-    /** Size of the content buffer for sending messages. */
-    private Integer outboundBufferSize;
-
-    /**
-     * Indicates if direct NIO buffers should be allocated instead of regular
-     * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be
-     * disabled to use direct buffers.
-     */
-    private Boolean directBuffers = false;
-
-    /**
-     * Time to wait between socket write operations in milliseconds. Can prevent
-     * TCP buffer overflows.
-     */
-    private Integer throttleTimeMs;
-
-    /** Indicates the transport protocol such as TCP or UDP. */
-    private String transport = "TCP";
-
-    /** Indicates if it is helping a client connector. */
-    protected final boolean clientSide;
-
-    /** The controller task. */
-    protected final ConnectionController controller;
-
-    /** The controller service. */
-    private volatile ExecutorService controllerService;
-
-    /** The queue of inbound messages. */
-    protected final Queue<Response> inboundMessages;
-
-    /** The queue of outbound messages. */
-    protected final Queue<Response> outboundMessages;
-
-    /** The worker service. */
-    private volatile ThreadPoolExecutor workerService;
+    private boolean workerThreads = true;
 
     /**
      * Constructor.
@@ -472,14 +472,11 @@ public abstract class BaseHelper<T extends Connector> extends
 
     /**
      * Returns the time for the controller thread to sleep between each control.
+     * A value strictly superior to 0 is required.
      * 
      * @return The time for the controller thread to sleep between each control.
      */
     public int getControllerSleepTimeMs() {
-        if (controllerSleepTimeMs == null) {
-            controllerSleepTimeMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("controllerSleepTimeMs", "60000"));
-        }
         return controllerSleepTimeMs;
     }
 
@@ -489,11 +486,6 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return The size of the content buffer for receiving messages.
      */
     public int getInboundBufferSize() {
-        if (inboundBufferSize == null) {
-            inboundBufferSize = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("inboundBufferSize",
-                            Integer.toString(16 * 1024)));
-        }
         return inboundBufferSize;
     }
 
@@ -507,30 +499,26 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the number of threads for the overload state.
+     * Returns the number of worker threads determining when the connector is
+     * considered overloaded. This triggers some protection actions such as not
+     * accepting new connections.
      * 
-     * @return The number of threads for the overload state.
+     * @return The number of worker threads determining when the connector is
+     *         considered overloaded.
      */
     public int getLowThreads() {
-        if (lowThreads == null) {
-            lowThreads = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "lowThreads", "8"));
-        }
         return lowThreads;
     }
 
     /**
-     * Returns the time for an idle IO connection or request to wait for an
-     * operation before being closed. For an unlimited wait, use '0' as value.
+     * Returns the maximum time for an idle IO connection or request to wait for
+     * an operation before being closed. For an unlimited wait, use '0' as
+     * value.
      * 
-     * @return The time for an idle IO connection to wait for an operation
-     *         before being closed.
+     * @return The maximum time for an idle IO connection or request to wait for
+     *         an operation before being closed.
      */
     public int getMaxIoIdleTimeMs() {
-        if (maxIoIdleTimeMs == null) {
-            maxIoIdleTimeMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("maxIoIdleTimeMs", "60000"));
-        }
         return maxIoIdleTimeMs;
     }
 
@@ -545,13 +533,10 @@ public abstract class BaseHelper<T extends Connector> extends
      * {@link #getMinThreads()} and the behavior of the
      * {@link ThreadPoolExecutor} configured internally.
      * 
-     * @return The maximum number of calls that can be queued.
+     * @return The maximum number of calls that can be queued if there aren't
+     *         any worker thread available to service them.
      */
     public int getMaxQueued() {
-        if (maxQueued == null) {
-            maxQueued = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "maxQueued", "0"));
-        }
         return maxQueued;
     }
 
@@ -563,51 +548,38 @@ public abstract class BaseHelper<T extends Connector> extends
      *         collected.
      */
     public int getMaxThreadIdleTimeMs() {
-        if (maxThreadIdleTimeMs == null) {
-            maxThreadIdleTimeMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("maxThreadIdleTimeMs", "300000"));
-        }
         return maxThreadIdleTimeMs;
     }
 
     /**
-     * Returns the maximum threads that will service requests.
+     * Returns the maximum number of worker threads that can service calls. If
+     * this number is reached then additional calls are queued if the
+     * "maxQueued" value hasn't been reached.
      * 
-     * @return The maximum threads that will service requests.
+     * @return The maximum number of worker threads that can service calls.
      */
     public int getMaxThreads() {
-        if (maxThreads == null) {
-            maxThreads = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "maxThreads", "10"));
-        }
         return maxThreads;
     }
 
     /**
-     * Returns the minimum threads waiting to service requests. Technically
-     * speaking, this is a core number of threads that are pre-started.
+     * Returns the minimum number of worker threads waiting to service calls,
+     * even if they are idle. Technically speaking, this is a core number of
+     * threads that are pre-started.
      * 
-     * @return The minimum threads waiting to service requests.
+     * @return The minimum number of worker threads waiting to service calls,
+     *         even if they are idle.
      */
     public int getMinThreads() {
-        if (minThreads == null) {
-            minThreads = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "minThreads", "1"));
-        }
         return minThreads;
     }
 
     /**
-     * Returns the size of the content buffer for sending responses.
+     * Returns the size of the content buffer for sending messages.
      * 
-     * @return The size of the content buffer for sending responses.
+     * @return The size of the content buffer for sending messages.
      */
     public int getOutboundBufferSize() {
-        if (outboundBufferSize == null) {
-            outboundBufferSize = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("outboundBufferSize",
-                            Integer.toString(32 * 1024)));
-        }
         return outboundBufferSize;
     }
 
@@ -638,10 +610,6 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return The time to wait between socket write operations in milliseconds.
      */
     public int getThrottleTimeMs() {
-        if (throttleTimeMs == null) {
-            throttleTimeMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("throttleTimeMs", "0"));
-        }
         return throttleTimeMs;
     }
 
@@ -655,14 +623,11 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the transport protocol.
+     * Indicates the transport protocol such as TCP or UDP.
      * 
-     * @return The transport protocol.
+     * @return True the transport protocol such as TCP or UDP.
      */
     public String getTransport() {
-        if (transport == null) {
-            transport = getHelpedParameters().getFirstValue("transport", "TCP");
-        }
         return transport;
     }
 
@@ -754,15 +719,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Indicates if the worker service (pool of worker threads) is enabled.
+     * Indicates if the processing of calls should be done via threads provided
+     * by a worker service (i.e. a pool of worker threads). Note that if set to
+     * false, calls will be processed a single IO selector thread, which should
+     * never block, otherwise the other connections would hang.
      * 
-     * @return True if the worker service (pool of worker threads) is enabled.
+     * @return True if the processing of calls should be done via threads
+     *         provided by a worker service (i.e. a pool of worker threads).
      */
     public boolean hasWorkerThreads() {
-        if (workerThreads == null) {
-            workerThreads = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("workerThreads", "true"));
-        }
         return workerThreads;
     }
 
@@ -785,16 +750,14 @@ public abstract class BaseHelper<T extends Connector> extends
     public abstract boolean isControllerDaemon();
 
     /**
-     * Indicates if direct NIO buffers should be used. Note that tracing must be
+     * Indicates if direct NIO buffers should be allocated instead of regular
+     * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be
      * disabled to use direct buffers.
      * 
-     * @return True if direct NIO buffers should be used.
+     * @return True if direct NIO buffers should be allocated instead of regular
+     *         buffers.
      */
     public boolean isDirectBuffers() {
-        if (directBuffers == null) {
-            directBuffers = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("directBuffers"));
-        }
         return !isTracing() && directBuffers;
     }
 
@@ -808,15 +771,11 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Indicates if console tracing is enabled.
+     * Indicates if all messages should be printed on the standard console.
      * 
-     * @return True if console tracing is enabled.
+     * @return True if all messages should be printed on the standard console.
      */
     public boolean isTracing() {
-        if (tracing == null) {
-            tracing = Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                    "tracing"));
-        }
         return tracing;
     }
 
@@ -830,10 +789,6 @@ public abstract class BaseHelper<T extends Connector> extends
     public boolean isWorkerServiceOverloaded() {
         return (getWorkerService() != null)
                 && getWorkerService().getActiveCount() >= getLowThreads();
-    }
-
-    public boolean isWorkerThreads() {
-        return workerThreads;
     }
 
     /**
@@ -872,58 +827,175 @@ public abstract class BaseHelper<T extends Connector> extends
         }
     }
 
+    /**
+     * Sets the time for the controller thread to sleep between each control. A
+     * value strictly superior to 0 is required.
+     * 
+     * @param controllerSleepTimeMs
+     *            The time for the controller thread to sleep between each
+     *            control.
+     */
     public void setControllerSleepTimeMs(int controllerSleepTimeMs) {
         this.controllerSleepTimeMs = controllerSleepTimeMs;
     }
 
+    /**
+     * Indicates if direct NIO buffers should be allocated instead of regular
+     * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be
+     * disabled to use direct buffers.
+     * 
+     * @param directBuffers
+     *            True if direct NIO buffers should be allocated instead of
+     *            regular buffers.
+     */
     public void setDirectBuffers(boolean directBuffers) {
         this.directBuffers = directBuffers;
     }
 
+    /**
+     * Sets the size of the content buffer for receiving messages.
+     * 
+     * @param inboundBufferSize
+     *            The size of the content buffer for receiving messages.
+     */
     public void setInboundBufferSize(int inboundBufferSize) {
         this.inboundBufferSize = inboundBufferSize;
     }
 
+    /**
+     * Sets the number of worker threads determining when the connector is
+     * considered overloaded. This triggers some protection actions such as not
+     * accepting new connections.
+     * 
+     * @param lowThreads
+     *            The number of worker threads determining when the connector is
+     *            considered overloaded.
+     */
     public void setLowThreads(int lowThreads) {
         this.lowThreads = lowThreads;
     }
 
+    /**
+     * Sets the maximum time for an idle IO connection or request to wait for an
+     * operation before being closed. For an unlimited wait, use '0' as value.
+     * 
+     * @param maxIoIdleTimeMs
+     *            The maximum time for an idle IO connection or request to wait
+     *            for an operation before being closed.
+     */
     public void setMaxIoIdleTimeMs(int maxIoIdleTimeMs) {
         this.maxIoIdleTimeMs = maxIoIdleTimeMs;
     }
 
+    /**
+     * Sets the maximum number of calls that can be queued if there aren't any
+     * worker thread available to service them. If the value is '0', then no
+     * queue is used and calls are rejected if no worker thread is immediately
+     * available. If the value is '-1', then an unbounded queue is used and
+     * calls are never rejected.<br>
+     * <br>
+     * Note: make sure that this value is consistent with
+     * {@link #getMinThreads()} and the behavior of the
+     * {@link ThreadPoolExecutor} configured internally.
+     * 
+     * @param maxQueued
+     *            The maximum number of calls that can be queued if there aren't
+     *            any worker thread available to service them.
+     */
     public void setMaxQueued(int maxQueued) {
         this.maxQueued = maxQueued;
     }
 
+    /**
+     * Sets the time for an idle thread to wait for an operation before being
+     * collected.
+     * 
+     * @param maxThreadIdleTimeMs
+     *            The time for an idle thread to wait for an operation before
+     *            being collected.
+     */
     public void setMaxThreadIdleTimeMs(int maxThreadIdleTimeMs) {
         this.maxThreadIdleTimeMs = maxThreadIdleTimeMs;
     }
 
+    /**
+     * Sets the maximum number of worker threads that can service calls. If this
+     * number is reached then additional calls are queued if the "maxQueued"
+     * value hasn't been reached.
+     * 
+     * @param maxThreads
+     *            The maximum number of worker threads that can service calls.
+     */
     public void setMaxThreads(int maxThreads) {
         this.maxThreads = maxThreads;
     }
 
+    /**
+     * Sets the minimum number of worker threads waiting to service calls, even
+     * if they are idle. Technically speaking, this is a core number of threads
+     * that are pre-started.
+     * 
+     * @param minThreads
+     *            The minimum number of worker threads waiting to service calls,
+     *            even if they are idle.
+     */
     public void setMinThreads(int minThreads) {
         this.minThreads = minThreads;
     }
 
+    /**
+     * Sets the size of the content buffer for sending messages.
+     * 
+     * @param outboundBufferSize
+     *            The size of the content buffer for sending messages.
+     */
     public void setOutboundBufferSize(int outboundBufferSize) {
         this.outboundBufferSize = outboundBufferSize;
     }
 
+    /**
+     * Sets the time to wait between socket write operations in milliseconds.
+     * Can prevent TCP buffer overflows.
+     * 
+     * @param throttleTimeMs
+     *            The time to wait between socket write operations in
+     *            milliseconds.
+     */
     public void setThrottleTimeMs(int throttleTimeMs) {
         this.throttleTimeMs = throttleTimeMs;
     }
 
+    /**
+     * Indicates if all messages should be printed on the standard console.
+     * 
+     * @param tracing
+     *            True if all messages should be printed on the standard
+     *            console.
+     */
     public void setTracing(boolean tracing) {
         this.tracing = tracing;
     }
 
+    /**
+     * Indicates the transport protocol such as TCP or UDP.
+     * 
+     * @param transport
+     *            True the transport protocol such as TCP or UDP.
+     */
     public void setTransport(String transport) {
         this.transport = transport;
     }
 
+    /**
+     * Indicates if the processing of calls should be done via threads provided
+     * by a worker service (i.e. a pool of worker threads). Note that if set to
+     * false, calls will be processed a single IO selector thread, which should
+     * never block, otherwise the other connections would hang.
+     * 
+     * @param workerThreads
+     *            True if the processing of calls should be done via threads
+     *            provided by a worker service (i.e. a pool of worker threads).
+     */
     public void setWorkerThreads(boolean workerThreads) {
         this.workerThreads = workerThreads;
     }

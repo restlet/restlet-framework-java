@@ -24,11 +24,10 @@
 
 package org.restlet.engine.adapter;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.ClientInfo;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ServerHelper;
 
@@ -43,14 +42,14 @@ import org.restlet.engine.connector.ServerHelper;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>useForwardedForHeader</td>
+ * <td>usingForwardedForHeader</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Lookup the "X-Forwarded-For" header supported by popular proxies and
- * caches and uses it to populate the Request.getClientAddresses() method
- * result. This information is only safe for intermediary components within your
- * local network. Other addresses could easily be changed by setting a fake
- * header and should not be trusted for serious security checks.</td>
+ * caches and uses it to populate the {@link ClientInfo#getForwardedAddresses()}
+ * method result. This information is only safe for intermediary components
+ * within your local network. Other addresses could easily be changed by setting
+ * a fake header and should not be trusted for serious security checks.</td>
  * </tr>
  * <tr>
  * <td>adapter</td>
@@ -67,6 +66,16 @@ public class HttpServerHelper extends ServerHelper {
 
     /** The adapter from HTTP calls to uniform calls. */
     private volatile ServerAdapter adapter;
+
+    /**
+     * Lookup the "X-Forwarded-For" header supported by popular proxies and
+     * caches and uses it to populate the
+     * {@link ClientInfo#getForwardedAddresses()} method result. This
+     * information is only safe for intermediary components within your local
+     * network. Other addresses could easily be changed by setting a fake header
+     * and should not be trusted for serious security checks.
+     */
+    private boolean usingForwardedForHeader = false;
 
     /**
      * Default constructor. Note that many methods assume that a non-null server
@@ -94,38 +103,6 @@ public class HttpServerHelper extends ServerHelper {
      * @return the adapter from HTTP calls to uniform calls.
      */
     public ServerAdapter getAdapter() {
-        if (this.adapter == null) {
-            try {
-                final String adapterClass = getHelpedParameters()
-                        .getFirstValue("adapter",
-                                "org.restlet.engine.adapter.ServerAdapter");
-                this.adapter = (ServerAdapter) Engine.loadClass(adapterClass)
-                        .getConstructor(Context.class)
-                        .newInstance(getContext());
-            } catch (IllegalArgumentException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (SecurityException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (InstantiationException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (IllegalAccessException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (InvocationTargetException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (NoSuchMethodException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            } catch (ClassNotFoundException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server adapter", e);
-            }
-        }
-
         return this.adapter;
     }
 
@@ -150,6 +127,10 @@ public class HttpServerHelper extends ServerHelper {
         }
     }
 
+    public boolean isUsingForwardedForHeader() {
+        return usingForwardedForHeader;
+    }
+
     /**
      * Sets the adapter from HTTP calls to uniform calls.
      * 
@@ -158,5 +139,15 @@ public class HttpServerHelper extends ServerHelper {
      */
     public void setAdapter(ServerAdapter adapter) {
         this.adapter = adapter;
+    }
+
+    /**
+     * Indicates if the Lookup of he "X-Forwarded-For" header is supported.
+     * 
+     * @param usingForwardedForHeader
+     *            True to lookup the "X-Forwarded-For" header.
+     */
+    public void setUsingForwardedForHeader(boolean usingForwardedForHeader) {
+        this.usingForwardedForHeader = usingForwardedForHeader;
     }
 }

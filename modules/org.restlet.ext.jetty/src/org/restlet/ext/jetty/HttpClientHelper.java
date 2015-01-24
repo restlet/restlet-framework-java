@@ -179,10 +179,74 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
 public class HttpClientHelper extends
         org.restlet.engine.adapter.HttpClientHelper {
 
+    /** The timeout in milliseconds for the DNS resolution of host addresses */
+    private long addressResolutionTimeout = 15000;
+
     /**
-     * The wrapped Jetty HTTP client.
+     * The address to bind socket channels to. You must set <i>both</i> this and
+     * bindPort.
      */
+    private String bindAddress = null;
+
+    /**
+     * The address to bind socket channels to. You must set <i>both</i> this and
+     * bindAddress.
+     */
+    private int bindPort;
+
+    /**
+     * The max time in milliseconds a connection can take to connect to
+     * destinations.
+     */
+    private long connectTimeout = 15000;
+
+    /**
+     * Indicates whether to dispatch I/O operations from the selector thread to
+     * a different thread.
+     */
+    private boolean dispatchingIo = true;
+
+    /** Indicates whether to follow HTTP redirects */
+    private boolean followingRedirects = true;
+
+    /** The wrapped Jetty HTTP client. */
     private volatile HttpClient httpClient;
+
+    /**
+     * The max time in milliseconds a connection can be idle (that is, without
+     * traffic of bytes in either direction).
+     */
+    private long idleTimeout = 60000;
+
+    /** The max number of connections to open to each destination */
+    private int maxConnectionsPerDestination = 10;
+
+    /** The max number of HTTP redirects that are followed */
+    private int maxRedirects = 8;
+
+    /** The max number of requests that may be queued to a destination */
+    private int maxRequestsQueuedPerDestination = 1024;
+
+    /** The size in bytes of the buffer used to write requests */
+    private int requestBufferSize = 4096;
+
+    /** The size in bytes of the buffer used to read responses */
+    private int responseBufferSize = 16384;
+
+    /**
+     * Stop timeout in milliseconds; the maximum time allowed for the service
+     * toshutdown
+     */
+    private long stopTimeout = 60000;
+
+    /** Indicates whether request events must be strictly ordered */
+    private boolean strictEventOrdering = false;
+
+    /** Indicates whether TCP_NODELAY is enabled */
+    private boolean tcpNoDelay = true;
+
+    /** The "User-Agent" HTTP header string; when null, uses the Jetty default */
+    private String userAgentField = null;
 
     /**
      * Constructor.
@@ -271,14 +335,14 @@ public class HttpClientHelper extends
     }
 
     /**
-     * The timeout in milliseconds for the DNS resolution of host addresses.
-     * Defaults to 15000.
+     * Returns the timeout in milliseconds for the DNS resolution of host
+     * addresses
      * 
-     * @return The address resolution timeout.
+     * @return The timeout in milliseconds for the DNS resolution of host
+     *         addresses
      */
     public long getAddressResolutionTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "addressResolutionTimeout", "15000"));
+        return addressResolutionTimeout;
     }
 
     /**
@@ -287,25 +351,31 @@ public class HttpClientHelper extends
      * @return The bind address or null.
      */
     public SocketAddress getBindAddress() {
-        final String bindAddress = getHelpedParameters().getFirstValue(
-                "bindAddress", null);
-        final String bindPort = getHelpedParameters().getFirstValue("bindPort",
-                null);
-        if ((bindAddress != null) && (bindPort != null))
-            return new InetSocketAddress(bindAddress,
-                    Integer.parseInt(bindPort));
+        if ((bindAddress != null))
+            return new InetSocketAddress(bindAddress, bindPort);
         return null;
     }
 
     /**
-     * The max time in milliseconds a connection can take to connect to
-     * destinations. Defaults to 15000.
+     * Returns the address to bind socket channels to. You must set <i>both</i>
+     * this and bindAddress.
      * 
-     * @return The connect timeout.
+     * @return The address to bind socket channels to. You must set <i>both</i>
+     *         this and bindAddress.
+     */
+    public int getBindPort() {
+        return bindPort;
+    }
+
+    /**
+     * Returns the max time in milliseconds a connection can take to connect to
+     * destinations.
+     * 
+     * @return The max time in milliseconds a connection can take to connect to
+     *         destinations.
      */
     public long getConnectTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "connectTimeout", "15000"));
+        return connectTimeout;
     }
 
     /**
@@ -338,19 +408,19 @@ public class HttpClientHelper extends
     }
 
     /**
-     * The max time in milliseconds a connection can be idle (that is, without
-     * traffic of bytes in either direction). Defaults to 60000.
+     * Returns the max time in milliseconds a connection can be idle (that is,
+     * without traffic of bytes in either direction).
      * 
-     * @return The idle timeout.
+     * @return The max time in milliseconds a connection can be idle (that is,
+     *         without traffic of bytes in either direction).
      */
     public long getIdleTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "idleTimeout", "60000"));
+        return idleTimeout;
     }
 
     /**
-     * Sets the max number of connections to open to each destination. Defaults
-     * to 10.
+     * Returns the max number of connections to open to each destination.
+     * Defaults to 10.
      * <p>
      * RFC 2616 suggests that 2 connections should be opened per each
      * destination, but browsers commonly open 6. If this client is used for
@@ -359,21 +429,20 @@ public class HttpClientHelper extends
      * least as much as the threads present in the {@link #getExecutor()
      * executor}).
      * 
-     * @return The maximum connections per destination.
+     * @return The max number of connections to open to each destination
      */
     public int getMaxConnectionsPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnectionsPerDestination", "10"));
+        return maxConnectionsPerDestination;
     }
 
     /**
-     * The max number of HTTP redirects that are followed. Defaults to 8.
+     * Returns the max number of HTTP redirects that are followed. Defaults to
+     * 8.
      * 
-     * @return The maximum redirects.
+     * @return The max number of HTTP redirects that are followed
      */
     public int getMaxRedirects() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRedirects", "8"));
+        return maxRedirects;
     }
 
     /**
@@ -391,8 +460,7 @@ public class HttpClientHelper extends
      * @return The maximum requests queues per destination.
      */
     public int getMaxRequestsQueuedPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRequestsQueuedPerDestination", "1024"));
+        return maxRequestsQueuedPerDestination;
     }
 
     /**
@@ -401,8 +469,7 @@ public class HttpClientHelper extends
      * @return The request buffer size.
      */
     public int getRequestBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "requestBufferSize", "4096"));
+        return requestBufferSize;
     }
 
     /**
@@ -412,8 +479,7 @@ public class HttpClientHelper extends
      * @return The response buffer size.
      */
     public int getResponseBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "responseBufferSize", "16384"));
+        return responseBufferSize;
     }
 
     /**
@@ -434,18 +500,29 @@ public class HttpClientHelper extends
      * @return The stop timeout.
      */
     public long getStopTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "stopTimeout", "60000"));
+        return stopTimeout;
     }
 
     /**
-     * The "User-Agent" HTTP header string. When null, uses the Jetty default.
-     * Defaults to null.
+     * Returns the "User-Agent" HTTP header string; when null, uses the Jetty
+     * default
      * 
-     * @return The user agent field or null.
+     * @return The "User-Agent" HTTP header string; when null, uses the Jetty
+     *         default
      */
     public String getUserAgentField() {
-        return getHelpedParameters().getFirstValue("userAgentField", null);
+        return userAgentField;
+    }
+
+    /**
+     * Returns the Indicates whether to dispatch I/O operations from the
+     * selector thread to a different thread.
+     * 
+     * @return The Indicates whether to dispatch I/O operations from the
+     *         selector thread to a different thread.
+     */
+    public boolean isDispatchingIo() {
+        return dispatchingIo;
     }
 
     /**
@@ -459,20 +536,29 @@ public class HttpClientHelper extends
      * quick and never block on I/O, then this may be set to false.
      * 
      * @return Whether to dispatch I/O.
+     * @deprecated use {@link #isDispatchingIo()} instead.
      */
     public boolean isDispatchIO() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "dispatchIo", "true"));
+        return dispatchingIo;
+    }
+
+    /**
+     * Returns the Indicates whether to follow HTTP redirects
+     * 
+     * @return The Indicates whether to follow HTTP redirects
+     */
+    public boolean isFollowingRedirects() {
+        return followingRedirects;
     }
 
     /**
      * Whether to follow HTTP redirects. Defaults to true.
      * 
      * @return Whether to follow redirects.
+     * @deprecated use {@link #isFollowingRedirects()} instead.
      */
     public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "followRedirects", "true"));
+        return followingRedirects;
     }
 
     /**
@@ -500,8 +586,7 @@ public class HttpClientHelper extends
      * @return Whether request events must be strictly ordered.
      */
     public boolean isStrictEventOrdering() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "strictEventOrdering", "false"));
+        return strictEventOrdering;
     }
 
     /**
@@ -510,8 +595,183 @@ public class HttpClientHelper extends
      * @return Whether TCP_NODELAY is enabled.
      */
     public boolean isTcpNoDelay() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "tcpNoDelay", "true"));
+        return tcpNoDelay;
+    }
+
+    /**
+     * Sets the timeout in milliseconds for the DNS resolution of host addresses
+     * 
+     * @param addressResolutionTimeout
+     *            The timeout in milliseconds for the DNS resolution of host
+     *            addresses
+     */
+    public void setAddressResolutionTimeout(long addressResolutionTimeout) {
+        this.addressResolutionTimeout = addressResolutionTimeout;
+    }
+
+    /**
+     * Sets the address to bind socket channels to. You must set <i>both</i>
+     * this and bindPort.
+     * 
+     * @param bindAddress
+     *            The address to bind socket channels to. You must set
+     *            <i>both</i> this and bindPort.
+     */
+    public void setBindAddress(String bindAddress) {
+        this.bindAddress = bindAddress;
+    }
+
+    /**
+     * Sets the address to bind socket channels to. You must set <i>both</i>
+     * this and bindAddress.
+     * 
+     * @param bindPort
+     *            The address to bind socket channels to. You must set
+     *            <i>both</i> this and bindAddress.
+     */
+    public void setBindPort(int bindPort) {
+        this.bindPort = bindPort;
+    }
+
+    /**
+     * Sets the max time in milliseconds a connection can take to connect to
+     * destinations.
+     * 
+     * @param connectTimeout
+     *            The max time in milliseconds a connection can take to connect
+     *            to destinations.
+     */
+    public void setConnectTimeout(long connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    /**
+     * Sets the Indicates whether to dispatch I/O operations from the selector
+     * thread to a different thread.
+     * 
+     * @param dispatchIo
+     *            The Indicates whether to dispatch I/O operations from the
+     *            selector thread to a different thread.
+     */
+    public void setDispatchIo(boolean dispatchIo) {
+        this.dispatchingIo = dispatchIo;
+    }
+
+    /**
+     * Sets the Indicates whether to follow HTTP redirects
+     * 
+     * @param followRedirects
+     *            The Indicates whether to follow HTTP redirects
+     */
+    public void setFollowRedirects(boolean followRedirects) {
+        this.followingRedirects = followRedirects;
+    }
+
+    /**
+     * Sets the max time in milliseconds a connection can be idle (that is,
+     * without traffic of bytes in either direction).
+     * 
+     * @param idleTimeout
+     *            The max time in milliseconds a connection can be idle (that
+     *            is, without traffic of bytes in either direction).
+     */
+    public void setIdleTimeout(long idleTimeout) {
+        this.idleTimeout = idleTimeout;
+    }
+
+    /**
+     * Sets the max number of connections to open to each destination
+     * 
+     * @param maxConnectionsPerDestination
+     *            The max number of connections to open to each destination
+     */
+    public void setMaxConnectionsPerDestination(int maxConnectionsPerDestination) {
+        this.maxConnectionsPerDestination = maxConnectionsPerDestination;
+    }
+
+    /**
+     * The max number of HTTP redirects that are followed
+     * 
+     * @param maxRedirects
+     *            The max number of HTTP redirects that are followed
+     */
+    public void setMaxRedirects(int maxRedirects) {
+        this.maxRedirects = maxRedirects;
+    }
+
+    /**
+     * Sets the max number of requests that may be queued to a destination
+     * 
+     * @param maxRequestsQueuedPerDestination
+     *            The max number of requests that may be queued to a destination
+     */
+    public void setMaxRequestsQueuedPerDestination(
+            int maxRequestsQueuedPerDestination) {
+        this.maxRequestsQueuedPerDestination = maxRequestsQueuedPerDestination;
+    }
+
+    /**
+     * Sets the size in bytes of the buffer used to write requests
+     * 
+     * @param requestBufferSize
+     *            The size in bytes of the buffer used to write requests
+     */
+    public void setRequestBufferSize(int requestBufferSize) {
+        this.requestBufferSize = requestBufferSize;
+    }
+
+    /**
+     * Sets the size in bytes of the buffer used to read responses
+     * 
+     * @param responseBufferSize
+     *            The size in bytes of the buffer used to read responses
+     */
+    public void setResponseBufferSize(int responseBufferSize) {
+        this.responseBufferSize = responseBufferSize;
+    }
+
+    /**
+     * Sets the stop timeout in milliseconds; the maximum time allowed for the
+     * service toshutdown
+     * 
+     * @param stopTimeout
+     *            The stop timeout in milliseconds; the maximum time allowed for
+     *            the service toshutdown
+     */
+    public void setStopTimeout(long stopTimeout) {
+        this.stopTimeout = stopTimeout;
+    }
+
+    /**
+     * Indicates whether request events must be strictly ordered
+     * 
+     * @param strictEventOrdering
+     *            True if request events must be strictly ordered
+     */
+    public void setStrictEventOrdering(boolean strictEventOrdering) {
+        this.strictEventOrdering = strictEventOrdering;
+    }
+
+    /**
+     * Indicates whether TCP_NODELAY is enabled
+     * 
+     * @param tcpNoDelay
+     *            True if TCP_NODELAY is enabled
+     */
+    public void setTcpNoDelay(boolean tcpNoDelay) {
+        this.tcpNoDelay = tcpNoDelay;
+    }
+
+    /**
+     * Sets the "User-Agent" HTTP header string; when null, uses the Jetty
+     * default
+     * 
+     * @param userAgentField
+     *            The "User-Agent" HTTP header string; when null, uses the Jetty
+     *            default
+     */
+    public void setUserAgentField(String userAgentField) {
+        this.userAgentField = userAgentField;
     }
 
     @Override

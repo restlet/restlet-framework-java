@@ -112,10 +112,18 @@ public class SdcClientHelper extends HttpClientHelper {
     private final Map<String, SdcServerConnection> connections;
 
     /**
+     * list of enabled cipher suites and/or can be specified multiple times.
+     */
+    private String[] enabledCipherSuites = { "TLS_RSA_WITH_AES_128_CBC_SHA" };
+
+    /**
      * The latch that can be used to block until the connector is ready to
      * process requests.
      */
     private final CountDownLatch latch;
+
+    /** The port number of the SDC tunnels server. */
+    private int serverPort = 4433;
 
     /** The connection worker service. */
     private final ExecutorService workerService;
@@ -145,6 +153,7 @@ public class SdcClientHelper extends HttpClientHelper {
                 if (cr.getScheme().equals(ChallengeScheme.valueOf("SDC"))) {
                     String key = cr.getIdentifier() + ":"
                             + String.valueOf(cr.getSecret());
+                    // retry parameters may be configurable
                     int retryAttempts = 3;
                     int retryDelay = 3000;
                     SdcServerConnection ssc = null;
@@ -197,8 +206,7 @@ public class SdcClientHelper extends HttpClientHelper {
      * @return The list of enabled cipher suites.
      */
     public String[] getEnabledCipherSuites() {
-        return getHelpedParameters().getValuesArray("enabledCipherSuites",
-                "TLS_RSA_WITH_AES_128_CBC_SHA");
+        return enabledCipherSuites;
     }
 
     /**
@@ -218,8 +226,7 @@ public class SdcClientHelper extends HttpClientHelper {
      * @return The port number of the SDC tunnels server.
      */
     public int getServerPort() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "serverPort", "4433"));
+        return serverPort;
     }
 
     /**
@@ -229,6 +236,28 @@ public class SdcClientHelper extends HttpClientHelper {
      */
     public ExecutorService getWorkerService() {
         return workerService;
+    }
+
+    /**
+     * Sets the Whitespace-separated list of enabled cipher suites and/or can be
+     * specified multiple times.
+     * 
+     * @param enabledCipherSuites
+     *            The Whitespace-separated list of enabled cipher suites and/or
+     *            can be specified multiple times.
+     */
+    public void setEnabledCipherSuites(String[] enabledCipherSuites) {
+        this.enabledCipherSuites = enabledCipherSuites;
+    }
+
+    /**
+     * Sets the port number of the SDC tunnels server.
+     * 
+     * @param serverPort
+     *            The port number of the SDC tunnels server.
+     */
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 
     @Override

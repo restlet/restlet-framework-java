@@ -154,77 +154,77 @@ import org.restlet.routing.VirtualHost;
 public abstract class ConnectionHelper<T extends Connector> extends
         BaseHelper<T> {
 
-    /** Maximum number of concurrent connections per host (IP address). */
-    private Integer maxConnectionsPerHost;
+    /** The connection pool. */
+    private volatile ConnectionPool<T> connectionPool;
+
+    /** The set of active connections. */
+    private final List<Connection<T>> connections;
 
     /**
      * Initial number of connections pre-created in the connections pool. This
      * saves time during establishment of new connections as heavy byte buffers
      * are simply reused.
      */
-    private Integer initialConnections;
+    private int initialConnections = 100;
+
+    /** Maximum number of concurrent connections per host (IP address). */
+    private int maxConnectionsPerHost = -1;
 
     /** Maximum number of concurrent connections in total. */
-    private Integer maxTotalConnections;
+    private int maxTotalConnections = -1;
 
     /** Indicates if connections should be kept alive after a call. */
-    private Boolean persistingConnections;
+    private boolean persistingConnections = true;
 
     /** Indicates if pipelining connections are supported. */
-    private Boolean pipeliningConnections;
+    private boolean pipeliningConnections = false;
 
     /** Indicates if connections should be pooled to save instantiation time. */
-    private Boolean pooledConnections;
+    private boolean pooledConnections = true;
 
     /**
      * Indicates if a TCP connection should be automatically kept alive after 2
      * hours of inactivity.
      */
-    private Boolean socketKeepAlive;
+    private boolean socketKeepAlive = true;
+
+    /**
+     * Time to block when a socket close is requested or -1 to not block at all.
+     */
+    private int socketLingerTimeMs = -1;
+
+    /**
+     * Enables Nagle's algorithm if set to false, preventing sending of small
+     * TCP packets.
+     */
+    private boolean socketNoDelay = false;
 
     /**
      * Indicates if urgent TCP data received on the socket will be received
      * through the socket input stream.
      */
-    private Boolean socketOobInline;
-
-    /**
-     * Time to block when a socket close is requested or -1 to not block at all.
-     */
-    private Integer socketLingerTimeMs;
-
-    /**
-     * Enables Nagle's algorithm if set to false, preventing sending of smallTCP
-     * packets.
-     */
-    private Boolean socketNoDelay;
+    private boolean socketOobInline = false;
 
     /**
      * The hinted size of the underlying TCP buffers used by the platform for
      * inbound network I/O.
      */
-    private Integer socketReceiveBufferSize;
+    private int socketReceiveBufferSize = 8192;
 
     /**
      * Indicates if sockets can be reused right away even if they are busy (in
      * TIME_WAIT or 2MSL wait state).
      */
-    private Boolean socketReuseAddress;
+    private boolean socketReuseAddress = true;
 
     /**
      * The hinted size of the underlying TCP buffers used by the platform for
      * outbound network I/O.
      */
-    private Integer socketSendBufferSize;
+    private int socketSendBufferSize = 8192;
 
     /** Type of service to set in IP packets. */
-    private Integer socketTrafficClass;
-
-    /** The connection pool. */
-    private volatile ConnectionPool<T> connectionPool;
-
-    /** The set of active connections. */
-    private final List<Connection<T>> connections;
+    private int socketTrafficClass = 0;
 
     /**
      * Constructor.
@@ -416,45 +416,34 @@ public abstract class ConnectionHelper<T extends Connector> extends
 
     /**
      * Returns the initial number of connections pre-created in the connections
-     * pool.
+     * pool. This saves time during establishment of new connections as heavy
+     * byte buffers are simply reused.
      * 
      * @return The initial number of connections pre-created in the connections
-     * 
-     *         pool.
+     *         pool. This saves time during establishment of new connections as
+     *         heavy byte buffers are simply reused.
      */
     public int getInitialConnections() {
-        if (initialConnections == null) {
-            initialConnections = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("initialConnections", "100"));
-        }
         return initialConnections;
     }
 
     /**
-     * Returns the maximum concurrent connections per host (IP address). By
-     * default, it is unbounded.
+     * Returns the maximum number of concurrent connections per host (IP
+     * address).
      * 
-     * @return Maximum number of concurrent connections per host (IP address).
+     * @return The maximum number of concurrent connections per host (IP
+     *         address).
      */
     public int getMaxConnectionsPerHost() {
-        if (maxConnectionsPerHost == null) {
-            maxConnectionsPerHost = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("maxConnectionsPerHost", "-1"));
-        }
         return maxConnectionsPerHost;
     }
 
     /**
-     * Returns the maximum number of concurrent connections allowed. By default,
-     * it is unbounded.
+     * Returns the maximum number of concurrent connections in total.
      * 
-     * @return The maximum number of concurrent connections allowed.
+     * @return The maximum number of concurrent connections in total.
      */
     public int getMaxTotalConnections() {
-        if (maxTotalConnections == null) {
-            maxTotalConnections = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("maxTotalConnections", "-1"));
-        }
         return maxTotalConnections;
     }
 
@@ -466,10 +455,6 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         block at all.
      */
     public int getSocketLingerTimeMs() {
-        if (socketLingerTimeMs == null) {
-            socketLingerTimeMs = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("socketLingerTimeMs", "-1"));
-        }
         return socketLingerTimeMs;
     }
 
@@ -481,10 +466,6 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         platform for inbound network I/O.
      */
     public int getSocketReceiveBufferSize() {
-        if (socketReceiveBufferSize == null) {
-            socketReceiveBufferSize = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("socketReceiveBufferSize", "8192"));
-        }
         return socketReceiveBufferSize;
     }
 
@@ -496,10 +477,6 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         platform for outbound network I/O.
      */
     public int getSocketSendBufferSize() {
-        if (socketSendBufferSize == null) {
-            socketSendBufferSize = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("socketSendBufferSize", "8192"));
-        }
         return socketSendBufferSize;
     }
 
@@ -509,23 +486,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @return The type of service to set in IP packets.
      */
     public int getSocketTrafficClass() {
-        if (socketTrafficClass == null) {
-            socketTrafficClass = Integer.parseInt(getHelpedParameters()
-                    .getFirstValue("socketTrafficClass", "0"));
-        }
         return socketTrafficClass;
     }
 
     /**
-     * Indicates if persistent connections should be used if possible.
+     * Indicates if connections should be kept alive after a call.
      * 
-     * @return True if persistent connections should be used if possible.
+     * @return True if connections should be kept alive after a call.
      */
     public boolean isPersistingConnections() {
-        if (persistingConnections == null) {
-            persistingConnections = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("persistingConnections", "true"));
-        }
         return persistingConnections;
     }
 
@@ -535,24 +504,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @return True if pipelining connections are supported.
      */
     public boolean isPipeliningConnections() {
-        if (pipeliningConnections == null) {
-            pipeliningConnections = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("pipeliningConnections", "false"));
-        }
         return pipeliningConnections;
     }
 
     /**
-     * Indicates if the connection objects should be pooled to save
-     * instantiation time.
+     * Indicates if connections should be pooled to save instantiation time.
      * 
-     * @return True if the connection objects should be pooled.
+     * @return True if connections should be pooled to save instantiation time.
      */
     public boolean isPooledConnections() {
-        if (pooledConnections == null) {
-            pooledConnections = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("pooledConnections", "true"));
-        }
         return pooledConnections;
     }
 
@@ -573,24 +533,17 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         2 hours of inactivity.
      */
     public boolean isSocketKeepAlive() {
-        if (socketKeepAlive == null) {
-            socketKeepAlive = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("socketKeepAlive", "true"));
-        }
         return socketKeepAlive;
     }
 
     /**
-     * Enables Nagle's algorithm if set to false, preventing sending of small
-     * TCP packets.
+     * Indicates if the Nagle's algorithm is disabled, preventing sending of
+     * small TCP packets.
      * 
-     * @return True if Nagle's algorithm should be disabled.
+     * @return False if the Nagle's algorithm, preventing sending of small TCP
+     *         packets.
      */
     public boolean isSocketNoDelay() {
-        if (socketNoDelay == null) {
-            socketNoDelay = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("socketNoDelay", "false"));
-        }
         return socketNoDelay;
     }
 
@@ -602,35 +555,27 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         through the socket input stream.
      */
     public boolean isSocketOobInline() {
-        if (socketOobInline == null) {
-            socketOobInline = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("socketOobInline", "false"));
-        }
         return socketOobInline;
     }
 
     /**
-     * Indicates if sockets can be reused right away even if they are busy (in
-     * TIME_WAIT or 2MSL wait state).
+     * Indicates if sockets can be reused right away even if they are busy
+     * (inTIME_WAIT or 2MSL wait state).
      * 
      * @return True if sockets can be reused right away even if they are busy
-     *         (in TIME_WAIT or 2MSL wait state).
+     *         (inTIME_WAIT or 2MSL wait state).
      */
     public boolean isSocketReuseAddress() {
-        if (socketReuseAddress == null) {
-            socketReuseAddress = Boolean.parseBoolean(getHelpedParameters()
-                    .getFirstValue("socketReuseAddress", "true"));
-        }
         return socketReuseAddress;
     }
 
     /**
-     * Sets the Initial number of connections pre-created in the connections
-     * pool. This saves time during establishment of new connections as heavy
+     * Sets the initial number of connections pre-created in the connections
+     * pool. Thissaves time during establishment of new connections as heavy
      * byte buffers are simply reused.
      * 
      * @param initialConnections
-     *            The Initial number of connections pre-created in the
+     *            The initial number of connections pre-created in the
      *            connections pool. This saves time during establishment of new
      *            connections as heavy byte buffers are simply reused.
      */
@@ -670,7 +615,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
-     * Sets the Indicates if pipelining connections are supported.
+     * Indicates if pipelining connections are supported.
      * 
      * @param pipeliningConnections
      *            True if pipelining connections are supported.
@@ -715,12 +660,12 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
-     * Enables Nagle's algorithm if set to false, preventing sending of smallTCP
-     * packets.
+     * Enables Nagle's algorithm if set to false, preventing sending of small
+     * TCP packets.
      * 
      * @param socketNoDelay
-     *            False to enable Nagle's algorithm if set to false, preventing
-     *            sending of smallTCP packets.
+     *            False to enable Nagle's algorithm, preventing sending of
+     *            smallTCP packets.
      */
     public void setSocketNoDelay(boolean socketNoDelay) {
         this.socketNoDelay = socketNoDelay;
@@ -744,7 +689,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @param socketReceiveBufferSize
      *            The hinted size of the underlying TCP buffers used by the
-     *            platform forinbound network I/O.
+     *            platform for inbound network I/O.
      */
     public void setSocketReceiveBufferSize(int socketReceiveBufferSize) {
         this.socketReceiveBufferSize = socketReceiveBufferSize;
@@ -755,16 +700,16 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * TIME_WAIT or 2MSL wait state).
      * 
      * @param socketReuseAddress
-     *            True if sockets can be reused right away even if they are busy
-     *            (in TIME_WAIT or 2MSL wait state).
+     *            Indicates if sockets can be reused right away even if they are
+     *            busy (in TIME_WAIT or 2MSL wait state).
      */
     public void setSocketReuseAddress(boolean socketReuseAddress) {
         this.socketReuseAddress = socketReuseAddress;
     }
 
     /**
-     * Sets the the hinted size of the underlying TCP buffers used by the
-     * platform for outbound network I/O.
+     * The hinted size of the underlying TCP buffers used by the platform for
+     * outbound network I/O.
      * 
      * @param socketSendBufferSize
      *            The hinted size of the underlying TCP buffers used by the
@@ -775,12 +720,13 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
-     * Sets the type of service to set in IP packets.
+     * Sets the Type of service to set in IP packets.
      * 
      * @param socketTrafficClass
-     *            The type of service to set in IP packets.
+     *            The Type of service to set in IP packets.
      */
     public void setSocketTrafficClass(int socketTrafficClass) {
         this.socketTrafficClass = socketTrafficClass;
     }
+
 }
