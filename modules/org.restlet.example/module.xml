@@ -9,7 +9,6 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="db4o" />
 		<dependency type="library" id="junit" />
 		<dependency type="library" id="mongodb" />
 		<dependency type="library" id="testng" />
