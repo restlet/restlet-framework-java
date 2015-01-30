@@ -181,11 +181,11 @@ public class SwaggerAnnotationUtils {
      */
     public static void processApiOperation(ApiOperation apiOperation,
             Resource resource, Operation operation) {
-        if (!StringUtils.isNullOrEmpty(apiOperation.value())) {
-            operation.setName(apiOperation.value());
+        if (!StringUtils.isNullOrEmpty(apiOperation.nickname())) {
+            operation.setName(apiOperation.nickname());
         }
-        if (!StringUtils.isNullOrEmpty(apiOperation.notes())) {
-            operation.setDescription(apiOperation.notes());
+        if (!StringUtils.isNullOrEmpty(apiOperation.value())) {
+            operation.setDescription(apiOperation.value());
         }
         if (!StringUtils.isNullOrEmpty(apiOperation.httpMethod())) {
             operation.setMethod(apiOperation.httpMethod());

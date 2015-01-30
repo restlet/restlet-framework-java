@@ -28,6 +28,10 @@ import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.Representation;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 
 /**
@@ -44,9 +48,8 @@ public class TypeInfo {
     private final TypeInfo componentTypeInfo;
 
     private final boolean isPrimitive;
-    private final boolean isJdkClass;
+    private final boolean isPojo;
     private final boolean isFile;
-    private final boolean isRaw;
 
     /**
      * Use {@link Types#getTypeInfo(Class, java.lang.reflect.Type)} to have a new instance of TypeInfo
@@ -65,9 +68,9 @@ public class TypeInfo {
 
         if (isList) {
             //Don't know how to instrospect the list if the componentClazz is null or a JDK class which is not a primitive
-            if (componentClazz == null || (!Types.isPrimitiveType(componentClazz) && ReflectUtils.isJdkClass(componentClazz))) {
+            if (componentClazz == null) {
               throw new UnsupportedTypeException("Type " + Types.toString(clazz, type) +
-                      " is a list/array and its component type is unknown or not supported");
+                      " is a list/array and its component type is unknown");
             }
             componentTypeInfo = Types.getTypeInfo(componentClazz,
                     null);
@@ -76,10 +79,13 @@ public class TypeInfo {
         }
 
         isPrimitive = Types.isPrimitiveType(representationClazz);
-        isJdkClass = ReflectUtils.isJdkClass(representationClazz);
+        isPojo = Types.isPojo(representationClazz);
         isFile = Representation.class.isAssignableFrom(representationClazz) ||
-                File.class.isAssignableFrom(representationClazz);
-        isRaw = isFile || isJdkClass;
+                File.class.isAssignableFrom(representationClazz) ||
+                InputStream.class.isAssignableFrom(representationClazz) ||
+                OutputStream.class.isAssignableFrom(representationClazz) ||
+                Reader.class.isAssignableFrom(representationClazz) ||
+                Writer.class.isAssignableFrom(representationClazz);
     }
 
     public Class<?> getClazz() {
@@ -110,15 +116,11 @@ public class TypeInfo {
         return isPrimitive;
     }
 
-    public boolean isJdkClass() {
-        return isJdkClass;
+    public boolean isPojo() {
+        return isPojo;
     }
 
     public boolean isFile() {
         return isFile;
-    }
-
-    public boolean isRaw() {
-        return isRaw;
     }
 }

@@ -73,8 +73,6 @@ public class ApplicationIntrospector extends IntrospectionUtils {
             // Look for the endpoint to which this application is attached.
             Endpoint endpoint = ComponentIntrospector.getEndpoint(
                     component.getDefaultHost(), application, scheme);
-            // add sections
-            contract.setSections(collectInfo.getSections());
             if (endpoint != null) {
                 definition.getEndpoints().add(endpoint);
             }

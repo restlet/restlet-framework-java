@@ -13,5 +13,47 @@
 		<dependency type="library" id="snakeyaml" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<wikiUri>299-restlet</wikiUri>
+    <bundleActivator>org.restlet.ext.jackson.internal.Activator</bundleActivator>
+    <source edition="android">
+        <files-sets>
+            <![CDATA[
+         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+]]>
+        </files-sets>
+    </source>
+    <source edition="gae">
+        <files-sets>
+            <![CDATA[
+         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+]]>
+        </files-sets>
+    </source>
+    <source edition="gwt">
+        <files-sets>
+            <![CDATA[
+         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+]]>
+        </files-sets>
+    </source>
+    <source edition="jee">
+        <files-sets>
+            <![CDATA[
+         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+]]>
+        </files-sets>
+    </source>
+    <source edition="jse">
+        <files-sets>
+            <![CDATA[
+         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+]]>
+        </files-sets>
+    </source>
+    <source edition="osgi">
+        <files-sets>
+            <![CDATA[
+                    ]]>
+        </files-sets>
+    </source>
+    <wikiUri>299-restlet</wikiUri>
 </module>

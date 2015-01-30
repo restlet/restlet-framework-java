@@ -74,7 +74,7 @@ public class ResourceCollector {
 
     private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
 
-    public static void collectResourceForDirectory(CollectInfo collectInfo,
+    public static void collectResource(CollectInfo collectInfo,
             Directory directory, String basePath, ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
         Resource resource = getResource(collectInfo, directory, basePath,
@@ -92,10 +92,11 @@ public class ResourceCollector {
         for (IntrospectionHelper helper : introspectionHelper) {
             helper.processResource(resource, directory.getClass());
         }
+        addSectionsForResource(collectInfo, resource);
         collectInfo.addResource(resource);
     }
 
-    public static void collectResourceForServletResource(
+    public static void collectResource(
             CollectInfo collectInfo, ServerResource sr, String basePath,
             ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
@@ -151,6 +152,7 @@ public class ResourceCollector {
             if (!operations.isEmpty()) {
                 sortOperationsByMethod(operations);
                 resource.setOperations(operations);
+                addSectionsForResource(collectInfo, resource);
                 collectInfo.addResource(resource);
             } else {
                 LOGGER.warning("Resource " + resource.getName()
@@ -203,6 +205,7 @@ public class ResourceCollector {
                     int statusCode = throwableAnnotationInfo.getStatus().getCode();
                     Response response = new Response();
                     response.setCode(statusCode);
+                    response.setName(Status.valueOf(statusCode).getReasonPhrase());
                     response.setMessage("Status " + statusCode);
 
                     Class<?> outputPayloadType = throwableAnnotationInfo
@@ -410,13 +413,6 @@ public class ResourceCollector {
             resource.setName(name);
         }
 
-        // add sections in collect info
-        for (String section : resource.getSections()) {
-            if (collectInfo.getSection(section) == null) {
-                collectInfo.addSection(new Section(section));
-            }
-        }
-
         Template template = new Template(basePath);
         for (String variable : template.getVariableNames()) {
             PathVariable pathVariable = new PathVariable();
@@ -429,6 +425,15 @@ public class ResourceCollector {
         }
 
         return resource;
+    }
+
+    private static void addSectionsForResource(CollectInfo collectInfo,
+            Resource resource) {
+        for (String section : resource.getSections()) {
+            if (collectInfo.getSection(section) == null) {
+                collectInfo.addSection(new Section(section));
+            }
+        }
     }
 
     private static void sortOperationsByMethod(ArrayList<Operation> operations) {

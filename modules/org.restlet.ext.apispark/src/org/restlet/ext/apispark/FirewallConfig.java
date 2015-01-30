@@ -56,8 +56,8 @@ public class FirewallConfig {
      * Private Constructor.
      */
     @SuppressWarnings("unchecked")
-    FirewallConfig(List<?> rules) {
-        //does not expose in Javadoc FirewallRule
+    public FirewallConfig(List<?> rules) {
+        // does not expose in Javadoc FirewallRule
         this.rules = (List<FirewallRule>) rules;
     }
 

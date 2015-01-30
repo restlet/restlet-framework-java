@@ -52,7 +52,7 @@ public abstract class Types {
     private static final Map<Class<?>, String> primitiveTypesByClass;
 
     static {
-        primitiveTypesByClass = new HashMap<Class<?>, String>();
+        primitiveTypesByClass = new HashMap<>();
         primitiveTypesByClass.put(Byte.TYPE, "byte");
         primitiveTypesByClass.put(Byte.class, "byte");
         primitiveTypesByClass.put(Short.TYPE, "short");
@@ -113,6 +113,10 @@ public abstract class Types {
                 || CharSequence.class.isAssignableFrom(type)
                 || Date.class.isAssignableFrom(type) || Representation.class
                     .isAssignableFrom(type));
+    }
+
+    public static boolean isPojo(Class<?> type) {
+        return Object.class != type && !type.isInterface();
     }
 
     public static boolean isPrimitiveType(String typename) {
