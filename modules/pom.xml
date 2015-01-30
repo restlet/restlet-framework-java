@@ -38,11 +38,6 @@
 			<name>Restlet repository</name>
 			<url>http://maven.restlet.org</url>
 		</repository>
-		<repository>
-			<id>maven-db4o</id>
-			<name>Db4o repository</name>
-			<url>https://source.db4o.com/maven/</url>
-		</repository>
 	</repositories>
 
 	<properties>
@@ -108,12 +103,6 @@
 		<lib-thymeleaf-version>2.1.2.RELEASE</lib-thymeleaf-version>
 		<lib-ognl-version>3.0.8</lib-ognl-version>
 		<lib-javassist-version>3.18.1-GA</lib-javassist-version>
-		<lib-db4o-version>7.12.132</lib-db4o-version>
-		<lib-db4o-instrumentation-version>7.12.132</lib-db4o-instrumentation-version>
-		<lib-db4o-nativequery-version>7.12.132</lib-db4o-nativequery-version>
-		<lib-db4o-optional-version>7.12.132</lib-db4o-optional-version>
-		<lib-db4o-ta-version>7.12.132</lib-db4o-ta-version>
-		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
 		<lib-bloat-version>1.0</lib-bloat-version>
 		<lib-junit-version>4.11</lib-junit-version>
 		<lib-rome-version>1.0</lib-rome-version>

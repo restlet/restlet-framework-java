@@ -123,14 +123,14 @@ public class HttpsServerHelper extends NetServerHelper {
             @Override
             public void handle(HttpExchange httpExchange) throws IOException {
                 HttpsServerHelper.this.handle(new HttpExchangeCall(getHelped(),
-                        httpExchange));
+                        httpExchange, true));
             }
         });
         // creates a default executor
         server.setExecutor(createThreadPool());
         server.start();
 
-        setConfidential(false);
+        setConfidential(true);
         setEphemeralPort(server.getAddress().getPort());
         super.start();
     }

@@ -297,7 +297,6 @@ public class ParameterList {
                     }
                 } catch (Exception exception) {
                     // -- don't worry about it...proceed with reflective calls
-                    exception.printStackTrace();
                 }
             }
 

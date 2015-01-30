@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2014 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -27,6 +27,7 @@ package org.restlet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Filter;
+import java.util.logging.Level;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
@@ -71,11 +72,11 @@ import org.restlet.util.ServiceList;
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
- * 
+ *
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
- * 
+ *
  * @author Jerome Louvel
  */
 public class Application extends Restlet {
@@ -84,11 +85,11 @@ public class Application extends Restlet {
     /**
      * This variable is stored internally as a thread local variable and updated
      * each time a call enters an application.
-     * 
+     *
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current application using methods such as
      * {@link org.restlet.resource.Resource#getApplication()}
-     * 
+     *
      * @return The current context.
      */
     public static Application getCurrent() {
@@ -97,13 +98,16 @@ public class Application extends Restlet {
 
     /**
      * Sets the context to associated with the current thread.
-     * 
+     *
      * @param application
      *            The thread's context.
      */
     public static void setCurrent(Application application) {
         CURRENT.set(application);
     }
+
+    /** Indicates if the debugging mode is enabled. */
+    private volatile boolean debugging;
 
     /** The helper provided by the implementation. */
     private volatile ApplicationHelper helper;
@@ -133,7 +137,7 @@ public class Application extends Restlet {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The context to use based on parent component context. This
      *            context should be created using the
@@ -152,6 +156,7 @@ public class Application extends Restlet {
         ConverterService converterService = new ConverterService();
         MetadataService metadataService = new MetadataService();
 
+        this.debugging = false;
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
@@ -177,7 +182,7 @@ public class Application extends Restlet {
      * general, instances of Router, Filter or Finder classes will be used as
      * initial application Restlet. The default implementation returns null by
      * default. This method is intended to be overridden by subclasses.
-     * 
+     *
      * @return The inbound root Restlet.
      */
     public Restlet createInboundRoot() {
@@ -195,7 +200,7 @@ public class Application extends Restlet {
      * benefit from the outbound service filtering layer, the original outbound
      * root must be careful attached again at the end of the user filtering
      * layer.
-     * 
+     *
      * @return The outbound root Restlet.
      */
     public Restlet createOutboundRoot() {
@@ -204,7 +209,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the connector service. The service is enabled by default.
-     * 
+     *
      * @return The connector service.
      */
     public ConnectorService getConnectorService() {
@@ -214,7 +219,7 @@ public class Application extends Restlet {
     /**
      * Returns the content negotiation service. The service is enabled by
      * default.
-     * 
+     *
      * @return The content negotiation service.
      */
     public ConnegService getConnegService() {
@@ -223,7 +228,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the converter service. The service is enabled by default.
-     * 
+     *
      * @return The converter service.
      */
     public ConverterService getConverterService() {
@@ -232,7 +237,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the decoder service. The service is enabled by default.
-     * 
+     *
      * @return The decoder service.
      */
     public DecoderService getDecoderService() {
@@ -241,7 +246,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the encoder service. The service is disabled by default.
-     * 
+     *
      * @return The encoder service.
      */
     public EncoderService getEncoderService() {
@@ -250,7 +255,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the helper provided by the implementation.
-     * 
+     *
      * @return The helper provided by the implementation.
      */
     private ApplicationHelper getHelper() {
@@ -259,7 +264,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the inbound root Restlet.
-     * 
+     *
      * @return The inbound root Restlet.
      */
     public Restlet getInboundRoot() {
@@ -276,7 +281,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the metadata service. The service is enabled by default.
-     * 
+     *
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
@@ -285,7 +290,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the outbound root Restlet.
-     * 
+     *
      * @return The outbound root Restlet.
      */
     public Restlet getOutboundRoot() {
@@ -302,7 +307,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the range service.
-     * 
+     *
      * @return The range service.
      */
     public RangeService getRangeService() {
@@ -311,7 +316,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the role associated to the given name.
-     * 
+     *
      * @param name
      *            The name of the role to find.
      * @return The role matched or null.
@@ -328,7 +333,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the modifiable list of roles.
-     * 
+     *
      * @return The modifiable list of roles.
      */
     public List<Role> getRoles() {
@@ -337,7 +342,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the modifiable list of services.
-     * 
+     *
      * @return The modifiable list of services.
      */
     public ServiceList getServices() {
@@ -346,7 +351,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the status service. The service is enabled by default.
-     * 
+     *
      * @return The status service.
      */
     public StatusService getStatusService() {
@@ -356,7 +361,7 @@ public class Application extends Restlet {
     /**
      * Returns a task service to run concurrent tasks. The service is enabled by
      * default.
-     * 
+     *
      * @return A task service.
      * @deprecated
      */
@@ -368,7 +373,7 @@ public class Application extends Restlet {
 
     /**
      * Returns the tunnel service. The service is enabled by default.
-     * 
+     *
      * @return The tunnel service.
      */
     public TunnelService getTunnelService() {
@@ -385,8 +390,17 @@ public class Application extends Restlet {
     }
 
     /**
+     * Indicates if the debugging mode is enabled. True by default.
+     *
+     * @return True if the debugging mode is enabled.
+     */
+    public boolean isDebugging() {
+        return debugging;
+    }
+
+    /**
      * Sets the connector service.
-     * 
+     *
      * @param connectorService
      *            The connector service.
      */
@@ -396,7 +410,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the content negotiation service.
-     * 
+     *
      * @param connegService
      *            The content negotiation service.
      */
@@ -413,7 +427,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the converter service.
-     * 
+     *
      * @param converterService
      *            The converter service.
      */
@@ -422,8 +436,18 @@ public class Application extends Restlet {
     }
 
     /**
+     * Indicates if the debugging mode is enabled.
+     *
+     * @param debugging
+     *            True if the debugging mode is enabled.
+     */
+    public void setDebugging(boolean debugging) {
+        this.debugging = debugging;
+    }
+
+    /**
      * Sets the decoder service.
-     * 
+     *
      * @param decoderService
      *            The decoder service.
      */
@@ -433,7 +457,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the encoder service.
-     * 
+     *
      * @param encoderService
      *            The encoder service.
      */
@@ -443,7 +467,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the inbound root Resource class.
-     * 
+     *
      * @param inboundRootClass
      *            The inbound root Resource class.
      */
@@ -454,7 +478,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the inbound root Restlet.
-     * 
+     *
      * @param inboundRoot
      *            The inbound root Restlet.
      */
@@ -468,7 +492,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the metadata service.
-     * 
+     *
      * @param metadataService
      *            The metadata service.
      */
@@ -478,7 +502,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the outbound root Resource class.
-     * 
+     *
      * @param outboundRootClass
      *            The client root {@link ServerResource} subclass.
      */
@@ -489,7 +513,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the outbound root Restlet.
-     * 
+     *
      * @param outboundRoot
      *            The outbound root Restlet.
      */
@@ -503,7 +527,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the range service.
-     * 
+     *
      * @param rangeService
      *            The range service.
      */
@@ -514,7 +538,7 @@ public class Application extends Restlet {
     /**
      * Sets the modifiable list of roles. This method clears the current list
      * and adds all entries in the parameter list.
-     * 
+     *
      * @param roles
      *            A list of roles.
      */
@@ -532,7 +556,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the status service.
-     * 
+     *
      * @param statusService
      *            The status service.
      */
@@ -542,7 +566,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the task service.
-     * 
+     *
      * @param taskService
      *            The task service.
      */
@@ -553,7 +577,7 @@ public class Application extends Restlet {
 
     /**
      * Sets the tunnel service.
-     * 
+     *
      * @param tunnelService
      *            The tunnel service.
      */
@@ -568,6 +592,16 @@ public class Application extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
+            if (isDebugging()) {
+                getLogger().log(
+                        Level.INFO,
+                        "Starting " + getClass().getName()
+                                + " application in debug mode");
+            } else {
+                getLogger().log(Level.INFO,
+                        "Starting " + getClass().getName() + " application");
+            }
+
             if (getHelper() != null) {
                 getHelper().start();
             }
