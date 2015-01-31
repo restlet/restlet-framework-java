@@ -24,74 +24,98 @@
 
 package org.restlet.ext.apispark.internal.agent.module;
 
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.ext.apispark.internal.ApiSparkConfig;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
 import org.restlet.routing.Filter;
 
 /**
- * @author Manuel Boillod
+ * Analytics module for the agent. This class extends {@link Filter} and sends
+ * call logs to the APISpark platform. To view them, open the Analytics tab of
+ * your Connector.
+ * 
+ * Posting is asynchronous to preserve performance.
+ * 
+ * @author Cyprien Quilici
  */
 public class AnalyticsModule extends Filter {
+
+    /** Internal logger. */
+    protected static Logger LOGGER = Logger.getLogger(AnalyticsModule.class
+            .getName());
+
+    /** Analytics handler */
+    private AnalyticsHandler analyticsHandler;
+
+    /**
+     * Last segment of the path to the APISpark analytics service for this
+     * connector.
+     */
+    public static final String ANALYTICS_PATH = "/analytics";
+
+    /**
+     * Create a new Analytics module with the specified settings.
+     * 
+     * @param apiSparkConfig
+     *            The agent configuration.
+     * @param modulesSettings
+     *            The modules settings.
+     */
     public AnalyticsModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings) {
         this(apiSparkConfig, modulesSettings, null);
     }
 
+    /**
+     * Create a new Authentication module with the specified settings.
+     * 
+     * @param apiSparkConfig
+     *            The agent configuration.
+     * @param modulesSettings
+     *            The modules settings.
+     * @param context
+     *            The context.
+     */
     public AnalyticsModule(ApiSparkConfig apiSparkConfig,
             ModulesSettings modulesSettings, Context context) {
         super(context);
+
+        analyticsHandler = new AnalyticsHandler(apiSparkConfig, modulesSettings);
+    }
+
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        request.getAttributes().put("org.restlet.startTime", getTimeMillis());
+        return CONTINUE;
+    }
+
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        long startTime = (Long) request.getAttributes().get(
+                "org.restlet.startTime");
+        int duration = (int) (getTimeMillis() - startTime);
+        analyticsHandler.addCallLogToBuffer(request, response, duration,
+                startTime);
+    }
+
+    /**
+     * Returns the current time in milliseconds. Uses {@link System#nanoTime()}
+     * for enhanced precision.
+     * 
+     * @return The current time in milliseconds.
+     */
+    private long getTimeMillis() {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        analyticsHandler.stop();
+        super.stop();
     }
 }
-
-// public String post(String request) throws ResourceException, IOException {
-// ClientResource cr = new ClientResource("");
-// String response = cr.post(request).getText();
-// return response;
-// }
-//
-// public Future<String> postAsync(final String request) {
-// Future<String> future = getExecutor().submit(new Callable<String>() {
-// public String call() throws Exception {
-// return post(request);
-// }
-// });
-// return future;
-// }
-//
-// protected ThreadPoolExecutor getExecutor() {
-// if (executor == null) {
-// executor = createExecutor();
-// }
-// return executor;
-// }
-//
-// protected synchronized ThreadPoolExecutor createExecutor() {
-// return new ThreadPoolExecutor(0, configuration.getMaxThreads(), 5,
-// TimeUnit.MINUTES, new LinkedBlockingDeque<Runnable>(),
-// createThreadFactory());
-// }
-//
-// protected ApisparkAnalyticsThreadFactory createThreadFactory() {
-// return new ApisparkAnalyticsThreadFactory(
-// configuration.getThreadNameFormat());
-// }
-//
-// class ApisparkAnalyticsThreadFactory implements ThreadFactory {
-// private final AtomicInteger threadNumber = new AtomicInteger(1);
-//
-// private String threadNameFormat = null;
-//
-// public ApisparkAnalyticsThreadFactory(String threadNameFormat) {
-// this.threadNameFormat = threadNameFormat;
-// }
-//
-// public Thread newThread(Runnable r) {
-// Thread thread = new Thread(Thread.currentThread().getThreadGroup(),
-// r, MessageFormat.format(threadNameFormat,
-// threadNumber.getAndIncrement()), 0);
-// thread.setDaemon(true);
-// thread.setPriority(Thread.MIN_PRIORITY);
-// return thread;
-// }
-// }

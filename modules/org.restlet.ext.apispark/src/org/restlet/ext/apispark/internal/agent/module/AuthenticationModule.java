@@ -136,7 +136,6 @@ public class AuthenticationModule extends ChallengeAuthenticator {
 
             return result;
         }
-
     }
 
     /**
@@ -277,7 +276,8 @@ public class AuthenticationModule extends ChallengeAuthenticator {
                 User user = authenticateClientResource
                         .authenticate(credentials);
                 if (user == null) {
-                    // Authentication should throw an error instead of returning
+                    // Authentication should throw an error instead of
+                    // returning
                     // null
                     throw new AgentException(
                             "Authentication should not return null");

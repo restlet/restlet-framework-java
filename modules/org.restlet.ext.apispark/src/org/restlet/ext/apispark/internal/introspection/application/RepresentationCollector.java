@@ -33,11 +33,13 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
@@ -60,11 +62,8 @@ public class RepresentationCollector {
      *            The typeInfo to document.
      * @param introspectionHelper
      *            The introspector helpers.
-     *
-     * @return The name of representation type if added, null otherwise
-     *         {@link Representation}.
      */
-    public static String addRepresentation(CollectInfo collectInfo,
+    public static void addRepresentation(CollectInfo collectInfo,
             TypeInfo typeInfo,
             List<? extends IntrospectionHelper> introspectionHelper) {
         // Introspect the java class
@@ -75,37 +74,31 @@ public class RepresentationCollector {
             // Collect generic type
             addRepresentation(collectInfo, typeInfo.getComponentTypeInfo(),
                     introspectionHelper);
-            return null;
+            return;
         }
 
-        if (typeInfo.isPrimitive() || typeInfo.isJdkClass()) {
-            // primitives and jdk classes are not collected
-            return null;
+        if (typeInfo.isPrimitive() || typeInfo.isFile()) {
+            // primitives and files are not collected
+            return;
         }
 
-        if (typeInfo.isFile()) {
-            representation.setName("file");
-        } else {
-            if (!typeInfo.isPrimitive()) {
-                // Example: "java.util.Contact" or "String"
-                representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+        // Example: "java.util.Contact" or "String"
+        representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+
+        // Sections
+        if (collectInfo.isUseSectionNamingPackageStrategy()) {
+            String packageName = typeInfo.getClazz().getPackage().getName();
+            representation.getSections().add(packageName);
+            if (collectInfo.getSection(packageName) == null) {
+                collectInfo.addSection(new Section(packageName));
             }
-
-            // Sections
-            if (collectInfo.isUseSectionNamingPackageStrategy()) {
-                String packageName = typeInfo.getClazz().getPackage().getName();
-                representation.getSections().add(packageName);
-                if (collectInfo.getSection(packageName) == null) {
-                    collectInfo.addSection(new Section(packageName));
-                }
-            }
-            // Example: "Contact"
-            JsonTypeName jsonType = typeInfo.getClazz().getAnnotation(JsonTypeName.class);
-            String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
-                    .getSimpleName() : jsonType.value();
-            representation.setName(typeName);
         }
-        representation.setRaw(typeInfo.isRaw());
+        // Example: "Contact"
+        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
+        String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
+                .getSimpleName() : jsonType.value();
+        representation.setName(typeName);
+        representation.setRaw(false);
 
         // at this point, identifier is known - we check if it exists in cache
         boolean notInCache = collectInfo.getRepresentation(representation
@@ -117,7 +110,7 @@ public class RepresentationCollector {
             // loop
             collectInfo.addRepresentation(representation);
 
-            if (!typeInfo.isRaw()) {
+            if (typeInfo.isPojo()) {
                 // add properties definition
 
                 BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
@@ -152,14 +145,17 @@ public class RepresentationCollector {
                     }
 
                     JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
-                    String propertyName = jsonProperty == null ? pd.getName() : jsonProperty.value();
+                    String propertyName = jsonProperty != null && !StringUtils.isNullOrEmpty(jsonProperty.value()) ?
+                            jsonProperty.value() : pd.getName();
+
+                    JsonPropertyDescription jsonPropertyDescription = pd.getReadMethod().getAnnotation(JsonPropertyDescription.class);
 
                     // Types
                     Property property = new Property();
                     property.setName(propertyName);
-                    property.setDescription("");
+                    property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription.value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(0);
+                    property.setMinOccurs(jsonProperty != null && jsonProperty.required() ? 1 : 0);
                     property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
 
                     addRepresentation(collectInfo, propertyTypeInfo,
@@ -179,6 +175,5 @@ public class RepresentationCollector {
             }
 
         }
-        return representation.getName();
     }
 }

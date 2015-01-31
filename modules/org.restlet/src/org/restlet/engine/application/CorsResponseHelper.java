@@ -265,6 +265,17 @@ public class CorsResponseHelper {
     }
 
     /**
+     * Returns true if the request is a CORS request.
+     *
+     * @param request
+     *      The current request.
+     * @return true if the request is a CORS request.
+     */
+    public boolean isCorsRequest(Request request) {
+        return request.getHeaders().getFirstValue("Origin", true) != null;
+    }
+
+    /**
      * If true, copies the value of 'Access-Control-Request-Headers' request
      * header into the 'Access-Control-Allow-Headers' response header. If false,
      * use {@link #allowedHeaders}.

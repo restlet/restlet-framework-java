@@ -39,21 +39,29 @@ public class ModulesSettingsModule {
 
     public static final String MODULE_PATH = "/settings";
 
-    private ModulesSettings modulesSettings;
+    /**
+     * Retrieves the modules settings from the service if it has changed, null
+     * otherwise.
+     * 
+     * @param apiSparkConfig
+     *            The service's configuration
+     * @param modulesSettings
+     *            The current modules settings
+     * @return The updated modules settings if it has changed, null otherwise.
+     */
+    public static ModulesSettings getModulesSettings(
+            ApiSparkConfig apiSparkConfig, ModulesSettings modulesSettings) {
 
-    public ModulesSettingsModule(ApiSparkConfig apiSparkConfig) {
+        // When modulesSettings not null, cell revision header is set
         ModulesSettingsResource modulesSettingsResource = AgentUtils
-                .getClientResource(apiSparkConfig, null,
+                .getClientResource(apiSparkConfig, modulesSettings,
                         ModulesSettingsResource.class, MODULE_PATH);
         try {
-            modulesSettings = modulesSettingsResource.getSettings();
+            return modulesSettingsResource.getSettings();
         } catch (Exception e) {
             throw new AgentConfigurationException(
                     "Unable to retrieve agent settings from apispark", e);
         }
     }
 
-    public ModulesSettings getModulesSettings() {
-        return modulesSettings;
-    }
 }

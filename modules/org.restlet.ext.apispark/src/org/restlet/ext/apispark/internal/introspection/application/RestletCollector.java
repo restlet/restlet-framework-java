@@ -92,12 +92,12 @@ public class RestletCollector {
             String basePath, Finder finder, ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
         if (finder instanceof Directory) {
-            ResourceCollector.collectResourceForDirectory(collectInfo,
+            ResourceCollector.collectResource(collectInfo,
                     (Directory) finder, basePath, scheme, introspectionHelper);
         } else {
             ServerResource serverResource = finder.find(null, null);
             if (serverResource != null) {
-                ResourceCollector.collectResourceForServletResource(
+                ResourceCollector.collectResource(
                         collectInfo, serverResource, basePath, scheme,
                         introspectionHelper);
             } else {
