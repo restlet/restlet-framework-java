@@ -285,8 +285,16 @@ public class FormDataSet extends OutputRepresentation {
                 outputStream.write(("--" + getMultipartBoundary()).getBytes());
                 HeaderUtils.writeCRLF(outputStream);
 
-                if (!StringUtils.isNullOrEmpty(data.getFilename())) {
-                    // Write the content disposition header line
+                if (StringUtils.isNullOrEmpty(data.getFilename())
+                        && MediaType.TEXT_PLAIN.equals(data.getMediaType())) {
+                    // Write the content disposition header line, as a simple
+                    // form field
+                    String line = "Content-Disposition: form-data; name=\""
+                            + data.getName() + "\"";
+                    outputStream.write(line.getBytes());
+                    HeaderUtils.writeCRLF(outputStream);
+                } else {
+                    // Write the content disposition header line as file
                     String line = "Content-Disposition: form-data; name=\""
                             + data.getName() + "\"; filename=\""
                             + data.getFilename() + "\"";
@@ -297,12 +305,6 @@ public class FormDataSet extends OutputRepresentation {
                     line = "Content-Type: "
                             + ContentType.writeHeader(data
                                     .getValueRepresentation());
-                    outputStream.write(line.getBytes());
-                    HeaderUtils.writeCRLF(outputStream);
-                } else {
-                    // Write the content disposition header line
-                    String line = "Content-Disposition: form-data; name=\""
-                            + data.getName() + "\"";
                     outputStream.write(line.getBytes());
                     HeaderUtils.writeCRLF(outputStream);
                 }
