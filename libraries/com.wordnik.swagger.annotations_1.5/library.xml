@@ -16,6 +16,6 @@
 	</package>
 	<dependency type="library" id="scala" />
 	<distributions>
-		<distribution id="maven" />
+		<distribution id="classic" />
 	</distributions>
 </library>
