@@ -244,13 +244,14 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 request.setEntity(requestEntity);
 
                 // Updates the client preferences if they weren't changed
-                if ((request.getClientInfo().getAcceptedCharacterSets().size() == 0)
+                if ((request.getClientInfo().getAcceptedCharacterSets()
+                        .isEmpty())
                         && (request.getClientInfo().getAcceptedEncodings()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedLanguages()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedMediaTypes()
-                                .size() == 0)) {
+                                .isEmpty())) {
                     List<Variant> responseVariants = annotationInfo
                             .getResponseVariants(getClientResource()
                                     .getMetadataService(), getClientResource()
@@ -306,14 +307,19 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                             if (t != null) {
                                 throw t;
                             }
-                        } else if (response.isEntityAvailable()) {
-                            StatusInfo si = getClientResource().toObject(
-                                    response.getEntity(), StatusInfo.class);
+                            // TODO cf issues 1004 and 1018.
+                            // this code has been commented as the automatic
+                            // deserialization is problematic. We may rethink a
+                            // way to recover the status info.
 
-                            if (si != null) {
-                                response.setStatus(new Status(si.getCode(), si
-                                        .getReasonPhrase(), si.getDescription()));
-                            }
+                            // } else if (response.isEntityAvailable()) {
+                            // StatusInfo si = getClientResource().toObject(
+                            // response.getEntity(), StatusInfo.class);
+                            //
+                            // if (si != null) {
+                            // response.setStatus(new Status(si.getCode(), si
+                            // .getReasonPhrase(), si.getDescription()));
+                            // }
                         }
 
                         getClientResource().doError(response.getStatus());

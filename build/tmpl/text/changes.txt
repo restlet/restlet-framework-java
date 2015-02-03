@@ -3,7 +3,17 @@
 Changes log  
 ===========
 
-- 2.3m1 (12/19/2014)
+
+- @version-full@ (@release-date@)
+    - Bugs
+      - Fixed potential NPE. Issue #1004.
+         Reported by philippeu.
+      - Fixed bug that prevented client code to properly consume error 
+        responses #1004 and #1018.
+        Reported by Philippe Perrault and spraguep.
+
+
+- 3.0m1 (12/19/2014)
     - API changes
        - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
          ROME, SIP, WebDAV, XDB, XStream).
@@ -16,5 +26,4 @@ Changes log
        - FormDataSet not properly serializing text/plain files. Issue #1006.
          Reported by johnjaylward.
        - Fixed fileupload extension for GAE and JEE editions.
-       - Fixed potential NPE. Issue #1004.
-         Reported by philippeu.
+
