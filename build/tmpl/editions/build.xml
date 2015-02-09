@@ -832,7 +832,9 @@
 				<path refid="mod-core-test-path" />
 			</classpath>
 			<formatter type="plain" />
-			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" >
+				<formatter type="xml" />
+			</test>
 		</junit>
 
 		<if>
