@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -110,13 +109,13 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
         operation1.setDescription("description");
 
         // resource 1 : operation 1 : produces
-        List<String> op1Produces = new ArrayList<String>();
+        List<String> op1Produces = new ArrayList<>();
         operation1.setProduces(op1Produces);
         op1Produces.add("produce 1");
         op1Produces.add("produce 2");
 
         // resource 1 : operation 1 : consumes
-        List<String> op1Consumes = new ArrayList<String>();
+        List<String> op1Consumes = new ArrayList<>();
         operation1.setConsumes(op1Consumes);
         op1Consumes.add("consume 1");
         op1Consumes.add("consume 2");
@@ -628,7 +627,7 @@ public class Swagger2TranslatorTestCase extends RestletTestCase {
     }
 
     public void testGetSwagger2() throws IOException {
-        Definition savedDefinition = new JacksonRepresentation<Definition>(
+        Definition savedDefinition = new JacksonRepresentation<>(
                 new FileRepresentation(getClass().getResource("refImpl.rwadef")
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
