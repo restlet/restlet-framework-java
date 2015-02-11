@@ -12,4 +12,7 @@
 			<artifactId>slf4j-api</artifactId>
 		</maven>
 	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 </library>

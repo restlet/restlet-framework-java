@@ -76,7 +76,7 @@ public class CorsService extends Service {
      * of CORS request and set Access-Control-Allow-Methods header with
      * the default methods. Default is false.
      */
-    private boolean skipResourceForCorsOptions = false;
+    private boolean skippingResourceForCorsOptions = false;
 
     /**
      * Constructor.
@@ -102,7 +102,7 @@ public class CorsService extends Service {
                 .setAllowingAllRequestedHeaders(allowingAllRequestedHeaders)
                 .setAllowedHeaders(allowedHeaders)
                 .setExposedHeaders(exposedHeaders)
-                .setSkippingResourceForCorsOptions(skipResourceForCorsOptions);
+                .setSkippingResourceForCorsOptions(skippingResourceForCorsOptions);
     }
 
     /**
@@ -163,7 +163,7 @@ public class CorsService extends Service {
      * OPTIONS method of CORS request.
      */
     public boolean isSkippingResourceForCorsOptions() {
-        return skipResourceForCorsOptions;
+        return skippingResourceForCorsOptions;
     }
 
     /**
@@ -239,6 +239,6 @@ public class CorsService extends Service {
      *          OPTIONS method of CORS request.
      */
     public void setSkippingResourceForCorsOptions(boolean skipResourceForCorsOptions) {
-        this.skipResourceForCorsOptions = skipResourceForCorsOptions;
+        this.skippingResourceForCorsOptions = skipResourceForCorsOptions;
     }
 }

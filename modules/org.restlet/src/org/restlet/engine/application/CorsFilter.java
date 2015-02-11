@@ -89,7 +89,7 @@ public class CorsFilter extends Filter {
      * of CORS request and set Access-Control-Allow-Methods header with
      * {@link #DEFAULT_ALLOWED_METHODS}. Default is false.
      */
-    private boolean skipResourceForCorsOptions = false;
+    private boolean skippingResourceForCorsOptions = false;
 
     /**
      * Constructor.
@@ -121,7 +121,7 @@ public class CorsFilter extends Filter {
     }
 
     /**
-     * Skip the call to the server resource if the {@link #skipResourceForCorsOptions}
+     * Skip the call to the server resource if the {@link #skippingResourceForCorsOptions}
      * is true and if the current request use the OPTIONS method and is a CORS request.
      *
      * @param request
@@ -131,7 +131,7 @@ public class CorsFilter extends Filter {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        if (skipResourceForCorsOptions
+        if (skippingResourceForCorsOptions
                 && Method.OPTIONS.equals(request.getMethod())
                 && getCorsResponseHelper().isCorsRequest(request)) {
             response.setAllowedMethods(DEFAULT_ALLOWED_METHODS);
@@ -237,7 +237,7 @@ public class CorsFilter extends Filter {
      * OPTIONS method of CORS request.
      */
     public boolean isSkippingResourceForCorsOptions() {
-        return skipResourceForCorsOptions;
+        return skippingResourceForCorsOptions;
     }
 
     /**
@@ -315,7 +315,7 @@ public class CorsFilter extends Filter {
      * @return Itself for chaining methods calls.
      */
     public CorsFilter setSkippingResourceForCorsOptions(boolean skipResourceForCorsOptions) {
-        this.skipResourceForCorsOptions = skipResourceForCorsOptions;
+        this.skippingResourceForCorsOptions = skipResourceForCorsOptions;
         return this;
     }
 }

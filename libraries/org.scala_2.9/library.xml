@@ -20,4 +20,7 @@
 			<version>2.9.1</version>
 		</maven>
 	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
 </library>

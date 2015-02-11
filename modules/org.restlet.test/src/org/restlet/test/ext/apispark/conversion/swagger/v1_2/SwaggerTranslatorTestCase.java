@@ -346,22 +346,4 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                 resourceListing, apiDeclarations);
         comparePetstoreDefinition(translatedDefinition);
     }
-
-    /**
-     * Retrieves the Petstore from <a
-     * href="http://petstore.swagger.wordnik.com/api/api-docs"
-     * >http://petstore.swagger.wordnik.com/api/api-doc</a>, and translates it
-     * to RWADef using SwaggerTranslater.
-     * 
-     * @throws TranslationException
-     * @throws IOException
-     */
-    public void testPetstoreSwaggerUrlToRwadef() throws TranslationException,
-            IOException {
-        Definition translatedDefinition = SwaggerUtils.getDefinition(
-                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
-        assertNotNull(translatedDefinition);
-        // could not check definitions attributes because content could be
-        // update by swagger
-    }
 }
