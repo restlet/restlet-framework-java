@@ -826,7 +826,7 @@
 		<mkdir dir="${temp}/test" />
 
 		<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
-		<junit printsummary="true" fork="true" haltonfailure="false" haltonerror="true" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
+		<junit printsummary="true" fork="true" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
 			<classpath>
 				<path location="${mod}/${mod-core-test-id}/src" />
 				<path refid="mod-core-test-path" />
@@ -834,6 +834,18 @@
 			<formatter type="plain" />
 			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
 		</junit>
+
+		<if>
+			<or>
+				<istrue value="${failprop}" />
+				<istrue value="${errorprop}" />
+			</or>
+			<then>
+				<loadfile property="restletTestSuiteFile" srcFile="${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt"/>
+				<echo message="RestletTestSuite file content:" />
+				<echo message="${restletTestSuiteFile}" />
+			</then>
+		</if>
 
 		<fail if="failprop" message="At least one failure during junit tests." taskname="verify-tests" />
 		<fail if="errorprop" message="At least one error during junit tests." taskname="verify-tests" />
