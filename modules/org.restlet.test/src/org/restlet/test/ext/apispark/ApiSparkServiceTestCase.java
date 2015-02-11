@@ -657,7 +657,8 @@ public class ApiSparkServiceTestCase extends RestletTestCase {
         Thread.sleep(1500);
 
         // verify
-        assertTrue(MockAnalyticsServerResource.GET_ANALYTICS_COUNT >= 2);
+        assertTrue("expected count >= 2, current count: " + MockAnalyticsServerResource.GET_ANALYTICS_COUNT,
+                MockAnalyticsServerResource.GET_ANALYTICS_COUNT >= 2);
         assertEquals(0, MockAnalyticsServerResource.GET_CALLLOG_COUNT);
     }
 
@@ -689,8 +690,10 @@ public class ApiSparkServiceTestCase extends RestletTestCase {
         Thread.sleep(100);
 
         // verify
-        assertEquals(1, MockAnalyticsServerResource.GET_ANALYTICS_COUNT);
-        assertEquals(1, MockAnalyticsServerResource.GET_CALLLOG_COUNT);
+        assertTrue("expected count >= 1, current count: " + MockAnalyticsServerResource.GET_ANALYTICS_COUNT,
+                MockAnalyticsServerResource.GET_ANALYTICS_COUNT >= 1);
+        assertTrue("expected count >= 1, current count: " + MockAnalyticsServerResource.GET_CALLLOG_COUNT,
+                MockAnalyticsServerResource.GET_CALLLOG_COUNT >= 1);
     }
 
     public void testAgent_Configuration_Null() throws Exception {
