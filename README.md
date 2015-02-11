@@ -10,4 +10,4 @@ http://restlet.com
 
 Copyright 2014 Restlet
 
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.png?branch=master)](https://travis-ci.org/restlet/restlet-framework-java)
+[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java)
