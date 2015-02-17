@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.BeanInfoUtils;
@@ -142,7 +141,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public Map<String, Header> getHeadersCopy() {
-            return new LinkedHashMap<String, Header>(headers);
+            return new LinkedHashMap<>(headers);
         }
 
         public Path getPath() {
@@ -150,7 +149,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public Map<String, PathVariable> getPathVariablesCopy() {
-            return new LinkedHashMap<String, PathVariable>(pathVariables);
+            return new LinkedHashMap<>(pathVariables);
         }
 
         public Produces getProduces() {
@@ -158,7 +157,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public Map<String, QueryParameter> getQueryParametersCopy() {
-            return new LinkedHashMap<String, QueryParameter>(queryParameters);
+            return new LinkedHashMap<>(queryParameters);
         }
 
         @SuppressWarnings("unused")
@@ -194,13 +193,11 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         private String applicationPath;
 
-        private Map<String, Representation> representations = new HashMap<String, Representation>();
+        private Map<String, Representation> representations = new HashMap<>();
 
-        private Map<String, Resource> resourcesByPath = new LinkedHashMap<String, Resource>();
+        private Map<String, Resource> resourcesByPath = new LinkedHashMap<>();
 
-        private List<ChallengeScheme> schemes = new ArrayList<ChallengeScheme>();
-
-        private Map<String, Section> sections = new HashMap<String, Section>();
+        private Map<String, Section> sections = new HashMap<>();
 
         private boolean useSectionNamingPackageStrategy;
 
@@ -210,21 +207,6 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
         public void addResource(Resource resource) {
             resourcesByPath.put(resource.getResourcePath(), resource);
-        }
-
-        /**
-         * Add scheme if it does not already exist
-         * 
-         * @param scheme
-         *            Scheme to add
-         * @return true is the collection changed
-         */
-        public boolean addSchemeIfNotExists(ChallengeScheme scheme) {
-            if (!schemes.contains(scheme)) {
-                return schemes.add(scheme);
-            } else {
-                return false;
-            }
         }
 
         public void addSection(Section section) {
@@ -248,7 +230,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public List<Representation> getRepresentations() {
-            return new ArrayList<Representation>(representations.values());
+            return new ArrayList<>(representations.values());
         }
 
         public Resource getResource(String operationPath) {
@@ -256,11 +238,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public List<Resource> getResources() {
-            return new ArrayList<Resource>(resourcesByPath.values());
-        }
-
-        public List<ChallengeScheme> getSchemes() {
-            return new ArrayList<ChallengeScheme>(schemes);
+            return new ArrayList<>(resourcesByPath.values());
         }
 
         public Section getSection(String identifier) {
@@ -268,7 +246,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         public List<Section> getSections() {
-            return new ArrayList<Section>(sections.values());
+            return new ArrayList<>(sections.values());
         }
 
         public boolean isUseSectionNamingPackageStrategy() {
@@ -297,17 +275,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
 
-    private static void addEndpoints(CollectInfo collectInfo,
-            Reference baseRef, Definition definition) {
-        String ap = collectInfo.getApplicationPath();
-        if (ap != null) {
-            Endpoint endpoint = new Endpoint(ap);
-            definition.getEndpoints().add(endpoint);
-        }
-        if (baseRef != null) {
-            Endpoint endpoint = new Endpoint(baseRef.getHostDomain(),
-                    baseRef.getHostPort(), baseRef.getSchemeProtocol()
-                            .getSchemeName(), baseRef.getPath(), null);
+    private static void addEndpoints(String applicationPath,
+            Definition definition) {
+        if (applicationPath != null) {
+            Endpoint endpoint = new Endpoint(applicationPath);
             definition.getEndpoints().add(endpoint);
         }
     }
@@ -521,13 +492,27 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
+     *
+     * @param application
+     *            An application to introspect.
+     */
+    public static Definition getDefinition(Application application,
+            Reference baseRef, boolean useSectionNamingPackageStrategy
+    ) {
+        //method kept for retro compatibility
+        return getDefinition(application, null, null, baseRef, useSectionNamingPackageStrategy);
+    }
+
+    /**
+     * Constructor.
      * 
      * @param application
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef, boolean useSectionNamingPackageStrategy,
-            String applicationName, String applicationPathValue) {
+            String applicationName, List<Class> resources,
+            Reference baseRef, boolean useSectionNamingPackageStrategy
+            ) {
 
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils
                 .getIntrospectionHelpers();
@@ -537,19 +522,25 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         collectInfo
                 .setUseSectionNamingPackageStrategy(useSectionNamingPackageStrategy);
 
-        ApplicationPath applicationPath = application.getClass().getAnnotation(
-                ApplicationPath.class);
-        if (applicationPathValue != null) {
-            collectInfo.setApplicationPath(applicationPathValue);
-        } else if (applicationPath != null) {
-            collectInfo.setApplicationPath(applicationPath.value());
+        if (baseRef != null) {
+            collectInfo.setApplicationPath(baseRef.getPath());
+        } else if (application != null) {
+            ApplicationPath applicationPath = application.getClass().getAnnotation(
+                    ApplicationPath.class);
+            if (applicationPath != null) {
+                collectInfo.setApplicationPath(applicationPath.value());
+            }
         }
-        scanResources(collectInfo, application, introspectionHelpers);
+
+        List<Class> allResources = getAllResources(application, resources);
+        scanResources(collectInfo, allResources, introspectionHelpers);
 
         if (applicationName != null) {
             collectInfo.setApplicationName(applicationName);
-        } else {
+        } else if (application != null) {
             collectInfo.setApplicationName(application.getClass().getName());
+        } else {
+            collectInfo.setApplicationName("JAXRS-Application");
         }
 
         updateDefinitionContract(collectInfo, application, definition);
@@ -562,17 +553,39 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         // add sections
         contract.setSections(collectInfo.getSections());
 
-        addEndpoints(collectInfo, baseRef, definition);
+        addEndpoints(collectInfo.getApplicationPath(), definition);
 
         sortDefinition(definition);
 
         updateRepresentationsSectionsFromResources(definition);
 
-        for (IntrospectionHelper helper : introspectionHelpers) {
-            helper.processDefinition(definition, application.getClass());
+        if (application != null) {
+            for (IntrospectionHelper helper : introspectionHelpers) {
+                helper.processDefinition(definition, application.getClass());
+            }
         }
 
         return definition;
+    }
+
+    public static List<Class> getAllResources(Application application, List<Class> resources) {
+        List<Class> allResources = new ArrayList<>();
+        if (application != null) {
+            if (application.getClasses() != null) {
+                allResources.addAll(application.getClasses());
+            }
+            if (application.getSingletons() != null) {
+                for (Object singleton : application.getSingletons()) {
+                    if (singleton != null) {
+                        allResources.add(singleton.getClass());
+                    }
+                }
+            }
+        }
+        if (resources != null) {
+            allResources.addAll(resources);
+        }
+        return allResources;
     }
 
     private static Header getHeader(TypeInfo typeInfo, String defaultValue,
@@ -1064,27 +1077,23 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
-     * 
-     * 
+     *
+     *
      * @param collectInfo
-     * @param application
-     *            The application.
+     *           The collect info bean
+     * @param resources
+     *            The resources.
      * @param introspectionHelper
-     * @return An application description.
+     *            Optional list of introspection helpers
      */
     public static void scanResources(CollectInfo collectInfo,
-            Application application,
-            List<? extends IntrospectionHelper> introspectionHelper) {
-        for (Class<?> clazz : application.getClasses()) {
+                                     List<Class> resources,
+                                     List<? extends IntrospectionHelper> introspectionHelper) {
+        for (Class<?> clazz : resources) {
             scanClazz(collectInfo, clazz, introspectionHelper);
         }
-        for (Object singleton : application.getSingletons()) {
-            if (singleton != null) {
-                scanClazz(collectInfo, singleton.getClass(),
-                        introspectionHelper);
-            }
-        }
     }
+
 
     private static void scanSimpleMethod(CollectInfo collectInfo,
             Method method, ClazzInfo clazzInfo) {

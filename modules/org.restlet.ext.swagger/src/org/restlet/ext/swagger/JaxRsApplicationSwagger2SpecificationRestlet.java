@@ -63,8 +63,7 @@ import javax.ws.rs.core.Application;
  * or
  * 
  * <pre>
- * JaxRsApplicationSwagger2SpecificationRestlet jaxrsSwagger2SpecificationRestlet = new JaxRsApplicationSwagger2SpecificationRestlet(
- *         this); // this is the current Application
+ * JaxRsApplicationSwagger2SpecificationRestlet jaxrsSwagger2SpecificationRestlet = new JaxRsApplicationSwagger2SpecificationRestlet(this); // this is the current Application
  * jaxrsSwagger2SpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
  * jaxrsSwagger2SpecificationRestlet.attach(baseRouter);
  * </pre>
@@ -181,7 +180,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (JaxRsApplicationSwagger2SpecificationRestlet.class) {
                 definition = JaxRsIntrospector.getDefinition(application,
-                        baseRef, false, null, null);
+                        baseRef, false);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion("1.0");

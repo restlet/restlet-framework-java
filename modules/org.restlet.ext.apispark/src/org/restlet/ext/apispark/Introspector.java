@@ -26,21 +26,18 @@ package org.restlet.ext.apispark;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.introspection.application.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
@@ -120,8 +117,8 @@ public class Introspector {
         boolean useSectionNamingPackageStrategy = false;
 
         String applicationName = null;
-        String applicationPath = null;
-        List<String> classesList = new ArrayList<>();
+        String endpoint = null;
+        List<String> jaxRsResources = new ArrayList<>();
 
         // (default ?)
         LOGGER.fine("Get parameters");
@@ -161,12 +158,12 @@ public class Introspector {
             } else if ("-V".equals(arg) || "--verbose".equals(arg)) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
-            } else if ("-N".equals(arg) || "--application-name".equals(arg)) {
+            } else if ("--application-name".equals(arg)) {
                 applicationName = getParameter(args, ++i);
-            } else if ("-e".equals(arg) || "--endpoint".equals(arg)) {
-                applicationPath = getParameter(args, ++i);
-            } else if ("-L".equals(arg) || "--class-list".equals(arg)) {
-                classesList = Arrays.asList(getParameter(args, ++i).split(","));
+            } else if ("--endpoint".equals(arg)) {
+                endpoint = getParameter(args, ++i);
+            } else if ("--jaxrs-resources".equals(arg)) {
+                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(","));
             } else {
                 defSource = arg;
             }
@@ -233,20 +230,8 @@ public class Introspector {
             System.exit(1);
         }
 
-        if (StringUtils.isNullOrEmpty(defSource) && classesList.isEmpty()) {
+        if (StringUtils.isNullOrEmpty(defSource) && jaxRsResources.isEmpty()) {
             LOGGER.severe("You should specify the definition source to use (value no prefixed by any option). "
-                    + "Use parameter --help for help.");
-            System.exit(1);
-        }
-
-        if (defSource != null && !classesList.isEmpty()) {
-            LOGGER.severe("You cannot use both an application and a list of classes. "
-                    + "Use parameter --help for help.");
-            System.exit(1);
-        }
-
-        if (!classesList.isEmpty() && StringUtils.isNullOrEmpty(applicationName)) {
-            LOGGER.severe("You must specify an application name (parameter -N). "
                     + "Use parameter --help for help.");
             System.exit(1);
         }
@@ -265,14 +250,6 @@ public class Introspector {
                                 "org.restlet.ext.apispark");
                     }
                 });
-
-        // Discover introspection helpers
-        List<IntrospectionHelper> introspectionHelpers = new ArrayList<>();
-        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
-                .load(IntrospectionHelper.class);
-        for (IntrospectionHelper helper : ihLoader) {
-            introspectionHelpers.add(helper);
-        }
 
         // Validate the application class name
         Definition definition = null;
@@ -295,30 +272,28 @@ public class Introspector {
                         .getApplication(defSource);
                 Component component = ComponentIntrospector
                         .getComponent(compName);
+                Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
+                if (applicationName != null) {
+                    application.setName(applicationName);
+                }
                 definition = ApplicationIntrospector.getDefinition(application,
-                        null, component, useSectionNamingPackageStrategy);
-            } else if (clazz != null) {
+                        baseRef, component, useSectionNamingPackageStrategy);
+            } else if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz) || !jaxRsResources.isEmpty()) {
                 javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                         .getApplication(defSource);
-                definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, useSectionNamingPackageStrategy, applicationName,
-                        applicationPath);
-            } else if (!classesList.isEmpty()) {
-                javax.ws.rs.core.Application jaxrsApplication = new javax.ws.rs.core.Application();
-                Set<Class<?>> classes = new HashSet<>();
+                List<Class> resources = new ArrayList<>();
                 try {
-                    for (String c : classesList) {
-                        classes.add(Class.forName(c));
+                    for (String c : jaxRsResources) {
+                        resources.add(Class.forName(c));
                     }
                 } catch (ClassNotFoundException e) {
                     LOGGER.log(Level.SEVERE,
                             "Cannot locate the JAXRS resource class.", e);
                     System.exit(1);
                 }
-                jaxrsApplication.getClasses().addAll(classes);
+                Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
                 definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, useSectionNamingPackageStrategy, applicationName,
-                        applicationPath);
+                        applicationName, resources, baseRef, useSectionNamingPackageStrategy);
             } else {
                 LOGGER.log(Level.SEVERE, "Class " + defSource
                         + " is not supported");
@@ -418,13 +393,14 @@ public class Introspector {
                 "Set section of introspected resources from java package name.");
         cli.print12("-v, --verbose",
                 "The optional parameter switching the process to a verbose mode.");
-        cli.print12("-N, --application-name name",
+        cli.print12("--application-name name",
                 "The optional parameter overriding the name of the API.");
-        cli.print12("-e, --endpoint endpoint",
+        cli.print12("--endpoint endpoint",
                 "The optional parameter overriding the endpoint of the API.");
         cli.print12(
-                "-L, --class-list class1,class2..",
-                "The optional parameter providing the list of classes that should be introspected.",
+                "--jaxrs-resources resourcesClasses",
+                "The optional parameter providing the list of fully qualified classes separated by a " +
+                "comma that should be introspected. Example: com.example.MyResource,com.example.MyResource2.",
                 "Replaces javax.ws.rs.core.Application#getClasses.");
 
         cli.print();

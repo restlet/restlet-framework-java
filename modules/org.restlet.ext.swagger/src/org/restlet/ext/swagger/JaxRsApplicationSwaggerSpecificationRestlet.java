@@ -57,8 +57,7 @@ import javax.ws.rs.core.Application;
  * Usage example:
  * 
  * <pre>
- * JaxRsApplicationSwaggerSpecificationRestlet jaxrsSwaggerSpecificationRestlet = new JaxRsApplicationSwaggerSpecificationRestlet(
- *         this); // this is the current Application
+ * JaxRsApplicationSwaggerSpecificationRestlet jaxrsSwaggerSpecificationRestlet = new JaxRsApplicationSwaggerSpecificationRestlet(this); // this is the current Application
  * jaxrsSwaggerSpecificationRestlet.setBasePath(&quot;http://myapp.com/api/v1&quot;);
  * jaxrsSwaggerSpecificationRestlet.attach(baseRouter);
  * </pre>
@@ -195,7 +194,7 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
         if (definition == null) {
             synchronized (JaxRsApplicationSwaggerSpecificationRestlet.class) {
                 definition = JaxRsIntrospector.getDefinition(application,
-                        baseRef, false, null, null);
+                        baseRef, false);
                 // This data seems necessary for Swagger codegen.
                 if (definition.getVersion() == null) {
                     definition.setVersion(apiVersion != null ? apiVersion
