@@ -5,6 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
 
+- 2.3.2
+    - Bugs fixed
+        - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030
+
+    - Enhancements
+      -
+
 - 2.3.1 (02/03/2015)
     - Bugs fixed
       - Reintroduced registration by default of the internal HTTP server 
