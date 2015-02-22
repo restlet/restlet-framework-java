@@ -49,6 +49,15 @@ import org.restlet.service.MetadataService;
  * 
  * &#064;Put(&quot;json|xml:xml|json&quot;)
  * public Representation store(Representation value);
+ * 
+ * &#064;Put(&quot;json?param=val&quot;)
+ * public Representation storeWithParam(String value);
+ * 
+ * &#064;Put(&quot;json?param&quot;)
+ * public Representation storeWithParam(String value);
+ * 
+ * &#064;Put(&quot;?param&quot;)
+ * public Representation storeWithParam(String value);
  * </pre>
  * 
  * @author Jerome Louvel

@@ -50,6 +50,15 @@ import org.restlet.service.MetadataService;
  * 
  * &#064;Post(&quot;xml|json:xml|json&quot;)
  * public Representation accept(Representation xmlValue);
+ * 
+ * &#064;Post(&quot;json?param=val&quot;)
+ * public Representation acceptWithParam(String value);
+ * 
+ * &#064;Post(&quot;json?param&quot;)
+ * public Representation acceptWithParam(String value);
+ * 
+ * &#064;Post(&quot;?param&quot;)
+ * public Representation acceptWithParam(String value);
  * </pre>
  * 
  * @author Jerome Louvel

@@ -92,7 +92,7 @@ public class JsonpRepresentation extends WrapperRepresentation {
         if (result > 0
                 && MediaType.APPLICATION_JSON.equals(super.getMediaType())) {
             return result + getCallback().length()
-                    + "({status:,body:});".length()
+                    + "({\"status\":,\"body\":});".length()
                     + Integer.toString(getStatus().getCode()).length();
         }
 
@@ -132,9 +132,9 @@ public class JsonpRepresentation extends WrapperRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         outputStream.write(getCallback().getBytes());
-        outputStream.write("({status:".getBytes());
+        outputStream.write("({\"status\":".getBytes());
         outputStream.write(Integer.toString(getStatus().getCode()).getBytes());
-        outputStream.write(",body:".getBytes());
+        outputStream.write(",\"body\":".getBytes());
 
         if (MediaType.APPLICATION_JSON.equals(super.getMediaType())) {
             IoUtils.copy(super.getStream(), outputStream);

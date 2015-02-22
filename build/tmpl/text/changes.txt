@@ -14,7 +14,13 @@ Changes log
        - Reintroduced registration by default of the internal HTTP server 
          connectors in JEE edition.
        - FormDataSet not properly serializing text/plain files. Issue #1006.
-         Reported by johnjaylward.
+         Reported by John Aylward.
        - Fixed fileupload extension for GAE and JEE editions.
        - Fixed potential NPE. Issue #1004.
-         Reported by philippeu.
+         Reported by Philippe Perrault.
+       - Fixed malformed JSON in the JsonpRepresentation.
+         Reported by Wagner Correa Ramos.
+    - Misc
+       - Completed the Javadocs for query parameter declarations inside
+         HTTP method annotations such as @Get("json?param=val).
+         

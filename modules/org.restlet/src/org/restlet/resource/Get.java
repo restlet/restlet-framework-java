@@ -48,6 +48,15 @@ import org.restlet.service.MetadataService;
  * 
  * &#064;Get(&quot;xml|html&quot;)
  * public Representation represent();
+ * 
+ * &#064;Get(&quot;json?param=val&quot;)
+ * public Representation representWithParam();
+ * 
+ * &#064;Get(&quot;json?param&quot;)
+ * public Representation representWithParam();
+ * 
+ * &#064;Get(&quot;?param&quot;)
+ * public Representation representWithParam();
  * </pre>
  * 
  * @author Jerome Louvel
