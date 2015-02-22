@@ -44,7 +44,16 @@ import org.restlet.service.MetadataService;
  * public void removeAll();
  * 
  * &#064;Delete(&quot;xml|json&quot;)
- * public Representation delete();
+ * public Representation removeAll();
+ * 
+ * &#064;Delete(&quot;json?param=val&quot;)
+ * public Representation removeAllWithParam();
+ * 
+ * &#064;Delete(&quot;json?param&quot;)
+ * public Representation removeAllWithParam();
+ * 
+ * &#064;Delete(&quot;?param&quot;)
+ * public Representation removeAllWithParam();
  * </pre>
  * 
  * @author Jerome Louvel

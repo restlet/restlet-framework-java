@@ -7,7 +7,12 @@ Changes log
 
 - 2.3.2
     - Bugs fixed
-        - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030
+       - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030
+       - Fixed malformed JSON in the JsonpRepresentation.
+         Reported by Wagner Correa Ramos.
+    - Misc
+       - Completed the Javadocs for query parameter declarations inside
+         HTTP method annotations such as @Get("json?param=val).
 
     - Enhancements
       -
