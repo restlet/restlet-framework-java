@@ -56,7 +56,7 @@ public class JsonpFilterTestCase extends RestletTestCase {
         ref.addQueryParameter(callback, "test");
         Request request = new Request(Method.GET, ref);
         Response response = new Response(request);
-        final String jsonString = "{'attribute': value}";
+        final String jsonString = "{\"attribute\": value}";
         response.setEntity(new JsonRepresentation(jsonString));
 
         filter.afterHandle(request, response);
@@ -80,7 +80,7 @@ public class JsonpFilterTestCase extends RestletTestCase {
         ref.addQueryParameter(callback, "test");
         Request request = new Request(Method.GET, ref);
         Response response = new Response(request);
-        final String jsonString = "{'attribute': value}";
+        final String jsonString = "{\"attribute\": value}";
         response.setEntity(new JsonRepresentation(jsonString));
 
         filter.afterHandle(request, response);
@@ -102,7 +102,7 @@ public class JsonpFilterTestCase extends RestletTestCase {
         Reference ref = new Reference();
         Request request = new Request(Method.GET, ref);
         Response response = new Response(request);
-        final String jsonString = "{'attribute': value}";
+        final String jsonString = "{\"attribute\": value}";
         final JsonRepresentation expected = new JsonRepresentation(jsonString);
         response.setEntity(expected);
 
