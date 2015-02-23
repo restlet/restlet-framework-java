@@ -46,10 +46,19 @@ import org.restlet.service.MetadataService;
  * public Representation update(Representation input);
  * 
  * &#064;Patch(&quot;json-patch&quot;)
- * public String storeJson(String value);
+ * public String updateJson(String value);
  * 
  * &#064;Patch(&quot;json-patch|xml-patch:xml|json&quot;)
  * public Representation update(Representation value);
+ * 
+ * &#064;Patch(&quot;json?param=val&quot;)
+ * public Representation updateWithParam(String value);
+ * 
+ * &#064;Patch(&quot;json?param&quot;)
+ * public Representation updateWithParam(String value);
+ * 
+ * &#064;Patch(&quot;?param&quot;)
+ * public Representation updateWithParam(String value);
  * </pre>
  * 
  * @author Jerome Louvel

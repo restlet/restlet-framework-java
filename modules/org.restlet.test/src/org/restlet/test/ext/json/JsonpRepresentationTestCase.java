@@ -45,9 +45,9 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
     public static final String CALLBACK = "callback";
 
-    public static final String JSON_SAMPLE = "{'attribute': value}";
+    public static final String JSON_SAMPLE = "{\"attribute\": value}";
 
-    public static final String JSONP_STATUS_BODY = "({status:,body:});";
+    public static final String JSONP_STATUS_BODY = "({\"status\":,\"body\":});";
 
     public void testGetSizeJson() throws Exception {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
@@ -82,7 +82,7 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
         jsonpRepresentation.write(out);
 
-        String expected = "callback({status:200,body:{'attribute': value}});";
+        String expected = "callback({\"status\":200,\"body\":{\"attribute\": value}});";
 
         Assert.assertEquals(expected, out.toString());
     }
@@ -93,13 +93,13 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
             throws Exception {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
                 CALLBACK, SUCCESS_OK, new StringRepresentation(
-                        "whatever'with'apostrophe'", MediaType.TEXT_HTML));
+                        "whatever\"with\"apostrophe", MediaType.TEXT_HTML));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         jsonpRepresentation.write(out);
 
-        String expected = "callback({status:200,body:'whatever\\\'with\\\'apostrophe\\\''});";
+        String expected = "callback({\"status\":200,\"body\":\"whatever\\\"with\\\"apostrophe\"});";
 
         Assert.assertEquals(expected, out.toString());
     }

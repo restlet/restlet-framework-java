@@ -88,7 +88,7 @@ public class Response extends Message {
      * indicates whether or not the actual request can be made using
      * credentials.
      */
-    private volatile Boolean accessControlAllowCredential;
+    private volatile Boolean accessControlAllowCredentials;
 
     /**
      * When used as part of a response to a preflight CORS request, this lists
@@ -174,7 +174,7 @@ public class Response extends Message {
      */
     public Response(Request request) {
         this.age = 0;
-        this.accessControlAllowCredential = null;
+        this.accessControlAllowCredentials = null;
         this.accessControlAllowHeaders = null;
         this.accessControlAllowMethods = null;
         this.accessControlAllowOrigin = null;
@@ -236,12 +236,12 @@ public class Response extends Message {
      * indicates whether or not the actual request can be made using
      * credentials.<br>
      * Note that when used with HTTP connectors, this property maps to the
-     * "Access-Control-Allow-Credential" header.
+     * "Access-Control-Allow-Credentials" header.
      * 
      * @return True if the requested resource allows credential.
      */
-    public Boolean getAccessControlAllowCredential() {
-        return this.accessControlAllowCredential;
+    public Boolean getAccessControlAllowCredentials() {
+        return this.accessControlAllowCredentials;
     }
 
     /**
@@ -678,14 +678,14 @@ public class Response extends Message {
      * When used as part of a response to a preflight CORS request, indicates
      * whether or not the actual request can be made using credentials. <br>
      * Note that when used with HTTP connectors, this property maps to the
-     * "Access-Control-Allow-Credential" header.
+     * "Access-Control-Allow-Credentials" header.
      * 
-     * @param accessControlAllowCredential
+     * @param accessControlAllowCredentials
      *            True if the requested resource allows credential.
      */
-    public void setAccessControlAllowCredential(
-            Boolean accessControlAllowCredential) {
-        this.accessControlAllowCredential = accessControlAllowCredential;
+    public void setAccessControlAllowCredentials(
+            Boolean accessControlAllowCredentials) {
+        this.accessControlAllowCredentials = accessControlAllowCredentials;
     }
 
     /**

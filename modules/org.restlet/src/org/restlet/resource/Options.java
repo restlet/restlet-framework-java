@@ -45,6 +45,15 @@ import org.restlet.service.MetadataService;
  * 
  * &#064;Options(&quot;wadl|html&quot;)
  * public Representation describe();
+ * 
+ * &#064;Options(&quot;wadl?param=val&quot;)
+ * public Representation describeWithParam();
+ * 
+ * &#064;Options(&quot;wadl?param&quot;)
+ * public Representation describeWithParam();
+ * 
+ * &#064;Options(&quot;?param&quot;)
+ * public Representation describeWithParam();
  * </pre>
  * 
  * @author Jerome Louvel

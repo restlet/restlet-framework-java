@@ -71,7 +71,7 @@ public class HeaderUtils {
      */
     private static final Set<String> STANDARD_HEADERS = Collections
             .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
@@ -600,9 +600,9 @@ public class HeaderUtils {
 
         // CORS headers
 
-        if (response.getAccessControlAllowCredential() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL,
-                    response.getAccessControlAllowCredential().toString(),
+        if (response.getAccessControlAllowCredentials() != null) {
+            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
+                    response.getAccessControlAllowCredentials().toString(),
                     headers);
         }
 
@@ -804,8 +804,8 @@ public class HeaderUtils {
                     response.getServerInfo().setAcceptingRanges(
                             tr.readValues().contains("bytes"));
                 } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL)) {
-                    response.setAccessControlAllowCredential(Boolean
+                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS)) {
+                    response.setAccessControlAllowCredentials(Boolean
                             .parseBoolean(header.getValue()));
                     StringReader.addValues(header,
                             response.getAccessControlAllowHeaders());
