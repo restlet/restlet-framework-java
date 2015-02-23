@@ -17,11 +17,11 @@ rm -rf build/editions
 
 cd build
 
+# Run test suite
+ant -Deditions=jse -Dverify=true 
+
 # Build RF OSGI version for APISpark 
 ant -Deditions=osgi -Dverify=false -Djavadoc=false -Dmaven=false -Dnsis=false -Dpackage=false -Declipse-pde=true -Declipse-pde-optional-dependencies=true -Dp2=true
 
 # Build  RF JSE version for agent and create maven artefacts
 ant -Deditions=jse -Dverify=false -Djavadoc=false -Dmaven=true -Dnsis=false -Dpackage=false -Declipse-pde=true -Declipse-pde-optional-dependencies=true -Dp2=true
-
-# Run test suite
-ant -Deditions=jse -Dverify=true 
