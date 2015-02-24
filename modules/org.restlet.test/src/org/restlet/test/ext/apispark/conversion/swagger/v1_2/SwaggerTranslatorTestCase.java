@@ -33,7 +33,6 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -102,8 +101,7 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         Representation savedRepresentation;
         for (Representation translatedRepresentation : translatedDefinition
                 .getContract().getRepresentations()) {
-            savedRepresentation = savedDefinition
-                    .getContract()
+            savedRepresentation = savedDefinition.getContract()
                     .getRepresentation(translatedRepresentation.getName());
             assertEquals(true, savedRepresentation != null);
 

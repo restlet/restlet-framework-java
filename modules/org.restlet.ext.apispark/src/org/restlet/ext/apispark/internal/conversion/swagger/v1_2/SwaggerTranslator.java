@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiInfo;
@@ -56,6 +57,7 @@ import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceO
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.TypePropertyDeclaration;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -70,7 +72,6 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**
@@ -338,49 +339,70 @@ public abstract class SwaggerTranslator {
                 continue;
             }
             ModelDeclaration md = new ModelDeclaration();
-            md.setId(model);
-            md.setDescription(repr.getDescription());
-            for (Property prop : repr.getProperties()) {
-                if (prop.getMinOccurs() > 0) {
-                    md.getRequired().add(prop.getName());
-                }
-                if (!Types.isPrimitiveType(prop.getType())
-                        && !usedModelsList.contains(prop.getType())) {
-                    usedModelsList.add(prop.getType());
-                }
-                TypePropertyDeclaration tpd = new TypePropertyDeclaration();
-                tpd.setDescription(prop.getDescription());
-                tpd.setEnum_(prop.getEnumeration());
-
-                if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
-                    tpd.setType("array");
-                    tpd.setItems(new ItemsDeclaration());
-                    if (Types.isPrimitiveType(prop.getType())) {
-                        SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
-                                .toSwaggerType(prop.getType());
-                        tpd.getItems().setType(swaggerTypeFormat.getType());
-                        tpd.setFormat(swaggerTypeFormat.getFormat());
-                    } else {
-                        tpd.getItems().setRef(prop.getType());
-                    }
-                } else {
-                    if (Types.isPrimitiveType(prop.getType())) {
-                        SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
-                                .toSwaggerType(prop.getType());
-                        tpd.setType(swaggerTypeFormat.getType());
-                        tpd.setFormat(swaggerTypeFormat.getFormat());
-                    } else {
-                        tpd.setRef(prop.getType());
-                    }
-                }
-                tpd.setMaximum(prop.getMax());
-                tpd.setMinimum(prop.getMin());
-                tpd.setUniqueItems(prop.isUniqueItems());
-
-                md.getProperties().put(prop.getName(), tpd);
-            }
-            apiDeclaration.getModels().put(md.getId(), md);
+            fillModel(apiDeclaration, usedModelsList, model,
+                    repr.getDescription(), repr.getProperties(), md);
         }
+    }
+
+    private static void fillModel(ApiDeclaration apiDeclaration,
+            List<String> usedModelsList, String model, String description,
+            List<Property> properties, ModelDeclaration md) {
+        md.setId(model);
+        md.setDescription(description);
+        for (Property prop : properties) {
+            String type = prop.getType();
+
+            boolean composite = Types.isCompositeType(type);
+            if (composite) {
+                type = model + StringUtils.firstUpper(prop.getName());
+            }
+
+            if (prop.getMinOccurs() > 0) {
+                md.getRequired().add(prop.getName());
+            }
+            if (!Types.isPrimitiveType(type) && !usedModelsList.contains(type)) {
+                usedModelsList.add(type);
+            }
+            TypePropertyDeclaration tpd = new TypePropertyDeclaration();
+            tpd.setDescription(prop.getDescription());
+            tpd.setEnum_(prop.getEnumeration());
+
+            if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
+                tpd.setType("array");
+                tpd.setItems(new ItemsDeclaration());
+                if (Types.isPrimitiveType(type)) {
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(type);
+                    tpd.getItems().setType(swaggerTypeFormat.getType());
+                    tpd.setFormat(swaggerTypeFormat.getFormat());
+                } else {
+                    tpd.getItems().setRef(type);
+                    if (composite) {
+                        ModelDeclaration m = new ModelDeclaration();
+                        fillModel(apiDeclaration, usedModelsList, type, null, prop.getProperties(), m);
+                    }
+                }
+            } else {
+                if (Types.isPrimitiveType(type)) {
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(type);
+                    tpd.setType(swaggerTypeFormat.getType());
+                    tpd.setFormat(swaggerTypeFormat.getFormat());
+                } else {
+                    tpd.setRef(type);
+                    if (composite) {
+                        ModelDeclaration m = new ModelDeclaration();
+                        fillModel(apiDeclaration, usedModelsList, type, null, prop.getProperties(), m);
+                    }
+                }
+            }
+            tpd.setMaximum(prop.getMax());
+            tpd.setMinimum(prop.getMin());
+            tpd.setUniqueItems(prop.isUniqueItems());
+
+            md.getProperties().put(prop.getName(), tpd);
+        }
+        apiDeclaration.getModels().put(md.getId(), md);
     }
 
     /**

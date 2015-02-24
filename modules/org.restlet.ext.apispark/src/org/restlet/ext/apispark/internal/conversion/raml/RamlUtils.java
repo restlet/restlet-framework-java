@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.raml.model.ActionType;
@@ -37,10 +38,14 @@ import org.raml.model.Raml;
 import org.raml.model.Resource;
 import org.raml.parser.rule.ValidationResult;
 import org.raml.parser.visitor.RamlValidationService;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.types.ArraySchema;
 import com.fasterxml.jackson.module.jsonSchema.types.BooleanSchema;
@@ -135,51 +140,64 @@ public class RamlUtils {
      * 
      * @param representation
      *            The representation.
-     * @return The JsonSchema of the Representation.
+     * @param schemas
+     * @param m
+     * @throws JsonProcessingException
      */
-    public static JsonSchema generateSchema(Representation representation) {
-        SimpleTypeSchema propertySchema;
-        ObjectSchema objectSchema;
-        objectSchema = new ObjectSchema();
-        objectSchema.setTitle(representation.getName());
-        objectSchema.setDescription(representation.getDescription());
-        if (!representation.isRaw()) {
-            if (representation.getExtendedType() != null) {
+    public static void fillSchemas(Representation representation,
+            Map<String, String> schemas, ObjectMapper m)
+            throws JsonProcessingException {
+        fillSchemas(representation.getName(), representation.getDescription(),
+                representation.isRaw(), representation.getExtendedType(),
+                representation.getProperties(), schemas, m);
+    }
+
+    public static void fillSchemas(String name, String description,
+            boolean isRaw, String extendedType, List<Property> properties,
+            Map<String, String> schemas, ObjectMapper m)
+            throws JsonProcessingException {
+        ObjectSchema objectSchema = new ObjectSchema();
+        objectSchema.setTitle(name);
+        objectSchema.setDescription(description);
+        if (!isRaw) {
+            if (extendedType != null) {
                 JsonSchema[] extended = new JsonSchema[1];
                 SimpleTypeSchema typeExtended = new ObjectSchema();
-                typeExtended.set$ref(representation.getExtendedType());
+                typeExtended.set$ref(extendedType);
                 extended[0] = typeExtended;
                 objectSchema.setExtends(extended);
             }
             objectSchema.setProperties(new HashMap<String, JsonSchema>());
-            for (Property property : representation.getProperties()) {
+            for (Property property : properties) {
+                String type = property.getType();
+
                 if (property.getMaxOccurs() != 1) {
                     ArraySchema array = new ArraySchema();
                     array.setTitle(property.getName());
                     array.setRequired(property.getMinOccurs() > 0);
                     array.setUniqueItems(property.isUniqueItems());
-                    if (isPrimitiveType(property.getType())) {
+                    if (isPrimitiveType(type)) {
                         Property prop = new Property();
                         prop.setName(property.getName());
-                        prop.setType(property.getType());
+                        prop.setType(type);
                         array.setItemsSchema(generatePrimitiveSchema(prop));
                     } else {
+                        if (Types.isCompositeType(type)) {
+                            type = name + StringUtils.firstUpper(type);
+                            // add the new schema
+                            fillSchemas(type, null, false, null,
+                                    property.getProperties(), schemas, m);
+                        }
+
                         SimpleTypeSchema reference = new ObjectSchema();
-                        reference.set$ref("#/schemas/" + property.getType());
+                        reference.set$ref("#/schemas/" + type);
                         array.setItemsSchema(reference);
                         // array.setItemsSchema(generateSchema(RamlTranslator
                         // .getRepresentationByName(representations,
                         // property.getType()), representations));
                     }
                     objectSchema.getProperties().put(array.getTitle(), array);
-                } else if (!isPrimitiveType(property.getType())) {
-                    propertySchema = new ObjectSchema();
-                    propertySchema.setTitle(property.getName());
-                    propertySchema.set$ref("#/schemas/" + property.getType());
-                    propertySchema.setRequired(property.getMinOccurs() > 0);
-                    objectSchema.getProperties().put(propertySchema.getTitle(),
-                            propertySchema);
-                } else {
+                } else if (isPrimitiveType(type)) {
                     SimpleTypeSchema primitive = generatePrimitiveSchema(property);
                     primitive.setRequired(property.getMinOccurs() > 0);
                     if (property.getDefaultValue() != null) {
@@ -187,11 +205,26 @@ public class RamlUtils {
                     }
                     objectSchema.getProperties().put(property.getName(),
                             primitive);
+                } else {
+                    if (Types.isCompositeType(type)) {
+                        type = name + StringUtils.firstUpper(type);
+                        // add the new schema
+                        fillSchemas(type, null, false, null,
+                                property.getProperties(), schemas, m);
+                    }
+
+                    SimpleTypeSchema propertySchema = new ObjectSchema();
+                    propertySchema.setTitle(property.getName());
+                    propertySchema.set$ref("#/schemas/" + type);
+                    propertySchema.setRequired(property.getMinOccurs() > 0);
+                    objectSchema.getProperties().put(propertySchema.getTitle(),
+                            propertySchema);
                 }
             }
 
         }
-        return objectSchema;
+
+        schemas.put(name, m.writeValueAsString(objectSchema));
     }
 
     /**
