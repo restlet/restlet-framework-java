@@ -63,7 +63,6 @@ public class AnalyticsHandler {
      */
     private int bufferSize = 100;
 
-
     /** Maximum time between two asynchronous call logs post. */
     private long postPeriodInSecond = 60;
 
@@ -123,7 +122,8 @@ public class AnalyticsHandler {
                 new ThreadFactoryBuilder().setNameFormat("analytics-poster-%d")
                         .build());
 
-        postPeriodInSecond = apiSparkConfig.getAgentAnalyticsPostPeriodInSecond();
+        postPeriodInSecond = apiSparkConfig
+                .getAgentAnalyticsPostPeriodInSecond();
         long postPeriodInMs = TimeUnit.SECONDS.toMillis(postPeriodInSecond);
 
         asyncPostTimer = new Timer();
@@ -157,9 +157,7 @@ public class AnalyticsHandler {
         callLog.setDate(new Date(startTime));
         callLog.setDuration(duration);
         callLog.setMethod(request.getMethod().getName());
-        String resourceQuery = (request.getResourceRef() == null) ? ""
-                : request.getResourceRef().getQuery();
-        callLog.setPath(request.getResourceRef().getPath() + resourceQuery);
+        callLog.setPath(request.getResourceRef().getPath());
         callLog.setRemoteIp(request.getClientInfo().getUpstreamAddress());
         callLog.setStatusCode(response.getStatus().getCode());
         callLog.setUserAgent(request.getClientInfo().getAgent());
