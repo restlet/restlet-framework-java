@@ -27,6 +27,7 @@ package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -122,63 +123,103 @@ public class Swagger2Translator {
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getName());
-            modelSwagger.setDescription(representation.getDescription());
 
-            /* Property -> Property */
-            for (Property property : representation.getProperties()) {
+            fillModel(representation.getName(),
+                    representation.getDescription(),
+                    representation.getProperties(), swagger, modelSwagger);
+        }
+    }
 
-                com.wordnik.swagger.models.properties.Property propertySwagger;
+    /**
+     * Fill swagger "Model" objects from rwadef.
+     * 
+     * @param name
+     *            The name of the swagger model.
+     * @param description
+     *            the description of the swagger model.
+     * @param properties
+     *            The list of rwadef properties of the swagger model.
+     * @param swagger
+     *            The swagger definition.
+     * @param modelSwagger
+     *            The swagger model.
+     */
+    private static void fillModel(String name, String description,
+            List<Property> properties, Swagger swagger, ModelImpl modelSwagger) {
+        modelSwagger.setName(name);
+        modelSwagger.setDescription(description);
 
-                Object exampleObject = SampleUtils
-                        .getFieldSampleValue(property);
-                String example = exampleObject == null ? null : exampleObject
-                        .toString();
+        /* Property -> Property */
+        for (Property property : properties) {
 
-                // property type
-                if (property.getMaxOccurs() != null
-                        && (property.getMaxOccurs() > 1 || property
-                                .getMaxOccurs() == -1)) {
-                    ArrayProperty arrayProperty = new ArrayProperty();
-                    com.wordnik.swagger.models.properties.Property itemProperty = newPropertyForType(property
-                            .getType());
-                    itemProperty.setExample(example);
-                    arrayProperty.setItems(itemProperty);
-                    propertySwagger = arrayProperty;
+            com.wordnik.swagger.models.properties.Property propertySwagger;
+
+            Object exampleObject = SampleUtils.getFieldSampleValue(property);
+            String example = exampleObject == null ? null : exampleObject
+                    .toString();
+
+            // property type
+            if (property.getMaxOccurs() != null
+                    && (property.getMaxOccurs() > 1 || property.getMaxOccurs() == -1)) {
+                ArrayProperty arrayProperty = new ArrayProperty();
+                com.wordnik.swagger.models.properties.Property itemProperty = null;
+                if (Types.isCompositeType(property.getType())) {
+                    itemProperty = newPropertyForType(name + property.getName());
+                    // List of properties -> Model */
+                    ModelImpl ms = new ModelImpl();
+                    fillModel(
+                            name + StringUtils.firstUpper(property.getName()),
+                            null, property.getProperties(), swagger, ms);
+                } else {
+                    itemProperty = newPropertyForType(property.getType());
+                }
+                itemProperty.setExample(example);
+                arrayProperty.setItems(itemProperty);
+                propertySwagger = arrayProperty;
+            } else {
+                if (Types.isCompositeType(property.getType())) {
+                    propertySwagger = newPropertyForType(name
+                            + property.getName());
+                    // List of properties -> Model */
+                    ModelImpl ms = new ModelImpl();
+                    fillModel(
+                            name + StringUtils.firstUpper(property.getName()),
+                            null, property.getProperties(), swagger, ms);
+                    propertySwagger.setExample(example);
                 } else {
                     propertySwagger = newPropertyForType(property.getType());
                     propertySwagger.setExample(example);
                 }
-                propertySwagger.setName(property.getName());
-                propertySwagger.setDescription(property.getDescription());
-
-                // min and max
-                if (propertySwagger instanceof AbstractNumericProperty) {
-                    AbstractNumericProperty abstractNumericProperty = (AbstractNumericProperty) propertySwagger;
-                    try {
-                        if (property.getMin() != null) {
-                            abstractNumericProperty.setMinimum(Double
-                                    .valueOf(property.getMin()));
-                        }
-                    } catch (NumberFormatException e) {
-                        LOGGER.warning("Min property is not a number: "
-                                + property.getMin());
-                    }
-                    try {
-                        if (property.getMax() != null) {
-                            abstractNumericProperty.setMaximum(Double
-                                    .valueOf(property.getMax()));
-                        }
-                    } catch (NumberFormatException e) {
-                        LOGGER.warning("Max property is not a number: "
-                                + property.getMax());
-                    }
-                }
-                modelSwagger.property(property.getName(), propertySwagger);
             }
+            propertySwagger.setName(property.getName());
+            propertySwagger.setDescription(property.getDescription());
 
-            swagger.addDefinition(modelSwagger.getName(), modelSwagger);
+            // min and max
+            if (propertySwagger instanceof AbstractNumericProperty) {
+                AbstractNumericProperty abstractNumericProperty = (AbstractNumericProperty) propertySwagger;
+                try {
+                    if (property.getMin() != null) {
+                        abstractNumericProperty.setMinimum(Double
+                                .valueOf(property.getMin()));
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Min property is not a number: "
+                            + property.getMin());
+                }
+                try {
+                    if (property.getMax() != null) {
+                        abstractNumericProperty.setMaximum(Double
+                                .valueOf(property.getMax()));
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Max property is not a number: "
+                            + property.getMax());
+                }
+            }
+            modelSwagger.property(property.getName(), propertySwagger);
         }
+
+        swagger.addDefinition(modelSwagger.getName(), modelSwagger);
     }
 
     /**
@@ -344,7 +385,10 @@ public class Swagger2Translator {
             /* Response -> Response */
             com.wordnik.swagger.models.Response responseSwagger = new com.wordnik.swagger.models.Response();
 
-            responseSwagger.setDescription(response.getDescription()); // required
+            // may be null
+            String description = response.getDescription();
+            responseSwagger.setDescription((description != null) ? description
+                    : response.getCode() + " status response"); // required
 
             // Response Schema
             if (response.getOutputPayLoad() != null

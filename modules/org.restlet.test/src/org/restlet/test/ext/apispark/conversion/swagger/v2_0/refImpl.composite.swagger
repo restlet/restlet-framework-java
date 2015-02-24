@@ -701,6 +701,19 @@
             "name": {
                 "type": "string",
                 "example": "sample name"
+            },
+            "compositeField": {
+                "$ref": "#/definitions/TagCompositeField"
+            }
+        }
+    },
+    "TagCompositeField": {
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
             }
         }
     },

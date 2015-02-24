@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a Web API representation
+ * Represents a Web API representation.
  * 
  * @author Cyprien Quilici
  */
@@ -49,7 +49,7 @@ public class Representation {
     /** Indicates if the representation is structured or not. */
     private boolean raw;
 
-    /** The list of Sections this Representation belongs to */
+    /** The list of Sections this Representation belongs to. */
     private List<String> sections;
 
     public String getDescription() {
