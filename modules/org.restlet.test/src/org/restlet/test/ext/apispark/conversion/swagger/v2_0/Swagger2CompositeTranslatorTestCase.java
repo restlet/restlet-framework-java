@@ -29,14 +29,47 @@ import java.net.URL;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
 
+import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.util.SwaggerLoader;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
+
+    /**
+     * Conversion Rwadef -> Swagger 2.0.
+     */
+    public void testGetSwagger1() {
+        Definition definition = createDefinition();
+
+        Representation rep = definition.getContract().getRepresentation(
+                "nameRepresentation1");
+        Property compositeProperty = new Property();
+        compositeProperty.setName("myCompositeType");
+        compositeProperty.setDescription("description");
+        compositeProperty.setType(Types.compositeType);
+        rep.getProperties().add(compositeProperty);
+
+        Property nameProperty = new Property();
+        nameProperty.setName("name");
+        nameProperty.setDescription("description");
+        nameProperty.setType("string");
+
+        compositeProperty.getProperties().add(nameProperty);
+
+        Swagger swagger = Swagger2Translator.getSwagger(definition);
+        Model model = swagger.getDefinitions().get(
+                "nameRepresentation1MyCompositeType");
+        assertNotNull(model);
+        assertEquals(1, model.getProperties().size());
+        assertNotNull(model.getProperties().get("name"));
+    }
 
     public void testGetSwagger2() throws IOException {
         Definition savedDefinition = new JacksonRepresentation<>(

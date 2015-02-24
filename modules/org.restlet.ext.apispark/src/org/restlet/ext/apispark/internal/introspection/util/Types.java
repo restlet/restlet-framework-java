@@ -72,7 +72,7 @@ public abstract class Types {
     /** TypeInfo cache. */
     private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
 
-    private static final String compositeType = "composite";
+    public static final String compositeType = "composite";
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
             "short", "integer", "long", "float", "double", "boolean", "string",
