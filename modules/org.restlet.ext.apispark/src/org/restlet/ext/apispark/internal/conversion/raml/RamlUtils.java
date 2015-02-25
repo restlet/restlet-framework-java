@@ -183,7 +183,7 @@ public class RamlUtils {
                         array.setItemsSchema(generatePrimitiveSchema(prop));
                     } else {
                         if (Types.isCompositeType(type)) {
-                            type = name + StringUtils.firstUpper(type);
+                            type = name + StringUtils.firstUpper(property.getName());
                             // add the new schema
                             fillSchemas(type, null, false, null,
                                     property.getProperties(), schemas, m);
@@ -207,7 +207,7 @@ public class RamlUtils {
                             primitive);
                 } else {
                     if (Types.isCompositeType(type)) {
-                        type = name + StringUtils.firstUpper(type);
+                        type = name + StringUtils.firstUpper(property.getName());
                         // add the new schema
                         fillSchemas(type, null, false, null,
                                 property.getProperties(), schemas, m);

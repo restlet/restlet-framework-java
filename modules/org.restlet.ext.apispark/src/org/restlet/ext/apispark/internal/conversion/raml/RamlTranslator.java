@@ -186,7 +186,6 @@ public abstract class RamlTranslator {
             }
             try {
                 RamlUtils.fillSchemas(representation, schemas, m);
-
             } catch (JsonProcessingException e) {
                 LOGGER.log(Level.WARNING,
                         "Error when putting mime type schema for representation: "
