@@ -25,19 +25,19 @@
 package org.restlet.ext.apispark;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.introspection.application.ComponentIntrospector;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
@@ -46,8 +46,7 @@ import org.restlet.ext.apispark.internal.utils.CliUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 /**
- * Generates the Web API documentation of a Restlet based {@link Application}
- * and imports it into the APISpark console.
+ * Generates the Web API documentation of a Restlet based {@link Application} and imports it into the APISpark console.
  * 
  * @author Thierry Boileau
  */
@@ -55,6 +54,34 @@ public class Introspector {
 
     /** Internal logger. */
     private static Logger LOGGER = Engine.getLogger(Introspector.class);
+
+    private static final List<String> SUPPORTED_LANGUAGES = Arrays.asList("swagger");
+
+    private static void failWithErrorMessage(String message) {
+        LOGGER.severe(message
+                + "Use parameter --help for help.");
+        System.exit(1);
+    }
+
+    private static Definition getDefinitionFromJaxrsSources(String defSource, boolean useSectionNamingPackageStrategy,
+            String applicationName, String endpoint, List<String> jaxRsResources) {
+        javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
+                .getApplication(defSource);
+        @SuppressWarnings("rawtypes")
+        List<Class> resources = new ArrayList<>();
+        try {
+            for (String c : jaxRsResources) {
+                resources.add(Class.forName(c));
+            }
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE,
+                    "Cannot locate the JAXRS resource class.", e);
+            System.exit(1);
+        }
+        Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
+        return JaxRsIntrospector.getDefinition(jaxrsApplication,
+                applicationName, resources, baseRef, useSectionNamingPackageStrategy);
+    }
 
     /**
      * Returns the value according to its index.
@@ -116,6 +143,10 @@ public class Introspector {
 
         boolean useSectionNamingPackageStrategy = false;
 
+        String applicationName = null;
+        String endpoint = null;
+        List<String> jaxRsResources = new ArrayList<>();
+
         // (default ?)
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
@@ -154,76 +185,65 @@ public class Introspector {
             } else if ("-V".equals(arg) || "--verbose".equals(arg)) {
                 // [ifndef gae,jee] instruction
                 Engine.setLogLevel(Level.FINE);
+            } else if ("--application-name".equals(arg)) {
+                applicationName = getParameter(args, ++i);
+            } else if ("--endpoint".equals(arg)) {
+                endpoint = getParameter(args, ++i);
+            } else if ("--jaxrs-resources".equals(arg)) {
+                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(","));
             } else {
                 defSource = arg;
             }
         }
 
         if (!createNewCell && !createNewVersion && !updateCell) {
-            LOGGER.severe("You should specify the wanted action among -d (--create-descriptor), -c (--create-connector), "
-                    + "-U (--update) or -n (--new-version). "
-                    + "Use parameter --help for help.");
-            System.exit(1);
+            failWithErrorMessage("You should specify the wanted action among -d (--create-descriptor), -c (--create-connector), "
+                    + "-U (--update) or -n (--new-version). ");
         }
 
         if (createNewCell) {
             if (createNewVersion || updateCell) {
-                LOGGER.severe("In create new cell mode, you can't use -U (--update) or -n (--new-version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In create new cell mode, you can't use -U (--update) or -n (--new-version). ");
             }
             if (cellId != null || cellVersion != null) {
-                LOGGER.severe("In create new cell mode, you can't use -i (--id) or -v (--version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In create new cell mode, you can't use -i (--id) or -v (--version). ");
             }
         }
         if (createNewVersion) {
             if (createNewCell || updateCell) {
-                LOGGER.severe("In create new version mode, you can't use -d (--create-descriptor), -c (--create-connector) or -n (--new-version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In create new version mode, you can't use -d (--create-descriptor), -c (--create-connector) or -n (--new-version). ");
             }
             if (cellId == null) {
-                LOGGER.severe("In create new version mode, you should specify the cell id with -i (--id). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In create new version mode, you should specify the cell id with -i (--id). ");
             }
             if (cellVersion != null) {
-                LOGGER.severe("In create new version mode, you can't use -v (--version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In create new version mode, you can't use -v (--version). ");
             }
         }
         if (updateCell) {
             if (createNewCell || createNewVersion) {
-                LOGGER.severe("In update mode, you can't use -d (--create-descriptor), -c (--create-connector) or -N (--new-version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In update mode, you can't use -d (--create-descriptor), -c (--create-connector) or -N (--new-version). ");
             }
             if (cellId == null || cellVersion == null) {
-                LOGGER.severe("In update mode, you should specify the cell id with -i (--id) and the cell version with -v (--version). "
-                        + "Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("In update mode, you should specify the cell id with -i (--id) and the cell version with -v (--version). ");
             }
             if (!IntrospectionUtils.STRATEGIES.contains(updateStrategy)) {
-                LOGGER.severe("The strategy: " + updateStrategy
-                        + " is not available. Use parameter --help for help.");
-                System.exit(1);
+                failWithErrorMessage("The strategy: " + updateStrategy
+                        + " is not available. ");
             }
         }
 
         if (StringUtils.isNullOrEmpty(ulogin)
                 || StringUtils.isNullOrEmpty(upwd)) {
-            LOGGER.severe("You should specify your API spark login and password with -U (--username) and -p (--password). "
-                    + "Use parameter --help for help.");
-            System.exit(1);
+            failWithErrorMessage("You should specify your API spark login and password with -U (--username) and -p (--password). ");
         }
 
-        if (StringUtils.isNullOrEmpty(defSource)) {
-            LOGGER.severe("You should specify the definition source to use (value no prefixed by any option). "
-                    + "Use parameter --help for help.");
-            System.exit(1);
+        if (StringUtils.isNullOrEmpty(defSource) && jaxRsResources.isEmpty()) {
+            failWithErrorMessage("You should specify the definition source to use (value no prefixed by any option). ");
+        }
+
+        if (!StringUtils.isNullOrEmpty(language) && !SUPPORTED_LANGUAGES.contains(language)) {
+            failWithErrorMessage("The language " + language + " is not currently supported. ");
         }
 
         if (StringUtils.isNullOrEmpty(serviceUrl)) {
@@ -241,61 +261,58 @@ public class Introspector {
                     }
                 });
 
-        // Discover introspection helpers
-        List<IntrospectionHelper> introspectionHelpers = new ArrayList<>();
-        ServiceLoader<IntrospectionHelper> ihLoader = ServiceLoader
-                .load(IntrospectionHelper.class);
-        for (IntrospectionHelper helper : ihLoader) {
-            introspectionHelpers.add(helper);
-        }
-
         // Validate the application class name
         Definition definition = null;
 
         // get definition
-        if (language == null) {
-            Class<?> clazz = null;
-            try {
-                clazz = Class.forName(defSource);
-            } catch (ClassNotFoundException e) {
-                LOGGER.log(Level.SEVERE,
-                        "Cannot locate the application class.", e);
-                System.exit(1);
-            }
-            // Is Restlet application ?
-            // TODO implement introspection of Restlet based JaxRs
-            // (org.restlet.ext.jaxrs.JaxRsApplication)
-            if (Application.class.isAssignableFrom(clazz)) {
-                Application application = ApplicationIntrospector
-                        .getApplication(defSource);
-                Component component = ComponentIntrospector
-                        .getComponent(compName);
-                definition = ApplicationIntrospector.getDefinition(application,
-                        null, component, useSectionNamingPackageStrategy);
-            } else if (clazz != null) {
-                javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
-                        .getApplication(defSource);
-                definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
-                        null, useSectionNamingPackageStrategy);
-            } else {
-                LOGGER.log(Level.SEVERE, "Class " + defSource
-                        + " is not supported");
-                System.exit(1);
-            }
-        } else {
+        if (language != null) {
             if ("swagger".equals(language)) {
                 definition = SwaggerUtils
                         .getDefinition(defSource, ulogin, upwd);
             } else {
-                LOGGER.log(Level.SEVERE, "Language " + language
-                        + " is not supported");
-                System.exit(1);
+                failWithErrorMessage("The language " + language + " is not currently supported. ");
+            }
+        } else {
+            if (defSource != null) {
+                Class<?> clazz = null;
+                try {
+                    clazz = Class.forName(defSource);
+                } catch (ClassNotFoundException e) {
+                    LOGGER.log(Level.SEVERE,
+                            "Cannot locate the application class.", e);
+                    System.exit(1);
+                }
+
+                // Is Restlet application ?
+                // TODO implement introspection of Restlet based JaxRs
+                // (org.restlet.ext.jaxrs.JaxRsApplication)
+                if (Application.class.isAssignableFrom(clazz)) {
+                    Application application = ApplicationIntrospector
+                            .getApplication(defSource);
+                    Component component = ComponentIntrospector
+                            .getComponent(compName);
+                    Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
+                    if (applicationName != null) {
+                        application.setName(applicationName);
+                    }
+                    definition = ApplicationIntrospector.getDefinition(application,
+                            baseRef, component, useSectionNamingPackageStrategy);
+                } else if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
+                    definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy, applicationName,
+                            endpoint, jaxRsResources);
+                } else {
+                    LOGGER.log(Level.SEVERE, "Class " + defSource
+                            + " is not supported");
+                    System.exit(1);
+                }
+            } else if (!jaxRsResources.isEmpty()) {
+                definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy, applicationName,
+                        endpoint, jaxRsResources);
             }
         }
 
         if (definition == null) {
-            LOGGER.severe("Please provide a valid application class name or definition URL.");
-            System.exit(1);
+            failWithErrorMessage("Please provide a valid application class name or definition URL.");
         }
 
         IntrospectionUtils.sendDefinition(definition, ulogin, upwd, serviceUrl,
@@ -375,7 +392,16 @@ public class Introspector {
         cli.print12("--sections",
                 "Set section of introspected resources from java package name.");
         cli.print12("-v, --verbose",
-                "The optional parameter switching the process to a verbose mode");
+                "The optional parameter switching the process to a verbose mode.");
+        cli.print12("--application-name name",
+                "The optional parameter overriding the name of the API.");
+        cli.print12("--endpoint endpoint",
+                "The optional parameter overriding the endpoint of the API.");
+        cli.print12(
+                "--jaxrs-resources resourcesClasses",
+                "The optional parameter providing the list of fully qualified classes separated by a " +
+                "comma that should be introspected. Example: com.example.MyResource,com.example.MyResource2.",
+                "Replaces javax.ws.rs.core.Application#getClasses.");
 
         cli.print();
         cli.print0("ENHANCE INTROSPECTION");
