@@ -65,7 +65,6 @@ public class Introspector {
 
     private static Definition getDefinitionFromJaxrsSources(String defSource, boolean useSectionNamingPackageStrategy,
             String applicationName, String endpoint, List<String> jaxRsResources) {
-        Definition definition;
         javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                 .getApplication(defSource);
         @SuppressWarnings("rawtypes")
@@ -80,9 +79,8 @@ public class Introspector {
             System.exit(1);
         }
         Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
-        definition = JaxRsIntrospector.getDefinition(jaxrsApplication,
+        return JaxRsIntrospector.getDefinition(jaxrsApplication,
                 applicationName, resources, baseRef, useSectionNamingPackageStrategy);
-        return definition;
     }
 
     /**
@@ -271,6 +269,8 @@ public class Introspector {
             if ("swagger".equals(language)) {
                 definition = SwaggerUtils
                         .getDefinition(defSource, ulogin, upwd);
+            } else {
+                failWithErrorMessage("The language " + language + " is not currently supported. ");
             }
         } else {
             if (defSource != null) {
