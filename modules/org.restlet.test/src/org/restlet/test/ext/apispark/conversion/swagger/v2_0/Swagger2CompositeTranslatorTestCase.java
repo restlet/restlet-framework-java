@@ -27,6 +27,7 @@ package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 import java.io.IOException;
 import java.net.URL;
 
+import com.wordnik.swagger.models.properties.RefProperty;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
@@ -46,8 +47,10 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
      * Conversion Rwadef -> Swagger 2.0.
      */
     public void testGetSwagger1() {
+        //prepare
         Definition definition = createDefinition();
 
+        //add a new composite property to representation 'nameRepresentation1'
         Representation rep = definition.getContract().getRepresentation(
                 "nameRepresentation1");
         Property compositeProperty = new Property();
@@ -63,12 +66,22 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 
         compositeProperty.getProperties().add(nameProperty);
 
+        //execute
         Swagger swagger = Swagger2Translator.getSwagger(definition);
-        Model model = swagger.getDefinitions().get(
+
+        //verify
+        Model model1 = swagger.getDefinitions().get(
+                "nameRepresentation1");
+        assertNotNull(model1);
+        RefProperty swaggerProperty = (RefProperty) model1.getProperties().get("myCompositeType");
+        assertNotNull(swaggerProperty);
+        assertEquals("#/definitions/nameRepresentation1MyCompositeType", swaggerProperty.get$ref());
+
+        Model model2 = swagger.getDefinitions().get(
                 "nameRepresentation1MyCompositeType");
-        assertNotNull(model);
-        assertEquals(1, model.getProperties().size());
-        assertNotNull(model.getProperties().get("name"));
+        assertNotNull(model2);
+        assertEquals(1, model2.getProperties().size());
+        assertNotNull(model2.getProperties().get("name"));
     }
 
     public void testGetSwagger2() throws IOException {
