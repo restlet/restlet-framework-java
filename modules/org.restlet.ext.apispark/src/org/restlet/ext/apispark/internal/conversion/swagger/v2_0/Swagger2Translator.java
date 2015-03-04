@@ -333,7 +333,7 @@ public class Swagger2Translator {
                         bodyParameterSwagger.setSchema(modelImpl);
                     } else {
                         RefModel refModel = new RefModel();
-                        refModel.set$ref(inRepr.getType());
+                        refModel.asDefault(inRepr.getType());
                         bodyParameterSwagger.setSchema(refModel);
                     }
                 }
