@@ -677,11 +677,12 @@ public class ApiSparkServiceTestCase extends RestletTestCase {
 
         ApiSparkService apiSparkService = getAgentService();
         apiSparkService.setAgentAnalyticsBufferSize(1);
-        startApiSparkService(apiSparkService, true);
 
         // verify
         assertEquals(0, MockAnalyticsServerResource.GET_ANALYTICS_COUNT);
         assertEquals(0, MockAnalyticsServerResource.GET_CALLLOG_COUNT);
+
+        startApiSparkService(apiSparkService, true);
 
         // Call user's Web API
         callAgent("/test", VALID_USERNAME, VALID_PASSWORD);

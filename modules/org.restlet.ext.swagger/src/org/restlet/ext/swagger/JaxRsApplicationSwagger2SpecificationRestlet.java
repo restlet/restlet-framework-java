@@ -111,13 +111,14 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
 
     /**
      * Constructor.<br>
-     *
+     * 
      * @param context
      *            The context.
      * @param application
      *            The application to describe.
      */
-    public JaxRsApplicationSwagger2SpecificationRestlet(Context context, Application application) {
+    public JaxRsApplicationSwagger2SpecificationRestlet(Context context,
+            Application application) {
         super(context);
         this.application = application;
     }
@@ -237,8 +238,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param apiVersion
      *            The API version.
      */
-    public void setApiVersion(
-            String apiVersion) {
+    public void setApiVersion(String apiVersion) {
         this.apiVersion = apiVersion;
     }
 
@@ -248,8 +248,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param application
      *            The application.
      */
-    public void setApplication(
-            Application application) {
+    public void setApplication(Application application) {
         this.application = application;
     }
 
@@ -259,8 +258,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param basePath
      *            The base path of the API
      */
-    public void setBasePath(
-            String basePath) {
+    public void setBasePath(String basePath) {
         this.basePath = basePath;
         // Process basepath and check validity
         this.baseRef = basePath != null ? new Reference(basePath) : null;
@@ -272,8 +270,7 @@ public class JaxRsApplicationSwagger2SpecificationRestlet extends Restlet {
      * @param swaggerVersion
      *            The version of the Swagger specification.
      */
-    public void setSwaggerVersion(
-            String swaggerVersion) {
+    public void setSwaggerVersion(String swaggerVersion) {
         this.swaggerVersion = swaggerVersion;
     }
 }

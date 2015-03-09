@@ -164,11 +164,12 @@ public class Swagger2Translator {
                 ArrayProperty arrayProperty = new ArrayProperty();
                 com.wordnik.swagger.models.properties.Property itemProperty = null;
                 if (Types.isCompositeType(property.getType())) {
-                    itemProperty = newPropertyForType(name + property.getName());
+                    String compositePropertyType = name + StringUtils.firstUpper(property.getName());
+                    itemProperty = newPropertyForType(compositePropertyType);
                     // List of properties -> Model */
                     ModelImpl ms = new ModelImpl();
                     fillModel(
-                            name + StringUtils.firstUpper(property.getName()),
+                            compositePropertyType,
                             null, property.getProperties(), swagger, ms);
                 } else {
                     itemProperty = newPropertyForType(property.getType());
@@ -178,12 +179,12 @@ public class Swagger2Translator {
                 propertySwagger = arrayProperty;
             } else {
                 if (Types.isCompositeType(property.getType())) {
-                    propertySwagger = newPropertyForType(name
-                            + property.getName());
+                    String compositePropertyType = name + StringUtils.firstUpper(property.getName());
+                    propertySwagger = newPropertyForType(compositePropertyType);
                     // List of properties -> Model */
                     ModelImpl ms = new ModelImpl();
                     fillModel(
-                            name + StringUtils.firstUpper(property.getName()),
+                            compositePropertyType,
                             null, property.getProperties(), swagger, ms);
                     propertySwagger.setExample(example);
                 } else {
@@ -332,7 +333,7 @@ public class Swagger2Translator {
                         bodyParameterSwagger.setSchema(modelImpl);
                     } else {
                         RefModel refModel = new RefModel();
-                        refModel.set$ref(inRepr.getType());
+                        refModel.asDefault(inRepr.getType());
                         bodyParameterSwagger.setSchema(refModel);
                     }
                 }

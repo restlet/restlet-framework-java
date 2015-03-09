@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.wordnik.swagger.models.RefModel;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -132,7 +133,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         // resource 1 : operation 1 : inRepresentation
         PayLoad inRepr = new PayLoad();
         operation1.setInputPayLoad(inRepr);
-        inRepr.setType("integer");
+        inRepr.setType("nameRepresentation1");
 
         // resource 1 : operation 1 : queryParameter 1
         QueryParameter queryParameter1 = new QueryParameter();
@@ -267,8 +268,8 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         BodyParameter bodyParameter = (BodyParameter) path1Get.getParameters()
                 .get(2);
         assertNotNull(bodyParameter);
-        ModelImpl schemaBodyParameter = (ModelImpl) bodyParameter.getSchema();
-        assertEquals("integer", schemaBodyParameter.getType());
+        RefModel schemaBodyParameter = (RefModel) bodyParameter.getSchema();
+        assertEquals("#/definitions/nameRepresentation1", schemaBodyParameter.get$ref());
         // queryParameter 1
         com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter1 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
                 .getParameters().get(3);

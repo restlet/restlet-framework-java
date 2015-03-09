@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -70,15 +71,22 @@ public class SampleUtils {
 
     public static Map<String, Object> getRepresentationSample(
             Representation representation) {
-        List<Property> properties = representation.getProperties();
+        return getPropertiesSample(representation.getProperties());
+    }
+
+    public static Map<String, Object> getPropertiesSample(List<Property> properties){
         Map<String, Object> content = new HashMap<>();
         for (Property property : properties) {
-            content.put(property.getName(), getFieldSampleValue(property));
+            if (Types.compositeType.equals(property.getType())) {
+                content.put(property.getName(), getPropertiesSample(property.getProperties()));
+            } else {
+                content.put(property.getName(), getFieldSampleValue(property));
+            }
         }
         return content;
     }
 
-    public static Object getFieldSampleValue(Property property) {
+            public static Object getFieldSampleValue(Property property) {
         Object sampleValue = property.getExample() != null ? convertSampleValue(
                 property.getType(), property.getExample())
                 : getPropertyDefaultSampleValue(property.getType(),
