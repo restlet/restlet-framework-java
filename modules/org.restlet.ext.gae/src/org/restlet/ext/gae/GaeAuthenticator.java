@@ -36,10 +36,12 @@ package org.restlet.ext.gae;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Application;
 import org.restlet.data.ClientInfo;
 import org.restlet.security.Authenticator;
 import org.restlet.security.Enroler;
 import org.restlet.security.User;
+import org.restlet.security.Role;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -49,6 +51,7 @@ import com.google.appengine.api.users.UserServiceFactory;
  * UserService.
  * 
  * @author Matt Kennedy
+ * @author Thierry Templier
  */
 public class GaeAuthenticator extends Authenticator {
     /**
@@ -123,6 +126,11 @@ public class GaeAuthenticator extends Authenticator {
             restletUser.setFirstName(gaeUser.getNickname());
             info.setUser(restletUser);
             info.setAuthenticated(true);
+            // Is the user an admin one
+            if (userService.isUserAdmin()) {
+                Role role = new Role(Application.getCurrent(), "admin");
+                info.getRoles().add(role);
+            }
             return true;
         } else {
             // The GAE user service says user not logged in, let's redirect him
