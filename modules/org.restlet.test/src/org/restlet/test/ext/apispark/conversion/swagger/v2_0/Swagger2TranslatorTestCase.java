@@ -28,8 +28,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.wordnik.swagger.models.RefModel;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -51,7 +52,10 @@ import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.ModelImpl;
 import com.wordnik.swagger.models.Path;
+import com.wordnik.swagger.models.RefModel;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.auth.BasicAuthDefinition;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.BodyParameter;
 import com.wordnik.swagger.models.parameters.PathParameter;
 import com.wordnik.swagger.models.properties.ArrayProperty;
@@ -75,7 +79,8 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         contact.setName("contact");
         definition.setContact(contact);
         License license = new License();
-        license.setName("license");
+        license.setName("licenseName");
+        license.setUrl("licenseUrl");
         definition.setLicense(license);
 
         // endpoint
@@ -85,6 +90,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         endpoint.setDomain("domain");
         endpoint.setPort(999);
         endpoint.setBasePath("/basePath");
+        endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC.getName());
 
         // contract
         Contract contract = new Contract();
@@ -227,13 +233,17 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         // Then
         assertEquals("2.0", swagger.getSwagger());
 
+        Map<String, SecuritySchemeDefinition> securitySchemes = swagger.getSecurityDefinitions();
+        assertEquals(true, securitySchemes.containsKey("HTTP_BASIC"));
+        assertEquals(true, securitySchemes.get("HTTP_BASIC") instanceof BasicAuthDefinition);
+
         Info infoSwagger = swagger.getInfo();
         assertEquals("version", infoSwagger.getVersion());
         Contact contactSwagger = infoSwagger.getContact();
         assertEquals("contact", contactSwagger.getName());
-        // TODO uncomment license assertion when translator will handle it
-        // License license = infoSwagger.getLicense();
-        // assertEquals("license", license.getUrl());
+        com.wordnik.swagger.models.License licenseSwagger = infoSwagger.getLicense();
+        assertEquals("licenseName", licenseSwagger.getName());
+        assertEquals("licenseUrl", licenseSwagger.getUrl());
         assertEquals("contract.name", infoSwagger.getTitle());
         assertEquals("contract.description", infoSwagger.getDescription());
         assertEquals("/basePath", swagger.getBasePath());
@@ -359,6 +369,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
+        @SuppressWarnings("deprecation")
         Swagger savedSwagger = new SwaggerLoader().read(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);

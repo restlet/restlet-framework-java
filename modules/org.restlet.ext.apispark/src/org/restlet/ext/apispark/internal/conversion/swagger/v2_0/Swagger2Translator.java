@@ -26,11 +26,13 @@ package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -55,6 +57,8 @@ import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.RefModel;
 import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.auth.BasicAuthDefinition;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.BodyParameter;
 import com.wordnik.swagger.models.parameters.HeaderParameter;
 import com.wordnik.swagger.models.parameters.PathParameter;
@@ -99,12 +103,35 @@ public class Swagger2Translator {
     public static final String SWAGGER_VERSION = "2.0";
 
     /**
-     * Fill swagger "Definitions" objects from rwadef definition
+     * Fill Swagger "SecuritySchemeDefinition" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param swagger
-     *            swagger definition
+     *            Swagger definition
+     */
+    private static void fillAuthentication(Definition definition, Swagger swagger) {
+        Map<String, SecuritySchemeDefinition> securitySchemes = new HashMap<>();
+
+        // Supported schemes
+        String httpBasic = ChallengeScheme.HTTP_BASIC.getName();
+
+        for (Endpoint endpoint : definition.getEndpoints()) {
+
+            if (httpBasic.equals(endpoint.getAuthenticationProtocol())) {
+                securitySchemes.put(httpBasic, new BasicAuthDefinition());
+            }
+        }
+        swagger.setSecurityDefinitions(securitySchemes.isEmpty() ? null : securitySchemes);
+    }
+
+    /**
+     * Fill Swagger "Definitions" objects from RWADef definition
+     * 
+     * @param definition
+     *            RWADef definition
+     * @param swagger
+     *            Swagger definition
      */
     private static void fillDefinitions(Definition definition, Swagger swagger) {
         for (Representation representation : definition.getContract()
@@ -131,18 +158,82 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger "Model" objects from rwadef.
+     * Fill Swagger "Info" object from RWADef definition
+     * 
+     * @param definition
+     *            RWADef definition
+     * @param swagger
+     *            Swagger definition
+     */
+    private static void fillInfo(Definition definition, Swagger swagger) {
+        Info infoSwagger = new Info();
+
+        infoSwagger.setTitle(definition.getContract().getName()); // required
+        infoSwagger.setDescription(definition.getContract().getDescription());
+        infoSwagger.setVersion(definition.getVersion()); // required
+
+        Contact contactSwagger = new Contact();
+        if (definition.getContact() != null) {
+            contactSwagger.setName(definition.getContact().getName());
+            contactSwagger.setEmail(definition.getContact().getEmail());
+            contactSwagger.setUrl(definition.getContact().getUrl());
+        }
+        infoSwagger.setContact(contactSwagger);
+
+        License licenseSwagger = new License();
+        if (definition.getLicense() != null) {
+            if (!StringUtils.isNullOrEmpty(definition.getLicense().getName())) {
+                org.restlet.ext.apispark.internal.model.License license = definition
+                        .getLicense();
+                licenseSwagger.setName(license.getName()); // required
+                licenseSwagger.setUrl(license.getUrl());
+                infoSwagger.setLicense(licenseSwagger);
+            } else if (!StringUtils.isNullOrEmpty(definition.getLicense()
+                    .getUrl())) {
+                LOGGER.warning("You must specify a license name");
+            }
+        }
+
+        swagger.setInfo(infoSwagger); // required
+    }
+
+    /**
+     * Fills Swagger main attributes from Restlet Web API definition
+     * 
+     * @param definition
+     *            The Restlet Web API definition
+     * @param swagger
+     *            The Swagger 2.0 definition
+     */
+    private static void fillMainAttributes(Definition definition,
+            Swagger swagger) {
+        // basePath
+        if (definition.getEndpoints() != null
+                && !definition.getEndpoints().isEmpty()) {
+            Endpoint endpoint = definition.getEndpoints().get(0);
+            swagger.setHost(endpoint.getDomain()
+                    + (endpoint.getPort() == null ? "" : (":" + endpoint
+                            .getPort())));
+            swagger.setBasePath(endpoint.getBasePath());
+            // Should be any of "http", "https", "ws", "wss"
+            swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint
+                    .getProtocol())));
+        }
+    }
+
+    /**
+     * Fill Swagger "Model" objects from RWADef.
      * 
      * @param name
-     *            The name of the swagger model.
+     *            The name of the Swagger model.
      * @param description
-     *            the description of the swagger model.
+     *            the description of the Swagger model.
      * @param properties
-     *            The list of rwadef properties of the swagger model.
+     *            The list of RWADef properties of the Swagger model.
      * @param swagger
-     *            The swagger definition.
+     *            The Swagger definition.
      * @param modelSwagger
-     *            The swagger model.
+     *            The Swagger model.
      */
     private static void fillModel(String name, String description,
             List<Property> properties, Swagger swagger, ModelImpl modelSwagger) {
@@ -221,70 +312,6 @@ public class Swagger2Translator {
         }
 
         swagger.addDefinition(modelSwagger.getName(), modelSwagger);
-    }
-
-    /**
-     * Fill swagger "Info" object from rwadef definition
-     * 
-     * @param definition
-     *            rwadef definition
-     * @param swagger
-     *            swagger definition
-     */
-    private static void fillInfo(Definition definition, Swagger swagger) {
-        Info infoSwagger = new Info();
-
-        infoSwagger.setTitle(definition.getContract().getName()); // required
-        infoSwagger.setDescription(definition.getContract().getDescription());
-        infoSwagger.setVersion(definition.getVersion()); // required
-
-        Contact contactSwagger = new Contact();
-        if (definition.getContact() != null) {
-            contactSwagger.setName(definition.getContact().getName());
-            contactSwagger.setEmail(definition.getContact().getEmail());
-            contactSwagger.setUrl(definition.getContact().getUrl());
-        }
-        infoSwagger.setContact(contactSwagger);
-
-        License licenseSwagger = new License();
-        if (definition.getLicense() != null) {
-            if (!StringUtils.isNullOrEmpty(definition.getLicense().getName())) {
-                org.restlet.ext.apispark.internal.model.License license = definition
-                        .getLicense();
-                licenseSwagger.setName(license.getName()); // required
-                licenseSwagger.setUrl(license.getUrl());
-                infoSwagger.setLicense(licenseSwagger);
-            } else if (!StringUtils.isNullOrEmpty(definition.getLicense()
-                    .getUrl())) {
-                LOGGER.warning("You must specify a license name");
-            }
-        }
-
-        swagger.setInfo(infoSwagger); // required
-    }
-
-    /**
-     * Fills swagger main attributes from Restlet Web API definition
-     * 
-     * @param definition
-     *            The Restlet Web API definition
-     * @param swagger
-     *            The Swagger 2.0 definition
-     */
-    private static void fillMainAttributes(Definition definition,
-            Swagger swagger) {
-        // basePath
-        if (definition.getEndpoints() != null
-                && !definition.getEndpoints().isEmpty()) {
-            Endpoint endpoint = definition.getEndpoints().get(0);
-            swagger.setHost(endpoint.getDomain()
-                    + (endpoint.getPort() == null ? "" : (":" + endpoint
-                            .getPort())));
-            swagger.setBasePath(endpoint.getBasePath());
-            // Should be any of "http", "https", "ws", "wss"
-            swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint
-                    .getProtocol())));
-        }
     }
 
     private static void fillOperationParameters(Definition definition,
@@ -422,14 +449,14 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger "Paths.Operations" objects from rwadef definition
+     * Fill Swagger "Paths.Operations" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param resource
-     *            rwadef.resource definition
+     *            RWADef.resource definition
      * @param pathSwagger
-     *            swagger.path definition
+     *            Swagger.path definition
      */
     private static void fillPathOperations(Definition definition,
             Resource resource, Path pathSwagger) {
@@ -468,12 +495,12 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger "Paths" objects from rwadef definition
+     * Fill Swagger "Paths" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param swagger
-     *            swagger definition
+     *            Swagger definition
      */
     private static void fillPaths(Definition definition, Swagger swagger) {
         Map<String, Path> paths = new LinkedHashMap<String, Path>();
@@ -500,16 +527,19 @@ public class Swagger2Translator {
         Swagger swagger = new Swagger();
         swagger.setSwagger(SWAGGER_VERSION); // required
 
-        // fill swagger main attributes
+        // fill Swagger main attributes
         fillMainAttributes(definition, swagger);
 
-        // fill swagger.info
+        // fill authentication information
+        fillAuthentication(definition, swagger);
+
+        // fill Swagger.info
         fillInfo(definition, swagger); // required
 
-        // fill swagger.paths
+        // fill Swagger.paths
         fillPaths(definition, swagger); // required
 
-        // fill swagger.definitions
+        // fill Swagger.definitions
         fillDefinitions(definition, swagger);
 
         // TODO add authorization attribute
@@ -526,27 +556,28 @@ public class Swagger2Translator {
      */
     private static com.wordnik.swagger.models.properties.Property newPropertyForType(
             String type) {
-        if ("string".equals(type.toLowerCase())) {
+
+        switch (type.toLowerCase()) {
+        case "string":
             return new StringProperty();
-        } else if ("byte".equals(type.toLowerCase())) {
-            // TODO wait for Swagger class
+        case "byte":
             return new ByteProperty();
-        } else if ("short".equals(type.toLowerCase())) {
-            // TODO wait for Swagger class
+        case "short":
             return new ShortProperty();
-        } else if ("integer".equals(type.toLowerCase())) {
+        case "integer":
             return new IntegerProperty();
-        } else if ("long".equals(type.toLowerCase())) {
+        case "long":
             return new LongProperty();
-        } else if ("float".equals(type.toLowerCase())) {
+        case "float":
             return new FloatProperty();
-        } else if ("double".equals(type.toLowerCase())) {
+        case "double":
             return new DoubleProperty();
-        } else if ("date".equals(type.toLowerCase())) {
+        case "date":
             return new DateProperty();
-        } else if ("boolean".equals(type.toLowerCase())) {
+        case "boolean":
             return new BooleanProperty();
         }
+
         // Reference to a representation
         return new RefProperty().asDefault(type);
     }

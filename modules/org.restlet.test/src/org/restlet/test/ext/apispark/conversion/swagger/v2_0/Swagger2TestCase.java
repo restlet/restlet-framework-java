@@ -48,6 +48,7 @@ import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.Parameter;
 
 public class Swagger2TestCase extends RestletTestCase {
@@ -307,6 +308,17 @@ public class Swagger2TestCase extends RestletTestCase {
         assertEquals(savedSwagger.getSwagger(), translatedSwagger.getSwagger());
         assertEquals(savedSwagger.getConsumes(),
                 translatedSwagger.getConsumes());
+
+        Map<String, SecuritySchemeDefinition> savedSecuritySchemes = savedSwagger.getSecurityDefinitions();
+        Map<String, SecuritySchemeDefinition> translatedSecuritySchemes = translatedSwagger.getSecurityDefinitions();
+
+        assertEquals(savedSecuritySchemes.size(),
+                translatedSecuritySchemes.size());
+
+        for (String key : savedSecuritySchemes.keySet()) {
+            assertEquals(savedSecuritySchemes.get(key).getClass(),
+                    translatedSecuritySchemes.get(key).getClass());
+        }
     }
 
     private void compareSwaggerModels(Model savedModel, Model translatedModel) {
