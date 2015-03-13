@@ -8,6 +8,6 @@ Leverage the open source Restlet Framework and its unique Java API available in 
 
 http://restlet.com
 
-Copyright 2014 Restlet
+Copyright 2015 Restlet
 
 [![Build Status](https://travis-ci.org/restlet/restlet-framework-java.png?branch=master)](https://travis-ci.org/restlet/restlet-framework-java)
