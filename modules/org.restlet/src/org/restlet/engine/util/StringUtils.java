@@ -668,6 +668,7 @@ public class StringUtils {
         return (string == null) ? "" : string;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an list of trimmed token splitted with the split character ",".
      * 
@@ -679,6 +680,7 @@ public class StringUtils {
         return splitAndTrim(stringToSplit, ",");
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an list of trimmed token splitted with the split character.
      * 
