@@ -81,7 +81,7 @@ public final class HeaderConstants {
 
     public static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
-    public static final String HEADER_ACCESS_CONTROL_ALLOW_CREDENTIAL = "Access-Control-Allow-Credential";
+    public static final String HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
 
     public static final String HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
 
