@@ -4,10 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
-- 2.3.2
     - Bugs fixed
-       - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030
+       - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030.
        - Fixed malformed JSON in the JsonpRepresentation.
          Reported by Wagner Correa Ramos.
        - When catching a 405 status, make sure to update allowed methods inside 
