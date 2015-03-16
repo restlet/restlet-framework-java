@@ -26,7 +26,6 @@ package org.restlet.ext.apispark.internal.introspection.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import org.restlet.data.Status;
@@ -64,65 +63,6 @@ public class SwaggerAnnotationUtils {
     /** Internal logger. */
     protected static Logger LOGGER = Logger
             .getLogger(SwaggerAnnotationUtils.class.getName());
-
-    /**
-     * Returns the string with the first character capitalized.
-     * 
-     * 
-     * @param string
-     *            a string reference to check
-     * @return the string with the first character capitalized.
-     */
-    public static String firstLower(String string) {
-        if (!isNullOrEmpty(string)) {
-            return string.substring(0, 1).toLowerCase() + string.substring(1);
-        }
-        return string;
-    }
-
-    /**
-     * Returns the string with the first character capitalized.
-     * 
-     * 
-     * @param string
-     *            a string reference to check
-     * @return the string with the first character capitalized.
-     */
-    public static String firstUpper(String string) {
-        if (!isNullOrEmpty(string)) {
-            return string.substring(0, 1).toUpperCase() + string.substring(1);
-        }
-        return string;
-    }
-
-    /**
-     * Returns {@code true} if the given string is null or is the empty string.
-     * 
-     * <p>
-     * Consider normalizing your string references with {@link #nullToEmpty}. If
-     * you do, you can use {@link String#isEmpty()} instead of this method, and
-     * you won't need special null-safe forms of methods like
-     * {@link String#toUpperCase} either.
-     * 
-     * @param string
-     *            a string reference to check
-     * @return {@code true} if the string is null or is the empty string.
-     */
-    public static boolean isNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
-    }
-
-    /**
-     * Returns the given string if it is non-null; the empty string otherwise.
-     * 
-     * @param string
-     *            the string to test and possibly return
-     * @return {@code string} itself if it is non-null; {@code ""} if it is
-     *         null.
-     */
-    public static String nullToEmpty(String string) {
-        return (string == null) ? "" : string;
-    }
 
     /**
      * Adds data from the {@link Api} annotation to the resource.
@@ -361,36 +301,5 @@ public class SwaggerAnnotationUtils {
         for (ApiResponse apiResponse : apiResponses.value()) {
             processApiResponse(apiResponse, operation, representationsUsed);
         }
-    }
-
-    /**
-     * Returns an list of trimmed token splitted with the split character ",".
-     * 
-     * @param stringToSplit
-     *            The String to split.
-     * @return List of tokens.
-     */
-    public static List<String> splitAndTrim(String stringToSplit) {
-        return splitAndTrim(stringToSplit, ",");
-    }
-
-    /**
-     * Returns an list of trimmed token splitted with the split character.
-     * 
-     * @param stringToSplit
-     *            The String to split.
-     * @param splitCharacter
-     *            The split Character.
-     * @return List of tokens.
-     */
-    public static List<String> splitAndTrim(String stringToSplit,
-            String splitCharacter) {
-        List<String> list = new ArrayList<>();
-        // StringTokenizer is 3 times more performant than String#split.
-        StringTokenizer st = new StringTokenizer(stringToSplit, splitCharacter);
-        while (st.hasMoreTokens()) {
-            list.add(st.nextToken().trim());
-        }
-        return list;
     }
 }

@@ -25,10 +25,10 @@
 package org.restlet.engine.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * String manipulation utilities.
@@ -654,8 +654,7 @@ public class StringUtils {
      * @return {@code true} if the string is null or is the empty string
      */
     public static boolean isNullOrEmpty(String string) {
-        return string == null || string.length() == 0; // string.isEmpty() in
-                                                       // Java 6
+        return string == null || string.isEmpty();
     }
 
     /**
@@ -672,27 +671,32 @@ public class StringUtils {
     /**
      * Returns an list of trimmed token splitted with the split character ",".
      * 
-     * @param stringToSlit
-     *            The String to split
-     * @return List of tokens
+     * @param stringToSplit
+     *            The String to split.
+     * @return List of tokens.
      */
-    public static List<String> splitAndTrim(String stringToSlit) {
-        return splitAndTrim(stringToSlit, ",");
+    public static List<String> splitAndTrim(String stringToSplit) {
+        return splitAndTrim(stringToSplit, ",");
     }
 
     /**
      * Returns an list of trimmed token splitted with the split character.
      * 
-     * @param stringToSlit
-     *            The String to split
+     * @param stringToSplit
+     *            The String to split.
      * @param splitCharacter
-     *            The split Character
-     * @return List of tokens
+     *            The split Character.
+     * @return List of tokens.
      */
-    public static List<String> splitAndTrim(String stringToSlit,
+    public static List<String> splitAndTrim(String stringToSplit,
             String splitCharacter) {
-        return Arrays.asList(stringToSlit.split("\\s*" + splitCharacter
-                + "\\s*"));
+        List<String> list = new ArrayList<>();
+        // StringTokenizer is 3 times more performant than String#split.
+        StringTokenizer st = new StringTokenizer(stringToSplit, splitCharacter);
+        while (st.hasMoreTokens()) {
+            list.add(st.nextToken().trim());
+        }
+        return list;
     }
 
     /**
