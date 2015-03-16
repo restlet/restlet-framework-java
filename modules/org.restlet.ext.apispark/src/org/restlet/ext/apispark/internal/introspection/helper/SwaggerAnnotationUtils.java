@@ -24,6 +24,23 @@
 
 package org.restlet.ext.apispark.internal.introspection.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
+
+import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.Parameter;
+import org.restlet.ext.apispark.internal.model.PayLoad;
+import org.restlet.ext.apispark.internal.model.Property;
+import org.restlet.ext.apispark.internal.model.QueryParameter;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -36,25 +53,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
-import org.restlet.data.Status;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.Parameter;
-import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.introspection.util.Types;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Tools for Swagger annotations.
- *
+ * 
  * @author Manuel Boillod.
  */
 public class SwaggerAnnotationUtils {
@@ -64,8 +66,67 @@ public class SwaggerAnnotationUtils {
             .getLogger(SwaggerAnnotationUtils.class.getName());
 
     /**
+     * Returns the string with the first character capitalized.
+     * 
+     * 
+     * @param string
+     *            a string reference to check
+     * @return the string with the first character capitalized.
+     */
+    public static String firstLower(String string) {
+        if (!isNullOrEmpty(string)) {
+            return string.substring(0, 1).toLowerCase() + string.substring(1);
+        }
+        return string;
+    }
+
+    /**
+     * Returns the string with the first character capitalized.
+     * 
+     * 
+     * @param string
+     *            a string reference to check
+     * @return the string with the first character capitalized.
+     */
+    public static String firstUpper(String string) {
+        if (!isNullOrEmpty(string)) {
+            return string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+        return string;
+    }
+
+    /**
+     * Returns {@code true} if the given string is null or is the empty string.
+     * 
+     * <p>
+     * Consider normalizing your string references with {@link #nullToEmpty}. If
+     * you do, you can use {@link String#isEmpty()} instead of this method, and
+     * you won't need special null-safe forms of methods like
+     * {@link String#toUpperCase} either.
+     * 
+     * @param string
+     *            a string reference to check
+     * @return {@code true} if the string is null or is the empty string.
+     */
+    public static boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
+
+    /**
+     * Returns the given string if it is non-null; the empty string otherwise.
+     * 
+     * @param string
+     *            the string to test and possibly return
+     * @return {@code string} itself if it is non-null; {@code ""} if it is
+     *         null.
+     */
+    public static String nullToEmpty(String string) {
+        return (string == null) ? "" : string;
+    }
+
+    /**
      * Adds data from the {@link Api} annotation to the resource.
-     *
+     * 
      * @param api
      *            The {@link Api} annotation.
      * @param resource
@@ -82,7 +143,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiImplicitParam} annotation to the operation.
-     *
+     * 
      * @param apiImplicitParam
      *            The {@link ApiImplicitParam} annotation.
      * @param operation
@@ -108,7 +169,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiImplicitParams} annotation to the operation.
-     *
+     * 
      * @param apiImplicitParams
      *            The {@link ApiImplicitParams} annotation.
      * @param operation
@@ -123,7 +184,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiModel} annotation to the representation.
-     *
+     * 
      * @param apiModel
      *            The {@link ApiModel} annotation.
      * @param representation
@@ -146,7 +207,7 @@ public class SwaggerAnnotationUtils {
     /**
      * Adds data from the {@link ApiModelProperty} annotation to the
      * representation property.
-     *
+     * 
      * @param apiModelProperty
      *            The {@link ApiModelProperty} annotation.
      * @param property
@@ -168,7 +229,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiModelProperty} annotation to the operation.
-     *
+     * 
      * @param apiOperation
      *            The {@link com.wordnik.swagger.annotations.ApiOperation}
      *            annotation.
@@ -210,7 +271,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiParam} annotation to the parameter.
-     *
+     * 
      * @param apiParam
      *            The {@link ApiParam} annotation.
      * @param parameter
@@ -233,7 +294,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiResponse} annotation to the operation.
-     *
+     * 
      * @param apiResponse
      *            The {@link ApiResponse} annotation.
      * @param operation
@@ -287,7 +348,7 @@ public class SwaggerAnnotationUtils {
 
     /**
      * Adds data from the {@link ApiResponses} annotation to the operation.
-     *
+     * 
      * @param apiResponses
      *            The {@link ApiResponses} annotation.
      * @param operation
@@ -300,5 +361,36 @@ public class SwaggerAnnotationUtils {
         for (ApiResponse apiResponse : apiResponses.value()) {
             processApiResponse(apiResponse, operation, representationsUsed);
         }
+    }
+
+    /**
+     * Returns an list of trimmed token splitted with the split character ",".
+     * 
+     * @param stringToSplit
+     *            The String to split.
+     * @return List of tokens.
+     */
+    public static List<String> splitAndTrim(String stringToSplit) {
+        return splitAndTrim(stringToSplit, ",");
+    }
+
+    /**
+     * Returns an list of trimmed token splitted with the split character.
+     * 
+     * @param stringToSplit
+     *            The String to split.
+     * @param splitCharacter
+     *            The split Character.
+     * @return List of tokens.
+     */
+    public static List<String> splitAndTrim(String stringToSplit,
+            String splitCharacter) {
+        List<String> list = new ArrayList<>();
+        // StringTokenizer is 3 times more performant than String#split.
+        StringTokenizer st = new StringTokenizer(stringToSplit, splitCharacter);
+        while (st.hasMoreTokens()) {
+            list.add(st.nextToken().trim());
+        }
+        return list;
     }
 }

@@ -42,13 +42,42 @@ import org.restlet.ext.apispark.internal.model.Representation;
  */
 public abstract class Types {
 
+    private static class TypeInfoKey {
+
+        private final Class<?> clazz;
+
+        private final Type type;
+
+        public TypeInfoKey(Class<?> clazz, Type type) {
+            this.clazz = clazz;
+            this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof TypeInfoKey) {
+                TypeInfoKey that = (TypeInfoKey) obj;
+                return Objects.equals(this.clazz, that.clazz)
+                        && Objects.equals(this.type, that.type);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(clazz, type);
+        }
+    }
+
     /** TypeInfo cache. */
     private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
+
+    public static final String compositeType = "composite";
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
             "short", "integer", "long", "float", "double", "boolean", "string",
             "date", "file");
-
+    
     private static final Map<Class<?>, String> primitiveTypesByClass;
 
     static {
@@ -76,17 +105,6 @@ public abstract class Types {
                                                        // considered as date
     }
 
-    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
-        TypeInfoKey key = new TypeInfoKey(clazz, type);
-        TypeInfo typeInfo = cache.get(key);
-
-        if (typeInfo == null) {
-            typeInfo = new TypeInfo(clazz, type);
-            cache.put(key, typeInfo);
-        }
-        return typeInfo;
-    }
-
     /**
      * Returns simple type name for primitive type or full name otherwise
      */
@@ -108,17 +126,32 @@ public abstract class Types {
         return type.getSimpleName();
     }
 
-    public static boolean isPrimitiveType(Class<?> type) {
-        return (primitiveTypesByClass.get(type) != null
-                || CharSequence.class.isAssignableFrom(type)
-                || Date.class.isAssignableFrom(type) || Representation.class
-                    .isAssignableFrom(type));
+    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
+        TypeInfoKey key = new TypeInfoKey(clazz, type);
+        TypeInfo typeInfo = cache.get(key);
+
+        if (typeInfo == null) {
+            typeInfo = new TypeInfo(clazz, type);
+            cache.put(key, typeInfo);
+        }
+        return typeInfo;
+    }
+
+    public static boolean isCompositeType(String typename) {
+        return compositeType.contains(typename);
     }
 
     public static boolean isPojo(Class<?> type) {
         return Object.class != type && !type.isInterface();
     }
 
+    public static boolean isPrimitiveType(Class<?> type) {
+        return (primitiveTypesByClass.get(type) != null
+                || CharSequence.class.isAssignableFrom(type)
+                || Date.class.isAssignableFrom(type) || Representation.class
+                    .isAssignableFrom(type));
+    }
+    
     public static boolean isPrimitiveType(String typename) {
         return primitivesTypes.contains(typename);
     }
@@ -128,33 +161,6 @@ public abstract class Types {
             return clazz.toString();
         } else {
             return type.toString();
-        }
-    }
-
-    private static class TypeInfoKey {
-
-        private final Class<?> clazz;
-
-        private final Type type;
-
-        public TypeInfoKey(Class<?> clazz, Type type) {
-            this.clazz = clazz;
-            this.type = type;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof TypeInfoKey) {
-                TypeInfoKey that = (TypeInfoKey) obj;
-                return Objects.equals(this.clazz, that.clazz)
-                        && Objects.equals(this.type, that.type);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(clazz, type);
         }
     }
 }

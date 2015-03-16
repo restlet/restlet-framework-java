@@ -157,9 +157,7 @@ public class AnalyticsHandler {
         callLog.setDate(new Date(startTime));
         callLog.setDuration(duration);
         callLog.setMethod(request.getMethod().getName());
-        String resourceQuery = (request.getResourceRef() == null) ? ""
-                : request.getResourceRef().getQuery();
-        callLog.setPath(request.getResourceRef().getPath() + resourceQuery);
+        callLog.setPath(request.getResourceRef().getPath());
         callLog.setRemoteIp(request.getClientInfo().getUpstreamAddress());
         callLog.setStatusCode(response.getStatus().getCode());
         callLog.setUserAgent(request.getClientInfo().getAgent());

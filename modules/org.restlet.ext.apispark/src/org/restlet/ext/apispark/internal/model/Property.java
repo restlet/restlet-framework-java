@@ -51,9 +51,15 @@ public class Property {
      */
     private List<String> enumeration;
 
+    /**
+     * An example of the property's value.
+     */
+    private String example;
+
     // TODO review comment
     /**
-     * Maximum value of this property if it is a number Note: check casts
+     * Maximum value of this property if it is a number.<br>
+     * Note: check casts.
      */
     private String max;
 
@@ -63,7 +69,8 @@ public class Property {
 
     // TODO review comment
     /**
-     * Minimum value of this property if it is a number Note: check casts
+     * Minimum value of this property if it is a number.<br>
+     * Note: check casts.
      */
     private String min;
 
@@ -74,6 +81,9 @@ public class Property {
     /** Name of this property. */
     private String name;
 
+    /** list of properties, in case of nested type. */
+    private List<Property> properties;
+
     /**
      * Type of this property, either a primitive type or a reference to a
      * representation.
@@ -83,14 +93,9 @@ public class Property {
     // TODO review comment
     /**
      * If maxOccurs > 1, indicates whether each item in this property is
-     * supposed to be unique or not
+     * supposed to be unique or not.
      */
     private boolean uniqueItems;
-    
-    /**
-     * An example of the property's value.
-     */
-    private String example;
 
     public String getDefaultValue() {
         return defaultValue;
@@ -105,6 +110,10 @@ public class Property {
             enumeration = new ArrayList<String>();
         }
         return enumeration;
+    }
+
+    public String getExample() {
+        return example;
     }
 
     public String getMax() {
@@ -127,6 +136,13 @@ public class Property {
         return name;
     }
 
+    public List<Property> getProperties() {
+        if (properties == null) {
+            properties = new ArrayList<>();
+        }
+        return properties;
+    }
+
     public String getType() {
         return type;
     }
@@ -145,6 +161,10 @@ public class Property {
 
     public void setEnumeration(List<String> enumeration) {
         this.enumeration = enumeration;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
     }
 
     public void setMax(String max) {
@@ -167,19 +187,15 @@ public class Property {
         this.name = name;
     }
 
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
-    }
-
-    public String getExample() {
-        return example;
-    }
-
-    public void setExample(String example) {
-        this.example = example;
     }
 }

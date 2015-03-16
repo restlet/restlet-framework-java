@@ -1153,7 +1153,8 @@
       "domain": "petstore.swagger.wordnik.com",
       "port": null,
       "protocol": "http",
-      "basePath": "/api"
+      "basePath": "/api",
+      "authenticationProtocol": "HTTP_BASIC"
     }
   ],
   "license": {

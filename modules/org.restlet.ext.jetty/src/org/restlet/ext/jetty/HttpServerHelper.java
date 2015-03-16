@@ -46,4 +46,5 @@ public class HttpServerHelper extends JettyServerHelper {
         super(server);
         getProtocols().add(Protocol.HTTP);
     }
+
 }
