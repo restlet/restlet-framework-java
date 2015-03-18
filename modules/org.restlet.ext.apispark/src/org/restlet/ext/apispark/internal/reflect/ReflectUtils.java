@@ -27,6 +27,7 @@ package org.restlet.ext.apispark.internal.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -97,11 +98,13 @@ public class ReflectUtils {
             return getComponentClass(gat.getGenericComponentType());
         } else if (type instanceof ParameterizedType) {
             ParameterizedType t = (ParameterizedType) type;
-            if (t.getActualTypeArguments().length == 1) {
-                return getComponentClass(t.getActualTypeArguments()[0]);
-            } else {
-                throw new UnsupportedTypeException("Type " + type + " is a generic type with several arguments. This is not supported.");
+            if (t.getActualTypeArguments().length != 1) {
+                throw new UnsupportedTypeException("Type " + type + " is a generic type with zero or several arguments. This is not supported.");
             }
+            if (t.getActualTypeArguments()[0] instanceof TypeVariable) {
+                    throw new UnsupportedTypeException("Type " + type + " is a generic type with unkwnown type. This is not supported.");
+            }
+            return getComponentClass(t.getActualTypeArguments()[0]);
         }
         return (type != null) ? type.getClass() : null;
     }
