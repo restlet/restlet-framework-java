@@ -74,7 +74,7 @@ public class ApiSparkConfig {
         return reverseProxyTargetUrl;
     }
 
-    public boolean isReverserProxyEnabled() {
+    public boolean isReverseProxyEnabled() {
         return reverseProxyEnabled;
     }
 

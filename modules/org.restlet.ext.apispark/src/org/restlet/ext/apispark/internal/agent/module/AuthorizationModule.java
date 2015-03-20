@@ -52,8 +52,7 @@ public class AuthorizationModule extends Filter {
 
     /**
      * Wrap an {@link OperationAuthorization} in a {@link Restlet} class for
-     * reuse of
-     * {@link Router#getNext(org.restlet.Request, org.restlet.Response)} logic.
+     * reuse of {@link Router#getNext(org.restlet.Request, org.restlet.Response)} logic.
      */
     private static class RestletOperationAuthorization extends Restlet {
 
@@ -181,7 +180,8 @@ public class AuthorizationModule extends Filter {
                     + operationAuthorization.getPathTemplate());
         } else {
             for (String groupAllowed : groupsAllowed) {
-                if (hasRole(userRoles, groupAllowed)) {
+                if (hasRole(userRoles, groupAllowed)
+                        || "anyone".equals(groupAllowed)) {
                     authorized = true;
                     break;
                 }

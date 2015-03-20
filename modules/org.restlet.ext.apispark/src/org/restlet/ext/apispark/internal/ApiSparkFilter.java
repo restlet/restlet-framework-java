@@ -177,7 +177,7 @@ public class ApiSparkFilter extends Filter {
             restletChain.add(new FirewallFilter(context, firewallRules));
         }
 
-        if (apiSparkConfig.isReverserProxyEnabled()) {
+        if (apiSparkConfig.isReverseProxyEnabled()) {
             LOGGER.info("Add redirection module");
             String redirectorUrl = apiSparkConfig.getReverseProxyTargetUrl()
                     + "{rr}";
@@ -247,7 +247,7 @@ public class ApiSparkFilter extends Filter {
      *            The service's configuration
      */
     public void validateRedirection(ApiSparkConfig config) {
-        if (config.isReverserProxyEnabled()
+        if (config.isReverseProxyEnabled()
                 && StringUtils.isNullOrEmpty(config.getReverseProxyTargetUrl())) {
             throw new IllegalArgumentException(
                     "The redirection url is mandatory when redirection is enabled");
