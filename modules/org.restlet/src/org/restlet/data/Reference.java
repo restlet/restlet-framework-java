@@ -1744,7 +1744,7 @@ public class Reference {
      * @see #getRemainingPart()
      */
     public String getRemainingPart(boolean decode) {
-        return getRemainingPart(true, true);
+        return getRemainingPart(decode, true);
     }
 
     /**

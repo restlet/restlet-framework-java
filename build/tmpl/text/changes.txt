@@ -11,6 +11,8 @@ Changes log
        - When catching a 405 status, make sure to update allowed methods inside 
          a ServerResource. Issue #1034.
          Reported by Jeremy Gustie.
+       - Fixed wrong Reference.getRemainingPart(boolean decode). Issue #1041.
+         Reported by Tal Liron.
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
