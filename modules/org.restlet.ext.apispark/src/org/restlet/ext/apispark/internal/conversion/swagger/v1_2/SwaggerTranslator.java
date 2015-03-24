@@ -242,7 +242,10 @@ public abstract class SwaggerTranslator {
             if (outRepr.isArray()) {
                 rod.setType("array");
                 if (Types.isPrimitiveType(outRepr.getType())) {
-                    // TODO how to display error ?
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(outRepr.getType());
+                    rod.getItems().setType(swaggerTypeFormat.getType());
+                    rod.getItems().setFormat(swaggerTypeFormat.getFormat());
                 } else {
                     rod.getItems().setRef(outRepr.getType());
                 }
@@ -374,7 +377,7 @@ public abstract class SwaggerTranslator {
                     SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
                             .toSwaggerType(type);
                     tpd.getItems().setType(swaggerTypeFormat.getType());
-                    tpd.setFormat(swaggerTypeFormat.getFormat());
+                    tpd.getItems().setFormat(swaggerTypeFormat.getFormat());
                 } else {
                     tpd.getItems().setRef(type);
                     if (composite) {
