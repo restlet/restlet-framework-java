@@ -13,6 +13,9 @@ Changes log
          Reported by Jeremy Gustie.
        - Fixed wrong Reference.getRemainingPart(boolean decode). Issue #1041.
          Reported by Tal Liron.
+       - Authorization header is not sent by GWT client, for authentication scheme other 
+         than HTTP Basic. Issue #1040.
+
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
