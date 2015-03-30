@@ -312,12 +312,16 @@ public class Swagger2TestCase extends RestletTestCase {
         Map<String, SecuritySchemeDefinition> savedSecuritySchemes = savedSwagger.getSecurityDefinitions();
         Map<String, SecuritySchemeDefinition> translatedSecuritySchemes = translatedSwagger.getSecurityDefinitions();
 
-        assertEquals(savedSecuritySchemes.size(),
-                translatedSecuritySchemes.size());
+        if (savedSecuritySchemes == null) {
+            assertEquals(translatedSecuritySchemes, null);
+        } else {
+            assertEquals(savedSecuritySchemes.size(),
+                    translatedSecuritySchemes.size());
 
-        for (String key : savedSecuritySchemes.keySet()) {
-            assertEquals(savedSecuritySchemes.get(key).getClass(),
-                    translatedSecuritySchemes.get(key).getClass());
+            for (String key : savedSecuritySchemes.keySet()) {
+                assertEquals(savedSecuritySchemes.get(key).getClass(),
+                        translatedSecuritySchemes.get(key).getClass());
+            }
         }
     }
 
