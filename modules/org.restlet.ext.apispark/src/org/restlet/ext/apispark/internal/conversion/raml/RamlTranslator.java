@@ -552,18 +552,14 @@ public abstract class RamlTranslator {
     private static String getExampleFromPayLoad(PayLoad payLoad,
             Map<String, Map<String, Object>> representationSamples,
             String mediaType) {
-        if (Types.isPrimitiveType(payLoad.getType())) {
-            Object sample = SampleUtils.getPropertyDefaultSampleValue(
-                    payLoad.getType(), "value");
-            return sample == null ? null : sample.toString();
-        } else {
-            Object sample = representationSamples.get(payLoad.getType());
-            if (payLoad.isArray()) {
-                sample = Arrays.asList(sample);
-            }
-            return SampleUtils.convertSampleAccordingToMediaType(sample,
-                    mediaType, payLoad.getType());
+        Object sample = (Types.isPrimitiveType(payLoad.getType())) ?
+            SampleUtils.getPropertyDefaultExampleValue(payLoad.getType(), "value") :
+            representationSamples.get(payLoad.getType());
+
+        if (payLoad.isArray()) {
+            sample = Arrays.asList(sample);
         }
+        return SampleUtils.convertSampleAccordingToMediaType(sample, mediaType, payLoad.getType());
     }
 
     /**

@@ -245,7 +245,7 @@ public class Swagger2Translator {
 
             com.wordnik.swagger.models.properties.Property propertySwagger;
 
-            Object exampleObject = SampleUtils.getFieldSampleValue(property);
+            Object exampleObject = SampleUtils.getPropertyExampleValue(property);
             String example = exampleObject == null ? null : exampleObject
                     .toString();
 
@@ -253,7 +253,7 @@ public class Swagger2Translator {
             if (property.getMaxOccurs() != null
                     && (property.getMaxOccurs() > 1 || property.getMaxOccurs() == -1)) {
                 ArrayProperty arrayProperty = new ArrayProperty();
-                com.wordnik.swagger.models.properties.Property itemProperty = null;
+                com.wordnik.swagger.models.properties.Property itemProperty;
                 if (Types.isCompositeType(property.getType())) {
                     String compositePropertyType = name + StringUtils.firstUpper(property.getName());
                     itemProperty = newPropertyForType(compositePropertyType);
@@ -503,7 +503,7 @@ public class Swagger2Translator {
      *            Swagger definition
      */
     private static void fillPaths(Definition definition, Swagger swagger) {
-        Map<String, Path> paths = new LinkedHashMap<String, Path>();
+        Map<String, Path> paths = new LinkedHashMap<>();
 
         for (Resource resource : definition.getContract().getResources()) {
             Path pathSwagger = new Path();
