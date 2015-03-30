@@ -74,7 +74,7 @@ public class SampleUtils {
         return getPropertiesSample(representation.getProperties());
     }
 
-    public static Map<String, Object> getPropertiesSample(List<Property> properties){
+    public static Map<String, Object> getPropertiesSample(List<Property> properties) {
         Map<String, Object> content = new HashMap<>();
         for (Property property : properties) {
             if (Types.compositeType.equals(property.getType())) {
@@ -86,11 +86,16 @@ public class SampleUtils {
         return content;
     }
 
-            public static Object getFieldSampleValue(Property property) {
+    public static Object getFieldSingleSampleValue(Property property) {
         Object sampleValue = property.getExample() != null ? convertSampleValue(
                 property.getType(), property.getExample())
                 : getPropertyDefaultSampleValue(property.getType(),
                         property.getName());
+        return sampleValue;
+    }
+
+    public static Object getFieldSampleValue(Property property) {
+        Object sampleValue = getFieldSingleSampleValue(property);
 
         if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
             if (sampleValue != null) {
@@ -99,6 +104,7 @@ public class SampleUtils {
                 sampleValue = Arrays.asList();
             }
         }
+
         return sampleValue;
     }
 
