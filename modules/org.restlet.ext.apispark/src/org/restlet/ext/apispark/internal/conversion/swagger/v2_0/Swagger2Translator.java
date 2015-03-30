@@ -245,7 +245,7 @@ public class Swagger2Translator {
 
             com.wordnik.swagger.models.properties.Property propertySwagger;
 
-            Object exampleObject = SampleUtils.getFieldSampleValue(property);
+            Object exampleObject = SampleUtils.getFieldSingleSampleValue(property);
             String example = exampleObject == null ? null : exampleObject
                     .toString();
 
