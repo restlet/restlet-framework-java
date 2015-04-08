@@ -64,7 +64,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
         ctx.write(response);
     }
 
-    private volatile NettyCall call;
+    private volatile NettyServerCall call;
 
     private final NettyServerHelper serverHelper;
 
@@ -84,7 +84,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
                     send100Continue(ctx);
                 }
 
-                call = new NettyCall(getServerHelper().getHelped(), ctx,
+                call = new NettyServerCall(getServerHelper().getHelped(), ctx,
                         request);
                 serverHelper.handle(call);
                 appendDecoderResult(request);

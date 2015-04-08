@@ -60,7 +60,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class NettyCall extends ServerCall {
+public class NettyServerCall extends ServerCall {
 
     private final ChannelHandlerContext nettyContext;
 
@@ -73,7 +73,7 @@ public class NettyCall extends ServerCall {
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
 
-    public NettyCall(Server server, ChannelHandlerContext nettyContext,
+    public NettyServerCall(Server server, ChannelHandlerContext nettyContext,
             HttpRequest httpRequest) {
         super(server);
         this.nettyContext = nettyContext;
@@ -170,14 +170,13 @@ public class NettyCall extends ServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     protected SSLEngine getSslEngine() {
-        // TODO Auto-generated method stub
-        return super.getSslEngine();
+        // TODO
+        return null;
     }
 
     @Override

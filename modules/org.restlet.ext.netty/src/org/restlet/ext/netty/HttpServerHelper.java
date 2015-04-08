@@ -59,7 +59,6 @@ public class HttpServerHelper extends NettyServerHelper {
             @Override
             public void handle(Request request, Response response) {
                 super.handle(request, response);
-
                 response.setEntity("Hello, world!", MediaType.TEXT_PLAIN);
             }
         });
