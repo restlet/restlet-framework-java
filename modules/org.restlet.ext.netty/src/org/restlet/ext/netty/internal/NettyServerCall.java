@@ -44,6 +44,7 @@ import io.netty.handler.stream.ChunkedStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -84,8 +85,13 @@ public class NettyServerCall extends ServerCall {
 
     @Override
     public boolean abort() {
-        // TODO Auto-generated method stub
-        return false;
+        try {
+            getNettyContext().close().sync();
+            return true;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -100,13 +106,16 @@ public class NettyServerCall extends ServerCall {
 
     @Override
     public String getClientAddress() {
-        return getNettyContext().channel().remoteAddress().toString();
+        InetSocketAddress isa = (InetSocketAddress) getNettyContext().channel()
+                .remoteAddress();
+        return isa.getHostString();
     }
 
     @Override
     public int getClientPort() {
-        // TODO Auto-generated method stub
-        return super.getClientPort();
+        InetSocketAddress isa = (InetSocketAddress) getNettyContext().channel()
+                .remoteAddress();
+        return isa.getPort();
     }
 
     @Override

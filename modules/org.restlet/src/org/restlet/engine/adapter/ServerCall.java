@@ -99,7 +99,7 @@ public abstract class ServerCall extends Call {
      * Ask the connector to abort the related network connection, for example
      * immediately closing the socket.
      * 
-     * @return True if the request was aborted.
+     * @return True if the connection was aborted.
      */
     public abstract boolean abort();
 
