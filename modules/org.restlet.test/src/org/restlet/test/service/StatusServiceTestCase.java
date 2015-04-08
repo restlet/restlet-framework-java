@@ -202,6 +202,7 @@ public class StatusServiceTestCase extends RestletTestCase {
             this.value = value;
         }
 
+        @SuppressWarnings("unused")
         public int getValue() {
             return value;
         }
@@ -214,6 +215,7 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         private int value;
 
+        @SuppressWarnings("unused")
         public Status401SerializableException() {
 
         }
@@ -237,6 +239,8 @@ public class StatusServiceTestCase extends RestletTestCase {
     @JsonIgnoreProperties({ "cause", "localizedMessage", "message",
             "stackTrace", "suppressed" })
     private static class StatusBusinessException extends Throwable {
+        private static final long serialVersionUID = 1L;
+
         private StatusBusinessException(String message) {
             super(message);
         }

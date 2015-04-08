@@ -928,8 +928,6 @@ public class Engine {
     public void registerDefaultProtocols() {
         getRegisteredProtocols().add(
                 new org.restlet.engine.connector.HttpProtocolHelper());
-        getRegisteredProtocols().add(
-                new org.restlet.engine.connector.WebDavProtocolHelper());
     }
 
     // [ifndef gwt] method

@@ -41,7 +41,7 @@ public class TestGetChunkedServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        helper = new org.restlet.ext.nio.HttpServerHelper(null);
+        helper = new org.restlet.ext.netty.HttpServerHelper(null);
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);

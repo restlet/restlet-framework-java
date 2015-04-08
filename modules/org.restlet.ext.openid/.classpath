@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.json"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.xml"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/net.sourceforge.nekohtml"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpclient"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.openid4java"/>
 	<classpathentry kind="output" path="bin"/>

@@ -1,0 +1,17 @@
+<library id="json" symbolicName="org.json">
+	<name>Netty</name>
+	<description>Netty project.</description>
+	<version>4.1</version>
+	<homeUri>http://netty.io</homeUri>
+	<downloadUri>http://netty.io/downloads.html</downloadUri>
+	<provider>The Netty project</provider>
+	
+	<package name="io.netty" />
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<javadocs>
+		<link href="http://netty.io/4.1/api/" />
+	</javadocs>
+</library>

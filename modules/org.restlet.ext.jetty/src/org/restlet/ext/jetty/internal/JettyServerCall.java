@@ -287,8 +287,9 @@ public class JettyServerCall extends ServerCall {
         } else {
             // Send the response entity
             getChannel().getResponse().setStatus(getStatusCode());
+            
             try {
-            super.sendResponse(response);
+                super.sendResponse(response);
             } catch (IllegalStateException e) {
                 getLogger().log(Level.WARNING, "Unable to set the status", e);
             }

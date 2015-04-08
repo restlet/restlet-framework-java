@@ -169,22 +169,9 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isAvailable();
     }
 
-    // [ifndef gae,gwt] method
-    @Override
-    public boolean isSelectable() {
-        return getWrappedRepresentation().isSelectable();
-    }
-
     @Override
     public boolean isTransient() {
         return getWrappedRepresentation().isTransient();
-    }
-
-    // [ifndef gae,gwt] method
-    @Override
-    public org.restlet.util.SelectionRegistration getRegistration()
-            throws IOException {
-        return getWrappedRepresentation().getRegistration();
     }
 
     @Override

@@ -38,8 +38,6 @@ import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
@@ -542,8 +540,7 @@ public class IoUtils {
 
         if (readableChannel != null) {
             result = isBlocking(readableChannel) ? Channels
-                    .newInputStream(readableChannel)
-                    : new NbChannelInputStream(readableChannel);
+                    .newInputStream(readableChannel) : null;
         }
 
         return result;
@@ -642,8 +639,7 @@ public class IoUtils {
 
         if (writableChannel != null) {
             result = isBlocking(writableChannel) ? Channels
-                    .newOutputStream(writableChannel)
-                    : new NbChannelOutputStream(writableChannel);
+                    .newOutputStream(writableChannel) : null;
         }
 
         return result;
@@ -722,31 +718,6 @@ public class IoUtils {
         }
 
         return result;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Release the selection key, working around for bug #6403933.
-     * 
-     * @param selector
-     *            The associated selector.
-     * @param selectionKey
-     *            The used selection key.
-     * @throws IOException
-     */
-    public static void release(Selector selector, SelectionKey selectionKey)
-            throws IOException {
-        if (selectionKey != null) {
-            // The key you registered on the temporary selector
-            selectionKey.cancel();
-
-            if (selector != null) {
-                // Flush the canceled key
-                selector.selectNow();
-                SelectorFactory.returnSelector(selector);
-            }
-        }
-
     }
 
     // [ifndef gwt] method
