@@ -25,11 +25,13 @@
 package org.restlet.ext.netty.internal;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpChunkedInput;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -61,6 +63,8 @@ import org.restlet.util.Series;
 public class NettyCall extends ServerCall {
 
     private final ChannelHandlerContext nettyContext;
+
+    private volatile HttpContentInputStream nettyEntityStream;
 
     private final HttpRequest nettyRequest;
 
@@ -114,6 +118,15 @@ public class NettyCall extends ServerCall {
         return nettyContext;
     }
 
+    protected HttpContentInputStream getNettyEntityStream() {
+        if (this.nettyEntityStream == null) {
+            this.nettyEntityStream = new HttpContentInputStream(
+                    getNettyContext());
+        }
+
+        return this.nettyEntityStream;
+    }
+
     protected HttpRequest getNettyRequest() {
         return nettyRequest;
     }
@@ -124,8 +137,7 @@ public class NettyCall extends ServerCall {
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        // TODO Auto-generated method stub
-        return null;
+        return getNettyEntityStream();
     }
 
     @Override
@@ -180,6 +192,15 @@ public class NettyCall extends ServerCall {
         }
 
         return result;
+    }
+
+    public void onContent(HttpContent httpContent) throws IOException {
+        ByteBuf content = httpContent.content();
+
+        if (content.isReadable()) {
+            getNettyEntityStream().onContent(content,
+                    httpContent instanceof LastHttpContent);
+        }
     }
 
     protected void setNettyResponse(HttpResponse nettyResponse) {

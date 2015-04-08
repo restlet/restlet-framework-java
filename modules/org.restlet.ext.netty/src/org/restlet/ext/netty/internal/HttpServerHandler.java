@@ -26,7 +26,9 @@ package org.restlet.ext.netty.internal;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-import io.netty.buffer.ByteBuf;
+
+import java.io.IOException;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.DecoderResult;
@@ -62,7 +64,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
         ctx.write(response);
     }
 
-    private HttpRequest request;
+    private volatile NettyCall call;
 
     private final NettyServerHelper serverHelper;
 
@@ -74,36 +76,40 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<Object> {
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
         System.out.println("Message received: " + msg);
 
-        if (msg instanceof HttpRequest) {
-            HttpRequest request = this.request = (HttpRequest) msg;
+        try {
+            if (msg instanceof HttpRequest) {
+                HttpRequest request = (HttpRequest) msg;
 
-            if (HttpHeaderUtil.is100ContinueExpected(request)) {
-                send100Continue(ctx);
-            }
+                if (HttpHeaderUtil.is100ContinueExpected(request)) {
+                    send100Continue(ctx);
+                }
 
-            try {
-                serverHelper.handle(new NettyCall(
-                        getServerHelper().getHelped(), ctx, request));
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            appendDecoderResult(request);
-        } else if (msg instanceof HttpContent) {
-            HttpContent httpContent = (HttpContent) msg;
-
-            ByteBuf content = httpContent.content();
-            if (content.isReadable()) {
+                call = new NettyCall(getServerHelper().getHelped(), ctx,
+                        request);
+                serverHelper.handle(call);
                 appendDecoderResult(request);
-            }
+            } else if (msg instanceof HttpContent) {
+                HttpContent httpContent = (HttpContent) msg;
+                ctx.channel().config().setAutoRead(false);
 
-            if (msg instanceof LastHttpContent) {
-                LastHttpContent trailer = (LastHttpContent) msg;
+                if (call != null) {
+                    call.onContent(httpContent);
+                } else {
+                    throw new IOException(
+                            "Unexpected error, content arrived before call created");
+                }
 
-                if (!trailer.trailingHeaders().isEmpty()) {
-                    // TODO: ???
+                if (msg instanceof LastHttpContent) {
+                    LastHttpContent trailer = (LastHttpContent) msg;
+
+                    if (!trailer.trailingHeaders().isEmpty()) {
+                        // TODO
+                    }
                 }
             }
+        } catch (Throwable e) {
+            // TODO
+            e.printStackTrace();
         }
     }
 
