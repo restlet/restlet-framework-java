@@ -39,7 +39,8 @@ Changes log
         Reported by Philippe Perrault and spraguep.
 
     - Enhancements
-      - 
+      - Added support of JAX-RS extension for the Android edition.
+        Contributed by Kiran Rao.
 
 - 2.3.0 (12/17/2014)
     - Bugs fixed

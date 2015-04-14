@@ -35,8 +35,7 @@
          <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileUploadProvider.java" />
          <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbElementProvider.java" />
          <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/MultipartProvider.java" />
-         
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/MultipartProvider.java" />        
 ]]>
 		</files-sets>
 	</source>

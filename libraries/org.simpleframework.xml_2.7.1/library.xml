@@ -6,7 +6,7 @@
 	<homeUri>http://simple.sourceforge.net/</homeUri>
 	<downloadUri>http://simple.sourceforge.net/download.php</downloadUri>
 	<provider>Niall Gallagher</provider>
-	
+
 	<package name="org.simpleframework.xml">
 		<maven>
 			<artifactId>simple-xml</artifactId>
