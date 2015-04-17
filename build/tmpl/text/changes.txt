@@ -15,6 +15,8 @@ Changes log
          Reported by Tal Liron.
        - Authorization header is not sent by GWT client, for authentication scheme other 
          than HTTP Basic. Issue #1040.
+       - Jetty client connector duplicates User-Agent header. Issue #1055.
+         Reported by Charlie Mason.
 
     - Misc
        - Completed the Javadocs for query parameter declarations inside
