@@ -17,6 +17,8 @@ Changes log
          than HTTP Basic. Issue #1040.
        - Jetty client connector duplicates User-Agent header. Issue #1055.
          Reported by Charlie Mason.
+       - Fixed Restlet JAX-RS encoding problem when using @FormParam annotation. 
+         Issue #1038.
 
     - Misc
        - Completed the Javadocs for query parameter declarations inside
