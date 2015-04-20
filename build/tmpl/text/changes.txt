@@ -19,6 +19,8 @@ Changes log
          Reported by Charlie Mason.
        - Fixed Restlet JAX-RS encoding problem when using @FormParam annotation. 
          Issue #1038.
+       - Fixed Tomcat shutdown due to TaskService that did not instantiate 
+         threads as daemon threads. Issue #1053.
 
     - Misc
        - Completed the Javadocs for query parameter declarations inside
