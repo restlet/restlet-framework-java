@@ -196,11 +196,11 @@ public class ServerAdapter extends Adapter {
             // [enddef]
             {
                 getLogger().log(Level.SEVERE,
-                        "An exception occured writing the response entity", t);
+                        "An exception occurred writing the response entity", t);
                 response.getHttpCall().setStatusCode(
                         Status.SERVER_ERROR_INTERNAL.getCode());
                 response.getHttpCall().setReasonPhrase(
-                        "An exception occured writing the response entity");
+                        "An exception occurred writing the response entity");
                 response.setEntity(null);
 
                 try {
