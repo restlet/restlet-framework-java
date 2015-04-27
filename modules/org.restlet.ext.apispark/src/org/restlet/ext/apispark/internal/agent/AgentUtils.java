@@ -79,7 +79,7 @@ public abstract class AgentUtils {
                     modulesSettings.getCellRevision());
         }
 
-        return clientResource.wrap(resourceClass);
+        return clientResource.wrap(resourceClass, AgentUtils.class.getClassLoader());
     }
 
     /**
