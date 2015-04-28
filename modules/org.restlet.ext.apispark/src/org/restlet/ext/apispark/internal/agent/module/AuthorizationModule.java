@@ -52,8 +52,7 @@ public class AuthorizationModule extends Filter {
 
     /**
      * Wrap an {@link OperationAuthorization} in a {@link Restlet} class for
-     * reuse of
-     * {@link Router#getNext(org.restlet.Request, org.restlet.Response)} logic.
+     * reuse of {@link Router#getNext(org.restlet.Request, org.restlet.Response)} logic.
      */
     private static class RestletOperationAuthorization extends Restlet {
 
@@ -171,12 +170,21 @@ public class AuthorizationModule extends Filter {
         // check that user has at least one authorized role (named group in
         // apispark)
         boolean authorized = false;
-        List<String> groupsAllowed = restletOperationAuthorization
-                .getOperationAuthorization().getGroupsAllowed();
-        for (String groupAllowed : groupsAllowed) {
-            if (hasRole(userRoles, groupAllowed)) {
-                authorized = true;
-                break;
+        OperationAuthorization operationAuthorization = restletOperationAuthorization
+                .getOperationAuthorization();
+        List<String> groupsAllowed = operationAuthorization.getGroupsAllowed();
+        if (groupsAllowed == null) {
+            LOGGER.warning("No group is allowed for method "
+                    + operationAuthorization.getMethod()
+                    + " on this resource: "
+                    + operationAuthorization.getPathTemplate());
+        } else {
+            for (String groupAllowed : groupsAllowed) {
+                if (hasRole(userRoles, groupAllowed)
+                        || "anyone".equals(groupAllowed)) {
+                    authorized = true;
+                    break;
+                }
             }
         }
 
