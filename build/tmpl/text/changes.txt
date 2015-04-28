@@ -21,7 +21,9 @@ Changes log
          Issue #1038.
        - Fixed Tomcat shutdown due to TaskService that did not instantiate 
          threads as daemon threads. Issue #1053.
-
+       - Made a public field private in JaxRs extension which lead some 
+         containers to stop the application. Issue #1058.
+         Reported by Constantin Gruber.
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
