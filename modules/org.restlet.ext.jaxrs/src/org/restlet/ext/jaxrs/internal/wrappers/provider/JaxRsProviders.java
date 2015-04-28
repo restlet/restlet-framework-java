@@ -192,7 +192,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             return false;
         } catch (InvocationTargetException ite) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because an exception occured while instantiating";
+                    + ", because an exception occurred while instantiating";
             logger.log(Level.WARNING, msg, ite);
             return false;
         } catch (IllegalArgumentException iae) {

@@ -132,7 +132,7 @@ public class ClientAdapter extends Adapter {
         } catch (Exception e) {
             getLogger()
                     .log(Level.FINE,
-                            "An error occured during the processing of the HTTP response.",
+                            "An error occurred during the processing of the HTTP response.",
                             e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
