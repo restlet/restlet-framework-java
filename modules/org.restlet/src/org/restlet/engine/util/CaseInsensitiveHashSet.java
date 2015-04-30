@@ -56,4 +56,8 @@ public class CaseInsensitiveHashSet extends HashSet<String> {
         return super.contains(element.toLowerCase());
     }
 
+    @Override
+    public boolean contains(Object o) {
+        return contains(o.toString());
+    }
 }
