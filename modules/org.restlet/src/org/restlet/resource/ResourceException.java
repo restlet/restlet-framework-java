@@ -24,6 +24,8 @@
 
 package org.restlet.resource;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Status;
 
 /**
@@ -37,6 +39,12 @@ public class ResourceException extends RuntimeException {
 
     /** The status associated to this exception. */
     private final Status status;
+
+    /** The request associated to this exception. Could be null. */
+    private final Request request;
+
+    /** The response associated to this exception. Could be null.  */
+    private final Response response;
 
     /**
      * Constructor.
@@ -191,6 +199,17 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Constructor.
+     *
+     * @param status
+     *            The status to associate.
+     */
+    public ResourceException(Status status, Request request, Response response) {
+        this(status, (Throwable) ((status == null) ? null : status
+                .getThrowable()), request, response);
+    }
+
+    /**
+     * Constructor.
      * 
      * @param status
      *            The status to copy.
@@ -224,9 +243,24 @@ public class ResourceException extends RuntimeException {
      *            The wrapped cause error or exception.
      */
     public ResourceException(Status status, Throwable cause) {
-        super((status == null) ? null : status.getReasonPhrase(), cause);
-        this.status = status;
+        this(status, cause, null, null);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param status
+     *            The status to associate.
+     * @param cause
+     *            The wrapped cause error or exception.
+     */
+    public ResourceException(Status status, Throwable cause, Request request, Response response) {
+        super((status == null) ? null : status.toString(), cause);
+        this.status = status;
+        this.request = request;
+        this.response = response;
+    }
+
 
     /**
      * Constructor that set the status to
@@ -247,11 +281,6 @@ public class ResourceException extends RuntimeException {
      */
     public Status getStatus() {
         return this.status;
-    }
-
-    @Override
-    public String toString() {
-        return getStatus().toString();
     }
 
 }

@@ -263,7 +263,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 // Handle the response
                 if (isSynchronous) {
                     if (response.getStatus().isError()) {
-                        getClientResource().doError(response.getStatus());
+                        getClientResource().doError(request, response);
                     }
 
                     if (!annotationInfo.getJavaOutputType().equals(void.class)) {
