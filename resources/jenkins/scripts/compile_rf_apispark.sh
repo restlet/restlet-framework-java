@@ -12,16 +12,22 @@ VERSION=$3
 # Build tag: will be used to create bundles artifact
 BUILD_TAG=$5
 
-# Clean build directories
-rm -rf build/editions
-
 cd build
+
+# Clean build directories
+rm -rf editions
+rm -rf builds
+
+mkdir builds
 
 # Run test suite
 ant -Deditions=jse -Dverify=true
+mv editions/jse builds/
 
 # Build RF OSGI version for APISpark
 ant -Deditions=osgi -Dverify=false -Djavadoc=false -Dmaven=false -Dnsis=false -Dpackage=false -Declipse-pde=true -Declipse-pde-optional-dependencies=true -Dp2=true
+mv editions/osgi builds/
 
 # Build  RF JSE version for agent and create maven artefacts
 ant -Deditions=jse -Dverify=false -Djavadoc=false -Dmaven=true -Dnsis=false -Dpackage=false -Declipse-pde=true -Declipse-pde-optional-dependencies=true -Dp2=true
+mv editions/jse builds/jse-maven
