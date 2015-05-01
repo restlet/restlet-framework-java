@@ -33,6 +33,7 @@ Changes log
       - Allowed to turn off header cleaning in Redirector for server-side 
         redirects. Issue #799.
         Suggested by Tal Liron.
+      - Upgraded swagger-models library to 1.5.3-M1.
 
 - 2.3.1 (02/03/2015)
     - Bugs fixed

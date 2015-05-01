@@ -39,7 +39,6 @@ import org.restlet.representation.FileRepresentation;
 
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.util.SwaggerLoader;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 
@@ -95,7 +94,7 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.composite.swagger");
-        Swagger savedSwagger = new SwaggerLoader().read(refImpl.getFile());
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
         compareSwaggerBeans(translatedSwagger, savedSwagger);

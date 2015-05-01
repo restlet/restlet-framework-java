@@ -62,7 +62,6 @@ import com.wordnik.swagger.models.properties.ArrayProperty;
 import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
-import com.wordnik.swagger.util.SwaggerLoader;
 
 public class Swagger2TranslatorTestCase extends Swagger2TestCase {
 
@@ -369,8 +368,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
-        @SuppressWarnings("deprecation")
-        Swagger savedSwagger = new SwaggerLoader().read(refImpl.getFile());
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }

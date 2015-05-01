@@ -1,8 +1,8 @@
 <library id="simple-xml" symbolicName="org.simpleframework.xml">
 	<name>Simple XML</name>
 	<description>Simple XML.</description>
-	<version>2.7.1</version>
-	<!-- <release>6</release> -->
+	<version>2.7</version>
+	<release>1</release>
 	<homeUri>http://simple.sourceforge.net/</homeUri>
 	<downloadUri>http://simple.sourceforge.net/download.php</downloadUri>
 	<provider>Niall Gallagher</provider>
