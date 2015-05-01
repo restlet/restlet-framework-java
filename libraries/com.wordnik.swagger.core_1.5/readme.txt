@@ -14,4 +14,4 @@ https://helloreverb.com/developers/swagger
 
 Swagger spec compatibility: 2.0
 
-Built from tag v1.5.2-M1
+Built from tag v1.5.3-M1
