@@ -525,7 +525,7 @@ public class Engine {
             } catch (IOException e) {
                 Context.getCurrentLogger()
                         .log(Level.WARNING,
-                                "An error occured while discovering the engine helpers.",
+                                "An error occurred while discovering the engine helpers.",
                                 e);
             }
         }

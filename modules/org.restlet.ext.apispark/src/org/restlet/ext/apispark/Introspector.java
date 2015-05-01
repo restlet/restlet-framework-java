@@ -46,7 +46,8 @@ import org.restlet.ext.apispark.internal.utils.CliUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
 /**
- * Generates the Web API documentation of a Restlet based {@link Application} and imports it into the APISpark console.
+ * Generates the Web API documentation of a Restlet based {@link Application}
+ * and imports it into the APISpark console.
  * 
  * @author Thierry Boileau
  */
@@ -55,16 +56,17 @@ public class Introspector {
     /** Internal logger. */
     private static Logger LOGGER = Engine.getLogger(Introspector.class);
 
-    private static final List<String> SUPPORTED_LANGUAGES = Arrays.asList("swagger");
+    private static final List<String> SUPPORTED_LANGUAGES = Arrays
+            .asList("swagger");
 
     private static void failWithErrorMessage(String message) {
-        LOGGER.severe(message
-                + "Use parameter --help for help.");
+        LOGGER.severe(message + "Use parameter --help for help.");
         System.exit(1);
     }
 
-    private static Definition getDefinitionFromJaxrsSources(String defSource, boolean useSectionNamingPackageStrategy,
-            String applicationName, String endpoint, List<String> jaxRsResources) {
+    private static Definition getDefinitionFromJaxrsSources(String defSource,
+            boolean useSectionNamingPackageStrategy, String applicationName,
+            String endpoint, List<String> jaxRsResources) {
         javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
                 .getApplication(defSource);
         @SuppressWarnings("rawtypes")
@@ -74,13 +76,14 @@ public class Introspector {
                 resources.add(Class.forName(c));
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Cannot locate the JAXRS resource class.", e);
+            LOGGER.log(Level.SEVERE, "Cannot locate the JAXRS resource class.",
+                    e);
             System.exit(1);
         }
         Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
         return JaxRsIntrospector.getDefinition(jaxrsApplication,
-                applicationName, resources, baseRef, useSectionNamingPackageStrategy);
+                applicationName, resources, baseRef,
+                useSectionNamingPackageStrategy);
     }
 
     /**
@@ -190,7 +193,8 @@ public class Introspector {
             } else if ("--endpoint".equals(arg)) {
                 endpoint = getParameter(args, ++i);
             } else if ("--jaxrs-resources".equals(arg)) {
-                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(","));
+                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(
+                        ","));
             } else {
                 defSource = arg;
             }
@@ -242,8 +246,10 @@ public class Introspector {
             failWithErrorMessage("You should specify the definition source to use (value no prefixed by any option). ");
         }
 
-        if (!StringUtils.isNullOrEmpty(language) && !SUPPORTED_LANGUAGES.contains(language)) {
-            failWithErrorMessage("The language " + language + " is not currently supported. ");
+        if (!StringUtils.isNullOrEmpty(language)
+                && !SUPPORTED_LANGUAGES.contains(language)) {
+            failWithErrorMessage("The language " + language
+                    + " is not currently supported. ");
         }
 
         if (StringUtils.isNullOrEmpty(serviceUrl)) {
@@ -270,7 +276,8 @@ public class Introspector {
                 definition = SwaggerUtils
                         .getDefinition(defSource, ulogin, upwd);
             } else {
-                failWithErrorMessage("The language " + language + " is not currently supported. ");
+                failWithErrorMessage("The language " + language
+                        + " is not currently supported. ");
             }
         } else {
             if (defSource != null) {
@@ -291,14 +298,18 @@ public class Introspector {
                             .getApplication(defSource);
                     Component component = ComponentIntrospector
                             .getComponent(compName);
-                    Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
+                    Reference baseRef = endpoint != null ? new Reference(
+                            endpoint) : null;
                     if (applicationName != null) {
                         application.setName(applicationName);
                     }
-                    definition = ApplicationIntrospector.getDefinition(application,
-                            baseRef, component, useSectionNamingPackageStrategy);
-                } else if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
-                    definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy, applicationName,
+                    definition = ApplicationIntrospector.getDefinition(
+                            application, baseRef, component,
+                            useSectionNamingPackageStrategy);
+                } else if (javax.ws.rs.core.Application.class
+                        .isAssignableFrom(clazz)) {
+                    definition = getDefinitionFromJaxrsSources(defSource,
+                            useSectionNamingPackageStrategy, applicationName,
                             endpoint, jaxRsResources);
                 } else {
                     LOGGER.log(Level.SEVERE, "Class " + defSource
@@ -306,7 +317,8 @@ public class Introspector {
                     System.exit(1);
                 }
             } else if (!jaxRsResources.isEmpty()) {
-                definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy, applicationName,
+                definition = getDefinitionFromJaxrsSources(defSource,
+                        useSectionNamingPackageStrategy, applicationName,
                         endpoint, jaxRsResources);
             }
         }
@@ -399,8 +411,8 @@ public class Introspector {
                 "The optional parameter overriding the endpoint of the API.");
         cli.print12(
                 "--jaxrs-resources resourcesClasses",
-                "The optional parameter providing the list of fully qualified classes separated by a " +
-                "comma that should be introspected. Example: com.example.MyResource,com.example.MyResource2.",
+                "The optional parameter providing the list of fully qualified classes separated by a "
+                        + "comma that should be introspected. Example: com.example.MyResource,com.example.MyResource2.",
                 "Replaces javax.ws.rs.core.Application#getClasses.");
 
         cli.print();

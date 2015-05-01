@@ -46,8 +46,7 @@ import javax.xml.bind.Marshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
-    /** public for testing */
-    public ContextResolver<JAXBContext> contextResolver;
+    private ContextResolver<JAXBContext> contextResolver;
 
     protected JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
         // NICE perhaps caching the JAXBContext
@@ -88,6 +87,10 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
         }
     }
 
+    public void setContextResolver(ContextResolver<JAXBContext> contextResolver) {
+        this.contextResolver = contextResolver;
+    }
+    
     @Context
     void setContextResolver(Providers providers) {
         this.contextResolver = providers.getContextResolver(JAXBContext.class,

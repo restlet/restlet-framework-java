@@ -10,4 +10,4 @@ http://restlet.com
 
 Copyright 2014 Restlet
 
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=apispark-5A)](https://travis-ci.org/restlet/restlet-framework-java)
+[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=apispark-3.8)](https://travis-ci.org/restlet/restlet-framework-java)

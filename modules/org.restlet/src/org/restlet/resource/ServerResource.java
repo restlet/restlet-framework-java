@@ -1053,17 +1053,19 @@ public abstract class ServerResource extends Resource {
                     getResponse().setEntity(result);
                 }
 
+            } catch (Throwable t) {
+                doCatch(t);
+            } finally {
                 if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                     updateAllowedMethods();
                 } else if (Status.SUCCESS_OK.equals(getStatus())
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
-                            .fine("A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                            .fine("A response with a 200 (Ok) status should have an entity. "
+                                    + "Changing the status to 204 (No content).");
                     setStatus(Status.SUCCESS_NO_CONTENT);
                 }
-            } catch (Throwable t) {
-                doCatch(t);
             }
         }
 

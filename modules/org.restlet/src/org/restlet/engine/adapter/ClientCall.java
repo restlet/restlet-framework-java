@@ -313,7 +313,7 @@ public abstract class ClientCall extends Call {
             getHelper()
                     .getLogger()
                     .log(Level.FINE,
-                            "An error occured during the communication with the remote HTTP server.",
+                            "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         } finally {

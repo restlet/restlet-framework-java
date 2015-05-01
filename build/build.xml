@@ -107,7 +107,7 @@
 	<projectChecker rootDir="../" maven="${maven}" verbose = "${verbose}" />
 
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: generate-edition          
+          macrodef: generate-edition
          = = = = = = = = = = = = = = = = = -->
 	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
@@ -200,7 +200,7 @@
 
 
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: exec-edition          
+          macrodef: exec-edition
          = = = = = = = = = = = = = = = = = -->
 	<macrodef name="exec-edition" description="Executes a task for a target edition">
 		<attribute name="edition" />
@@ -223,7 +223,7 @@
 	</macrodef>
 
 	<!-- = = = = = = = = = = = = = = = = =
-          Definition of targets          
+          Definition of targets
          = = = = = = = = = = = = = = = = = -->
 	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files.">
 		<delete dir="${temp}/misc" />

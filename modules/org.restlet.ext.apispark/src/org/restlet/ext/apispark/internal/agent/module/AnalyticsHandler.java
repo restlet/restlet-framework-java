@@ -63,6 +63,7 @@ public class AnalyticsHandler {
      */
     private int bufferSize = 100;
 
+
     /** Maximum time between two asynchronous call logs post. */
     private long postPeriodInSecond = 60;
 
@@ -122,8 +123,7 @@ public class AnalyticsHandler {
                 new ThreadFactoryBuilder().setNameFormat("analytics-poster-%d")
                         .build());
 
-        postPeriodInSecond = apiSparkConfig
-                .getAgentAnalyticsPostPeriodInSecond();
+        postPeriodInSecond = apiSparkConfig.getAgentAnalyticsPostPeriodInSecond();
         long postPeriodInMs = TimeUnit.SECONDS.toMillis(postPeriodInSecond);
 
         asyncPostTimer = new Timer();

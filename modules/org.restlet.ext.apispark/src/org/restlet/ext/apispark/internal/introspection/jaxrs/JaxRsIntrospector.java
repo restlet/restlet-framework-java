@@ -24,13 +24,43 @@
 
 package org.restlet.ext.apispark.internal.introspection.jaxrs;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
+
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.BeanInfoUtils;
@@ -56,41 +86,13 @@ import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.ext.apispark.internal.utils.IntrospectionUtils;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import java.beans.BeanInfo;
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 /**
  * Publish the documentation of a Jaxrs-based Application to the APISpark
@@ -303,7 +305,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         }
 
         // Example: "java.util.Contact" or "String"
-        representation.setDescription("Java type: " + typeInfo.getRepresentationClazz().getName());
+        representation.setDescription("Java type: "
+                + typeInfo.getRepresentationClazz().getName());
 
         // Sections
         String packageName = typeInfo.getClazz().getPackage().getName();
@@ -312,7 +315,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             collectInfo.addSection(new Section(packageName));
         }
         // Example: "Contact"
-        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
+        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(
+                JsonRootName.class);
         String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
                 .getSimpleName() : jsonType.value();
         representation.setName(typeName);
@@ -483,15 +487,15 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
-     *
+     * 
      * @param application
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef, boolean useSectionNamingPackageStrategy
-    ) {
-        //method kept for retro compatibility
-        return getDefinition(application, null, null, baseRef, useSectionNamingPackageStrategy);
+            Reference baseRef, boolean useSectionNamingPackageStrategy) {
+        // method kept for retro compatibility
+        return getDefinition(application, null, null, baseRef,
+                useSectionNamingPackageStrategy);
     }
 
     /**
@@ -501,9 +505,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            String applicationName, List<Class> resources,
-            Reference baseRef, boolean useSectionNamingPackageStrategy
-            ) {
+            String applicationName, List<Class> resources, Reference baseRef,
+            boolean useSectionNamingPackageStrategy) {
 
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils
                 .getIntrospectionHelpers();
@@ -516,8 +519,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         if (baseRef != null) {
             collectInfo.setApplicationPath(baseRef.getPath());
         } else if (application != null) {
-            ApplicationPath applicationPath = application.getClass().getAnnotation(
-                    ApplicationPath.class);
+            ApplicationPath applicationPath = application.getClass()
+                    .getAnnotation(ApplicationPath.class);
             if (applicationPath != null) {
                 collectInfo.setApplicationPath(applicationPath.value());
             }
@@ -559,7 +562,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
         return definition;
     }
 
-    public static List<Class> getAllResources(Application application, List<Class> resources) {
+    public static List<Class> getAllResources(Application application,
+            List<Class> resources) {
         List<Class> allResources = new ArrayList<>();
         if (application != null) {
             if (application.getClasses() != null) {
@@ -787,7 +791,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     + e.getMessage());
             return;
         } // Introduced by Jax-rs 2.0
-        // BeanParam beanparam = field.getAnnotation(BeanParam.class);
+          // BeanParam beanparam = field.getAnnotation(BeanParam.class);
 
         DefaultValue defaultvalue = field.getAnnotation(DefaultValue.class);
         String defaultValueString = defaultvalue != null ? defaultvalue.value()
@@ -1068,23 +1072,22 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      * Returns a APISpark description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
-     *
-     *
+     * 
+     * 
      * @param collectInfo
-     *           The collect info bean
+     *            The collect info bean
      * @param resources
      *            The resources.
      * @param introspectionHelper
      *            Optional list of introspection helpers
      */
     public static void scanResources(CollectInfo collectInfo,
-                                     List<Class> resources,
-                                     List<? extends IntrospectionHelper> introspectionHelper) {
+            List<Class> resources,
+            List<? extends IntrospectionHelper> introspectionHelper) {
         for (Class<?> clazz : resources) {
             scanClazz(collectInfo, clazz, introspectionHelper);
         }
     }
-
 
     private static void scanSimpleMethod(CollectInfo collectInfo,
             Method method, ClazzInfo clazzInfo) {

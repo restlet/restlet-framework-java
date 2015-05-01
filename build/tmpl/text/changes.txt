@@ -4,18 +4,36 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
-- 2.3.2
     - Bugs fixed
-       - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030
+       - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030.
        - Fixed malformed JSON in the JsonpRepresentation.
          Reported by Wagner Correa Ramos.
+       - When catching a 405 status, make sure to update allowed methods inside 
+         a ServerResource. Issue #1034.
+         Reported by Jeremy Gustie.
+       - Fixed wrong Reference.getRemainingPart(boolean decode). Issue #1041.
+         Reported by Tal Liron.
+       - Authorization header is not sent by GWT client, for authentication scheme other 
+         than HTTP Basic. Issue #1040.
+       - Jetty client connector duplicates User-Agent header. Issue #1055.
+         Reported by Charlie Mason.
+       - Fixed Restlet JAX-RS encoding problem when using @FormParam annotation. 
+         Issue #1038.
+       - Fixed Tomcat shutdown due to TaskService that did not instantiate 
+         threads as daemon threads. Issue #1053.
+       - Made a public field private in JaxRs extension which lead some 
+         containers to stop the application. Issue #1058.
+         Reported by Constantin Gruber.
+       - Fixed duplication of headers (jaxrs). Issues #944, #948.
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
 
     - Enhancements
-      -
+      - Allowed to turn off header cleaning in Redirector for server-side 
+        redirects. Issue #799.
+        Suggested by Tal Liron.
+      - Upgraded swagger-models library to 1.5.3-M1.
 
 - 2.3.1 (02/03/2015)
     - Bugs fixed
@@ -33,7 +51,8 @@ Changes log
         Reported by Philippe Perrault and spraguep.
 
     - Enhancements
-      - 
+      - Added support of JAX-RS extension for the Android edition.
+        Contributed by Kiran Rao.
 
 - 2.3.0 (12/17/2014)
     - Bugs fixed

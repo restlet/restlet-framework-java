@@ -585,7 +585,7 @@ public class ParameterList {
             Representation entity = this.tlContext.get().getRequest()
                     .getEntity();
             if (entity != null && entity.isAvailable()) {
-                form = new Form(entity);
+                form = new Form(entity, false);
             }
 
             final String paramName = this.formParam.value();

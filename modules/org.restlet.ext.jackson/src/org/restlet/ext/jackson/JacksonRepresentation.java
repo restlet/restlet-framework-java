@@ -79,7 +79,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     public static boolean XML_VALIDATING_DTD = Boolean
             .getBoolean("org.restlet.ext.xml.validatingDtd");
 
-
     /** The modifiable Jackson CSV schema. */
     private CsvSchema csvSchema;
 

@@ -108,7 +108,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
     /**
      * Returns the associated annotation utils.
-     *
+     * 
      * @return The associated annotation utils.
      */
     public AnnotationUtils getAnnotationUtils() {
@@ -155,16 +155,15 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 boolean isSynchronous = true;
 
                 if ((args != null) && args.length > 0) {
-                    // Checks if the user has defined its own
-                    // callback.
+                    // Checks if the user has defined its own callback.
                     for (int i = 0; i < args.length; i++) {
                         Object o = args[i];
 
                         if (o == null) {
                             requestEntity = null;
                         } else if (Result.class.isAssignableFrom(o.getClass())) {
-                            // Asynchronous mode where a callback
-                            // object is to be called.
+                            // Asynchronous mode where a callback object is to
+                            // be called.
                             isSynchronous = false;
 
                             // Get the kind of result expected.
@@ -240,13 +239,14 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 request.setEntity(requestEntity);
 
                 // Updates the client preferences if they weren't changed
-                if ((request.getClientInfo().getAcceptedCharacterSets().size() == 0)
+                if ((request.getClientInfo().getAcceptedCharacterSets()
+                        .isEmpty())
                         && (request.getClientInfo().getAcceptedEncodings()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedLanguages()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedMediaTypes()
-                                .size() == 0)) {
+                                .isEmpty())) {
                     List<Variant> responseVariants = annotationInfo
                             .getResponseVariants(getClientResource()
                                     .getMetadataService(), getClientResource()
@@ -279,5 +279,4 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
         return result;
     }
-
 }

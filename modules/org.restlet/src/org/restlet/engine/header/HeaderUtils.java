@@ -665,7 +665,7 @@ public class HeaderUtils {
         // [ifndef gwt] instruction
         Series<Header> extensionHeaders = new Series<Header>(Header.class);
         // [ifdef gwt] instruction uncomment
-        // extensionHeaders = new org.restlet.engine.util.HeaderSeries();
+        // Series<Header> extensionHeaders = new org.restlet.engine.util.HeaderSeries();
         for (Header header : headers) {
             if (!STANDARD_HEADERS.contains(header.getName())) {
                 extensionHeaders.add(header);

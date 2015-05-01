@@ -71,6 +71,7 @@ import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.internal.provider.ConverterProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.SimpleXmlProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
@@ -1044,9 +1045,12 @@ public class JaxRsRestlet extends Restlet {
     private void loadDefaultProviders() {
         addDefaultProvider(new BufferedReaderProvider());
         addDefaultProvider(new ByteArrayProvider());
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.DataSourceProvider");
 
         // not yet tested
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
         // Fall-back on the Restlet converter service
         addDefaultProvider(new ConverterProvider());
@@ -1054,12 +1058,18 @@ public class JaxRsRestlet extends Restlet {
         // [ifndef gae] instruction
         addDefaultProvider(new org.restlet.ext.jaxrs.internal.provider.FileProvider());
         addDefaultProvider(new InputStreamProvider());
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbProvider");
-
+        
+        // [ifndef android] instruction
         // not yet tested
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.MultipartProvider");
 
+        addDefaultProvider(new SimpleXmlProvider());
         addDefaultProvider(new ReaderProvider());
         addDefaultProvider(new StreamingOutputProvider());
         addDefaultProvider(new StringProvider());

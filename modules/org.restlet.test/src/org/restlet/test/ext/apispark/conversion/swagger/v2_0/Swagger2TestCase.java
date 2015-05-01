@@ -309,8 +309,10 @@ public class Swagger2TestCase extends RestletTestCase {
         assertEquals(savedSwagger.getConsumes(),
                 translatedSwagger.getConsumes());
 
-        Map<String, SecuritySchemeDefinition> savedSecuritySchemes = savedSwagger.getSecurityDefinitions();
-        Map<String, SecuritySchemeDefinition> translatedSecuritySchemes = translatedSwagger.getSecurityDefinitions();
+        Map<String, SecuritySchemeDefinition> savedSecuritySchemes = savedSwagger
+                .getSecurityDefinitions();
+        Map<String, SecuritySchemeDefinition> translatedSecuritySchemes = translatedSwagger
+                .getSecurityDefinitions();
 
         if (savedSecuritySchemes == null) {
             assertEquals(translatedSecuritySchemes, null);
