@@ -960,6 +960,17 @@ public abstract class Resource {
             // [ifdef gwt] uncomment
             // if (source instanceof Representation) {
             // result = (Representation) source;
+            // } else {
+            // getLogger()
+            // .log(Level.WARNING,
+            // "The entity has been omitted since the conversion of an instance of "
+            // + source.getClass().getName()
+            // + " to an instance of "
+            // + Representation.class.getName()
+            // + " is not supported."
+            // + " Either provide a regular representation"
+            // + " or use an annotated interface"
+            // + " or use the json or xml extensions.");
             // }
             // [enddef]
         }
