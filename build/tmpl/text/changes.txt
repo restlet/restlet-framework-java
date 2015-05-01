@@ -24,6 +24,7 @@ Changes log
        - Made a public field private in JaxRs extension which lead some 
          containers to stop the application. Issue #1058.
          Reported by Constantin Gruber.
+       - Fixed duplication of headers (jaxrs). Issues #944, #948.
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
