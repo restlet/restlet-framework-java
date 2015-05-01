@@ -9,7 +9,9 @@
 
 	<package name="org.simpleframework.xml">
 		<maven>
+			<groupId>org.simpleframework</groupId>
 			<artifactId>simple-xml</artifactId>
+			<version>2.7.1</version>
 		</maven>
 	</package>
 	<distributions>
