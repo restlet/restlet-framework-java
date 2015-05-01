@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+@version-full@ (@release-date@)
+
 - 2.3.2 (05/01/2015)
     - Bugs fixed
        - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030.
