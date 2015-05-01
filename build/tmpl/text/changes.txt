@@ -29,7 +29,9 @@ Changes log
          HTTP method annotations such as @Get("json?param=val).
 
     - Enhancements
-      -
+      - Allowed to turn off header cleaning in Redirector for server-side 
+        redirects. Issue #799.
+        Suggested by Tal Liron.
 
 - 2.3.1 (02/03/2015)
     - Bugs fixed
