@@ -283,4 +283,21 @@ public class ResourceException extends RuntimeException {
         return this.status;
     }
 
+    /**
+     * Returns the request associated to this exception.
+     *
+     * @return The request associated to this exception.
+     */
+    public Request getRequest() {
+        return this.request;
+    }
+
+    /**
+     * Returns the response associated to this exception.
+     *
+     * @return The response associated to this exception.
+     */
+    public Response getResponse() {
+        return this.response;
+    }
 }
