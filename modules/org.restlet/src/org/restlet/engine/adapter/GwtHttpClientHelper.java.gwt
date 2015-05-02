@@ -26,6 +26,7 @@ package org.restlet.engine.adapter;
 
 import org.restlet.Client;
 import org.restlet.Request;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Protocol;

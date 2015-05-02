@@ -1,4 +1,4 @@
-<module id="jaxrs" excludes="android,gwt" type="standard" package="org.restlet.ext.jaxrs">
+<module id="jaxrs" excludes="gwt" type="standard" package="org.restlet.ext.jaxrs">
 	<name>Restlet Extension - JAX-RS</name>
 	<description>Support for JAX-RS 2.0</description>
 	<distributions>
@@ -16,6 +16,7 @@
 		<dependency type="library" id="lang" />
 		<dependency type="library" id="resteasy" />
 		<dependency type="library" id="servlet" />
+		<dependency type="library" id="simple-xml" />
 		<dependency type="module" id="core" />
 	</dependencies>
 
@@ -23,6 +24,18 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileProvider.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="android">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/AbstractJaxbProvider.java" />
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/DataSourceProvider.java" />
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileUploadProvider.java" />
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbElementProvider.java" />
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbProvider.java" />
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/MultipartProvider.java" />        
 ]]>
 		</files-sets>
 	</source>

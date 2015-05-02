@@ -236,7 +236,7 @@ public class Response extends Message {
      * indicates whether or not the actual request can be made using
      * credentials.<br>
      * Note that when used with HTTP connectors, this property maps to the
-     * "Access-Control-Allow-Credential" header.
+     * "Access-Control-Allow-Credentials" header.
      * 
      * @return True if the requested resource allows credential.
      */
@@ -678,7 +678,7 @@ public class Response extends Message {
      * When used as part of a response to a preflight CORS request, indicates
      * whether or not the actual request can be made using credentials. <br>
      * Note that when used with HTTP connectors, this property maps to the
-     * "Access-Control-Allow-Credential" header.
+     * "Access-Control-Allow-Credentials" header.
      * 
      * @param accessControlAllowCredentials
      *            True if the requested resource allows credential.

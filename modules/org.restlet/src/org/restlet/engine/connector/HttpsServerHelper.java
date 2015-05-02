@@ -123,7 +123,7 @@ public class HttpsServerHelper extends NetServerHelper {
             @Override
             public void handle(HttpExchange httpExchange) throws IOException {
                 HttpsServerHelper.this.handle(new HttpExchangeCall(getHelped(),
-                        httpExchange));
+                        httpExchange, true));
             }
         });
         // creates a default executor

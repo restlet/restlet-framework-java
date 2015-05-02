@@ -35,6 +35,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Resolver;
 
@@ -69,6 +70,15 @@ import org.restlet.util.Resolver;
  */
 public class Redirector extends Restlet {
     /**
+     * In this mode, the client is simply redirected to the URI generated from
+     * the target URI pattern using the {@link Status#REDIRECTION_FOUND} status.
+     * Note: this is a client-side redirection.<br>
+     * 
+     * @see Status#REDIRECTION_FOUND
+     */
+    public static final int MODE_CLIENT_FOUND = 2;
+
+    /**
      * In this mode, the client is permanently redirected to the URI generated
      * from the target URI pattern, using the
      * {@link Status#REDIRECTION_PERMANENT} status. Note: this is a client-side
@@ -77,15 +87,6 @@ public class Redirector extends Restlet {
      * @see Status#REDIRECTION_PERMANENT
      */
     public static final int MODE_CLIENT_PERMANENT = 1;
-
-    /**
-     * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern using the {@link Status#REDIRECTION_FOUND} status.
-     * Note: this is a client-side redirection.<br>
-     * 
-     * @see Status#REDIRECTION_FOUND
-     */
-    public static final int MODE_CLIENT_FOUND = 2;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
@@ -107,6 +108,27 @@ public class Redirector extends Restlet {
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
     /**
+     * In this mode, the call is sent to {@link Context#getServerDispatcher()}.
+     * Once the selected client connector has completed the request handling,
+     * the response is normally returned to the client. In this case, you can
+     * view the Redirector as acting as a transparent proxy Restlet. Note: this
+     * is a server-side redirection.<br>
+     * <br>
+     * Warning: remember to add the required connectors to the parent
+     * {@link Component} and to declare them in the list of required connectors
+     * on the {@link Application#getConnectorService()} property.<br>
+     * <br>
+     * Note that in this mode, the headers of HTTP requests, stored in the
+     * request's attributes, are removed before dispatching. Also, when a HTTP
+     * response comes back the headers are also removed. You can control this
+     * behavior by setting the {@link #headersCleaning} attribute or by
+     * overriding the {@link #rewrite(Request)} or {@link #rewrite(Response)}.
+     * 
+     * @see Context#getServerDispatcher()
+     */
+    public static final int MODE_SERVER_INBOUND = 7;
+
+    /**
      * In this mode, the call is sent to {@link Application#getOutboundRoot()}
      * or if null to {@link Context#getClientDispatcher()}. Once the selected
      * client connector has completed the request handling, the response is
@@ -120,7 +142,9 @@ public class Redirector extends Restlet {
      * <br>
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
-     * response comes back the headers are also removed.
+     * response comes back the headers are also removed. You can control this
+     * behavior by setting the {@link #headersCleaning} attribute or by
+     * overriding the {@link #rewrite(Request)} or {@link #rewrite(Response)}.
      * 
      * @see Application#getOutboundRoot()
      * @see Context#getClientDispatcher()
@@ -128,29 +152,16 @@ public class Redirector extends Restlet {
     public static final int MODE_SERVER_OUTBOUND = 6;
 
     /**
-     * In this mode, the call is sent to {@link Context#getServerDispatcher()}.
-     * Once the selected client connector has completed the request handling,
-     * the response is normally returned to the client. In this case, you can
-     * view the Redirector as acting as a transparent proxy Restlet. Note: this
-     * is a server-side redirection.<br>
-     * <br>
-     * Warning: remember to add the required connectors to the parent
-     * {@link Component} and to declare them in the list of required connectors
-     * on the {@link Application#getConnectorService()} property.<br>
-     * <br>
-     * Note that in this mode, the headers of HTTP requests, stored in the
-     * request's attributes, are removed before dispatching. Also, when a HTTP
-     * response comes back the headers are also removed.
-     * 
-     * @see Context#getServerDispatcher()
+     * Indicates if the headers of HTTP requests stored in the request's
+     * attributes, and the .
      */
-    public static final int MODE_SERVER_INBOUND = 7;
-
-    /** The target URI pattern. */
-    protected volatile String targetTemplate;
+    protected volatile boolean headersCleaning;
 
     /** The redirection mode. */
     protected volatile int mode;
+
+    /** The target URI pattern. */
+    protected volatile String targetTemplate;
 
     /**
      * Constructor for the client dispatcher mode.
@@ -180,6 +191,7 @@ public class Redirector extends Restlet {
         super(context);
         this.targetTemplate = targetPattern;
         this.mode = mode;
+        this.headersCleaning = true;
     }
 
     /**
@@ -318,6 +330,15 @@ public class Redirector extends Restlet {
     }
 
     /**
+     * Indicates if the headers must be cleaned.
+     * 
+     * @return True if the headers must be cleaned.
+     */
+    public boolean isHeadersCleaning() {
+        return headersCleaning;
+    }
+
+    /**
      * Redirects a given call to a target reference. In the default
      * implementation, the request HTTP headers, stored in the request's
      * attributes, are removed before dispatching. After dispatching, the
@@ -363,6 +384,46 @@ public class Redirector extends Restlet {
     }
 
     /**
+     * Optionally updates the request sent in the {@link #MODE_SERVER_INBOUND}
+     * and {@link #MODE_SERVER_OUTBOUND} modes. By default, it leverages the
+     * {@link #headersCleaning} attribute in order to clean the headers: if set
+     * to true, it removes all headers, otherwise it keeps only the extension
+     * (or non HTTP standard) headers<br>
+     * 
+     * @param initialRequest
+     *            The initial request returned.
+     * @return The updated request.
+     */
+    protected void rewrite(Request initialRequest) {
+        if (isHeadersCleaning()) {
+            initialRequest.getAttributes().remove(
+                    HeaderConstants.ATTRIBUTE_HEADERS);
+        } else {
+            HeaderUtils.keepExtensionHeadersOnly(initialRequest);
+        }
+    }
+
+    /**
+     * Optionally updates the response sent in the {@link #MODE_SERVER_INBOUND}
+     * and {@link #MODE_SERVER_OUTBOUND} modes. By default, it leverages the
+     * {@link #headersCleaning} attribute in order to clean the headers: if set
+     * to true, it removes all headers, otherwise it keeps only the extension
+     * (or non HTTP standard) headers<br>
+     * 
+     * @param initialRequest
+     *            The initial request returned.
+     * @return The updated request.
+     */
+    protected void rewrite(Response initialResponse) {
+        if (isHeadersCleaning()) {
+            initialResponse.getAttributes().remove(
+                    HeaderConstants.ATTRIBUTE_HEADERS);
+        } else {
+            HeaderUtils.keepExtensionHeadersOnly(initialResponse);
+        }
+    }
+
+    /**
      * Redirects a given call on the server-side to a next Restlet with a given
      * target reference. In the default implementation, the request HTTP
      * headers, stored in the request's attributes, are removed before
@@ -395,12 +456,12 @@ public class Redirector extends Restlet {
 
             // Update the request to cleanly go to the target URI
             request.setResourceRef(targetRef);
-            request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+            rewrite(request);
             next.handle(request, response);
 
             // Allow for response rewriting and clean the headers
             response.setEntity(rewrite(response.getEntity()));
-            response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+            rewrite(response);
             request.setResourceRef(resourceRef);
 
             // In case of redirection, we may have to rewrite the redirect URI
@@ -421,6 +482,16 @@ public class Redirector extends Restlet {
                 }
             }
         }
+    }
+
+    /**
+     * Indicates if the headers must be cleaned.
+     * 
+     * @param headersCleaning
+     *            True if the headers must be cleaned.
+     */
+    public void setHeadersCleaning(boolean headersCleaning) {
+        this.headersCleaning = headersCleaning;
     }
 
     /**

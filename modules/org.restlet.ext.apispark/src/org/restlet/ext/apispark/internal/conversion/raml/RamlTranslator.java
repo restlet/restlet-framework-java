@@ -166,35 +166,7 @@ public abstract class RamlTranslator {
 
         // Authentication
         raml.setSecuritySchemes(new ArrayList<Map<String, SecurityScheme>>());
-        Map<String, SecurityScheme> securitySchemes = new HashMap<String, SecurityScheme>();
-        SecurityScheme securityScheme = new SecurityScheme();
-        if (endpoint != null) {
-            if (ChallengeScheme.HTTP_BASIC.equals(endpoint
-                    .getAuthenticationProtocol())) {
-                securityScheme.setType(ChallengeScheme.HTTP_BASIC.getName());
-                securitySchemes.put(ChallengeScheme.HTTP_BASIC.getName(),
-                        securityScheme);
-            } else if (ChallengeScheme.HTTP_OAUTH.equals(endpoint
-                    .getAuthenticationProtocol())
-                    || ChallengeScheme.HTTP_OAUTH_BEARER.equals(endpoint
-                            .getAuthenticationProtocol())
-                    || ChallengeScheme.HTTP_OAUTH_MAC.equals(endpoint
-                            .getAuthenticationProtocol())) {
-                securityScheme.setType("Oauth 2.0");
-                securitySchemes.put("oauth_2_0", securityScheme);
-            } else if (ChallengeScheme.HTTP_DIGEST.equals(endpoint
-                    .getAuthenticationProtocol())) {
-                securityScheme.setType(ChallengeScheme.HTTP_DIGEST.getName());
-                securitySchemes.put(ChallengeScheme.HTTP_DIGEST.getName(),
-                        securityScheme);
-            } else if (ChallengeScheme.CUSTOM.equals(endpoint
-                    .getAuthenticationProtocol())) {
-                securityScheme.setType(ChallengeScheme.CUSTOM.getName());
-                securitySchemes.put(ChallengeScheme.CUSTOM.getName(),
-                        securityScheme);
-            }
-            raml.getSecuritySchemes().add(securitySchemes);
-        }
+        fillSecuritySchemes(raml.getSecuritySchemes(), endpoint);
 
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
@@ -202,6 +174,32 @@ public abstract class RamlTranslator {
         raml.setTitle(contract.getName());
 
         raml.setResources(new HashMap<String, org.raml.model.Resource>());
+        fillResources(raml.getResources(), m, contract, representationSamples);
+
+        // Representations
+        raml.setSchemas(new ArrayList<Map<String, String>>());
+        Map<String, String> schemas = new HashMap<String, String>();
+        raml.getSchemas().add(schemas);
+        for (Representation representation : contract.getRepresentations()) {
+            if (RamlUtils.isPrimitiveType(representation.getName())) {
+                continue;
+            }
+            try {
+                RamlUtils.fillSchemas(representation, schemas, m);
+            } catch (JsonProcessingException e) {
+                LOGGER.log(Level.WARNING,
+                        "Error when putting mime type schema for representation: "
+                                + representation.getName(), e);
+            }
+        }
+        return raml;
+    }
+
+    private static void fillResources(
+            Map<String, org.raml.model.Resource> resources, ObjectMapper m,
+            Contract contract,
+            Map<String, Map<String, Object>> representationSamples) {
+
         org.raml.model.Resource ramlResource;
         List<String> paths = new ArrayList<String>();
 
@@ -234,63 +232,25 @@ public abstract class RamlTranslator {
             // Operations
             Action action;
             ramlResource.setActions(new HashMap<ActionType, Action>());
-            MimeType ramlInRepresentation;
             for (Operation operation : resource.getOperations()) {
                 action = new Action();
                 action.setDescription(operation.getDescription());
                 action.setResource(ramlResource);
 
                 // In representation
-                ramlInRepresentation = new MimeType();
+
                 if (operation.getInputPayLoad() != null) {
-                    ramlInRepresentation.setType(operation.getInputPayLoad()
-                            .getType());
-                    if (RamlUtils.isPrimitiveType(operation.getInputPayLoad()
-                            .getType())) {
-                        Property inRepresentationPrimitive = new Property();
-                        inRepresentationPrimitive.setName("");
-                        inRepresentationPrimitive.setType(operation
-                                .getInputPayLoad().getType());
-                        SimpleTypeSchema inRepresentationSchema = RamlUtils
-                                .generatePrimitiveSchema(inRepresentationPrimitive);
-                        try {
-                            ramlInRepresentation
-                                    .setSchema(m
-                                            .writeValueAsString(inRepresentationSchema));
-                        } catch (JsonProcessingException e) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error when setting mime type schema.", e);
-                        }
-                    } else {
-                        ramlInRepresentation.setSchema(operation
-                                .getInputPayLoad().getType());
-                    }
-                    action.setBody(new HashMap<String, MimeType>());
-                    MimeType ramlInRepresentationWithMediaType;
-                    for (String mediaType : operation.getConsumes()) {
-                        ramlInRepresentationWithMediaType = new MimeType();
-                        ramlInRepresentationWithMediaType
-                                .setSchema(ramlInRepresentation.getSchema());
-                        try {
-                            ramlInRepresentationWithMediaType
-                                    .setExample(getExampleFromPayLoad(
-                                            operation.getInputPayLoad(),
-                                            representationSamples, mediaType));
-                        } catch (Exception e) {
-                            LOGGER.log(Level.WARNING,
-                                    "Error when writting sample.", e);
-                        }
-                        action.getBody().put(mediaType,
-                                ramlInRepresentationWithMediaType);
-                    }
+                    MimeType ramlInRepresentation = new MimeType();
+                    fillInputRepresentation(m, representationSamples, action,
+                            operation, ramlInRepresentation);
                 }
 
                 // Query parameters
-                org.raml.model.parameter.QueryParameter ramlQueryParameter;
+
                 action.setQueryParameters(new HashMap<String, org.raml.model.parameter.QueryParameter>());
                 for (QueryParameter queryParameter : operation
                         .getQueryParameters()) {
-                    ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
+                    org.raml.model.parameter.QueryParameter ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
                     ramlQueryParameter.setDisplayName(queryParameter.getName());
                     // ramlQueryParameter.setType(RamlUtils
                     // .getParamType(queryParameter.getType()));
@@ -372,29 +332,82 @@ public abstract class RamlTranslator {
             }
             paths.add(resource.getResourcePath());
 
-            raml.getResources()
-                    .put(ramlResource.getRelativeUri(), ramlResource);
+            resources.put(ramlResource.getRelativeUri(), ramlResource);
         }
+    }
 
-        // Representations
-        raml.setSchemas(new ArrayList<Map<String, String>>());
-        Map<String, String> schemas = new HashMap<String, String>();
-        raml.getSchemas().add(schemas);
-        for (Representation representation : contract.getRepresentations()) {
-            if (RamlUtils.isPrimitiveType(representation.getName())) {
-                continue;
-            }
+    private static void fillInputRepresentation(ObjectMapper m,
+            Map<String, Map<String, Object>> representationSamples,
+            Action action, Operation operation, MimeType ramlInRepresentation) {
+        ramlInRepresentation.setType(operation.getInputPayLoad().getType());
+        if (RamlUtils.isPrimitiveType(operation.getInputPayLoad().getType())) {
+            Property inRepresentationPrimitive = new Property();
+            inRepresentationPrimitive.setName("");
+            inRepresentationPrimitive.setType(operation.getInputPayLoad()
+                    .getType());
+            SimpleTypeSchema inRepresentationSchema = RamlUtils
+                    .generatePrimitiveSchema(inRepresentationPrimitive);
             try {
-                schemas.put(representation.getName(), m
-                        .writeValueAsString(RamlUtils
-                                .generateSchema(representation)));
+                ramlInRepresentation.setSchema(m
+                        .writeValueAsString(inRepresentationSchema));
             } catch (JsonProcessingException e) {
                 LOGGER.log(Level.WARNING,
-                        "Error when putting mime type schema for representation: "
-                                + representation.getName(), e);
+                        "Error when setting mime type schema.", e);
             }
+        } else {
+            ramlInRepresentation.setSchema(operation.getInputPayLoad()
+                    .getType());
         }
-        return raml;
+        action.setBody(new HashMap<String, MimeType>());
+        MimeType ramlInRepresentationWithMediaType;
+        for (String mediaType : operation.getConsumes()) {
+            ramlInRepresentationWithMediaType = new MimeType();
+            ramlInRepresentationWithMediaType.setSchema(ramlInRepresentation
+                    .getSchema());
+            try {
+                ramlInRepresentationWithMediaType
+                        .setExample(getExampleFromPayLoad(
+                                operation.getInputPayLoad(),
+                                representationSamples, mediaType));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error when writting sample.", e);
+            }
+            action.getBody().put(mediaType, ramlInRepresentationWithMediaType);
+        }
+    }
+
+    private static void fillSecuritySchemes(
+            List<Map<String, SecurityScheme>> securitySchemesList,
+            Endpoint endpoint) {
+        Map<String, SecurityScheme> securitySchemes = new HashMap<String, SecurityScheme>();
+        SecurityScheme securityScheme = new SecurityScheme();
+        if (endpoint != null) {
+            if (ChallengeScheme.HTTP_BASIC.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.HTTP_BASIC.getName());
+                securitySchemes.put(ChallengeScheme.HTTP_BASIC.getName(),
+                        securityScheme);
+            } else if (ChallengeScheme.HTTP_OAUTH.equals(endpoint
+                    .getAuthenticationProtocol())
+                    || ChallengeScheme.HTTP_OAUTH_BEARER.equals(endpoint
+                            .getAuthenticationProtocol())
+                    || ChallengeScheme.HTTP_OAUTH_MAC.equals(endpoint
+                            .getAuthenticationProtocol())) {
+                securityScheme.setType("Oauth 2.0");
+                securitySchemes.put("oauth_2_0", securityScheme);
+            } else if (ChallengeScheme.HTTP_DIGEST.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.HTTP_DIGEST.getName());
+                securitySchemes.put(ChallengeScheme.HTTP_DIGEST.getName(),
+                        securityScheme);
+            } else if (ChallengeScheme.CUSTOM.equals(endpoint
+                    .getAuthenticationProtocol())) {
+                securityScheme.setType(ChallengeScheme.CUSTOM.getName());
+                securitySchemes.put(ChallengeScheme.CUSTOM.getName(),
+                        securityScheme);
+            }
+            securitySchemesList.add(securitySchemes);
+        }
     }
 
     /**
@@ -539,18 +552,14 @@ public abstract class RamlTranslator {
     private static String getExampleFromPayLoad(PayLoad payLoad,
             Map<String, Map<String, Object>> representationSamples,
             String mediaType) {
-        if (Types.isPrimitiveType(payLoad.getType())) {
-            Object sample = SampleUtils.getPropertyDefaultSampleValue(
-                    payLoad.getType(), "value");
-            return sample == null ? null : sample.toString();
-        } else {
-            Object sample = representationSamples.get(payLoad.getType());
-            if (payLoad.isArray()) {
-                sample = Arrays.asList(sample);
-            }
-            return SampleUtils.convertSampleAccordingToMediaType(sample,
-                    mediaType, payLoad.getType());
+        Object sample = (Types.isPrimitiveType(payLoad.getType())) ?
+            SampleUtils.getPropertyDefaultExampleValue(payLoad.getType(), "value") :
+            representationSamples.get(payLoad.getType());
+
+        if (payLoad.isArray()) {
+            sample = Arrays.asList(sample);
         }
+        return SampleUtils.convertSampleAccordingToMediaType(sample, mediaType, payLoad.getType());
     }
 
     /**

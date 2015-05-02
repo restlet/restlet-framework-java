@@ -1,0 +1,748 @@
+{"swagger": "2.0", "info": {
+    "description": "This is a sample server Petstore server.  You can find out more about Swagger \n    at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a> or on irc.freenode.net, #swagger.  For this sample,\n    you can use the api key \"special-key\" to test the authorization filters",
+    "version": "1.0.0",
+    "title": "Swagger Sample App",
+    "contact": {
+        "name": "apiteam",
+        "email": "apiteam@wordnik.com"
+    },
+    "license": {
+        "name": "LICENSE-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+}, "host": "petstore.swagger.wordnik.com", "basePath": "/api", "schemes": ["http"], "paths": {
+    "/pet": {
+        "post": {
+            "tags": [],
+            "summary": "Add a new pet to the store",
+            "description": "Add a new pet to the store",
+            "operationId": "addPet",
+            "consumes": ["application/json", "application/xml"],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Pet"
+                    }
+                }
+            ],
+            "responses": {
+                "405": {
+                    "description": "405 status response"
+                },
+                "200": {
+                    "description": "Success"
+                }
+            }
+        },
+        "put": {
+            "tags": [],
+            "summary": "Update an existing pet",
+            "description": "Update an existing pet",
+            "operationId": "updatePet",
+            "consumes": [],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Pet"
+                    }
+                }
+            ],
+            "responses": {
+                "405": {
+                    "description": "405 status response"
+                },
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/pet/findByStatus": {
+        "get": {
+            "tags": [],
+            "summary": "Finds Pets by status",
+            "description": "Finds Pets by status",
+            "operationId": "findPetsByStatus",
+            "consumes": [],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "query",
+                    "name": "status",
+                    "description": "Status values that need to be considered for filter",
+                    "required": true,
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": "available"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Pet"
+                        }
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/pet/findByTags": {
+        "get": {
+            "tags": [],
+            "summary": "Finds Pets by tags",
+            "description": "Finds Pets by tags",
+            "operationId": "findPetsByTags",
+            "consumes": [],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "query",
+                    "name": "tags",
+                    "description": "Tags to filter by",
+                    "required": true,
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Pet"
+                        }
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/pet/uploadImage": {
+        "post": {
+            "tags": [],
+            "summary": "uploads an image",
+            "description": "uploads an image",
+            "operationId": "uploadFile",
+            "consumes": ["multipart/form-data"],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                }
+            }
+        }
+    },
+    "/pet/{petId}": {
+        "get": {
+            "tags": [],
+            "summary": "Find pet by ID",
+            "description": "Find pet by ID",
+            "operationId": "getPetById",
+            "consumes": [],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "petId",
+                    "description": "Pet id to delete",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "$ref": "#/definitions/Pet"
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        },
+        "post": {
+            "tags": [],
+            "summary": "Updates a pet in the store with form data",
+            "description": "Updates a pet in the store with form data",
+            "operationId": "updatePetWithForm",
+            "consumes": ["application/x-www-form-urlencoded"],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "petId",
+                    "description": "Pet id to delete",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "405": {
+                    "description": "405 status response"
+                },
+                "200": {
+                    "description": "Success"
+                }
+            }
+        },
+        "delete": {
+            "tags": [],
+            "summary": "Deletes a pet",
+            "description": "Deletes a pet",
+            "operationId": "deletePet",
+            "consumes": [],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "petId",
+                    "description": "Pet id to delete",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        },
+        "patch": {
+            "tags": [],
+            "summary": "partial updates to a pet",
+            "description": "partial updates to a pet",
+            "operationId": "partialUpdate",
+            "consumes": ["application/json", "application/xml"],
+            "produces": ["application/json", "application/xml", "text/plain", "text/html"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "petId",
+                    "description": "Pet id to delete",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Pet"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Pet"
+                        }
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/store/order": {
+        "post": {
+            "tags": [],
+            "summary": "Place an order for a pet",
+            "description": "Place an order for a pet",
+            "operationId": "placeOrder",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definitions/Order"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/store/order/{orderId}": {
+        "get": {
+            "tags": [],
+            "summary": "Find purchase order by ID",
+            "description": "Find purchase order by ID",
+            "operationId": "getOrderById",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "orderId",
+                    "description": "ID of the order that needs to be deleted",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "$ref": "#/definitions/Order"
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        },
+        "delete": {
+            "tags": [],
+            "summary": "Delete purchase order by ID",
+            "description": "Delete purchase order by ID",
+            "operationId": "deleteOrder",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "orderId",
+                    "description": "ID of the order that needs to be deleted",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/user": {
+        "post": {
+            "tags": [],
+            "summary": "Create user",
+            "description": "Create user",
+            "operationId": "createUser",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definition/User"
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                }
+            }
+        }
+    },
+    "/user/createWithArray": {
+        "post": {
+            "tags": [],
+            "summary": "Creates list of users with given input array",
+            "description": "Creates list of users with given input array",
+            "operationId": "createUsersWithArrayInput",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                }
+            }
+        }
+    },
+    "/user/createWithList": {
+        "post": {
+            "tags": [],
+            "summary": "Creates list of users with given list input",
+            "description": "Creates list of users with given list input",
+            "operationId": "createUsersWithListInput",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                }
+            }
+        }
+    },
+    "/user/login": {
+        "get": {
+            "tags": [],
+            "summary": "Logs user into the system",
+            "description": "Logs user into the system",
+            "operationId": "loginUser",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "query",
+                    "name": "username",
+                    "description": "The user name for login",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "password",
+                    "description": "The password for login in clear text",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    },
+    "/user/logout": {
+        "get": {
+            "tags": [],
+            "summary": "Logs out current logged in user session",
+            "description": "Logs out current logged in user session",
+            "operationId": "logoutUser",
+            "consumes": [],
+            "produces": ["application/json"],
+            "responses": {
+                "200": {
+                    "description": "Success"
+                }
+            }
+        }
+    },
+    "/user/{username}": {
+        "get": {
+            "tags": [],
+            "summary": "Get user by user name",
+            "description": "Get user by user name",
+            "operationId": "getUserByName",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "username",
+                    "description": "name that need to be deleted",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success",
+                    "schema": {
+                        "$ref": "#/definitions/User"
+                    }
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        },
+        "put": {
+            "tags": [],
+            "summary": "Updated user",
+            "description": "Updated user",
+            "operationId": "updateUser",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "username",
+                    "description": "name that need to be deleted",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "body",
+                    "name": "body",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/definition/User"
+                    }
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        },
+        "delete": {
+            "tags": [],
+            "summary": "Delete user",
+            "description": "Delete user",
+            "operationId": "deleteUser",
+            "consumes": [],
+            "produces": ["application/json"],
+            "parameters": [
+                {
+                    "in": "path",
+                    "name": "username",
+                    "description": "name that need to be deleted",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "404": {
+                    "description": "404 status response"
+                },
+                "200": {
+                    "description": "Success"
+                },
+                "400": {
+                    "description": "400 status response"
+                }
+            }
+        }
+    }
+}, "definitions": {
+    "User": {
+        "properties": {
+            "id": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "firstName": {
+                "type": "string",
+                "example": "sample firstName"
+            },
+            "username": {
+                "type": "string",
+                "example": "sample username"
+            },
+            "lastName": {
+                "type": "string",
+                "example": "sample lastName"
+            },
+            "email": {
+                "type": "string",
+                "example": "sample email"
+            },
+            "password": {
+                "type": "string",
+                "example": "sample password"
+            },
+            "phone": {
+                "type": "string",
+                "example": "sample phone"
+            },
+            "userStatus": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1",
+                "description": "User Status"
+            }
+        }
+    },
+    "Category": {
+        "properties": {
+            "id": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "name": {
+                "type": "string",
+                "example": "sample name"
+            }
+        }
+    },
+    "Pet": {
+        "properties": {
+            "id": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1",
+                "description": "unique identifier for the pet",
+                "minimum": 0.0,
+                "maximum": 100.0
+            },
+            "category": {
+                "$ref": "#/definitions/Category"
+            },
+            "name": {
+                "type": "string",
+                "example": "sample name"
+            },
+            "photoUrls": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "[sample photoUrls]"
+                }
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "example": "[]",
+                    "$ref": "#/definitions/Tag"
+                }
+            },
+            "status": {
+                "type": "string",
+                "example": "sample status",
+                "description": "pet status in the store"
+            }
+        }
+    },
+    "Tag": {
+        "properties": {
+            "id": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "name": {
+                "type": "string",
+                "example": "sample name"
+            },
+            "compositeField": {
+                "$ref": "#/definitions/TagCompositeField"
+            }
+        }
+    },
+    "TagCompositeField": {
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            }
+        }
+    },
+    "Order": {
+        "properties": {
+            "id": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "petId": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "quantity": {
+                "type": "integer",
+                "format": "int32",
+                "example": "1"
+            },
+            "status": {
+                "type": "string",
+                "example": "sample status",
+                "description": "Order Status"
+            },
+            "shipDate": {
+                "type": "string",
+                "example": "sample shipDate"
+            }
+        }
+    }
+}}

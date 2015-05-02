@@ -201,7 +201,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         } catch (Throwable t) {
             getLogger()
                     .log(Level.FINE,
-                            "An error occured during the communication with the remote server.",
+                            "An error occurred during the communication with the remote server.",
                             t);
             response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
             unblock(response);

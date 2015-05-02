@@ -272,11 +272,11 @@ public class ProviderTest extends JaxRsTestCase {
     public static void main(String[] args) throws Exception {
         Person person = new Person("vn", "nn");
         JaxbElementProvider jaxbElementProvider = new JaxbElementProvider();
-        jaxbElementProvider.contextResolver = new ContextResolver<JAXBContext>() {
+        jaxbElementProvider.setContextResolver(new ContextResolver<JAXBContext>() {
             public JAXBContext getContext(Class<?> type) {
                 return null;
             }
-        };
+        });
         JAXBElement<Person> jaxbElement = new JAXBElement<Person>(new QName(
                 "xyz"), Person.class, person);
         jaxbElementProvider.writeTo(jaxbElement, Person.class, Person.class,
@@ -302,7 +302,6 @@ public class ProviderTest extends JaxRsTestCase {
         JAXBElement je = jaxbElementProvider.readFrom(
                 (Class) JAXBElement.class, type, null, null, null,
                 new ByteArrayInputStream(xml.getBytes()));
-        System.out.println();
     }
 
     public void testJaxbGet() throws Exception {

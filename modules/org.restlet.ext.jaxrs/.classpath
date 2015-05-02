@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.jboss.resteasy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.simpleframework.xml"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -33,7 +33,6 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerUtils;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -102,8 +101,7 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         Representation savedRepresentation;
         for (Representation translatedRepresentation : translatedDefinition
                 .getContract().getRepresentations()) {
-            savedRepresentation = savedDefinition
-                    .getContract()
+            savedRepresentation = savedDefinition.getContract()
                     .getRepresentation(translatedRepresentation.getName());
             assertEquals(true, savedRepresentation != null);
 
@@ -345,23 +343,5 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         Definition translatedDefinition = SwaggerTranslator.translate(
                 resourceListing, apiDeclarations);
         comparePetstoreDefinition(translatedDefinition);
-    }
-
-    /**
-     * Retrieves the Petstore from <a
-     * href="http://petstore.swagger.wordnik.com/api/api-docs"
-     * >http://petstore.swagger.wordnik.com/api/api-doc</a>, and translates it
-     * to RWADef using SwaggerTranslater.
-     * 
-     * @throws TranslationException
-     * @throws IOException
-     */
-    public void testPetstoreSwaggerUrlToRwadef() throws TranslationException,
-            IOException {
-        Definition translatedDefinition = SwaggerUtils.getDefinition(
-                "http://petstore.swagger.wordnik.com/api/api-docs", "", "");
-        assertNotNull(translatedDefinition);
-        // could not check definitions attributes because content could be
-        // update by swagger
     }
 }

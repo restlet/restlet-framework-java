@@ -26,10 +26,13 @@ package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -54,6 +57,8 @@ import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.RefModel;
 import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.auth.BasicAuthDefinition;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.BodyParameter;
 import com.wordnik.swagger.models.parameters.HeaderParameter;
 import com.wordnik.swagger.models.parameters.PathParameter;
@@ -98,12 +103,35 @@ public class Swagger2Translator {
     public static final String SWAGGER_VERSION = "2.0";
 
     /**
-     * Fill swagger "Definitions" objects from rwadef definition
+     * Fill Swagger "SecuritySchemeDefinition" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param swagger
-     *            swagger definition
+     *            Swagger definition
+     */
+    private static void fillAuthentication(Definition definition, Swagger swagger) {
+        Map<String, SecuritySchemeDefinition> securitySchemes = new HashMap<>();
+
+        // Supported schemes
+        String httpBasic = ChallengeScheme.HTTP_BASIC.getName();
+
+        for (Endpoint endpoint : definition.getEndpoints()) {
+
+            if (httpBasic.equals(endpoint.getAuthenticationProtocol())) {
+                securitySchemes.put(httpBasic, new BasicAuthDefinition());
+            }
+        }
+        swagger.setSecurityDefinitions(securitySchemes.isEmpty() ? null : securitySchemes);
+    }
+
+    /**
+     * Fill Swagger "Definitions" objects from RWADef definition
+     * 
+     * @param definition
+     *            RWADef definition
+     * @param swagger
+     *            Swagger definition
      */
     private static void fillDefinitions(Definition definition, Swagger swagger) {
         for (Representation representation : definition.getContract()
@@ -122,72 +150,20 @@ public class Swagger2Translator {
 
             /* Representation -> Model */
             ModelImpl modelSwagger = new ModelImpl();
-            modelSwagger.setName(representation.getName());
-            modelSwagger.setDescription(representation.getDescription());
 
-            /* Property -> Property */
-            for (Property property : representation.getProperties()) {
-
-                com.wordnik.swagger.models.properties.Property propertySwagger;
-
-                Object exampleObject = SampleUtils
-                        .getFieldSampleValue(property);
-                String example = exampleObject == null ? null : exampleObject
-                        .toString();
-
-                // property type
-                if (property.getMaxOccurs() != null
-                        && (property.getMaxOccurs() > 1 || property
-                                .getMaxOccurs() == -1)) {
-                    ArrayProperty arrayProperty = new ArrayProperty();
-                    com.wordnik.swagger.models.properties.Property itemProperty = newPropertyForType(property
-                            .getType());
-                    itemProperty.setExample(example);
-                    arrayProperty.setItems(itemProperty);
-                    propertySwagger = arrayProperty;
-                } else {
-                    propertySwagger = newPropertyForType(property.getType());
-                    propertySwagger.setExample(example);
-                }
-                propertySwagger.setName(property.getName());
-                propertySwagger.setDescription(property.getDescription());
-
-                // min and max
-                if (propertySwagger instanceof AbstractNumericProperty) {
-                    AbstractNumericProperty abstractNumericProperty = (AbstractNumericProperty) propertySwagger;
-                    try {
-                        if (property.getMin() != null) {
-                            abstractNumericProperty.setMinimum(Double
-                                    .valueOf(property.getMin()));
-                        }
-                    } catch (NumberFormatException e) {
-                        LOGGER.warning("Min property is not a number: "
-                                + property.getMin());
-                    }
-                    try {
-                        if (property.getMax() != null) {
-                            abstractNumericProperty.setMaximum(Double
-                                    .valueOf(property.getMax()));
-                        }
-                    } catch (NumberFormatException e) {
-                        LOGGER.warning("Max property is not a number: "
-                                + property.getMax());
-                    }
-                }
-                modelSwagger.property(property.getName(), propertySwagger);
-            }
-
-            swagger.addDefinition(modelSwagger.getName(), modelSwagger);
+            fillModel(representation.getName(),
+                    representation.getDescription(),
+                    representation.getProperties(), swagger, modelSwagger);
         }
     }
 
     /**
-     * Fill swagger "Info" object from rwadef definition
+     * Fill Swagger "Info" object from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param swagger
-     *            swagger definition
+     *            Swagger definition
      */
     private static void fillInfo(Definition definition, Swagger swagger) {
         Info infoSwagger = new Info();
@@ -222,7 +198,7 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fills swagger main attributes from Restlet Web API definition
+     * Fills Swagger main attributes from Restlet Web API definition
      * 
      * @param definition
      *            The Restlet Web API definition
@@ -243,6 +219,99 @@ public class Swagger2Translator {
             swagger.setSchemes(Arrays.asList(Scheme.forValue(endpoint
                     .getProtocol())));
         }
+    }
+
+    /**
+     * Fill Swagger "Model" objects from RWADef.
+     * 
+     * @param name
+     *            The name of the Swagger model.
+     * @param description
+     *            the description of the Swagger model.
+     * @param properties
+     *            The list of RWADef properties of the Swagger model.
+     * @param swagger
+     *            The Swagger definition.
+     * @param modelSwagger
+     *            The Swagger model.
+     */
+    private static void fillModel(String name, String description,
+            List<Property> properties, Swagger swagger, ModelImpl modelSwagger) {
+        modelSwagger.setName(name);
+        modelSwagger.setDescription(description);
+
+        /* Property -> Property */
+        for (Property property : properties) {
+
+            com.wordnik.swagger.models.properties.Property propertySwagger;
+
+            Object exampleObject = SampleUtils.getPropertyExampleValue(property);
+            String example = exampleObject == null ? null : exampleObject
+                    .toString();
+
+            // property type
+            if (property.getMaxOccurs() != null
+                    && (property.getMaxOccurs() > 1 || property.getMaxOccurs() == -1)) {
+                ArrayProperty arrayProperty = new ArrayProperty();
+                com.wordnik.swagger.models.properties.Property itemProperty;
+                if (Types.isCompositeType(property.getType())) {
+                    String compositePropertyType = name + StringUtils.firstUpper(property.getName());
+                    itemProperty = newPropertyForType(compositePropertyType);
+                    // List of properties -> Model */
+                    ModelImpl ms = new ModelImpl();
+                    fillModel(
+                            compositePropertyType,
+                            null, property.getProperties(), swagger, ms);
+                } else {
+                    itemProperty = newPropertyForType(property.getType());
+                }
+                itemProperty.setExample(example);
+                arrayProperty.setItems(itemProperty);
+                propertySwagger = arrayProperty;
+            } else {
+                if (Types.isCompositeType(property.getType())) {
+                    String compositePropertyType = name + StringUtils.firstUpper(property.getName());
+                    propertySwagger = newPropertyForType(compositePropertyType);
+                    // List of properties -> Model */
+                    ModelImpl ms = new ModelImpl();
+                    fillModel(
+                            compositePropertyType,
+                            null, property.getProperties(), swagger, ms);
+                    propertySwagger.setExample(example);
+                } else {
+                    propertySwagger = newPropertyForType(property.getType());
+                    propertySwagger.setExample(example);
+                }
+            }
+            propertySwagger.setName(property.getName());
+            propertySwagger.setDescription(property.getDescription());
+
+            // min and max
+            if (propertySwagger instanceof AbstractNumericProperty) {
+                AbstractNumericProperty abstractNumericProperty = (AbstractNumericProperty) propertySwagger;
+                try {
+                    if (property.getMin() != null) {
+                        abstractNumericProperty.setMinimum(Double
+                                .valueOf(property.getMin()));
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Min property is not a number: "
+                            + property.getMin());
+                }
+                try {
+                    if (property.getMax() != null) {
+                        abstractNumericProperty.setMaximum(Double
+                                .valueOf(property.getMax()));
+                    }
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Max property is not a number: "
+                            + property.getMax());
+                }
+            }
+            modelSwagger.property(property.getName(), propertySwagger);
+        }
+
+        swagger.addDefinition(modelSwagger.getName(), modelSwagger);
     }
 
     private static void fillOperationParameters(Definition definition,
@@ -291,7 +360,7 @@ public class Swagger2Translator {
                         bodyParameterSwagger.setSchema(modelImpl);
                     } else {
                         RefModel refModel = new RefModel();
-                        refModel.set$ref(inRepr.getType());
+                        refModel.asDefault(inRepr.getType());
                         bodyParameterSwagger.setSchema(refModel);
                     }
                 }
@@ -344,7 +413,10 @@ public class Swagger2Translator {
             /* Response -> Response */
             com.wordnik.swagger.models.Response responseSwagger = new com.wordnik.swagger.models.Response();
 
-            responseSwagger.setDescription(response.getDescription()); // required
+            // may be null
+            String description = response.getDescription();
+            responseSwagger.setDescription((description != null) ? description
+                    : response.getCode() + " status response"); // required
 
             // Response Schema
             if (response.getOutputPayLoad() != null
@@ -377,14 +449,14 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger "Paths.Operations" objects from rwadef definition
+     * Fill Swagger "Paths.Operations" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param resource
-     *            rwadef.resource definition
+     *            RWADef.resource definition
      * @param pathSwagger
-     *            swagger.path definition
+     *            Swagger.path definition
      */
     private static void fillPathOperations(Definition definition,
             Resource resource, Path pathSwagger) {
@@ -423,15 +495,15 @@ public class Swagger2Translator {
     }
 
     /**
-     * Fill swagger "Paths" objects from rwadef definition
+     * Fill Swagger "Paths" objects from RWADef definition
      * 
      * @param definition
-     *            rwadef definition
+     *            RWADef definition
      * @param swagger
-     *            swagger definition
+     *            Swagger definition
      */
     private static void fillPaths(Definition definition, Swagger swagger) {
-        Map<String, Path> paths = new LinkedHashMap<String, Path>();
+        Map<String, Path> paths = new LinkedHashMap<>();
 
         for (Resource resource : definition.getContract().getResources()) {
             Path pathSwagger = new Path();
@@ -455,16 +527,19 @@ public class Swagger2Translator {
         Swagger swagger = new Swagger();
         swagger.setSwagger(SWAGGER_VERSION); // required
 
-        // fill swagger main attributes
+        // fill Swagger main attributes
         fillMainAttributes(definition, swagger);
 
-        // fill swagger.info
+        // fill authentication information
+        fillAuthentication(definition, swagger);
+
+        // fill Swagger.info
         fillInfo(definition, swagger); // required
 
-        // fill swagger.paths
+        // fill Swagger.paths
         fillPaths(definition, swagger); // required
 
-        // fill swagger.definitions
+        // fill Swagger.definitions
         fillDefinitions(definition, swagger);
 
         // TODO add authorization attribute
@@ -481,27 +556,28 @@ public class Swagger2Translator {
      */
     private static com.wordnik.swagger.models.properties.Property newPropertyForType(
             String type) {
-        if ("string".equals(type.toLowerCase())) {
+
+        switch (type.toLowerCase()) {
+        case "string":
             return new StringProperty();
-        } else if ("byte".equals(type.toLowerCase())) {
-            // TODO wait for Swagger class
+        case "byte":
             return new ByteProperty();
-        } else if ("short".equals(type.toLowerCase())) {
-            // TODO wait for Swagger class
+        case "short":
             return new ShortProperty();
-        } else if ("integer".equals(type.toLowerCase())) {
+        case "integer":
             return new IntegerProperty();
-        } else if ("long".equals(type.toLowerCase())) {
+        case "long":
             return new LongProperty();
-        } else if ("float".equals(type.toLowerCase())) {
+        case "float":
             return new FloatProperty();
-        } else if ("double".equals(type.toLowerCase())) {
+        case "double":
             return new DoubleProperty();
-        } else if ("date".equals(type.toLowerCase())) {
+        case "date":
             return new DateProperty();
-        } else if ("boolean".equals(type.toLowerCase())) {
+        case "boolean":
             return new BooleanProperty();
         }
+
         // Reference to a representation
         return new RefProperty().asDefault(type);
     }

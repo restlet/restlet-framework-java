@@ -42,91 +42,6 @@ import org.restlet.ext.apispark.internal.model.Representation;
  */
 public abstract class Types {
 
-    /** TypeInfo cache. */
-    private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
-
-    private static final List<String> primitivesTypes = Arrays.asList("byte",
-            "short", "integer", "long", "float", "double", "boolean", "string",
-            "date", "file");
-
-    private static final Map<Class<?>, String> primitiveTypesByClass;
-
-    static {
-        primitiveTypesByClass = new HashMap<Class<?>, String>();
-        primitiveTypesByClass.put(Byte.TYPE, "byte");
-        primitiveTypesByClass.put(Byte.class, "byte");
-        primitiveTypesByClass.put(Short.TYPE, "short");
-        primitiveTypesByClass.put(Short.class, "short");
-        primitiveTypesByClass.put(Integer.TYPE, "integer");
-        primitiveTypesByClass.put(Integer.class, "integer");
-        primitiveTypesByClass.put(Long.TYPE, "long");
-        primitiveTypesByClass.put(Long.class, "long");
-        primitiveTypesByClass.put(Float.TYPE, "float");
-        primitiveTypesByClass.put(Float.class, "float");
-        primitiveTypesByClass.put(Double.TYPE, "double");
-        primitiveTypesByClass.put(Double.class, "double");
-        primitiveTypesByClass.put(Boolean.TYPE, "boolean");
-        primitiveTypesByClass.put(Boolean.class, "boolean");
-        primitiveTypesByClass.put(Double.TYPE, "double");
-        primitiveTypesByClass.put(Double.class, "double");
-        primitiveTypesByClass.put(String.class, "string"); // others types could
-                                                           // be considered as
-                                                           // string
-        primitiveTypesByClass.put(Date.class, "date"); // others types could be
-                                                       // considered as date
-    }
-
-    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
-        TypeInfoKey key = new TypeInfoKey(clazz, type);
-        TypeInfo typeInfo = cache.get(key);
-
-        if (typeInfo == null) {
-            typeInfo = new TypeInfo(clazz, type);
-            cache.put(key, typeInfo);
-        }
-        return typeInfo;
-    }
-
-    /**
-     * Returns simple type name for primitive type or full name otherwise
-     */
-    public static String convertPrimitiveType(Class<?> type) {
-        String primitiveName = primitiveTypesByClass.get(type);
-        if (primitiveName != null) {
-            return primitiveName;
-        }
-        if (CharSequence.class.isAssignableFrom(type)) {
-            return "string";
-        }
-        if (Date.class.isAssignableFrom(type)) {
-            return "date";
-        }
-        if (Representation.class.isAssignableFrom(type)
-                || File.class.isAssignableFrom(type)) {
-            return "file";
-        }
-        return type.getSimpleName();
-    }
-
-    public static boolean isPrimitiveType(Class<?> type) {
-        return (primitiveTypesByClass.get(type) != null
-                || CharSequence.class.isAssignableFrom(type)
-                || Date.class.isAssignableFrom(type) || Representation.class
-                    .isAssignableFrom(type));
-    }
-
-    public static boolean isPrimitiveType(String typename) {
-        return primitivesTypes.contains(typename);
-    }
-
-    public static String toString(Class<?> clazz, Type type) {
-        if (type == null) {
-            return clazz.toString();
-        } else {
-            return type.toString();
-        }
-    }
-
     private static class TypeInfoKey {
 
         private final Class<?> clazz;
@@ -151,6 +66,101 @@ public abstract class Types {
         @Override
         public int hashCode() {
             return Objects.hash(clazz, type);
+        }
+    }
+
+    /** TypeInfo cache. */
+    private static final ConcurrentMap<TypeInfoKey, TypeInfo> cache = new ConcurrentHashMap<>();
+
+    public static final String compositeType = "composite";
+
+    private static final List<String> primitivesTypes = Arrays.asList("byte",
+            "short", "integer", "long", "float", "double", "boolean", "string",
+            "date", "file");
+    
+    private static final Map<Class<?>, String> primitiveTypesByClass;
+
+    static {
+        primitiveTypesByClass = new HashMap<>();
+        primitiveTypesByClass.put(Byte.TYPE, "byte");
+        primitiveTypesByClass.put(Byte.class, "byte");
+        primitiveTypesByClass.put(Short.TYPE, "short");
+        primitiveTypesByClass.put(Short.class, "short");
+        primitiveTypesByClass.put(Integer.TYPE, "integer");
+        primitiveTypesByClass.put(Integer.class, "integer");
+        primitiveTypesByClass.put(Long.TYPE, "long");
+        primitiveTypesByClass.put(Long.class, "long");
+        primitiveTypesByClass.put(Float.TYPE, "float");
+        primitiveTypesByClass.put(Float.class, "float");
+        primitiveTypesByClass.put(Double.TYPE, "double");
+        primitiveTypesByClass.put(Double.class, "double");
+        primitiveTypesByClass.put(Boolean.TYPE, "boolean");
+        primitiveTypesByClass.put(Boolean.class, "boolean");
+        primitiveTypesByClass.put(Double.TYPE, "double");
+        primitiveTypesByClass.put(Double.class, "double");
+        primitiveTypesByClass.put(String.class, "string"); // others types could
+                                                           // be considered as
+                                                           // string
+        primitiveTypesByClass.put(Date.class, "date"); // others types could be
+                                                       // considered as date
+    }
+
+    /**
+     * Returns simple type name for primitive type or full name otherwise
+     */
+    public static String convertPrimitiveType(Class<?> type) {
+        String primitiveName = primitiveTypesByClass.get(type);
+        if (primitiveName != null) {
+            return primitiveName;
+        }
+        if (CharSequence.class.isAssignableFrom(type)) {
+            return "string";
+        }
+        if (Date.class.isAssignableFrom(type)) {
+            return "date";
+        }
+        if (Representation.class.isAssignableFrom(type)
+                || File.class.isAssignableFrom(type)) {
+            return "file";
+        }
+        return type.getSimpleName();
+    }
+
+    public static TypeInfo getTypeInfo(Class<?> clazz, Type type) {
+        TypeInfoKey key = new TypeInfoKey(clazz, type);
+        TypeInfo typeInfo = cache.get(key);
+
+        if (typeInfo == null) {
+            typeInfo = new TypeInfo(clazz, type);
+            cache.put(key, typeInfo);
+        }
+        return typeInfo;
+    }
+
+    public static boolean isCompositeType(String typename) {
+        return compositeType.contains(typename);
+    }
+
+    public static boolean isPojo(Class<?> type) {
+        return Object.class != type && !type.isInterface();
+    }
+
+    public static boolean isPrimitiveType(Class<?> type) {
+        return (primitiveTypesByClass.get(type) != null
+                || CharSequence.class.isAssignableFrom(type)
+                || Date.class.isAssignableFrom(type) || Representation.class
+                    .isAssignableFrom(type));
+    }
+    
+    public static boolean isPrimitiveType(String typename) {
+        return primitivesTypes.contains(typename);
+    }
+
+    public static String toString(Class<?> clazz, Type type) {
+        if (type == null) {
+            return clazz.toString();
+        } else {
+            return type.toString();
         }
     }
 }

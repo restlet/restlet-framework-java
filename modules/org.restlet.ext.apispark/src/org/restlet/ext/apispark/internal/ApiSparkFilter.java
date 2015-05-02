@@ -24,12 +24,17 @@
 
 package org.restlet.ext.apispark.internal;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.FirewallConfig;
 import org.restlet.ext.apispark.internal.agent.AgentConfigurationException;
 import org.restlet.ext.apispark.internal.agent.bean.ModulesSettings;
+import org.restlet.ext.apispark.internal.agent.module.AnalyticsModule;
 import org.restlet.ext.apispark.internal.agent.module.AuthenticationModule;
 import org.restlet.ext.apispark.internal.agent.module.AuthorizationModule;
 import org.restlet.ext.apispark.internal.agent.module.FirewallModule;
@@ -41,9 +46,6 @@ import org.restlet.ext.apispark.internal.utils.RestletChain;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Redirector;
 
-import java.util.List;
-import java.util.logging.Logger;
-
 public class ApiSparkFilter extends Filter {
 
     /** Internal logger. */
@@ -52,39 +54,97 @@ public class ApiSparkFilter extends Filter {
 
     /** Default next restlet of filter. */
     private Restlet agentFirstRestlet;
+
     /** First restlet of the agent filter. */
     private Restlet filterNext;
+
     /** Last restlet of the agent filter. */
     private Restlet agentLastRestlet;
 
+    /** Modules settings of the agent */
+    private ModulesSettings modulesSettings;
+
+    /** List of firewall rules set by user at creation */
+    private List<FirewallRule> firewallRules;
+
+    /** Is user set firewall enabled */
+    private boolean firewallEnabled;
+
+    /** APISpark connection configuration */
+    private ApiSparkConfig apiSparkConfig;
+
+    /** APISpark connection enabled */
+    private boolean agentEnabled;
+
+    /** Restlet context */
+    private Context context;
+
     /**
      * Create a new ApiSparkFilter with the specified configuration.
+     * 
      * @param context
      *            The current context.
      * @param apiSparkConfig
      *            The ApiSparkService configuration.
      */
-    public ApiSparkFilter(Context context, ApiSparkConfig apiSparkConfig, boolean agentEnabled,
-                          boolean firewallEnabled, List<FirewallRule> firewallRules,
-                          FirewallConfig firewallConfig) {
+    public ApiSparkFilter(Context context, ApiSparkConfig apiSparkConfig,
+            boolean agentEnabled, boolean firewallEnabled,
+            List<FirewallRule> firewallRules) {
         super(context);
-
-        boolean authenticationEnabled = false;
-
-        RestletChain restletChain = new RestletChain();
+        this.firewallRules = firewallRules;
+        this.firewallEnabled = firewallEnabled;
+        this.apiSparkConfig = apiSparkConfig;
+        this.agentEnabled = agentEnabled;
+        this.context = context;
 
         validateRedirection(apiSparkConfig);
 
         if (agentEnabled) {
             validateAgentConfiguration(apiSparkConfig);
+            modulesSettings = ModulesSettingsModule.getModulesSettings(
+                    apiSparkConfig, null);
+        }
 
-            ModulesSettings modulesSettings = getAgentSettings(apiSparkConfig);
+        refreshApiSparkFilter();
+
+    }
+
+    /**
+     * Retrieves the modules settings from the service and updates the filter.
+     */
+    public void refreshApiSparkFilterIfRevisionChanged() {
+
+        try {
+            ModulesSettings newModulesSettings = ModulesSettingsModule
+                    .getModulesSettings(apiSparkConfig, modulesSettings);
+
+            if (newModulesSettings != null) {
+                modulesSettings = newModulesSettings;
+
+                LOGGER.info("Updating modules settings");
+                refreshApiSparkFilter();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,
+                    "Unable to retrieve agent settings from apispark", e);
+        }
+    }
+
+    /**
+     * Updates the filter with its modules settings.
+     */
+    public void refreshApiSparkFilter() {
+
+        boolean authenticationEnabled = false;
+        RestletChain restletChain = new RestletChain();
+
+        if (agentEnabled) {
 
             if (modulesSettings.isAuthenticationModuleEnabled()) {
                 LOGGER.info("Add authentication module");
                 authenticationEnabled = true;
-                restletChain.add(new AuthenticationModule(apiSparkConfig, modulesSettings,
-                        context));
+                restletChain.add(new AuthenticationModule(apiSparkConfig,
+                        modulesSettings, context));
             }
             if (modulesSettings.isAuthorizationModuleEnabled()) {
                 if (!modulesSettings.isAuthenticationModuleEnabled()) {
@@ -92,22 +152,24 @@ public class ApiSparkFilter extends Filter {
                             "The authorization module requires the authentication module which is not enabled");
                 }
                 LOGGER.info("Add authorization module");
-                restletChain.add(new AuthorizationModule(apiSparkConfig, modulesSettings,
-                        context));
+                restletChain.add(new AuthorizationModule(apiSparkConfig,
+                        modulesSettings, context));
             }
 
             if (modulesSettings.isFirewallModuleEnabled()) {
                 firewallEnabled = true;
-                FirewallModule firewallModule = new FirewallModule(apiSparkConfig, modulesSettings);
+                FirewallModule firewallModule = new FirewallModule(
+                        apiSparkConfig, modulesSettings);
+                FirewallConfig firewallConfig = new FirewallConfig(
+                        firewallRules);
                 firewallModule.updateFirewallConfig(firewallConfig);
             }
 
-            //wait for implementation
-//            if (modulesSettings.isAnalyticsModuleEnabled()) {
-//                LOGGER.info("Add analytics module");
-//                restletChain.add(new AnalyticsModule(apiSparkConfig, modulesSettings,
-//                        context));
-//            }
+            if (modulesSettings.isAnalyticsModuleEnabled()) {
+                LOGGER.info("Add analytics module");
+                restletChain.add(new AnalyticsModule(apiSparkConfig,
+                        modulesSettings, context));
+            }
         }
 
         if (firewallEnabled) {
@@ -115,10 +177,12 @@ public class ApiSparkFilter extends Filter {
             restletChain.add(new FirewallFilter(context, firewallRules));
         }
 
-        if (apiSparkConfig.isReverserProxyEnabled()) {
+        if (apiSparkConfig.isReverseProxyEnabled()) {
             LOGGER.info("Add redirection module");
-            String redirectorUrl = apiSparkConfig.getReverseProxyTargetUrl() + "{rr}";
-            Redirector redirector = new ReverseProxyModule(context, redirectorUrl, authenticationEnabled);
+            String redirectorUrl = apiSparkConfig.getReverseProxyTargetUrl()
+                    + "{rr}";
+            Redirector redirector = new ReverseProxyModule(context,
+                    redirectorUrl, authenticationEnabled);
             restletChain.add(redirector);
         }
 
@@ -128,20 +192,6 @@ public class ApiSparkFilter extends Filter {
 
         agentFirstRestlet = restletChain.getFirst();
         agentLastRestlet = restletChain.getLast();
-
-    }
-
-    /**
-     * Retrieve the modules settings from the service.
-     * 
-     * @param apiSparkConfig
-     *            The agent configuration.
-     */
-    public ModulesSettings getAgentSettings(ApiSparkConfig apiSparkConfig) {
-        ModulesSettingsModule modulesSettingsModule = new ModulesSettingsModule(
-                apiSparkConfig);
-        return modulesSettingsModule
-                .getModulesSettings();
     }
 
     @Override
@@ -152,7 +202,8 @@ public class ApiSparkFilter extends Filter {
     @Override
     public void setNext(Restlet next) {
         filterNext = next;
-        // If the agent has any restlet components, set the next on the last one.
+        // If the agent has any restlet components, set the next on the last
+        // one.
         if (agentLastRestlet != null) {
             if (agentLastRestlet instanceof Filter) {
                 Filter filter = (Filter) agentLastRestlet;
@@ -161,6 +212,12 @@ public class ApiSparkFilter extends Filter {
         }
     }
 
+    /**
+     * Terminates the agent if the service's configuration is not correctly set.
+     * 
+     * @param config
+     *            The service's configuration
+     */
     public void validateAgentConfiguration(ApiSparkConfig config) {
         if (config.getAgentCellId() == null) {
             throw new IllegalArgumentException(
@@ -175,8 +232,7 @@ public class ApiSparkFilter extends Filter {
                     "The agent service url is mandatory");
         }
         if (StringUtils.isNullOrEmpty(config.getAgentLogin())) {
-            throw new IllegalArgumentException(
-                    "The agent login is mandatory");
+            throw new IllegalArgumentException("The agent login is mandatory");
         }
         if (StringUtils.isNullOrEmpty(config.getAgentPassword())) {
             throw new IllegalArgumentException(
@@ -184,8 +240,15 @@ public class ApiSparkFilter extends Filter {
         }
     }
 
+    /**
+     * Validates the redirection URL
+     * 
+     * @param config
+     *            The service's configuration
+     */
     public void validateRedirection(ApiSparkConfig config) {
-        if (config.isReverserProxyEnabled() && StringUtils.isNullOrEmpty(config.getReverseProxyTargetUrl())) {
+        if (config.isReverseProxyEnabled()
+                && StringUtils.isNullOrEmpty(config.getReverseProxyTargetUrl())) {
             throw new IllegalArgumentException(
                     "The redirection url is mandatory when redirection is enabled");
         }

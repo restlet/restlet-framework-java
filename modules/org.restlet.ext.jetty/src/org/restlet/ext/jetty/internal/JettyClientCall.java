@@ -176,12 +176,13 @@ public class JettyClientCall extends ClientCall {
     /**
      * Returns the response entity if available. Note that no metadata is
      * associated by default, you have to manually set them from your headers.
-     *
+     * 
      * As jetty client decode the input stream on the fly in
      * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer, org.eclipse.jetty.util.Callback)}
-     * we have to clear the {@link org.restlet.representation.Representation#getEncodings()}
-     * to avoid decoding the input stream another time.
-
+     * we have to clear the
+     * {@link org.restlet.representation.Representation#getEncodings()} to avoid
+     * decoding the input stream another time.
+     * 
      * @param response
      *            the Response to get the entity from
      * @return The response entity if available.
@@ -265,15 +266,24 @@ public class JettyClientCall extends ClientCall {
             // Set the request headers
             for (Header header : getRequestHeaders()) {
                 final String name = header.getName();
-                if (!name.equals(HeaderConstants.HEADER_CONTENT_LENGTH))
+                switch (name) {
+                case HeaderConstants.HEADER_CONTENT_LENGTH:
+                    // skip this header
+                    break;
+                case HeaderConstants.HEADER_USER_AGENT:
+                    this.httpRequest.agent(header.getValue());
+                    break;
+                default:
                     this.httpRequest.header(name, header.getValue());
+                    break;
+                }
             }
 
             // Ensure that the connection is active
             this.inputStreamResponseListener = new InputStreamResponseListener();
             this.httpRequest.send(this.inputStreamResponseListener);
-            this.httpResponse = this.inputStreamResponseListener
-                    .get(clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
+            this.httpResponse = this.inputStreamResponseListener.get(
+                    clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
 
             result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException e) {

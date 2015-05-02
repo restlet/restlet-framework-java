@@ -229,7 +229,8 @@ public class StatusService extends Service {
                                 cause.getClass());
 
                 if (tai != null && tai.isSerializable()) {
-                    if (!Application.getCurrent().isDebugging()) {
+                    if (Application.getCurrent() != null
+                            && !Application.getCurrent().isDebugging()) {
                         // We clear the stack trace to prevent technical
                         // information leak
                         cause.setStackTrace(new StackTraceElement[] {});

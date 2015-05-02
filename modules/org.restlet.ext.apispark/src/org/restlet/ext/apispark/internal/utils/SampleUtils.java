@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -70,32 +71,38 @@ public class SampleUtils {
 
     public static Map<String, Object> getRepresentationSample(
             Representation representation) {
-        List<Property> properties = representation.getProperties();
+        return getPropertiesSample(representation.getProperties());
+    }
+
+    public static Map<String, Object> getPropertiesSample(List<Property> properties) {
         Map<String, Object> content = new HashMap<>();
         for (Property property : properties) {
-            content.put(property.getName(), getFieldSampleValue(property));
+            if (Types.compositeType.equals(property.getType())) {
+                content.put(property.getName(), getPropertiesSample(property.getProperties()));
+            } else {
+                Object sampleValue = getPropertyExampleValue(property);
+
+                if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
+                    if (sampleValue != null) {
+                        sampleValue = Arrays.asList(sampleValue);
+                    } else {
+                        sampleValue = Arrays.asList();
+                    }
+                }
+
+                content.put(property.getName(), sampleValue);
+            }
         }
         return content;
     }
 
-    public static Object getFieldSampleValue(Property property) {
-        Object sampleValue = property.getExample() != null ? convertSampleValue(
-                property.getType(), property.getExample())
-                : getPropertyDefaultSampleValue(property.getType(),
-                        property.getName());
-
-        if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
-            if (sampleValue != null) {
-                sampleValue = Arrays.asList(sampleValue);
-            } else {
-                sampleValue = Arrays.asList();
-            }
-        }
-        return sampleValue;
+    public static Object getPropertyExampleValue(Property property) {
+        return property.getExample() != null ?
+                convertExampleValue(property.getType(), property.getExample()) :
+                getPropertyDefaultExampleValue(property.getType(), property.getName());
     }
 
-    public static Object getPropertyDefaultSampleValue(String propertyType,
-            String propertyName) {
+    public static Object getPropertyDefaultExampleValue(String propertyType, String propertyName) {
         if ("string".equals(propertyType)) {
             return "sample " + propertyName;
         } else if (numberTypes.contains(propertyType)) {
@@ -113,20 +120,19 @@ public class SampleUtils {
         }
     }
 
-    public static Object convertSampleValue(String propertyType,
-            String sampleValue) {
+    public static Object convertExampleValue(String propertyType, String exampleValue) {
         if ("string".equals(propertyType)) {
-            return sampleValue;
+            return exampleValue;
         } else if (numberTypes.contains(propertyType)) {
-            return Long.parseLong(sampleValue);
+            return Long.parseLong(exampleValue);
         } else if (decimalTypes.contains(propertyType)) {
-            return Double.parseDouble(sampleValue);
+            return Double.parseDouble(exampleValue);
         } else if ("boolean".equals(propertyType)) {
-            return Boolean.parseBoolean(sampleValue);
+            return Boolean.parseBoolean(exampleValue);
         } else if ("date".equals(propertyType)) {
             // do not convert date sample because we don't know the expected
             // type
-            return sampleValue;
+            return exampleValue;
         } else {
             return null;
         }

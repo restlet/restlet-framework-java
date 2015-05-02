@@ -40,7 +40,7 @@ import org.restlet.util.Series;
 public abstract class AgentUtils {
 
     /**
-     * Returns a client resource configured to communicate with the apispark
+     * Returns a client resource configured to communicate with the APISpark
      * connector cell.
      * 
      * @param apiSparkConfig
@@ -59,7 +59,44 @@ public abstract class AgentUtils {
             ModulesSettings modulesSettings, Class<T> resourceClass,
             String resourcePath) {
 
-        StringBuilder sb = new StringBuilder(apiSparkConfig.getAgentServiceUrl());
+        ClientResource clientResource = new ClientResource(buildResourcePath(
+                apiSparkConfig, resourcePath));
+        clientResource.accept(MediaType.APPLICATION_JSON);
+
+        // add authentication scheme
+        clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
+                apiSparkConfig.getAgentLogin(),
+                apiSparkConfig.getAgentPassword());
+
+        // send agent version to apispark in headers
+        Series<Header> headers = clientResource.getRequest().getHeaders();
+        headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_AGENT_VERSION,
+                AgentConstants.AGENT_VERSION);
+
+        // send connector cell revision to apispark in headers
+        if (modulesSettings != null) {
+            headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_CELL_REVISION,
+                    modulesSettings.getCellRevision());
+        }
+
+        return clientResource.wrap(resourceClass, AgentUtils.class.getClassLoader());
+    }
+
+    /**
+     * Builds the path of the client resource to communicate with the APISpark
+     * connector cell.
+     * 
+     * @param apiSparkConfig
+     *            The agent configuration.
+     * @param resourcePath
+     *            The resource path.
+     * @return The path of the client resource to communicate with the APISpark
+     *         connector cell.
+     */
+    private static String buildResourcePath(ApiSparkConfig apiSparkConfig,
+            String resourcePath) {
+        StringBuilder sb = new StringBuilder(
+                apiSparkConfig.getAgentServiceUrl());
         if (!apiSparkConfig.getAgentServiceUrl().endsWith("/")) {
             sb.append("/");
         }
@@ -75,25 +112,7 @@ public abstract class AgentUtils {
             sb.append(resourcePath);
         }
 
-        ClientResource clientResource = new ClientResource(sb.toString());
-        clientResource.accept(MediaType.APPLICATION_JSON);
-        
-        // add authentication scheme
-        clientResource.setChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                apiSparkConfig.getAgentLogin(), apiSparkConfig.getAgentPassword());
-
-        // send agent version to apispark in headers
-        Series<Header> headers = clientResource.getRequest().getHeaders();
-        headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_AGENT_VERSION,
-                AgentConstants.AGENT_VERSION);
-
-        // send connector cell revision to apispark in headers
-        if (modulesSettings != null) {
-            headers.add(AgentConstants.REQUEST_HEADER_CONNECTOR_CELL_REVISION,
-                    modulesSettings.getCellRevision());
-        }
-
-        return clientResource.wrap(resourceClass);
+        return sb.toString();
     }
 
     /**

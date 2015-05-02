@@ -56,8 +56,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
- * Authentication module for the agent. This class extends
- * {@link ChallengeAuthenticator} and is responsible to fill
+ * Authentication module for the agent. This class extends {@link ChallengeAuthenticator} and is responsible to fill
  * {@link org.restlet.data.ClientInfo} on the request.
  * 
  * @author Manuel Boillod
@@ -136,7 +135,6 @@ public class AuthenticationModule extends ChallengeAuthenticator {
 
             return result;
         }
-
     }
 
     /**
@@ -251,6 +249,7 @@ public class AuthenticationModule extends ChallengeAuthenticator {
         super(context, ChallengeScheme.HTTP_BASIC, "realm");
 
         authenticationSettings = new AuthenticationSettings();
+        authenticationSettings.setOptional(modulesSettings.isAuthorizationModuleEnabled());
 
         authenticateClientResource = AgentUtils.getClientResource(
                 apiSparkConfig, modulesSettings,
@@ -277,7 +276,8 @@ public class AuthenticationModule extends ChallengeAuthenticator {
                 User user = authenticateClientResource
                         .authenticate(credentials);
                 if (user == null) {
-                    // Authentication should throw an error instead of returning
+                    // Authentication should throw an error instead of
+                    // returning
                     // null
                     throw new AgentException(
                             "Authentication should not return null");

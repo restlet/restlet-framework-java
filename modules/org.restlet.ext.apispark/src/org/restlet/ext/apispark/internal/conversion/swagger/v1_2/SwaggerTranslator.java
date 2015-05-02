@@ -24,7 +24,6 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +40,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiInfo;
@@ -56,6 +56,7 @@ import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceO
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.TypePropertyDeclaration;
+import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Contact;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -70,7 +71,6 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 
 /**
@@ -204,8 +204,7 @@ public abstract class SwaggerTranslator {
                     usedModels);
 
             // fill the resource operation out representation
-            fillApiDeclarationOutRepresentation(operation, rod, contract,
-                    usedModels);
+            fillApiDeclarationOutRepresentation(operation, rod, usedModels);
 
             // fill the resource operation erorr response models
             fillApiDeclarationResponses(operation, usedModels, rod);
@@ -222,14 +221,12 @@ public abstract class SwaggerTranslator {
      *            The Restlet Web API definition's Operation
      * @param rod
      *            The Swagger Swagger ResourceOperationDeclaration
-     * @param contract
-     *            The Restlet Web API definition's Contract
      * @param usedModels
      *            The models specified by this API declaration
      */
     private static void fillApiDeclarationOutRepresentation(
             Operation operation, ResourceOperationDeclaration rod,
-            Contract contract, Collection<String> usedModels) {
+            Collection<String> usedModels) {
         // Get out representation
         PayLoad outRepr = null;
         for (Response response : operation.getResponses()) {
@@ -241,7 +238,10 @@ public abstract class SwaggerTranslator {
             if (outRepr.isArray()) {
                 rod.setType("array");
                 if (Types.isPrimitiveType(outRepr.getType())) {
-                    // TODO how to display error ?
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(outRepr.getType());
+                    rod.getItems().setType(swaggerTypeFormat.getType());
+                    rod.getItems().setFormat(swaggerTypeFormat.getFormat());
                 } else {
                     rod.getItems().setRef(outRepr.getType());
                 }
@@ -330,7 +330,7 @@ public abstract class SwaggerTranslator {
         Contract contract = definition.getContract();
         apiDeclaration.setModels(new TreeMap<String, ModelDeclaration>());
 
-        List<String> usedModelsList = new ArrayList<String>(usedModels);
+        List<String> usedModelsList = new ArrayList<>(usedModels);
         for (int i = 0; i < usedModelsList.size(); i++) {
             String model = usedModelsList.get(i);
             Representation repr = contract.getRepresentation(model);
@@ -338,49 +338,70 @@ public abstract class SwaggerTranslator {
                 continue;
             }
             ModelDeclaration md = new ModelDeclaration();
-            md.setId(model);
-            md.setDescription(repr.getDescription());
-            for (Property prop : repr.getProperties()) {
-                if (prop.getMinOccurs() > 0) {
-                    md.getRequired().add(prop.getName());
-                }
-                if (!Types.isPrimitiveType(prop.getType())
-                        && !usedModelsList.contains(prop.getType())) {
-                    usedModelsList.add(prop.getType());
-                }
-                TypePropertyDeclaration tpd = new TypePropertyDeclaration();
-                tpd.setDescription(prop.getDescription());
-                tpd.setEnum_(prop.getEnumeration());
-
-                if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
-                    tpd.setType("array");
-                    tpd.setItems(new ItemsDeclaration());
-                    if (Types.isPrimitiveType(prop.getType())) {
-                        SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
-                                .toSwaggerType(prop.getType());
-                        tpd.getItems().setType(swaggerTypeFormat.getType());
-                        tpd.setFormat(swaggerTypeFormat.getFormat());
-                    } else {
-                        tpd.getItems().setRef(prop.getType());
-                    }
-                } else {
-                    if (Types.isPrimitiveType(prop.getType())) {
-                        SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
-                                .toSwaggerType(prop.getType());
-                        tpd.setType(swaggerTypeFormat.getType());
-                        tpd.setFormat(swaggerTypeFormat.getFormat());
-                    } else {
-                        tpd.setRef(prop.getType());
-                    }
-                }
-                tpd.setMaximum(prop.getMax());
-                tpd.setMinimum(prop.getMin());
-                tpd.setUniqueItems(prop.isUniqueItems());
-
-                md.getProperties().put(prop.getName(), tpd);
-            }
-            apiDeclaration.getModels().put(md.getId(), md);
+            fillModel(apiDeclaration, usedModelsList, model,
+                    repr.getDescription(), repr.getProperties(), md);
         }
+    }
+
+    private static void fillModel(ApiDeclaration apiDeclaration,
+            List<String> usedModelsList, String model, String description,
+            List<Property> properties, ModelDeclaration md) {
+        md.setId(model);
+        md.setDescription(description);
+        for (Property prop : properties) {
+            String type = prop.getType();
+
+            boolean composite = Types.isCompositeType(type);
+            if (composite) {
+                type = model + StringUtils.firstUpper(prop.getName());
+            }
+
+            if (prop.getMinOccurs() > 0) {
+                md.getRequired().add(prop.getName());
+            }
+            if (!Types.isPrimitiveType(type) && !usedModelsList.contains(type)) {
+                usedModelsList.add(type);
+            }
+            TypePropertyDeclaration tpd = new TypePropertyDeclaration();
+            tpd.setDescription(prop.getDescription());
+            tpd.setEnum_(prop.getEnumeration());
+
+            if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
+                tpd.setType("array");
+                tpd.setItems(new ItemsDeclaration());
+                if (Types.isPrimitiveType(type)) {
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(type);
+                    tpd.getItems().setType(swaggerTypeFormat.getType());
+                    tpd.getItems().setFormat(swaggerTypeFormat.getFormat());
+                } else {
+                    tpd.getItems().setRef(type);
+                    if (composite) {
+                        ModelDeclaration m = new ModelDeclaration();
+                        fillModel(apiDeclaration, usedModelsList, type, null, prop.getProperties(), m);
+                    }
+                }
+            } else {
+                if (Types.isPrimitiveType(type)) {
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(type);
+                    tpd.setType(swaggerTypeFormat.getType());
+                    tpd.setFormat(swaggerTypeFormat.getFormat());
+                } else {
+                    tpd.setRef(type);
+                    if (composite) {
+                        ModelDeclaration m = new ModelDeclaration();
+                        fillModel(apiDeclaration, usedModelsList, type, null, prop.getProperties(), m);
+                    }
+                }
+            }
+            tpd.setMaximum(prop.getMax());
+            tpd.setMinimum(prop.getMin());
+            tpd.setUniqueItems(prop.isUniqueItems());
+
+            md.getProperties().put(prop.getName(), tpd);
+        }
+        apiDeclaration.getModels().put(md.getId(), md);
     }
 
     /**
@@ -398,11 +419,11 @@ public abstract class SwaggerTranslator {
     private static Collection<String> fillApiDeclarationResources(
             Definition definition, ApiDeclaration apiDeclaration,
             String sectionName) {
-        Set<String> usedModels = new HashSet<String>();
+        Set<String> usedModels = new HashSet<>();
         Contract contract = definition.getContract();
 
         // Get the resources corresponding to the sectionName
-        List<Resource> resources = new ArrayList<Resource>();
+        List<Resource> resources = new ArrayList<>();
         boolean allResources = contract.getSections().isEmpty();
         for (Resource resource : contract.getResources()) {
             if (allResources) {
@@ -487,7 +508,7 @@ public abstract class SwaggerTranslator {
 
         // Resource listing
         Resource resource;
-        List<String> declaredTypes = new ArrayList<String>();
+        List<String> declaredTypes = new ArrayList<>();
         for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
             ApiDeclaration apiDeclaration = entry.getValue();
             Section section = new Section();
@@ -504,7 +525,7 @@ public abstract class SwaggerTranslator {
                 resource = new Resource();
                 resource.setResourcePath(api.getPath());
 
-                List<String> declaredPathVariables = new ArrayList<String>();
+                List<String> declaredPathVariables = new ArrayList<>();
                 fillOperations(resource, apiDeclaration, api, contract,
                         section, declaredPathVariables, declaredTypes);
 
@@ -521,14 +542,14 @@ public abstract class SwaggerTranslator {
      * 
      * @param contract
      *            The Restlet Web API definition's Contract
-     * @param apiDeclarations
+     * @param apiDeclaration
      *            The Swagger ApiDeclaration
      */
     private static void fillContract(Contract contract,
             ApiDeclaration apiDeclaration) {
         // Resource listing
         Resource resource;
-        List<String> declaredTypes = new ArrayList<String>();
+        List<String> declaredTypes = new ArrayList<>();
         Section section = new Section();
         if (apiDeclaration.getResourcePath().startsWith("/")) {
             section.setName(apiDeclaration.getResourcePath().substring(1));
@@ -541,7 +562,7 @@ public abstract class SwaggerTranslator {
             resource = new Resource();
             resource.setResourcePath(api.getPath());
 
-            List<String> declaredPathVariables = new ArrayList<String>();
+            List<String> declaredPathVariables = new ArrayList<>();
             fillOperations(resource, apiDeclaration, api, contract, section,
                     declaredPathVariables, declaredTypes);
 
@@ -620,7 +641,7 @@ public abstract class SwaggerTranslator {
 
         List<String> apiProduces = apiDeclaration.getProduces();
         List<String> apiConsumes = apiDeclaration.getConsumes();
-        Map<String, List<String>> subtypes = new HashMap<String, List<String>>();
+        Map<String, List<String>> subtypes = new HashMap<>();
         Representation representation;
 
         // Operations listing
@@ -634,7 +655,7 @@ public abstract class SwaggerTranslator {
             operation.setDescription(swaggerOperation.getSummary());
 
             // fill produced and consumed variants
-            fillVariants(contract, section, operation, swaggerOperation,
+            fillVariants(operation, swaggerOperation,
                     apiProduces, apiConsumes);
 
             // Extract success response message
@@ -800,7 +821,7 @@ public abstract class SwaggerTranslator {
         boolean allResources = contract.getSections().isEmpty();
 
         // Resources
-        List<String> addedApis = new ArrayList<String>();
+        List<String> addedApis = new ArrayList<>();
         if (definition.getContract() != null && contract.getResources() != null) {
             listing.setApis(new ArrayList<ResourceListingApi>());
 
@@ -922,10 +943,6 @@ public abstract class SwaggerTranslator {
     /**
      * Fills Restlet Web API definition's variants from Swagger 1.2 definition
      * 
-     * @param contract
-     *            The Restlet Web API definition's Contract
-     * @param section
-     *            The current Section
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param swaggerOperation
@@ -935,8 +952,7 @@ public abstract class SwaggerTranslator {
      * @param apiConsumes
      *            The list of media types consumed by the operation
      */
-    private static void fillVariants(Contract contract, Section section,
-            Operation operation, ResourceOperationDeclaration swaggerOperation,
+    private static void fillVariants(Operation operation, ResourceOperationDeclaration swaggerOperation,
             List<String> apiProduces, List<String> apiConsumes) {
         // Set variants
         for (String produced : apiProduces.isEmpty() ? swaggerOperation
@@ -1152,14 +1168,10 @@ public abstract class SwaggerTranslator {
                     "Definition successfully retrieved from Swagger definition");
             return definition;
         } catch (Exception e) {
-            if (e instanceof FileNotFoundException) {
-                throw new TranslationException("file", e.getMessage(), e);
-            } else {
-                throw new TranslationException(
-                        "compliance",
-                        "Impossible to read your API definition, check your Swagger specs compliance",
-                        e);
-            }
+            throw new TranslationException(
+                    "compliance",
+                    "Impossible to read your API definition, check your Swagger specs compliance",
+                    e);
         }
     }
 
@@ -1185,14 +1197,10 @@ public abstract class SwaggerTranslator {
                     "Definition successfully retrieved from Swagger definition");
             return definition;
         } catch (Exception e) {
-            if (e instanceof FileNotFoundException) {
-                throw new TranslationException("file", e.getMessage(), e);
-            } else {
-                throw new TranslationException(
-                        "compliance",
-                        "Impossible to read your API definition, check your Swagger specs compliance",
-                        e);
-            }
+            throw new TranslationException(
+                    "compliance",
+                    "Impossible to read your API definition, check your Swagger specs compliance",
+                    e);
         }
     }
 

@@ -52,24 +52,31 @@ public class CorsService extends Service {
      * header into the 'Access-Control-Allow-Headers' response header. If false,
      * use {@link #allowedHeaders}. Default is true.
      */
-    public boolean allowingAllRequestedHeaders = true;
+    private boolean allowingAllRequestedHeaders = true;
 
     /**
      * If true, add 'Access-Control-Allow-Credentials' header. Default is false.
      */
-    public boolean allowedCredentials = false;
+    private boolean allowedCredentials = false;
 
     /**
      * The value of 'Access-Control-Allow-Headers' response header. Used only if
      * {@link #allowingAllRequestedHeaders} is false.
      */
-    public Set<String> allowedHeaders = null;
+    private Set<String> allowedHeaders = null;
 
     /** The value of 'Access-Control-Allow-Origin' header. Default is '*'. */
-    public Set<String> allowedOrigins = SetUtils.newHashSet("*");
+    private Set<String> allowedOrigins = SetUtils.newHashSet("*");
 
     /** The value of 'Access-Control-Expose-Headers' response header. */
-    public Set<String> exposedHeaders = null;
+    private Set<String> exposedHeaders = null;
+
+    /**
+     * If true, the filter does not call the server resource for OPTIONS method
+     * of CORS request and set Access-Control-Allow-Methods header with
+     * the default methods. Default is false.
+     */
+    private boolean skippingResourceForCorsOptions = false;
 
     /**
      * Constructor.
@@ -94,7 +101,8 @@ public class CorsService extends Service {
                 .setAllowedOrigins(allowedOrigins)
                 .setAllowingAllRequestedHeaders(allowingAllRequestedHeaders)
                 .setAllowedHeaders(allowedHeaders)
-                .setExposedHeaders(exposedHeaders);
+                .setExposedHeaders(exposedHeaders)
+                .setSkippingResourceForCorsOptions(skippingResourceForCorsOptions);
     }
 
     /**
@@ -144,6 +152,18 @@ public class CorsService extends Service {
      */
     public boolean isAllowingAllRequestedHeaders() {
         return allowingAllRequestedHeaders;
+    }
+
+    /**
+     * If true, the filter does not call the server resource for OPTIONS method
+     * of CORS request and set Access-Control-Allow-Methods header with
+     * the default methods. Default is false.
+     *
+     * @return True if the filter does not call the server resource for
+     * OPTIONS method of CORS request.
+     */
+    public boolean isSkippingResourceForCorsOptions() {
+        return skippingResourceForCorsOptions;
     }
 
     /**
@@ -209,5 +229,16 @@ public class CorsService extends Service {
      */
     public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
+    }
+
+    /**
+     * Sets the value of skipResourceForCorsOptions field.
+     *
+     * @param skipResourceForCorsOptions
+     *          True if the filter does not call the server resource for
+     *          OPTIONS method of CORS request.
+     */
+    public void setSkippingResourceForCorsOptions(boolean skipResourceForCorsOptions) {
+        this.skippingResourceForCorsOptions = skipResourceForCorsOptions;
     }
 }
