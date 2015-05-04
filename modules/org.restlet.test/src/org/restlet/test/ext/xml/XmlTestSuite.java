@@ -39,7 +39,6 @@ public class XmlTestSuite extends TestCase {
         TestSuite result = new TestSuite();
         result.setName("XML extension");
         result.addTestSuite(ResolvingTransformerTestCase.class);
-        result.addTestSuite(RestletXmlTestCase.class);
         result.addTestSuite(TransformerTestCase.class);
         result.addTestSuite(TransformRepresentationTestCase.class);
         return result;
