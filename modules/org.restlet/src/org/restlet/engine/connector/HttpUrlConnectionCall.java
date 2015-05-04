@@ -341,8 +341,14 @@ public class HttpUrlConnectionCall extends ClientCall {
 
             // Set the request headers
             for (Header header : getRequestHeaders()) {
-                getConnection().addRequestProperty(header.getName(),
-                        header.getValue());
+                if (header.getValue() != null) {
+                    getConnection().addRequestProperty(header.getName(),
+                            header.getValue());
+                } else {
+                    getHelper().getLogger().info(
+                            "The following header has a null value and has been discarded: "
+                                    + header.getName());
+                }
             }
 
             if ((Edition.CURRENT == Edition.GAE)
