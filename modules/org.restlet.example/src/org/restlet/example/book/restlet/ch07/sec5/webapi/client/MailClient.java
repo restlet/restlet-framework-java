@@ -24,8 +24,6 @@
 
 package org.restlet.example.book.restlet.ch07.sec5.webapi.client;
 
-import java.util.List;
-
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.ext.atom.Entry;

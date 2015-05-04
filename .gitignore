@@ -26,7 +26,6 @@
 /modules/org.restlet.ext.apispark/bin
 /modules/org.restlet.ext.atom/bin
 /modules/org.restlet.ext.crypto/bin
-/modules/org.restlet.ext.e4/bin
 /modules/org.restlet.ext.emf/bin
 /modules/org.restlet.ext.fileupload/bin
 /modules/org.restlet.ext.freemarker/bin
@@ -35,7 +34,6 @@
 /modules/org.restlet.ext.guice/bin
 /modules/org.restlet.ext.gwt/bin
 /modules/org.restlet.ext.html/bin
-/modules/org.restlet.ext.httpclient/bin
 /modules/org.restlet.ext.jaas/bin
 /modules/org.restlet.ext.jackson/bin
 /modules/org.restlet.ext.javamail/bin
@@ -46,7 +44,7 @@
 /modules/org.restlet.ext.jibx/bin
 /modules/org.restlet.ext.json/bin
 /modules/org.restlet.ext.lucene/bin
-/modules/org.restlet.ext.nio/bin
+/modules/org.restlet.ext.netty/bin
 /modules/org.restlet.ext.oauth/bin
 /modules/org.restlet.ext.odata/bin
 /modules/org.restlet.ext.openid/bin

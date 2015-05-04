@@ -560,7 +560,7 @@
 			<if>
 				<istrue value="${do-javadoc}" />
 				<then>
-			@generate-mavenjavadocs@
+			<!-- @generate-mavenjavadocs@ -->
 				</then>
 			</if>
 

@@ -3,15 +3,20 @@
 Changes log  
 ===========
 
-@version-full@ (@release-date@)
-
-- 2.3m1 (12/19/2014)
+- @version-full@ (@release-date@)
     - API changes
-       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
-         ROME, SIP, WebDAV, XDB, XStream).
        - Enhanced HTML extension (moved StatusInfoConverter). Issue #1005.
        - Reference scheme reverts to http when using https. Issue #998.
          Reported by Stephen C. Pope.
+       - Removed previous attempts to add asynchronous representation
+         handling to make room for simpler solution based on Netty.
+       - Removed WebDAV methods in Method class and engine.
+       - Removed deprecated StatusService from Component. Please use the
+         StatusService in Application instead.
+       - Added bytes array support in DefaultConverter and Representation
+         (via getBytes() method).
+    - Enhancements
+       - Added Netty connector.
     - Bugs
        - Reintroduced registration by default of the internal HTTP server 
          connectors in JEE edition.
@@ -25,4 +30,15 @@ Changes log
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
-         
+       - Removed lesser used/maintained extensions (e4, XDB)
+       - Removed connectors that will be replaced by the Netty connector
+         (Apache HTTP Client, Simple, NIO).
+       - Removed NIO related classes from Restlet Engine packages to save
+         space (we will now rely on Netty).
+       - Removed deprecated XML configuration classes.
+
+- 3.0 M1 (12/19/2014)
+    - API changes
+       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
+         ROME, SIP, WebDAV, XStream).
+

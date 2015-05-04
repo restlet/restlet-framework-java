@@ -69,9 +69,9 @@ public abstract class RestletTestCase extends TestCase {
         Engine.getInstance()
                 .getRegisteredServers()
                 .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
-        // FIXME turn on the internal connector.
-        Engine.getInstance().getRegisteredClients()
-                .add(0, new org.restlet.ext.httpclient.HttpClientHelper(null));
+        Engine.getInstance()
+                .getRegisteredClients()
+                .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
 
         // Enable object serialization
         ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;

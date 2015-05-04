@@ -27,8 +27,6 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.restlet.test.component.ComponentXmlConfigTestCase;
-import org.restlet.test.component.ComponentXmlTestCase;
 import org.restlet.test.connector.FileClientTestCase;
 import org.restlet.test.connector.RestartTestCase;
 import org.restlet.test.connector.RiapTestCase;
@@ -83,7 +81,6 @@ import org.restlet.test.util.TemplateTestCase;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class RestletTestSuite extends TestSuite {
 
     /**
@@ -102,7 +99,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(AtomTestCase.class);
         addTestSuite(AuthenticationInfoTestCase.class);
         addTestSuite(CallTestCase.class);
-        addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(ClientInfoTestCase.class);
         addTestSuite(FileClientTestCase.class);
@@ -152,7 +148,6 @@ public class RestletTestSuite extends TestSuite {
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
         // [ifndef gae]
-        addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(DigesterRepresentationTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);

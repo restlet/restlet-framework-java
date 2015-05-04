@@ -29,8 +29,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
 import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
 
 import org.restlet.Context;
 import org.restlet.Response;
@@ -47,6 +52,7 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -71,7 +77,8 @@ public abstract class ServerCall extends Call {
      *            The parent server connector.
      */
     public ServerCall(Server server) {
-        this(server.getAddress(), server.getPort());
+        this((server == null) ? null : server.getAddress(),
+                (server == null) ? 0 : server.getPort());
     }
 
     /**
@@ -92,7 +99,7 @@ public abstract class ServerCall extends Call {
      * Ask the connector to abort the related network connection, for example
      * immediately closing the socket.
      * 
-     * @return True if the request was aborted.
+     * @return True if the connection was aborted.
      */
     public abstract boolean abort();
 
@@ -120,6 +127,21 @@ public abstract class ServerCall extends Call {
      *         accessible.
      */
     public List<Certificate> getCertificates() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                try {
+                    return Arrays.asList(sslSession.getPeerCertificates());
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+
         return null;
     }
 
@@ -129,6 +151,16 @@ public abstract class ServerCall extends Call {
      * @return The SSL Cipher Suite, if available and accessible.
      */
     public String getCipherSuite() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+
         return null;
     }
 
@@ -283,12 +315,28 @@ public abstract class ServerCall extends Call {
     public abstract OutputStream getResponseEntityStream();
 
     /**
+     * Returns the SSL engine.
+     * 
+     * @return the SSL engine or null by default.
+     */
+    protected SSLEngine getSslEngine() {
+        return null;
+    }
+
+    /**
      * Returns the SSL key size, if available and accessible.
      * 
      * @return The SSL key size, if available and accessible.
      */
     public Integer getSslKeySize() {
-        return null;
+        Integer keySize = null;
+        String sslCipherSuite = getCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
     }
 
     /**
@@ -316,6 +364,16 @@ public abstract class ServerCall extends Call {
      *         in that format.
      */
     protected byte[] getSslSessionIdBytes() {
+        final SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            final SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getId();
+            }
+        }
+
         return null;
     }
 
@@ -450,23 +508,10 @@ public abstract class ServerCall extends Call {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-                    OutputStream responseEntityStream = getResponseEntityStream();
-                    writeResponseBody(responseEntity, responseEntityStream);
-
-                    if (responseEntityStream != null) {
-                        try {
-                            responseEntityStream.flush();
-                            responseEntityStream.close();
-                        } catch (IOException ioe) {
-                            // The stream was probably already closed by the
-                            // connector. Probably OK, low message priority.
-                            getLogger()
-                                    .log(Level.FINE,
-                                            "Exception while flushing and closing the entity stream.",
-                                            ioe);
-                        }
-                    }
+                    writeResponseBody(responseEntity);
                 }
+
+                writeResponseTail(response);
             } finally {
                 if (responseEntity != null) {
                     responseEntity.release();
@@ -490,6 +535,35 @@ public abstract class ServerCall extends Call {
     public boolean shouldResponseBeChunked(Response response) {
         return (response.getEntity() != null)
                 && !response.getEntity().hasKnownSize();
+    }
+
+    /**
+     * Attempts to write the response body. By default, it attempts to use the
+     * {@link #getResponseEntityStream()} to synchronously write the entity
+     * content.
+     * 
+     * @param responseEntity
+     *            The response entity to write.
+     * @throws IOException
+     */
+    protected void writeResponseBody(Representation responseEntity)
+            throws IOException {
+        OutputStream responseEntityStream = getResponseEntityStream();
+        writeResponseBody(responseEntity, responseEntityStream);
+
+        if (responseEntityStream != null) {
+            try {
+                responseEntityStream.flush();
+                responseEntityStream.close();
+            } catch (IOException ioe) {
+                // The stream was probably already closed by the
+                // connector. Probably OK, low message priority.
+                getLogger()
+                        .log(Level.FINE,
+                                "Exception while flushing and closing the entity stream.",
+                                ioe);
+            }
+        }
     }
 
     /**
@@ -571,5 +645,13 @@ public abstract class ServerCall extends Call {
         headStream.write(13); // CR
         headStream.write(10); // LF
         headStream.flush();
+    }
+
+    /**
+     * Write the response tail. By default does nothing.
+     * 
+     * @param response The response being written.
+     */
+    protected void writeResponseTail(Response response) {
     }
 }

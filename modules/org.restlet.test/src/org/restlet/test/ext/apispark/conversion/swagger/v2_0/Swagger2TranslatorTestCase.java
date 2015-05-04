@@ -232,15 +232,19 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         // Then
         assertEquals("2.0", swagger.getSwagger());
 
-        Map<String, SecuritySchemeDefinition> securitySchemes = swagger.getSecurityDefinitions();
+        Map<String, SecuritySchemeDefinition> securitySchemes = swagger
+                .getSecurityDefinitions();
         assertEquals(true, securitySchemes.containsKey("HTTP_BASIC"));
-        assertEquals(true, securitySchemes.get("HTTP_BASIC") instanceof BasicAuthDefinition);
+        assertEquals(
+                true,
+                securitySchemes.get("HTTP_BASIC") instanceof BasicAuthDefinition);
 
         Info infoSwagger = swagger.getInfo();
         assertEquals("version", infoSwagger.getVersion());
         Contact contactSwagger = infoSwagger.getContact();
         assertEquals("contact", contactSwagger.getName());
-        com.wordnik.swagger.models.License licenseSwagger = infoSwagger.getLicense();
+        com.wordnik.swagger.models.License licenseSwagger = infoSwagger
+                .getLicense();
         assertEquals("licenseName", licenseSwagger.getName());
         assertEquals("licenseUrl", licenseSwagger.getUrl());
         assertEquals("contract.name", infoSwagger.getTitle());
@@ -278,7 +282,8 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .get(2);
         assertNotNull(bodyParameter);
         RefModel schemaBodyParameter = (RefModel) bodyParameter.getSchema();
-        assertEquals("#/definitions/nameRepresentation1", schemaBodyParameter.get$ref());
+        assertEquals("#/definitions/nameRepresentation1",
+                schemaBodyParameter.get$ref());
         // queryParameter 1
         com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter1 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
                 .getParameters().get(3);

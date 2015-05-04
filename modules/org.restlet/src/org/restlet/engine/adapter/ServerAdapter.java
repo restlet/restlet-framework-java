@@ -104,7 +104,7 @@ public class ServerAdapter extends Adapter {
     /**
      * Commits the changes to a handled uniform call back into the original HTTP
      * call. The default implementation first invokes the "addResponseHeaders"
-     * then asks the "htppCall" to send the response back to the client.
+     * then asks the "httpCall" to send the response back to the client.
      * 
      * @param response
      *            The high-level response.

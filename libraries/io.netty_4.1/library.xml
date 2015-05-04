@@ -1,0 +1,22 @@
+<library id="netty" symbolicName="io.netty">
+	<name>Netty</name>
+	<description>Netty project.</description>
+	<version>4.1</version>
+	<homeUri>http://netty.io</homeUri>
+	<downloadUri>http://netty.io/downloads.html</downloadUri>
+	<provider>The Netty project</provider>
+	
+	<package name="io.netty">
+		<maven>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.0.Beta4</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://netty.io/4.1/api/" />
+	</javadocs>
+</library>

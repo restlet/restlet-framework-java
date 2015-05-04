@@ -24,18 +24,12 @@
 
 package org.restlet;
 
-import java.io.File;
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 
-import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.InternalRouter;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Realm;
@@ -110,35 +104,6 @@ import org.restlet.util.ServiceList;
  */
 public class Component extends Restlet {
 
-    /**
-     * Used as bootstrap for configuring and running a component in command
-     * line. Just provide as first and unique parameter the URI to the XML file.
-     * Note that relative paths are accepted.
-     * 
-     * @param args
-     *            The list of in-line parameters.
-     * @deprecated Use XML support in the Spring extension instead.
-     */
-    @Deprecated
-    public static void main(String[] args) throws Exception {
-        try {
-            if ((args == null) || (args.length != 1)) {
-                // Display program arguments
-                System.err
-                        .println("Can't launch the component. Requires the path to an XML configuration file.\n");
-            } else {
-                // Create and start the component
-                URI currentDirURI = (new File(".")).toURI();
-                URI confURI = currentDirURI.resolve(args[0]);
-                new Component(confURI.toString()).start();
-            }
-        } catch (Exception e) {
-            System.err
-                    .println("Can't launch the component.\nAn unexpected exception occurred:");
-            e.printStackTrace(System.err);
-        }
-    }
-
     /** The modifiable list of client connectors. */
     private final ClientList clients;
 
@@ -189,73 +154,9 @@ public class Component extends Restlet {
             this.services.add(new LogService());
             getLogService().setContext(childContext);
             this.services.add(new StatusService());
-            getStatusService().setContext(childContext);
             this.clients.setContext(childContext);
             this.servers.setContext(childContext);
         }
-    }
-
-    /**
-     * Constructor with the reference to the XML configuration file.
-     * 
-     * @param xmlConfigRef
-     *            The URI reference to the XML configuration file.
-     * @deprecated Use XML support in the Spring extension instead.
-     */
-    @Deprecated
-    public Component(Reference xmlConfigRef) {
-        this();
-
-        // Get the representation of the configuration file.
-        Representation xmlConfigRepresentation = null;
-
-        if (xmlConfigRef != null) {
-            ClientResource cr = new ClientResource(xmlConfigRef);
-            xmlConfigRepresentation = cr.get();
-
-            if (xmlConfigRepresentation != null) {
-                new org.restlet.engine.component.ComponentXmlParser(this,
-                        xmlConfigRepresentation).parse();
-            } else {
-                getLogger().log(
-                        Level.WARNING,
-                        "Unable to get the Component XML configuration located at this URI: "
-                                + xmlConfigRef);
-            }
-        }
-    }
-
-    /**
-     * Constructor with the representation of the XML configuration file.
-     * 
-     * @param xmlConfigRepresentation
-     *            The representation of the XML configuration file.
-     * @deprecated Use XML support in the Spring extension instead.
-     */
-    @Deprecated
-    public Component(Representation xmlConfigRepresentation) {
-        this();
-
-        if (xmlConfigRepresentation != null) {
-            new org.restlet.engine.component.ComponentXmlParser(this,
-                    xmlConfigRepresentation).parse();
-        } else {
-            getLogger().log(Level.WARNING,
-                    "Unable to parse the Component XML configuration.");
-        }
-    }
-
-    /**
-     * Constructor with the URI reference to the XML configuration file.
-     * 
-     * @param xmlConfigurationRef
-     *            The URI reference to the XML configuration file.
-     * @deprecated Use XML support in the Spring extension instead.
-     */
-    @Deprecated
-    public Component(String xmlConfigurationRef) {
-        this((xmlConfigurationRef == null) ? null : new Reference(
-                xmlConfigurationRef));
     }
 
     /**
@@ -378,17 +279,6 @@ public class Component extends Restlet {
      */
     public ServiceList getServices() {
         return services;
-    }
-
-    /**
-     * Returns the status service, enabled by default.
-     * 
-     * @return The status service.
-     * @deprecated Use {@link Application#getStatusService()} instead.
-     */
-    @Deprecated
-    public StatusService getStatusService() {
-        return getServices().get(StatusService.class);
     }
 
     /**
@@ -525,19 +415,6 @@ public class Component extends Restlet {
                 }
             }
         }
-    }
-
-    /**
-     * Sets the status service.
-     * 
-     * @param statusService
-     *            The status service.
-     * @deprecated Use {@link Application#setStatusService(StatusService)}
-     *             instead.
-     */
-    @Deprecated
-    public void setStatusService(StatusService statusService) {
-        getServices().set(statusService);
     }
 
     /**

@@ -34,8 +34,7 @@ import java.nio.channels.ReadableByteChannel;
  * 
  * @author Jerome Louvel
  */
-public class InputStreamChannel implements ReadableByteChannel,
-        BlockableChannel {
+public class InputStreamChannel implements ReadableByteChannel {
 
     /** The underlying input stream. */
     private final InputStream inputStream;
