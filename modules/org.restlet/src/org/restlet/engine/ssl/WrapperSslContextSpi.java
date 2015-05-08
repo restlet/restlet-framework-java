@@ -91,8 +91,12 @@ public class WrapperSslContextSpi extends SSLContextSpi {
 
     @Override
     protected SSLServerSocketFactory engineGetServerSocketFactory() {
+        // [ifndef gae] instruction
         return new WrapperSslServerSocketFactory(getContextFactory(),
                 getWrappedContext().getServerSocketFactory());
+        // [ifdef gae] instruction uncomment
+        // throw new RuntimeException(
+        // "Not supported in the GAE edition of the Restlet Framework");
     }
 
     @Override
