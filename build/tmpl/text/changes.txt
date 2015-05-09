@@ -4,6 +4,12 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - Redirector does not translate response's entity location reference.
+         Issue #1069.
+       - Fixed tunnelFilter. + symbol (%2b) converted incorrectly when media 
+         query parameter is used. Issue #804.
+         Reported by Rob Elsner.
 
 - 2.3.2 (05/01/2015)
     - Bugs fixed
@@ -27,8 +33,6 @@ Changes log
          containers to stop the application. Issue #1058.
          Reported by Constantin Gruber.
        - Fixed duplication of headers (jaxrs). Issues #944, #948.
-       - Redirector does not translate response's entity location reference.
-         Issue #1069.
 
     - Misc
        - Completed the Javadocs for query parameter declarations inside
