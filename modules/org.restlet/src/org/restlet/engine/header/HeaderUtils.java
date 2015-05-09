@@ -671,10 +671,8 @@ public class HeaderUtils {
                 extensionHeaders.add(header);
             }
         }
-        if (!extensionHeaders.isEmpty()) {
-            message.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
-                    extensionHeaders);
-        }
+        message.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                extensionHeaders);
     }
 
     /**
