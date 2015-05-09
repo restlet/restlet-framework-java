@@ -195,6 +195,36 @@ public class Redirector extends Restlet {
     }
 
     /**
+     * Computes the new location of the given reference, after applying the
+     * redirection template. Returns null in case it cannot compute the new
+     * reference.
+     * 
+     * @param locationRef
+     *            The reference to translate.
+     * @param request
+     *            The current request.
+     * @return The new location of the given reference.
+     */
+    private String getLocation(Reference locationRef, Request request) {
+        Reference resourceRef = request.getResourceRef();
+        Reference baseRef = resourceRef.getBaseRef();
+
+        Template rt = new Template(this.targetTemplate);
+        rt.setLogger(getLogger());
+        int matched = rt.parse(locationRef.toString(), request);
+
+        if (matched > 0) {
+            String remainingPart = (String) request.getAttributes().get("rr");
+
+            if (remainingPart != null) {
+                return baseRef.toString() + remainingPart;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the redirection mode.
      * 
      * @return The redirection mode.
@@ -424,6 +454,35 @@ public class Redirector extends Restlet {
     }
 
     /**
+     * Rewrite the location of the response, and the Location of the entity, if
+     * any.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    public void rewriteLocation(Request request, Response response) {
+        if (response.getLocationRef() != null) {
+            Reference locationRef = response.getLocationRef();
+
+            String newLocation = getLocation(locationRef, request);
+            if (newLocation != null) {
+                response.setLocationRef(newLocation);
+            }
+        }
+        if (response.getEntity() != null
+                && response.getEntity().getLocationRef() != null) {
+            Reference locationRef = response.getEntity().getLocationRef();
+
+            String newLocation = getLocation(locationRef, request);
+            if (newLocation != null) {
+                response.getEntity().setLocationRef(newLocation);
+            }
+        }
+    }
+
+    /**
      * Redirects a given call on the server-side to a next Restlet with a given
      * target reference. In the default implementation, the request HTTP
      * headers, stored in the request's attributes, are removed before
@@ -449,7 +508,6 @@ public class Redirector extends Restlet {
             // Save the base URI if it exists as we might need it for
             // redirections
             Reference resourceRef = request.getResourceRef();
-            Reference baseRef = resourceRef.getBaseRef();
 
             // Reset the protocol and let the dispatcher handle the protocol
             request.setProtocol(null);
@@ -459,28 +517,13 @@ public class Redirector extends Restlet {
             rewrite(request);
             next.handle(request, response);
 
+            request.setResourceRef(resourceRef);
             // Allow for response rewriting and clean the headers
             response.setEntity(rewrite(response.getEntity()));
             rewrite(response);
-            request.setResourceRef(resourceRef);
 
             // In case of redirection, we may have to rewrite the redirect URI
-            if (response.getLocationRef() != null) {
-                Template rt = new Template(this.targetTemplate);
-                rt.setLogger(getLogger());
-                int matched = rt.parse(response.getLocationRef().toString(),
-                        request);
-
-                if (matched > 0) {
-                    String remainingPart = (String) request.getAttributes()
-                            .get("rr");
-
-                    if (remainingPart != null) {
-                        response.setLocationRef(baseRef.toString()
-                                + remainingPart);
-                    }
-                }
-            }
+            rewriteLocation(request, response);
         }
     }
 
