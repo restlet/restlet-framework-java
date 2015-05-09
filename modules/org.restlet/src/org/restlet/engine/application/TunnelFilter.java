@@ -452,7 +452,7 @@ public class TunnelFilter extends Filter {
         Reference resourceRef = request.getResourceRef();
 
         if (resourceRef.hasQuery()) {
-            Form query = resourceRef.getQueryAsForm();
+            Form query = resourceRef.getQueryAsForm(CharacterSet.UTF_8);
 
             // Tunnel the request method
             Method method = request.getMethod();
@@ -543,7 +543,7 @@ public class TunnelFilter extends Filter {
 
             // Update the query if it has been modified
             if (queryModified) {
-                request.getResourceRef().setQuery(query.getQueryString(null));
+                request.getResourceRef().setQuery(query.getQueryString(CharacterSet.UTF_8));
             }
         }
 

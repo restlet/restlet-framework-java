@@ -56,6 +56,12 @@ public class TunnelFilterTestCase extends RestletTestCase {
     private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
 
     /** . */
+    private static final String QUERY = "http://example.org/?start=2013-11-26T03%3A45%2B1300";
+
+    /** . */
+    private static final String QUERY_PREF = "http://example.org/?start=2013-11-26T03%3A45%2B1300&media=txt";
+
+    /** . */
     private static final String START_REF_FOR_PATH_TEST = "http://www.example.com/abc/def/";
 
     /** . */
@@ -88,7 +94,8 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
-            @SuppressWarnings("unchecked") A... expected) {
+            @SuppressWarnings("unchecked")
+            A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
             System.out.println("Should: " + Arrays.asList(expected));
@@ -429,4 +436,24 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML,
                 MediaType.APPLICATION_XML, MediaType.ALL);
     }
+
+    public void testMethodTunnelingViaQuery() {
+        tunnelFilter.getTunnelService().setExtensionsTunnel(false);
+        tunnelFilter.getTunnelService().setHeadersTunnel(false);
+        tunnelFilter.getTunnelService().setMethodTunnel(false);
+        tunnelFilter.getTunnelService().setPreferencesTunnel(true);
+        tunnelFilter.getTunnelService().setQueryTunnel(true);
+        tunnelFilter.getTunnelService().setUserAgentTunnel(false);
+
+        createGet(QUERY);
+        this.tunnelFilter.beforeHandle(this.request, this.response);
+
+        assertEquals(QUERY, this.request.getResourceRef().toString());
+
+        createGet(QUERY_PREF);
+        this.tunnelFilter.beforeHandle(this.request, this.response);
+        assertEquals(QUERY, this.request.getResourceRef().toString());
+        assertMediaTypes(MediaType.TEXT_PLAIN);
+    }
+
 }
