@@ -30,4 +30,7 @@ mv editions/osgi builds/
 
 # Build  RF JSE version for agent and create maven artefacts
 ant -Deditions=jse -Dverify=false -Djavadoc=false -Dmaven=true -Dnsis=false -Dpackage=false -Declipse-pde=true -Declipse-pde-optional-dependencies=true -Dp2=true
+# Copy maven edition to local maven repository
+mkdir -p ~/.m2/repository/
+cp -r editions/jse/dist/maven2/restlet-*/org ~/.m2/repository/
 mv editions/jse builds/jse-maven
