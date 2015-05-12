@@ -191,9 +191,8 @@ public class SwaggerAnnotationUtils {
         if (!StringUtils.isNullOrEmpty(apiOperation.httpMethod())) {
             operation.setMethod(apiOperation.httpMethod());
         }
-        if (!StringUtils.isNullOrEmpty(apiOperation.tags())) {
-            List<String> tags = StringUtils.splitAndTrim(apiOperation.tags());
-            for (String tag : tags) {
+        if (apiOperation.tags() != null) {
+            for (String tag : apiOperation.tags()) {
                 if (!resource.getSections().contains(tag)) {
                     resource.getSections().add(tag);
                 }
