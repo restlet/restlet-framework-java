@@ -10,6 +10,9 @@ Changes log
        - Fixed tunnelFilter. + symbol (%2b) converted incorrectly when media 
          query parameter is used. Issue #804.
          Reported by Rob Elsner.
+       - Fixed never ending call when an exception happens while writing the 
+         response's entity using the internal HTTP server connector.
+         Issue #1061. Reported by Gernot Pansy.
 
 - 2.3.2 (05/01/2015)
     - Bugs fixed

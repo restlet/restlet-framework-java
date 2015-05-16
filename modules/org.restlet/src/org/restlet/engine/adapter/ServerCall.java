@@ -446,28 +446,30 @@ public abstract class ServerCall extends Call {
                 connectorService.beforeSend(responseEntity);
             }
 
+            OutputStream responseEntityStream = null;
             try {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-                    OutputStream responseEntityStream = getResponseEntityStream();
+
+                    responseEntityStream = getResponseEntityStream();
                     writeResponseBody(responseEntity, responseEntityStream);
 
-                    if (responseEntityStream != null) {
-                        try {
-                            responseEntityStream.flush();
-                            responseEntityStream.close();
-                        } catch (IOException ioe) {
-                            // The stream was probably already closed by the
-                            // connector. Probably OK, low message priority.
-                            getLogger()
-                                    .log(Level.FINE,
-                                            "Exception while flushing and closing the entity stream.",
-                                            ioe);
-                        }
-                    }
                 }
             } finally {
+                if (responseEntityStream != null) {
+                    try {
+                        responseEntityStream.flush();
+                        responseEntityStream.close();
+                    } catch (IOException ioe) {
+                        // The stream was probably already closed by the
+                        // connector. Probably OK, low message priority.
+                        getLogger()
+                                .log(Level.FINE,
+                                        "Exception while flushing and closing the entity stream.",
+                                        ioe);
+                    }
+                }
                 if (responseEntity != null) {
                     responseEntity.release();
                 }
