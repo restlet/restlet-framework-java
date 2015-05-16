@@ -71,7 +71,8 @@ public abstract class ServerCall extends Call {
      *            The parent server connector.
      */
     public ServerCall(Server server) {
-        this(server.getAddress(), server.getPort());
+        this((server == null) ? null : server.getAddress(),
+                (server == null) ? 0 : server.getPort());
     }
 
     /**
@@ -92,7 +93,7 @@ public abstract class ServerCall extends Call {
      * Ask the connector to abort the related network connection, for example
      * immediately closing the socket.
      * 
-     * @return True if the request was aborted.
+     * @return True if the connection was aborted.
      */
     public abstract boolean abort();
 
