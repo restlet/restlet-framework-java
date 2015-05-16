@@ -121,6 +121,16 @@ public class JaxRsClientTest extends JaxRsTestCase {
         });
     }
 
+    public void testEchoStringFormParam() throws Exception {
+        performEchoTest(new EchoTest() {
+            @Override
+            public void performTest(EchoResource echoResource) {
+                assertEquals("formparam",
+                        echoResource.echoStringFormParam("formparam"));
+            }
+        });
+    }
+
     // TODO - regex path params are not quite ready
     // public void testRegexPathParam() throws Exception {
     // performEchoTest(new EchoTest() {

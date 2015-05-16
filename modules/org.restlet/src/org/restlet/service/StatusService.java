@@ -59,7 +59,11 @@ import org.restlet.resource.ResourceException;
  * If you want to customize the default behavior, you need to create a subclass
  * of StatusService that overrides some or all of the methods mentioned above.
  * Then, just create a instance of your class and set it on your Component or
- * Application via the setStatusService() methods.
+ * Application via the setStatusService() methods.<br>
+ * <br>
+ * In case the response's entity has already been set, the status service does
+ * not generate an error representation. You can turn off this default behavior
+ * by calling the {@link #setOverwriting(boolean)} method.
  * 
  * @see <a href="http://wiki.restlet.org/docs_2.2/202-restlet.html">User
  *      Guide</a>

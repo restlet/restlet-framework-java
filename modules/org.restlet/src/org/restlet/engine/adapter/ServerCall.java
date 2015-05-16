@@ -549,19 +549,21 @@ public abstract class ServerCall extends Call {
     protected void writeResponseBody(Representation responseEntity)
             throws IOException {
         OutputStream responseEntityStream = getResponseEntityStream();
-        writeResponseBody(responseEntity, responseEntityStream);
-
-        if (responseEntityStream != null) {
-            try {
-                responseEntityStream.flush();
-                responseEntityStream.close();
-            } catch (IOException ioe) {
-                // The stream was probably already closed by the
-                // connector. Probably OK, low message priority.
-                getLogger()
-                        .log(Level.FINE,
-                                "Exception while flushing and closing the entity stream.",
-                                ioe);
+        try {
+            writeResponseBody(responseEntity, responseEntityStream);
+        } finally {
+            if (responseEntityStream != null) {
+                try {
+                    responseEntityStream.flush();
+                    responseEntityStream.close();
+                } catch (IOException ioe) {
+                    // The stream was probably already closed by the
+                    // connector. Probably OK, low message priority.
+                    getLogger()
+                            .log(Level.FINE,
+                                    "Exception while flushing and closing the entity stream.",
+                                    ioe);
+                }
             }
         }
     }
@@ -650,7 +652,8 @@ public abstract class ServerCall extends Call {
     /**
      * Write the response tail. By default does nothing.
      * 
-     * @param response The response being written.
+     * @param response
+     *            The response being written.
      */
     protected void writeResponseTail(Response response) {
     }
