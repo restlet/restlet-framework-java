@@ -27,6 +27,10 @@ package org.restlet.ext.jaxrs.internal.client;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.logging.Level;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -38,16 +42,30 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang.ClassUtils;
+import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.ClientInvocationHandler;
+import org.restlet.engine.resource.MethodAnnotationInfo;
+import org.restlet.engine.resource.ThrowableAnnotationInfo;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ClientProxy;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Result;
 import org.restlet.util.Series;
 
 /**
@@ -95,6 +113,12 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
         request.setCookies(cookies);
     }
 
+    private void addFormParam(Form form, String representationAsText,
+            Annotation annotation) {
+        form.add(new Parameter(((FormParam) annotation).value(),
+                        representationAsText));
+    }
+
     private void addHeaderParam(Request request, String representationAsText,
             Annotation annotation) {
         Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
@@ -139,7 +163,7 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
         request.getResourceRef().setPath(existingPath);
     }
-
+    
     private void addQueryParam(Request request, String representationAsText,
             Annotation annotation) {
         request.getResourceRef().addQueryParameter(
@@ -176,53 +200,228 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
         setRequestPathToAnnotationPath(javaMethod, request);
 
-        setRequestParams(javaMethod, args, request);
-
         return request;
     }
 
-    private void setRequestParams(Method javaMethod, Object[] args,
-            Request request) throws IllegalMethodParamTypeException {
+    @SuppressWarnings("rawtypes")
+    private void handleJavaMethodParameter(Request request, Object value,
+            Type genericParameterType, Annotation[] annotations, Form form) throws IOException {
 
-        int argIndex = 0;
+        if (value == null) {
+            // Set the entity
+            request.setEntity(null);
+        } else if (Result.class.isAssignableFrom(value.getClass())) {
+            // Asynchronous mode where a callback object is to
+            // be called.
 
-        Annotation[][] parameterAnnotations = javaMethod
-                .getParameterAnnotations();
-        for (Annotation[] annotations : parameterAnnotations) {
+            // Get the kind of result expected.
+            final Result rCallback = (Result) value;
+            ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
+                    : null;
+            final Class<?> actualType = (parameterizedType
+                    .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
+                    .getActualTypeArguments()[0] : null;
 
-            String representationAsText = getRepresentationAsText(args[argIndex]);
+            // Define the callback
+            Uniform callback = new Uniform() {
+                @SuppressWarnings("unchecked")
+                public void handle(Request request,
+                        Response response) {
+                    if (response.getStatus().isError()) {
+                        rCallback.onFailure(new ResourceException(
+                                response.getStatus()));
+                    } else {
+                        if (actualType != null) {
+                            Object result = null;
+                            boolean serializationError = false;
+
+                            try {
+                                result = getClientResource()
+                                        .toObject(
+                                                response.getEntity(),
+                                                actualType);
+                            } catch (Exception e) {
+                                serializationError = true;
+                                rCallback
+                                        .onFailure(new ResourceException(
+                                                e));
+                            }
+
+                            if (!serializationError) {
+                                rCallback.onSuccess(result);
+                            }
+                        } else {
+                            rCallback.onSuccess(null);
+                        }
+                    }
+                }
+            };
+
+            getClientResource().setOnResponse(callback);
+        } else if (annotations != null && annotations.length > 0) {
+            String representationAsText = getRepresentationAsText(value);                
 
             if (representationAsText != null) {
                 for (Annotation annotation : annotations) {
                     if (annotation instanceof HeaderParam) {
                         addHeaderParam(request, representationAsText,
                                 annotation);
-                        argIndex++;
                     } else if (annotation instanceof QueryParam) {
                         addQueryParam(request, representationAsText, annotation);
-                        argIndex++;
                     } else if (annotation instanceof FormParam) {
-
-                        // TODO
-                        argIndex++;
+                        addFormParam(form, representationAsText, annotation);
                     } else if (annotation instanceof CookieParam) {
                         addCookieParam(request, representationAsText,
                                 annotation);
-                        argIndex++;
                     } else if (annotation instanceof MatrixParam) {
-
                         // TODO
-                        argIndex++;
                     } else if (annotation instanceof PathParam) {
                         addPathParam(request, representationAsText, annotation);
-                        argIndex++;
                     }
+                }
+            }
+        } else {
+            // Set the entity
+            request.setEntity(getClientResource().toRepresentation(
+                    value));
+        }
+    }
+    
+    @Override
+    public Object invoke(Object proxy, Method javaMethod, Object[] args)
+            throws Throwable {
+        Object result = null;
+
+        if (javaMethod.equals(Object.class.getMethod("toString"))) {
+            // Help debug
+            result = "ClientProxy for resource: " + clientResource;
+        } else if (javaMethod.equals(ClientProxy.class
+                .getMethod("getClientResource"))) {
+            result = clientResource;
+        } else {
+            MethodAnnotationInfo annotationInfo = getAnnotationUtils()
+                    .getMethodAnnotation(getAnnotations(), javaMethod);
+
+            if (annotationInfo == null) {
+                return result;
+            }
+
+            // Clone the prototype request
+            Request request = getRequest(javaMethod, args);
+
+            if ((args != null) && args.length > 0) {
+                Form form = new Form();
+                Annotation[][] parameterAnnotations = javaMethod.getParameterAnnotations();
+                Type[] genericParameterTypes = javaMethod.getGenericParameterTypes();
+
+                // Checks if the user has defined its own callback.
+                for (int i = 0; i < args.length; i++) {
+                    Object o = args[i];
+                    Type genericParameterType = genericParameterTypes[i];
+                    
+                    handleJavaMethodParameter(request, o, genericParameterType, parameterAnnotations[i], form);
+                }
+                if (!form.isEmpty()) {
+                    request.setEntity(form.getWebRepresentation());
+                }
+            }
+
+            // The Java method was annotated
+            request.setMethod(annotationInfo.getRestletMethod());
+
+            // Add the mandatory query parameters
+            String query = annotationInfo.getQuery();
+
+            if (query != null) {
+                Form queryParams = new Form(annotationInfo.getQuery());
+                request.getResourceRef().addQueryParameters(queryParams);
+            }
+
+            // Updates the client preferences if they weren't changed
+            if ((request.getClientInfo().getAcceptedCharacterSets().isEmpty())
+                    && (request.getClientInfo().getAcceptedEncodings()
+                            .isEmpty())
+                    && (request.getClientInfo().getAcceptedLanguages()
+                            .isEmpty())
+                    && (request.getClientInfo().getAcceptedMediaTypes()
+                            .isEmpty())) {
+                List<Variant> responseVariants = annotationInfo
+                        .getResponseVariants(getClientResource()
+                                .getMetadataService(), getClientResource()
+                                .getConverterService());
+
+                if (responseVariants != null) {
+                    request.setClientInfo(new ClientInfo(responseVariants));
+                }
+            }
+
+            // Effectively handle the call
+            Response response = getClientResource().handleOutbound(request);
+
+            // Handle the response
+            if (getClientResource().getOnResponse() == null) {
+                if ((response != null) && response.getStatus().isError()) {
+                    ThrowableAnnotationInfo tai = getAnnotationUtils()
+                            .getThrowableAnnotationInfo(javaMethod,
+                                    response.getStatus().getCode());
+
+                    if (tai != null) {
+                        Class<?> throwableClazz = tai.getJavaClass();
+                        Throwable t = null;
+
+                        if (tai.isSerializable()
+                                && response.isEntityAvailable()) {
+                            t = (Throwable) getClientResource().toObject(
+                                    response.getEntity(), throwableClazz);
+                        } else {
+                            try {
+                                t = (Throwable) throwableClazz.newInstance();
+                            } catch (Exception e) {
+                                Context.getCurrentLogger()
+                                        .log(Level.FINE,
+                                                "Unable to instantiate the client-side exception using the default constructor.");
+                            }
+
+                            if (response.isEntityAvailable()) {
+                                StatusInfo si = getClientResource().toObject(
+                                        response.getEntity(), StatusInfo.class);
+
+                                if (si != null) {
+                                    response.setStatus(new Status(si.getCode(),
+                                            si.getReasonPhrase(), si
+                                                    .getDescription()));
+                                }
+                            }
+                        }
+
+                        if (t != null) {
+                            throw t;
+                        }
+                        // TODO cf issues 1004 and 1018.
+                        // this code has been commented as the automatic
+                        // deserialization is problematic. We may rethink a
+                        // way to recover the status info.
+                        // } else if (response.isEntityAvailable()) {
+                        // StatusInfo si = getClientResource().toObject(
+                        // response.getEntity(), StatusInfo.class);
+                        //
+                        // if (si != null) {
+                        // response.setStatus(new Status(si.getCode(), si
+                        // .getReasonPhrase(), si.getDescription()));
+                        // }
+                    }
+
+                    getClientResource().doError(response.getStatus());
+                } else if (!annotationInfo.getJavaOutputType().equals(
+                        void.class)) {
+                    result = getClientResource().toObject(
+                            (response == null ? null : response.getEntity()),
+                            annotationInfo.getJavaOutputType());
                 }
             }
         }
 
-        // TODO - possibly throw an exception if the arg count != processed
-        // annotations?
+        return result;
     }
 
     private void setRequestPathToAnnotationPath(Method javaMethod,
@@ -230,9 +429,23 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
         Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
         if (methodPathAnnotation != null) {
             String methodPath = methodPathAnnotation.value();
-            if (methodPath != null && methodPath.length() > 0) {
-                request.getResourceRef().setPath(
-                        request.getResourceRef().getPath() + "/" + methodPath);
+            if (!StringUtils.isNullOrEmpty(methodPath)) {
+                String fullUriFromPath = request.getResourceRef().getPath();
+                if (fullUriFromPath.endsWith("/")) {
+                    if (methodPath.startsWith("/")) {
+                        fullUriFromPath += methodPath.substring(1);
+                    } else {
+                        fullUriFromPath += methodPath;
+                    }
+                } else {
+                    if (methodPath.startsWith("/")) {
+                        fullUriFromPath += methodPath;
+                    } else {
+                        fullUriFromPath += "/" + methodPath;
+                    }
+                }
+                
+                request.getResourceRef().setPath(fullUriFromPath);
             }
         }
     }

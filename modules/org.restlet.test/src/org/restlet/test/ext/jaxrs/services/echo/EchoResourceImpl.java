@@ -58,4 +58,9 @@ public class EchoResourceImpl implements EchoResource {
         return point;
     }
 
+    @Override
+    public String echoStringFormParam(String value) {
+        return value;
+    }
+
 }

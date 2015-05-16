@@ -13,6 +13,8 @@ Changes log
        - Fixed never ending call when an exception happens while writing the 
          response's entity using the internal HTTP server connector.
          Issue #1061. Reported by Gernot Pansy.
+       - Prevented insertion of query params into POST request for JAX-RS client.
+         Issue #1072. Reported by Edouard Mercier.
 
 - 2.3.2 (05/01/2015)
     - Bugs fixed

@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 
 import org.restlet.Context;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -82,13 +83,25 @@ public class JaxRsClientResource extends ClientResource {
         }
 
         String path = pathAnnotation.value();
-        if (path == null || path.length() == 0) {
+        if (StringUtils.isNullOrEmpty(path)) {
             throw new IllegalPathException(pathAnnotation,
                     "The path annotation must have a value.");
         }
 
-        String fullUriFromPath = baseUri + (baseUri.endsWith("/") ? "" : "/")
-                + path;
+        String fullUriFromPath = baseUri;
+        if (fullUriFromPath.endsWith("/")) {
+            if (path.startsWith("/")) {
+                fullUriFromPath +=  path.substring(1);
+            } else {
+                fullUriFromPath += path;
+            }
+        } else {
+            if (path.startsWith("/")) {
+                fullUriFromPath += path;
+            } else {
+                fullUriFromPath += "/" + path;
+            }
+        }
 
         return JaxRsClientResource.createJaxRsClient(null, new Reference(
                 fullUriFromPath), resourceInterface);
