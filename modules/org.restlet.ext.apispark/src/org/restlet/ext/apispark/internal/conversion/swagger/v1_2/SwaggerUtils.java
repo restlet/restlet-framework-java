@@ -45,7 +45,7 @@ import org.restlet.resource.ClientResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tools library for Swagger.
+ * Tools library for Swagger 1.2.
  * 
  * @author Cyprien Quilici
  */
@@ -66,7 +66,7 @@ public abstract class SwaggerUtils {
         }
         return cr;
     }
-
+    
     /**
      * Returns the {@link Definition} by reading the Swagger definition URL.
      * 

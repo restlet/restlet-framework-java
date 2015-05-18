@@ -25,7 +25,11 @@
 package org.restlet.ext.apispark.internal.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a Web API representation.
@@ -44,13 +48,13 @@ public class Representation {
     private String name;
 
     /** List of this representation's properties. */
-    private List<Property> properties;
+    private List<Property> properties = new ArrayList<>();
 
     /** Indicates if the representation is structured or not. */
     private boolean raw;
 
     /** The list of Sections this Representation belongs to. */
-    private List<String> sections;
+    private List<String> sections = new ArrayList<>();
 
     public String getDescription() {
         return description;
@@ -65,9 +69,6 @@ public class Representation {
     }
 
     public List<Property> getProperties() {
-        if (properties == null) {
-            properties = new ArrayList<Property>();
-        }
         return properties;
     }
 
@@ -81,9 +82,6 @@ public class Representation {
     }
 
     public List<String> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<String>();
-        }
         return sections;
     }
 
@@ -113,5 +111,38 @@ public class Representation {
 
     public void setSections(List<String> sections) {
         this.sections = sections;
+    }
+
+    public void addSections(Collection<String> sections) {
+        for (String section : sections) {
+            if (!this.sections.contains(section)) {
+                this.sections.add(section);
+            }
+        }
+    }
+
+    public void addSectionsToProperties(Contract contract) {
+        Set<String> processedRepresentations = new HashSet<String>(Arrays.asList(name));
+        for (Property property : properties) {
+            Representation representation = contract.getRepresentation(property.getType());
+            if (representation != null
+                    && !processedRepresentations.contains(representation.getName())) {
+                representation.addSections(sections);
+                processedRepresentations.add(representation.getName());
+                representation.addSectionsToProperties(processedRepresentations, contract);
+            }
+        }
+    }
+
+    private void addSectionsToProperties(Set<String> processedRepresentations, Contract contract) {
+        for (Property property : properties) {
+            Representation representation = contract.getRepresentation(property.getType());
+            if (representation != null
+                    && !processedRepresentations.contains(representation.getName())) {
+                representation.addSections(sections);
+                processedRepresentations.add(representation.getName());
+                representation.addSectionsToProperties(processedRepresentations, contract);
+            }
+        }
     }
 }

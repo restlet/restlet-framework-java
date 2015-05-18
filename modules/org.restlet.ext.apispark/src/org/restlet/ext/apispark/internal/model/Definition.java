@@ -44,15 +44,15 @@ public class Definition {
     private Contact contact;
 
     /** Contract of this API. */
-    private Contract contract;
+    private Contract contract = new Contract();
 
     /**
      * Endpoints on which one can access the Web API.
      */
-    private List<Endpoint> endpoints;
+    private List<Endpoint> endpoints = new ArrayList<>();
 
     /** A list of the keywords describing the Web API */
-    private List<String> keywords;
+    private List<String> keywords = new ArrayList<>();
 
     /** URL of the description of the license used by the API. */
     private License license;
@@ -79,9 +79,6 @@ public class Definition {
     }
 
     public List<Endpoint> getEndpoints() {
-        if (endpoints == null) {
-            endpoints = new ArrayList<Endpoint>();
-        }
         return endpoints;
     }
 

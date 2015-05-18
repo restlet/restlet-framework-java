@@ -74,21 +74,6 @@ public class RamlUtils {
             "integer", "int", "double", "long", "float");
 
     /**
-     * Returns the String passed as a parameter with a capital first letter.
-     * Used to generate resource names in camel case
-     * 
-     * @param str
-     *            The string to process
-     * @return The String with a capital first letter
-     */
-    public static String capFirst(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return ("" + str.charAt(0)).toUpperCase() + str.substring(1);
-    }
-
-    /**
      * Generates the JsonSchema of a Representation's Property of primitive
      * type.
      * 
@@ -343,25 +328,6 @@ public class RamlUtils {
         return ("string".equals(t) || "int".equals(t) || "integer".equals(t)
                 || "long".equals(t) || "float".equals(t) || "double".equals(t)
                 || "date".equals(t) || "boolean".equals(t) || "bool".equals(t));
-    }
-
-    /**
-     * Generates a name for a resource computed from its path. The name is
-     * composed of all alphanumeric characters in camel case.<br/>
-     * Ex: /contacts/{contactId} => ContactsContactId
-     * 
-     * @param uri
-     *            The URI of the Resource
-     * @return The Resource's name computed from the path.
-     */
-    public static String processResourceName(String uri) {
-        String processedUri = "";
-        String[] split = uri.replaceAll("\\{", "").replaceAll("\\}", "")
-                .split("/");
-        for (String str : split) {
-            processedUri += RamlUtils.capFirst(str);
-        }
-        return processedUri;
     }
 
     /**

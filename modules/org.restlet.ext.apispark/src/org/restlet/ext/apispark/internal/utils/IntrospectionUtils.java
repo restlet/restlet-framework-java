@@ -24,18 +24,6 @@
 
 package org.restlet.ext.apispark.internal.utils;
 
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
-import org.restlet.ext.apispark.internal.model.Definition;
-import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.Representation;
-import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
-import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +38,18 @@ import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.apispark.internal.model.Definition;
+import org.restlet.ext.apispark.internal.model.Operation;
+import org.restlet.ext.apispark.internal.model.Representation;
+import org.restlet.ext.apispark.internal.model.Resource;
+import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 /**
  * Tools library.

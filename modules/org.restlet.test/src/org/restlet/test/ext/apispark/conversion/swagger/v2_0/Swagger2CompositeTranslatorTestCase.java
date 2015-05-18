@@ -27,7 +27,6 @@ package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 import java.io.IOException;
 import java.net.URL;
 
-import com.wordnik.swagger.models.properties.RefProperty;
 import org.restlet.data.MediaType;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
@@ -39,6 +38,7 @@ import org.restlet.representation.FileRepresentation;
 
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.properties.RefProperty;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 
@@ -97,6 +97,5 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
         Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
-        compareSwaggerBeans(translatedSwagger, savedSwagger);
     }
 }

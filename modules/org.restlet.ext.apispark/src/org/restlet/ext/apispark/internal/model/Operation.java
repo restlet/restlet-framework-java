@@ -35,13 +35,13 @@ import java.util.List;
 public class Operation {
 
     /** Mediatypes consumed by this operation */
-    private List<String> consumes;
+    private List<String> consumes = new ArrayList<>();
 
     /** Textual description of this operation. */
     private String description;
 
     /** Headers to use for this operation. */
-    private List<Header> headers;
+    private List<Header> headers = new ArrayList<>();
 
     /** Request body for this operation if any. */
     private PayLoad inputPayLoad;
@@ -56,18 +56,15 @@ public class Operation {
     private String name;
 
     /** Mediatypes produced by this operation */
-    private List<String> produces;
+    private List<String> produces = new ArrayList<>();
 
     /** Query parameters available for this operation. */
-    private List<QueryParameter> queryParameters;
+    private List<QueryParameter> queryParameters = new ArrayList<>();
 
     /** Possible response messages you could encounter. */
-    private List<Response> responses;
+    private List<Response> responses = new ArrayList<>();
 
     public List<String> getConsumes() {
-        if (consumes == null) {
-            consumes = new ArrayList<String>();
-        }
         return consumes;
     }
 
@@ -76,9 +73,6 @@ public class Operation {
     }
 
     public List<Header> getHeaders() {
-        if (headers == null) {
-            headers = new ArrayList<Header>();
-        }
         return headers;
     }
 
@@ -95,9 +89,6 @@ public class Operation {
     }
 
     public List<String> getProduces() {
-        if (produces == null) {
-            produces = new ArrayList<String>();
-        }
         return produces;
     }
 
@@ -111,9 +102,6 @@ public class Operation {
     }
 
     public List<QueryParameter> getQueryParameters() {
-        if (queryParameters == null) {
-            queryParameters = new ArrayList<QueryParameter>();
-        }
         return queryParameters;
     }
 
@@ -127,9 +115,6 @@ public class Operation {
     }
 
     public List<Response> getResponses() {
-        if (responses == null) {
-            responses = new ArrayList<Response>();
-        }
         return responses;
     }
 

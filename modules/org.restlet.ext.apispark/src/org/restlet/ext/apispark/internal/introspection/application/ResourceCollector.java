@@ -135,8 +135,8 @@ public class ResourceCollector {
                                 try {
                                     typeInfo = Types.getTypeInfo(representationClazz, null);
                                 } catch (UnsupportedTypeException e) {
-                                    LOGGER.warning("Could not add representation class " + representationClazz.getName() +
-                                            ". " + e.getMessage());
+                                    LOGGER.warning("Could not add representation class "
+                                            + representationClazz.getName() + ". " + e.getMessage());
                                     continue;
                                 }
                                 RepresentationCollector.addRepresentation(collectInfo,
@@ -195,7 +195,8 @@ public class ResourceCollector {
         completeOperationProduces(operation, mai, sr, metadataService);
     }
 
-    private static void completeOperationThrows(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
+    private static void completeOperationThrows(CollectInfo collectInfo, Operation operation,
+            MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
@@ -232,7 +233,9 @@ public class ResourceCollector {
         }
     }
 
-    private static void completeOperationInput(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, ServerResource sr, List<? extends IntrospectionHelper> introspectionHelper, MetadataService metadataService) {
+    private static void completeOperationInput(CollectInfo collectInfo, Operation operation,
+            MethodAnnotationInfo mai, ServerResource sr, List<? extends IntrospectionHelper> introspectionHelper,
+            MetadataService metadataService) {
         Class<?>[] inputClasses = mai.getJavaMethod().getParameterTypes();
         if (inputClasses != null && inputClasses.length > 0) {
 
@@ -304,13 +307,15 @@ public class ResourceCollector {
         }
     }
 
-    private static void completeOperationOutput(CollectInfo collectInfo, Operation operation, MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
+    private static void completeOperationOutput(CollectInfo collectInfo, Operation operation,
+            MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
         Response response = new Response();
 
         if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
             TypeInfo outputTypeInfo;
             try {
-                outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(), mai.getJavaMethod().getGenericReturnType());
+                outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(),
+                        mai.getJavaMethod().getGenericReturnType());
             } catch (UnsupportedTypeException e) {
                 LOGGER.warning("Could not add output representation of method " +
                         mai.getJavaMethod() + ". " + e.getMessage());
@@ -339,7 +344,8 @@ public class ResourceCollector {
         operation.getResponses().add(response);
     }
 
-    private static void completeOperationProduces(Operation operation, MethodAnnotationInfo mai, ServerResource sr, MetadataService metadataService) {
+    private static void completeOperationProduces(Operation operation, MethodAnnotationInfo mai,
+            ServerResource sr, MetadataService metadataService) {
         if (metadataService != null) {
             try {
                 List<Variant> responseVariants = mai.getResponseVariants(

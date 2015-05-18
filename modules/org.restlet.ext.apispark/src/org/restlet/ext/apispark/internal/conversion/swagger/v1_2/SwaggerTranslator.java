@@ -25,6 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -798,7 +799,7 @@ public abstract class SwaggerTranslator {
             if (!declaredTypes.contains(modelEntry.getKey())) {
                 declaredTypes.add(modelEntry.getKey());
                 representation = toRepresentation(model, modelEntry.getKey());
-                representation.getSections().add(section.getName());
+                representation.addSections(Arrays.asList(section.getName()));
                 contract.getRepresentations().add(representation);
                 LOGGER.log(Level.FINE, "Representation " + modelEntry.getKey()
                         + " added.");
@@ -1162,7 +1163,12 @@ public abstract class SwaggerTranslator {
                     (listing.getApis().get(0).getPath())).getBasePath();
             fillMainAttributes(definition, listing, basePath);
 
-            fillContract(definition.getContract(), listing, apiDeclarations);
+            Contract contract = definition.getContract();
+            fillContract(contract, listing, apiDeclarations);
+
+            for (Representation representation : contract.getRepresentations()) {
+                representation.addSectionsToProperties(contract);
+            }
 
             LOGGER.log(Level.FINE,
                     "Definition successfully retrieved from Swagger definition");
@@ -1191,7 +1197,12 @@ public abstract class SwaggerTranslator {
             definition.getEndpoints().add(
                     new Endpoint(apiDeclaration.getBasePath()));
 
-            fillContract(definition.getContract(), apiDeclaration);
+            Contract contract = definition.getContract();
+            fillContract(contract, apiDeclaration);
+
+            for (Representation representation : contract.getRepresentations()) {
+                representation.addSectionsToProperties(contract);
+            }
 
             LOGGER.log(Level.FINE,
                     "Definition successfully retrieved from Swagger definition");

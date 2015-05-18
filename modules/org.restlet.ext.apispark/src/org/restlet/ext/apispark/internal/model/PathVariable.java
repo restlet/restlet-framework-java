@@ -29,45 +29,12 @@ package org.restlet.ext.apispark.internal.model;
  * 
  * @author Cyprien Quilici
  */
-public class PathVariable {
+public class PathVariable extends Parameter {
 
-    /** Textual description of this variable. */
-    private String description;
-
-    /** Name of this variable. */
-    private String name;
-
-    /** The expected type of the parameter. By default, string */
-    private String type = "string";
-    
     /**
      * An example of the variable's value.
      */
     private String example;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getExample() {
         return example;

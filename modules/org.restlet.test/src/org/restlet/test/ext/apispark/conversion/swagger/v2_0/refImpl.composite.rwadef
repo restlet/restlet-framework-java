@@ -11,6 +11,7 @@
         "description": null,
         "name": "Tag",
         "extendedType": null,
+        "sections": [ "Pet" ],
         "properties": [
           {
             "defaultValue": null,
@@ -81,6 +82,7 @@
         "description": null,
         "name": "Pet",
         "extendedType": null,
+        "sections": [ "Pet" ],
         "properties": [
           {
             "defaultValue": null,
@@ -161,6 +163,7 @@
         "description": null,
         "name": "Category",
         "extendedType": null,
+        "sections": [ "Pet" ],
         "properties": [
           {
             "defaultValue": null,
@@ -193,6 +196,7 @@
         "description": null,
         "name": "Order",
         "extendedType": null,
+        "sections": [ "Order" ],
         "properties": [
           {
             "defaultValue": null,
@@ -261,6 +265,7 @@
         "description": null,
         "name": "User",
         "extendedType": null,
+        "sections": [ "User" ],
         "properties": [
           {
             "defaultValue": null,
@@ -366,6 +371,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Pet" ],
         "operations": [
           {
             "description": "Finds Pets by tags",
@@ -417,6 +423,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Pet" ],
         "operations": [
           {
             "description": "Find pet by ID",
@@ -575,6 +582,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Pet" ],
         "operations": [
           {
             "description": "Add a new pet to the store",
@@ -668,6 +676,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Pet" ],
         "operations": [
           {
             "description": "Finds Pets by status",
@@ -723,6 +732,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Pet" ],
         "operations": [
           {
             "description": "uploads an image",
@@ -757,6 +767,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Order" ],
         "operations": [
           {
             "description": "Delete purchase order by ID",
@@ -843,6 +854,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "Order" ],
         "operations": [
           {
             "description": "Place an order for a pet",
@@ -882,6 +894,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Create user",
@@ -914,6 +927,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Creates list of users with given input array",
@@ -946,6 +960,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Creates list of users with given list input",
@@ -978,6 +993,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Updated user",
@@ -1102,6 +1118,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Logs user into the system",
@@ -1158,6 +1175,7 @@
       {
         "description": null,
         "name": null,
+        "sections": [ "User" ],
         "operations": [
           {
             "description": "Logs out current logged in user session",
@@ -1184,7 +1202,21 @@
         "pathVariables": [],
         "resourcePath": "/user/logout"
       }
-    ]
+    ],
+	"sections": [ 
+	  {
+	    "name": "Pet",
+	  	"description": "Operations about pets"
+	  },
+	  {
+	  	"name": "User",
+	  	"description": "Operations about users"
+	  },
+	  {
+	  	"name": "Order",
+	  	"description": "Operations about orders"
+	  }
+	]
   },
   "endpoints": [
     {

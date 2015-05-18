@@ -26,42 +26,56 @@ package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
+import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
 import org.restlet.ext.apispark.internal.model.Header;
-import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
 import org.restlet.ext.apispark.internal.model.PayLoad;
-import org.restlet.ext.apispark.internal.model.Property;
-import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
-import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.utils.SampleUtils;
 
 import com.wordnik.swagger.models.ArrayModel;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.License;
+import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.ModelImpl;
+import com.wordnik.swagger.models.Operation;
 import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.RefModel;
+import com.wordnik.swagger.models.Response;
 import com.wordnik.swagger.models.Scheme;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.Tag;
+import com.wordnik.swagger.models.auth.ApiKeyAuthDefinition;
 import com.wordnik.swagger.models.auth.BasicAuthDefinition;
+import com.wordnik.swagger.models.auth.OAuth2Definition;
 import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.BodyParameter;
 import com.wordnik.swagger.models.parameters.HeaderParameter;
+import com.wordnik.swagger.models.parameters.Parameter;
 import com.wordnik.swagger.models.parameters.PathParameter;
+import com.wordnik.swagger.models.parameters.QueryParameter;
+import com.wordnik.swagger.models.parameters.RefParameter;
 import com.wordnik.swagger.models.properties.AbstractNumericProperty;
 import com.wordnik.swagger.models.properties.AbstractProperty;
 import com.wordnik.swagger.models.properties.ArrayProperty;
@@ -72,11 +86,12 @@ import com.wordnik.swagger.models.properties.FileProperty;
 import com.wordnik.swagger.models.properties.FloatProperty;
 import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.LongProperty;
+import com.wordnik.swagger.models.properties.Property;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
 
 /**
- * Translator : RWADEF <-> Swagger 2.0.
+ * Translator : RWADef <-> Swagger 2.0.
  */
 public class Swagger2Translator {
 
@@ -110,7 +125,7 @@ public class Swagger2Translator {
      * @param swagger
      *            Swagger definition
      */
-    private static void fillAuthentication(Definition definition, Swagger swagger) {
+    private static void fillSwaggerAuthentication(Definition definition, Swagger swagger) {
         Map<String, SecuritySchemeDefinition> securitySchemes = new HashMap<>();
 
         // Supported schemes
@@ -165,7 +180,7 @@ public class Swagger2Translator {
      * @param swagger
      *            Swagger definition
      */
-    private static void fillInfo(Definition definition, Swagger swagger) {
+    private static void fillSwaggerInfo(Definition definition, Swagger swagger) {
         Info infoSwagger = new Info();
 
         infoSwagger.setTitle(definition.getContract().getName()); // required
@@ -205,7 +220,7 @@ public class Swagger2Translator {
      * @param swagger
      *            The Swagger 2.0 definition
      */
-    private static void fillMainAttributes(Definition definition,
+    private static void fillSwaggerMainAttributes(Definition definition,
             Swagger swagger) {
         // basePath
         if (definition.getEndpoints() != null
@@ -236,12 +251,13 @@ public class Swagger2Translator {
      *            The Swagger model.
      */
     private static void fillModel(String name, String description,
-            List<Property> properties, Swagger swagger, ModelImpl modelSwagger) {
+            List<org.restlet.ext.apispark.internal.model.Property> properties,
+            Swagger swagger, ModelImpl modelSwagger) {
         modelSwagger.setName(name);
         modelSwagger.setDescription(description);
 
         /* Property -> Property */
-        for (Property property : properties) {
+        for (org.restlet.ext.apispark.internal.model.Property property : properties) {
 
             com.wordnik.swagger.models.properties.Property propertySwagger;
 
@@ -285,6 +301,7 @@ public class Swagger2Translator {
             }
             propertySwagger.setName(property.getName());
             propertySwagger.setDescription(property.getDescription());
+            propertySwagger.setRequired(property.getMinOccurs() == null ? false : property.getMinOccurs() > 0);
 
             // min and max
             if (propertySwagger instanceof AbstractNumericProperty) {
@@ -315,8 +332,8 @@ public class Swagger2Translator {
     }
 
     private static void fillOperationParameters(Definition definition,
-            Resource resource, Operation operation,
-            com.wordnik.swagger.models.Operation operationSwagger) {
+            Resource resource, org.restlet.ext.apispark.internal.model.Operation operation,
+            Operation operationSwagger) {
 
         // Path parameters
         for (PathVariable pathVariable : resource.getPathVariables()) {
@@ -369,7 +386,7 @@ public class Swagger2Translator {
         }
 
         // query parameters
-        for (QueryParameter queryParameter : operation.getQueryParameters()) {
+        for (org.restlet.ext.apispark.internal.model.QueryParameter queryParameter : operation.getQueryParameters()) {
             com.wordnik.swagger.models.parameters.QueryParameter queryParameterSwagger = new com.wordnik.swagger.models.parameters.QueryParameter();
             queryParameterSwagger.setRequired(queryParameter.isRequired());
             queryParameterSwagger.setDefaultValue(queryParameter
@@ -407,16 +424,18 @@ public class Swagger2Translator {
     }
 
     private static void fillOperationResponses(Definition definition,
-            Operation operation,
-            com.wordnik.swagger.models.Operation operationSwagger) {
-        for (Response response : operation.getResponses()) {
+            org.restlet.ext.apispark.internal.model.Operation operation,
+            Operation operationSwagger) {
+        for (org.restlet.ext.apispark.internal.model.Response response : operation.getResponses()) {
             /* Response -> Response */
-            com.wordnik.swagger.models.Response responseSwagger = new com.wordnik.swagger.models.Response();
+            Response responseSwagger = new Response();
 
             // may be null
-            String description = response.getDescription();
-            responseSwagger.setDescription((description != null) ? description
-                    : response.getCode() + " status response"); // required
+            String message = response.getMessage();
+            String autoGeneratedMessage = Status.isSuccess(response.getCode())
+                    ? "Success"
+                    : "Error " + response.getCode();
+            responseSwagger.setDescription(message == null ? autoGeneratedMessage : message); // required
 
             // Response Schema
             if (response.getOutputPayLoad() != null
@@ -460,7 +479,7 @@ public class Swagger2Translator {
      */
     private static void fillPathOperations(Definition definition,
             Resource resource, Path pathSwagger) {
-        for (Operation operation : resource.getOperations()) {
+        for (org.restlet.ext.apispark.internal.model.Operation operation : resource.getOperations()) {
 
             com.wordnik.swagger.models.Operation operationSwagger = new com.wordnik.swagger.models.Operation();
             operationSwagger.setTags(new ArrayList<String>());
@@ -528,13 +547,16 @@ public class Swagger2Translator {
         swagger.setSwagger(SWAGGER_VERSION); // required
 
         // fill Swagger main attributes
-        fillMainAttributes(definition, swagger);
+        fillSwaggerMainAttributes(definition, swagger);
 
         // fill authentication information
-        fillAuthentication(definition, swagger);
+        fillSwaggerAuthentication(definition, swagger);
 
         // fill Swagger.info
-        fillInfo(definition, swagger); // required
+        fillSwaggerInfo(definition, swagger); // required
+
+        // fill Swagger.tags
+        fillTags(definition.getContract(), swagger); // required
 
         // fill Swagger.paths
         fillPaths(definition, swagger); // required
@@ -545,6 +567,20 @@ public class Swagger2Translator {
         // TODO add authorization attribute
 
         return swagger;
+    }
+
+    private static void fillTags(Contract contract, Swagger swagger) {
+        if (contract.getSections() == null) {
+            return;
+        }
+        swagger.setTags(new ArrayList<Tag>());
+
+        for (Section section : contract.getSections()) {
+            Tag tag = new Tag();
+            tag.setName(section.getName());
+            tag.setDescription(section.getDescription());
+            swagger.getTags().add(tag);
+        }
     }
 
     /**
@@ -580,5 +616,524 @@ public class Swagger2Translator {
 
         // Reference to a representation
         return new RefProperty().asDefault(type);
+    }
+
+    /**
+     * Translates a Swagger definition to a Restlet Web API Definition
+     * 
+     * @param Swagger
+     *            The translated Swagger 2.0 definition
+     * 
+     * @return The Restlet Web API definition
+     */
+    public static Definition translate(Swagger swagger) {
+
+        // conversion
+        Definition definition = new Definition();
+
+        // fill RWADef main attributes
+        fillRwadefEndpoints(swagger, definition);
+
+        List<String> produces = new ArrayList<>();
+        List<String> consumes = new ArrayList<>();
+        fillRwadefGeneralInformation(swagger, definition, produces, consumes);
+
+        // fill definition.sections
+        Contract contract = definition.getContract();
+        fillSections(swagger, contract);
+
+        // Get declared parameters
+        Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters = new HashMap<>();
+        fillDeclaredParameters(swagger, definition, parameters);
+
+        // fill definition.representations
+        fillRepresentations(swagger, contract);
+
+        // fill definition.resources
+        fillResources(swagger, contract, produces, consumes, parameters);
+
+        for (Representation representation : contract.getRepresentations()) {
+            representation.addSectionsToProperties(contract);
+        }
+
+        return definition;
+    }
+
+    private static void fillDeclaredParameters(Swagger swagger, Definition definition,
+            Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters) {
+        if (swagger.getParameters() == null) {
+            return;
+        }
+
+        for (String key : swagger.getParameters().keySet()) {
+            Parameter swaggerParameter = swagger.getParameters().get(key);
+            if (swaggerParameter instanceof QueryParameter) {
+                org.restlet.ext.apispark.internal.model.QueryParameter queryParameter =
+                        new org.restlet.ext.apispark.internal.model.QueryParameter();
+                fillRwadefQueryParameter(queryParameter, (QueryParameter) swaggerParameter);
+                parameters.put(key, queryParameter);
+
+            } else if (swaggerParameter instanceof PathParameter) {
+                org.restlet.ext.apispark.internal.model.PathVariable pathVariable =
+                        new org.restlet.ext.apispark.internal.model.PathVariable();
+                fillRwadefPathVariable(pathVariable, (PathParameter) swaggerParameter);
+                parameters.put(key, pathVariable);
+
+            } else if (swaggerParameter instanceof HeaderParameter) {
+                Header header = new Header();
+                fillRwadefHeader(header, (HeaderParameter) swaggerParameter);
+                parameters.put(key, header);
+
+            }
+        }
+    }
+
+    private static void fillRwadefHeader(Header header, HeaderParameter swaggerHeader) {
+        header.setName(swaggerHeader.getName());
+        header.setRequired(swaggerHeader.getRequired());
+        header.setDescription(swaggerHeader.getDescription());
+        header.setAllowMultiple(true);
+        header.setDefaultValue(swaggerHeader.getDefaultValue());
+        // TODO: example not implemented in Swagger 2.0
+
+        SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat(
+                swaggerHeader.getType(),
+                swaggerHeader.getFormat(),
+                swaggerHeader.getItems());
+        header.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
+    }
+
+    private static void fillRwadefPathVariable(PathVariable pathVariable, PathParameter swaggerPathVariable) {
+        pathVariable.setName(swaggerPathVariable.getName());
+        pathVariable.setRequired(swaggerPathVariable.getRequired());
+        pathVariable.setDescription(swaggerPathVariable.getDescription());
+        // TODO: example not implemented in Swagger 2.0
+
+        SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat(
+                swaggerPathVariable.getType(),
+                swaggerPathVariable.getFormat(),
+                swaggerPathVariable.getItems());
+        pathVariable.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
+    }
+
+    /**
+     * Fills the given RWADef query parameter information from the given Swagger query parameter.
+     * 
+     * @param queryParameter
+     *            The RWADef query parameter.
+     * @param swaggerQueryParameter
+     *            The Swagger query parameter.
+     */
+    private static void fillRwadefQueryParameter(org.restlet.ext.apispark.internal.model.QueryParameter queryParameter,
+            QueryParameter swaggerQueryParameter) {
+
+        // TODO: allowMultiple not implemented in Swagger 2.0
+        queryParameter.setAllowMultiple(true);
+        queryParameter.setDefaultValue(swaggerQueryParameter.getDefaultValue());
+        queryParameter.setDescription(swaggerQueryParameter.getDescription());
+        queryParameter.setEnumeration(swaggerQueryParameter.getEnum());
+        // TODO: example not implemented in Swagger 2.0
+        queryParameter.setName(swaggerQueryParameter.getName());
+        queryParameter.setRequired(swaggerQueryParameter.getRequired());
+        queryParameter.setSeparator(SwaggerUtils.getSeparator(swaggerQueryParameter.getCollectionFormat()));
+
+        SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat(
+                swaggerQueryParameter.getType(),
+                swaggerQueryParameter.getFormat(),
+                swaggerQueryParameter.getItems());
+        queryParameter.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
+    }
+
+    private static void fillSections(Swagger swagger, Contract contract) {
+        if (swagger.getTags() == null) {
+            return;
+        }
+
+        for (Tag tag : swagger.getTags()) {
+           Section section = new Section();
+            section.setName(tag.getName());
+            section.setDescription(tag.getDescription());
+            contract.getSections().add(section);
+        }
+    }
+
+    private static void fillRwadefGeneralInformation(Swagger swagger, Definition definition,
+            List<String> produces, List<String> consumes) {
+
+        Info info = swagger.getInfo();
+
+        // Contact
+        if (info.getContact() != null) {
+            org.restlet.ext.apispark.internal.model.Contact contact = new org.restlet.ext.apispark.internal.model.Contact();
+            contact.setEmail(info.getContact().getEmail());
+            contact.setName(info.getContact().getName());
+            contact.setUrl(info.getContact().getUrl());
+            definition.setContact(contact);
+        }
+
+        if (info.getLicense() != null) {
+            // License
+            org.restlet.ext.apispark.internal.model.License license = new org.restlet.ext.apispark.internal.model.License();
+            license.setName(info.getLicense().getName());
+            license.setUrl(info.getLicense().getUrl());
+            definition.setLicense(license);
+        }
+
+        // Contract
+        Contract contract = new Contract();
+        contract.setDescription(info.getDescription());
+        contract.setName(info.getTitle());
+        definition.setContract(contract);
+
+        // Media types
+        if (swagger.getProduces() != null) {
+            produces.addAll(swagger.getProduces());
+        }
+        if (swagger.getConsumes() != null) {
+            consumes.addAll(swagger.getConsumes());
+        }
+
+        // General
+        definition.setVersion(info.getVersion());
+        definition.setTermsOfService(info.getTermsOfService());
+        // TODO: attribution and keywords not implemented in Swagger 2.0
+        definition.setAttribution(null);
+        definition.setKeywords(new ArrayList<String>());
+    }
+
+    private static void fillRepresentations(Swagger swagger, Contract contract) {
+        if (swagger.getDefinitions() == null) {
+            return;
+        }
+
+        for (String key : swagger.getDefinitions().keySet()) {
+            Representation representation = new Representation();
+            Model model = swagger.getDefinitions().get(key);
+            representation.setDescription(model.getDescription());
+            representation.setName(key);
+            representation.setRaw(false);
+            // TODO: example not implemented in RWADef (built from properties examples)
+            fillRwadefProperties(model, representation);
+            contract.getRepresentations().add(representation);
+        }
+    }
+
+    private static void fillRwadefProperties(Model model, Representation representation) {
+        if (model.getProperties() == null) {
+            return;
+        }
+
+        sortSwaggerPropertiesByPosition(model);
+
+        for (String key : model.getProperties().keySet()) {
+            org.restlet.ext.apispark.internal.model.Property property =
+                    new org.restlet.ext.apispark.internal.model.Property();
+            Property swaggerProperty = model.getProperties().get(key);
+
+            property.setDefaultValue(swaggerProperty.getDefault());
+            property.setDescription(swaggerProperty.getDescription());
+            // TODO: enumeration not implemented in Swagger 2.0
+            property.setExample(swaggerProperty.getExample());
+            property.setMinOccurs(swaggerProperty.getRequired() ? 1 : 0);
+            property.setMaxOccurs(swaggerProperty instanceof ArrayProperty ? -1 : 1);
+            property.setName(key);
+            // TODO: sub-properties not implemented in Swagger 2.0
+            // TODO: uniqueItems not implemented in Swagger 2.0
+            property.setUniqueItems(false);
+
+            if (swaggerProperty instanceof AbstractNumericProperty) {
+                AbstractNumericProperty numericProperty = (AbstractNumericProperty) swaggerProperty;
+                formatPropertyMinMax(numericProperty, property);
+            } else if (swaggerProperty instanceof ArrayProperty) {
+                ArrayProperty arrayProperty = (ArrayProperty) swaggerProperty;
+                property.setExample(arrayProperty.getItems().getExample());
+            }
+
+            property.setType(SwaggerTypes.toDefinitionType(swaggerProperty));
+
+            representation.getProperties().add(property);
+        }
+    }
+
+    /**
+     * Sorts the properties by their positions.
+     * 
+     * @param model
+     *            The model in which to sort the properties.
+     */
+    private static void sortSwaggerPropertiesByPosition(Model model) {
+        List<Map.Entry<String, Property>> propertyList =
+                new LinkedList<Map.Entry<String, Property>>(model.getProperties().entrySet());
+
+        Collections.sort(propertyList, new Comparator<Map.Entry<String, Property>>() {
+            public int compare(Map.Entry<String, Property> o1,
+                    Map.Entry<String, Property> o2) {
+                if (o1.getValue().getPosition() == null) {
+                    return -1;
+                }
+                return (o1.getValue().getPosition()).compareTo(o2.getValue().getPosition());
+            }
+        });
+
+        model.setProperties(new LinkedHashMap<String, Property>());
+        for (Iterator<Map.Entry<String, Property>> it = propertyList.iterator(); it.hasNext();) {
+            Map.Entry<String, Property> entry = it.next();
+            model.getProperties().put(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /**
+     * Removes the dots in maximums and minimums for integer and long properties.
+     * 
+     * @param swaggerProperty
+     *            The Swagger property to process.
+     * @param property
+     *            The RWADef property to update
+     */
+    private static void formatPropertyMinMax(AbstractNumericProperty swaggerProperty,
+            org.restlet.ext.apispark.internal.model.Property property) {
+        String min = SwaggerUtils.toString(swaggerProperty.getMinimum());
+        String max = SwaggerUtils.toString(swaggerProperty.getMaximum());
+
+        if (swaggerProperty instanceof IntegerProperty
+                || swaggerProperty instanceof LongProperty) {
+            property.setMin(min == null ? null : min.replaceAll("\\.[0-9]+", ""));
+            property.setMax(max == null ? null : max.replaceAll("\\.[0-9]+", ""));
+
+        } else {
+            property.setMin(min);
+            property.setMax(max);
+
+        }
+    }
+
+    private static void fillResources(Swagger swagger, Contract contract,
+            List<String> produces, List<String> consumes,
+            Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters) {
+        if (swagger.getPaths() == null) {
+            return;
+        }
+
+        for (String key : swagger.getPaths().keySet()) {
+            Resource resource = new Resource();
+            Path path = swagger.getPath(key);
+
+            // TODO: description not implemented in Swagger 2.0
+            resource.setName(ConversionUtils.processResourceName(key));
+            resource.setResourcePath(key);
+            for (Operation operation : path.getOperations()) {
+                resource.addSections(operation.getTags());
+            }
+
+            if (path.getParameters() != null) {
+                for (Parameter parameter : path.getParameters()) {
+                    PathVariable pathVariable = null;
+                    if (parameter instanceof PathParameter) {
+                        pathVariable = new PathVariable();
+                        fillRwadefPathVariable(pathVariable, (PathParameter) parameter);
+                    } else if (parameter instanceof RefParameter) {
+                        RefParameter refParameter = (RefParameter) parameter;
+                        org.restlet.ext.apispark.internal.model.Parameter savedParameter =
+                                parameters.get(refParameter.getSimpleRef());
+                        if (savedParameter instanceof PathVariable) {
+                            pathVariable = (PathVariable) savedParameter;
+                        }
+                    }
+
+                    if (pathVariable != null) {
+                        resource.getPathVariables().add(pathVariable);
+                    }
+                }
+            }
+            fillRwadefOperations(path, resource, contract, produces, consumes, parameters);
+
+            contract.getResources().add(resource);
+        }
+
+    }
+
+    private static void fillRwadefOperations(Path path, Resource resource,
+            Contract contract, List<String> produces, List<String> consumes,
+            Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters) {
+
+        fillRwadefOperation(path.getGet(), resource, contract, Method.GET.getName(),
+                produces, consumes, parameters);
+        fillRwadefOperation(path.getPost(), resource, contract, Method.POST.getName(),
+                produces, consumes, parameters);
+        fillRwadefOperation(path.getPut(), resource, contract, Method.PUT.getName(),
+                produces, consumes, parameters);
+        fillRwadefOperation(path.getDelete(), resource, contract, Method.DELETE.getName(),
+                produces, consumes, parameters);
+        fillRwadefOperation(path.getOptions(), resource, contract, Method.OPTIONS.getName(),
+                produces, consumes, parameters);
+        fillRwadefOperation(path.getPatch(), resource, contract, Method.PATCH.getName(),
+                produces, consumes, parameters);
+    }
+
+    private static void fillRwadefOperation(Operation swaggerOperation, Resource resource,
+            Contract contract, String methodName,
+            List<String> produces, List<String> consumes,
+            Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters) {
+        if (swaggerOperation == null) {
+            return;
+        }
+
+        org.restlet.ext.apispark.internal.model.Operation operation =
+                new org.restlet.ext.apispark.internal.model.Operation();
+
+        List<String> operationProduces = swaggerOperation.getProduces();
+        operationProduces.addAll(produces);
+        operation.setProduces(operationProduces);
+
+        List<String> operationConsumes = swaggerOperation.getConsumes();
+        operationConsumes.addAll(consumes);
+        operation.setConsumes(operationConsumes);
+
+        operation.setDescription(swaggerOperation.getDescription());
+        operation.setMethod(methodName);
+        operation.setName(swaggerOperation.getOperationId());
+
+        fillRwadefParameters(swaggerOperation, operation, resource, parameters);
+        fillRwadefResponses(swaggerOperation, operation, contract);
+        fillInputPayload(swaggerOperation, operation, contract);
+
+        resource.getOperations().add(operation);
+    }
+
+    private static void fillRwadefParameters(Operation swaggerOperation,
+            org.restlet.ext.apispark.internal.model.Operation operation, Resource resource,
+            Map<String, org.restlet.ext.apispark.internal.model.Parameter> parameters) {
+        if (swaggerOperation.getParameters() == null) {
+            return;
+        }
+
+        for (Parameter parameter : swaggerOperation.getParameters()) {
+            if (parameter instanceof QueryParameter) {
+                org.restlet.ext.apispark.internal.model.QueryParameter queryParameter =
+                        new org.restlet.ext.apispark.internal.model.QueryParameter();
+                QueryParameter swaggerQueryParameter = (QueryParameter) parameter;
+
+                fillRwadefQueryParameter(queryParameter, swaggerQueryParameter);
+                operation.getQueryParameters().add(queryParameter);
+            } else if (parameter instanceof PathParameter) {
+                org.restlet.ext.apispark.internal.model.PathVariable pathVariable =
+                        new org.restlet.ext.apispark.internal.model.PathVariable();
+                PathParameter swaggerPathVariable = (PathParameter) parameter;
+
+                fillRwadefPathVariable(pathVariable, swaggerPathVariable);
+                if (resource.getPathVariable(pathVariable.getName()) == null) {
+                    resource.getPathVariables().add(pathVariable);
+                }
+            }
+        }
+    }
+
+    private static void fillRwadefResponses(Operation swaggerOperation,
+            org.restlet.ext.apispark.internal.model.Operation operation,
+            Contract contract) {
+        if (swaggerOperation == null) {
+            return;
+        }
+
+        for (String key : swaggerOperation.getResponses().keySet()) {
+            Response swaggerResponse = swaggerOperation.getResponses().get(key);
+            org.restlet.ext.apispark.internal.model.Response response =
+                    new org.restlet.ext.apispark.internal.model.Response();
+
+            Integer statusCode = null;
+            try {
+                statusCode = Integer.parseInt(key);
+                response.setCode(statusCode);
+            } catch (Exception e) {
+                // TODO: what to do with "Default" responses ?
+                LOGGER.warning("Response " + key + " for operation " + swaggerOperation.getOperationId() +
+                        " could not be retrieved because its key is not a valid status code.");
+                continue;
+            }
+
+            response.setMessage(swaggerResponse.getDescription());
+            response.setName(statusCode.toString().matches("2[0-9]{2}") ? "Success" : "Error " + statusCode);
+
+            fillOutputPayload(swaggerResponse, response, swaggerOperation, contract);
+
+            operation.getResponses().add(response);
+        }
+    }
+
+    private static void fillOutputPayload(Response swaggerResponse,
+            org.restlet.ext.apispark.internal.model.Response response,
+            Operation swaggerOperation, Contract contract) {
+        Property property = swaggerResponse.getSchema();
+        if (property == null) {
+            return;
+        }
+
+        PayLoad payload = new PayLoad();
+
+        payload.setDescription(property.getDescription());
+        payload.setArray(property instanceof ArrayProperty);
+        payload.setType(SwaggerTypes.toDefinitionType(property));
+
+        Representation representation = contract.getRepresentation(payload.getType());
+        if (representation != null) {
+            representation.addSections(swaggerOperation.getTags());
+        }
+
+        response.setOutputPayLoad(payload);
+    }
+
+    private static void fillInputPayload(Operation swaggerOperation,
+            org.restlet.ext.apispark.internal.model.Operation operation,
+            Contract contract) {
+        BodyParameter bodyParameter = SwaggerUtils.getInputPayload(swaggerOperation);
+
+        if (bodyParameter != null) {
+            PayLoad payload = new PayLoad();
+            Model model = bodyParameter.getSchema();
+            payload.setDescription(model.getDescription());
+
+            if (model instanceof ArrayModel) {
+                ArrayModel arrayModel = (ArrayModel) model;
+                payload.setArray(true);
+                payload.setType(SwaggerTypes.toDefinitionType(arrayModel.getItems()));
+
+            } else if (model instanceof RefModel) {
+                RefModel refModel = (RefModel) model;
+                payload.setType(refModel.getSimpleRef());
+
+            } else {
+                LOGGER.warning("Unsupported input payload type: " + model.getClass().getSimpleName());
+            }
+
+            Representation representation = contract.getRepresentation(payload.getType());
+            if (representation != null) {
+                representation.addSections(swaggerOperation.getTags());
+            }
+            operation.setInputPayLoad(payload);
+        }
+    }
+
+    private static void fillRwadefEndpoints(Swagger swagger, Definition definition) {
+        String authenticationProtocol = null;
+
+        if (swagger.getSecurityDefinitions() != null) {
+            for (String key : swagger.getSecurityDefinitions().keySet()) {
+                SecuritySchemeDefinition securityDefinition = swagger.getSecurityDefinitions().get(key);
+                if (securityDefinition instanceof BasicAuthDefinition) {
+                    authenticationProtocol = ChallengeScheme.HTTP_BASIC.getName();
+                } else if (securityDefinition instanceof OAuth2Definition) {
+                    authenticationProtocol = ChallengeScheme.HTTP_OAUTH.getName();
+                } else if (securityDefinition instanceof ApiKeyAuthDefinition) {
+                    authenticationProtocol = ChallengeScheme.CUSTOM.getName();
+                }
+            }
+        }
+
+        for (Scheme scheme : swagger.getSchemes()) {
+            Endpoint endpoint = new Endpoint(scheme.toString().toLowerCase() + "://" + swagger.getHost()
+                    + (swagger.getBasePath() == null ? "" : swagger.getBasePath()));
+            endpoint.setAuthenticationProtocol(authenticationProtocol);
+            definition.getEndpoints().add(endpoint);
+        }
     }
 }

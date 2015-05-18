@@ -41,6 +41,7 @@ import org.raml.model.SecurityScheme;
 import org.raml.model.parameter.UriParameter;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -209,7 +210,7 @@ public abstract class RamlTranslator {
             if (resource.getName() != null) {
                 ramlResource.setDisplayName(resource.getName());
             } else {
-                ramlResource.setDisplayName(RamlUtils
+                ramlResource.setDisplayName(ConversionUtils
                         .processResourceName(resource.getResourcePath()));
             }
             ramlResource.setDescription(resource.getDescription());
@@ -472,7 +473,7 @@ public abstract class RamlTranslator {
         for (Entry<String, org.raml.model.Resource> entry : resource
                 .getResources().entrySet()) {
             rwadResources.addAll(getResource(
-                    RamlUtils.processResourceName(entry.getValue().getUri()),
+                    ConversionUtils.processResourceName(entry.getValue().getUri()),
                     entry.getValue(), rootPathVariables));
         }
 
@@ -529,7 +530,7 @@ public abstract class RamlTranslator {
             org.raml.model.Resource resource = entry.getValue();
             contract.getResources().addAll(
                     getResource(
-                            RamlUtils.processResourceName(resource.getUri()),
+                            ConversionUtils.processResourceName(resource.getUri()),
                             resource, rootPathVariables));
         }
 

@@ -45,15 +45,15 @@ public class Contract {
      * Representations available with this API Note: their "name" is used as a
      * reference further in this description.
      */
-    private List<Representation> representations;
+    private List<Representation> representations = new ArrayList<>();
 
     /** Resources provided by the API. */
-    private List<Resource> resources;
+    private List<Resource> resources = new ArrayList<>();
 
     /**
      * Sections referenced by the API's Representations and Resources.
      */
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     public String getDescription() {
         return description;
@@ -73,9 +73,6 @@ public class Contract {
     }
 
     public List<Representation> getRepresentations() {
-        if (representations == null) {
-            representations = new ArrayList<>();
-        }
         return representations;
     }
 
@@ -89,9 +86,6 @@ public class Contract {
     }
 
     public List<Resource> getResources() {
-        if (resources == null) {
-            resources = new ArrayList<>();
-        }
         return resources;
     }
 
@@ -105,9 +99,6 @@ public class Contract {
     }
 
     public List<Section> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<>();
-        }
         return sections;
     }
 
