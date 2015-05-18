@@ -25,6 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -586,20 +587,26 @@ public abstract class SwaggerTranslator {
     private static void fillMainAttributes(Definition definition,
             ResourceListing listing, String basePath) {
         definition.setVersion(listing.getApiVersion());
-        Contact contact = new Contact();
-        contact.setEmail(listing.getInfo().getContact());
-        definition.setContact(contact);
-        License license = new License();
-        license.setUrl(listing.getInfo().getLicenseUrl());
-        definition.setLicense(license);
 
         Contract contract = new Contract();
-        contract.setName(listing.getInfo().getTitle());
+        if (listing.getInfo() != null) {
+            Contact contact = new Contact();
+            contact.setEmail(listing.getInfo().getContact());
+            definition.setContact(contact);
+
+            License license = new License();
+            license.setUrl(listing.getInfo().getLicenseUrl());
+            definition.setLicense(license);
+
+            contract.setName(listing.getInfo().getTitle());
+            contract.setDescription(listing.getInfo().getDescription());
+        }
+
         LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
-        contract.setDescription(listing.getInfo().getDescription());
         definition.setContract(contract);
 
-        if (definition.getEndpoints().isEmpty()) {
+        if (definition.getEndpoints().isEmpty()
+                && listing.getAuthorizations() != null) {
             // TODO verify how to deal with API key auth + oauth
             Endpoint endpoint = new Endpoint(basePath);
             definition.getEndpoints().add(endpoint);
