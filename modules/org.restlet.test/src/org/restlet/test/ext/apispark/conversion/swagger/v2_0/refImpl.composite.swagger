@@ -19,18 +19,18 @@
     "http"
   ],
   "tags": [
-  	{
-  	  "name": "Pet",
-  	  "description": "Operations about pets"
-  	},
-  	{
-  	  "name": "User",
-  	  "description": "Operations about users"
-  	},
-  	{
-  	  "name": "Order",
-  	  "description": "Operations about orders"
-  	}
+    {
+      "name": "Pet",
+      "description": "Operations about pets"
+    },
+    {
+      "name": "User",
+      "description": "Operations about users"
+    },
+    {
+      "name": "Order",
+      "description": "Operations about orders"
+    }
   ],
   "paths": {
     "/pet": {
@@ -64,7 +64,7 @@
             "description": "Success"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       },
@@ -95,13 +95,13 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       }
@@ -143,7 +143,7 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
@@ -184,7 +184,7 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
@@ -241,10 +241,10 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
@@ -276,7 +276,7 @@
             "description": "Success"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       },
@@ -306,7 +306,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       },
@@ -353,7 +353,7 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
@@ -383,7 +383,7 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
@@ -415,10 +415,10 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
@@ -445,10 +445,10 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       }
@@ -574,7 +574,7 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
@@ -623,10 +623,10 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
@@ -661,10 +661,10 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
@@ -691,10 +691,10 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       }
@@ -754,6 +754,7 @@
       }
     },
     "Pet": {
+      "required": [ "id", "name" ],
       "properties": {
         "id": {
           "type": "integer",

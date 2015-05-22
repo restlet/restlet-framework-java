@@ -24,6 +24,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class QueryParameter extends Parameter {
      * List of accepted values of the parameter if there is a limited number of
      * them.
      */
-    private List<String> enumeration;
+    private List<String> enumeration = new ArrayList<>();
 
     /**
      * Indicates which character separates values when this parameter allows

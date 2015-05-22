@@ -24,6 +24,7 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Status;
@@ -42,7 +43,7 @@ public class Response {
     private String description;
 
     /** The list of Headers associated with this response. */
-    private List<Header> headers;
+    private List<Header> headers = new ArrayList<>();
 
     /** Status message of the response. */
     private String message;
