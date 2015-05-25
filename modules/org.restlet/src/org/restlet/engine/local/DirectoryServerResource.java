@@ -427,7 +427,7 @@ public class DirectoryServerResource extends ServerResource {
                 }
             }
 
-            if (variantRefs.size() > 0) {
+            if (!variantRefs.isEmpty()) {
                 // Return the list of variants
                 setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
                 result = variantRefs.getTextRepresentation();

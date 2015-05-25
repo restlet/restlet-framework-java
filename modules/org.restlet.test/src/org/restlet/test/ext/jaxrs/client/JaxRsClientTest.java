@@ -50,7 +50,7 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  */
 public class JaxRsClientTest extends JaxRsTestCase {
 
-    // TODO - add tests for remaining param types: FormParam, MatrixParam,
+    // TODO - add tests for remaining param type: MatrixParam,
 
     private AtomicBoolean _serverStarted = new AtomicBoolean(false);
 
@@ -117,6 +117,16 @@ public class JaxRsClientTest extends JaxRsTestCase {
             public void performTest(EchoResource echoResource) {
                 assertEquals(7,
                         echoResource.echoPointCookieParam(new Point(7, 8)).x);
+            }
+        });
+    }
+
+    public void testEchoStringFormParam() throws Exception {
+        performEchoTest(new EchoTest() {
+            @Override
+            public void performTest(EchoResource echoResource) {
+                assertEquals("formparam",
+                        echoResource.echoStringFormParam("formparam"));
             }
         });
     }

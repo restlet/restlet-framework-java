@@ -3,6 +3,19 @@
 Changes log  
 ===========
 
+@version-full@ (@release-date@)
+    - Bugs fixed
+       - Redirector does not translate response's entity location reference.
+         Issue #1069.
+       - Fixed tunnelFilter. + symbol (%2b) converted incorrectly when media 
+         query parameter is used. Issue #804.
+         Reported by Rob Elsner.
+       - Fixed never ending call when an exception happens while writing the 
+         response's entity using the internal HTTP server connector.
+         Issue #1061. Reported by Gernot Pansy.
+       - Prevented insertion of query params into POST request for JAX-RS client.
+         Issue #1072. Reported by Edouard Mercier.
+
 - 2.3.2 (05/01/2015)
     - Bugs fixed
        - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030.
@@ -25,6 +38,7 @@ Changes log
          containers to stop the application. Issue #1058.
          Reported by Constantin Gruber.
        - Fixed duplication of headers (jaxrs). Issues #944, #948.
+
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).

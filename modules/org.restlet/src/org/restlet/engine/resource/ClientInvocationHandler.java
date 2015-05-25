@@ -148,11 +148,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
             result = clientResource;
         } else {
             MethodAnnotationInfo annotationInfo = getAnnotationUtils()
-                    .getMethodAnnotation(annotations, javaMethod);
+                    .getMethodAnnotation(getAnnotations(), javaMethod);
 
             if (annotationInfo != null) {
                 Representation requestEntity = null;
-                boolean isSynchronous = true;
 
                 if ((args != null) && args.length > 0) {
                     // Checks if the user has defined its own callback.
@@ -164,7 +163,6 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                         } else if (Result.class.isAssignableFrom(o.getClass())) {
                             // Asynchronous mode where a callback object is to
                             // be called.
-                            isSynchronous = false;
 
                             // Get the kind of result expected.
                             final Result rCallback = (Result) o;
@@ -216,7 +214,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                             getClientResource().setOnResponse(callback);
                         } else {
                             requestEntity = getClientResource()
-                                    .toRepresentation(args[i]);
+                                    .toRepresentation(o);
                         }
                     }
                 }

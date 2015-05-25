@@ -348,10 +348,8 @@ public abstract class Representation extends RepresentationInfo {
         if (isSelectable()) {
             return ((org.restlet.engine.io.SelectionChannel) getChannel())
                     .getRegistration();
-        } else {
-            throw new IllegalStateException(
-                    "The representation isn't selectable");
         }
+        throw new IllegalStateException("The representation isn't selectable");
     }
 
     /**

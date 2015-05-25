@@ -977,7 +977,7 @@ public class ClientResource extends Resource {
      */
     @Override
     public Representation handle() {
-        Response response = handleOutbound(new Request(getRequest()));
+        Response response = handleOutbound(createRequest());
         return (response == null) ? null : response.getEntity();
     }
 
