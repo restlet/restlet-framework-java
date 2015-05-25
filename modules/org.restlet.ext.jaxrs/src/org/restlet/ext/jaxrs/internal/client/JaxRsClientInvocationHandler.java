@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -42,7 +41,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang.ClassUtils;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -51,14 +49,10 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.ClientInvocationHandler;
 import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.engine.resource.ThrowableAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -361,56 +355,6 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
             // Handle the response
             if (getClientResource().getOnResponse() == null) {
                 if ((response != null) && response.getStatus().isError()) {
-                    ThrowableAnnotationInfo tai = getAnnotationUtils()
-                            .getThrowableAnnotationInfo(javaMethod,
-                                    response.getStatus().getCode());
-
-                    if (tai != null) {
-                        Class<?> throwableClazz = tai.getJavaClass();
-                        Throwable t = null;
-
-                        if (tai.isSerializable()
-                                && response.isEntityAvailable()) {
-                            t = (Throwable) getClientResource().toObject(
-                                    response.getEntity(), throwableClazz);
-                        } else {
-                            try {
-                                t = (Throwable) throwableClazz.newInstance();
-                            } catch (Exception e) {
-                                Context.getCurrentLogger()
-                                        .log(Level.FINE,
-                                                "Unable to instantiate the client-side exception using the default constructor.");
-                            }
-
-                            if (response.isEntityAvailable()) {
-                                StatusInfo si = getClientResource().toObject(
-                                        response.getEntity(), StatusInfo.class);
-
-                                if (si != null) {
-                                    response.setStatus(new Status(si.getCode(),
-                                            si.getReasonPhrase(), si
-                                                    .getDescription()));
-                                }
-                            }
-                        }
-
-                        if (t != null) {
-                            throw t;
-                        }
-                        // TODO cf issues 1004 and 1018.
-                        // this code has been commented as the automatic
-                        // deserialization is problematic. We may rethink a
-                        // way to recover the status info.
-                        // } else if (response.isEntityAvailable()) {
-                        // StatusInfo si = getClientResource().toObject(
-                        // response.getEntity(), StatusInfo.class);
-                        //
-                        // if (si != null) {
-                        // response.setStatus(new Status(si.getCode(), si
-                        // .getReasonPhrase(), si.getDescription()));
-                        // }
-                    }
-
                     getClientResource().doError(response.getStatus());
                 } else if (!annotationInfo.getJavaOutputType().equals(
                         void.class)) {
