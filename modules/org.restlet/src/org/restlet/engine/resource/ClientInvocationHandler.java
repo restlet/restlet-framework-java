@@ -258,8 +258,8 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 // Effectively handle the call
                 Response response = getClientResource().handleOutbound(request);
 
-                // Handle the response
-                if (isSynchronous) {
+                // Handle the response, synchronous call
+                if (getClientResource().getOnResponse() == null) {
                     if (response.getStatus().isError()) {
                         getClientResource().doError(request, response);
                     }
