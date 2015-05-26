@@ -36,6 +36,13 @@ import com.wordnik.swagger.models.parameters.Parameter;
 public abstract class SwaggerUtils {
 
     /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private SwaggerUtils() {
+    }
+
+    /**
      * Returns the input payload of the given operation if there is one. Null otherwise.
      * 
      * @param operation
@@ -89,12 +96,5 @@ public abstract class SwaggerUtils {
         default:
             return null;
         }
-    }
-
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private SwaggerUtils() {
     }
 }

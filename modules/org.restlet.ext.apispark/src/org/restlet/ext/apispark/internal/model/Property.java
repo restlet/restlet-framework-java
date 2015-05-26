@@ -27,6 +27,10 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a property of a Web API representation
  * 
@@ -98,6 +102,7 @@ public class Property {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getEnumeration() {
         return enumeration;
     }
@@ -126,6 +131,7 @@ public class Property {
         return name;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Property> getProperties() {
         return properties;
     }
@@ -184,5 +190,31 @@ public class Property {
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
+    }
+
+    @JsonIgnore
+    public boolean isList() {
+        if (this.maxOccurs == null) {
+            return false;
+        }
+        return this.maxOccurs == -1 || this.maxOccurs > 1;
+    }
+
+    @JsonIgnore
+    public boolean isRequired() {
+        if (this.minOccurs == null) {
+            return false;
+        }
+        return this.minOccurs == 1;
+    }
+
+    @JsonIgnore
+    public void setList(boolean list) {
+        this.maxOccurs = list ? -1 : 1;
+    }
+
+    @JsonIgnore
+    public void setRequired(boolean required) {
+        this.minOccurs = required ? 1 : 0;
     }
 }

@@ -87,9 +87,9 @@
           {
             "defaultValue": null,
             "description": "unique identifier for the pet",
-            "max": "100",
+            "max": null,
             "maxOccurs": 1,
-            "min": "0",
+            "min": null,
             "minOccurs": 1,
             "name": "id",
             "enumeration": [],

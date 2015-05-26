@@ -27,6 +27,9 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a Web API
  * 
@@ -82,6 +85,7 @@ public class Definition {
         return endpoints;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getKeywords() {
         return keywords;
     }

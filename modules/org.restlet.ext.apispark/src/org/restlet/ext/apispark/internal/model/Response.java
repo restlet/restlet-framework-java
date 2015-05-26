@@ -29,6 +29,9 @@ import java.util.List;
 
 import org.restlet.data.Status;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a response sent by a Web API resource
  * 
@@ -73,6 +76,7 @@ public class Response {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Header> getHeaders() {
         return headers;
     }

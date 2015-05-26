@@ -187,15 +187,13 @@ public class Swagger2TestCase extends RestletTestCase {
         representation1.getProperties().add(representation1Property1);
         representation1Property1.setName("nameRepresentation1Property1");
         representation1Property1.setType("integer");
-        representation1Property1.setMin("1.0");
-        representation1Property1.setMax("2.0");
         representation1Property1.setDescription("description");
 
         // representation 1 : property 2
         Property representation1Property2 = new Property();
         representation1.getProperties().add(representation1Property2);
         representation1Property2.setName("nameRepresentation1Property2");
-        representation1Property2.setMaxOccurs(-1);
+        representation1Property2.setList(true);
         representation1Property2.setType("string");
         representation1Property2.setDescription("description");
 

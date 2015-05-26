@@ -160,8 +160,8 @@ public class SwaggerAnnotationUtils {
             property.setType(apiModelProperty.dataType());
         }
         if (!StringUtils.isNullOrEmpty(apiModelProperty.allowableValues())) {
-            property.setMinOccurs(1);
-            property.setMaxOccurs(1);
+            property.setRequired(true);
+            property.setList(true);
         }
     }
 

@@ -31,6 +31,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a Web API representation.
  * 
@@ -68,6 +71,7 @@ public class Representation {
         return name;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Property> getProperties() {
         return properties;
     }
@@ -81,6 +85,7 @@ public class Representation {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getSections() {
         return sections;
     }
@@ -113,11 +118,15 @@ public class Representation {
         this.sections = sections;
     }
 
+    public void addSection(String section) {
+        if (!this.sections.contains(section)) {
+            this.sections.add(section);
+        }
+    }
+
     public void addSections(Collection<String> sections) {
         for (String section : sections) {
-            if (!this.sections.contains(section)) {
-                this.sections.add(section);
-            }
+            addSection(section);
         }
     }
 

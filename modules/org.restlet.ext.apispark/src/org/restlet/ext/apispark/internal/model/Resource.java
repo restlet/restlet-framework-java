@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a Web API resource
  * 
@@ -77,6 +80,7 @@ public class Resource {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Operation> getOperations() {
         return operations;
     }
@@ -90,6 +94,7 @@ public class Resource {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<PathVariable> getPathVariables() {
         return pathVariables;
     }
@@ -98,6 +103,7 @@ public class Resource {
         return resourcePath;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getSections() {
         return sections;
     }

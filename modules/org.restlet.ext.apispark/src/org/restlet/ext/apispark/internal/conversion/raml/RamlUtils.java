@@ -156,10 +156,10 @@ public class RamlUtils {
             for (Property property : properties) {
                 String type = property.getType();
 
-                if (property.getMaxOccurs() != 1) {
+                if (property.isList()) {
                     ArraySchema array = new ArraySchema();
                     array.setTitle(property.getName());
-                    array.setRequired(property.getMinOccurs() > 0);
+                    array.setRequired(property.isRequired());
                     array.setUniqueItems(property.isUniqueItems());
                     if (isPrimitiveType(type)) {
                         Property prop = new Property();

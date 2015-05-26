@@ -27,6 +27,9 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents an operation on a Web API resource.
  * 
@@ -64,6 +67,7 @@ public class Operation {
     /** Possible response messages you could encounter. */
     private List<Response> responses = new ArrayList<>();
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getConsumes() {
         return consumes;
     }
@@ -72,6 +76,7 @@ public class Operation {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Header> getHeaders() {
         return headers;
     }
@@ -88,6 +93,7 @@ public class Operation {
         return name;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getProduces() {
         return produces;
     }
@@ -101,6 +107,7 @@ public class Operation {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<QueryParameter> getQueryParameters() {
         return queryParameters;
     }
@@ -114,6 +121,7 @@ public class Operation {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Response> getResponses() {
         return responses;
     }

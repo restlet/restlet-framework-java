@@ -27,6 +27,9 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents the contract of a Web API. Contains the representations and
  * resources sorted in sections.
@@ -50,9 +53,7 @@ public class Contract {
     /** Resources provided by the API. */
     private List<Resource> resources = new ArrayList<>();
 
-    /**
-     * Sections referenced by the API's Representations and Resources.
-     */
+    /** Sections referenced by the API's Representations and Resources. */
     private List<Section> sections = new ArrayList<>();
 
     public String getDescription() {
@@ -72,6 +73,7 @@ public class Contract {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Representation> getRepresentations() {
         return representations;
     }
@@ -85,6 +87,7 @@ public class Contract {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Resource> getResources() {
         return resources;
     }
@@ -98,6 +101,7 @@ public class Contract {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Section> getSections() {
         return sections;
     }

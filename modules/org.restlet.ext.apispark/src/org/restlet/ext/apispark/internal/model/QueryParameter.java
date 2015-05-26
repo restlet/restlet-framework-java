@@ -27,6 +27,9 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a query parameter. Associated to an operation.
  * 
@@ -92,6 +95,7 @@ public class QueryParameter extends Parameter {
         this.defaultValue = defaultValue;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getEnumeration() {
         return enumeration;
     }

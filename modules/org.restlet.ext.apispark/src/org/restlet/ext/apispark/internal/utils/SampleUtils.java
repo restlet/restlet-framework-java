@@ -82,7 +82,7 @@ public class SampleUtils {
             } else {
                 Object sampleValue = getPropertyExampleValue(property);
 
-                if (property.getMaxOccurs() != null && property.getMaxOccurs() != 1) {
+                if (property.isList()) {
                     if (sampleValue != null) {
                         sampleValue = Arrays.asList(sampleValue);
                     } else {

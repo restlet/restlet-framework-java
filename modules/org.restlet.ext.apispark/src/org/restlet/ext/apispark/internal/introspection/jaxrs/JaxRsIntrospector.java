@@ -386,9 +386,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription
                             .value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(jsonProperty != null
-                            && jsonProperty.required() ? 1 : 0);
-                    property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
+                    property.setRequired(jsonProperty != null && jsonProperty.required());
+                    property.setList(propertyTypeInfo.isList());
 
                     addRepresentation(collectInfo, propertyTypeInfo,
                             introspectionHelper);
