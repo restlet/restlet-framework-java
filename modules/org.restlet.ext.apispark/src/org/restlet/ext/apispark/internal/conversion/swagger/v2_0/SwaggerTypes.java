@@ -24,19 +24,24 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import com.wordnik.swagger.models.properties.ArrayProperty;
+import com.wordnik.swagger.models.properties.Property;
+import com.wordnik.swagger.models.properties.RefProperty;
+
 /**
  * @author Manuel Boillod
  */
 public class SwaggerTypes {
 
     /**
-     * Converts Swagger types to Java types
+     * Converts Swagger primitive types to Java types. To be used only for query parameters,
+     * headers and path variables.
      * 
      * @param dataType
      *            The Swagger type
      * @return The corresponding Java type
      */
-    public static String toDefinitionType(SwaggerTypeFormat dataType) {
+    public static String toDefinitionPrimitiveType(SwaggerTypeFormat dataType) {
         if ("string".equals(dataType.getType())) {
             if ("date".equals(dataType.getFormat())) {
                 return "date";
@@ -60,8 +65,33 @@ public class SwaggerTypes {
         } else if ("boolean".equals(dataType.getType())) {
             return "boolean";
         } else {
+            if ("array".equals(dataType.getType())) {
+                return dataType.getItems().getType();
+            }
             return dataType.getType();
         }
+    }
+    
+    /**
+     * Returns the RWADef type corresponding to the given Swagger Property.
+     * 
+     * @param property
+     *            The Swagger property.
+     * @return
+     *         The RWADef type.
+     */
+    public static String toDefinitionType(Property property) {
+        if (property instanceof RefProperty) {
+            RefProperty refProperty = (RefProperty) property;
+            return refProperty.getSimpleRef();
+        } else if (property instanceof ArrayProperty) {
+            ArrayProperty arrayProperty = (ArrayProperty) property;
+            return toDefinitionType(arrayProperty.getItems());
+        }
+        
+        SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat(property.getType(),
+                property.getFormat());
+        return SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat);
     }
 
     /**

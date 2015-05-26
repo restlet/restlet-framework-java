@@ -32,7 +32,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Operation;
-import org.restlet.ext.apispark.internal.model.Parameter;
 import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.QueryParameter;
@@ -49,7 +48,6 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
@@ -162,8 +160,8 @@ public class SwaggerAnnotationUtils {
             property.setType(apiModelProperty.dataType());
         }
         if (!StringUtils.isNullOrEmpty(apiModelProperty.allowableValues())) {
-            property.setMinOccurs(1);
-            property.setMaxOccurs(1);
+            property.setRequired(true);
+            property.setList(true);
         }
     }
 
@@ -171,14 +169,11 @@ public class SwaggerAnnotationUtils {
      * Adds data from the {@link ApiModelProperty} annotation to the operation.
      * 
      * @param apiOperation
-     *            The {@link com.wordnik.swagger.annotations.ApiOperation}
-     *            annotation.
+     *            The {@link com.wordnik.swagger.annotations.ApiOperation} annotation.
      * @param resource
-     *            The {@link org.restlet.ext.apispark.internal.model.Resource}
-     *            to update.
+     *            The {@link org.restlet.ext.apispark.internal.model.Resource} to update.
      * @param operation
-     *            The {@link org.restlet.ext.apispark.internal.model.Operation}
-     *            to update.
+     *            The {@link org.restlet.ext.apispark.internal.model.Operation} to update.
      */
     public static void processApiOperation(ApiOperation apiOperation,
             Resource resource, Operation operation) {
@@ -206,29 +201,6 @@ public class SwaggerAnnotationUtils {
             operation.setProduces(StringUtils.splitAndTrim(apiOperation
                     .produces()));
         }
-    }
-
-    /**
-     * Adds data from the {@link ApiParam} annotation to the parameter.
-     * 
-     * @param apiParam
-     *            The {@link ApiParam} annotation.
-     * @param parameter
-     *            The {@link Parameter} to update.
-     */
-    public static void processApiParameter(ApiParam apiParam,
-            Parameter parameter) {
-        if (!StringUtils.isNullOrEmpty(apiParam.name())) {
-            parameter.setName(apiParam.name());
-        }
-        if (!StringUtils.isNullOrEmpty(apiParam.value())) {
-            parameter.setDescription(apiParam.value());
-        }
-        if (!StringUtils.isNullOrEmpty(apiParam.defaultValue())) {
-            parameter.setDefaultValue(apiParam.defaultValue());
-        }
-        parameter.setRequired(apiParam.required());
-        parameter.setAllowMultiple(apiParam.allowMultiple());
     }
 
     /**

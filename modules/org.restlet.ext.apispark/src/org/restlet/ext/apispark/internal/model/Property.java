@@ -27,6 +27,10 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents a property of a Web API representation
  * 
@@ -34,7 +38,6 @@ import java.util.List;
  */
 public class Property {
 
-    // TODO review comment
     /**
      * Default value if this property is of a primitive type<br>
      * Note: need to check casts for non-String primitive types
@@ -44,37 +47,32 @@ public class Property {
     /** Textual description of this property. */
     private String description;
 
-    // TODO review comment
     /**
      * A list of possible values for this property if it has a limited number of
      * possible values.
      */
-    private List<String> enumeration;
+    private List<String> enumeration = new ArrayList<>();
 
     /**
      * An example of the property's value.
      */
     private String example;
 
-    // TODO review comment
     /**
      * Maximum value of this property if it is a number.<br>
      * Note: check casts.
      */
     private String max;
 
-    // TODO review comment
     /** Maximum number of occurences of the items of this property. */
     private Integer maxOccurs;
 
-    // TODO review comment
     /**
      * Minimum value of this property if it is a number.<br>
      * Note: check casts.
      */
     private String min;
 
-    // TODO review comment
     /** Minimum number of occurences of the items of this property. */
     private Integer minOccurs;
 
@@ -82,7 +80,7 @@ public class Property {
     private String name;
 
     /** list of properties, in case of nested type. */
-    private List<Property> properties;
+    private List<Property> properties = new ArrayList<>();
 
     /**
      * Type of this property, either a primitive type or a reference to a
@@ -90,7 +88,6 @@ public class Property {
      */
     private String type;
 
-    // TODO review comment
     /**
      * If maxOccurs > 1, indicates whether each item in this property is
      * supposed to be unique or not.
@@ -105,10 +102,8 @@ public class Property {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getEnumeration() {
-        if (enumeration == null) {
-            enumeration = new ArrayList<String>();
-        }
         return enumeration;
     }
 
@@ -136,10 +131,8 @@ public class Property {
         return name;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Property> getProperties() {
-        if (properties == null) {
-            properties = new ArrayList<>();
-        }
         return properties;
     }
 
@@ -197,5 +190,31 @@ public class Property {
 
     public void setUniqueItems(boolean uniqueItems) {
         this.uniqueItems = uniqueItems;
+    }
+
+    @JsonIgnore
+    public boolean isList() {
+        if (this.maxOccurs == null) {
+            return false;
+        }
+        return this.maxOccurs == -1 || this.maxOccurs > 1;
+    }
+
+    @JsonIgnore
+    public boolean isRequired() {
+        if (this.minOccurs == null) {
+            return false;
+        }
+        return this.minOccurs == 1;
+    }
+
+    @JsonIgnore
+    public void setList(boolean list) {
+        this.maxOccurs = list ? -1 : 1;
+    }
+
+    @JsonIgnore
+    public void setRequired(boolean required) {
+        this.minOccurs = required ? 1 : 0;
     }
 }

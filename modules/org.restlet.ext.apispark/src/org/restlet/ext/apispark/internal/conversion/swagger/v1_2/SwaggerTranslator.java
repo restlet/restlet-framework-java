@@ -356,7 +356,7 @@ public abstract class SwaggerTranslator {
                 type = model + StringUtils.firstUpper(prop.getName());
             }
 
-            if (prop.getMinOccurs() > 0) {
+            if (prop.isRequired()) {
                 md.getRequired().add(prop.getName());
             }
             if (!Types.isPrimitiveType(type) && !usedModelsList.contains(type)) {
@@ -366,7 +366,7 @@ public abstract class SwaggerTranslator {
             tpd.setDescription(prop.getDescription());
             tpd.setEnum_(prop.getEnumeration());
 
-            if (prop.getMaxOccurs() > 1 || prop.getMaxOccurs() == -1) {
+            if (prop.isList()) {
                 tpd.setType("array");
                 tpd.setItems(new ItemsDeclaration());
                 if (Types.isPrimitiveType(type)) {
@@ -798,7 +798,7 @@ public abstract class SwaggerTranslator {
             if (!declaredTypes.contains(modelEntry.getKey())) {
                 declaredTypes.add(modelEntry.getKey());
                 representation = toRepresentation(model, modelEntry.getKey());
-                representation.getSections().add(section.getName());
+                representation.addSection(section.getName());
                 contract.getRepresentations().add(representation);
                 LOGGER.log(Level.FINE, "Representation " + modelEntry.getKey()
                         + " added.");
@@ -1121,15 +1121,13 @@ public abstract class SwaggerTranslator {
             }
 
             if (model.getRequired() != null) {
-                property.setMinOccurs(model.getRequired().contains(
-                        swagProperties.getKey()) ? 1 : 0);
+                boolean required = model.getRequired().contains(swagProperties.getKey());
+                property.setRequired(required);
             } else {
-                property.setMinOccurs(0);
+                property.setRequired(false);
             }
-            property.setMaxOccurs(isArray ? -1 : 1);
+            property.setList(isArray);
             property.setDescription(swagProperty.getDescription());
-            property.setMin(swagProperty.getMinimum());
-            property.setMax(swagProperty.getMaximum());
             property.setUniqueItems(swagProperty.isUniqueItems());
 
             result.getProperties().add(property);
@@ -1162,7 +1160,12 @@ public abstract class SwaggerTranslator {
                     (listing.getApis().get(0).getPath())).getBasePath();
             fillMainAttributes(definition, listing, basePath);
 
-            fillContract(definition.getContract(), listing, apiDeclarations);
+            Contract contract = definition.getContract();
+            fillContract(contract, listing, apiDeclarations);
+
+            for (Representation representation : contract.getRepresentations()) {
+                representation.addSectionsToProperties(contract);
+            }
 
             LOGGER.log(Level.FINE,
                     "Definition successfully retrieved from Swagger definition");
@@ -1191,7 +1194,12 @@ public abstract class SwaggerTranslator {
             definition.getEndpoints().add(
                     new Endpoint(apiDeclaration.getBasePath()));
 
-            fillContract(definition.getContract(), apiDeclaration);
+            Contract contract = definition.getContract();
+            fillContract(contract, apiDeclaration);
+
+            for (Representation representation : contract.getRepresentations()) {
+                representation.addSectionsToProperties(contract);
+            }
 
             LOGGER.log(Level.FINE,
                     "Definition successfully retrieved from Swagger definition");

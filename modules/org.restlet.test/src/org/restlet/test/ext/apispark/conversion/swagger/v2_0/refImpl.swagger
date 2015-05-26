@@ -23,10 +23,24 @@
   "schemes": [
     "http"
   ],
+  "tags": [
+    {
+      "name": "Pet",
+      "description": "Operations about pets"
+    },
+    {
+      "name": "User",
+      "description": "Operations about users"
+    },
+    {
+      "name": "Order",
+      "description": "Operations about orders"
+    }
+  ],
   "paths": {
     "/pet": {
       "post": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Add a new pet to the store",
         "description": "Add a new pet to the store",
         "operationId": "addPet",
@@ -55,12 +69,12 @@
             "description": "Success"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       },
       "put": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Update an existing pet",
         "description": "Update an existing pet",
         "operationId": "updatePet",
@@ -86,20 +100,20 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       }
     },
     "/pet/findByStatus": {
       "get": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Finds Pets by status",
         "description": "Finds Pets by status",
         "operationId": "findPetsByStatus",
@@ -117,6 +131,11 @@
             "description": "Status values that need to be considered for filter",
             "required": true,
             "type": "array",
+            "enum": [
+              "available",
+              "pending",
+              "sold"
+            ],
             "items": {
               "type": "string"
             },
@@ -134,14 +153,14 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
     },
     "/pet/findByTags": {
       "get": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Finds Pets by tags",
         "description": "Finds Pets by tags",
         "operationId": "findPetsByTags",
@@ -159,6 +178,7 @@
             "description": "Tags to filter by",
             "required": true,
             "type": "array",
+            "enum": [],
             "items": {
               "type": "string"
             }
@@ -175,14 +195,14 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
     },
     "/pet/uploadImage": {
       "post": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "uploads an image",
         "description": "uploads an image",
         "operationId": "uploadFile",
@@ -204,7 +224,7 @@
     },
     "/pet/{petId}": {
       "get": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Find pet by ID",
         "description": "Find pet by ID",
         "operationId": "getPetById",
@@ -232,15 +252,15 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
       "post": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Updates a pet in the store with form data",
         "description": "Updates a pet in the store with form data",
         "operationId": "updatePetWithForm",
@@ -267,12 +287,12 @@
             "description": "Success"
           },
           "405": {
-            "description": "405 status response"
+            "description": "Error 405"
           }
         }
       },
       "delete": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "Deletes a pet",
         "description": "Deletes a pet",
         "operationId": "deletePet",
@@ -297,12 +317,12 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       },
       "patch": {
-        "tags": [],
+        "tags": [ "Pet" ],
         "summary": "partial updates to a pet",
         "description": "partial updates to a pet",
         "operationId": "partialUpdate",
@@ -344,14 +364,14 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
     },
     "/store/order": {
       "post": {
-        "tags": [],
+        "tags": [ "Order" ],
         "summary": "Place an order for a pet",
         "description": "Place an order for a pet",
         "operationId": "placeOrder",
@@ -374,14 +394,14 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
     },
     "/store/order/{orderId}": {
       "get": {
-        "tags": [],
+        "tags": [ "Order" ],
         "summary": "Find purchase order by ID",
         "description": "Find purchase order by ID",
         "operationId": "getOrderById",
@@ -406,15 +426,15 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
       "delete": {
-        "tags": [],
+        "tags": [ "Order" ],
         "summary": "Delete purchase order by ID",
         "description": "Delete purchase order by ID",
         "operationId": "deleteOrder",
@@ -436,17 +456,17 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       }
     },
     "/user": {
       "post": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Create user",
         "description": "Create user",
         "operationId": "createUser",
@@ -460,7 +480,7 @@
             "name": "body",
             "required": false,
             "schema": {
-              "$ref": "#/definition/User"
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -473,7 +493,7 @@
     },
     "/user/createWithArray": {
       "post": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Creates list of users with given input array",
         "description": "Creates list of users with given input array",
         "operationId": "createUsersWithArrayInput",
@@ -503,7 +523,7 @@
     },
     "/user/createWithList": {
       "post": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Creates list of users with given list input",
         "description": "Creates list of users with given list input",
         "operationId": "createUsersWithListInput",
@@ -533,7 +553,7 @@
     },
     "/user/login": {
       "get": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Logs user into the system",
         "description": "Logs user into the system",
         "operationId": "loginUser",
@@ -547,6 +567,7 @@
             "name": "username",
             "description": "The user name for login",
             "required": true,
+            "enum": [],
             "type": "string"
           },
           {
@@ -554,6 +575,7 @@
             "name": "password",
             "description": "The password for login in clear text",
             "required": true,
+            "enum": [],
             "type": "string"
           }
         ],
@@ -565,14 +587,14 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           }
         }
       }
     },
     "/user/logout": {
       "get": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Logs out current logged in user session",
         "description": "Logs out current logged in user session",
         "operationId": "logoutUser",
@@ -589,7 +611,7 @@
     },
     "/user/{username}": {
       "get": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Get user by user name",
         "description": "Get user by user name",
         "operationId": "getUserByName",
@@ -614,15 +636,15 @@
             }
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
       "put": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Updated user",
         "description": "Updated user",
         "operationId": "updateUser",
@@ -643,7 +665,7 @@
             "name": "body",
             "required": false,
             "schema": {
-              "$ref": "#/definition/User"
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -652,15 +674,15 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       },
       "delete": {
-        "tags": [],
+        "tags": [ "User" ],
         "summary": "Delete user",
         "description": "Delete user",
         "operationId": "deleteUser",
@@ -682,10 +704,10 @@
             "description": "Success"
           },
           "400": {
-            "description": "400 status response"
+            "description": "Error 400"
           },
           "404": {
-            "description": "404 status response"
+            "description": "Error 404"
           }
         }
       }
@@ -745,6 +767,7 @@
       }
     },
     "Pet": {
+      "required": [ "id", "name" ],
       "properties": {
         "id": {
           "type": "integer",
@@ -752,33 +775,37 @@
           "example": "1",
           "description": "unique identifier for the pet",
           "minimum": 0,
-          "maximum": 100
+          "maximum": 100,
+          "position": 1
         },
         "category": {
-          "$ref": "#/definitions/Category"
+          "$ref": "#/definitions/Category",
+          "position": 3
         },
         "name": {
           "type": "string",
-          "example": "sample name"
+          "example": "sample name",
+          "position": 2
         },
         "photoUrls": {
           "type": "array",
           "items": {
-            "type": "string",
-            "example": "[sample photoUrls]"
-          }
+            "type": "string"
+          },
+          "position": 6
         },
         "tags": {
           "type": "array",
           "items": {
-            "example": "[]",
             "$ref": "#/definitions/Tag"
-          }
+          },
+          "position": 5
         },
         "status": {
           "type": "string",
           "example": "sample status",
-          "description": "pet status in the store"
+          "description": "pet status in the store",
+          "position": 4
         }
       }
     },

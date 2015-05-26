@@ -11,6 +11,9 @@
         "description": null,
         "name": "Tag",
         "extendedType": null,
+        "sections": [
+          "Pet"
+        ],
         "properties": [
           {
             "defaultValue": null,
@@ -21,6 +24,7 @@
             "minOccurs": 0,
             "name": "id",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -33,6 +37,7 @@
             "minOccurs": 0,
             "name": "name",
             "enumeration": [],
+            "example": "sample name",
             "uniqueItems": false,
             "type": "string"
           }
@@ -43,16 +48,20 @@
         "description": null,
         "name": "Pet",
         "extendedType": null,
+        "sections": [
+          "Pet"
+        ],
         "properties": [
           {
             "defaultValue": null,
             "description": "unique identifier for the pet",
-            "max": "100.0",
+            "max": null,
             "maxOccurs": 1,
-            "min": "0.0",
+            "min": null,
             "minOccurs": 1,
             "name": "id",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -77,6 +86,7 @@
             "minOccurs": 1,
             "name": "name",
             "enumeration": [],
+            "example": "sample name",
             "uniqueItems": false,
             "type": "string"
           },
@@ -113,6 +123,7 @@
             "minOccurs": 0,
             "name": "status",
             "enumeration": [],
+            "example": "sample status",
             "uniqueItems": false,
             "type": "string"
           }
@@ -123,6 +134,9 @@
         "description": null,
         "name": "Category",
         "extendedType": null,
+        "sections": [
+          "Pet"
+        ],
         "properties": [
           {
             "defaultValue": null,
@@ -133,6 +147,7 @@
             "minOccurs": 0,
             "name": "id",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -145,6 +160,7 @@
             "minOccurs": 0,
             "name": "name",
             "enumeration": [],
+            "example": "sample name",
             "uniqueItems": false,
             "type": "string"
           }
@@ -155,6 +171,9 @@
         "description": null,
         "name": "Order",
         "extendedType": null,
+        "sections": [
+          "Order"
+        ],
         "properties": [
           {
             "defaultValue": null,
@@ -165,6 +184,7 @@
             "minOccurs": 0,
             "name": "id",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -177,6 +197,7 @@
             "minOccurs": 0,
             "name": "petId",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -189,6 +210,7 @@
             "minOccurs": 0,
             "name": "quantity",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -201,6 +223,7 @@
             "minOccurs": 0,
             "name": "status",
             "enumeration": [],
+            "example": "sample status",
             "uniqueItems": false,
             "type": "string"
           },
@@ -213,6 +236,7 @@
             "minOccurs": 0,
             "name": "shipDate",
             "enumeration": [],
+            "example": "sample shipDate",
             "uniqueItems": false,
             "type": "string"
           }
@@ -223,6 +247,9 @@
         "description": null,
         "name": "User",
         "extendedType": null,
+        "sections": [
+          "User"
+        ],
         "properties": [
           {
             "defaultValue": null,
@@ -233,6 +260,7 @@
             "minOccurs": 0,
             "name": "id",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           },
@@ -244,6 +272,7 @@
             "min": null,
             "minOccurs": 0,
             "name": "firstName",
+            "example": "sample firstName",
             "enumeration": [],
             "uniqueItems": false,
             "type": "string"
@@ -257,6 +286,7 @@
             "minOccurs": 0,
             "name": "username",
             "enumeration": [],
+            "example": "sample username",
             "uniqueItems": false,
             "type": "string"
           },
@@ -269,6 +299,7 @@
             "minOccurs": 0,
             "name": "lastName",
             "enumeration": [],
+            "example": "sample lastName",
             "uniqueItems": false,
             "type": "string"
           },
@@ -281,6 +312,7 @@
             "minOccurs": 0,
             "name": "email",
             "enumeration": [],
+            "example": "sample email",
             "uniqueItems": false,
             "type": "string"
           },
@@ -293,6 +325,7 @@
             "minOccurs": 0,
             "name": "password",
             "enumeration": [],
+            "example": "sample password",
             "uniqueItems": false,
             "type": "string"
           },
@@ -305,6 +338,7 @@
             "minOccurs": 0,
             "name": "phone",
             "enumeration": [],
+            "example": "sample phone",
             "uniqueItems": false,
             "type": "string"
           },
@@ -317,6 +351,7 @@
             "minOccurs": 0,
             "name": "userStatus",
             "enumeration": [],
+            "example": "1",
             "uniqueItems": false,
             "type": "integer"
           }
@@ -327,7 +362,10 @@
     "resources": [
       {
         "description": null,
-        "name": null,
+        "name": "PetFindByTags",
+        "sections": [
+          "Pet"
+        ],
         "operations": [
           {
             "description": "Finds Pets by tags",
@@ -352,15 +390,15 @@
                   "type": "Pet"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid tag value",
+                "description": "Invalid tag value",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -378,7 +416,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "PetPetId",
+        "sections": [
+          "Pet"
+        ],
         "operations": [
           {
             "description": "Find pet by ID",
@@ -394,22 +435,22 @@
                   "type": "Pet"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid ID supplied",
+                "description": "Invalid ID supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "Pet not found",
+                "description": "Pet not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -432,15 +473,15 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid pet value",
+                "description": "Invalid pet value",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -469,15 +510,15 @@
                   "type": "Pet"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid tag value",
+                "description": "Invalid tag value",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -503,15 +544,15 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
-                "description": null,
-                "message": "Invalid input",
+                "description": "Invalid input",
+                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -529,14 +570,18 @@
         "pathVariables": [
           {
             "description": "Pet id to delete",
-            "name": "petId"
+            "name": "petId",
+            "required": true
           }
         ],
         "resourcePath": "/pet/{petId}"
       },
       {
         "description": null,
-        "name": null,
+        "name": "Pet",
+        "sections": [
+          "Pet"
+        ],
         "operations": [
           {
             "description": "Add a new pet to the store",
@@ -552,15 +597,15 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
-                "description": null,
-                "message": "Invalid input",
+                "description": "Invalid input",
+                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -589,29 +634,29 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid ID supplied",
+                "description": "Invalid ID supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "Pet not found",
+                "description": "Pet not found",
+                "message": "Error 404",
                 "name": "Error 404"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
-                "description": null,
-                "message": "Validation exception",
+                "description": "Validation exception",
+                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -629,7 +674,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "PetFindByStatus",
+        "sections": [
+          "Pet"
+        ],
         "operations": [
           {
             "description": "Finds Pets by status",
@@ -658,15 +706,15 @@
                   "type": "Pet"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid status value",
+                "description": "Invalid status value",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -684,7 +732,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "PetUploadImage",
+        "sections": [
+          "Pet"
+        ],
         "operations": [
           {
             "description": "uploads an image",
@@ -697,8 +748,8 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -718,7 +769,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "StoreOrderOrderId",
+        "sections": [
+          "Order"
+        ],
         "operations": [
           {
             "description": "Delete purchase order by ID",
@@ -731,22 +785,22 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid ID supplied",
+                "description": "Invalid ID supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "Order not found",
+                "description": "Order not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -769,22 +823,22 @@
                   "type": "Order"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid ID supplied",
+                "description": "Invalid ID supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "Order not found",
+                "description": "Order not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -797,14 +851,18 @@
         "pathVariables": [
           {
             "description": "ID of the order that needs to be deleted",
-            "name": "orderId"
+            "name": "orderId",
+            "required": true
           }
         ],
         "resourcePath": "/store/order/{orderId}"
       },
       {
         "description": null,
-        "name": null,
+        "name": "StoreOrder",
+        "sections": [
+          "Order"
+        ],
         "operations": [
           {
             "description": "Place an order for a pet",
@@ -820,15 +878,15 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid order",
+                "description": "Invalid order",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -843,7 +901,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "User",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Create user",
@@ -859,8 +920,8 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -875,7 +936,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "UserCreateWithArray",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Creates list of users with given input array",
@@ -891,8 +955,8 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -907,7 +971,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "UserCreateWithList",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Creates list of users with given list input",
@@ -923,8 +990,8 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -939,7 +1006,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "UserUsername",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Updated user",
@@ -955,22 +1025,22 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid username supplied",
+                "description": "Invalid username supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "User not found",
+                "description": "User not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -990,22 +1060,22 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid username supplied",
+                "description": "Invalid username supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "User not found",
+                "description": "User not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -1028,22 +1098,22 @@
                   "type": "User"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid username supplied",
+                "description": "Invalid username supplied",
+                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
-                "description": null,
-                "message": "User not found",
+                "description": "User not found",
+                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -1056,14 +1126,18 @@
         "pathVariables": [
           {
             "description": "name that need to be deleted",
-            "name": "username"
+            "name": "username",
+            "required": true
           }
         ],
         "resourcePath": "/user/{username}"
       },
       {
         "description": null,
-        "name": null,
+        "name": "UserLogin",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Logs user into the system",
@@ -1096,15 +1170,15 @@
                   "type": "string"
                 },
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
-                "description": null,
-                "message": "Invalid username and password combination",
+                "description": "Invalid username and password combination",
+                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -1119,7 +1193,10 @@
       },
       {
         "description": null,
-        "name": null,
+        "name": "UserLogout",
+        "sections": [
+          "User"
+        ],
         "operations": [
           {
             "description": "Logs out current logged in user session",
@@ -1132,8 +1209,8 @@
               {
                 "outputPayLoad": null,
                 "code": 200,
-                "description": "Success",
-                "message": "The request has succeeded",
+                "description": "The request has succeeded",
+                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -1145,6 +1222,20 @@
         ],
         "pathVariables": [],
         "resourcePath": "/user/logout"
+      }
+    ],
+    "sections": [
+      {
+        "name": "Pet",
+        "description": "Operations about pets"
+      },
+      {
+        "name": "User",
+        "description": "Operations about users"
+      },
+      {
+        "name": "Order",
+        "description": "Operations about orders"
       }
     ]
   },

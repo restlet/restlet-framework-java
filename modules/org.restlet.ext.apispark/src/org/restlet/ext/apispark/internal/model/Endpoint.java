@@ -59,7 +59,7 @@ public class Endpoint {
 
     public Endpoint(String url) {
         Pattern p = Pattern
-                .compile("([a-z]*)://([^:^/]*)(:([0-9]*))?([a-zA-Z0-9+&@#/%=~_|]*)");
+                .compile("([a-zA-Z]*)://([^:^/]*)(:([0-9]*))?([a-zA-Z0-9+&@#/%=~_|]*)");
         Matcher m = p.matcher(url);
         if (m.matches()) {
             domain = m.group(2);
