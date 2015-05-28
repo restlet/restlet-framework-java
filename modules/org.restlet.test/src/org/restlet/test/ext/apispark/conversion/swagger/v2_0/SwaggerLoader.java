@@ -27,21 +27,13 @@ package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 import java.io.File;
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.util.Json;
 
 public class SwaggerLoader {
 
-    private static ObjectMapper mapper() {
-        ObjectMapper mapper = Json.mapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
-    }
-
     public static Swagger readJson(File file) throws IOException {
-        return mapper().readValue(file, Swagger.class);
+        return Json.mapper().readValue(file, Swagger.class);
     }
 
     public static Swagger readJson(String file) throws IOException {
@@ -49,7 +41,7 @@ public class SwaggerLoader {
     }
 
     public static Swagger readJsonString(String json) throws IOException {
-        return mapper().readValue(json, Swagger.class);
+        return Json.mapper().readValue(json, Swagger.class);
     }
 
 }

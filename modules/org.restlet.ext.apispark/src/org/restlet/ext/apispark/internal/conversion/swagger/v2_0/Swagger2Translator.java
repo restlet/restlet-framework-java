@@ -1096,11 +1096,14 @@ public class Swagger2Translator {
             }
         }
 
-        for (Scheme scheme : swagger.getSchemes()) {
-            Endpoint endpoint = new Endpoint(scheme.toString().toLowerCase() + "://" + swagger.getHost()
-                    + (swagger.getBasePath() == null ? "" : swagger.getBasePath()));
-            endpoint.setAuthenticationProtocol(authenticationProtocol);
-            definition.getEndpoints().add(endpoint);
+        if (swagger.getSchemes() != null
+            && swagger.getHost() != null) {
+            for (Scheme scheme : swagger.getSchemes()) {
+                Endpoint endpoint = new Endpoint(scheme.toString().toLowerCase() + "://" + swagger.getHost()
+                        + (swagger.getBasePath() == null ? "" : swagger.getBasePath()));
+                endpoint.setAuthenticationProtocol(authenticationProtocol);
+                definition.getEndpoints().add(endpoint);
+            }
         }
     }
 }
