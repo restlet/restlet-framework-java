@@ -921,13 +921,11 @@ public class Swagger2Translator {
         org.restlet.ext.apispark.internal.model.Operation operation =
                 new org.restlet.ext.apispark.internal.model.Operation();
 
-        List<String> operationProduces = swaggerOperation.getProduces();
-        operationProduces.addAll(produces);
-        operation.setProduces(operationProduces);
+        operation.addProduces(produces);
+        operation.addProduces(swaggerOperation.getProduces());
 
-        List<String> operationConsumes = swaggerOperation.getConsumes();
-        operationConsumes.addAll(consumes);
-        operation.setConsumes(operationConsumes);
+        operation.addConsumes(consumes);
+        operation.addConsumes(swaggerOperation.getConsumes());
 
         operation.setDescription(swaggerOperation.getDescription());
         operation.setMethod(methodName);

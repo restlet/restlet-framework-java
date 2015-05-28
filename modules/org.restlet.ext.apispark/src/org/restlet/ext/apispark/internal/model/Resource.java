@@ -136,11 +136,19 @@ public class Resource {
         this.sections = sections;
     }
 
+    public void addSection(String section) {
+        if (!this.sections.contains(section)) {
+            this.sections.add(section);
+        }
+    }
+
     public void addSections(Collection<String> sections) {
+        if (sections == null) {
+            return;
+        }
+
         for (String section : sections) {
-            if (!this.sections.contains(section)) {
-                this.sections.add(section);
-            }
+            addSection(section);
         }
     }
 }

@@ -125,6 +125,10 @@ public class Representation {
     }
 
     public void addSections(Collection<String> sections) {
+        if (sections == null) {
+            return;
+        }
+
         for (String section : sections) {
             addSection(section);
         }

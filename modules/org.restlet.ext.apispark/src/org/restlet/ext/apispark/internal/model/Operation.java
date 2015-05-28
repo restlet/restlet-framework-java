@@ -27,6 +27,7 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -160,5 +161,39 @@ public class Operation {
 
     public void setResponses(List<Response> responses) {
         this.responses = responses;
+    }
+
+    @JsonIgnore
+    public void addProduces(List<String> produces) {
+        if (produces == null) {
+            return;
+        }
+
+        if (this.produces == null) {
+            this.produces = new ArrayList<>();
+        }
+
+        for (String mediaType : produces) {
+            if (!this.produces.contains(mediaType)) {
+                this.produces.add(mediaType);
+            }
+        }
+    }
+
+    @JsonIgnore
+    public void addConsumes(List<String> consumes) {
+        if (consumes == null) {
+            return;
+        }
+
+        if (this.consumes == null) {
+            this.consumes = new ArrayList<>();
+        }
+
+        for (String mediaType : consumes) {
+            if (!this.consumes.contains(mediaType)) {
+                this.consumes.add(mediaType);
+            }
+        }
     }
 }
