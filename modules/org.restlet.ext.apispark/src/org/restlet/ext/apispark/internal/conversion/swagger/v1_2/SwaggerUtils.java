@@ -66,7 +66,6 @@ public abstract class SwaggerUtils {
 
     static {
         client.setContext(new Context());
-        client.getContext().getParameters().add("idleTimeout", "4000");
     }
 
     private static ClientResource createAuthenticatedClientResource(String url,

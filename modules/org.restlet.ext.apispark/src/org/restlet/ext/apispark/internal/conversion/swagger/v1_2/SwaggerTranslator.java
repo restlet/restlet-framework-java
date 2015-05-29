@@ -25,7 +25,6 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -605,20 +604,22 @@ public abstract class SwaggerTranslator {
         LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
         definition.setContract(contract);
 
-        if (definition.getEndpoints().isEmpty()
-                && listing.getAuthorizations() != null) {
+        if (definition.getEndpoints().isEmpty()) {
             // TODO verify how to deal with API key auth + oauth
             Endpoint endpoint = new Endpoint(basePath);
             definition.getEndpoints().add(endpoint);
-            if (listing.getAuthorizations().getBasicAuth() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
-                        .getName());
-            } else if (listing.getAuthorizations().getOauth2() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
-                        .getName());
-            } else if (listing.getAuthorizations().getApiKey() != null) {
-                endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
-                        .getName());
+
+            if (listing.getAuthorizations() != null) {
+                if (listing.getAuthorizations().getBasicAuth() != null) {
+                    endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
+                            .getName());
+                } else if (listing.getAuthorizations().getOauth2() != null) {
+                    endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
+                            .getName());
+                } else if (listing.getAuthorizations().getApiKey() != null) {
+                    endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
+                            .getName());
+                }
             }
         }
     }
