@@ -24,9 +24,20 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.restlet.ext.apispark.internal.conversion.ImportUtils;
+import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.apispark.internal.model.Definition;
+
 import com.wordnik.swagger.models.Operation;
+import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.models.parameters.BodyParameter;
 import com.wordnik.swagger.models.parameters.Parameter;
+import com.wordnik.swagger.util.Json;
 
 /**
  * Tools library for Swagger 2.0.
@@ -35,11 +46,51 @@ import com.wordnik.swagger.models.parameters.Parameter;
  */
 public abstract class SwaggerUtils {
 
+    /** Internal logger. */
+    protected static Logger LOGGER = Logger.getLogger(SwaggerUtils.class
+            .getName());
+
     /**
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
     private SwaggerUtils() {
+    }
+
+    /**
+     * Returns the {@link Definition} by reading the Swagger definition URL.
+     * 
+     * @param swaggerUrl
+     *            The URl of the Swagger definition service.
+     * @param userName
+     *            The user name for service authentication.
+     * @param password
+     *            The paswword for service authentication.
+     * @return A {@link Definition}.
+     * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
+     * @throws IOException
+     */
+    public static Definition getDefinition(String swaggerUrl, String userName,
+            String password) throws TranslationException {
+
+        // Check that URL is non empty and well formed
+        if (swaggerUrl == null) {
+            throw new TranslationException("url", "You did not provide any URL");
+        }
+
+        Swagger swagger = null;
+        LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
+        if (ImportUtils.isRemoteUrl(swaggerUrl)) {
+            swagger = ImportUtils.getAndDeserialize(swaggerUrl, userName, password, Swagger.class);
+        } else {
+            File swaggerFile = new File(swaggerUrl);
+            try {
+                swagger = Json.mapper().readValue(swaggerFile, Swagger.class);
+            } catch (Exception e) {
+                throw new TranslationException("file", e.getMessage());
+            }
+        }
+        return Swagger2Translator.translate(swagger);
     }
 
     /**
