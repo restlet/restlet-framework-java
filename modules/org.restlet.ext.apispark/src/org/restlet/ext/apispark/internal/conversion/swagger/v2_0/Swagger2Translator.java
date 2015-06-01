@@ -969,8 +969,10 @@ public class Swagger2Translator {
                 fillRwadefHeader(header, swaggerHeader);
                 operation.getHeaders().add(header);
             } else {
-                LOGGER.warning("Unsupported parameter type for " + swaggerParameter.getName() +
-                        " of type " + swaggerParameter.getClass().getName());
+                if (!(swaggerParameter instanceof BodyParameter)) {
+                    LOGGER.warning("Unsupported parameter type for " + swaggerParameter.getName() +
+                            " of type " + swaggerParameter.getClass().getName());
+                }
             }
         }
     }

@@ -13,7 +13,6 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
 
 import com.wordnik.swagger.util.Json;
 
@@ -73,12 +72,8 @@ public class ImportUtils {
             Class<T> clazz) throws TranslationException {
 
         Representation representation;
-        try {
-            ClientResource cr = createAuthenticatedClientResource(url, userName, password);
-            representation = cr.get();
-        } catch (ResourceException e) {
-            throw e;
-        }
+        ClientResource cr = createAuthenticatedClientResource(url, userName, password);
+        representation = cr.get();
 
         try {
 
