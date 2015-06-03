@@ -27,6 +27,8 @@ Changes log
          Reported by Philippe Perrault.
        - Fixed malformed JSON in the JsonpRepresentation.
          Reported by Wagner Correa Ramos.
+       - Fixed NPE when OAuth refresh token request when no scope is provided. 
+         Issue #1080. Reported by Gernot Pansy.
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
