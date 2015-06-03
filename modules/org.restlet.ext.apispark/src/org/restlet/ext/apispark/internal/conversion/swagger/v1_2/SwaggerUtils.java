@@ -109,6 +109,6 @@ public abstract class SwaggerUtils {
                 throw new TranslationException("file", e.getMessage());
             }
         }
-        return SwaggerTranslator.translate(resourceListing, apis);
+        return SwaggerReader.translate(resourceListing, apis);
     }
 }
