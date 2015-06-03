@@ -15,6 +15,8 @@ Changes log
          Issue #1061. Reported by Gernot Pansy.
        - Prevented insertion of query params into POST request for JAX-RS client.
          Issue #1072. Reported by Edouard Mercier.
+       - Fixed NPE when OAuth refresh token request when no scope is provided. 
+         Issue #1080. Reported by Gernot Pansy.
 
 - 2.3.2 (05/01/2015)
     - Bugs fixed

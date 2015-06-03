@@ -459,7 +459,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             response.put(REFRESH_TOKEN, refreshToken);
         }
         String[] scope = token.getScope();
-        if (!Scopes.isIdentical(scope, requestedScope)) {
+        if (requestedScope == null || !Scopes.isIdentical(scope, requestedScope)) {
             /*
              * OPTIONAL, if identical to the scope requested by the client,
              * otherwise REQUIRED. (5.1. Successful Response)
