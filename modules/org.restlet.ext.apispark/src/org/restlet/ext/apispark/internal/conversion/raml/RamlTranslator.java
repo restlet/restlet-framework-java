@@ -166,8 +166,7 @@ public abstract class RamlTranslator {
         }
 
         // Authentication
-        raml.setSecuritySchemes(new ArrayList<Map<String, SecurityScheme>>());
-        fillSecuritySchemes(raml.getSecuritySchemes(), endpoint);
+        raml.setSecuritySchemes(getSecuritySchemes(endpoint));
 
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
@@ -377,9 +376,8 @@ public abstract class RamlTranslator {
         }
     }
 
-    private static void fillSecuritySchemes(
-            List<Map<String, SecurityScheme>> securitySchemesList,
-            Endpoint endpoint) {
+    private static List<Map<String, SecurityScheme>> getSecuritySchemes(Endpoint endpoint) {
+        ArrayList<Map<String, SecurityScheme>> securitySchemesList = new ArrayList<Map<String, SecurityScheme>>();
         Map<String, SecurityScheme> securitySchemes = new HashMap<String, SecurityScheme>();
         SecurityScheme securityScheme = new SecurityScheme();
         if (endpoint != null) {
@@ -407,8 +405,12 @@ public abstract class RamlTranslator {
                 securitySchemes.put(ChallengeScheme.CUSTOM.getName(),
                         securityScheme);
             }
-            securitySchemesList.add(securitySchemes);
+            if (!securitySchemes.isEmpty()) {
+                securitySchemesList.add(securitySchemes);
+                return securitySchemesList;
+            }
         }
+        return null;
     }
 
     /**
