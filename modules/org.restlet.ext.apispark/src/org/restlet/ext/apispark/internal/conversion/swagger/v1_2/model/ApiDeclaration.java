@@ -45,8 +45,6 @@ public class ApiDeclaration {
 
     private List<String> consumes;
 
-    private ApiInfo info;
-
     private Map<String, ModelDeclaration> models;
 
     private List<String> produces;
@@ -79,10 +77,6 @@ public class ApiDeclaration {
             consumes = new ArrayList<String>();
         }
         return consumes;
-    }
-
-    public ApiInfo getInfo() {
-        return info;
     }
 
     public Map<String, ModelDeclaration> getModels() {
@@ -125,10 +119,6 @@ public class ApiDeclaration {
 
     public void setConsumes(List<String> consumes) {
         this.consumes = consumes;
-    }
-
-    public void setInfo(ApiInfo info) {
-        this.info = info;
     }
 
     public void setModels(Map<String, ModelDeclaration> models) {

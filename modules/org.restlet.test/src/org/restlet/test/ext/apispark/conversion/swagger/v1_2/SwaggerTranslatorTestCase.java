@@ -32,7 +32,7 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerReader;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -340,7 +340,7 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
         apiDeclarations.put("/pet", petApiDeclaration);
         apiDeclarations.put("/store", storeApiDeclaration);
         apiDeclarations.put("/user", userApiDeclaration);
-        Definition translatedDefinition = SwaggerTranslator.translate(
+        Definition translatedDefinition = SwaggerReader.translate(
                 resourceListing, apiDeclarations);
         comparePetstoreDefinition(translatedDefinition);
     }
