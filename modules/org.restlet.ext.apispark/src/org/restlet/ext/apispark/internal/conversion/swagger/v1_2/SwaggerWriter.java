@@ -434,7 +434,8 @@ public abstract class SwaggerWriter {
             ResponseMessageDeclaration rmd = new ResponseMessageDeclaration();
             rmd.setCode(response.getCode());
             rmd.setMessage(response.getMessage());
-            if (response.getOutputPayLoad() != null) {
+            if (response.getOutputPayLoad() != null
+                    && response.getOutputPayLoad().getType() != null) {
                 rmd.setResponseModel(response.getOutputPayLoad().getType());
                 usedModels.add(response.getOutputPayLoad().getType());
             }
