@@ -25,7 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -233,7 +233,7 @@ public class SwaggerReader {
 
         List<String> apiProduces = apiDeclaration.getProduces();
         List<String> apiConsumes = apiDeclaration.getConsumes();
-        Map<String, List<String>> subtypes = new HashMap<>();
+        Map<String, List<String>> subtypes = new LinkedHashMap<>();
         Representation representation;
 
         // Operations listing
