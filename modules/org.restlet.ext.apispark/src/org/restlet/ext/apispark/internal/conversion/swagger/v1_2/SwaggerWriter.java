@@ -106,9 +106,9 @@ public abstract class SwaggerWriter {
             Collection<String> usedModels) {
         // Get in representation
         ResourceOperationParameterDeclaration ropd;
-        PayLoad inRepr = operation.getInputPayLoad();
-        if (inRepr != null) {
-            Representation representation = contract.getRepresentation(inRepr
+        PayLoad inputPayload = operation.getInputPayLoad();
+        if (inputPayload != null && inputPayload.getType() != null) {
+            Representation representation = contract.getRepresentation(inputPayload
                     .getType());
 
             ropd = new ResourceOperationParameterDeclaration();
@@ -116,9 +116,9 @@ public abstract class SwaggerWriter {
             ropd.setName("body");
             ropd.setRequired(true);
 
-            ropd.setType(inRepr.getType());
+            ropd.setType(inputPayload.getType());
             if (representation != null) {
-                usedModels.add(inRepr.getType());
+                usedModels.add(inputPayload.getType());
             }
             rod.getParameters().add(ropd);
         }
