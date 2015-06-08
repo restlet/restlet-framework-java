@@ -343,7 +343,8 @@ public class Swagger2Translator {
         }
 
         // Body
-        if (operation.getInputPayLoad() != null) {
+        if (operation.getInputPayLoad() != null
+                && operation.getInputPayLoad().getType() != null) {
             BodyParameter bodyParameterSwagger = new BodyParameter();
             bodyParameterSwagger.setName("body");
 
