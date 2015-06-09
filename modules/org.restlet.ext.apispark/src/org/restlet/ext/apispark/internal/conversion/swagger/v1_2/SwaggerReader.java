@@ -34,11 +34,14 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.AuthorizationsDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ModelDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListingApi;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceOperationParameterDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResponseMessageDeclaration;
@@ -78,26 +81,29 @@ public class SwaggerReader {
     }
 
     /**
-     * Fills Restlet Web API definition's Contract from Swagger 1.2 API
-     * declaration
+     * Fills Restlet Web API definition's Contract from Swagger 1.2 {@link ApiDeclaration}.
      * 
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param apiDeclaration
      *            The Swagger ApiDeclaration
+     * @param declaredTypes
+     *            The names of the representations already imported into the {@link Contract}.
+     * @param sectionName
+     *            Optional name of the section in which to import the {@link ApiDeclaration}.
+     * @param sectionDescription
+     *            Optional description of the section in which to import the {@link ApiDeclaration}.
      */
-    private static void fillContract(Contract contract,
-            ApiDeclaration apiDeclaration) {
-        // Resource listing
+    private static void fillContract(Contract contract, ApiDeclaration apiDeclaration,
+            List<String> declaredTypes, String sectionName, String sectionDescription) {
         Resource resource;
-        List<String> declaredTypes = new ArrayList<>();
-        Section section = new Section();
-        if (apiDeclaration.getResourcePath().startsWith("/")) {
-            section.setName(apiDeclaration.getResourcePath().substring(1));
-        } else {
-            section.setName(apiDeclaration.getResourcePath());
+        Section section = null;
+
+        if (!StringUtils.isNullOrEmpty(sectionName)) {
+            section = new Section(sectionName);
+            section.setDescription(sectionDescription);
+            contract.getSections().add(section);
         }
-        contract.getSections().add(section);
 
         for (ResourceDeclaration api : apiDeclaration.getApis()) {
             resource = new Resource();
@@ -107,7 +113,10 @@ public class SwaggerReader {
             fillOperations(resource, apiDeclaration, api, contract, section,
                     declaredPathVariables, declaredTypes);
 
-            resource.getSections().add(section.getName());
+            if (section != null) {
+                resource.getSections().add(section.getName());
+            }
+
             contract.getResources().add(resource);
             LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
         }
@@ -126,32 +135,17 @@ public class SwaggerReader {
     private static void fillContract(Contract contract,
             ResourceListing listing, Map<String, ApiDeclaration> apiDeclarations) {
 
-        // Resource listing
-        Resource resource;
         List<String> declaredTypes = new ArrayList<>();
         for (Entry<String, ApiDeclaration> entry : apiDeclarations.entrySet()) {
             ApiDeclaration apiDeclaration = entry.getValue();
-            Section section = new Section();
-            if (entry.getKey().startsWith("/")) {
-                section.setName(entry.getKey().substring(1));
+
+            String sectionName = entry.getKey();
+            if (!StringUtils.isNullOrEmpty(sectionName)) {
+                fillContract(contract, apiDeclaration, declaredTypes,
+                        sectionName.startsWith("/") ? sectionName.substring(1) : sectionName,
+                        listing.getApi(sectionName).getDescription());
             } else {
-                section.setName(entry.getKey());
-            }
-            section.setDescription(listing.getApi(entry.getKey())
-                    .getDescription());
-            contract.getSections().add(section);
-
-            for (ResourceDeclaration api : apiDeclaration.getApis()) {
-                resource = new Resource();
-                resource.setResourcePath(api.getPath());
-
-                List<String> declaredPathVariables = new ArrayList<>();
-                fillOperations(resource, apiDeclaration, api, contract,
-                        section, declaredPathVariables, declaredTypes);
-
-                resource.getSections().add(section.getName());
-                contract.getResources().add(resource);
-                LOGGER.log(Level.FINE, "Resource " + api.getPath() + " added.");
+                fillContract(contract, apiDeclaration, declaredTypes, null, null);
             }
         }
     }
@@ -188,23 +182,25 @@ public class SwaggerReader {
         LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
         definition.setContract(contract);
 
-        if (definition.getEndpoints().isEmpty()
-                && basePath != null) {
+        if (definition.getEndpoints().isEmpty() && basePath != null) {
             // TODO verify how to deal with API key auth + oauth
             Endpoint endpoint = new Endpoint(basePath);
             definition.getEndpoints().add(endpoint);
+            fillEndpointAuthorization(listing.getAuthorizations(), endpoint);
+        }
+    }
 
-            if (listing.getAuthorizations() != null) {
-                if (listing.getAuthorizations().getBasicAuth() != null) {
-                    endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
-                            .getName());
-                } else if (listing.getAuthorizations().getOauth2() != null) {
-                    endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
-                            .getName());
-                } else if (listing.getAuthorizations().getApiKey() != null) {
-                    endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
-                            .getName());
-                }
+    private static void fillEndpointAuthorization(AuthorizationsDeclaration authorizations, Endpoint endpoint) {
+        if (authorizations != null) {
+            if (authorizations.getBasicAuth() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_BASIC
+                        .getName());
+            } else if (authorizations.getOauth2() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.HTTP_OAUTH
+                        .getName());
+            } else if (authorizations.getApiKey() != null) {
+                endpoint.setAuthenticationProtocol(ChallengeScheme.CUSTOM
+                        .getName());
             }
         }
     }
@@ -391,7 +387,11 @@ public class SwaggerReader {
             if (!declaredTypes.contains(modelEntry.getKey())) {
                 declaredTypes.add(modelEntry.getKey());
                 representation = toRepresentation(model, modelEntry.getKey());
-                representation.addSection(section.getName());
+
+                if (section != null) {
+                    representation.addSection(section.getName());
+                }
+
                 contract.getRepresentations().add(representation);
                 LOGGER.log(Level.FINE, "Representation " + modelEntry.getKey()
                         + " added.");
@@ -581,19 +581,22 @@ public class SwaggerReader {
      * 
      * @param apiDeclaration
      *            The Swagger API declaration
+     * @param sectionName
+     *            Optional name of the section to add to the contract
      * @return the Restlet Web API definition
      * @throws TranslationException
      */
-    public static Definition translate(ApiDeclaration apiDeclaration)
+    public static Definition translate(ApiDeclaration apiDeclaration, String sectionName)
             throws TranslationException {
         try {
             Definition definition = new Definition();
             definition.setContract(new Contract());
-            definition.getEndpoints().add(
-                    new Endpoint(apiDeclaration.getBasePath()));
+            Endpoint endpoint = new Endpoint(apiDeclaration.getBasePath());
+            definition.getEndpoints().add(endpoint);
+            fillEndpointAuthorization(apiDeclaration.getAuthorizations(), endpoint);
 
             Contract contract = definition.getContract();
-            fillContract(contract, apiDeclaration);
+            fillContract(contract, apiDeclaration, new ArrayList<String>(), null, null);
 
             for (Representation representation : contract.getRepresentations()) {
                 representation.addSectionsToProperties(contract);
@@ -620,8 +623,7 @@ public class SwaggerReader {
      * @return The Restlet definition.
      * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      */
-    public static Definition translate(ResourceListing listing,
-            Map<String, ApiDeclaration> apiDeclarations)
+    public static Definition translate(ResourceListing listing, Map<String, ApiDeclaration> apiDeclarations)
             throws TranslationException {
 
         validate(listing, apiDeclarations);
@@ -630,8 +632,15 @@ public class SwaggerReader {
             Definition definition = new Definition();
 
             // fill main attributes of the Restlet Web API definition
-            String basePath = apiDeclarations.get(
-                    (listing.getApis().get(0).getPath())).getBasePath();
+            String basePath = null;
+
+            List<ResourceListingApi> apis = listing.getApis();
+            if (apis != null && !apis.isEmpty()) {
+                String key = apis.get(0).getPath();
+                ApiDeclaration firstApiDeclaration = apiDeclarations.get(key);
+                basePath = firstApiDeclaration.getBasePath();
+            }
+
             fillMainAttributes(definition, listing, basePath);
 
             Contract contract = definition.getContract();
@@ -687,7 +696,7 @@ public class SwaggerReader {
         int adSize = apiDeclarations.size();
         if (rlSize < adSize) {
             throw new TranslationException("file",
-                    "One of your API declarations is not mapped in your resource listing");
+                    "Some API declarations are not mapped in your resource listing");
         } else if (rlSize > adSize) {
             throw new TranslationException("file",
                     "Some API declarations are missing");
