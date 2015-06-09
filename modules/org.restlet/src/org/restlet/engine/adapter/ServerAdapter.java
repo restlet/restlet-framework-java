@@ -188,10 +188,8 @@ public class ServerAdapter extends Adapter {
         } catch (Throwable t) {
             // [ifndef gae]
             if (response.getHttpCall().isConnectionBroken(t)) {
-                getLogger()
-                        .log(Level.INFO,
-                                "The connection was broken. It was probably closed by the client.",
-                                t);
+                // output a single log line for this common case to avoid filling servers logs
+                getLogger().log(Level.INFO, "The connection was broken. It was probably closed by the client. Reason: " + t.getMessage());
             } else
             // [enddef]
             {
