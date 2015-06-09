@@ -39,8 +39,6 @@ public class ResourceListing {
 
     private AuthorizationsDeclaration authorizations;
 
-    private String basePath;
-
     private ApiInfo info;
 
     private String swaggerVersion;
@@ -69,10 +67,6 @@ public class ResourceListing {
         return authorizations;
     }
 
-    public String getBasePath() {
-        return basePath;
-    }
-
     public ApiInfo getInfo() {
         return info;
     }
@@ -91,10 +85,6 @@ public class ResourceListing {
 
     public void setAuthorizations(AuthorizationsDeclaration authorizations) {
         this.authorizations = authorizations;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
     }
 
     public void setInfo(ApiInfo info) {
