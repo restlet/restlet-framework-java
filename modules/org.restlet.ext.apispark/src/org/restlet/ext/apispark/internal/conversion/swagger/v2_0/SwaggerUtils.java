@@ -90,7 +90,7 @@ public abstract class SwaggerUtils {
                 throw new TranslationException("file", e.getMessage());
             }
         }
-        return Swagger2Translator.translate(swagger);
+        return Swagger2Writer.translate(swagger);
     }
 
     /**
