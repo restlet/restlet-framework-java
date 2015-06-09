@@ -188,7 +188,8 @@ public class SwaggerReader {
         LOGGER.log(Level.FINE, "Contract " + contract.getName() + " added.");
         definition.setContract(contract);
 
-        if (definition.getEndpoints().isEmpty()) {
+        if (definition.getEndpoints().isEmpty()
+                && basePath != null) {
             // TODO verify how to deal with API key auth + oauth
             Endpoint endpoint = new Endpoint(basePath);
             definition.getEndpoints().add(endpoint);
@@ -650,6 +651,24 @@ public class SwaggerReader {
                     e);
         }
     }
+    
+    /**
+     * Translates a Swagger Resource Listing to a Restlet definition.
+     * 
+     * @param listing
+     *            The Swagger resource listing.
+     * @return The Restlet definition.
+     * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
+     */
+    public static Definition translate(ResourceListing listing) {
+        Definition definition = new Definition();
+        fillMainAttributes(definition, listing, null);
+
+        LOGGER.log(Level.FINE,
+                "Main attributes successfully retrieved from Swagger resource listing.");
+        return definition;
+    }
+            
 
     /**
      * Indicates if the given resource listing and list of API declarations
