@@ -32,8 +32,8 @@ import java.util.Map;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Reader;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Reader;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -226,7 +226,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         representation2.setName("nameRepresentation2");
 
         // When
-        Swagger swagger = Swagger2Reader.getSwagger(definition);
+        Swagger swagger = Swagger2Writer.getSwagger(definition);
 
         // Then
         assertEquals("2.0", swagger.getSwagger());
@@ -361,7 +361,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
-        Swagger translatedSwagger = Swagger2Reader
+        Swagger translatedSwagger = Swagger2Writer
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
@@ -374,7 +374,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         URL refImpl = getClass().getResource("refImpl.swagger");
         Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
         
-        Definition translatedDefinition = Swagger2Writer.translate(savedSwagger);
+        Definition translatedDefinition = Swagger2Reader.translate(savedSwagger);
         
         Definition savedDefinition = new JacksonRepresentation<>(
                 new FileRepresentation(getClass().getResource("refImpl.rwadef")

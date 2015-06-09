@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Reader;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -66,7 +66,7 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
         compositeProperty.getProperties().add(nameProperty);
 
         //execute
-        Swagger swagger = Swagger2Reader.getSwagger(definition);
+        Swagger swagger = Swagger2Writer.getSwagger(definition);
 
         //verify
         Model model1 = swagger.getDefinitions().get(
@@ -90,7 +90,7 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
                         MediaType.APPLICATION_JSON), Definition.class)
                 .getObject();
 
-        Swagger translatedSwagger = Swagger2Reader
+        Swagger translatedSwagger = Swagger2Writer
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.composite.swagger");
