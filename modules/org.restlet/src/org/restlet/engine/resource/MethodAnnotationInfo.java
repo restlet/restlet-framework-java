@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
@@ -287,42 +288,47 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         List<Variant> result = null;
 
         if (annotationValue != null) {
-            String[] variants = annotationValue.split("\\|");
+            StringTokenizer stValue = new StringTokenizer(annotationValue,
+                    "\\|");
+            while (stValue.hasMoreTokens()) {
+                String variantValue = stValue.nextToken().trim();
 
-            for (String variantValue : variants) {
                 Variant variant = null;
-                String[] extensions = variantValue.split("\\+");
                 List<MediaType> mediaTypes = null;
                 List<Language> languages = null;
                 CharacterSet characterSet = null;
 
-                for (String extension : extensions) {
-                    if (extension != null) {
-                        List<Metadata> metadataList = metadataService
-                                .getAllMetadata(extension);
+                StringTokenizer stExtension = new StringTokenizer(variantValue,
+                        "\\+");
+                while (stExtension.hasMoreTokens()) {
+                    String extension = stExtension.nextToken().trim();
+                    if (extension == null) {
+                        continue;
+                    }
+                    List<Metadata> metadataList = metadataService
+                            .getAllMetadata(extension);
 
-                        if (metadataList != null) {
-                            for (Metadata metadata : metadataList) {
-                                if (metadata instanceof MediaType) {
-                                    if (mediaTypes == null) {
-                                        mediaTypes = new ArrayList<MediaType>();
-                                    }
+                    if (metadataList != null) {
+                        for (Metadata metadata : metadataList) {
+                            if (metadata instanceof MediaType) {
+                                if (mediaTypes == null) {
+                                    mediaTypes = new ArrayList<MediaType>();
+                                }
 
-                                    mediaTypes.add((MediaType) metadata);
-                                } else if (metadata instanceof Language) {
-                                    if (languages == null) {
-                                        languages = new ArrayList<Language>();
-                                    }
+                                mediaTypes.add((MediaType) metadata);
+                            } else if (metadata instanceof Language) {
+                                if (languages == null) {
+                                    languages = new ArrayList<Language>();
+                                }
 
-                                    languages.add((Language) metadata);
-                                } else if (metadata instanceof CharacterSet) {
-                                    if (characterSet == null) {
-                                        characterSet = (CharacterSet) metadata;
-                                    } else {
-                                        Context.getCurrentLogger()
-                                                .warning(
-                                                        "A representation variant can have only one character set. Please check your annotation value.");
-                                    }
+                                languages.add((Language) metadata);
+                            } else if (metadata instanceof CharacterSet) {
+                                if (characterSet == null) {
+                                    characterSet = (CharacterSet) metadata;
+                                } else {
+                                    Context.getCurrentLogger()
+                                            .warning(
+                                                    "A representation variant can have only one character set. Please check your annotation value.");
                                 }
                             }
                         }
