@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
@@ -37,6 +38,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -79,7 +81,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         this.restletMethod = restletMethod;
 
         // Parse the main components of the annotation value
-        if ((annotationValue != null) && !annotationValue.equals("")) {
+        if (!StringUtils.isNullOrEmpty(annotationValue)) {
             int queryIndex = annotationValue.indexOf('?');
 
             if (queryIndex != -1) {
@@ -287,42 +289,49 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         List<Variant> result = null;
 
         if (annotationValue != null) {
-            String[] variants = annotationValue.split("\\|");
 
-            for (String variantValue : variants) {
+            StringTokenizer stValue = new StringTokenizer(annotationValue,
+                    "\\|");
+            while (stValue.hasMoreTokens()) {
+                String variantValue = stValue.nextToken().trim();
+
                 Variant variant = null;
-                String[] extensions = variantValue.split("\\+");
                 List<MediaType> mediaTypes = null;
                 List<Language> languages = null;
                 CharacterSet characterSet = null;
 
-                for (String extension : extensions) {
-                    if (extension != null) {
-                        List<Metadata> metadataList = metadataService
-                                .getAllMetadata(extension);
+                StringTokenizer stExtension = new StringTokenizer(variantValue,
+                        "\\+");
+                while (stExtension.hasMoreTokens()) {
+                    String extension = stExtension.nextToken().trim();
+                    if (extension == null) {
+                        continue;
+                    }
 
-                        if (metadataList != null) {
-                            for (Metadata metadata : metadataList) {
-                                if (metadata instanceof MediaType) {
-                                    if (mediaTypes == null) {
-                                        mediaTypes = new ArrayList<MediaType>();
-                                    }
+                    List<Metadata> metadataList = metadataService
+                            .getAllMetadata(extension);
 
-                                    mediaTypes.add((MediaType) metadata);
-                                } else if (metadata instanceof Language) {
-                                    if (languages == null) {
-                                        languages = new ArrayList<Language>();
-                                    }
+                    if (metadataList != null) {
+                        for (Metadata metadata : metadataList) {
+                            if (metadata instanceof MediaType) {
+                                if (mediaTypes == null) {
+                                    mediaTypes = new ArrayList<MediaType>();
+                                }
 
-                                    languages.add((Language) metadata);
-                                } else if (metadata instanceof CharacterSet) {
-                                    if (characterSet == null) {
-                                        characterSet = (CharacterSet) metadata;
-                                    } else {
-                                        Context.getCurrentLogger()
-                                                .warning(
-                                                        "A representation variant can have only one character set. Please check your annotation value.");
-                                    }
+                                mediaTypes.add((MediaType) metadata);
+                            } else if (metadata instanceof Language) {
+                                if (languages == null) {
+                                    languages = new ArrayList<Language>();
+                                }
+
+                                languages.add((Language) metadata);
+                            } else if (metadata instanceof CharacterSet) {
+                                if (characterSet == null) {
+                                    characterSet = (CharacterSet) metadata;
+                                } else {
+                                    Context.getCurrentLogger()
+                                            .warning(
+                                                    "A representation variant can have only one character set. Please check your annotation value.");
                                 }
                             }
                         }
