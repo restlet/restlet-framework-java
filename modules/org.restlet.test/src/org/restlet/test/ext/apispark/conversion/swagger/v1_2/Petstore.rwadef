@@ -441,7 +441,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -521,7 +521,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -576,7 +576,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -619,7 +619,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -742,7 +742,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -779,7 +779,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -883,7 +883,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -928,7 +928,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -963,7 +963,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -998,7 +998,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -1033,7 +1033,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -1077,7 +1077,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",
@@ -1237,7 +1237,7 @@
               {
                 "outputPayLoad": {
                   "array": false,
-                  "type": "void"
+                  "type": null
                 },
                 "code": 200,
                 "description": "Success",

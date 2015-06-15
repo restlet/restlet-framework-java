@@ -116,7 +116,23 @@ public abstract class SwaggerWriter {
             ropd.setName("body");
             ropd.setRequired(true);
 
-            ropd.setType(inputPayload.getType());
+            if (inputPayload.isArray()) {
+                ropd.setType("array");
+                ItemsDeclaration items = new ItemsDeclaration();
+                String itemsType = inputPayload.getType();
+                if (Types.isPrimitiveType(itemsType)) {
+                    SwaggerTypeFormat swaggerTypeFormat = SwaggerTypes
+                            .toSwaggerType(itemsType);
+                    items.setType(swaggerTypeFormat.getType());
+                    items.setFormat(swaggerTypeFormat.getFormat());
+                } else {
+                    items.setRef(itemsType);
+                }
+                ropd.setItems(items);
+            } else {
+                ropd.setType(inputPayload.getType());
+            }
+
             if (representation != null) {
                 usedModels.add(inputPayload.getType());
             }
@@ -305,6 +321,7 @@ public abstract class SwaggerWriter {
             ropd.setDescription(qp.getDescription());
             ropd.setEnum_(qp.getEnumeration());
             ropd.setDefaultValue(qp.getDefaultValue());
+            ropd.setRequired(qp.isRequired());
             rod.getParameters().add(ropd);
         }
     }
@@ -579,6 +596,7 @@ public abstract class SwaggerWriter {
             listing.getInfo().setContact(definition.getContact().getEmail());
         }
         if (definition.getLicense() != null) {
+            listing.getInfo().setLicense(definition.getLicense().getName());
             listing.getInfo().setLicenseUrl(definition.getLicense().getUrl());
         }
         if (definition.getContract() != null) {

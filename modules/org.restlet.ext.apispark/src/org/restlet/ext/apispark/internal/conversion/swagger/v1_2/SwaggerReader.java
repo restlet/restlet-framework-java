@@ -172,6 +172,7 @@ public class SwaggerReader {
             definition.setContact(contact);
 
             License license = new License();
+            license.setName(listing.getInfo().getLicense());
             license.setUrl(listing.getInfo().getLicenseUrl());
             definition.setLicense(license);
 
@@ -311,7 +312,8 @@ public class SwaggerReader {
                     "Operation: " + swaggerOperation.getNickname()
                             + " returns a single Representation");
             rwadOutRepr.setArray(false);
-            if (swaggerOperation.getType() != null) {
+            if (swaggerOperation.getType() != null
+                    && !"void".equals(swaggerOperation.getType())) {
                 rwadOutRepr.setType(swaggerOperation.getType());
             } else {
                 rwadOutRepr.setType(swaggerOperation.getRef());
@@ -673,11 +675,34 @@ public class SwaggerReader {
         Definition definition = new Definition();
         fillMainAttributes(definition, listing, null);
 
+        Contract contract = definition.getContract();
+        fillSections(contract, listing);
+
         LOGGER.log(Level.FINE,
                 "Main attributes successfully retrieved from Swagger resource listing.");
         return definition;
     }
             
+
+    private static void fillSections(Contract contract, ResourceListing listing) {
+        for (ResourceListingApi api : listing.getApis()) {
+            Section section = new Section();
+            String sectionName = computeSectionName(api.getPath());
+            section.setName(sectionName);
+            section.setDescription(api.getDescription());
+
+            contract.getSections().add(section);
+        }
+    }
+
+    private static String computeSectionName(String apiDeclarationPath) {
+        String result = apiDeclarationPath;
+        if (result.startsWith("/")) {
+            result = result.substring(1);
+        }
+
+        return result.replaceAll("/", "_");
+    }
 
     /**
      * Indicates if the given resource listing and list of API declarations
