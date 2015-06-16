@@ -87,6 +87,8 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
 
         assertEquals(savedDefinition.getLicense().getUrl(),
                 translatedDefinition.getLicense().getUrl());
+        assertEquals(savedDefinition.getLicense().getName(),
+                translatedDefinition.getLicense().getName());
         assertEquals(savedDefinition.getVersion(),
                 translatedDefinition.getVersion());
 
@@ -301,6 +303,8 @@ public class SwaggerTranslatorTestCase extends RestletTestCase {
                                                 .getDescription());
                                 assertEquals(savedQueryParameter.getName(),
                                         translatedQueryParameter.getName());
+                                assertEquals(savedQueryParameter.isRequired(),
+                                        translatedQueryParameter.isRequired());
                                 assertEquals(
                                         savedQueryParameter.getEnumeration(),
                                         translatedQueryParameter
