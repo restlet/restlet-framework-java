@@ -27,7 +27,7 @@ package org.restlet.ext.apispark.internal.conversion.raml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -152,7 +152,7 @@ public class RamlUtils {
                 extended[0] = typeExtended;
                 objectSchema.setExtends(extended);
             }
-            objectSchema.setProperties(new HashMap<String, JsonSchema>());
+            objectSchema.setProperties(new LinkedHashMap<String, JsonSchema>());
             for (Property property : properties) {
                 String type = property.getType();
 
