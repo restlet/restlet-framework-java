@@ -471,28 +471,30 @@ public class Swagger2Reader {
             return;
         }
 
-        for (String key : swaggerOperation.getResponses().keySet()) {
-            Response swaggerResponse = swaggerOperation.getResponses().get(key);
-            org.restlet.ext.apispark.internal.model.Response response =
-                    new org.restlet.ext.apispark.internal.model.Response();
+        if (swaggerOperation.getResponses() != null) {
+            for (String key : swaggerOperation.getResponses().keySet()) {
+                Response swaggerResponse = swaggerOperation.getResponses().get(key);
+                org.restlet.ext.apispark.internal.model.Response response =
+                        new org.restlet.ext.apispark.internal.model.Response();
 
-            int statusCode;
-            try {
-                statusCode = Integer.parseInt(key);
-                response.setCode(statusCode);
-            } catch (Exception e) {
-                // TODO: what to do with "Default" responses ?
-                LOGGER.warning("Response " + key + " for operation " + swaggerOperation.getOperationId() +
-                        " could not be retrieved because its key is not a valid status code.");
-                continue;
+                int statusCode;
+                try {
+                    statusCode = Integer.parseInt(key);
+                    response.setCode(statusCode);
+                } catch (Exception e) {
+                    // TODO: what to do with "Default" responses ?
+                    LOGGER.warning("Response " + key + " for operation " + swaggerOperation.getOperationId() +
+                            " could not be retrieved because its key is not a valid status code.");
+                    continue;
+                }
+
+                response.setMessage(swaggerResponse.getDescription());
+                response.setName(ConversionUtils.generateResponseName(statusCode));
+
+                fillOutputPayload(swaggerResponse, response, swaggerOperation, contract, parameters);
+
+                operation.getResponses().add(response);
             }
-
-            response.setMessage(swaggerResponse.getDescription());
-            response.setName(ConversionUtils.generateResponseName(statusCode));
-
-            fillOutputPayload(swaggerResponse, response, swaggerOperation, contract, parameters);
-
-            operation.getResponses().add(response);
         }
     }
 

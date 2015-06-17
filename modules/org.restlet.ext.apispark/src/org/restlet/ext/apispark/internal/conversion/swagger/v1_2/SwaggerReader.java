@@ -687,21 +687,12 @@ public class SwaggerReader {
     private static void fillSections(Contract contract, ResourceListing listing) {
         for (ResourceListingApi api : listing.getApis()) {
             Section section = new Section();
-            String sectionName = computeSectionName(api.getPath());
+            String sectionName = SwaggerUtils.computeSectionName(api.getPath());
             section.setName(sectionName);
             section.setDescription(api.getDescription());
 
             contract.getSections().add(section);
         }
-    }
-
-    private static String computeSectionName(String apiDeclarationPath) {
-        String result = apiDeclarationPath;
-        if (result.startsWith("/")) {
-            result = result.substring(1);
-        }
-
-        return result.replaceAll("/", "_");
     }
 
     /**

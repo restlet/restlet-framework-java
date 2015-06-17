@@ -69,7 +69,7 @@ public class Endpoint {
                 port = Integer.parseInt(m.group(4));
             }
         } else {
-            throw new RuntimeException("url does not match URL pattern: " + url);
+            throw new RuntimeException(url + " does not match URL pattern");
         }
     }
 

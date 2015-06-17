@@ -25,7 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +81,7 @@ public class ApiDeclaration {
 
     public Map<String, ModelDeclaration> getModels() {
         if (models == null) {
-            models = new HashMap<String, ModelDeclaration>();
+            models = new LinkedHashMap<String, ModelDeclaration>();
         }
         return models;
     }

@@ -26,7 +26,7 @@ package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +79,7 @@ public abstract class SwaggerUtils {
         }
 
         ResourceListing resourceListing;
-        Map<String, ApiDeclaration> apis = new HashMap<String, ApiDeclaration>();
+        Map<String, ApiDeclaration> apis = new LinkedHashMap<String, ApiDeclaration>();
         if (ImportUtils.isRemoteUrl(swaggerUrl)) {
             LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
             resourceListing = ImportUtils.getAndDeserialize(swaggerUrl, userName, password, ResourceListing.class);
@@ -110,5 +110,20 @@ public abstract class SwaggerUtils {
             }
         }
         return SwaggerReader.translate(resourceListing, apis);
+    }
+
+    /**
+     * Computes a section name from the Resource Listing api's path
+     * 
+     * @param apiDeclarationPath
+     *            The path
+     */
+    public static String computeSectionName(String apiDeclarationPath) {
+        String result = apiDeclarationPath;
+        if (result.startsWith("/")) {
+            result = result.substring(1);
+        }
+
+        return result.replaceAll("/", "_");
     }
 }
