@@ -52,13 +52,21 @@ public abstract class Call {
     public static boolean isBroken(Throwable exception) {
         boolean result = false;
 
-        if (exception.getMessage() != null) {
-            result = (exception.getMessage().indexOf("Broken pipe") != -1)
-                    || (exception
-                            .getMessage()
-                            .equals("An existing connection must have been closed by the remote party.") || (exception
-                            .getMessage()
-                            .equals("An open connection has been abandonned by your network stack.")));
+        // detect Tomcat and Jetty exceptions
+        if (exception instanceof IOException) {
+            String exceptionName = exception.getClass().getName();
+            result = (exceptionName.endsWith("ClientAbortException") ||
+                exceptionName.endsWith("jetty.io.EofException"));
+        }
+
+        // check for known exception messages
+        if (!result) {
+            String exceptionMessage = exception.getMessage();
+            if (exceptionMessage != null) {
+                result = (exceptionMessage.indexOf("Broken pipe") != -1) ||
+                    (exceptionMessage.equals("An existing connection must have been closed by the remote party.") ||
+                        (exceptionMessage.equals("An open connection has been abandonned by your network stack.")));
+            }
         }
 
         if (!result && exception.getCause() != null) {
