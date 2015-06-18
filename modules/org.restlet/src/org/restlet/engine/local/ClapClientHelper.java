@@ -26,6 +26,7 @@ package org.restlet.engine.local;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.logging.Level;
@@ -113,30 +114,49 @@ public class ClapClientHelper extends LocalClientHelper {
 
             if (url != null) {
                 try {
-                    Representation output = new InputRepresentation(
-                            url.openStream(),
-                            metadataService.getDefaultMediaType());
-                    output.setLocationRef(request.getResourceRef());
-                    output.setModificationDate(modificationDate);
 
-                    // Update the expiration date
-                    long timeToLive = getTimeToLive();
+                    InputStream inputStream = url.openStream();
 
-                    if (timeToLive == 0) {
-                        output.setExpirationDate(null);
-                    } else if (timeToLive > 0) {
-                        output.setExpirationDate(new Date(System
-                                .currentTimeMillis() + (1000L * timeToLive)));
+                    // check for empty input stream on jar directories
+                    if (url.getProtocol().equals("jar")) {
+                        try {
+                            if (inputStream.available() == 0) {
+                                url = null;
+                            }
+                        } catch (NullPointerException e) {
+                            url = null;
+                        }
                     }
 
-                    // Update the metadata based on file extensions
-                    String name = path.substring(path.lastIndexOf('/') + 1);
-                    Entity.updateMetadata(name, output, true,
-                            getMetadataService());
+                    if (url != null) {
 
-                    // Update the response
-                    response.setEntity(output);
-                    response.setStatus(Status.SUCCESS_OK);
+                        Representation output = new InputRepresentation(
+                                inputStream,
+                                metadataService.getDefaultMediaType());
+                        output.setLocationRef(request.getResourceRef());
+                        output.setModificationDate(modificationDate);
+
+                        // Update the expiration date
+                        long timeToLive = getTimeToLive();
+
+                        if (timeToLive == 0) {
+                            output.setExpirationDate(null);
+                        } else if (timeToLive > 0) {
+                            output.setExpirationDate(new Date(System
+                                    .currentTimeMillis() + (1000L * timeToLive)));
+                        }
+
+                        // Update the metadata based on file extensions
+                        String name = path.substring(path.lastIndexOf('/') + 1);
+                        Entity.updateMetadata(name, output, true,
+                                getMetadataService());
+
+                        // Update the response
+                        response.setEntity(output);
+                        response.setStatus(Status.SUCCESS_OK);
+                    } else {
+                        response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    }
                 } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to open the representation's input stream",
