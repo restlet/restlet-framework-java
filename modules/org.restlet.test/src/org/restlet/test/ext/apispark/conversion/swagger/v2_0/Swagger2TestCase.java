@@ -729,10 +729,10 @@ public class Swagger2TestCase extends RestletTestCase {
             assertNotNull(savedResponse);
             assertNotNull(translatedResponse);
 
-            assertEquals(savedResponse.getMessage(), translatedResponse.getMessage());
+            assertEquals(savedResponse.getDescription(), translatedResponse.getDescription());
 
             // both don't exist in Swagger => can't be retrieved
-            // assertEquals(savedResponse.getDescription(), translatedResponse.getDescription());
+            // assertEquals(savedResponse.getMessage(), translatedResponse.getMessage());
             // assertEquals(savedResponse.getName(), translatedResponse.getName());
 
             compareRwadefHeaders(savedResponse.getHeaders(), translatedResponse.getHeaders());

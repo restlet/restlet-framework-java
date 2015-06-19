@@ -32,8 +32,8 @@ import java.util.Map;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Reader;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -307,7 +307,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         com.wordnik.swagger.models.Response op1Response2 = path1Get
                 .getResponses().get("300");
         assertNotNull(op1Response2);
-        assertEquals("Error 300", op1Response2.getDescription());
+        assertEquals("Status 300", op1Response2.getDescription());
         assertTrue(op1Response2.getSchema() instanceof RefProperty);
         RefProperty op1Response2RefProperty = (RefProperty) op1Response2
                 .getSchema();
