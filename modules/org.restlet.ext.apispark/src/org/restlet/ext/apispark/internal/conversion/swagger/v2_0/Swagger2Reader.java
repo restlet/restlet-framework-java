@@ -488,7 +488,7 @@ public class Swagger2Reader {
                     continue;
                 }
 
-                response.setMessage(swaggerResponse.getDescription());
+                response.setDescription(swaggerResponse.getDescription());
                 response.setName(ConversionUtils.generateResponseName(statusCode));
 
                 fillOutputPayload(swaggerResponse, response, swaggerOperation, contract, parameters);
