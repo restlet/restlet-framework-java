@@ -330,10 +330,10 @@ public class Swagger2Writer {
             Response responseSwagger = new Response();
 
             // may be null
-            String message = response.getMessage();
-            responseSwagger.setDescription(message == null
+            String description = response.getDescription();
+            responseSwagger.setDescription(description == null
                     ? ConversionUtils.generateResponseName(response.getCode())
-                            : message); // required
+                            : description); // required
 
             // Response Schema
             if (response.getOutputPayLoad() != null

@@ -48,7 +48,8 @@ public class Response {
     /** The list of Headers associated with this response. */
     private List<Header> headers = new ArrayList<>();
 
-    /** Status message of the response. */
+    /** Status message of the response, will be deleted as description is sufficient. */
+    @Deprecated
     private String message;
 
     /** Name of this response. */
