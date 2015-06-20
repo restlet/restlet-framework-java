@@ -274,8 +274,8 @@ public abstract class JettyServerHelper extends
             } catch (Throwable e) {
                 channel.getEndPoint().close();
                 throw new IOException("Restlet exception", e);
+            }
         }
-    }
 
         @Override
         public void handleAsync(HttpChannel<?> channel) throws IOException,
@@ -834,10 +834,10 @@ public abstract class JettyServerHelper extends
 
     @Override
     public void stop() throws Exception {
-        getLogger().info("Stopping a Jetty HTTP/HTTPS server");
-
+        getLogger().info(
+                "Stopping the Jetty " + getProtocols() + " server on port "
+                        + getHelped().getPort());
         getWrappedServer().stop();
-
         super.stop();
     }
 }
