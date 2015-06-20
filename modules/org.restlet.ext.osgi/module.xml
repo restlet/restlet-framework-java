@@ -10,8 +10,6 @@
 	<dependencies>
 		<dependency type="module" id="core" />
 		<dependency type="library" id="osgi" maven-scope="compile" />
-		<dependency type="library" id="e4" maven-scope="compile" />
 	</dependencies>
 	<wikiUri>TODO</wikiUri>
-
 </module>
