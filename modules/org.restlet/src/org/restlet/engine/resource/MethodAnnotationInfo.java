@@ -38,6 +38,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -80,7 +81,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         this.restletMethod = restletMethod;
 
         // Parse the main components of the annotation value
-        if ((annotationValue != null) && !annotationValue.equals("")) {
+        if (!StringUtils.isNullOrEmpty(annotationValue)) {
             int queryIndex = annotationValue.indexOf('?');
 
             if (queryIndex != -1) {
@@ -288,6 +289,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         List<Variant> result = null;
 
         if (annotationValue != null) {
+
             StringTokenizer stValue = new StringTokenizer(annotationValue,
                     "\\|");
             while (stValue.hasMoreTokens()) {
@@ -305,6 +307,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
                     if (extension == null) {
                         continue;
                     }
+
                     List<Metadata> metadataList = metadataService
                             .getAllMetadata(extension);
 
