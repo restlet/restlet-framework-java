@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-@version-full@ (@release-date@)
+- 2.3.3 (06/21/2015)
     - Bugs fixed
        - Redirector does not translate response's entity location reference.
          Issue #1069.
