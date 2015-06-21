@@ -26,7 +26,7 @@ package org.restlet.ext.apispark.internal.conversion.raml;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +41,7 @@ import org.raml.model.SecurityScheme;
 import org.raml.model.parameter.UriParameter;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Status;
+import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Contract;
@@ -106,7 +107,7 @@ public abstract class RamlTranslator {
      */
     private static List<PathVariable> getPathVariables(
             org.raml.model.Resource resource) {
-        List<PathVariable> pathVariables = new ArrayList<PathVariable>();
+        List<PathVariable> pathVariables = new ArrayList<>();
         for (Entry<String, UriParameter> entry : resource.getUriParameters()
                 .entrySet()) {
             pathVariables
@@ -127,7 +128,7 @@ public abstract class RamlTranslator {
      * @return A map of representations' names and sample maps
      */
     private static Map<String, Map<String, Object>> getSamples(Contract contract) {
-        Map<String, Map<String, Object>> samples = new HashMap<>();
+        Map<String, Map<String, Object>> samples = new LinkedHashMap<>();
         for (Representation representation : contract.getRepresentations()) {
             samples.put(representation.getName(),
                     SampleUtils.getRepresentationSample(representation));
@@ -165,20 +166,19 @@ public abstract class RamlTranslator {
         }
 
         // Authentication
-        raml.setSecuritySchemes(new ArrayList<Map<String, SecurityScheme>>());
-        fillSecuritySchemes(raml.getSecuritySchemes(), endpoint);
+        raml.setSecuritySchemes(getSecuritySchemes(endpoint));
 
         // raml.setBaseUriParameters(new HashMap<String, UriParameter>());
         // raml.getBaseUriParameters().put("version", new
         // UriParameter("version"));
         raml.setTitle(contract.getName());
 
-        raml.setResources(new HashMap<String, org.raml.model.Resource>());
+        raml.setResources(new LinkedHashMap<String, org.raml.model.Resource>());
         fillResources(raml.getResources(), m, contract, representationSamples);
 
         // Representations
         raml.setSchemas(new ArrayList<Map<String, String>>());
-        Map<String, String> schemas = new HashMap<String, String>();
+        Map<String, String> schemas = new LinkedHashMap<>();
         raml.getSchemas().add(schemas);
         for (Representation representation : contract.getRepresentations()) {
             if (RamlUtils.isPrimitiveType(representation.getName())) {
@@ -201,7 +201,7 @@ public abstract class RamlTranslator {
             Map<String, Map<String, Object>> representationSamples) {
 
         org.raml.model.Resource ramlResource;
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
 
         // Resources
         for (Resource resource : contract.getResources()) {
@@ -209,7 +209,7 @@ public abstract class RamlTranslator {
             if (resource.getName() != null) {
                 ramlResource.setDisplayName(resource.getName());
             } else {
-                ramlResource.setDisplayName(RamlUtils
+                ramlResource.setDisplayName(ConversionUtils
                         .processResourceName(resource.getResourcePath()));
             }
             ramlResource.setDescription(resource.getDescription());
@@ -219,7 +219,7 @@ public abstract class RamlTranslator {
 
             // Path variables
             UriParameter uiParam = new UriParameter();
-            ramlResource.setUriParameters(new HashMap<String, UriParameter>());
+            ramlResource.setUriParameters(new LinkedHashMap<String, UriParameter>());
             for (PathVariable pathVariable : resource.getPathVariables()) {
                 uiParam.setDisplayName(pathVariable.getName());
                 uiParam.setDescription(pathVariable.getDescription());
@@ -231,7 +231,7 @@ public abstract class RamlTranslator {
 
             // Operations
             Action action;
-            ramlResource.setActions(new HashMap<ActionType, Action>());
+            ramlResource.setActions(new LinkedHashMap<ActionType, Action>());
             for (Operation operation : resource.getOperations()) {
                 action = new Action();
                 action.setDescription(operation.getDescription());
@@ -247,7 +247,7 @@ public abstract class RamlTranslator {
 
                 // Query parameters
 
-                action.setQueryParameters(new HashMap<String, org.raml.model.parameter.QueryParameter>());
+                action.setQueryParameters(new LinkedHashMap<String, org.raml.model.parameter.QueryParameter>());
                 for (QueryParameter queryParameter : operation
                         .getQueryParameters()) {
                     org.raml.model.parameter.QueryParameter ramlQueryParameter = new org.raml.model.parameter.QueryParameter();
@@ -270,12 +270,11 @@ public abstract class RamlTranslator {
 
                 // Responses + out representation
                 MimeType ramlOutRepresentation;
-                org.raml.model.Response ramlResponse = new org.raml.model.Response();
-                action.setResponses(new HashMap<String, org.raml.model.Response>());
+                action.setResponses(new LinkedHashMap<String, org.raml.model.Response>());
                 for (Response response : operation.getResponses()) {
-                    ramlResponse = new org.raml.model.Response();
+                    org.raml.model.Response ramlResponse = new org.raml.model.Response();
                     ramlResponse.setDescription(response.getDescription());
-                    ramlResponse.setBody(new HashMap<String, MimeType>());
+                    ramlResponse.setBody(new LinkedHashMap<String, MimeType>());
                     ramlOutRepresentation = new MimeType();
                     if (Status.isSuccess(response.getCode())
                             && response.getOutputPayLoad() != null
@@ -358,7 +357,7 @@ public abstract class RamlTranslator {
             ramlInRepresentation.setSchema(operation.getInputPayLoad()
                     .getType());
         }
-        action.setBody(new HashMap<String, MimeType>());
+        action.setBody(new LinkedHashMap<String, MimeType>());
         MimeType ramlInRepresentationWithMediaType;
         for (String mediaType : operation.getConsumes()) {
             ramlInRepresentationWithMediaType = new MimeType();
@@ -376,10 +375,9 @@ public abstract class RamlTranslator {
         }
     }
 
-    private static void fillSecuritySchemes(
-            List<Map<String, SecurityScheme>> securitySchemesList,
-            Endpoint endpoint) {
-        Map<String, SecurityScheme> securitySchemes = new HashMap<String, SecurityScheme>();
+    private static List<Map<String, SecurityScheme>> getSecuritySchemes(Endpoint endpoint) {
+        ArrayList<Map<String, SecurityScheme>> securitySchemesList = new ArrayList<>();
+        Map<String, SecurityScheme> securitySchemes = new LinkedHashMap<>();
         SecurityScheme securityScheme = new SecurityScheme();
         if (endpoint != null) {
             if (ChallengeScheme.HTTP_BASIC.equals(endpoint
@@ -406,14 +404,18 @@ public abstract class RamlTranslator {
                 securitySchemes.put(ChallengeScheme.CUSTOM.getName(),
                         securityScheme);
             }
-            securitySchemesList.add(securitySchemes);
+            if (!securitySchemes.isEmpty()) {
+                securitySchemesList.add(securitySchemes);
+                return securitySchemesList;
+            }
         }
+        return null;
     }
 
     /**
      * Returns the representation given its name from the given list of
      * representations.
-     * 
+     *
      * @param representations
      *            The list of representations.
      * @param name
@@ -446,7 +448,7 @@ public abstract class RamlTranslator {
     private static List<Resource> getResource(String resourceName,
             org.raml.model.Resource resource,
             List<PathVariable> rootPathVariables) {
-        List<Resource> rwadResources = new ArrayList<Resource>();
+        List<Resource> rwadResources = new ArrayList<>();
 
         // Create one resource
         Resource rwadResource = new Resource();
@@ -472,7 +474,7 @@ public abstract class RamlTranslator {
         for (Entry<String, org.raml.model.Resource> entry : resource
                 .getResources().entrySet()) {
             rwadResources.addAll(getResource(
-                    RamlUtils.processResourceName(entry.getValue().getUri()),
+                    ConversionUtils.processResourceName(entry.getValue().getUri()),
                     entry.getValue(), rootPathVariables));
         }
 
@@ -503,7 +505,7 @@ public abstract class RamlTranslator {
         // TODO add section sorting strategies
 
         // TODO String defaultMediaType = raml.getMediaType();
-        List<PathVariable> rootPathVariables = new ArrayList<PathVariable>();
+        List<PathVariable> rootPathVariables = new ArrayList<>();
         for (Entry<String, UriParameter> entry : raml.getBaseUriParameters()
                 .entrySet()) {
             rootPathVariables.add(getPathVariable(entry.getKey(),
@@ -529,7 +531,7 @@ public abstract class RamlTranslator {
             org.raml.model.Resource resource = entry.getValue();
             contract.getResources().addAll(
                     getResource(
-                            RamlUtils.processResourceName(resource.getUri()),
+                            ConversionUtils.processResourceName(resource.getUri()),
                             resource, rootPathVariables));
         }
 

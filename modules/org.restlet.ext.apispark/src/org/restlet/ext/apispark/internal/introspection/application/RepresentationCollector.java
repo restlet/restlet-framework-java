@@ -30,13 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.engine.util.StringUtils;
@@ -48,6 +41,14 @@ import org.restlet.ext.apispark.internal.introspection.util.UnsupportedTypeExcep
 import org.restlet.ext.apispark.internal.model.Property;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Section;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 /**
  * @author Manuel Boillod
@@ -155,8 +156,8 @@ public class RepresentationCollector {
                     property.setName(propertyName);
                     property.setDescription(jsonPropertyDescription != null ? jsonPropertyDescription.value() : "");
                     property.setType(propertyTypeInfo.getRepresentationName());
-                    property.setMinOccurs(jsonProperty != null && jsonProperty.required() ? 1 : 0);
-                    property.setMaxOccurs(propertyTypeInfo.isList() ? -1 : 1);
+                    property.setRequired(jsonProperty != null && jsonProperty.required());
+                    property.setList(propertyTypeInfo.isList());
 
                     addRepresentation(collectInfo, propertyTypeInfo,
                             introspectionHelper);

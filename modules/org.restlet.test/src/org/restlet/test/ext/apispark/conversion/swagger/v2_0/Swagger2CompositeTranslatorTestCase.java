@@ -27,9 +27,8 @@ package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 import java.io.IOException;
 import java.net.URL;
 
-import com.wordnik.swagger.models.properties.RefProperty;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Property;
@@ -39,6 +38,7 @@ import org.restlet.representation.FileRepresentation;
 
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.properties.RefProperty;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 
@@ -66,7 +66,7 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
         compositeProperty.getProperties().add(nameProperty);
 
         //execute
-        Swagger swagger = Swagger2Translator.getSwagger(definition);
+        Swagger swagger = Swagger2Writer.getSwagger(definition);
 
         //verify
         Model model1 = swagger.getDefinitions().get(
@@ -90,13 +90,12 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
                         MediaType.APPLICATION_JSON), Definition.class)
                 .getObject();
 
-        Swagger translatedSwagger = Swagger2Translator
+        Swagger translatedSwagger = Swagger2Writer
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.composite.swagger");
         Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
-        compareSwaggerBeans(translatedSwagger, savedSwagger);
     }
 }

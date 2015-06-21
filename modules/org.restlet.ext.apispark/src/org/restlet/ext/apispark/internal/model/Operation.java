@@ -27,6 +27,10 @@ package org.restlet.ext.apispark.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Represents an operation on a Web API resource.
  * 
@@ -35,13 +39,13 @@ import java.util.List;
 public class Operation {
 
     /** Mediatypes consumed by this operation */
-    private List<String> consumes;
+    private List<String> consumes = new ArrayList<>();
 
     /** Textual description of this operation. */
     private String description;
 
     /** Headers to use for this operation. */
-    private List<Header> headers;
+    private List<Header> headers = new ArrayList<>();
 
     /** Request body for this operation if any. */
     private PayLoad inputPayLoad;
@@ -56,18 +60,16 @@ public class Operation {
     private String name;
 
     /** Mediatypes produced by this operation */
-    private List<String> produces;
+    private List<String> produces = new ArrayList<>();
 
     /** Query parameters available for this operation. */
-    private List<QueryParameter> queryParameters;
+    private List<QueryParameter> queryParameters = new ArrayList<>();
 
     /** Possible response messages you could encounter. */
-    private List<Response> responses;
+    private List<Response> responses = new ArrayList<>();
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getConsumes() {
-        if (consumes == null) {
-            consumes = new ArrayList<String>();
-        }
         return consumes;
     }
 
@@ -75,10 +77,8 @@ public class Operation {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Header> getHeaders() {
-        if (headers == null) {
-            headers = new ArrayList<Header>();
-        }
         return headers;
     }
 
@@ -94,10 +94,8 @@ public class Operation {
         return name;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getProduces() {
-        if (produces == null) {
-            produces = new ArrayList<String>();
-        }
         return produces;
     }
 
@@ -110,10 +108,8 @@ public class Operation {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<QueryParameter> getQueryParameters() {
-        if (queryParameters == null) {
-            queryParameters = new ArrayList<QueryParameter>();
-        }
         return queryParameters;
     }
 
@@ -126,10 +122,8 @@ public class Operation {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Response> getResponses() {
-        if (responses == null) {
-            responses = new ArrayList<Response>();
-        }
         return responses;
     }
 
@@ -167,5 +161,39 @@ public class Operation {
 
     public void setResponses(List<Response> responses) {
         this.responses = responses;
+    }
+
+    @JsonIgnore
+    public void addProduces(List<String> produces) {
+        if (produces == null) {
+            return;
+        }
+
+        if (this.produces == null) {
+            this.produces = new ArrayList<>();
+        }
+
+        for (String mediaType : produces) {
+            if (!this.produces.contains(mediaType)) {
+                this.produces.add(mediaType);
+            }
+        }
+    }
+
+    @JsonIgnore
+    public void addConsumes(List<String> consumes) {
+        if (consumes == null) {
+            return;
+        }
+
+        if (this.consumes == null) {
+            this.consumes = new ArrayList<>();
+        }
+
+        for (String mediaType : consumes) {
+            if (!this.consumes.contains(mediaType)) {
+                this.consumes.add(mediaType);
+            }
+        }
     }
 }

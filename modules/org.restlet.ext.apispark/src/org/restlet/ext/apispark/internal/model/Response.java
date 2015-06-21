@@ -24,9 +24,13 @@
 
 package org.restlet.ext.apispark.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Status;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Represents a response sent by a Web API resource
@@ -42,9 +46,10 @@ public class Response {
     private String description;
 
     /** The list of Headers associated with this response. */
-    private List<Header> headers;
+    private List<Header> headers = new ArrayList<>();
 
-    /** Status message of the response. */
+    /** Status message of the response, will be deleted as description is sufficient. */
+    @Deprecated
     private String message;
 
     /** Name of this response. */
@@ -72,6 +77,7 @@ public class Response {
         return description;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Header> getHeaders() {
         return headers;
     }

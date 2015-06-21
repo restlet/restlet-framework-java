@@ -25,7 +25,11 @@
 package org.restlet.ext.apispark.internal.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Represents a Web API resource
@@ -44,16 +48,16 @@ public class Resource {
     private String name;
 
     /** List of the APIs this resource provides */
-    private List<Operation> operations;
+    private List<Operation> operations = new ArrayList<>();
 
     /** The variables you must provide for this operation. */
-    private List<PathVariable> pathVariables;
+    private List<PathVariable> pathVariables = new ArrayList<>();
 
     /** Relative path from the endpoint to this resource */
     private String resourcePath;
 
     /** The list of Sections this Resource belongs to */
-    private List<String> sections;
+    private List<String> sections = new ArrayList<>();
 
     public String getAuthenticationProtocol() {
         return authenticationProtocol;
@@ -76,10 +80,8 @@ public class Resource {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<Operation> getOperations() {
-        if (operations == null) {
-            operations = new ArrayList<Operation>();
-        }
         return operations;
     }
 
@@ -92,10 +94,8 @@ public class Resource {
         return null;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<PathVariable> getPathVariables() {
-        if (pathVariables == null) {
-            pathVariables = new ArrayList<PathVariable>();
-        }
         return pathVariables;
     }
 
@@ -103,10 +103,8 @@ public class Resource {
         return resourcePath;
     }
 
+    @JsonInclude(Include.NON_EMPTY)
     public List<String> getSections() {
-        if (sections == null) {
-            sections = new ArrayList<String>();
-        }
         return sections;
     }
 
@@ -136,5 +134,21 @@ public class Resource {
 
     public void setSections(List<String> sections) {
         this.sections = sections;
+    }
+
+    public void addSection(String section) {
+        if (!this.sections.contains(section)) {
+            this.sections.add(section);
+        }
+    }
+
+    public void addSections(Collection<String> sections) {
+        if (sections == null) {
+            return;
+        }
+
+        for (String section : sections) {
+            addSection(section);
+        }
     }
 }

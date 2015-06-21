@@ -25,7 +25,7 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +44,6 @@ public class ApiDeclaration {
     private String basePath;
 
     private List<String> consumes;
-
-    private ApiInfo info;
 
     private Map<String, ModelDeclaration> models;
 
@@ -81,13 +79,9 @@ public class ApiDeclaration {
         return consumes;
     }
 
-    public ApiInfo getInfo() {
-        return info;
-    }
-
     public Map<String, ModelDeclaration> getModels() {
         if (models == null) {
-            models = new HashMap<String, ModelDeclaration>();
+            models = new LinkedHashMap<String, ModelDeclaration>();
         }
         return models;
     }
@@ -125,10 +119,6 @@ public class ApiDeclaration {
 
     public void setConsumes(List<String> consumes) {
         this.consumes = consumes;
-    }
-
-    public void setInfo(ApiInfo info) {
-        this.info = info;
     }
 
     public void setModels(Map<String, ModelDeclaration> models) {

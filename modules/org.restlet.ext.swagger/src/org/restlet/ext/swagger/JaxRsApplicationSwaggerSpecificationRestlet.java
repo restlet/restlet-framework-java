@@ -24,6 +24,8 @@
 
 package org.restlet.ext.swagger;
 
+import javax.ws.rs.core.Application;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -31,7 +33,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerTranslator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.SwaggerWriter;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
 import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
 import org.restlet.ext.apispark.internal.introspection.jaxrs.JaxRsIntrospector;
@@ -39,8 +41,6 @@ import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Router;
-
-import javax.ws.rs.core.Application;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the
@@ -90,9 +90,9 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
 
     /**
      * The version of the Swagger specification. Default is
-     * {@link SwaggerTranslator#SWAGGER_VERSION}
+     * {@link SwaggerWriter#SWAGGER_VERSION}
      */
-    private String swaggerVersion = SwaggerTranslator.SWAGGER_VERSION;
+    private String swaggerVersion = SwaggerWriter.SWAGGER_VERSION;
 
     /**
      * Constructor.<br>
@@ -161,8 +161,7 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      * @return The representation of the API declaration.
      */
     public Representation getApiDeclaration(String category) {
-        ApiDeclaration apiDeclaration = SwaggerTranslator.getApiDeclaration(
-                category, getDefinition());
+        ApiDeclaration apiDeclaration = SwaggerWriter.getApiDeclaration(getDefinition(), category);
         apiDeclaration.setSwaggerVersion(swaggerVersion);
         return new JacksonRepresentation<>(apiDeclaration);
     }
@@ -214,15 +213,14 @@ public class JaxRsApplicationSwaggerSpecificationRestlet extends Restlet {
      *         Application.
      */
     public Representation getResourceListing() {
-        ResourceListing resourcelisting = SwaggerTranslator
-                .getResourcelisting(getDefinition());
+        ResourceListing resourcelisting = SwaggerWriter.getResourcelisting(getDefinition());
         resourcelisting.setSwaggerVersion(swaggerVersion);
         return new JacksonRepresentation<>(resourcelisting);
     }
 
     /**
      * Returns the version of the Swagger specification. Default is
-     * {@link SwaggerTranslator#SWAGGER_VERSION}
+     * {@link SwaggerWriter#SWAGGER_VERSION}
      * 
      * @return The version of the Swagger specification.
      */

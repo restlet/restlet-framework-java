@@ -40,4 +40,8 @@ public class SwaggerLoader {
         return readJson(new File(file));
     }
 
+    public static Swagger readJsonString(String json) throws IOException {
+        return Json.mapper().readValue(json, Swagger.class);
+    }
+
 }

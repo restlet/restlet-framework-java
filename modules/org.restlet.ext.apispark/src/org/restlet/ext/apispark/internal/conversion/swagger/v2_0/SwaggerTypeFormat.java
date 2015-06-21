@@ -24,6 +24,8 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import com.wordnik.swagger.models.properties.Property;
+
 /**
  * Internal class representing a Swagger type
  */
@@ -32,13 +34,20 @@ public class SwaggerTypeFormat {
 
     private String type;
 
+    private Property items;
+
     public SwaggerTypeFormat(String type) {
-        this(type, null);
+        this(type, null, null);
     }
 
     public SwaggerTypeFormat(String type, String format) {
-        this.type = type;
+        this(type, format, null);
+    }
+
+    public SwaggerTypeFormat(String type, String format, Property items) {
         this.format = format;
+        this.type = type;
+        this.items = items;
     }
 
     public String getFormat() {
@@ -47,5 +56,9 @@ public class SwaggerTypeFormat {
 
     public String getType() {
         return type;
+    }
+
+    public Property getItems() {
+        return items;
     }
 }

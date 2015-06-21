@@ -32,7 +32,8 @@ import java.util.Map;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Reader;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
@@ -158,7 +159,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         Response response1 = new Response();
         operation1.getResponses().add(response1);
         response1.setCode(200);
-        response1.setDescription("description");
+        response1.setMessage("Success");
         PayLoad response1Entity = new PayLoad();
         response1.setOutputPayLoad(response1Entity);
         response1Entity.setArray(true);
@@ -169,7 +170,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         Response response2 = new Response();
         operation1.getResponses().add(response2);
         response2.setCode(300);
-        response2.setDescription("description");
+        response2.setMessage("Error " + response2.getCode());
         PayLoad response2Entity = new PayLoad();
         response2.setOutputPayLoad(response2Entity);
         response2Entity.setArray(false);
@@ -180,7 +181,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         Response response3 = new Response();
         operation1.getResponses().add(response3);
         response3.setCode(400);
-        response3.setDescription("description");
+        response3.setMessage("Error " + response3.getCode());
         PayLoad response3Entity = new PayLoad();
         response3.setOutputPayLoad(response3Entity);
         response3Entity.setArray(false);
@@ -202,15 +203,13 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         representation1.getProperties().add(representation1Property1);
         representation1Property1.setName("nameRepresentation1Property1");
         representation1Property1.setType("integer");
-        representation1Property1.setMin("1.0");
-        representation1Property1.setMax("2.0");
         representation1Property1.setDescription("description");
 
         // representation 1 : property 2
         Property representation1Property2 = new Property();
         representation1.getProperties().add(representation1Property2);
         representation1Property2.setName("nameRepresentation1Property2");
-        representation1Property2.setMaxOccurs(-1);
+        representation1Property2.setList(true);
         representation1Property2.setType("string");
         representation1Property2.setDescription("description");
 
@@ -227,7 +226,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         representation2.setName("nameRepresentation2");
 
         // When
-        Swagger swagger = Swagger2Translator.getSwagger(definition);
+        Swagger swagger = Swagger2Writer.getSwagger(definition);
 
         // Then
         assertEquals("2.0", swagger.getSwagger());
@@ -299,7 +298,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         com.wordnik.swagger.models.Response op1Response1 = path1Get
                 .getResponses().get("200");
         assertNotNull(op1Response1);
-        assertEquals("description", op1Response1.getDescription());
+        assertEquals("Success", op1Response1.getDescription());
         assertTrue(op1Response1.getSchema() instanceof ArrayProperty);
         ArrayProperty op1Response1ArrayProperty = (ArrayProperty) op1Response1
                 .getSchema();
@@ -308,7 +307,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         com.wordnik.swagger.models.Response op1Response2 = path1Get
                 .getResponses().get("300");
         assertNotNull(op1Response2);
-        assertEquals("description", op1Response2.getDescription());
+        assertEquals("Status 300", op1Response2.getDescription());
         assertTrue(op1Response2.getSchema() instanceof RefProperty);
         RefProperty op1Response2RefProperty = (RefProperty) op1Response2
                 .getSchema();
@@ -317,7 +316,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         com.wordnik.swagger.models.Response op1Response3 = path1Get
                 .getResponses().get("400");
         assertNotNull(op1Response3);
-        assertEquals("description", op1Response3.getDescription());
+        assertEquals("Error 400", op1Response3.getDescription());
         assertTrue(op1Response3.getSchema() instanceof IntegerProperty);
 
         // resource 2
@@ -334,8 +333,6 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .getProperties().get("nameRepresentation1Property1");
         assertEquals("nameRepresentation1Property1", model1Property1.getName());
         assertEquals("description", model1Property1.getDescription());
-        assertEquals(1.0d, model1Property1.getMinimum());
-        assertEquals(2.0d, model1Property1.getMaximum());
         // representation 1 : property 2
         assertTrue(model1.getProperties().get("nameRepresentation1Property2") instanceof ArrayProperty);
         ArrayProperty model1Property2 = (ArrayProperty) model1.getProperties()
@@ -364,13 +361,27 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
-        Swagger translatedSwagger = Swagger2Translator
+        Swagger translatedSwagger = Swagger2Writer
                 .getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
         Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
+    }
+
+    public void testGetDefinition() throws IOException {
+        URL refImpl = getClass().getResource("refImpl.swagger");
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
+        
+        Definition translatedDefinition = Swagger2Reader.translate(savedSwagger);
+        
+        Definition savedDefinition = new JacksonRepresentation<>(
+                new FileRepresentation(getClass().getResource("refImpl.rwadef")
+                        .getFile(), MediaType.APPLICATION_JSON),
+                Definition.class).getObject();
+
+        compareDefinitions(savedDefinition, translatedDefinition);
     }
 
 }

@@ -27,7 +27,7 @@ package org.restlet.ext.apispark.internal.conversion.raml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,21 +72,6 @@ public class RamlUtils {
      */
     private static final List<String> numericTypesList = Arrays.asList(
             "integer", "int", "double", "long", "float");
-
-    /**
-     * Returns the String passed as a parameter with a capital first letter.
-     * Used to generate resource names in camel case
-     * 
-     * @param str
-     *            The string to process
-     * @return The String with a capital first letter
-     */
-    public static String capFirst(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return ("" + str.charAt(0)).toUpperCase() + str.substring(1);
-    }
 
     /**
      * Generates the JsonSchema of a Representation's Property of primitive
@@ -167,14 +152,14 @@ public class RamlUtils {
                 extended[0] = typeExtended;
                 objectSchema.setExtends(extended);
             }
-            objectSchema.setProperties(new HashMap<String, JsonSchema>());
+            objectSchema.setProperties(new LinkedHashMap<String, JsonSchema>());
             for (Property property : properties) {
                 String type = property.getType();
 
-                if (property.getMaxOccurs() != 1) {
+                if (property.isList()) {
                     ArraySchema array = new ArraySchema();
                     array.setTitle(property.getName());
-                    array.setRequired(property.getMinOccurs() > 0);
+                    array.setRequired(property.isRequired());
                     array.setUniqueItems(property.isUniqueItems());
                     if (isPrimitiveType(type)) {
                         Property prop = new Property();
@@ -343,25 +328,6 @@ public class RamlUtils {
         return ("string".equals(t) || "int".equals(t) || "integer".equals(t)
                 || "long".equals(t) || "float".equals(t) || "double".equals(t)
                 || "date".equals(t) || "boolean".equals(t) || "bool".equals(t));
-    }
-
-    /**
-     * Generates a name for a resource computed from its path. The name is
-     * composed of all alphanumeric characters in camel case.<br/>
-     * Ex: /contacts/{contactId} => ContactsContactId
-     * 
-     * @param uri
-     *            The URI of the Resource
-     * @return The Resource's name computed from the path.
-     */
-    public static String processResourceName(String uri) {
-        String processedUri = "";
-        String[] split = uri.replaceAll("\\{", "").replaceAll("\\}", "")
-                .split("/");
-        for (String str : split) {
-            processedUri += RamlUtils.capFirst(str);
-        }
-        return processedUri;
     }
 
     /**

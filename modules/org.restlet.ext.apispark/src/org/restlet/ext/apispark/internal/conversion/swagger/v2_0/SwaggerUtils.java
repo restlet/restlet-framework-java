@@ -22,33 +22,33 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.internal.conversion.swagger.v1_2;
+package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.ext.apispark.internal.conversion.ImportUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ApiDeclaration;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListing;
-import org.restlet.ext.apispark.internal.conversion.swagger.v1_2.model.ResourceListingApi;
 import org.restlet.ext.apispark.internal.model.Definition;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.models.Operation;
+import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.parameters.BodyParameter;
+import com.wordnik.swagger.models.parameters.Parameter;
+import com.wordnik.swagger.util.Json;
 
 /**
- * Tools library for Swagger 1.2.
+ * Tools library for Swagger 2.0.
  * 
  * @author Cyprien Quilici
  */
 public abstract class SwaggerUtils {
 
     /** Internal logger. */
-    protected static Logger LOGGER = Logger.getLogger(SwaggerUtils.class.getName());
+    protected static Logger LOGGER = Logger.getLogger(SwaggerUtils.class
+            .getName());
 
     /**
      * Private constructor to ensure that the class acts as a true utility class
@@ -78,52 +78,74 @@ public abstract class SwaggerUtils {
             throw new TranslationException("url", "You did not provide any URL");
         }
 
-        ResourceListing resourceListing;
-        Map<String, ApiDeclaration> apis = new LinkedHashMap<String, ApiDeclaration>();
+        Swagger swagger = null;
+        LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
         if (ImportUtils.isRemoteUrl(swaggerUrl)) {
-            LOGGER.log(Level.FINE, "Reading file: " + swaggerUrl);
-            resourceListing = ImportUtils.getAndDeserialize(swaggerUrl, userName, password, ResourceListing.class);
-            for (ResourceListingApi api : resourceListing.getApis()) {
-                LOGGER.log(Level.FINE,
-                        "Reading file: " + swaggerUrl + api.getPath());
-                apis.put(
-                        api.getPath(),
-                        ImportUtils.getAndDeserialize(swaggerUrl + api.getPath(), userName, password,
-                                ApiDeclaration.class));
-            }
+            swagger = ImportUtils.getAndDeserialize(swaggerUrl, userName, password, Swagger.class);
         } else {
-            File resourceListingFile = new File(swaggerUrl);
-            ObjectMapper om = new ObjectMapper();
+            File swaggerFile = new File(swaggerUrl);
             try {
-                resourceListing = om.readValue(resourceListingFile,
-                        ResourceListing.class);
-                String basePath = resourceListingFile.getParent();
-                LOGGER.log(Level.FINE, "Base path: " + basePath);
-                for (ResourceListingApi api : resourceListing.getApis()) {
-                    LOGGER.log(Level.FINE,
-                            "Reading file " + basePath + api.getPath());
-                    apis.put(api.getPath(), om.readValue(new File(basePath
-                            + api.getPath()), ApiDeclaration.class));
-                }
+                swagger = Json.mapper().readValue(swaggerFile, Swagger.class);
             } catch (Exception e) {
                 throw new TranslationException("file", e.getMessage());
             }
         }
-        return SwaggerReader.translate(resourceListing, apis);
+        return Swagger2Reader.translate(swagger);
     }
 
     /**
-     * Computes a section name from the Resource Listing api's path
+     * Returns the input payload of the given operation if there is one. Null otherwise.
      * 
-     * @param apiDeclarationPath
-     *            The path
+     * @param operation
+     *            The Swagger operation.
+     * @return The input payload.
      */
-    public static String computeSectionName(String apiDeclarationPath) {
-        String result = apiDeclarationPath;
-        if (result.startsWith("/")) {
-            result = result.substring(1);
+    public static BodyParameter getInputPayload(Operation operation) {
+        for (Parameter parameter : operation.getParameters()) {
+            if (parameter instanceof BodyParameter) {
+                return (BodyParameter) parameter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Safe toString method, returns null if the object is null, calls its toString otherwise.
+     * Avoids NPEs.
+     * 
+     * @param object
+     *            The object on which to perform a toString.
+     * @return
+     *         The String representation of the object.
+     */
+    public static String toString(Object object) {
+        return object == null ? null : object.toString();
+    }
+
+    /**
+     * Returns the separator for multi-valued parameters given the collection format.
+     * 
+     * @param collectionFormat
+     *            The Swagger's collection format, {@see
+     *            https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#fixed-fields-7}
+     * @return The separator character
+     */
+    public static Character getSeparator(String collectionFormat) {
+        if (collectionFormat == null) {
+            return null;
         }
 
-        return result.replaceAll("/", "_");
+        switch (collectionFormat) {
+        case "csv":
+            return ',';
+        case "ssv":
+            return ' ';
+        case "tsv":
+            return '\t';
+        case "pipes":
+            return '|';
+        default:
+            return null;
+        }
     }
 }

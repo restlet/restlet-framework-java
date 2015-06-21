@@ -31,7 +31,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Translator;
+import org.restlet.ext.apispark.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.apispark.internal.introspection.application.ApplicationIntrospector;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -95,9 +95,9 @@ public class Swagger2SpecificationRestlet extends Restlet {
 
     /**
      * The version of the Swagger specification. Default is
-     * {@link Swagger2Translator#SWAGGER_VERSION}
+     * {@link Swagger2Writer#SWAGGER_VERSION}
      */
-    private String swaggerVersion = Swagger2Translator.SWAGGER_VERSION;
+    private String swaggerVersion = Swagger2Writer.SWAGGER_VERSION;
 
     /**
      * Constructor.<br>
@@ -186,7 +186,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
      *         Application.
      */
     public Representation getSwagger() {
-        Swagger swagger = Swagger2Translator.getSwagger(getDefinition());
+        Swagger swagger = Swagger2Writer.getSwagger(getDefinition());
         swagger.setSwagger(swaggerVersion);
         JacksonRepresentation<Swagger> swaggerJacksonRepresentation = new JacksonRepresentation<>(
                 swagger);
@@ -199,7 +199,7 @@ public class Swagger2SpecificationRestlet extends Restlet {
 
     /**
      * Returns the version of the Swagger specification. Default is
-     * {@link Swagger2Translator#SWAGGER_VERSION}
+     * {@link Swagger2Writer#SWAGGER_VERSION}
      * 
      * @return The version of the Swagger specification.
      */

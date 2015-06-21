@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
 import org.restlet.ext.apispark.internal.model.Endpoint;
+import org.restlet.ext.apispark.internal.model.Header;
 import org.restlet.ext.apispark.internal.model.License;
 import org.restlet.ext.apispark.internal.model.Operation;
 import org.restlet.ext.apispark.internal.model.PathVariable;
@@ -41,13 +42,18 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
+import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.test.RestletTestCase;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.Model;
 import com.wordnik.swagger.models.Path;
 import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.Tag;
 import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
 import com.wordnik.swagger.models.parameters.Parameter;
 
@@ -181,15 +187,13 @@ public class Swagger2TestCase extends RestletTestCase {
         representation1.getProperties().add(representation1Property1);
         representation1Property1.setName("nameRepresentation1Property1");
         representation1Property1.setType("integer");
-        representation1Property1.setMin("1.0");
-        representation1Property1.setMax("2.0");
         representation1Property1.setDescription("description");
 
         // representation 1 : property 2
         Property representation1Property2 = new Property();
         representation1.getProperties().add(representation1Property2);
         representation1Property2.setName("nameRepresentation1Property2");
-        representation1Property2.setMaxOccurs(-1);
+        representation1Property2.setList(true);
         representation1Property2.setType("string");
         representation1Property2.setDescription("description");
 
@@ -226,9 +230,14 @@ public class Swagger2TestCase extends RestletTestCase {
 
     private void compareStringLists(List<String> savedList,
             List<String> translatedList) {
+        if (assertBothNull(savedList, translatedList)) {
+            return;
+        }
+
         for (String value : savedList) {
             assertTrue(translatedList.contains(value));
         }
+
         for (String value : translatedList) {
             assertTrue(savedList.contains(value));
         }
@@ -278,6 +287,20 @@ public class Swagger2TestCase extends RestletTestCase {
             assertNotNull(savedPath);
             assertNotNull(translatedPath);
             compareSwaggerPaths(savedPath, translatedPath);
+        }
+
+        // Tags
+        List<Tag> savedTags = savedSwagger.getTags();
+        List<Tag> translatedTags = translatedSwagger.getTags();
+
+        assertEquals(savedTags.size(), translatedTags.size());
+
+        for (Tag savedTag : savedTags) {
+            String tagName = savedTag.getName();
+            Tag translatedTag = getTagFromList(translatedTags, tagName);
+            assertNotNull(savedTag);
+            assertNotNull(translatedTag);
+            assertEquals(savedTag.getDescription(), translatedTag.getDescription());
         }
 
     }
@@ -479,6 +502,15 @@ public class Swagger2TestCase extends RestletTestCase {
                 translatedResponse.getSchema());
     }
 
+    private Tag getTagFromList(List<Tag> list, String parameterName) {
+        for (Tag tag : list) {
+            if (tag.getName().equals(parameterName)) {
+                return tag;
+            }
+        }
+        return null;
+    }
+
     private com.wordnik.swagger.models.parameters.Parameter getParameterFromList(
             List<com.wordnik.swagger.models.parameters.Parameter> list,
             String parameterName) {
@@ -488,6 +520,433 @@ public class Swagger2TestCase extends RestletTestCase {
             }
         }
         return null;
+    }
+
+    protected void compareDefinitions(Definition savedDefinition,
+            Definition translatedDefinition) {
+
+        assertEquals(savedDefinition.getAttribution(), translatedDefinition.getAttribution());
+        assertEquals(savedDefinition.getSpecVersion(), translatedDefinition.getSpecVersion());
+        assertEquals(savedDefinition.getTermsOfService(), translatedDefinition.getTermsOfService());
+        assertEquals(savedDefinition.getVersion(), translatedDefinition.getVersion());
+
+        // Contact
+        org.restlet.ext.apispark.internal.model.Contact savedContact = savedDefinition.getContact();
+        org.restlet.ext.apispark.internal.model.Contact translatedContact = translatedDefinition.getContact();
+        assertEquals(savedContact.getEmail(), translatedContact.getEmail());
+        assertEquals(savedContact.getName(), translatedContact.getName());
+        assertEquals(savedContact.getUrl(), translatedContact.getUrl());
+        
+        // License
+        org.restlet.ext.apispark.internal.model.License savedLicense = savedDefinition.getLicense();
+        org.restlet.ext.apispark.internal.model.License translatedLicense = translatedDefinition.getLicense();
+        assertEquals(savedLicense.getName(), translatedLicense.getName());
+        assertEquals(savedLicense.getUrl(), translatedLicense.getUrl());
+        
+        compareStringLists(savedDefinition.getKeywords(), translatedDefinition.getKeywords());
+
+        compareRwadefEndpoints(savedDefinition, translatedDefinition);
+        compareRwadefContracts(savedDefinition.getContract(), translatedDefinition.getContract());
+    }
+
+    private void compareRwadefEndpoints(Definition savedDefinition, Definition translatedDefinition) {
+        if (assertBothNull(savedDefinition.getEndpoints(), translatedDefinition.getEndpoints())) {
+            return;
+        }
+
+        ImmutableMap<String, Endpoint> savedEndpoints = Maps.uniqueIndex(
+                savedDefinition.getEndpoints(),
+                new Function<Endpoint, String>() {
+                    public String apply(Endpoint endpoint) {
+                        return endpoint.computeUrl();
+                    }
+                });
+        ImmutableMap<String, Endpoint> translatedEndpoints = Maps.uniqueIndex(
+                translatedDefinition.getEndpoints(),
+                new Function<Endpoint, String>() {
+                    public String apply(Endpoint endpoint) {
+                        return endpoint.computeUrl();
+                    }
+                });
+        assertEquals(savedEndpoints.size(), translatedEndpoints.size());
+        for (String key : savedEndpoints.keySet()) {
+            Endpoint savedEndpoint = savedEndpoints.get(key);
+            Endpoint translatedEndpoint = translatedEndpoints.get(key);
+            assertNotNull(savedEndpoint);
+            assertNotNull(translatedEndpoint);
+            assertEquals(savedEndpoint.getAuthenticationProtocol(), translatedEndpoint.getAuthenticationProtocol());
+            assertEquals(savedEndpoint.getBasePath(), translatedEndpoint.getBasePath());
+            assertEquals(savedEndpoint.getDomain(), translatedEndpoint.getDomain());
+            assertEquals(savedEndpoint.getProtocol(), translatedEndpoint.getProtocol());
+            assertEquals(savedEndpoint.getPort(), translatedEndpoint.getPort());
+        }
+    }
+
+    private void compareRwadefContracts(Contract savedContract, Contract translatedContract) {
+        assertEquals(savedContract.getDescription(), translatedContract.getDescription());
+        assertEquals(savedContract.getName(), translatedContract.getName());
+
+        compareRwadefSections(savedContract, translatedContract);
+        compareRwadefRepresentations(savedContract, translatedContract);
+        compareRwadefResources(savedContract, translatedContract);
+    }
+
+    private void compareRwadefResources(Contract savedContract, Contract translatedContract) {
+        if (assertBothNull(savedContract.getResources(), translatedContract.getResources())) {
+            return;
+        }
+
+        ImmutableMap<String, Resource> savedResources = Maps.uniqueIndex(
+                savedContract.getResources(),
+                new Function<Resource, String>() {
+                    public String apply(Resource resource) {
+                        return resource.getResourcePath();
+                    }
+                });
+        ImmutableMap<String, Resource> translatedResources = Maps.uniqueIndex(
+                translatedContract.getResources(),
+                new Function<Resource, String>() {
+                    public String apply(Resource resource) {
+                        return resource.getResourcePath();
+                    }
+                });
+
+        assertEquals(savedResources.size(), translatedResources.size());
+        for (String key : savedResources.keySet()) {
+            Resource savedResource = savedResources.get(key);
+            Resource translatedResource = translatedResources.get(key);
+            assertNotNull(savedResource);
+            assertNotNull(translatedResource);
+
+            assertEquals(savedResource.getDescription(), translatedResource.getDescription());
+            assertEquals(savedResource.getAuthenticationProtocol(), translatedResource.getAuthenticationProtocol());
+            assertEquals(savedResource.getName(), translatedResource.getName());
+            compareStringLists(savedResource.getSections(), translatedResource.getSections());
+
+            compareRwadefPathVariables(savedResource, translatedResource);
+            compareRwadefOperations(savedResource, translatedResource);
+        }
+    }
+
+    private void compareRwadefPathVariables(Resource savedResource, Resource translatedResource) {
+        if (assertBothNull(savedResource.getPathVariables(), translatedResource.getPathVariables())) {
+            return;
+        }
+
+        ImmutableMap<String, PathVariable> savedPathVariables = Maps.uniqueIndex(
+                savedResource.getPathVariables(),
+                new Function<PathVariable, String>() {
+                    public String apply(PathVariable pathVariable) {
+                        return pathVariable.getName();
+                    }
+                });
+        ImmutableMap<String, PathVariable> translatedPathVariables = Maps.uniqueIndex(
+                translatedResource.getPathVariables(),
+                new Function<PathVariable, String>() {
+                    public String apply(PathVariable pathVariable) {
+                        return pathVariable.getName();
+                    }
+                });
+
+        assertEquals(savedPathVariables.size(), translatedPathVariables.size());
+        for (String key1 : savedPathVariables.keySet()) {
+            PathVariable savedPathVariable = savedPathVariables.get(key1);
+            PathVariable translatedPathVariable = translatedPathVariables.get(key1);
+            assertNotNull(savedPathVariable);
+            assertNotNull(translatedPathVariable);
+
+            assertEquals(savedPathVariable.getDescription(), translatedPathVariable.getDescription());
+            assertEquals(savedPathVariable.getExample(), translatedPathVariable.getExample());
+            assertEquals(savedPathVariable.getType(), translatedPathVariable.getType());
+            assertEquals(savedPathVariable.isRequired(), translatedPathVariable.isRequired());
+        }
+    }
+
+    private void compareRwadefOperations(Resource savedResource, Resource translatedResource) {
+        if (assertBothNull(savedResource.getOperations(), translatedResource.getOperations())) {
+            return;
+        }
+
+        ImmutableMap<String, Operation> savedOperations = Maps.uniqueIndex(
+                savedResource.getOperations(),
+                new Function<Operation, String>() {
+                    public String apply(Operation operation) {
+                        return operation.getName();
+                    }
+                });
+        ImmutableMap<String, Operation> translatedOperations = Maps.uniqueIndex(
+                translatedResource.getOperations(),
+                new Function<Operation, String>() {
+                    public String apply(Operation operation) {
+                        return operation.getName();
+                    }
+                });
+
+        assertEquals(savedOperations.size(), translatedOperations.size());
+        for (String key : savedOperations.keySet()) {
+            Operation savedOperation = savedOperations.get(key);
+            Operation translatedOperation = translatedOperations.get(key);
+            assertNotNull(savedOperation);
+            assertNotNull(translatedOperation);
+
+            assertEquals(savedOperation.getDescription(), translatedOperation.getDescription());
+            assertEquals(savedOperation.getMethod(), translatedOperation.getMethod());
+
+            compareRwadefHeaders(savedOperation.getHeaders(), translatedOperation.getHeaders());
+            compareRwadefQueryParameters(savedOperation, translatedOperation);
+            compareRwadefPayloads(savedOperation.getInputPayLoad(), translatedOperation.getInputPayLoad());
+            compareRwadefResponses(savedOperation, translatedOperation);
+
+            compareStringLists(savedOperation.getProduces(), translatedOperation.getProduces());
+            compareStringLists(savedOperation.getConsumes(), translatedOperation.getConsumes());
+        }
+    }
+
+    private void compareRwadefResponses(Operation savedOperation, Operation translatedOperation) {
+        if (assertBothNull(savedOperation.getResponses(), translatedOperation.getResponses())) {
+            return;
+        }
+
+        ImmutableMap<Integer, Response> savedResponses = Maps.uniqueIndex(
+                savedOperation.getResponses(),
+                new Function<Response, Integer>() {
+                    public Integer apply(Response response) {
+                        return response.getCode();
+                    }
+                });
+        ImmutableMap<Integer, Response> translatedResponses = Maps.uniqueIndex(
+                translatedOperation.getResponses(),
+                new Function<Response, Integer>() {
+                    public Integer apply(Response response) {
+                        return response.getCode();
+                    }
+                });
+
+        assertEquals(savedResponses.size(), translatedResponses.size());
+        for (Integer key : savedResponses.keySet()) {
+            Response savedResponse = savedResponses.get(key);
+            Response translatedResponse = translatedResponses.get(key);
+            assertNotNull(savedResponse);
+            assertNotNull(translatedResponse);
+
+            assertEquals(savedResponse.getDescription(), translatedResponse.getDescription());
+
+            // both don't exist in Swagger => can't be retrieved
+            // assertEquals(savedResponse.getMessage(), translatedResponse.getMessage());
+            // assertEquals(savedResponse.getName(), translatedResponse.getName());
+
+            compareRwadefHeaders(savedResponse.getHeaders(), translatedResponse.getHeaders());
+            compareRwadefPayloads(savedResponse.getOutputPayLoad(), translatedResponse.getOutputPayLoad());
+        }
+    }
+
+    private void compareRwadefPayloads(PayLoad savedPayload, PayLoad translatedPayload) {
+        if (assertBothNull(savedPayload, translatedPayload)) {
+            return;
+        }
+
+        assertEquals(savedPayload.getDescription(), translatedPayload.getDescription());
+        assertEquals(savedPayload.getType(), translatedPayload.getType());
+        assertEquals(savedPayload.isArray(), translatedPayload.isArray());
+    }
+
+    private void compareRwadefQueryParameters(Operation savedOperation, Operation translatedOperation) {
+        if (assertBothNull(savedOperation.getQueryParameters(), translatedOperation.getQueryParameters())) {
+            return;
+        }
+
+        ImmutableMap<String, QueryParameter> savedQueryParameters = Maps.uniqueIndex(
+                savedOperation.getQueryParameters(),
+                new Function<QueryParameter, String>() {
+                    public String apply(QueryParameter header) {
+                        return header.getName();
+                    }
+                });
+        ImmutableMap<String, QueryParameter> translatedQueryParameters = Maps.uniqueIndex(
+                translatedOperation.getQueryParameters(),
+                new Function<QueryParameter, String>() {
+                    public String apply(QueryParameter header) {
+                        return header.getName();
+                    }
+                });
+
+        assertEquals(savedQueryParameters.size(), translatedQueryParameters.size());
+        for (String key : savedQueryParameters.keySet()) {
+            QueryParameter savedQueryParameter = savedQueryParameters.get(key);
+            QueryParameter translatedQueryParameter = translatedQueryParameters.get(key);
+            assertNotNull(savedQueryParameter);
+            assertNotNull(translatedQueryParameter);
+
+            assertEquals(savedQueryParameter.getDefaultValue(), translatedQueryParameter.getDefaultValue());
+            assertEquals(savedQueryParameter.getDescription(), translatedQueryParameter.getDescription());
+            assertEquals(savedQueryParameter.getType(), translatedQueryParameter.getType());
+            assertEquals(savedQueryParameter.getExample(), translatedQueryParameter.getExample());
+            assertEquals(savedQueryParameter.getSeparator(), translatedQueryParameter.getSeparator());
+            assertEquals(savedQueryParameter.isRequired(), translatedQueryParameter.isRequired());
+            // TODO: not available in Swagger 2.0
+            // assertEquals(savedQueryParameter.isAllowMultiple(), translatedQueryParameter.isAllowMultiple());
+            compareStringLists(savedQueryParameter.getEnumeration(), translatedQueryParameter.getEnumeration());
+        }
+    }
+
+    private void compareRwadefHeaders(List<Header> savedHeadersList, List<Header> translatedHeadersList) {
+        if (assertBothNull(savedHeadersList, translatedHeadersList)) {
+            return;
+        }
+
+        ImmutableMap<String, Header> savedHeaders = Maps.uniqueIndex(
+                savedHeadersList,
+                new Function<Header, String>() {
+                    public String apply(Header header) {
+                        return header.getName();
+                    }
+                });
+        ImmutableMap<String, Header> translatedHeaders = Maps.uniqueIndex(
+                translatedHeadersList,
+                new Function<Header, String>() {
+                    public String apply(Header header) {
+                        return header.getName();
+                    }
+                });
+
+        assertEquals(savedHeaders.size(), translatedHeaders.size());
+        for (String key : savedHeaders.keySet()) {
+            Header savedHeader = savedHeaders.get(key);
+            Header translatedHeader = translatedHeaders.get(key);
+            assertNotNull(savedHeader);
+            assertNotNull(translatedHeader);
+
+            assertEquals(savedHeader.getDefaultValue(), translatedHeader.getDefaultValue());
+            assertEquals(savedHeader.getDescription(), translatedHeader.getDescription());
+            assertEquals(savedHeader.getType(), translatedHeader.getType());
+            assertEquals(savedHeader.isRequired(), translatedHeader.isRequired());
+            // TODO: does not exist in Swagger 2.0 yet
+            // assertEquals(savedHeader.isAllowMultiple(), translatedHeader.isAllowMultiple());
+
+        }
+    }
+
+    private void compareRwadefRepresentations(Contract savedContract, Contract translatedContract) {
+        if (assertBothNull(savedContract.getRepresentations(), translatedContract.getRepresentations())) {
+            return;
+        }
+
+        ImmutableMap<String, Representation> savedRepresentations = Maps.uniqueIndex(
+                savedContract.getRepresentations(),
+                new Function<Representation, String>() {
+                    public String apply(Representation representation) {
+                        return representation.getName();
+                    }
+                });
+        ImmutableMap<String, Representation> translatedRepresentations = Maps.uniqueIndex(
+                translatedContract.getRepresentations(),
+                new Function<Representation, String>() {
+                    public String apply(Representation representation) {
+                        return representation.getName();
+                    }
+                });
+
+        assertEquals(savedRepresentations.size(), translatedRepresentations.size());
+        for (String key : savedRepresentations.keySet()) {
+            Representation savedRepresentation = savedRepresentations.get(key);
+            Representation translatedRepresentation = translatedRepresentations.get(key);
+            assertNotNull(savedRepresentation);
+            assertNotNull(translatedRepresentation);
+            assertEquals(savedRepresentation.getDescription(), translatedRepresentation.getDescription());
+            assertEquals(savedRepresentation.getExtendedType(), translatedRepresentation.getExtendedType());
+
+            compareStringLists(savedRepresentation.getSections(), translatedRepresentation.getSections());
+            compareRwadefProperties(savedRepresentation.getProperties(), translatedRepresentation.getProperties());
+        }
+    }
+
+    private void compareRwadefProperties(List<Property> savedPropertiesList,
+            List<Property> translatedPropertiesList) {
+        if (assertBothNull(savedPropertiesList, translatedPropertiesList)) {
+            return;
+        }
+
+        ImmutableMap<String, Property> savedProperties = Maps.uniqueIndex(
+                savedPropertiesList,
+                new Function<Property, String>() {
+                    public String apply(Property property) {
+                        return property.getName();
+                    }
+                });
+        ImmutableMap<String, Property> translatedProperties = Maps.uniqueIndex(
+                translatedPropertiesList,
+                new Function<Property, String>() {
+                    public String apply(Property property) {
+                        return property.getName();
+                    }
+                });
+        
+        assertEquals(savedProperties.size(), translatedProperties.size());
+        for (String key : savedProperties.keySet()) {
+            Property savedProperty = savedProperties.get(key);
+            Property translatedProperty = translatedProperties.get(key);
+            assertNotNull(savedProperty);
+            assertNotNull(translatedProperty);
+
+            assertEquals(savedProperty.getDefaultValue(), translatedProperty.getDefaultValue());
+            assertEquals(savedProperty.getDescription(), translatedProperty.getDescription());
+            assertEquals(savedProperty.getExample(), translatedProperty.getExample());
+            assertEquals(savedProperty.getMax(), translatedProperty.getMax());
+            assertEquals(savedProperty.getMin(), translatedProperty.getMin());
+            assertEquals(savedProperty.getType(), translatedProperty.getType());
+            assertEquals(savedProperty.getMaxOccurs(), translatedProperty.getMaxOccurs());
+            assertEquals(savedProperty.getMinOccurs(), translatedProperty.getMinOccurs());
+
+            compareRwadefProperties(savedProperty.getProperties(), translatedProperty.getProperties());
+            compareStringLists(savedProperty.getEnumeration(), translatedProperty.getEnumeration());
+        }
+    }
+
+    private void compareRwadefSections(Contract savedContract, Contract translatedContract) {
+        if (assertBothNull(savedContract.getSections(), translatedContract.getSections())) {
+            return;
+        }
+
+        ImmutableMap<String, Section> savedSections = Maps.uniqueIndex(savedContract.getSections(),
+                new Function<Section, String>() {
+                    public String apply(Section section) {
+                        return section.getName();
+                    }
+                });
+        ImmutableMap<String, Section> translatedSections = Maps.uniqueIndex(translatedContract.getSections(),
+                new Function<Section, String>() {
+                    public String apply(Section section) {
+                        return section.getName();
+                    }
+                });
+
+        assertEquals(savedSections.size(), translatedSections.size());
+        for (String key : savedSections.keySet()) {
+            Section savedSection = savedSections.get(key);
+            Section translatedSection = translatedSections.get(key);
+            assertNotNull(savedSection);
+            assertNotNull(translatedSection);
+            assertEquals(savedSection.getDescription(), translatedSection.getDescription());
+        }
+    }
+
+    /**
+     * Asserts that the given objects are both null. Returns true if it is the case, false otherwise.
+     * Fails if one is null and not the other.
+     * 
+     * @param savedObject
+     *            The object from the saved definition.
+     * @param translatedObject
+     *            The object from the translated definition.
+     * @return True if both the objects are null, false otherwise.
+     */
+    private boolean assertBothNull(Object savedObject, Object translatedObject) {
+        if (savedObject == null || translatedObject == null) {
+            assertNull(savedObject);
+            assertNull(translatedObject);
+            return true;
+        }
+        return false;
     }
 
 }

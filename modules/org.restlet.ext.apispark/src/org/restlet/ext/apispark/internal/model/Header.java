@@ -31,4 +31,29 @@ package org.restlet.ext.apispark.internal.model;
  */
 public class Header extends Parameter {
 
+    /**
+     * Indicates whether you can provide multiple values for this parameter or
+     * not.
+     */
+    private boolean allowMultiple;
+
+    /** Default value of the header. */
+    private String defaultValue;
+
+    public boolean isAllowMultiple() {
+        return allowMultiple;
+    }
+
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
 }
