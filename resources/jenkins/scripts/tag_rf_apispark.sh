@@ -61,7 +61,7 @@ fi
 
 # Add and commit
 git add $BUILD_PROPERTIES
-git commit -m "Bump version to apispark $INIT_RELEASE_TYPE"
+git commit -m "Released version $TAG"
 
 # Push modifications
 git push origin $CURRENT_BRANCH
