@@ -40,7 +40,7 @@ sed -i "s,$INIT_RELEASE_NUMBER_LINE,$NEW_RELEASE_NUMBER_LINE," $BUILD_PROPERTIES
 
 # Add and commit
 git add $BUILD_PROPERTIES
-git commit -m "Bump version to $TAG"
+git commit -m "Released version $TAG"
 
 # Create and push tag
 TAG_NAME=apispark-v$TAG
