@@ -24,6 +24,8 @@
 
 package org.restlet.ext.apispark.internal.introspection.util;
 
+import org.restlet.representation.Representation;
+
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -34,8 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.restlet.ext.apispark.internal.model.Representation;
 
 /**
  * @author Manuel Boillod
