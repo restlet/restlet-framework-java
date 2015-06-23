@@ -155,6 +155,9 @@ public class IntrospectionUtils {
                     throw new RuntimeException("APISpark Authentication fails. Check that you provide valid credentials.", e);
                 } else if (e.getStatus().getCode() == 404) {
                     throw new RuntimeException("Resource not found. Check that you provide valid cell id and cell version.", e);
+                } else if (e.getStatus().getCode() == 422) {
+                    System.out.println("Invalid Request Payload. Response payload: \n" + cr.getResponse().getEntityAsText());
+                    throw new RuntimeException("Invalid Request Payload.", e);
                 } else {
                     throw new RuntimeException("APISpark returns client error. Please check the root cause below.", e);
                 }
