@@ -33,7 +33,6 @@ import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.restlet.data.Parameter;
@@ -376,7 +375,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Creates a new {@link SSLContext} wrapper. Necessary to properly
      * initialize the {@link SSLEngine} or {@link SSLSocketFactory} or
-     * {@link SSLServerSocketFactory} created.
+     * {@link javax.net.ssl.SSLServerSocketFactory} created.
      * 
      * @param sslContext
      *            The SSL context to wrap.

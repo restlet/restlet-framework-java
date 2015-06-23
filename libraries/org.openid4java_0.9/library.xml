@@ -15,5 +15,4 @@
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<dependency type="library" id="httpclient" />
 </library>

@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
@@ -121,7 +120,7 @@ public class AccessTokenClientResource extends ClientResource implements
     }
 
     @Override
-    public void doError(Status errorStatus, Request request, Response response) {
+    public void doError(Status errorStatus) {
         Representation representation = getResponse().getEntity();
         if (representation.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             // Do not throw an exception here.
@@ -131,7 +130,7 @@ public class AccessTokenClientResource extends ClientResource implements
             return;
         }
         // ResourceException will be thrown.
-        super.doError(errorStatus, request, response);
+        super.doError(errorStatus);
     }
 
     // We override to not dispose the OAuth error json body.
@@ -142,7 +141,7 @@ public class AccessTokenClientResource extends ClientResource implements
         // Verify that the request was synchronous
         if (response.getRequest().isSynchronous()) {
             if (response.getStatus().isError()) {
-                doError(response.getStatus(), getRequest(), response);
+                doError(response.getStatus());
                 // DO NOT DISPOSE THE RESPONSE.
             }/* else { */
             result = (response == null) ? null : response.getEntity();

@@ -35,10 +35,11 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
-import org.restlet.engine.resource.StatusAnnotationInfo;
+import org.restlet.engine.resource.ThrowableAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
 import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
@@ -53,7 +54,6 @@ import org.restlet.ext.apispark.internal.model.QueryParameter;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
-import org.restlet.representation.StatusInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
@@ -96,9 +96,8 @@ public class ResourceCollector {
         collectInfo.addResource(resource);
     }
 
-    public static void collectResource(
-            CollectInfo collectInfo, ServerResource sr, String basePath,
-            ChallengeScheme scheme,
+    public static void collectResource(CollectInfo collectInfo,
+            ServerResource sr, String basePath, ChallengeScheme scheme,
             List<? extends IntrospectionHelper> introspectionHelper) {
         Resource resource = getResource(collectInfo, sr, basePath, scheme);
 
@@ -126,21 +125,26 @@ public class ResourceCollector {
                             methodAnnotationInfo, sr, introspectionHelper);
 
                     for (IntrospectionHelper helper : introspectionHelper) {
-                        List<Class<?>> representationClasses = helper.processOperation(resource, operation,
-                                sr.getClass(),
-                                methodAnnotationInfo.getJavaMethod());
-                        if (representationClasses != null && !representationClasses.isEmpty()) {
+                        List<Class<?>> representationClasses = helper
+                                .processOperation(resource, operation,
+                                        sr.getClass(),
+                                        methodAnnotationInfo.getJavaMethod());
+                        if (representationClasses != null
+                                && !representationClasses.isEmpty()) {
                             for (Class<?> representationClazz : representationClasses) {
                                 TypeInfo typeInfo;
                                 try {
-                                    typeInfo = Types.getTypeInfo(representationClazz, null);
+                                    typeInfo = Types.getTypeInfo(
+                                            representationClazz, null);
                                 } catch (UnsupportedTypeException e) {
                                     LOGGER.warning("Could not add representation class "
-                                            + representationClazz.getName() + ". " + e.getMessage());
+                                            + representationClazz.getName()
+                                            + ". " + e.getMessage());
                                     continue;
                                 }
-                                RepresentationCollector.addRepresentation(collectInfo,
-                                        typeInfo, introspectionHelper);
+                                RepresentationCollector.addRepresentation(
+                                        collectInfo, typeInfo,
+                                        introspectionHelper);
 
                             }
 
@@ -180,43 +184,52 @@ public class ResourceCollector {
         MetadataService metadataService = sr.getMetadataService();
 
         // Retrieve thrown classes
-        completeOperationThrows(collectInfo, operation, mai, introspectionHelper);
+        completeOperationThrows(collectInfo, operation, mai,
+                introspectionHelper);
 
         // Describe the input
-        completeOperationInput(collectInfo, operation, mai, sr, introspectionHelper, metadataService);
+        completeOperationInput(collectInfo, operation, mai, sr,
+                introspectionHelper, metadataService);
 
         // Describe query parameters, if any.
         completeOperationQueryParameter(operation, mai);
 
         // Describe the success response
-        completeOperationOutput(collectInfo, operation, mai, introspectionHelper);
+        completeOperationOutput(collectInfo, operation, mai,
+                introspectionHelper);
 
         // Produces
         completeOperationProduces(operation, mai, sr, metadataService);
     }
 
-    private static void completeOperationThrows(CollectInfo collectInfo, Operation operation,
-            MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
+    private static void completeOperationThrows(CollectInfo collectInfo,
+            Operation operation, MethodAnnotationInfo mai,
+            List<? extends IntrospectionHelper> introspectionHelper) {
         Class<?>[] thrownClasses = mai.getJavaMethod().getExceptionTypes();
         if (thrownClasses != null) {
             for (Class<?> thrownClass : thrownClasses) {
-                StatusAnnotationInfo throwableAnnotationInfo = AnnotationUtils
-                        .getInstance().getStatusAnnotationInfo(thrownClass);
+                ThrowableAnnotationInfo throwableAnnotationInfo = AnnotationUtils
+                        .getInstance().getThrowableAnnotationInfo(thrownClass);
                 if (throwableAnnotationInfo != null) {
-                    int statusCode = throwableAnnotationInfo.getStatus().getCode();
+                    int statusCode = throwableAnnotationInfo.getStatus()
+                            .getCode();
                     Response response = new Response();
                     response.setCode(statusCode);
-                    response.setName(Status.valueOf(statusCode).getReasonPhrase());
+                    response.setName(Status.valueOf(statusCode)
+                            .getReasonPhrase());
                     response.setMessage("Status " + statusCode);
 
                     Class<?> outputPayloadType = throwableAnnotationInfo
                             .isSerializable() ? thrownClass : StatusInfo.class;
                     TypeInfo outputTypeInfo = null;
                     try {
-                        outputTypeInfo = Types.getTypeInfo(outputPayloadType, null);
+                        outputTypeInfo = Types.getTypeInfo(outputPayloadType,
+                                null);
                     } catch (UnsupportedTypeException e) {
-                        LOGGER.warning("Could not add output payload for exception " +
-                                thrownClass + " throws by method " + mai.getJavaMethod() + ". " + e.getMessage());
+                        LOGGER.warning("Could not add output payload for exception "
+                                + thrownClass
+                                + " throws by method "
+                                + mai.getJavaMethod() + ". " + e.getMessage());
                         continue;
                     }
 
@@ -224,7 +237,8 @@ public class ResourceCollector {
                             outputTypeInfo, introspectionHelper);
 
                     PayLoad outputPayLoad = new PayLoad();
-                    outputPayLoad.setType(outputTypeInfo.getRepresentationName());
+                    outputPayLoad.setType(outputTypeInfo
+                            .getRepresentationName());
                     response.setOutputPayLoad(outputPayLoad);
                     operation.getResponses().add(response);
 
@@ -233,8 +247,9 @@ public class ResourceCollector {
         }
     }
 
-    private static void completeOperationInput(CollectInfo collectInfo, Operation operation,
-            MethodAnnotationInfo mai, ServerResource sr, List<? extends IntrospectionHelper> introspectionHelper,
+    private static void completeOperationInput(CollectInfo collectInfo,
+            Operation operation, MethodAnnotationInfo mai, ServerResource sr,
+            List<? extends IntrospectionHelper> introspectionHelper,
             MetadataService metadataService) {
         Class<?>[] inputClasses = mai.getJavaMethod().getParameterTypes();
         if (inputClasses != null && inputClasses.length > 0) {
@@ -243,15 +258,16 @@ public class ResourceCollector {
             // Handles only the first method parameter
             TypeInfo inputTypeInfo;
             try {
-                inputTypeInfo = Types.getTypeInfo(inputClasses[0],
-                        mai.getJavaMethod().getGenericParameterTypes()[0]);
+                inputTypeInfo = Types.getTypeInfo(inputClasses[0], mai
+                        .getJavaMethod().getGenericParameterTypes()[0]);
             } catch (UnsupportedTypeException e) {
-                LOGGER.warning("Could not add input representation of method" +
-                        mai.getJavaMethod() + ". " + e.getMessage());
+                LOGGER.warning("Could not add input representation of method"
+                        + mai.getJavaMethod() + ". " + e.getMessage());
                 return;
             }
 
-            RepresentationCollector.addRepresentation(collectInfo, inputTypeInfo, introspectionHelper);
+            RepresentationCollector.addRepresentation(collectInfo,
+                    inputTypeInfo, introspectionHelper);
 
             PayLoad inputEntity = new PayLoad();
             inputEntity.setType(inputTypeInfo.getRepresentationName());
@@ -266,8 +282,9 @@ public class ResourceCollector {
                             metadataService, sr.getConverterService());
 
                     if (requestVariants == null || requestVariants.isEmpty()) {
-                        LOGGER.warning("Could not add consumes of method " + mai.getJavaMethod() +
-                                ". There is no requested variant");
+                        LOGGER.warning("Could not add consumes of method "
+                                + mai.getJavaMethod()
+                                + ". There is no requested variant");
                         return;
                     }
 
@@ -290,7 +307,8 @@ public class ResourceCollector {
         }
     }
 
-    private static void completeOperationQueryParameter(Operation operation, MethodAnnotationInfo mai) {
+    private static void completeOperationQueryParameter(Operation operation,
+            MethodAnnotationInfo mai) {
         if (mai.getQuery() != null) {
             Form form = new Form(mai.getQuery());
             for (org.restlet.data.Parameter parameter : form) {
@@ -307,22 +325,25 @@ public class ResourceCollector {
         }
     }
 
-    private static void completeOperationOutput(CollectInfo collectInfo, Operation operation,
-            MethodAnnotationInfo mai, List<? extends IntrospectionHelper> introspectionHelper) {
+    private static void completeOperationOutput(CollectInfo collectInfo,
+            Operation operation, MethodAnnotationInfo mai,
+            List<? extends IntrospectionHelper> introspectionHelper) {
         Response response = new Response();
 
         if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
             TypeInfo outputTypeInfo;
             try {
-                outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod().getReturnType(),
-                        mai.getJavaMethod().getGenericReturnType());
+                outputTypeInfo = Types.getTypeInfo(mai.getJavaMethod()
+                        .getReturnType(), mai.getJavaMethod()
+                        .getGenericReturnType());
             } catch (UnsupportedTypeException e) {
-                LOGGER.warning("Could not add output representation of method " +
-                        mai.getJavaMethod() + ". " + e.getMessage());
+                LOGGER.warning("Could not add output representation of method "
+                        + mai.getJavaMethod() + ". " + e.getMessage());
                 return;
             }
             // Output representation
-            RepresentationCollector.addRepresentation(collectInfo, outputTypeInfo, introspectionHelper);
+            RepresentationCollector.addRepresentation(collectInfo,
+                    outputTypeInfo, introspectionHelper);
 
             PayLoad outputEntity = new PayLoad();
             outputEntity.setType(outputTypeInfo.getRepresentationName());
@@ -344,8 +365,9 @@ public class ResourceCollector {
         operation.getResponses().add(response);
     }
 
-    private static void completeOperationProduces(Operation operation, MethodAnnotationInfo mai,
-            ServerResource sr, MetadataService metadataService) {
+    private static void completeOperationProduces(Operation operation,
+            MethodAnnotationInfo mai, ServerResource sr,
+            MetadataService metadataService) {
         if (metadataService != null) {
             try {
                 List<Variant> responseVariants = mai.getResponseVariants(
@@ -353,7 +375,8 @@ public class ResourceCollector {
 
                 if (responseVariants == null || responseVariants.isEmpty()) {
                     if (mai.getJavaMethod().getReturnType() != Void.TYPE) {
-                        LOGGER.warning("Method has no response variant: " + mai.getJavaMethod());
+                        LOGGER.warning("Method has no response variant: "
+                                + mai.getJavaMethod());
                     }
                     return;
                 }
