@@ -19,8 +19,14 @@ Changes log
          Issue #1072. Reported by Edouard Mercier.
        - Fixed NPE when OAuth refresh token request when no scope is provided. 
          Issue #1080. Reported by Gernot Pansy.
+       - Internal HTTP client doesn't fail anymore with null values in headers.
+       - Improved robustness of Swagger translation code (import/export).
+       - Fixed security scheme issue in RAML translator.
+       
     - Enhancements
-      - Allowed spaces in the values of the Java methods annotations. Issue #1099.
+       - Allowed spaces in the values of the Java methods annotations. Issue #1099.
+       - Added support for Chromium browser when extracting user agent info.
+       - Added Swagger 2.0 import support in Swagger and APISPark extensions.
 
 - 2.3.2 (05/01/2015)
     - Bugs fixed
