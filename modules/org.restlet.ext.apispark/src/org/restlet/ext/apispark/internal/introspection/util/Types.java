@@ -75,7 +75,7 @@ public abstract class Types {
     public static final String compositeType = "composite";
 
     private static final List<String> primitivesTypes = Arrays.asList("byte",
-            "short", "integer", "long", "float", "double", "boolean", "string",
+            "char", "short", "integer", "long", "float", "double", "boolean", "string",
             "date", "file");
     
     private static final Map<Class<?>, String> primitiveTypesByClass;
@@ -84,6 +84,8 @@ public abstract class Types {
         primitiveTypesByClass = new HashMap<>();
         primitiveTypesByClass.put(Byte.TYPE, "byte");
         primitiveTypesByClass.put(Byte.class, "byte");
+        primitiveTypesByClass.put(Character.TYPE, "char");
+        primitiveTypesByClass.put(Character.class, "char");
         primitiveTypesByClass.put(Short.TYPE, "short");
         primitiveTypesByClass.put(Short.class, "short");
         primitiveTypesByClass.put(Integer.TYPE, "integer");
