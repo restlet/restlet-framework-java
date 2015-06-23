@@ -66,10 +66,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "405": {
-            "description": "Error 405"
+            "description": "Invalid input"
           }
         }
       },
@@ -97,16 +97,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid ID supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "Pet not found"
           },
           "405": {
-            "description": "Error 405"
+            "description": "Validation exception"
           }
         }
       }
@@ -144,7 +144,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "type": "array",
               "items": {
@@ -153,7 +153,7 @@
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid status value"
           }
         }
       }
@@ -186,7 +186,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "type": "array",
               "items": {
@@ -195,7 +195,7 @@
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid tag value"
           }
         }
       }
@@ -217,7 +217,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           }
         }
       }
@@ -246,16 +246,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "$ref": "#/definitions/Pet"
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid ID supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "Pet not found"
           }
         }
       },
@@ -284,10 +284,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "405": {
-            "description": "Error 405"
+            "description": "Invalid input"
           }
         }
       },
@@ -314,10 +314,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid pet value"
           }
         }
       },
@@ -355,7 +355,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "type": "array",
               "items": {
@@ -364,7 +364,7 @@
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid tag value"
           }
         }
       }
@@ -391,10 +391,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid order"
           }
         }
       }
@@ -420,16 +420,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "$ref": "#/definitions/Order"
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid ID supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "Order not found"
           }
         }
       },
@@ -453,13 +453,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid ID supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "Order not found"
           }
         }
       }
@@ -486,7 +486,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           }
         }
       }
@@ -516,7 +516,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           }
         }
       }
@@ -546,7 +546,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           }
         }
       }
@@ -581,13 +581,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "type": "string"
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid username and password combination"
           }
         }
       }
@@ -604,7 +604,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           }
         }
       }
@@ -630,16 +630,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "The request has succeeded",
             "schema": {
               "$ref": "#/definitions/User"
             }
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid username supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "User not found"
           }
         }
       },
@@ -671,13 +671,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid username supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "User not found"
           }
         }
       },
@@ -701,13 +701,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "The request has succeeded"
           },
           "400": {
-            "description": "Error 400"
+            "description": "Invalid username supplied"
           },
           "404": {
-            "description": "Error 404"
+            "description": "User not found"
           }
         }
       }
