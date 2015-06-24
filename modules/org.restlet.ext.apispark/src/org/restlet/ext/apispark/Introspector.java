@@ -123,7 +123,6 @@ public class Introspector {
             LOGGER.log(Level.SEVERE, "Introspection error", e);
             System.exit(1);
         }
-        System.exit(0);
     }
 
     public static void process(String[] args) throws TranslationException {
