@@ -397,14 +397,12 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid tag value",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -440,21 +438,18 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid ID supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "Pet not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -478,14 +473,12 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid pet value",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -515,14 +508,12 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid tag value",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -549,14 +540,12 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
                 "description": "Invalid input",
-                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -599,14 +588,12 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
                 "description": "Invalid input",
-                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -636,28 +623,24 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid ID supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "Pet not found",
-                "message": "Error 404",
                 "name": "Error 404"
               },
               {
                 "outputPayLoad": null,
                 "code": 405,
                 "description": "Validation exception",
-                "message": "Error 405",
                 "name": "Error 405"
               }
             ],
@@ -706,14 +689,12 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid status value",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -746,7 +727,6 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -781,21 +761,18 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid ID supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "Order not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -819,21 +796,18 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid ID supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "Order not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -871,14 +845,12 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid order",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -911,7 +883,6 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -944,7 +915,6 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -977,7 +947,6 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -1010,21 +979,18 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid username supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "User not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -1045,21 +1011,18 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid username supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "User not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -1083,21 +1046,18 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid username supplied",
-                "message": "Error 400",
                 "name": "Error 400"
               },
               {
                 "outputPayLoad": null,
                 "code": 404,
                 "description": "User not found",
-                "message": "Error 404",
                 "name": "Error 404"
               }
             ],
@@ -1152,14 +1112,12 @@
                 },
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               },
               {
                 "outputPayLoad": null,
                 "code": 400,
                 "description": "Invalid username and password combination",
-                "message": "Error 400",
                 "name": "Error 400"
               }
             ],
@@ -1189,7 +1147,6 @@
                 "outputPayLoad": null,
                 "code": 200,
                 "description": "The request has succeeded",
-                "message": "Success",
                 "name": "Success"
               }
             ],
@@ -1203,20 +1160,20 @@
         "resourcePath": "/user/logout"
       }
     ],
-	"sections": [ 
-	  {
-	    "name": "Pet",
-	  	"description": "Operations about pets"
-	  },
-	  {
-	  	"name": "User",
-	  	"description": "Operations about users"
-	  },
-	  {
-	  	"name": "Order",
-	  	"description": "Operations about orders"
-	  }
-	]
+  "sections": [ 
+    {
+      "name": "Pet",
+      "description": "Operations about pets"
+    },
+    {
+      "name": "User",
+      "description": "Operations about users"
+    },
+    {
+      "name": "Order",
+      "description": "Operations about orders"
+    }
+  ]
   },
   "endpoints": [
     {
