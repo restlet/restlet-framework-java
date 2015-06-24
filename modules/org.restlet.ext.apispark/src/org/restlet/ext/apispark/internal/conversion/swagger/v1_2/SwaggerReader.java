@@ -443,15 +443,13 @@ public class SwaggerReader {
     private static void fillVariants(Operation operation, ResourceOperationDeclaration swaggerOperation,
             List<String> apiProduces, List<String> apiConsumes) {
         // Set variants
-        for (String produced : apiProduces.isEmpty() ? swaggerOperation
-                .getProduces() : apiProduces) {
-            operation.getProduces().add(produced);
-        }
+        operation.addProduces(apiProduces.isEmpty()
+                ? swaggerOperation.getProduces()
+                : apiProduces);
 
-        for (String consumed : apiConsumes.isEmpty() ? swaggerOperation
-                .getConsumes() : apiConsumes) {
-            operation.getConsumes().add(consumed);
-        }
+        operation.addConsumes(apiConsumes.isEmpty()
+                ? swaggerOperation.getConsumes()
+                : apiConsumes);
     }
 
     /**

@@ -41,6 +41,7 @@ import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.StatusAnnotationInfo;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
+import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.introspection.DocumentedResource;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
@@ -297,8 +298,7 @@ public class ResourceCollector {
                             continue;
                         }
 
-                        operation.getConsumes().add(
-                                variant.getMediaType().getName());
+                        operation.addConsumes(variant.getMediaType().getName());
                     }
                 } catch (IOException e) {
                     throw new ResourceException(e);
@@ -423,8 +423,9 @@ public class ResourceCollector {
             DocumentedResource documentedServerResource = (DocumentedResource) restlet;
             resource.setSections(documentedServerResource.getSections());
         } else if (collectInfo.isUseSectionNamingPackageStrategy()) {
-            String sectionName = restlet.getClass().getPackage().getName();
-            resource.getSections().add(sectionName);
+            String packageName = restlet.getClass().getPackage().getName();
+            String formattedSectionName = ConversionUtils.formatSectionNameFromPackageName(packageName);
+            collectInfo.addSection(new Section(formattedSectionName));
         }
 
         if (StringUtils.isNullOrEmpty(resource.getName())) {
