@@ -25,7 +25,9 @@
 package org.restlet.ext.apispark.internal.introspection.application;
 
 import java.beans.BeanInfo;
+import java.beans.IndexedPropertyDescriptor;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -34,6 +36,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.util.BeanInfoUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.apispark.Introspector;
+import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.introspection.IntrospectionHelper;
 import org.restlet.ext.apispark.internal.introspection.util.TypeInfo;
 import org.restlet.ext.apispark.internal.introspection.util.Types;
@@ -91,7 +94,8 @@ public class RepresentationCollector {
             String packageName = typeInfo.getClazz().getPackage().getName();
             representation.getSections().add(packageName);
             if (collectInfo.getSection(packageName) == null) {
-                collectInfo.addSection(new Section(packageName));
+                String formattedSectionName = ConversionUtils.formatSectionNameFromPackageName(packageName);
+                collectInfo.addSection(new Section(formattedSectionName));
             }
         }
         // Example: "Contact"
@@ -122,11 +126,24 @@ public class RepresentationCollector {
 
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
 
+                    if (pd instanceof IndexedPropertyDescriptor) {
+                        continue;
+                    }
+
                     if (jsonIgnoreProperties != null && jsonIgnoreProperties.contains(pd.getName())) {
                         //ignore this field
                         continue;
                     }
-                    JsonIgnore jsonIgnore = pd.getReadMethod().getAnnotation(JsonIgnore.class);
+
+                    Method readMethod = pd.getReadMethod();
+
+                    if (readMethod == null) {
+                        LOGGER.warning("Could not add property " + pd.getName() + " of representation "
+                                + typeInfo.getRepresentationClazz().getName() + " because its getter was not found.");
+                        continue;
+                    }
+
+                    JsonIgnore jsonIgnore = readMethod.getAnnotation(JsonIgnore.class);
                     if (jsonIgnore != null && jsonIgnore.value()) {
                         //ignore this field
                         continue;
@@ -134,8 +151,8 @@ public class RepresentationCollector {
 
                     TypeInfo propertyTypeInfo;
                     try {
-                        propertyTypeInfo = Types.getTypeInfo(pd.getReadMethod()
-                                .getReturnType(), pd.getReadMethod()
+                        propertyTypeInfo = Types.getTypeInfo(readMethod
+                                .getReturnType(), readMethod
                                 .getGenericReturnType());
                     } catch (UnsupportedTypeException e) {
                         LOGGER.warning("Could not add property " + pd.getName()
@@ -145,11 +162,11 @@ public class RepresentationCollector {
                         continue;
                     }
 
-                    JsonProperty jsonProperty = pd.getReadMethod().getAnnotation(JsonProperty.class);
+                    JsonProperty jsonProperty = readMethod.getAnnotation(JsonProperty.class);
                     String propertyName = jsonProperty != null && !StringUtils.isNullOrEmpty(jsonProperty.value()) ?
                             jsonProperty.value() : pd.getName();
 
-                    JsonPropertyDescription jsonPropertyDescription = pd.getReadMethod().getAnnotation(JsonPropertyDescription.class);
+                    JsonPropertyDescription jsonPropertyDescription = readMethod.getAnnotation(JsonPropertyDescription.class);
 
                     // Types
                     Property property = new Property();
@@ -163,7 +180,7 @@ public class RepresentationCollector {
                             introspectionHelper);
 
                     for (IntrospectionHelper helper : introspectionHelper) {
-                        helper.processProperty(property, pd.getReadMethod());
+                        helper.processProperty(property, readMethod);
                     }
 
                     representation.getProperties().add(property);
