@@ -48,6 +48,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.apispark.internal.model.Section;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
@@ -97,6 +98,8 @@ public class IntrospectionUtils {
 
         sortDefinition(definition);
 
+        JacksonRepresentation<Definition> definitionRepresentation = new JacksonRepresentation<>(definition);
+
         ClientResource cr = new ClientResource(url);
         try {
             cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin, upwd);
@@ -106,20 +109,20 @@ public class IntrospectionUtils {
                 cr.addQueryParameter("cellType", cellType);
                 cr.addSegment("apis").addSegment("");
                 logger.info("Create a new cell of type " + cellType);
-                cr.post(definition, MediaType.APPLICATION_JSON);
+                cr.post(definitionRepresentation, MediaType.APPLICATION_JSON);
             } else if (createNewVersion) {
                 cr.addSegment("apis").addSegment(cellId)
                         .addSegment("versions").addSegment("");
                 logger.info("Create a new version of the cell "
                         + cellId);
-                cr.post(definition, MediaType.APPLICATION_JSON);
+                cr.post(definitionRepresentation, MediaType.APPLICATION_JSON);
             } else if (updateCell) {
                 cr.addSegment("apis").addSegment(cellId)
                         .addSegment("versions").addSegment(cellVersion);
                 logger.info("Update version " + cellVersion + " of cell "
                         + cellId + " with strategy " + updateStrategy);
                 cr.addQueryParameter("strategy", updateStrategy);
-                cr.put(definition, MediaType.APPLICATION_JSON);
+                cr.put(definitionRepresentation, MediaType.APPLICATION_JSON);
             } else {
                 throw new RuntimeException("No action error");
             }
