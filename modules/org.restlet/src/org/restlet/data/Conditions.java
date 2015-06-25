@@ -305,7 +305,7 @@ public final class Conditions {
                     }
                 } else {
                     matched = (getNoneMatch().size() > 0)
-                            && getNoneMatch().get(0).equals(Tag.ALL);
+                            && Tag.ALL.equals(getNoneMatch().get(0));
                 }
             }
 
