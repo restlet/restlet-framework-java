@@ -66,8 +66,7 @@ public class Swagger2Reader {
                 parameters.put(key, queryParameter);
 
             } else if (swaggerParameter instanceof PathParameter) {
-                org.restlet.ext.apispark.internal.model.PathVariable pathVariable =
-                        new org.restlet.ext.apispark.internal.model.PathVariable();
+                PathVariable pathVariable = new PathVariable();
                 fillRwadefPathVariable(pathVariable, (PathParameter) swaggerParameter);
                 parameters.put(key, pathVariable);
 
@@ -360,7 +359,32 @@ public class Swagger2Reader {
         }
 
         for (Parameter swaggerParameter : swaggerOperation.getParameters()) {
-            if (swaggerParameter instanceof QueryParameter) {
+
+            if (swaggerParameter instanceof RefParameter) {
+                RefParameter refParameter = (RefParameter) swaggerParameter;
+                Object rwadefParameter = parameters.get(refParameter.getSimpleRef());
+
+                if (rwadefParameter == null) {
+                    LOGGER.warning("The parameter " + refParameter.getName()
+                            + " was not found in the list of declared parameters.");
+                } else if (rwadefParameter instanceof Header) {
+                    operation.getHeaders().add((Header) rwadefParameter);
+                } else if (rwadefParameter instanceof PathVariable) {
+                    resource.addPathVariable((PathVariable) rwadefParameter);
+
+                } else if (rwadefParameter instanceof org.restlet.ext.apispark.internal.model.QueryParameter) {
+                    operation.getQueryParameters().add(
+                            (org.restlet.ext.apispark.internal.model.QueryParameter) rwadefParameter);
+
+                } else if (rwadefParameter instanceof PayLoad) {
+                    operation.setInputPayLoad((PayLoad) rwadefParameter);
+
+                } else {
+                    LOGGER.warning("The type of declared parameter " + refParameter.getName() + ", " +
+                            rwadefParameter.getClass() + " is not supported.");
+                }
+
+            } else if (swaggerParameter instanceof QueryParameter) {
                 org.restlet.ext.apispark.internal.model.QueryParameter queryParameter =
                         new org.restlet.ext.apispark.internal.model.QueryParameter();
                 QueryParameter swaggerQueryParameter = (QueryParameter) swaggerParameter;
