@@ -136,7 +136,7 @@ public class Endpoint {
         if (port != null && port != -1) {
             this.port = port;
         } else {
-            port = null;
+            this.port = null;
         }
     }
 
