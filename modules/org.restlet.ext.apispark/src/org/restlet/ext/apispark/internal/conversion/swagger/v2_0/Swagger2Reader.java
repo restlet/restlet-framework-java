@@ -1,5 +1,29 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Info;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.RefModel;
+import io.swagger.models.Response;
+import io.swagger.models.Scheme;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.auth.ApiKeyAuthDefinition;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.OAuth2Definition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.RefParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,30 +42,6 @@ import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Section;
-
-import com.wordnik.swagger.models.ArrayModel;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.RefModel;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Scheme;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.auth.ApiKeyAuthDefinition;
-import com.wordnik.swagger.models.auth.BasicAuthDefinition;
-import com.wordnik.swagger.models.auth.OAuth2Definition;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.parameters.RefParameter;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.RefProperty;
 
 /**
  * Translator : RWADef <- Swagger 2.0.
@@ -438,7 +438,8 @@ public class Swagger2Reader {
                     new org.restlet.ext.apispark.internal.model.Property();
             Property swaggerProperty = model.getProperties().get(key);
 
-            property.setDefaultValue(swaggerProperty.getDefault());
+            property.setDefaultValue(SwaggerUtils.toString(SwaggerUtils
+                    .getDefaultValue(swaggerProperty)));
             property.setDescription(swaggerProperty.getDescription());
             // TODO: enumeration not implemented in Swagger 2.0
             property.setExample(swaggerProperty.getExample());

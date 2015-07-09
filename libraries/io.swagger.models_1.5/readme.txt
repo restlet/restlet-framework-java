@@ -10,6 +10,8 @@ parameters and models are tightly integrated into the server code,
 allowing APIs to always stay in sync."
 
 For more information:
-https://helloreverb.com/developers/swagger
+https://swagger.io
 
 Swagger spec compatibility: 2.0
+
+Built from tag v1.5.0

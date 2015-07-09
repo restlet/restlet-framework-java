@@ -24,9 +24,9 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
 
 /**
  * @author Manuel Boillod

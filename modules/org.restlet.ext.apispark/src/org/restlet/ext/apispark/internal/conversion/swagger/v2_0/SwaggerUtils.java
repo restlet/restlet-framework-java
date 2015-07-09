@@ -24,6 +24,19 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.FloatProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.LongProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
+import io.swagger.models.properties.UUIDProperty;
+import io.swagger.util.Json;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -32,12 +45,6 @@ import java.util.logging.Logger;
 import org.restlet.ext.apispark.internal.conversion.ImportUtils;
 import org.restlet.ext.apispark.internal.conversion.TranslationException;
 import org.restlet.ext.apispark.internal.model.Definition;
-
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.util.Json;
 
 /**
  * Tools library for Swagger 2.0.
@@ -57,6 +64,26 @@ public abstract class SwaggerUtils {
     private SwaggerUtils() {
     }
 
+    public static Object getDefaultValue(Property swaggerProperty) {
+        if (swaggerProperty instanceof IntegerProperty) {
+            return ((IntegerProperty) swaggerProperty).getDefault();
+        } else if (swaggerProperty instanceof LongProperty) {
+            return ((LongProperty) swaggerProperty).getDefault();
+        } else if (swaggerProperty instanceof FloatProperty) {
+            return ((FloatProperty) swaggerProperty).getDefault();
+        } else if (swaggerProperty instanceof DoubleProperty) {
+            return ((DoubleProperty) swaggerProperty).getDefault();
+        } else if (swaggerProperty instanceof UUIDProperty) {
+            return ((UUIDProperty) swaggerProperty).getDefault();
+        } else if (swaggerProperty instanceof StringProperty) {
+            return ((StringProperty) swaggerProperty).getDefault();
+        }
+        LOGGER.warning("Cannot get the default value "
+                + "from a swagger property of unknown type '"
+                + swaggerProperty.getType() + "'");
+        return null;
+    }
+
     /**
      * Returns the {@link Definition} by reading the Swagger definition URL.
      * 
@@ -65,7 +92,7 @@ public abstract class SwaggerUtils {
      * @param userName
      *            The user name for service authentication.
      * @param password
-     *            The paswword for service authentication.
+     *            The password for service authentication.
      * @return A {@link Definition}.
      * @throws org.restlet.ext.apispark.internal.conversion.TranslationException
      * @throws IOException
