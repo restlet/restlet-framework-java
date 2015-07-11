@@ -320,14 +320,12 @@ public class HttpUrlConnectionCall extends ClientCall {
                     // Adjust the streaming mode
                     if (entity.getSize() != -1) {
                         // The size of the entity is known in advance
-                        getConnection().setFixedLengthStreamingMode(
-                                (int) entity.getSize());
+                        getConnection().setFixedLengthStreamingMode(entity.getSize());
                     } else {
                         // The size of the entity is not known in advance
                         if (getHelper().getChunkLength() >= 0) {
                             // Use chunked encoding
-                            getConnection().setChunkedStreamingMode(
-                                    getHelper().getChunkLength());
+                            getConnection().setChunkedStreamingMode(getHelper().getChunkLength());
                         } else {
                             // Use entity buffering to determine the content
                             // length
