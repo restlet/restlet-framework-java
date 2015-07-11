@@ -126,7 +126,7 @@ public final class Method implements Comparable<Method> {
      */
     public static final Method LOCK = new Method("LOCK",
             "Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
-                    + "#METHOD_LOCK", true, false);
+                    + "#METHOD_LOCK", false, false);
 
     /**
      * MKCOL creates a new collection resource at the location specified by the
@@ -256,7 +256,7 @@ public final class Method implements Comparable<Method> {
     public static final Method UNLOCK = new Method(
             "UNLOCK",
             "Removes the lock identified by the lock token from the request URI, and all other resources included in the lock",
-            BASE_WEBDAV + "#METHOD_UNLOCK", true, false);
+            BASE_WEBDAV + "#METHOD_UNLOCK", false, false);
 
     /**
      * Adds a new Method to the list of registered methods.
