@@ -1,0 +1,20 @@
+<library id="swagger.annotations_1.5" symbolicName="io.swagger.annotations">
+	<name>Swagger</name>
+	<description>Swagger document your API with style. Swagger spec compatibility: 2.0</description>
+	<version>1.5</version>
+	<release>0</release>
+	<homeUri>http://swagger.io</homeUri>
+	<downloadUri>http://repo1.maven.org/maven2/io/swagger/swagger-annotations/1.5.0/swagger-annotations-1.5.0.jar</downloadUri>
+	<provider>SmartBear Software</provider>
+
+	<package id="swagger-annotations" name="io.swagger.annotations">
+		<maven>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</maven>
+	</package>
+	<dependency type="library" id="scala" />
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

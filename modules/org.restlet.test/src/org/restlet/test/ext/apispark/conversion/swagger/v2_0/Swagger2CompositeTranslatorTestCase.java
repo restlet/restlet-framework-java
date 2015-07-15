@@ -36,9 +36,9 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
 
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.properties.RefProperty;
+import io.swagger.models.Model;
+import io.swagger.models.Swagger;
+import io.swagger.models.properties.RefProperty;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 

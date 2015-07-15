@@ -40,7 +40,7 @@ import org.restlet.routing.Router;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.models.Swagger;
+import io.swagger.models.Swagger;
 
 /**
  * Restlet that generates Swagger documentation in the format defined by the

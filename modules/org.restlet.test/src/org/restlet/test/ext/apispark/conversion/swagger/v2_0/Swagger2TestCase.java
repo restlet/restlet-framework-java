@@ -24,6 +24,15 @@
 
 package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.Model;
+import io.swagger.models.Path;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.parameters.Parameter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +57,6 @@ import org.restlet.test.RestletTestCase;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.wordnik.swagger.models.Contact;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.Parameter;
 
 public class Swagger2TestCase extends RestletTestCase {
 
@@ -212,22 +213,6 @@ public class Swagger2TestCase extends RestletTestCase {
         return definition;
     }
 
-    private void compareMapOfStrings(Map<String, String> savedMap,
-            Map<String, String> translatedMap) {
-        if (savedMap != null || translatedMap != null) {
-            assertNotNull(savedMap);
-            assertNotNull(translatedMap);
-            for (Entry<String, String> entry : savedMap.entrySet()) {
-                assertEquals(savedMap.get(entry.getKey()),
-                        translatedMap.get(entry.getKey()));
-            }
-            for (Entry<String, String> entry : translatedMap.entrySet()) {
-                assertEquals(savedMap.get(entry.getKey()),
-                        translatedMap.get(entry.getKey()));
-            }
-        }
-    }
-
     private void compareStringLists(List<String> savedList,
             List<String> translatedList) {
         if (assertBothNull(savedList, translatedList)) {
@@ -259,9 +244,8 @@ public class Swagger2TestCase extends RestletTestCase {
         compareSwaggerContact(savedContact, translatedContact);
 
         // License
-        com.wordnik.swagger.models.License savedLicense = savedInfo
-                .getLicense();
-        com.wordnik.swagger.models.License translatedLicense = translatedInfo
+        io.swagger.models.License savedLicense = savedInfo.getLicense();
+        io.swagger.models.License translatedLicense = translatedInfo
                 .getLicense();
         assertEquals(savedLicense.getUrl(), translatedLicense.getUrl());
         assertEquals(savedLicense.getName(), translatedLicense.getName());
@@ -354,15 +338,15 @@ public class Swagger2TestCase extends RestletTestCase {
         assertEquals(savedModel.getDescription(),
                 translatedModel.getDescription());
         assertEquals(savedModel.getExample(), translatedModel.getExample());
-        Map<String, com.wordnik.swagger.models.properties.Property> savedProperties = savedModel
+        Map<String, io.swagger.models.properties.Property> savedProperties = savedModel
                 .getProperties();
-        Map<String, com.wordnik.swagger.models.properties.Property> translatedProperties = translatedModel
+        Map<String, io.swagger.models.properties.Property> translatedProperties = translatedModel
                 .getProperties();
-        for (Entry<String, com.wordnik.swagger.models.properties.Property> entry : savedProperties
+        for (Entry<String, io.swagger.models.properties.Property> entry : savedProperties
                 .entrySet()) {
-            com.wordnik.swagger.models.properties.Property savedProperty = savedProperties
+            io.swagger.models.properties.Property savedProperty = savedProperties
                     .get(entry.getKey());
-            com.wordnik.swagger.models.properties.Property translatedProperty = translatedProperties
+            io.swagger.models.properties.Property translatedProperty = translatedProperties
                     .get(entry.getKey());
             assertNotNull(savedProperty);
             if (translatedProperty == null) {
@@ -373,8 +357,8 @@ public class Swagger2TestCase extends RestletTestCase {
     }
 
     private void compareSwaggerOperations(
-            com.wordnik.swagger.models.Operation savedOperation,
-            com.wordnik.swagger.models.Operation translatedOperation) {
+            io.swagger.models.Operation savedOperation,
+            io.swagger.models.Operation translatedOperation) {
         if (savedOperation != null || translatedOperation != null) {
             assertNotNull(savedOperation);
             assertNotNull(translatedOperation);
@@ -396,15 +380,15 @@ public class Swagger2TestCase extends RestletTestCase {
             compareStringLists(savedProduces, translatedProduces);
 
             // Parameters
-            List<com.wordnik.swagger.models.parameters.Parameter> savedParameters = savedOperation
+            List<io.swagger.models.parameters.Parameter> savedParameters = savedOperation
                     .getParameters();
-            List<com.wordnik.swagger.models.parameters.Parameter> translatedParameters = translatedOperation
+            List<io.swagger.models.parameters.Parameter> translatedParameters = translatedOperation
                     .getParameters();
             if (savedParameters != null || translatedParameters != null) {
                 assertNotNull(savedParameters);
                 assertNotNull(translatedParameters);
-                for (com.wordnik.swagger.models.parameters.Parameter savedParameter : savedParameters) {
-                    com.wordnik.swagger.models.parameters.Parameter translatedParameter = getParameterFromList(
+                for (io.swagger.models.parameters.Parameter savedParameter : savedParameters) {
+                    io.swagger.models.parameters.Parameter translatedParameter = getParameterFromList(
                             translatedParameters, savedParameter.getName());
                     assertNotNull(savedParameter);
                     assertNotNull(translatedParameter);
@@ -414,18 +398,18 @@ public class Swagger2TestCase extends RestletTestCase {
             }
 
             // Responses
-            Map<String, com.wordnik.swagger.models.Response> savedResponses = savedOperation
+            Map<String, io.swagger.models.Response> savedResponses = savedOperation
                     .getResponses();
-            Map<String, com.wordnik.swagger.models.Response> translatedResponses = translatedOperation
+            Map<String, io.swagger.models.Response> translatedResponses = translatedOperation
                     .getResponses();
             if (savedResponses != null || translatedResponses != null) {
                 assertNotNull(savedResponses);
                 assertNotNull(translatedResponses);
-                for (Entry<String, com.wordnik.swagger.models.Response> entry : savedResponses
+                for (Entry<String, io.swagger.models.Response> entry : savedResponses
                         .entrySet()) {
-                    com.wordnik.swagger.models.Response savedResponse = savedResponses
+                    io.swagger.models.Response savedResponse = savedResponses
                             .get(entry.getKey());
-                    com.wordnik.swagger.models.Response translatedResponse = translatedResponses
+                    io.swagger.models.Response translatedResponse = translatedResponses
                             .get(entry.getKey());
                     assertNotNull(savedResponse);
                     assertNotNull(translatedResponse);
@@ -466,8 +450,8 @@ public class Swagger2TestCase extends RestletTestCase {
     }
 
     private void compareSwaggerProperties(
-            com.wordnik.swagger.models.properties.Property savedProperty,
-            com.wordnik.swagger.models.properties.Property translatedProperty) {
+            io.swagger.models.properties.Property savedProperty,
+            io.swagger.models.properties.Property translatedProperty) {
         if (savedProperty != null || translatedProperty != null) {
             assertNotNull(savedProperty);
             assertNotNull(translatedProperty);
@@ -492,12 +476,10 @@ public class Swagger2TestCase extends RestletTestCase {
     }
 
     private void compareSwaggerResponses(
-            com.wordnik.swagger.models.Response savedResponse,
-            com.wordnik.swagger.models.Response translatedResponse) {
+            io.swagger.models.Response savedResponse,
+            io.swagger.models.Response translatedResponse) {
         assertEquals(savedResponse.getDescription(),
                 translatedResponse.getDescription());
-        compareMapOfStrings(savedResponse.getExamples(),
-                translatedResponse.getExamples());
         compareSwaggerProperties(savedResponse.getSchema(),
                 translatedResponse.getSchema());
     }
@@ -511,10 +493,10 @@ public class Swagger2TestCase extends RestletTestCase {
         return null;
     }
 
-    private com.wordnik.swagger.models.parameters.Parameter getParameterFromList(
-            List<com.wordnik.swagger.models.parameters.Parameter> list,
+    private io.swagger.models.parameters.Parameter getParameterFromList(
+            List<io.swagger.models.parameters.Parameter> list,
             String parameterName) {
-        for (com.wordnik.swagger.models.parameters.Parameter parameter : list) {
+        for (io.swagger.models.parameters.Parameter parameter : list) {
             if (parameter.getName().equals(parameterName)) {
                 return parameter;
             }

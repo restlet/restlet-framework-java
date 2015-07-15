@@ -53,7 +53,7 @@
         ],
         "properties": [
           {
-            "defaultValue": null,
+            "defaultValue": "1",
             "description": "unique identifier for the pet",
             "max": null,
             "maxOccurs": 1,
