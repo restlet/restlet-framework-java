@@ -3,10 +3,11 @@
 Changes log  
 ===========
 
-@version-full@ (@release-date@)
+- 2.3.4 (07/16/2015)
     - Bugs fixed
        - LOCK and UNLOCK methods are not safe. Issue #1112.
          Reported by Zsolt Szloboda.
+       - Fixed APISpark introspection when application name is not set.
 
 - 2.3.3 (06/21/2015)
     - Bugs fixed

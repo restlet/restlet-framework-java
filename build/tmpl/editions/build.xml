@@ -408,7 +408,7 @@
 
 			<!-- Copy all library content into the destination folder -->
 			<copy todir="${dist-classic}/lib/${lib-@{name}-root}">
-				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties" />
+				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties, library.xml" />
 			</copy>
 		</sequential>
 	</macrodef>
