@@ -392,7 +392,7 @@ public class RangeTestCase extends RestletTestCase {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("10220000998", response.getEntity().getText());
 
-            request = new Request(Method.GET, "http://localhost:" + TEST_PORT + "/testPut/essai.txt");
+            request = new Request(Method.GET, uriEssai);
             request.setRanges(Arrays.asList(new Range(3, Range.SIZE_MAX)));
             response = client.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
