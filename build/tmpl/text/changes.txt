@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+@version-full@ (@release-date@)
+
 - 2.3.4 (07/16/2015)
     - Bugs fixed
        - LOCK and UNLOCK methods are not safe. Issue #1112.
