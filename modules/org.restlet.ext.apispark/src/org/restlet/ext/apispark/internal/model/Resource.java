@@ -80,6 +80,12 @@ public class Resource {
         return null;
     }
 
+    public void addPathVariable(PathVariable pathVariable) {
+        if (getPathVariable(pathVariable.getName()) == null) {
+            pathVariables.add(pathVariable);
+        }
+    }
+
     @JsonInclude(Include.NON_EMPTY)
     public List<Operation> getOperations() {
         return operations;

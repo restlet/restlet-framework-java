@@ -143,11 +143,11 @@ public class ApplicationIntrospector extends IntrospectionUtils {
         Contract contract = new Contract();
         contract.setDescription(StringUtils.nullToEmpty(application
                 .getDescription()));
-        if (StringUtils.isNullOrEmpty(application.getName())) {
+        if (application.toString().equals(application.getName())) {
             LOGGER.log(Level.WARNING,
-                    "Please provide a name to your application, used "
-                            + contract.getName() + " by default.");
-            contract.setName(application.getClass().getName());
+                    "Please provide a name to your application by overriding its method getName. Used "
+                            + application.getClass().getSimpleName() + " by default.");
+            contract.setName(application.getClass().getSimpleName());
         } else {
             contract.setName(application.getName());
         }

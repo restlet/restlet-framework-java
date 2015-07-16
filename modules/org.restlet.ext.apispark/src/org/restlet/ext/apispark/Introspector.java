@@ -238,7 +238,7 @@ public class Introspector {
 
         if (StringUtils.isNullOrEmpty(ulogin)
                 || StringUtils.isNullOrEmpty(upwd)) {
-            failWithErrorMessage("You should specify your API spark login and password with -U (--username) and -p (--password). ");
+            failWithErrorMessage("You should specify your API spark login and password with -u (--username) and -p (--password). ");
         }
 
         if (StringUtils.isNullOrEmpty(defSource) && jaxRsResources.isEmpty()) {
@@ -293,12 +293,9 @@ public class Introspector {
                 // TODO implement introspection of Restlet based JaxRs
                 // (org.restlet.ext.jaxrs.JaxRsApplication)
                 if (Application.class.isAssignableFrom(clazz)) {
-                    Application application = ApplicationIntrospector
-                            .getApplication(defSource);
-                    Component component = ComponentIntrospector
-                            .getComponent(compName);
-                    Reference baseRef = endpoint != null ? new Reference(
-                            endpoint) : null;
+                    Application application = ApplicationIntrospector.getApplication(defSource);
+                    Component component = ComponentIntrospector.getComponent(compName);
+                    Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
                     if (applicationName != null) {
                         application.setName(applicationName);
                     }
