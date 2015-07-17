@@ -72,6 +72,14 @@ public class JacksonTestCase extends RestletTestCase {
         return invoice;
     }
 
+    public void testCbor() throws Exception {
+        Customer customer = createCustomer();
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(
+                MediaType.APPLICATION_CBOR, customer);
+        rep = new JacksonRepresentation<Customer>(rep, Customer.class);
+        verify(customer, rep.getObject());
+    }
+
     public void testCsv() throws Exception {
         Invoice invoice = createInvoice();
         JacksonRepresentation<Invoice> rep = new JacksonRepresentation<Invoice>(
@@ -150,7 +158,7 @@ public class JacksonTestCase extends RestletTestCase {
         }
         assertTrue(error);
     }
-
+    
     public void testYaml() throws Exception {
         Customer customer = createCustomer();
         JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(

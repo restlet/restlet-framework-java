@@ -100,6 +100,7 @@ public class MetadataService extends Service {
      * <li>au: AU audio file</li>
      * <li>bin: Binary file</li>
      * <li>bmp: Bitmap graphics</li>
+     * <li>cbor: Concise Binary Object Representation</li>
      * <li>class: Java bytecode</li>
      * <li>css: CSS stylesheet</li>
      * <li>csv: Comma-separated Values</li>
@@ -230,6 +231,7 @@ public class MetadataService extends Service {
         ext(dm, "au", MediaType.AUDIO_BASIC);
         ext(dm, "bin", MediaType.APPLICATION_OCTET_STREAM);
         ext(dm, "bmp", MediaType.IMAGE_BMP);
+        ext(dm, "cbor", MediaType.APPLICATION_CBOR);
         ext(dm, "class", MediaType.APPLICATION_JAVA);
         ext(dm, "css", MediaType.TEXT_CSS);
         ext(dm, "csv", MediaType.TEXT_CSV);
