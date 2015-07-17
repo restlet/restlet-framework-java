@@ -4,6 +4,9 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - Added check for jar class path resources if the inputstream is empty.
+         Reported and contributed by Gernot Pansy.
 
 - 2.3.4 (07/16/2015)
     - Bugs fixed
