@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvFactory;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.internal.XmlFactoryProvider;
 import org.restlet.representation.OutputRepresentation;
@@ -46,7 +48,7 @@ import java.io.OutputStream;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
- * automatically in JSON, JSON binary (Smile), XML, YAML and CSV. <br>
+ * automatically in JSON, JSON binary (Smile), CBOR, XML, YAML and CSV. <br>
  * <br>
  * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
  * document type definition (DTD) entity resolution can expose the parser to an
@@ -206,6 +208,11 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             SmileFactory smileFactory = new SmileFactory();
             smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new ObjectMapper(smileFactory);
+        } else if (MediaType.APPLICATION_CBOR
+                .isCompatible(getMediaType())) {
+            CBORFactory cborFactory = new CBORFactory();
+            cborFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(cborFactory);
             // [ifndef android]
         } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
                 || MediaType.TEXT_XML.isCompatible(getMediaType())) {

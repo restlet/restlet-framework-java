@@ -37,6 +37,12 @@
 			<artifactId>jackson-dataformat-smile</artifactId>
 		</maven>
 	</package>
+	<package id="jackson-cbor" name="com.fasterxml.jackson.cbor">
+		<maven>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-cbor</artifactId>
+		</maven>
+	</package>
 	<package id="jackson-xml" name="com.fasterxml.jackson.xml">
 		<maven>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>

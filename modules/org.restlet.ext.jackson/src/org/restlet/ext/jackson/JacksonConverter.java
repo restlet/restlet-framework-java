@@ -36,7 +36,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
 /**
- * Converter between the JSON, JSON Smile, CSV, XML, YAML and Representation
+ * Converter between the JSON, JSON Smile, CBOR, CSV, XML, YAML and Representation
  * classes based on Jackson.
  * 
  * @author Jerome Louvel
@@ -51,6 +51,10 @@ public class JacksonConverter extends ConverterHelper {
     /** Variant with media type application/yaml. */
     private static final VariantInfo VARIANT_APPLICATION_YAML = new VariantInfo(
             MediaType.APPLICATION_YAML);
+    
+    /** Variant with media type application/cbor. */
+    private static final VariantInfo VARIANT_APPLICATION_CBOR = new VariantInfo(
+            MediaType.APPLICATION_CBOR);
 
     /** Variant with media type application/json. */
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
@@ -121,6 +125,7 @@ public class JacksonConverter extends ConverterHelper {
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_JSON_SMILE);
+            result = addVariant(result, VARIANT_APPLICATION_CBOR);
             // [ifndef android] instruction
             result = addVariant(result, VARIANT_APPLICATION_XML);
             // [ifndef android] instruction
@@ -146,6 +151,7 @@ public class JacksonConverter extends ConverterHelper {
         return (variant != null)
                 && (VARIANT_JSON.isCompatible(variant)
                         || VARIANT_JSON_SMILE.isCompatible(variant)
+                        || VARIANT_APPLICATION_CBOR.isCompatible(variant)
                         // [ifndef android] line
                         || VARIANT_APPLICATION_XML.isCompatible(variant)
                         // [ifndef android] line
@@ -242,6 +248,7 @@ public class JacksonConverter extends ConverterHelper {
             Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_CBOR, 1.0F);
         // [ifndef android] instruction
         updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
         // [ifndef android] instruction

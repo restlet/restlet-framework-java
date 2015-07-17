@@ -86,6 +86,10 @@ public final class MediaType extends Metadata {
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
     // [ifndef gwt] member
+    public static final MediaType APPLICATION_CBOR = register(
+            "application/cbor", "Concise Binary Object Representation document");
+    
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_COMPRESS = register(
             "application/x-compress", "Compressed file");
 
