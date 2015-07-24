@@ -140,6 +140,7 @@ public class Directory extends Finder {
         this.modifiable = false;
         this.negotiatingContent = true;
         setTargetClass(DirectoryServerResource.class);
+        setName("Directory");
     }
 
     /**
