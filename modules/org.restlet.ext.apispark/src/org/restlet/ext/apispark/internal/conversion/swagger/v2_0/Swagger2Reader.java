@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
@@ -42,6 +43,8 @@ import org.restlet.ext.apispark.internal.model.PayLoad;
 import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Section;
+
+import com.google.common.base.Joiner;
 
 /**
  * Translator : RWADef <- Swagger 2.0.
@@ -160,20 +163,69 @@ public class Swagger2Reader {
     }
 
     private static void fillRepresentations(Swagger swagger, Contract contract) {
-        if (swagger.getDefinitions() == null) {
-            return;
+        // A Representation in Restlet is equivalent to a Schema Object in the
+        // Swagger 2.0 spec.
+        //
+        // Schema Objects can be found in 3 different locations in a Swagger
+        // model:
+        // - paths/{path}/{method}/parameters/schema
+        // - paths/{path}/{method}/responses/{statusCode}/schema
+        // - definitions/{name}
+        //
+        // A schema can reference another schema in definitions, but can
+        // also contain an inline anonymous schema.
+        int anonymousRepresentationCounter = 1;
+        for (Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            for (Operation operation : pathEntry.getValue().getOperations()) {
+                for (Parameter parameter : operation.getParameters()) {
+                    if (parameter instanceof BodyParameter) {
+                        fillRepresentation(
+                                ((BodyParameter) parameter).getSchema(),
+                                "anonymousRepresentation"
+                                        + anonymousRepresentationCounter,
+                                contract);
+                        anonymousRepresentationCounter += 1;
+                    }
+                }
+                for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
+                    Property schemaProperty = responseEntry.getValue()
+                            .getSchema();
+                    if (schemaProperty instanceof RefProperty
+                            && ((RefProperty) schemaProperty).get$ref() != null) {
+                        continue; // schema is defined elsewhere
+                    }
+                    String pathToPotentialInlineSchema = Joiner.on("/").join(
+                            "paths", pathEntry.getKey(),
+                            operation.getOperationId(), "responses",
+                            responseEntry.getKey(), "schema");
+                    LOGGER.warning(String
+                            .format("Looks like you might have an inline schema at %s. "
+                                    + "Restlet Framework does not support inline schemas in responses. "
+                                    + "Your schema was ignored. "
+                                    + "Please place your schema in the definitions of your Swagger file.",
+                                    pathToPotentialInlineSchema));
+                }
+            }
         }
+        for (Entry<String, Model> definition : swagger.getDefinitions()
+                .entrySet()) {
+            fillRepresentation(definition.getValue(), definition.getKey(), contract);
+        }
+    }
 
-        for (String key : swagger.getDefinitions().keySet()) {
-            Model model = swagger.getDefinitions().get(key);
-            Representation representation = new Representation();
-            representation.setDescription(model.getDescription());
-            representation.setName(key);
-            representation.setRaw(false);
-            // TODO: example not implemented in RWADef (built from properties examples)
-            fillProperties(model, representation);
-            contract.getRepresentations().add(representation);
+    private static void fillRepresentation(Model model, String name,
+            Contract contract) {
+        if (model.getReference() != null) {
+            return; // schema is defined elsewhere
         }
+        Representation representation = new Representation();
+        representation.setDescription(model.getDescription());
+        representation.setName(name);
+        representation.setRaw(false);
+        // TODO: example not implemented in RWADef (built from
+        // properties examples)
+        fillProperties(model, representation);
+        contract.getRepresentations().add(representation);
     }
 
     private static void fillResources(Swagger swagger, Contract contract,
