@@ -1107,7 +1107,7 @@
             "name": "loginUser",
             "queryParameters": [
               {
-                "allowMultiple": false,
+                "allowMultiple": true,
                 "defaultValue": null,
                 "description": "The user name for login",
                 "name": "username",
@@ -1115,7 +1115,7 @@
                 "required": true
               },
               {
-                "allowMultiple": false,
+                "allowMultiple": true,
                 "defaultValue": null,
                 "description": "The password for login in clear text",
                 "name": "password",

@@ -63,6 +63,7 @@ import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
+import org.restlet.test.ext.apispark.conversion.DefinitionComparator;
 
 public class Swagger2TranslatorTestCase extends Swagger2TestCase {
 
@@ -381,7 +382,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
-        compareDefinitions(savedDefinition, translatedDefinition);
+        DefinitionComparator.compareDefinitions(savedDefinition, translatedDefinition);
     }
 
 }

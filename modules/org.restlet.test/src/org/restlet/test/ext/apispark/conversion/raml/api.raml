@@ -1,0 +1,11 @@
+#%RAML 0.8
+title: Notes
+version: v4.0
+baseUri: HTTPS://example.com/{country}/admin
+protocols: [ HTTP, HTTPS ]
+mediaType:  application/json
+securitySchemes:
+  - oauth_2_0: 
+      type: Digest Authentication
+  - oauth_2_0: 
+      type: x-customHeader

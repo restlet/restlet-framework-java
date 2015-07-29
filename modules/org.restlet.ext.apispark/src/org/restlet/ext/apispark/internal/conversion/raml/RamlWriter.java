@@ -326,7 +326,7 @@ public abstract class RamlWriter {
     }
 
     private static List<Map<String, SecurityScheme>> getSecuritySchemes(Endpoint endpoint) {
-        ArrayList<Map<String, SecurityScheme>> securitySchemesList = new ArrayList<>();
+        List<Map<String, SecurityScheme>> securitySchemesList = new ArrayList<>();
         Map<String, SecurityScheme> securitySchemes = new LinkedHashMap<>();
         SecurityScheme securityScheme = new SecurityScheme();
         if (endpoint != null) {
