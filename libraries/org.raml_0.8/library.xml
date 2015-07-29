@@ -2,7 +2,7 @@
 	<name>Raml parser</name>
 	<description>Java implementation of the raml parser</description>
 	<version>0.8</version>
-	<release>7</release>
+	<release>12</release>
 	<homeUri>http://raml.org</homeUri>
 	<downloadUri>http://raml.org</downloadUri>
 	<provider>Mule Soft</provider>
@@ -10,7 +10,7 @@
 	<package id="raml" name="org.raml">
 	    <groupId>org.raml</groupId>
 	    <artifactId>raml-parser</artifactId>
-	    <version>0.8.7</version>
+	    <version>0.8.12</version>
 	</package>
 	<dependencies>
 		<dependency type="library" id="io" />
