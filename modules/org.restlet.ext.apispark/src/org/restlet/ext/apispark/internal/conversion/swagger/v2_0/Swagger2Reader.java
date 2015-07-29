@@ -62,17 +62,17 @@ public class Swagger2Reader {
             if (swaggerParameter instanceof QueryParameter) {
                 org.restlet.ext.apispark.internal.model.QueryParameter queryParameter =
                         new org.restlet.ext.apispark.internal.model.QueryParameter();
-                fillRwadefQueryParameter(queryParameter, (QueryParameter) swaggerParameter);
+                fillQueryParameter(queryParameter, (QueryParameter) swaggerParameter);
                 parameters.put(key, queryParameter);
 
             } else if (swaggerParameter instanceof PathParameter) {
                 PathVariable pathVariable = new PathVariable();
-                fillRwadefPathVariable(pathVariable, (PathParameter) swaggerParameter);
+                fillPathVariable(pathVariable, (PathParameter) swaggerParameter);
                 parameters.put(key, pathVariable);
 
             } else if (swaggerParameter instanceof HeaderParameter) {
                 Header header = new Header();
-                fillRwadefHeader(header, (HeaderParameter) swaggerParameter);
+                fillHeader(header, (HeaderParameter) swaggerParameter);
                 parameters.put(key, header);
 
             } else if (swaggerParameter instanceof BodyParameter) {
@@ -171,7 +171,7 @@ public class Swagger2Reader {
             representation.setName(key);
             representation.setRaw(false);
             // TODO: example not implemented in RWADef (built from properties examples)
-            fillRwadefProperties(model, representation);
+            fillProperties(model, representation);
             contract.getRepresentations().add(representation);
         }
     }
@@ -199,7 +199,7 @@ public class Swagger2Reader {
                     PathVariable pathVariable = null;
                     if (parameter instanceof PathParameter) {
                         pathVariable = new PathVariable();
-                        fillRwadefPathVariable(pathVariable, (PathParameter) parameter);
+                        fillPathVariable(pathVariable, (PathParameter) parameter);
                     } else if (parameter instanceof RefParameter) {
                         RefParameter refParameter = (RefParameter) parameter;
                         Object savedParameter = parameters.get(refParameter.getSimpleRef());
@@ -213,14 +213,14 @@ public class Swagger2Reader {
                     }
                 }
             }
-            fillRwadefOperations(path, resource, contract, produces, consumes, parameters);
+            fillOperations(path, resource, contract, produces, consumes, parameters);
 
             contract.getResources().add(resource);
         }
 
     }
 
-    private static void fillRwadefEndpoints(Swagger swagger, Definition definition) {
+    private static void fillEndpoints(Swagger swagger, Definition definition) {
         String authenticationProtocol = null;
 
         if (swagger.getSecurityDefinitions() != null) {
@@ -247,7 +247,7 @@ public class Swagger2Reader {
         }
     }
 
-    private static void fillRwadefGeneralInformation(Swagger swagger, Definition definition,
+    private static void fillGeneralInformation(Swagger swagger, Definition definition,
             List<String> produces, List<String> consumes) {
 
         Info info = swagger.getInfo();
@@ -290,7 +290,7 @@ public class Swagger2Reader {
         definition.setAttribution(null);
     }
 
-    private static void fillRwadefHeader(Header header, HeaderParameter swaggerHeader) {
+    private static void fillHeader(Header header, HeaderParameter swaggerHeader) {
         header.setName(swaggerHeader.getName());
         header.setRequired(swaggerHeader.getRequired());
         header.setDescription(swaggerHeader.getDescription());
@@ -305,7 +305,7 @@ public class Swagger2Reader {
         header.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefOperation(Operation swaggerOperation, Resource resource,
+    private static void fillOperation(Operation swaggerOperation, Resource resource,
             Contract contract, String methodName,
             List<String> produces, List<String> consumes,
             Map<String, Object> parameters) {
@@ -326,32 +326,32 @@ public class Swagger2Reader {
         operation.setMethod(methodName);
         operation.setName(swaggerOperation.getOperationId());
 
-        fillRwadefParameters(swaggerOperation, operation, resource, parameters);
-        fillRwadefResponses(swaggerOperation, operation, contract, parameters);
+        fillParameters(swaggerOperation, operation, resource, parameters);
+        fillResponses(swaggerOperation, operation, contract, parameters);
         fillInputPayload(swaggerOperation, operation, contract);
 
         resource.getOperations().add(operation);
     }
 
-    private static void fillRwadefOperations(Path path, Resource resource,
+    private static void fillOperations(Path path, Resource resource,
             Contract contract, List<String> produces, List<String> consumes,
             Map<String, Object> parameters) {
 
-        fillRwadefOperation(path.getGet(), resource, contract, Method.GET.getName(),
+        fillOperation(path.getGet(), resource, contract, Method.GET.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPost(), resource, contract, Method.POST.getName(),
+        fillOperation(path.getPost(), resource, contract, Method.POST.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPut(), resource, contract, Method.PUT.getName(),
+        fillOperation(path.getPut(), resource, contract, Method.PUT.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getDelete(), resource, contract, Method.DELETE.getName(),
+        fillOperation(path.getDelete(), resource, contract, Method.DELETE.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getOptions(), resource, contract, Method.OPTIONS.getName(),
+        fillOperation(path.getOptions(), resource, contract, Method.OPTIONS.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPatch(), resource, contract, Method.PATCH.getName(),
+        fillOperation(path.getPatch(), resource, contract, Method.PATCH.getName(),
                 produces, consumes, parameters);
     }
 
-    private static void fillRwadefParameters(Operation swaggerOperation,
+    private static void fillParameters(Operation swaggerOperation,
             org.restlet.ext.apispark.internal.model.Operation operation, Resource resource,
             Map<String, Object> parameters) {
         if (swaggerOperation.getParameters() == null) {
@@ -389,14 +389,14 @@ public class Swagger2Reader {
                         new org.restlet.ext.apispark.internal.model.QueryParameter();
                 QueryParameter swaggerQueryParameter = (QueryParameter) swaggerParameter;
 
-                fillRwadefQueryParameter(queryParameter, swaggerQueryParameter);
+                fillQueryParameter(queryParameter, swaggerQueryParameter);
                 operation.getQueryParameters().add(queryParameter);
             } else if (swaggerParameter instanceof PathParameter) {
                 org.restlet.ext.apispark.internal.model.PathVariable pathVariable =
                         new org.restlet.ext.apispark.internal.model.PathVariable();
                 PathParameter swaggerPathVariable = (PathParameter) swaggerParameter;
 
-                fillRwadefPathVariable(pathVariable, swaggerPathVariable);
+                fillPathVariable(pathVariable, swaggerPathVariable);
                 if (resource.getPathVariable(pathVariable.getName()) == null) {
                     resource.getPathVariables().add(pathVariable);
                 }
@@ -404,7 +404,7 @@ public class Swagger2Reader {
                 Header header = new Header();
                 HeaderParameter swaggerHeader = new HeaderParameter();
 
-                fillRwadefHeader(header, swaggerHeader);
+                fillHeader(header, swaggerHeader);
                 operation.getHeaders().add(header);
             } else {
                 if (!(swaggerParameter instanceof BodyParameter)) {
@@ -415,7 +415,7 @@ public class Swagger2Reader {
         }
     }
 
-    private static void fillRwadefPathVariable(PathVariable pathVariable, PathParameter swaggerPathVariable) {
+    private static void fillPathVariable(PathVariable pathVariable, PathParameter swaggerPathVariable) {
         pathVariable.setName(swaggerPathVariable.getName());
         pathVariable.setRequired(swaggerPathVariable.getRequired());
         pathVariable.setDescription(swaggerPathVariable.getDescription());
@@ -428,7 +428,7 @@ public class Swagger2Reader {
         pathVariable.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefProperties(Model model, Representation representation) {
+    private static void fillProperties(Model model, Representation representation) {
         if (model.getProperties() == null) {
             return;
         }
@@ -469,7 +469,7 @@ public class Swagger2Reader {
      * @param swaggerQueryParameter
      *            The Swagger query parameter.
      */
-    private static void fillRwadefQueryParameter(org.restlet.ext.apispark.internal.model.QueryParameter queryParameter,
+    private static void fillQueryParameter(org.restlet.ext.apispark.internal.model.QueryParameter queryParameter,
             QueryParameter swaggerQueryParameter) {
 
         // TODO: allowMultiple not implemented in Swagger 2.0
@@ -489,7 +489,7 @@ public class Swagger2Reader {
         queryParameter.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefResponses(Operation swaggerOperation,
+    private static void fillResponses(Operation swaggerOperation,
             org.restlet.ext.apispark.internal.model.Operation operation,
             Contract contract, Map<String, Object> parameters) {
         if (swaggerOperation == null) {
@@ -550,11 +550,11 @@ public class Swagger2Reader {
         Definition definition = new Definition();
 
         // fill RWADef main attributes
-        fillRwadefEndpoints(swagger, definition);
+        fillEndpoints(swagger, definition);
 
         List<String> produces = new ArrayList<>();
         List<String> consumes = new ArrayList<>();
-        fillRwadefGeneralInformation(swagger, definition, produces, consumes);
+        fillGeneralInformation(swagger, definition, produces, consumes);
 
         // fill definition.sections
         Contract contract = definition.getContract();
