@@ -197,7 +197,23 @@ public class TypeUtils {
                 result = "guid'" + value + "'";
             } else if (adoNetType.endsWith("String")) {
                 result = "'" + value + "'";
-            }
+            } else if (adoNetType.endsWith("Boolean")) {
+                result = String.valueOf(value);
+            } else if (adoNetType.endsWith("Byte")) {
+                result = String.valueOf(value);
+            } else if (adoNetType.endsWith("Int16")) {
+                result = String.valueOf(value);
+            } else if (adoNetType.endsWith("Int32")) {
+                result = String.valueOf(value);
+            } else if (adoNotType.endsWith("Edm64")) {
+                result = value + "L";
+            } else if (adoNetType.endsWith("Decimal")) {
+                result = value + "d";
+            } else if (adoNetType.endsWith("Single")) {
+                result = String.valueOf(value);
+            } else if (adoNetType.endsWith("Double")) {
+                result = String.valueOf(value);
+            }  
         } catch (Exception e) {
             Context.getCurrentLogger().warning(
                     "Cannot convert " + value + " from this EDM type "
