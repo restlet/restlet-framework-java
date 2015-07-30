@@ -205,7 +205,7 @@ public class TypeUtils {
                 result = String.valueOf(value);
             } else if (adoNetType.endsWith("Int32")) {
                 result = String.valueOf(value);
-            } else if (adoNotType.endsWith("Edm64")) {
+            } else if (adoNotType.endsWith("Int64")) {
                 result = value + "L";
             } else if (adoNetType.endsWith("Decimal")) {
                 result = value + "d";
