@@ -539,8 +539,8 @@ public class Swagger2Reader {
     /**
      * Translates a Swagger definition to a Restlet Web API Definition
      * 
-     * @param Swagger
-     *            The translated Swagger 2.0 definition
+     * @param swagger
+     *            The Swagger 2.0 definition to translate
      * 
      * @return The Restlet Web API definition
      */
