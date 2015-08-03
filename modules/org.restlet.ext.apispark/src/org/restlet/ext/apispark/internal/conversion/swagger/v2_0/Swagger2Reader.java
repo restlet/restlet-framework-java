@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -547,32 +548,62 @@ public class Swagger2Reader {
         if (swaggerOperation == null) {
             return;
         }
-
+        boolean operationHasSpecificSuccessResponse = false;
         if (swaggerOperation.getResponses() != null) {
-            for (String key : swaggerOperation.getResponses().keySet()) {
-                Response swaggerResponse = swaggerOperation.getResponses().get(key);
-                org.restlet.ext.apispark.internal.model.Response response =
-                        new org.restlet.ext.apispark.internal.model.Response();
-
+            for (Entry<String, Response> responseEntry : swaggerOperation
+                    .getResponses().entrySet()) {
+                String key = responseEntry.getKey();
+                Response swaggerResponse = responseEntry.getValue();
+                if ("default".equals(key)) {
+                    continue; // the default response is handled at the end
+                }
                 int statusCode;
                 try {
                     statusCode = Integer.parseInt(key);
-                    response.setCode(statusCode);
-                } catch (Exception e) {
-                    // TODO: what to do with "Default" responses ?
-                    LOGGER.warning("Response " + key + " for operation " + swaggerOperation.getOperationId() +
-                            " could not be retrieved because its key is not a valid status code.");
+                } catch (NumberFormatException e) {
+                    LOGGER.warning(String.format(
+                            "Response '%s' for operation '%s' "
+                                    + "could not be retrieved because its "
+                                    + "key is not a valid status code.", key,
+                            swaggerOperation.getOperationId()));
                     continue;
                 }
+                if (Status.isSuccess(statusCode)) {
+                    operationHasSpecificSuccessResponse = true;
+                }
+                fillResponse(statusCode, swaggerResponse, swaggerOperation,
+                        operation, contract, parameters);
+            }
 
-                response.setDescription(swaggerResponse.getDescription());
-                response.setName(ConversionUtils.generateResponseName(statusCode));
-
-                fillOutputPayload(swaggerResponse, response, swaggerOperation, contract, parameters);
-
-                operation.getResponses().add(response);
+            Response defaultSwaggerResponse = swaggerOperation.getResponses()
+                    .get("default");
+            if (defaultSwaggerResponse != null
+                    && !operationHasSpecificSuccessResponse) {
+                fillResponse(200, defaultSwaggerResponse, swaggerOperation,
+                        operation, contract, parameters);
+            } else if (defaultSwaggerResponse != null) {
+                LOGGER.warning(String.format(
+                        "The 'default' response for the operation '%s' was "
+                                + "ignored because there is already a success response "
+                                + "and the Restlet Framework does not support "
+                                + "'default' responses for other status codes.",
+                                swaggerOperation.getOperationId()));
             }
         }
+    }
+
+    private static void fillResponse(int statusCode,
+            Response swaggerResponse,
+            Operation swaggerOperation,
+            org.restlet.ext.apispark.internal.model.Operation operation,
+            Contract contract, Map<String, Object> parameters) {
+        org.restlet.ext.apispark.internal.model.Response response = new org.restlet.ext.apispark.internal.model.Response();
+        response.setCode(statusCode);
+        response.setDescription(swaggerResponse.getDescription());
+        response.setName(ConversionUtils.generateResponseName(statusCode));
+        fillOutputPayload(swaggerResponse, response, swaggerOperation,
+                contract, parameters);
+        operation.getResponses().add(response);
     }
 
     private static void fillSections(Swagger swagger, Contract contract) {
