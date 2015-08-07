@@ -1,0 +1,19 @@
+<library id="swagger.models_1.5" symbolicName="io.swagger.models">
+	<name>Swagger</name>
+	<description>Swagger document your API with style. Swagger spec compatibility: 2.0</description>
+	<version>1.5</version>
+	<release>0</release>
+	<homeUri>http://swagger.io</homeUri>
+	<downloadUri>http://repo1.maven.org/maven2/io/swagger/swagger-models/1.5.0/swagger-models-1.5.0.jar</downloadUri>
+	<provider>SmartBear Software</provider>
+
+	<package id="swagger-models" name="io.swagger.models">
+		<maven>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

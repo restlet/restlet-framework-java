@@ -1,0 +1,13 @@
+#feat(): (AS-)
+#fix(): (AS-)
+
+
+# FORMAT: <type>(<scope>): <subject> (AS-<issue_number>)
+# <type> can be: feat, fix, docs, style, refactor, perf, test, chore or revert',
+# <scope> arbitrary string (ex: databrowser, entitystore, sqlwrapper, api, connector)
+
+# docs, style, refactor, perf, test and chore: can be used as well.
+# WIP: ... to by pass the validation
+
+# Note that you can bypass messages validation with the option -n `git commit -n`
+# To know more about the validation rules, have a look to the files under resources/git/hooks/

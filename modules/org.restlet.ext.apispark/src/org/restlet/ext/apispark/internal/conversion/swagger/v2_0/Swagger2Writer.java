@@ -46,35 +46,35 @@ import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Section;
 import org.restlet.ext.apispark.internal.utils.SampleUtils;
 
-import com.wordnik.swagger.models.ArrayModel;
-import com.wordnik.swagger.models.Contact;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.License;
-import com.wordnik.swagger.models.ModelImpl;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.RefModel;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Scheme;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.auth.BasicAuthDefinition;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.properties.AbstractNumericProperty;
-import com.wordnik.swagger.models.properties.AbstractProperty;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.BooleanProperty;
-import com.wordnik.swagger.models.properties.DateProperty;
-import com.wordnik.swagger.models.properties.DoubleProperty;
-import com.wordnik.swagger.models.properties.FileProperty;
-import com.wordnik.swagger.models.properties.FloatProperty;
-import com.wordnik.swagger.models.properties.IntegerProperty;
-import com.wordnik.swagger.models.properties.LongProperty;
-import com.wordnik.swagger.models.properties.RefProperty;
-import com.wordnik.swagger.models.properties.StringProperty;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.License;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.RefModel;
+import io.swagger.models.Response;
+import io.swagger.models.Scheme;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.properties.AbstractNumericProperty;
+import io.swagger.models.properties.AbstractProperty;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.BooleanProperty;
+import io.swagger.models.properties.DateProperty;
+import io.swagger.models.properties.DoubleProperty;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.FloatProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.LongProperty;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
 /**
  * Translator : RWADef -> Swagger 2.0.
@@ -158,7 +158,7 @@ public class Swagger2Writer {
         /* Property -> Property */
         for (org.restlet.ext.apispark.internal.model.Property property : properties) {
 
-            com.wordnik.swagger.models.properties.Property propertySwagger;
+            io.swagger.models.properties.Property propertySwagger;
 
             Object exampleObject = SampleUtils.getPropertyExampleValue(property);
             String example = exampleObject == null ? null : exampleObject
@@ -167,7 +167,7 @@ public class Swagger2Writer {
             // property type
             if (property.isList()) {
                 ArrayProperty arrayProperty = new ArrayProperty();
-                com.wordnik.swagger.models.properties.Property itemProperty;
+                io.swagger.models.properties.Property itemProperty;
                 if (Types.isCompositeType(property.getType())) {
                     String compositePropertyType = name + StringUtils.firstUpper(property.getName());
                     itemProperty = newPropertyForType(compositePropertyType);
@@ -286,7 +286,7 @@ public class Swagger2Writer {
 
         // query parameters
         for (org.restlet.ext.apispark.internal.model.QueryParameter queryParameter : operation.getQueryParameters()) {
-            com.wordnik.swagger.models.parameters.QueryParameter queryParameterSwagger = new com.wordnik.swagger.models.parameters.QueryParameter();
+            io.swagger.models.parameters.QueryParameter queryParameterSwagger = new io.swagger.models.parameters.QueryParameter();
             queryParameterSwagger.setRequired(queryParameter.isRequired());
             queryParameterSwagger.setDefaultValue(queryParameter
                     .getDefaultValue());
@@ -379,7 +379,7 @@ public class Swagger2Writer {
             Resource resource, Path pathSwagger) {
         for (org.restlet.ext.apispark.internal.model.Operation operation : resource.getOperations()) {
 
-            com.wordnik.swagger.models.Operation operationSwagger = new com.wordnik.swagger.models.Operation();
+            io.swagger.models.Operation operationSwagger = new io.swagger.models.Operation();
             operationSwagger.setTags(new ArrayList<String>());
             operationSwagger.getTags().addAll(resource.getSections());
 
@@ -575,7 +575,7 @@ public class Swagger2Writer {
      *            Type Rwadef
      * @return Type Swagger
      */
-    private static com.wordnik.swagger.models.properties.Property newPropertyForType(
+    private static io.swagger.models.properties.Property newPropertyForType(
             String type) {
 
         switch (type.toLowerCase()) {

@@ -27,8 +27,8 @@ package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 import java.io.File;
 import java.io.IOException;
 
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.util.Json;
+import io.swagger.models.Swagger;
+import io.swagger.util.Json;
 
 public class SwaggerLoader {
 

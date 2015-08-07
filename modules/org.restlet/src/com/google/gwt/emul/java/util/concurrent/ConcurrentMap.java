@@ -42,7 +42,7 @@ public interface ConcurrentMap<K, V> extends Map<K, V> {
      * @param value
      *            The value
      */
-    void putIfAbsent(K key, V value);
+    V putIfAbsent(K key, V value);
 
     /**
      * Remove entry for key only if currently mapped to given value.
