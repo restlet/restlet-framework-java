@@ -37,10 +37,13 @@ public class ConcurrentHashMap<K, V> extends TreeMap<K, V> implements
     /** */
     private static final long serialVersionUID = 1L;
 
-    public void putIfAbsent(K key, V value) {
+    public V putIfAbsent(K key, V value) {
         if (!containsKey(key)) {
-            put(key, value);
+            return put(key, value);
+        } else {
+            return get(key);
         }
+
     }
 
     public boolean remove(Object key, Object value) {

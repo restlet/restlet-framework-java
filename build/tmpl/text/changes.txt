@@ -7,6 +7,10 @@ Changes log
     - Bugs fixed
        - Added check for jar class path resources if the inputstream is empty.
          Reported and contributed by Gernot Pansy.
+    - Enhancements
+       - Added Request and response attributes to the ResourceException class.
+       - ServerResource traces Exception in the doCatch method with SEVERE log 
+         level, in case of 5xx errors.
 
 - 2.3.4 (07/16/2015)
     - Bugs fixed

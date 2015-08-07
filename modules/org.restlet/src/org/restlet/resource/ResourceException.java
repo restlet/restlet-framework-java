@@ -24,6 +24,8 @@
 
 package org.restlet.resource;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Status;
 
 /**
@@ -34,6 +36,12 @@ import org.restlet.data.Status;
 public class ResourceException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
+
+    /** The request associated to this exception. Could be null. */
+    private final Request request;
+
+    /** The response associated to this exception. Could be null.  */
+    private final Response response;
 
     /** The status associated to this exception. */
     private final Status status;
@@ -191,6 +199,17 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Constructor.
+     *
+     * @param status
+     *            The status to associate.
+     */
+    public ResourceException(Status status, Request request, Response response) {
+        this(status, (Throwable) ((status == null) ? null : status
+                .getThrowable()), request, response);
+    }
+
+    /**
+     * Constructor.
      * 
      * @param status
      *            The status to copy.
@@ -224,9 +243,24 @@ public class ResourceException extends RuntimeException {
      *            The wrapped cause error or exception.
      */
     public ResourceException(Status status, Throwable cause) {
-        super((status == null) ? null : status.getReasonPhrase(), cause);
-        this.status = status;
+        this(status, cause, null, null);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param status
+     *            The status to associate.
+     * @param cause
+     *            The wrapped cause error or exception.
+     */
+    public ResourceException(Status status, Throwable cause, Request request, Response response) {
+        super((status == null) ? null : status.toString(), cause);
+        this.status = status;
+        this.request = request;
+        this.response = response;
+    }
+
 
     /**
      * Constructor that set the status to
@@ -241,6 +275,24 @@ public class ResourceException extends RuntimeException {
     }
 
     /**
+     * Returns the request associated to this exception.
+     *
+     * @return The request associated to this exception.
+     */
+    public Request getRequest() {
+        return this.request;
+    }
+
+    /**
+     * Returns the response associated to this exception.
+     *
+     * @return The response associated to this exception.
+     */
+    public Response getResponse() {
+        return this.response;
+    }
+
+    /**
      * Returns the status associated to this exception.
      * 
      * @return The status associated to this exception.
@@ -248,10 +300,4 @@ public class ResourceException extends RuntimeException {
     public Status getStatus() {
         return this.status;
     }
-
-    @Override
-    public String toString() {
-        return getStatus().toString();
-    }
-
 }

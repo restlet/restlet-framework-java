@@ -255,7 +255,7 @@ public abstract class ServerResource extends Resource {
         Status status = getStatusService().toStatus(throwable, this);
 
         if (status.isServerError()) {
-            level = Level.WARNING;
+            level = Level.SEVERE;
         } else if (status.isConnectorError()) {
             level = Level.INFO;
         } else if (status.isClientError()) {
