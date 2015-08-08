@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.ext.servlet.ServletAdapter;
