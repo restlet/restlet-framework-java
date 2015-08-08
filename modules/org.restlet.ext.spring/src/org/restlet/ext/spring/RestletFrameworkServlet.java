@@ -120,9 +120,9 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      */
     protected Component createComponent() {
         Component component;
-        if(getComponentBeanName() != null) {
+        if(componentBeanName != null) {
 	        component = (Component) getWebApplicationContext().getBean(
-	                getComponentBeanName());
+	                componentBeanName;
         } else {
 	    	component = new Component();
         }
