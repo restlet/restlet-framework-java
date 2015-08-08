@@ -83,29 +83,26 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>threadPool.idleTimeout</td>
  * <td>int</td>
  * <td>60000</td>
- * <td>Thread pool idle timeout in milliseconds; threads that are idle for
- * longer than this period may be stopped</td>
+ * <td>Thread pool idle timeout in milliseconds; threads that are idle for longer than this period may be stopped</td>
  * </tr>
  * <tr>
  * <td>threadPool.stopTimeout</td>
  * <td>long</td>
  * <td>5000</td>
- * <td>Thread pool stop timeout in milliseconds; the maximum time allowed for
- * the service to shutdown</td>
+ * <td>Thread pool stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
  * </tr>
  * <tr>
  * <td>connector.acceptors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector acceptor thread count; when -1, Jetty will default to
- * {@link Runtime#availableProcessors()} / 2, with a minimum of 1</td>
+ * <td>Connector acceptor thread count; when -1, Jetty will default to {@link Runtime#availableProcessors()} / 2, with a
+ * minimum of 1</td>
  * </tr>
  * <tr>
  * <td>connector.selectors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector selector thread count; when -1, Jetty will default to
- * {@link Runtime#availableProcessors()}</td>
+ * <td>Connector selector thread count; when -1, Jetty will default to {@link Runtime#availableProcessors()}</td>
  * </tr>
  * <tr>
  * <td>connector.acceptQueueSize</td>
@@ -117,10 +114,9 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>connector.idleTimeout</td>
  * <td>int</td>
  * <td>30000</td>
- * <td>Connector idle timeout in milliseconds; see
- * {@link Socket#setSoTimeout(int)}; this value is interpreted as the maximum
- * time between some progress being made on the connection; so if a single byte
- * is read or written, then the timeout is reset</td>
+ * <td>Connector idle timeout in milliseconds; see {@link Socket#setSoTimeout(int)}; this value is interpreted as the
+ * maximum time between some progress being made on the connection; so if a single byte is read or written, then the
+ * timeout is reset</td>
  * </tr>
  * <tr>
  * <td>connector.soLingerTime</td>
@@ -133,8 +129,7 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>connector.stopTimeout</td>
  * <td>long</td>
  * <td>30000</td>
- * <td>Connector stop timeout in milliseconds; the maximum time allowed for the
- * service to shutdown</td>
+ * <td>Connector stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
  * </tr>
  * <tr>
  * <td>http.headerCacheSize</td>
@@ -146,34 +141,30 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>http.requestHeaderSize</td>
  * <td>int</td>
  * <td>8*1024</td>
- * <td>HTTP request header size in bytes; larger headers will allow for more
- * and/or larger cookies plus larger form content encoded in a URL; however,
- * larger headers consume more memory and can make a server more vulnerable to
- * denial of service attacks</td>
+ * <td>HTTP request header size in bytes; larger headers will allow for more and/or larger cookies plus larger form
+ * content encoded in a URL; however, larger headers consume more memory and can make a server more vulnerable to denial
+ * of service attacks</td>
  * </tr>
  * <tr>
  * <td>http.responseHeaderSize</td>
  * <td>int</td>
  * <td>8*1024</td>
- * <td>HTTP response header size in bytes; larger headers will allow for more
- * and/or larger cookies and longer HTTP headers (e.g. for redirection);
- * however, larger headers will also consume more memory</td>
+ * <td>HTTP response header size in bytes; larger headers will allow for more and/or larger cookies and longer HTTP
+ * headers (e.g. for redirection); however, larger headers will also consume more memory</td>
  * </tr>
  * <tr>
  * <td>http.outputBufferSize</td>
  * <td>int</td>
  * <td>32*1024</td>
- * <td>HTTP output buffer size in bytes; a larger buffer can improve performance
- * by allowing a content producer to run without blocking, however larger
- * buffers consume more memory and may induce some latency before a client
- * starts processing the content</td>
+ * <td>HTTP output buffer size in bytes; a larger buffer can improve performance by allowing a content producer to run
+ * without blocking, however larger buffers consume more memory and may induce some latency before a client starts
+ * processing the content</td>
  * </tr>
  * <tr>
  * <td>lowResource.period</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>Low resource monitor period in milliseconds; when 0, low resource
- * monitoring is disabled</td>
+ * <td>Low resource monitor period in milliseconds; when 0, low resource monitoring is disabled</td>
  * </tr>
  * <tr>
  * <td>lowResource.threads</td>
@@ -185,8 +176,8 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>lowResource.maxMemory</td>
  * <td>int</td>
  * <td>0</td>
- * <td>Low resource monitor max memory in bytes; when 0, the check disabled;
- * memory used is calculated as (totalMemory-freeMemory)</td>
+ * <td>Low resource monitor max memory in bytes; when 0, the check disabled; memory used is calculated as
+ * (totalMemory-freeMemory)</td>
  * </tr>
  * <tr>
  * <td>lowResource.maxConnections</td>
@@ -198,23 +189,20 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>lowResource.idleTimeout</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>Low resource monitor idle timeout in milliseconds; applied to EndPoints
- * when in the low resources state</td>
+ * <td>Low resource monitor idle timeout in milliseconds; applied to EndPoints when in the low resources state</td>
  * </tr>
  * <tr>
  * <td>lowResource.stopTimeout</td>
  * <td>long</td>
  * <td>30000</td>
- * <td>Low resource monitor stop timeout in milliseconds; the maximum time
- * allowed for the service to shutdown</td>
+ * <td>Low resource monitor stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
  * </tr>
  * <tr>
  * <td>spdy.version</td>
  * <td>int</td>
  * <td>0</td>
- * <td>SPDY max version; can be 0, 2, or 3; if 0, SPDY is not used. Make sure to
- * install the NON boot jar for the matching JDK 1.7 version in the JVM boot
- * classpath in order to make it work.</td>
+ * <td>SPDY max version; can be 0, 2, or 3; if 0, SPDY is not used. Make sure to install the NON boot jar for the
+ * matching JDK 1.7 version in the JVM boot classpath in order to make it work.</td>
  * </tr>
  * <tr>
  * <td>spdy.pushStrategy</td>
@@ -226,12 +214,8 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * </table>
  * 
  * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
- * @see <a
- *      href="http://www.eclipse.org/jetty/documentation/current/spdy.html">Jetty
- *      SPDY page</a>
- * @see <a
- *      href="http://www.eclipse.org/jetty/documentation/current/npn-chapter.html">Jetty
- *      NPN configuration page</a>
+ * @see <a href="https://wiki.eclipse.org/Jetty/Feature/SPDY">Jetty SPDY page</a>
+ * @see <a href="https://wiki.eclipse.org/Jetty/Feature/NPN">Jetty NPN configuration page</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -513,8 +497,7 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Connector byte buffer pool. Defaults to null. When null, will use a new
-     * {@link ArrayByteBufferPool}.
+     * Connector byte buffer pool. Defaults to null. When null, will use a new {@link ArrayByteBufferPool}.
      * 
      * @return Connector byte buffer pool or null.
      */
@@ -537,9 +520,8 @@ public abstract class JettyServerHelper extends
      * <p>
      * See {@link Socket#setSoTimeout(int)}.
      * <p>
-     * This value is interpreted as the maximum time between some progress being
-     * made on the connection. So if a single byte is read or written, then the
-     * timeout is reset.
+     * This value is interpreted as the maximum time between some progress being made on the connection. So if a single
+     * byte is read or written, then the timeout is reset.
      * 
      * @return Connector idle timeout.
      */
@@ -549,8 +531,7 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Connector scheduler. Defaults to null. When null, will use a new
-     * {@link ScheduledExecutorScheduler}.
+     * Connector scheduler. Defaults to null. When null, will use a new {@link ScheduledExecutorScheduler}.
      * 
      * @return Connector scheduler or null.
      */
@@ -607,9 +588,8 @@ public abstract class JettyServerHelper extends
     /**
      * HTTP output buffer size in bytes. Defaults to 32*1024.
      * <p>
-     * A larger buffer can improve performance by allowing a content producer to
-     * run without blocking, however larger buffers consume more memory and may
-     * induce some latency before a client starts processing the content.
+     * A larger buffer can improve performance by allowing a content producer to run without blocking, however larger
+     * buffers consume more memory and may induce some latency before a client starts processing the content.
      * 
      * @return HTTP output buffer size.
      */
@@ -621,9 +601,8 @@ public abstract class JettyServerHelper extends
     /**
      * HTTP request header size in bytes. Defaults to 8*1024.
      * <p>
-     * Larger headers will allow for more and/or larger cookies plus larger form
-     * content encoded in a URL. However, larger headers consume more memory and
-     * can make a server more vulnerable to denial of service attacks.
+     * Larger headers will allow for more and/or larger cookies plus larger form content encoded in a URL. However,
+     * larger headers consume more memory and can make a server more vulnerable to denial of service attacks.
      * 
      * @return HTTP request header size.
      */
@@ -635,9 +614,8 @@ public abstract class JettyServerHelper extends
     /**
      * HTTP response header size in bytes. Defaults to 8*1024.
      * <p>
-     * Larger headers will allow for more and/or larger cookies and longer HTTP
-     * headers (e.g. for redirection). However, larger headers will also consume
-     * more memory.
+     * Larger headers will allow for more and/or larger cookies and longer HTTP headers (e.g. for redirection). However,
+     * larger headers will also consume more memory.
      * 
      * @return HTTP response header size.
      */
@@ -719,10 +697,9 @@ public abstract class JettyServerHelper extends
     /**
      * SPDY push strategy. Defaults to null.
      * <p>
-     * Can be null or "referrer" (shortcut for
-     * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
+     * Can be null or "referrer" (shortcut for "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
      * name.
-     *
+     * 
      * @return SPDY push strategy or null.
      */
     public String getSpdyPushStrategy() {
@@ -733,7 +710,7 @@ public abstract class JettyServerHelper extends
      * SPDY max version. Defaults to 0.
      * <p>
      * Can be 0, 2, or 3. If 0, SPDY is not used.
-     *
+     * 
      * @return Low resource monitor stop timeout.
      */
     public int getSpdyVersion() {
