@@ -104,7 +104,7 @@
 		edition: ${edition}
 		edition-full-label: ${edition-full-label}
 		edition-medium-label: ${edition-medium-label}
-		edition-short-label: ${edition-short-label}	
+		edition-short-label: ${edition-short-label}
 		parent-group-id: ${parent-maven-groupId}
 		parent-artifact-id: ${parent-maven-artifactId}
 		parent-version: ${parent-maven-version}
@@ -199,7 +199,7 @@
 			<istrue value="${package}" />
 		</and>
 	</condition>
-	
+
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 	<condition property="exclude-packages" value="">
 		<isfalse value="${javadoc-hide}" />
@@ -408,7 +408,7 @@
 
 			<!-- Copy all library content into the destination folder -->
 			<copy todir="${dist-classic}/lib/${lib-@{name}-root}">
-				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties, library.xml" />
+				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties, resources/**, library.xml" />
 			</copy>
 		</sequential>
 	</macrodef>

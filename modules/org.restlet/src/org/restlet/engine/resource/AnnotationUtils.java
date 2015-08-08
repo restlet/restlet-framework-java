@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2014 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -41,7 +41,7 @@ import org.restlet.service.MetadataService;
 // [excludes gwt]
 /**
  * Utilities to manipulate Restlet annotations.
- * 
+ *
  * @author Jerome Louvel
  */
 public class AnnotationUtils {
@@ -65,7 +65,7 @@ public class AnnotationUtils {
 
     /**
      * Computes the annotation descriptors for the given class or interface.
-     * 
+     *
      * @param descriptors
      *            The annotation descriptors to update or null to create a new
      *            one.
@@ -254,19 +254,19 @@ public class AnnotationUtils {
 
     /**
      * Returns the annotation descriptors for the given resource class.
-     * 
+     *
      * @param javaMethod
      *            The Java method.
      * @return The list of annotation descriptors.
      */
     public List<AnnotationInfo> getAnnotations(Class<?> clazz,
-            java.lang.reflect.Method javaMethod) {
+                                               java.lang.reflect.Method javaMethod) {
         return addMethodAnnotationDescriptors(null, clazz, clazz, javaMethod);
     }
 
     /**
      * Returns the first annotation descriptor matching the given Java method.
-     * 
+     *
      * @param annotations
      *            The list of annotations.
      * @param javaMethod
@@ -291,7 +291,7 @@ public class AnnotationUtils {
     /**
      * Returns the first annotation descriptor matching the given Restlet
      * method.
-     * 
+     *
      * @param annotations
      *            The list of annotations.
      * @param restletMethod
@@ -329,7 +329,7 @@ public class AnnotationUtils {
 
     /**
      * Returns an instance of {@link Method} according to the given annotations.
-     * 
+     *
      * @param annotation
      *            Java annotation.
      * @param methodAnnotation
