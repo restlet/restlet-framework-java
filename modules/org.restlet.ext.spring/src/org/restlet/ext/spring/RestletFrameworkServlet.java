@@ -96,6 +96,35 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     /** The bean name of the target Restlet. */
     private volatile String targetRestletBeanName;
 
+    /** List of supported client protocols. */
+    private volatile String clientProtocolsString;
+
+    /**
+     * Creates an implicit {@link Component} for the {@link Application}.
+     * 
+     * @return A new instance of {@link Component}
+     */
+    protected Component createComponent() {
+    	Component component = new Component();
+        if (clientProtocolsString != null) {
+            final String[] clientProtocols = clientProtocolsString
+                    .split(" ");
+            Client client;
+
+            for (final String clientProtocol : clientProtocols) {
+                client = new Client(clientProtocol);
+
+                if (client.isAvailable()) {
+                    component.getClients().add(client);
+                } else {
+                    log("[Restlet] Couldn't find a client connector for protocol "
+                            + clientProtocol);
+                }
+            }
+        }
+    	return component;
+    }
+
     /**
      * Creates the Restlet {@link Context} to use if the target application does
      * not already have a context associated, or if the target restlet is not an
@@ -106,7 +135,9 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * @return A new instance of {@link Context}
      */
     protected Context createContext() {
-        return new Context();
+    	Component component = createComponent();
+    	Context parentContext = component.getContext();
+	    return parentContext.createChildContext();
     }
 
     @Override
@@ -176,5 +207,15 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      */
     public void setTargetRestletBeanName(String targetRestletBeanName) {
         this.targetRestletBeanName = targetRestletBeanName;
+    }
+
+    /**
+     * Sets the client protocols.
+     * 
+     * @param clientProtocols
+     *              Space-separated list of protocols (e.g. FILE CLAP).
+     */
+    public void setClientProtocols(String clientProtocolsString) {
+        this.clientProtocolsString = clientProtocolsString;
     }
 }
