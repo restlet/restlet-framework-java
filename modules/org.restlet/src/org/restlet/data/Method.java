@@ -237,7 +237,7 @@ public final class Method implements Comparable<Method> {
     /** The URI of the specification describing the method. */
     private volatile String uri;
 
-    {
+    static {
         // Let the engine register all methods (the default ones and the ones to
         // be discovered) as soon as the Method class is loaded or at least
         // used.
