@@ -24,6 +24,8 @@
 
 package org.restlet.engine.io;
 
+import static org.restlet.data.Range.isBytesRange;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -290,8 +292,8 @@ public class IoUtils {
     }
 
     /**
-     * Returns the size effectively available. This returns the same value as
-     * {@link Representation#getSize()} if no range is defined, otherwise it
+     * Returns the size effectively available. This returns the same value as {@link Representation#getSize()} if no
+     * range is defined, otherwise it
      * returns the size of the range using {@link Range#getSize()}.
      * 
      * @param representation
@@ -300,21 +302,19 @@ public class IoUtils {
      */
     public static long getAvailableSize(Representation representation) {
         // [ifndef gwt]
-        if (representation.getRange() == null) {
+        Range range = representation.getRange();
+        if (range == null || !isBytesRange(range)) {
             return representation.getSize();
-        } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
+        } else if (range.getSize() != Range.SIZE_MAX) {
             if (representation.hasKnownSize()) {
-                return Math.min(representation.getRange().getIndex()
-                        + representation.getRange().getSize(),
-                        representation.getSize())
-                        - representation.getRange().getIndex();
+                return Math.min(range.getIndex() + range.getSize(),
+                        representation.getSize()) - range.getIndex();
             } else {
                 return Representation.UNKNOWN_SIZE;
             }
         } else if (representation.hasKnownSize()) {
-            if (representation.getRange().getIndex() != Range.INDEX_LAST) {
-                return representation.getSize()
-                        - representation.getRange().getIndex();
+            if (range.getIndex() != Range.INDEX_LAST) {
+                return representation.getSize() - range.getIndex();
             }
 
             return representation.getSize();
@@ -579,8 +579,7 @@ public class IoUtils {
      * pipe stream.
      * 
      * @param representation
-     *            the representation to get the {@link java.io.OutputStream}
-     *            from.
+     *            the representation to get the {@link java.io.OutputStream} from.
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {

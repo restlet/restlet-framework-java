@@ -32,14 +32,16 @@ package org.restlet.data;
 public class Range {
 
     /**
-     * Index for the first byte of an entity.
+     * Index for the first byte (or range unit) of an entity.
      */
     public final static long INDEX_FIRST = 0;
 
     /**
-     * Index for the last byte of an entity.
+     * Index for the last byte (or range unit) of an entity.
      */
     public final static long INDEX_LAST = -1;
+
+    public final static String RANGE_BYTES_UNIT = "bytes";
 
     /**
      * Maximum size available from the index.
@@ -47,15 +49,31 @@ public class Range {
     public final static long SIZE_MAX = -1;
 
     /**
+     * Indicates if the unit of the given range is "bytes".
+     * 
+     * @param range
+     *            The range.
+     * @return true if the unit of the given range is "bytes".
+     */
+    public static boolean isBytesRange(Range range) {
+        return RANGE_BYTES_UNIT.equals(range.getUnitName());
+    }
+
+    /**
      * Index from which to start the range. If the index is superior or equal to
-     * zero, the index will define the start of the range. If its value is
-     * {@value #INDEX_LAST} (-1), then it defines the end of the range. The
-     * default value is {@link #INDEX_FIRST} (0), starting at the first byte.
+     * zero, the index will define the start of the range. If its value is {@value #INDEX_LAST} (-1), then it defines
+     * the end of the range. The default value is {@link #INDEX_FIRST} (0), starting at the first byte.
      */
     private volatile long index;
 
     /**
-     * Size of the range in number of bytes. If the size is the maximum
+     * Total size of the instance in number of bytes (or range unit). In case of "bytes" range, this attribute is
+     * ignored, as the instance size is taken from the entity.
+     */
+    private volatile long instanceSize;
+
+    /**
+     * Size of the range in number of bytes (or range unit). If the size is the maximum
      * available from the index, then use the {@value #SIZE_MAX} constant.
      */
     private volatile long size;
@@ -97,7 +115,26 @@ public class Range {
     public Range(long index, long size) {
         this.index = index;
         this.size = size;
-        this.unitName = "bytes";
+        this.unitName = RANGE_BYTES_UNIT;
+    }
+
+    /**
+     * Constructor. Sets the name of the range unit as "bytes" by default.
+     * 
+     * @param index
+     *            Index from which to start the range
+     * @param size
+     *            Size of the range in number of bytes.
+     * @param instanceSize
+     *            Size of the instance in number of bytes.
+     * @param unitName
+     *            Unit of the range.
+     */
+    public Range(long index, long size, long instanceSize, String unitName) {
+        this.index = index;
+        this.instanceSize = instanceSize;
+        this.size = size;
+        this.unitName = unitName;
     }
 
     @Override
@@ -121,9 +158,18 @@ public class Range {
     }
 
     /**
+     * Returns the total size of the instance in number of bytes (or range unit). In case of "bytes" range, this
+     * attribute is ignored, as the instance size is taken from the entity.
+     * 
+     * @return The total size of the instance.
+     */
+    public long getInstanceSize() {
+        return instanceSize;
+    }
+
+    /**
      * Returns the size of the range in number of bytes. If the size is the
-     * maximum available from the index, then use the {@value #SIZE_MAX}
-     * constant.
+     * maximum available from the index, then use the {@value #SIZE_MAX} constant.
      * 
      * @return The size of the range in number of bytes.
      */
@@ -183,6 +229,16 @@ public class Range {
      */
     public void setIndex(long index) {
         this.index = index;
+    }
+
+    /**
+     * Sets the total size of the instance in number of bytes (or range unit).
+     * 
+     * @param instanceSize
+     *            The total size of the instance.
+     */
+    public void setInstanceSize(long instanceSize) {
+        this.instanceSize = instanceSize;
     }
 
     /**
