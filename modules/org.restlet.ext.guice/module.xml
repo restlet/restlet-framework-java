@@ -1,4 +1,4 @@
-<module id="guice" excludes="android,gae,gwt" type="integration" package="org.restlet.ext.guice">
+<module id="guice" excludes="android,gwt" type="integration" package="org.restlet.ext.guice">
 	<name>Restlet Extension - Guice</name>
 	<description>Integration with Google Guice.</description>
 	<distributions>
