@@ -40,7 +40,7 @@ public class ResourceException extends RuntimeException {
     /** The request associated to this exception. Could be null. */
     private final Request request;
 
-    /** The response associated to this exception. Could be null.  */
+    /** The response associated to this exception. Could be null. */
     private final Response response;
 
     /** The status associated to this exception. */
@@ -96,8 +96,7 @@ public class ResourceException extends RuntimeException {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public ResourceException(int code, String name, String description,
-            String uri) {
+    public ResourceException(int code, String name, String description, String uri) {
         this(new Status(code, name, description, uri));
     }
 
@@ -116,8 +115,7 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(int code, String reasonPhrase, String description,
-            String uri, Throwable cause) {
+    public ResourceException(int code, String reasonPhrase, String description, String uri, Throwable cause) {
         this(new Status(code, cause, reasonPhrase, description, uri), cause);
     }
 
@@ -161,8 +159,7 @@ public class ResourceException extends RuntimeException {
      * @param description
      *            The longer description.
      */
-    public ResourceException(int code, Throwable throwable,
-            String reasonPhrase, String description) {
+    public ResourceException(int code, Throwable throwable, String reasonPhrase, String description) {
         this(new Status(code, throwable, reasonPhrase, description, null));
     }
 
@@ -181,8 +178,7 @@ public class ResourceException extends RuntimeException {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public ResourceException(int code, Throwable throwable,
-            String reasonPhrase, String description, String uri) {
+    public ResourceException(int code, Throwable throwable, String reasonPhrase, String description, String uri) {
         this(new Status(code, throwable, reasonPhrase, description, uri));
     }
 
@@ -193,19 +189,17 @@ public class ResourceException extends RuntimeException {
      *            The status to associate.
      */
     public ResourceException(Status status) {
-        this(status, (Throwable) ((status == null) ? null : status
-                .getThrowable()));
+        this(status, (Throwable) ((status == null) ? null : status.getThrowable()));
     }
 
     /**
      * Constructor.
-     *
+     * 
      * @param status
      *            The status to associate.
      */
     public ResourceException(Status status, Request request, Response response) {
-        this(status, (Throwable) ((status == null) ? null : status
-                .getThrowable()), request, response);
+        this(status, (Throwable) ((status == null) ? null : status.getThrowable()), request, response);
     }
 
     /**
@@ -231,7 +225,7 @@ public class ResourceException extends RuntimeException {
      *            The wrapped cause error or exception.
      */
     public ResourceException(Status status, String description, Throwable cause) {
-        this(new Status(status, cause, description), cause);
+        this(new Status(status, cause, null, description), cause);
     }
 
     /**
@@ -248,7 +242,7 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Constructor.
-     *
+     * 
      * @param status
      *            The status to associate.
      * @param cause
@@ -261,10 +255,8 @@ public class ResourceException extends RuntimeException {
         this.response = response;
     }
 
-
     /**
-     * Constructor that set the status to
-     * {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL} including the
+     * Constructor that set the status to {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL} including the
      * related error or exception.
      * 
      * @param cause
@@ -276,7 +268,7 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Returns the request associated to this exception.
-     *
+     * 
      * @return The request associated to this exception.
      */
     public Request getRequest() {
@@ -285,7 +277,7 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Returns the response associated to this exception.
-     *
+     * 
      * @return The response associated to this exception.
      */
     public Response getResponse() {

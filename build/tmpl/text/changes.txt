@@ -7,6 +7,9 @@ Changes log
     - Bugs fixed
        - Added check for jar class path resources if the inputstream is empty.
          Reported and contributed by Gernot Pansy.
+       - Fixed Jetty server connector that sends the Date header twice. Issue #1141.
+       - Fixed ResourceException constructor calling incorrect Status constructor. Issue #1139.
+         Reported by Chad Gatesman. 
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log 
