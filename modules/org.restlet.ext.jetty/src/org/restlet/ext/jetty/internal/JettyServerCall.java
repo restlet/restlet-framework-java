@@ -41,6 +41,7 @@ import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -266,11 +267,18 @@ public class JettyServerCall extends ServerCall {
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
-        for (Iterator<Header> iter = getResponseHeaders().iterator(); iter
-                .hasNext();) {
+        for (Iterator<Header> iter = getResponseHeaders().iterator(); iter.hasNext();) {
             Header header = iter.next();
-            getChannel().getResponse().addHeader(header.getName(),
-                    header.getValue());
+            switch (header.getName()) {
+            case HeaderConstants.HEADER_DATE:
+                if (!getChannel().getHttpConfiguration().getSendDateHeader()) {
+                    getChannel().getResponse().addHeader(header.getName(), header.getValue());
+                }
+                break;
+            default:
+                getChannel().getResponse().addHeader(header.getName(), header.getValue());
+                break;
+            }
         }
 
         // Set the status code in the response. We do this after adding the
@@ -288,7 +296,7 @@ public class JettyServerCall extends ServerCall {
             // Send the response entity
             getChannel().getResponse().setStatus(getStatusCode());
             try {
-            super.sendResponse(response);
+                super.sendResponse(response);
             } catch (IllegalStateException e) {
                 getLogger().log(Level.WARNING, "Unable to set the status", e);
             }

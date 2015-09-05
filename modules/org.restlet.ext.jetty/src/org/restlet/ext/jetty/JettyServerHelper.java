@@ -32,6 +32,7 @@ import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
+import org.eclipse.jetty.http.HttpGenerator;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -298,6 +299,8 @@ public abstract class JettyServerHelper extends
         configuration.setRequestHeaderSize(getHttpRequestHeaderSize());
         configuration.setResponseHeaderSize(getHttpResponseHeaderSize());
         configuration.setOutputBufferSize(getHttpOutputBufferSize());
+        // ask Jetty connector to let us handling the Date header.
+        configuration.setSendDateHeader(false);
         return configuration;
     }
 
@@ -790,8 +793,7 @@ public abstract class JettyServerHelper extends
      * @param wrappedServer
      *            The wrapped Jetty server.
      */
-    protected void setWrappedServer(
-            org.eclipse.jetty.server.Server wrappedServer) {
+    protected void setWrappedServer(org.eclipse.jetty.server.Server wrappedServer) {
         this.wrappedServer = wrappedServer;
     }
 
