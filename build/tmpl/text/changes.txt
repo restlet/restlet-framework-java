@@ -10,6 +10,10 @@ Changes log
        - Fixed Jetty server connector that sends the Date header twice. Issue #1141.
        - Fixed ResourceException constructor calling incorrect Status constructor. Issue #1139.
          Reported by Chad Gatesman.
+       - Fixed ResourceException constructor calling incorrect Status constructor. Issue #1139.
+         Reported by Chad Gatesman.
+       - Fixed support of encoding inside the DecodeRepresentation, and the Jetty client connector.
+         Issue #1146.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log 

@@ -192,6 +192,8 @@ public class JettyClientCall extends ClientCall {
         Representation responseEntity = super.getResponseEntity(response);
         if (responseEntity != null && !responseEntity.getEncodings().isEmpty()) {
             responseEntity.getEncodings().clear();
+            // Entity size is reset accordingly.
+            responseEntity.setSize(Representation.UNKNOWN_SIZE);
         }
         return responseEntity;
     }

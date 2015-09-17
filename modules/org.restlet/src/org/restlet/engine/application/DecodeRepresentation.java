@@ -83,6 +83,11 @@ public class DecodeRepresentation extends WrapperRepresentation {
         this.wrappedEncodings = new CopyOnWriteArrayList<Encoding>(
                 wrappedRepresentation.getEncodings());
     }
+    
+    @Override
+    public long getAvailableSize() {
+        return IoUtils.getAvailableSize(this);
+    }
 
     /**
      * Returns a readable byte channel. If it is supported by a file a read-only
@@ -171,7 +176,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
 
         if (isDecoding()) {
             boolean identity = true;
-            for (final Iterator<Encoding> iter = getEncodings().iterator(); identity
+            for (final Iterator<Encoding> iter = this.wrappedEncodings.iterator(); identity
                     && iter.hasNext();) {
                 identity = (iter.next().equals(Encoding.IDENTITY));
             }
