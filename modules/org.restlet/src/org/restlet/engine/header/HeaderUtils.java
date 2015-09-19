@@ -75,6 +75,7 @@ public class HeaderUtils {
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
                     HeaderConstants.HEADER_ACCEPT,
@@ -621,6 +622,12 @@ public class HeaderUtils {
             addHeader(
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     MethodWriter.write(response.getAccessControlAllowMethods()),
+                    headers);
+        }
+        if (response.getAccessControlExposeHeaders() != null) {
+            addHeader(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
+                    StringWriter.write(response.getAccessControlExposeHeaders()),
                     headers);
         }
 
