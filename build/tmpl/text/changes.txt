@@ -1,6 +1,6 @@
-   
+
 ===========
-Changes log  
+Changes log
 ===========
 
 @version-full@ (@release-date@)
@@ -18,9 +18,12 @@ Changes log
          Reported and contributed by Ralph van Etten.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
-       - ServerResource traces Exception in the doCatch method with SEVERE log 
+       - ServerResource traces Exception in the doCatch method with SEVERE log
          level, in case of 5xx errors.
        - Added Guice extension to GAE edition. Issue #1136.
+    - API changes
+       - Added ResourceException#resource attribute and ResourceException#getRequest()
+         and ResourceException#getResponse() shortcut methods.
 
 - 2.3.4 (07/16/2015)
     - Bugs fixed
@@ -32,20 +35,20 @@ Changes log
     - Bugs fixed
        - Redirector does not translate response's entity location reference.
          Issue #1069.
-       - Fixed tunnelFilter. + symbol (%2b) converted incorrectly when media 
+       - Fixed tunnelFilter. + symbol (%2b) converted incorrectly when media
          query parameter is used. Issue #804.
          Reported by Rob Elsner.
-       - Fixed never ending call when an exception happens while writing the 
+       - Fixed never ending call when an exception happens while writing the
          response's entity using the internal HTTP server connector.
          Issue #1061. Reported by Gernot Pansy.
        - Prevented insertion of query params into POST request for JAX-RS client.
          Issue #1072. Reported by Edouard Mercier.
-       - Fixed NPE when OAuth refresh token request when no scope is provided. 
+       - Fixed NPE when OAuth refresh token request when no scope is provided.
          Issue #1080. Reported by Gernot Pansy.
        - Internal HTTP client doesn't fail anymore with null values in headers.
        - Improved robustness of Swagger translation code (import/export).
        - Fixed security scheme issue in RAML translator.
-       
+
     - Enhancements
        - Allowed spaces in the values of the Java methods annotations. Issue #1099.
        - Added support for Chromium browser when extracting user agent info.
@@ -56,20 +59,20 @@ Changes log
        - Fix CORS header name Access-Control-Allow-Credentials. Issue #1030.
        - Fixed malformed JSON in the JsonpRepresentation.
          Reported by Wagner Correa Ramos.
-       - When catching a 405 status, make sure to update allowed methods inside 
+       - When catching a 405 status, make sure to update allowed methods inside
          a ServerResource. Issue #1034.
          Reported by Jeremy Gustie.
        - Fixed wrong Reference.getRemainingPart(boolean decode). Issue #1041.
          Reported by Tal Liron.
-       - Authorization header is not sent by GWT client, for authentication scheme other 
+       - Authorization header is not sent by GWT client, for authentication scheme other
          than HTTP Basic. Issue #1040.
        - Jetty client connector duplicates User-Agent header. Issue #1055.
          Reported by Charlie Mason.
-       - Fixed Restlet JAX-RS encoding problem when using @FormParam annotation. 
+       - Fixed Restlet JAX-RS encoding problem when using @FormParam annotation.
          Issue #1038.
-       - Fixed Tomcat shutdown due to TaskService that did not instantiate 
+       - Fixed Tomcat shutdown due to TaskService that did not instantiate
          threads as daemon threads. Issue #1053.
-       - Made a public field private in JaxRs extension which lead some 
+       - Made a public field private in JaxRs extension which lead some
          containers to stop the application. Issue #1058.
          Reported by Constantin Gruber.
        - Fixed duplication of headers (jaxrs). Issues #944, #948.
@@ -79,14 +82,14 @@ Changes log
          HTTP method annotations such as @Get("json?param=val).
 
     - Enhancements
-      - Allowed to turn off header cleaning in Redirector for server-side 
+      - Allowed to turn off header cleaning in Redirector for server-side
         redirects. Issue #799.
         Suggested by Tal Liron.
       - Upgraded swagger-models library to 1.5.3-M1.
 
 - 2.3.1 (02/03/2015)
     - Bugs fixed
-      - Reintroduced registration by default of the internal HTTP server 
+      - Reintroduced registration by default of the internal HTTP server
         connectors in JEE edition.
       - FormDataSet not properly serializing text/plain files. Issue #1006.
         Reported by johnjaylward.
@@ -95,7 +98,7 @@ Changes log
         Reported by Philippe Perrault.
       - Reference scheme reverts to http when using https. Issue #998.
         Reported by Stephen C. Pope.
-      - Fixed bug that prevented client code to properly consume error 
+      - Fixed bug that prevented client code to properly consume error
         responses #1004 and #1018.
         Reported by Philippe Perrault and spraguep.
 
@@ -111,7 +114,7 @@ Changes log
         to the internal serialized status object.
       - JacksonRepresentation fields are now thread safe.
         Reported by Tim Peierls.
-      - Removed XML serialization using Jackson extension from Android edition as 
+      - Removed XML serialization using Jackson extension from Android edition as
         it depends on classes not supported by Android SDK (issue #964).
         Reported by Ralph van Etten.
       - Fixed OutputRepresentation in the GAE edition (issue #954).
@@ -136,7 +139,7 @@ Changes log
         Usage of XML support in Spring extension is recommended instead.
       - Deprecated e4 extension.
         Usage of Guice or Spring extensions is recommended instead.
-      - Deprecated JDBC extension. 
+      - Deprecated JDBC extension.
         Use a persistence technology such as Mybatis or Hibernate instead.
       - Deprecated JiBX and XStream extensions.
         Use an XML serialization technology such as Jackson instead.
@@ -144,10 +147,10 @@ Changes log
         Libraries not actively developed anymore.
       - Deprecated Apache HTTP Client and Simple extensions.
         Will be removed to favor lower-level network extensions such as
-        Jetty and Netty, allowing more control at the Restlet API level. 
+        Jetty and Netty, allowing more control at the Restlet API level.
       - Deprecated SIP, WebDAV extensions.
         Will be removed to focus on Web APIs.
-        
+
     - Misc
       - Removed the Tanuki's Java Service Wrapper library.
       - Removed the CDDL and LGPL licences, kept Apache License, Version 2.0 and
@@ -170,7 +173,7 @@ Changes log
 
     - API changes
       - Deprecated protected LogService#debugging property.
-      - Added Application#debugging Boolean property and a start message 
+      - Added Application#debugging Boolean property and a start message
         indicating in which mode your application is.
       - Added getName() and getDescription() methods in ServerResource for
         documentation purpose. Note that this could conflict with existing
@@ -179,7 +182,7 @@ Changes log
     - Bugs fixed
       - Prevent potential security issue with Directory class.
         Contributed by Andrew Hughes.
-      
+
     - Misc
       - Remove the outdated example based on the O'Reilly's book
         "RESTful Web Services" and the related db4o dependency.
@@ -188,7 +191,7 @@ Changes log
 - 2.3 Milestone 5 (11/07/2014)
     - Enhancements
       - Added support of GWT 2.7. Contributed by Koen Maes.
-      - Enhanced introspection of Restlet and JAX-RS based applications in 
+      - Enhanced introspection of Restlet and JAX-RS based applications in
         conjunction with Swagger and Raml annotations.
       - Added APISpark agent service.
 
@@ -200,12 +203,12 @@ Changes log
 
 - 2.3 Milestone 4 (10/31/2014)
     - Enhancements
-      - Unified the HTTP client connector parameters (socket connection to 15s, 
-        idle socket to 60s, socket stop to 60s, max connections per host to 10, 
+      - Unified the HTTP client connector parameters (socket connection to 15s,
+        idle socket to 60s, socket stop to 60s, max connections per host to 10,
         max total connections to 20). Suggested by Kristoffer Gronowski.
       - Upgraded Jackson to version 2.4.3.
       - Jackson representation now ignore empty value (null or empty collections)
-        by default in the JSON/XML/CSV/YAML produced, leading to more compact 
+        by default in the JSON/XML/CSV/YAML produced, leading to more compact
         representations.
      - Fixed log level (issue #777). Reported by Marcus NL.
 
@@ -229,15 +232,15 @@ Changes log
       - Added RAML support in dedicated extension.
 
     - Enhancements
-      - Added targetRef support to templates, allow reference variables to 
+      - Added targetRef support to templates, allow reference variables to
         resolve to the full reference (issue #935).
         Contributed by Jeremy Gustie.
       - Updated agent.properties file with recent Opera user agent signature.
       - Added Resource#toRepresentation(Object, MediaType) convenience method.
       - Added ConverterService#toRepresentation(Object, MediaType) convenience method.
       - Added ConverterService#toRepresentation(Object, Variant) convenience method.
-      - Added static Resource#toInteger, toFloat, toByte, toLong, toDouble, toBoolean 
-        methods accepting 'null' string values to facilitate the processing of path 
+      - Added static Resource#toInteger, toFloat, toByte, toLong, toDouble, toBoolean
+        methods accepting 'null' string values to facilitate the processing of path
         variables and query parameters.
       - Renamed StatusService methods from getRepresentation(...) and getStatus(...) to
         toRepresentation(...) and toStatus(...), added throwable parameters to allow
@@ -249,12 +252,12 @@ Changes log
         NOTE: implementation is in progress.
       - StatusService.toStatus(Throwable, ...) methods now support @Status annotations
         to set the proper code.
- 
+
     - Bugs fixed
-      - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.    
+      - ObjectRepresentation wasn't closing a Decoder in case reading exceptions occured.
       - ServerResource#doCatch() method wasn't invoking StatusService to set the error
         representation if empty.
-      - Fixed potential NPE in odata extension when schema ComplexType in a 
+      - Fixed potential NPE in odata extension when schema ComplexType in a
         document does not declare a schema attribute (issue #932).
       - Uncaught exceptions may cause LogFilter to fail, with dire consequences.
         Issue #931. Reported and contributed by Tal Liron.
@@ -268,7 +271,7 @@ Changes log
         it to APISpark.com PaaS for online and intuive documentation. Added user guide
         page to describe the process and parameters. API contract can be created or
         updated (replaced) remotely.
-        
+
     - Enhancements
       - Added HTTPS support to Jetty connector. Issue #793.
         Contributed by Tal Liron.
@@ -276,7 +279,7 @@ Changes log
         Reported and contributed by Jeremy Gustie.
       - ServletWarEntity is limited to file system modification dates. Issue #868.
         Reported and contributed by Jeremy Gustie.
-      
+
     - Bugs fixed
       - Added copy of Servlet request parameters to the Restlet request attributes. Issue #741.
         Reported by Steve Rowe and contributed by Jeremy Gustie.
@@ -304,7 +307,7 @@ Changes log
       - Added initial APISpark extension. Issue #875.
       - Added Jetty client for HTTP and HTTPS. Issue #512.
         Contributed by Tal Liron.
-        
+
     - Enhancements
       - Upgraded project to Java 7. Issue #874.
       - Upgraded Jetty connector to version 9.1.3. Issue #793.

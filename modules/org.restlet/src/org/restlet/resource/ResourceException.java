@@ -37,11 +37,8 @@ public class ResourceException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    /** The request associated to this exception. Could be null. */
-    private final Request request;
-
-    /** The response associated to this exception. Could be null. */
-    private final Response response;
+    /** The resource associated to this exception. Could be null. */
+    private final Resource resource;
 
     /** The status associated to this exception. */
     private final Status status;
@@ -198,8 +195,8 @@ public class ResourceException extends RuntimeException {
      * @param status
      *            The status to associate.
      */
-    public ResourceException(Status status, Request request, Response response) {
-        this(status, (Throwable) ((status == null) ? null : status.getThrowable()), request, response);
+    public ResourceException(Status status, Resource resource) {
+        this(status, (Throwable) ((status == null) ? null : status.getThrowable()), resource);
     }
 
     /**
@@ -237,7 +234,7 @@ public class ResourceException extends RuntimeException {
      *            The wrapped cause error or exception.
      */
     public ResourceException(Status status, Throwable cause) {
-        this(status, cause, null, null);
+        this(status, cause, null);
     }
 
     /**
@@ -248,11 +245,10 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(Status status, Throwable cause, Request request, Response response) {
+    public ResourceException(Status status, Throwable cause, Resource resource) {
         super((status == null) ? null : status.toString(), cause);
         this.status = status;
-        this.request = request;
-        this.response = response;
+        this.resource = resource;
     }
 
     /**
@@ -272,7 +268,16 @@ public class ResourceException extends RuntimeException {
      * @return The request associated to this exception.
      */
     public Request getRequest() {
-        return this.request;
+        return (this.resource != null) ? this.resource.getRequest() : null;
+    }
+
+    /**
+     * Returns the resource associated to this exception.
+     * 
+     * @return The resource associated to this exception.
+     */
+    public Resource getResource() {
+        return this.resource;
     }
 
     /**
@@ -281,7 +286,7 @@ public class ResourceException extends RuntimeException {
      * @return The response associated to this exception.
      */
     public Response getResponse() {
-        return this.response;
+        return (this.resource != null) ? this.resource.getResponse() : null;
     }
 
     /**
