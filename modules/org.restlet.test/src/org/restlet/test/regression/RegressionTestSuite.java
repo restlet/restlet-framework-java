@@ -40,6 +40,7 @@ public class RegressionTestSuite extends TestSuite {
     /** Trivial 0-arguments constructor. */
     public RegressionTestSuite() {
         super();
+        addTestSuite(Bug1145TestCase.class);
         // addTestSuite(Bug717TestCase.class);
     }
 }
