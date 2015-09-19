@@ -763,7 +763,7 @@ public class Response extends Message {
      */
     public void setAccessControlExposeHeaders(
             Set<String> accessControlExposeHeaders) {
-        synchronized (getAccessControlAllowHeaders()) {
+        synchronized (getAccessControlExposeHeaders()) {
             if (accessControlExposeHeaders != this.accessControlExposeHeaders) {
                 this.accessControlExposeHeaders.clear();
 

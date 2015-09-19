@@ -16,6 +16,8 @@ Changes log
          Issue #1146.
        - Fixed handling of header Access-Control-Expose-Headers. Issue #1147.
          Reported and contributed by Ralph van Etten.
+       - Fixed issue when setting header Access-Control-Expose-Headers. Issue #1145.
+         Reported by Ralph van Etten.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log

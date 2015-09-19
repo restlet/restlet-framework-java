@@ -41,5 +41,6 @@ public class RegressionTestSuite extends TestSuite {
     public RegressionTestSuite() {
         super();
         // addTestSuite(Bug717TestCase.class);
+        addTestSuite(Bug1145TestCase.class);
     }
 }
