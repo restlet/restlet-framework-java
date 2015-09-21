@@ -18,6 +18,7 @@ Changes log
          Reported and contributed by Ralph van Etten.
        - Fixed issue when setting header Access-Control-Expose-Headers. Issue #1145.
          Reported by Ralph van Etten.
+       - Removed useless log trace for HTTP_OAUTH_BEARER request with raw value. Issue #1152.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log

@@ -141,11 +141,11 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Formats a challenge request as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default
+     * Formats a challenge request as a HTTP header value. The header is {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}
+     * . The default
      * implementation relies on
-     * {@link AuthenticatorHelper#formatRequest(ChallengeWriter, ChallengeRequest, Response, Series)}
-     * to append all parameters from {@link ChallengeRequest#getParameters()}.
+     * {@link AuthenticatorHelper#formatRequest(ChallengeWriter, ChallengeRequest, Response, Series)} to append all
+     * parameters from {@link ChallengeRequest#getParameters()}.
      * 
      * @param challenge
      *            The challenge request to format.
@@ -205,11 +205,10 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Formats a challenge response as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
-     * relies on
-     * {@link AuthenticatorHelper#formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)}
-     * unless some custom credentials are provided via
+     * Formats a challenge response as a HTTP header value. The header is {@link HeaderConstants#HEADER_AUTHORIZATION}.
+     * The default implementation
+     * relies on {@link AuthenticatorHelper#formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)} unless
+     * some custom credentials are provided via
      * 
      * @param challenge
      *            The challenge response to format.
@@ -464,7 +463,7 @@ public class AuthenticatorUtils {
      */
     public static Reference updateReference(Reference resourceRef,
             ChallengeResponse challengeResponse, Request request) {
-        if (challengeResponse != null) {
+        if (challengeResponse != null && challengeResponse.getRawValue() == null) {
             AuthenticatorHelper helper = Engine.getInstance().findHelper(
                     challengeResponse.getScheme(), true, false);
 
