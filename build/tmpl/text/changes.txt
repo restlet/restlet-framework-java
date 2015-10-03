@@ -3,6 +3,8 @@
 Changes log
 ===========
 
+@version-full@ (@release-date@)
+
 - 2.3.5 (10/03/2015)
     - Bugs fixed
        - Added check for jar class path resources if the inputstream is empty.
