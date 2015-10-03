@@ -36,7 +36,8 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * Token "Authenticate" Resource for internal use.
+ * Token "Authenticate" Resource for internal use.<br>
+ * Supports the {@link OAuthResourceDefs#TOKEN_TYPE_BEARER} token type only.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
@@ -44,11 +45,19 @@ public class TokenAuthServerResource extends OAuthServerResource {
 
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
 
+    /**
+     * Checks that the given JSON representation is valid, accordingly to the type of token it contains.
+     * 
+     * @param input
+     *            The JSON representation to validate.
+     * @return A JSON representation of the user name and the supported scopes.
+     * @throws Exception
+     */
     @Post("json")
     public Representation authenticate(Representation input) throws Exception {
         getLogger().fine("In Authenticate resource");
 
-        if (isLocalAcessOnly()) { // Check that protocol = RIAP
+        if (isLocalAccessOnly()) { // Check that protocol = RIAP
             String scheme = getOriginalRef().getScheme();
 
             if (!Protocol.RIAP.getSchemeName().equals(scheme)) {
@@ -60,8 +69,7 @@ public class TokenAuthServerResource extends OAuthServerResource {
         JSONObject call = new JsonRepresentation(input).getJsonObject();
 
         if (!call.has(TOKEN_TYPE)) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "No token_type", null);
+            throw new OAuthException(OAuthError.invalid_request, "No token_type", null);
         }
         String tokenType = call.getString(TOKEN_TYPE);
 
@@ -72,8 +80,7 @@ public class TokenAuthServerResource extends OAuthServerResource {
           * else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) { //
           * TODO }
           */else {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Unsupported token_type", null);
+            throw new OAuthException(OAuthError.invalid_request, "Unsupported token_type", null);
         }
 
         JSONObject resp = new JSONObject();
@@ -86,16 +93,14 @@ public class TokenAuthServerResource extends OAuthServerResource {
     @Override
     protected void doCatch(Throwable t) {
         final OAuthException oex = OAuthException.toOAuthException(t);
-        // XXX: Generally, we only communicate with TokenVerifier. So we don't
-        // need HTTP 400 code.
+        // XXX: Generally, we only communicate with TokenVerifier. So we don't need HTTP 400 code.
         // getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setStatus(Status.SUCCESS_OK);
         getResponse().setEntity(responseErrorRepresentation(oex));
     }
 
-    private boolean isLocalAcessOnly() {
-        String lo = (String) getContext().getAttributes()
-                .get(LOCAL_ACCESS_ONLY);
-        return (lo != null) && (lo.length() > 0) && Boolean.parseBoolean(lo);
+    private boolean isLocalAccessOnly() {
+        String lo = (String) getContext().getAttributes().get(LOCAL_ACCESS_ONLY);
+        return Boolean.parseBoolean(lo);
     }
 }

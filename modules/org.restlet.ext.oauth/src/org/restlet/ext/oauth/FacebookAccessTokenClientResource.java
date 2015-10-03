@@ -34,8 +34,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class FacebookAccessTokenClientResource extends
-        AccessTokenClientResource {
+public class FacebookAccessTokenClientResource extends AccessTokenClientResource {
 
     private static class FacebookTokenResponse implements Token {
 
@@ -73,8 +72,14 @@ public class FacebookAccessTokenClientResource extends
 
     }
 
-    public FacebookAccessTokenClientResource(Reference tokenURI) {
-        super(tokenURI);
+    /**
+     * Constructor.
+     * 
+     * @param tokenUri
+     *            The URI of the target authorization resource.
+     */
+    public FacebookAccessTokenClientResource(Reference tokenUri) {
+        super(tokenUri);
     }
 
     @Override

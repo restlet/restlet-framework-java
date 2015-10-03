@@ -612,8 +612,7 @@ public class ClientResource extends Resource {
 
     /**
      * By default, it throws a new resource exception.
-     * Call {@link #doError(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}.
-     *
+     * 
      * @param errorStatus
      *            The error status received.
      */
@@ -746,8 +745,7 @@ public class ClientResource extends Resource {
             result.setReference(new Reference(getReference().getTargetRef(),
                     relativeRef).getTargetRef());
         } else {
-            doError(Status.CLIENT_ERROR_BAD_REQUEST,
-                    "The child URI is not relative.");
+            doError(Status.CLIENT_ERROR_BAD_REQUEST, "The child URI is not relative.");
         }
 
         return result;
@@ -885,8 +883,7 @@ public class ClientResource extends Resource {
             result = new ClientResource(this);
             result.setReference(getReference().getParentRef());
         } else {
-            doError(Status.CLIENT_ERROR_BAD_REQUEST,
-                    "The resource URI is not hierarchical.");
+            doError(Status.CLIENT_ERROR_BAD_REQUEST, "The resource URI is not hierarchical.");
         }
 
         return result;

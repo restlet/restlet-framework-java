@@ -24,6 +24,8 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.logging.Level;
+
 import javax.naming.AuthenticationException;
 
 import org.json.JSONException;
@@ -31,6 +33,8 @@ import org.json.JSONObject;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.AuthSessionTimeoutException;
@@ -41,7 +45,6 @@ import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
 import org.restlet.security.User;
 
 /**
@@ -55,7 +58,7 @@ import org.restlet.security.User;
  * <pre>
  * {
  *      &#064;code
- *      public Restlet createInboundRoot(){
+ *      public Restlet createInboundRoot() {
  *              ...
  *              root.attach(&quot;/token&quot;, AccessTokenServerResource.class);
  *              ...
@@ -66,60 +69,49 @@ import org.restlet.security.User;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
  * 
- * @see <a href="http://tools.ietf.org/html/rfc6749#section-3.2">OAuth 2.0 (3.2.
- *      Token Endpoint)</a>
+ * @see <a href="http://tools.ietf.org/html/rfc6749#section-3.2">OAuth 2.0 (3.2. Token Endpoint)</a>
  */
 public class AccessTokenServerResource extends OAuthServerResource {
 
     /**
-     * Executes the 'authorization_code' flow. (4.1.3. Access Token Request)
+     * Executes the "authorization_code" flow. (4.1.3. Access Token Request).
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The JSON representation of the response of the "authorization_code" flow.
      * @throws OAuthException
      * @throws JSONException
      */
-    private Representation doAuthCodeFlow(Form params) throws OAuthException,
-            JSONException {
-        // The flow require authenticated client.
+    private Representation doAuthCodeFlow(Form parameters) throws OAuthException, JSONException {
+        // The flow requires authenticated client.
         Client client = getAuthenticatedClient();
         if (client == null) {
             // Use the public client. (4.1.3. Access Token Request)
-            client = getClient(params);
+            client = getClient(parameters);
         }
 
         ensureGrantTypeAllowed(client, GrantType.authorization_code);
 
-        String code = getCode(params);
+        String code = getCode(parameters);
 
-        /*
-         * ensure that the authorization code was issued to the authenticated
-         * confidential client, or if the client is public, ensure that the code
-         * was issued to "client_id" in the request, (4.1.3. Access Token
-         * Request)
-         */
+        // Ensure that the authorization code was issued to the authenticated confidential client, or if the client is
+        // public, ensure that the code was issued to "client_id" in the request, (4.1.3. Access Token Request)
         AuthSession session = tokens.restoreSession(code);
         if (!client.getClientId().equals(session.getClientId())) {
-            throw new OAuthException(OAuthError.invalid_grant,
-                    "The code was not issued to the client.", null);
+            throw new OAuthException(OAuthError.invalid_grant, "The code was not issued to the client.", null);
         }
 
         try {
             // Ensure that the session is not timeout.
             session.updateActivity();
         } catch (AuthSessionTimeoutException ex) {
-            throw new OAuthException(OAuthError.invalid_grant, "Code expired.",
-                    null);
+            throw new OAuthException(OAuthError.invalid_grant, "Code expired.", null);
         }
 
-        /*
-         * ensure that the "redirect_uri" parameter is present if the
-         * "redirect_uri" parameter was included in the initial authorization
-         * request as described in Section 4.1.1, and if included ensure that
-         * their values are identical. (4.1.3. Access Token Request)
-         */
+        // ensure that the "redirect_uri" parameter is present if the "redirect_uri" parameter was included in the
+        // initial authorization request as described in Section 4.1.1, and if included ensure that their values are
+        // identical. (4.1.3. Access Token Request)
         if (session.getRedirectionURI().isDynamicConfigured()) {
-            String redirectURI = getRedirectURI(params);
+            String redirectURI = getRedirectURI(parameters);
             if (!redirectURI.equals(session.getRedirectionURI().getURI())) {
                 throw new OAuthException(
                         OAuthError.invalid_grant,
@@ -128,44 +120,39 @@ public class AccessTokenServerResource extends OAuthServerResource {
             }
         }
 
-        Token token = tokens.generateToken(client, session.getScopeOwner(),
-                session.getGrantedScope());
+        Token token = tokens.generateToken(client, session.getScopeOwner(), session.getGrantedScope());
 
         return responseTokenRepresentation(token, session.getRequestedScope());
     }
 
     /**
-     * Handle errors as described in 5.2 Error Response.
-     * 
-     * @param t
+     * Handles errors as described in 5.2 Error Response.
      */
     @Override
     protected void doCatch(Throwable t) {
-        t.printStackTrace(); // FIXME
+        getLogger().log(Level.SEVERE, "Error while generating a Oauth token.", t);
         final OAuthException oex = OAuthException.toOAuthException(t);
         // The authorization server responds with an HTTP 400 (Bad Request)
         getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setEntity(responseErrorRepresentation(oex));
         // Sets the no-store Cache-Control header
         addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
+        getResponse().getHeaders().add(HeaderConstants.HEADER_PRAGMA, "no-cache");
     }
 
     /**
-     * Executes the "client_credentials" flow. (4.4. Client Credentials Grant)
+     * Executes the "client_credentials" flow. (4.4. Client Credentials Grant).
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The JSON representation of the response of the "client_credentials" flow.
      * @throws OAuthException
      * @throws JSONException
      */
-    private Representation doClientFlow(Form params) throws OAuthException,
-            JSONException {
+    private Representation doClientFlow(Form parameters) throws OAuthException, JSONException {
         // The flow require authenticated client.
         Client client = getAuthenticatedClient();
         if (client == null || client.getClientType() != ClientType.CONFIDENTIAL) {
-            // The client credentials grant type MUST only be used by
-            // confidential clients.
+            // The client credentials grant type MUST only be used by confidential clients.
             throw new OAuthException(
                     OAuthError.invalid_client,
                     "The client credentials grant type MUST only be used by confidential clients.",
@@ -174,7 +161,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         ensureGrantTypeAllowed(client, GrantType.client_credentials);
 
-        String[] requestedScope = getScope(params);
+        String[] requestedScope = getScope(parameters);
 
         // Generate token for the client itself.
         Token token = tokens.generateToken(client, requestedScope);
@@ -184,45 +171,40 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
     /**
      * Executes the "password" flow. (4.3. Resource Owner Password Credentials
-     * Grant)
+     * Grant).
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The JSON representation of the response of the "password" flow.
      * @throws OAuthException
      * @throws JSONException
      */
-    private Representation doPasswordFlow(Form params) throws OAuthException,
+    private Representation doPasswordFlow(Form parameters) throws OAuthException,
             JSONException {
-        Object users = getContext().getAttributes().get(
-                ResourceOwnerManager.class.getName());
+        Object users = getContext().getAttributes().get(ResourceOwnerManager.class.getName());
         if (users == null) {
-            throw new OAuthException(OAuthError.unsupported_grant_type,
-                    "'password' flow is not supported.", null);
+            throw new OAuthException(OAuthError.unsupported_grant_type, "'password' flow is not supported.", null);
         }
 
         // The flow require authenticated client.
         Client client = getAuthenticatedClient();
         if (client == null) {
-            // XXX: 'password' flow MAY use the public client. (3.2.1 Client
-            // Authentication)
-            client = getClient(params);
+            // XXX: 'password' flow MAY use the public client. (3.2.1 Client Authentication)
+            client = getClient(parameters);
         }
 
         ensureGrantTypeAllowed(client, GrantType.password);
 
-        String username = getUsername(params);
-        String password = getPassword(params);
+        String username = getUsername(parameters);
+        String password = getPassword(parameters);
         String identifier;
 
         try {
-            identifier = ((ResourceOwnerManager) users).authenticate(username,
-                    password.toCharArray());
+            identifier = ((ResourceOwnerManager) users).authenticate(username, password.toCharArray());
         } catch (AuthenticationException ex) {
-            throw new OAuthException(OAuthError.invalid_grant,
-                    ex.getExplanation(), null);
+            throw new OAuthException(OAuthError.invalid_grant, ex.getExplanation(), null);
         }
 
-        String[] requestedScope = getScope(params);
+        String[] requestedScope = getScope(parameters);
 
         // Generate token for the resource owner.
         Token token = tokens.generateToken(client, identifier, requestedScope);
@@ -233,28 +215,27 @@ public class AccessTokenServerResource extends OAuthServerResource {
     /**
      * Executes the "refresh_token" flow. (6. Refreshing an Access Token)
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The JSON representation of the response of the "refresh_token" flow.
      * @throws OAuthException
      * @throws JSONException
      */
-    private Representation doRefreshFlow(Form params) throws OAuthException,
-            JSONException {
+    private Representation doRefreshFlow(Form parameters) throws OAuthException, JSONException {
         // The flow require authenticated client.
         Client client = getAuthenticatedClient();
         if (client == null) {
-            // XXX: 'refresh' flow MAY use the public client. (3.2.1 Client
-            // Authentication)
-            client = getClient(params);
+            // XXX: 'refresh' flow MAY use the public client. (3.2.1 Client Authentication)
+            client = getClient(parameters);
         }
 
         ensureGrantTypeAllowed(client, GrantType.refresh_token);
 
-        String refreshToken = getRefreshToken(params);
+        String refreshToken = getRefreshToken(parameters);
 
         String[] requestedScope = null;
-        String scope = params.getFirstValue(SCOPE);
-        if (scope != null && !scope.isEmpty()) {
+
+        String scope = parameters.getFirstValue(SCOPE);
+        if (!StringUtils.isNullOrEmpty(scope)) {
             requestedScope = Scopes.parseScope(scope);
         }
 
@@ -277,128 +258,121 @@ public class AccessTokenServerResource extends OAuthServerResource {
             getLogger().warning("Authenticated client_id is missing.");
             return null;
         }
-        // XXX: We 'know' the client was authenticated before, 'client' should
-        // not be null.
+        // XXX: We 'know' the client was authenticated before, 'client' should not be null.
         Client client = clients.findById(authenticatedClient.getIdentifier());
-        getLogger().fine(
-                "Requested by authenticated client " + client.getClientId());
+        getLogger().fine("Requested by authenticated client " + client.getClientId());
         return client;
     }
 
     @Override
     protected Client getClient(Form params) throws OAuthException {
         Client client = super.getClient(params);
+
         if (client.getClientType() == Client.ClientType.CONFIDENTIAL) {
-            throw new OAuthException(OAuthError.invalid_client,
-                    "Unauthenticated confidential client.", null);
+            throw new OAuthException(OAuthError.invalid_client, "Unauthenticated confidential client.", null);
         } else if (client.getClientSecret() != null) {
-            throw new OAuthException(OAuthError.invalid_client,
-                    "Unauthenticated public client.", null);
+            throw new OAuthException(OAuthError.invalid_client, "Unauthenticated public client.", null);
         }
         return client;
     }
 
     /**
-     * Get request parameter "code".
+     * Returns the value of the request parameter "code".
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The value of the request parameter "code".
      * @throws OAuthException
+     *             In case the parameter is not set.
      */
-    protected String getCode(Form params) throws OAuthException {
-        String code = params.getFirstValue(CODE);
-        if (code == null || code.isEmpty()) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Mandatory parameter code is missing", null);
-        }
-        return code;
+    protected String getCode(Form parameters) throws OAuthException {
+        return getParameter(parameters, CODE);
     }
 
     /**
-     * Get request parameter "grant_type".
+     * Returns the value of the request parameter "grant_type".
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The value of the request parameter "grant_type".
      * @throws OAuthException
+     *             In case the parameter is not set or is an invalid value.
      */
-    protected GrantType getGrantType(Form params) throws OAuthException {
-        String typeString = params.getFirstValue(GRANT_TYPE);
-        getLogger().info("Type: " + typeString);
+    protected GrantType getGrantType(Form parameters) throws OAuthException {
+        String typeString = getParameter(parameters, GRANT_TYPE);
         try {
+            getLogger().info("Type: " + typeString);
             GrantType type = Enum.valueOf(GrantType.class, typeString);
             getLogger().fine("Found flow - " + type);
             return type;
         } catch (IllegalArgumentException iae) {
-            throw new OAuthException(OAuthError.unsupported_grant_type,
-                    "Unsupported flow", null);
-        } catch (NullPointerException npe) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "No grant_type parameter found.", null);
+            throw new OAuthException(OAuthError.unsupported_grant_type, "Unsupported flow", null);
         }
     }
 
     /**
-     * Get request parameter "password".
+     * Return the value of the given parameter, and throws an OAuthException in case the parameter is not set.
      * 
-     * @param params
-     * @return
+     * @param parameters
+     *            The set of parameters.
+     * @param key
+     *            The name of the parameter to return.
+     * @return The value of the given parameter.
      * @throws OAuthException
      */
-    protected String getPassword(Form params) throws OAuthException {
-        String password = params.getFirstValue(PASSWORD);
-        if (password == null || password.isEmpty()) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Mandatory parameter password is missing", null);
+    private String getParameter(Form parameters, String key) throws OAuthException {
+        String value = parameters.getFirstValue(key);
+
+        if (StringUtils.isNullOrEmpty(value)) {
+            throw new OAuthException(OAuthError.invalid_request, "The following parameter is missing: " + key, null);
         }
-        return password;
+        return value;
     }
 
     /**
-     * Get request parameter "redirect_uri".
+     * Returns the value of the request parameter "password".
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The value of the request parameter "password".
      * @throws OAuthException
+     *             In case the parameter is not set.
+     */
+    protected String getPassword(Form parameters) throws OAuthException {
+        return getParameter(parameters, PASSWORD);
+    }
+
+    /**
+     * Returns the value of the request parameter "redirect_uri".
+     * 
+     * @param parameters
+     * @return The value of the request parameter "redirect_uri".
+     * @throws OAuthException
+     *             In case the parameter is not set.
      */
     protected String getRedirectURI(Form params) throws OAuthException {
-        String redirUri = params.getFirstValue(REDIR_URI);
-        if (redirUri == null || redirUri.isEmpty()) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Mandatory parameter redirect_uri is missing", null);
-        }
-        return redirUri;
+        return getParameter(params, REDIR_URI);
     }
 
     /**
-     * Get request parameter "refresh_token".
+     * Returns the value of the request parameter "refresh_token".
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The value of the request parameter "refresh_token".
      * @throws OAuthException
+     *             In case the parameter is not set.
      */
     protected String getRefreshToken(Form params) throws OAuthException {
-        String token = params.getFirstValue(REFRESH_TOKEN);
-        if (token == null || token.isEmpty()) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Mandatory parameter refresh_token is missing", null);
-        }
-        return token;
+        return getParameter(params, REFRESH_TOKEN);
     }
 
     /**
-     * Get request parameter "username".
+     * Returns the value of the request parameter "username".
      * 
-     * @param params
-     * @return
+     * @param parameters
+     * @return The value of the request parameter "username".
      * @throws OAuthException
+     *             In case the parameter is not set.
      */
     protected String getUsername(Form params) throws OAuthException {
-        String username = params.getFirstValue(USERNAME);
-        if (username == null || username.isEmpty()) {
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Mandatory parameter username is missing", null);
-        }
-        return username;
+        return getParameter(params, USERNAME);
     }
 
     /**
@@ -410,60 +384,57 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @return JSON response with token or error.
      */
     @Post("form:json")
-    public Representation requestToken(Representation input)
-            throws OAuthException, JSONException {
+    public Representation requestToken(Representation input) throws OAuthException, JSONException {
         getLogger().fine("Grant request");
-        final Form params = new Form(input);
+        final Form parameters = new Form(input);
 
-        final GrantType grantType = getGrantType(params);
+        final GrantType grantType = getGrantType(parameters);
+
         switch (grantType) {
         case authorization_code:
             getLogger().info("Authorization Code Grant");
-            return doAuthCodeFlow(params);
+            return doAuthCodeFlow(parameters);
         case password:
             getLogger().info("Resource Owner Password Credentials Grant");
-            return doPasswordFlow(params);
+            return doPasswordFlow(parameters);
         case client_credentials:
-            getLogger().info("Client Credentials Grantt");
-            return doClientFlow(params);
+            getLogger().info("Client Credentials Grant");
+            return doClientFlow(parameters);
         case refresh_token:
             getLogger().info("Refreshing an Access Token");
-            return doRefreshFlow(params);
+            return doRefreshFlow(parameters);
         default:
             getLogger().warning("Unsupported flow: " + grantType);
-            throw new OAuthException(OAuthError.unsupported_grant_type,
-                    "Flow not supported", null);
+            throw new OAuthException(OAuthError.unsupported_grant_type, "Flow not supported", null);
         }
     }
 
     /**
-     * Response JSON document with valid token. The format of the JSON document
-     * is according to 5.1. Successful Response.
+     * Generates a JSON document with valid token. The format of the JSON document is according to 5.1. Successful
+     * Response.
      * 
      * @param token
      *            The token generated by the client.
      * @param requestedScope
      *            The scope originally requested by the client.
      * @return The token representation as described in RFC6749 5.1.
-     * @throws ResourceException
+     * @throws JSONException
      */
-    protected Representation responseTokenRepresentation(Token token,
-            String[] requestedScope) throws JSONException {
+    protected Representation responseTokenRepresentation(Token token, String[] requestedScope) throws JSONException {
         JSONObject response = new JSONObject();
 
         response.put(TOKEN_TYPE, token.getTokenType());
         response.put(ACCESS_TOKEN, token.getAccessToken());
         response.put(EXPIRES_IN, token.getExpirePeriod());
+
         String refreshToken = token.getRefreshToken();
-        if (refreshToken != null && !refreshToken.isEmpty()) {
+        if (!StringUtils.isNullOrEmpty(refreshToken)) {
             response.put(REFRESH_TOKEN, refreshToken);
         }
+
         String[] scope = token.getScope();
         if (requestedScope == null || !Scopes.isIdentical(scope, requestedScope)) {
-            /*
-             * OPTIONAL, if identical to the scope requested by the client,
-             * otherwise REQUIRED. (5.1. Successful Response)
-             */
+            // OPTIONAL, if identical to the requested scope, otherwise REQUIRED. (5.1. Successful Response)
             response.put(SCOPE, Scopes.toString(scope));
         }
 
@@ -475,7 +446,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
          * with a value of "no-cache". (5.1. Successful Response)
          */
         addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
+        getResponse().getHeaders().add(HeaderConstants.HEADER_PRAGMA, "no-cache");
 
         return new JsonRepresentation(response);
     }

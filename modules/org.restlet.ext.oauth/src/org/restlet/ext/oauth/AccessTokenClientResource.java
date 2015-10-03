@@ -31,31 +31,30 @@ import org.json.JSONObject;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 /**
  * Client resource used to acquire an OAuth token. Implements OAuth 2.0
- * (RFC6749)
+ * (RFC6749).<br>
+ * Use or override the {@link #requestToken(OAuthParameters)} method to retrieve the token.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class AccessTokenClientResource extends ClientResource implements
-        OAuthResourceDefs {
+public class AccessTokenClientResource extends ClientResource implements OAuthResourceDefs {
 
     private static class TokenResponse implements Token {
 
-        public static TokenResponse parseResponse(JSONObject result)
-                throws JSONException {
+        public static TokenResponse parseResponse(JSONObject result) throws JSONException {
             TokenResponse token = new TokenResponse();
             token.accessToken = result.getString(ACCESS_TOKEN);
             token.tokenType = result.getString(TOKEN_TYPE);
+
             if (result.has(EXPIRES_IN)) {
                 token.expirePeriod = result.getInt(EXPIRES_IN);
             }
@@ -113,44 +112,47 @@ public class AccessTokenClientResource extends ClientResource implements
 
     private String clientSecret;
 
-    public AccessTokenClientResource(Reference tokenURI) {
-        super(tokenURI);
+    public AccessTokenClientResource(Reference tokenUri) {
+        super(tokenUri);
         // set default scheme
         authenticationScheme = ChallengeScheme.HTTP_BASIC;
     }
 
-    @Override
-    public void doError(Status errorStatus) {
-        Representation representation = getResponse().getEntity();
-        if (representation.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            // Do not throw an exception here.
-            getLogger().fine("OAuth response is found.");
-            // XXX: after #doError, the representation will disposed in
-            // #handleInbound.
-            return;
-        }
-        // ResourceException will be thrown.
-        super.doError(errorStatus);
-    }
-
-    // We override to not dispose the OAuth error json body.
+    /**
+     * Handles the inbound call. Note that only synchronous calls are processed.<br>
+     * Overrides the {@link ClientResource#handleInbound(Response)} method in order to return the OAuth error entity.
+     * That is to say in case of OAuth error response, no {@link ResourceException} is thrown, whereas the initial
+     * behaviour of {@link ClientResource} is to throw such exception.
+     * 
+     * @param response
+     * @return The response's entity, if any.
+     */
     @Override
     public Representation handleInbound(Response response) {
-        Representation result = null;
+        try {
+            return super.handleInbound(response);
+        } catch (ResourceException e) {
+            if (getResponse().isEntityAvailable()
+                    && MediaType.APPLICATION_JSON.equals(getResponseEntity().getMediaType())) {
+                // Do not throw an exception here.
+                getLogger().fine("OAuth response is found.");
+                return getResponseEntity();
+            }
 
-        // Verify that the request was synchronous
-        if (response.getRequest().isSynchronous()) {
-            if (response.getStatus().isError()) {
-                doError(response.getStatus());
-                // DO NOT DISPOSE THE RESPONSE.
-            }/* else { */
-            result = (response == null) ? null : response.getEntity();
-            /* } */
+            throw e;
         }
-
-        return result;
     }
 
+    /**
+     * Returns the OAuth token by requesting the remote authorization server.
+     * 
+     * @param parameters
+     *            The credentials, in case of they are sent via the entity of the request.
+     * @return The OAuth token.
+     * @throws OAuthException
+     * @throws IOException
+     * @throws JSONException
+     */
     public Token requestToken(OAuthParameters parameters)
             throws OAuthException, IOException, JSONException {
         if (authenticationScheme == null) {
@@ -162,8 +164,7 @@ public class AccessTokenClientResource extends ClientResource implements
 
         Representation input = parameters.toRepresentation();
 
-        getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.APPLICATION_JSON));
+        accept(MediaType.APPLICATION_JSON);
 
         JSONObject result = new JsonRepresentation(post(input)).getJsonObject();
 
@@ -174,8 +175,7 @@ public class AccessTokenClientResource extends ClientResource implements
         TokenResponse token = TokenResponse.parseResponse(result);
         if (token.scope == null) {
             // Should be identical to the scope requested by the client.
-            token.scope = Scopes.parseScope(parameters.toForm().getFirstValue(
-                    SCOPE));
+            token.scope = Scopes.parseScope(parameters.toForm().getFirstValue(SCOPE));
         }
 
         return token;
@@ -190,6 +190,13 @@ public class AccessTokenClientResource extends ClientResource implements
         this.clientSecret = clientSecret;
     }
 
+    /**
+     * By default adds the clientId and clientSecret (if any) values to the set of Oauth parameters.<br>
+     * Called from {@link #requestToken(OAuthParameters)} method.
+     * 
+     * @param parameters
+     *            The set of Oauth parameters to complete.
+     */
     protected void setupBodyClientCredentials(OAuthParameters parameters) {
         parameters.add(CLIENT_ID, clientId);
         if (clientSecret != null) {

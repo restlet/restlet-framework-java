@@ -29,8 +29,7 @@ package org.restlet.ext.oauth;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
- * @see <a href="http://tools.ietf.org/html/rfc6749"> The OAuth 2.0
- *      Authorization Framework</a>
+ * @see <a href="http://tools.ietf.org/html/rfc6749"> The OAuth 2.0 Authorization Framework</a>
  * @see <a href="http://tools.ietf.org/html/rfc6750"> Bearer Token Usage</a>
  */
 public enum OAuthError {

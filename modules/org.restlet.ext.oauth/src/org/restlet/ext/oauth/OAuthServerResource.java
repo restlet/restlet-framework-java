@@ -34,6 +34,7 @@ import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.ClientManager;
@@ -51,13 +52,19 @@ import org.restlet.resource.ServerResource;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
  */
-public abstract class OAuthServerResource extends ServerResource implements
-        OAuthResourceDefs {
+public abstract class OAuthServerResource extends ServerResource implements OAuthResourceDefs {
 
     public static final String PARAMETER_DEFAULT_SCOPE = "defaultScope";
 
-    public static void addCacheDirective(Response response,
-            CacheDirective cacheDirective) {
+    /**
+     * Adds a cache directive to the response.
+     * 
+     * @param response
+     *            The current response.
+     * @param cacheDirective
+     *            The cache directive to add.
+     */
+    public static void addCacheDirective(Response response, CacheDirective cacheDirective) {
         List<CacheDirective> cacheDirectives = response.getCacheDirectives();
         if (cacheDirectives == null) {
             cacheDirectives = new ArrayList<CacheDirective>();
@@ -79,8 +86,7 @@ public abstract class OAuthServerResource extends ServerResource implements
             return new JsonRepresentation(ex.createErrorDocument());
         } catch (JSONException e) {
             StringRepresentation r = new StringRepresentation(
-                    "{\"error\":\"server_error\",\"error_description:\":\""
-                            + e.getLocalizedMessage() + "\"}");
+                    "{\"error\":\"server_error\",\"error_description:\":\"" + e.getLocalizedMessage() + "\"}");
             r.setMediaType(MediaType.APPLICATION_JSON);
             return r;
         }
@@ -100,10 +106,10 @@ public abstract class OAuthServerResource extends ServerResource implements
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
-        Context ctx = getContext();
-        ConcurrentMap<String, Object> attribs = ctx.getAttributes();
-        clients = (ClientManager) attribs.get(ClientManager.class.getName());
-        tokens = (TokenManager) attribs.get(TokenManager.class.getName());
+        Context context = getContext();
+        ConcurrentMap<String, Object> attributes = context.getAttributes();
+        clients = (ClientManager) attributes.get(ClientManager.class.getName());
+        tokens = (TokenManager) attributes.get(TokenManager.class.getName());
 
         getLogger().fine("Found client store = " + clients);
     }
@@ -111,24 +117,23 @@ public abstract class OAuthServerResource extends ServerResource implements
     /**
      * Get request parameter "client_id".
      * 
-     * @param params
+     * @param parameters
      * @return
      * @throws OAuthException
      */
-    protected Client getClient(Form params) throws OAuthException {
+    protected Client getClient(Form parameters) throws OAuthException {
         // check clientId:
-        String clientId = params.getFirstValue(CLIENT_ID);
-        if (clientId == null || clientId.isEmpty()) {
+        String clientId = parameters.getFirstValue(CLIENT_ID);
+        if (StringUtils.isNullOrEmpty(clientId)) {
             getLogger().warning("Could not find client ID");
-            throw new OAuthException(OAuthError.invalid_request,
-                    "No client_id parameter found.", null);
+            throw new OAuthException(OAuthError.invalid_request, "No client_id parameter found.", null);
         }
+        
         Client client = clients.findById(clientId);
         getLogger().fine("Client = " + client);
         if (client == null) {
             getLogger().warning("Need to register the client : " + clientId);
-            throw new OAuthException(OAuthError.invalid_request,
-                    "Need to register the client : " + clientId, null);
+            throw new OAuthException(OAuthError.invalid_request, "Need to register the client : " + clientId, null);
         }
 
         return client;
@@ -137,24 +142,20 @@ public abstract class OAuthServerResource extends ServerResource implements
     /**
      * Get request parameter "scope".
      * 
-     * @param params
+     * @param parameters
      * @return
      * @throws OAuthException
      */
-    protected String[] getScope(Form params) throws OAuthException {
-        String scope = params.getFirstValue(SCOPE);
-        if (scope == null || scope.isEmpty()) {
-            /*
-             * If the client omits the scope parameter when requesting
-             * authorization, the authorization server MUST either process the
-             * request using a pre-defined default value, or fail the request
-             * indicating an invalid scope... (draft-ietf-oauth-v2-30 3.3.)
-             */
-            Object defaultScope = getContext().getAttributes().get(
-                    PARAMETER_DEFAULT_SCOPE);
+    protected String[] getScope(Form parameters) throws OAuthException {
+        String scope = parameters.getFirstValue(SCOPE);
+        
+        if (StringUtils.isNullOrEmpty(scope)) {
+            // If the client omits the scope parameter when requesting authorization, the authorization server MUST
+            // either process the request using a pre-defined default value, or fail the request indicating an invalid
+            // scope... (draft-ietf-oauth-v2-30 3.3.)
+            Object defaultScope = getContext().getAttributes().get(PARAMETER_DEFAULT_SCOPE);
             if (defaultScope == null || defaultScope.toString().isEmpty()) {
-                throw new OAuthException(OAuthError.invalid_scope,
-                        "Scope has not provided.", null);
+                throw new OAuthException(OAuthError.invalid_scope, "Scope has not been provided.", null);
             }
             scope = defaultScope.toString();
         }
@@ -164,11 +165,11 @@ public abstract class OAuthServerResource extends ServerResource implements
     /**
      * Get request parameter "state".
      * 
-     * @param params
+     * @param parameters
      * @return
      * @throws OAuthException
      */
-    protected String getState(Form params) {
-        return params.getFirstValue(STATE);
+    protected String getState(Form parameters) {
+        return parameters.getFirstValue(STATE);
     }
 }

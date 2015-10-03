@@ -30,14 +30,16 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
+import org.restlet.engine.Engine;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.internal.CryptoUtils;
 import org.restlet.util.Series;
 
 /**
- * Implementation of the client-side OAuth2 support. If this helper is not
- * automatically added to your Engine add it with:
+ * Implementation of the client-side OAuth2 support.<br>
+ * <br>
+ * If this helper is not automatically added to the {@link Engine#getInstance()}, add it with:
  * 
  * <pre>
  * {
@@ -59,6 +61,7 @@ public class HttpOAuthMacHelper extends AuthenticatorHelper {
         super(ChallengeScheme.HTTP_OAUTH_MAC, true, true);
     }
 
+    @Override
     public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
             Request request, Series<Header> httpHeaders) {
         cw.append("id=\"");
@@ -66,11 +69,11 @@ public class HttpOAuthMacHelper extends AuthenticatorHelper {
         cw.append("\",ts=\"");
         cw.append((new Date()).getTime());
         cw.append("\",nonce=\"");
-        String nonce = CryptoUtils.makeNonce(String.valueOf(challenge
-                .getSecret()));
+        String nonce = CryptoUtils.makeNonce(String.valueOf(challenge.getSecret()));
         cw.append(nonce);
         cw.append("\",mac=\"");
         cw.append(String.valueOf(challenge.getSecret()));
         cw.append("\"");
     }
+
 }

@@ -48,8 +48,7 @@ public class MemoryClient implements Client {
 
     private String[] redirectURIs;
 
-    protected MemoryClient(String clientId, ClientType clientType,
-            String[] redirectURIs, Map<String, Object> properties) {
+    protected MemoryClient(String clientId, ClientType clientType, String[] redirectURIs, Map<String, Object> properties) {
         this.clientId = clientId;
         this.clientType = clientType;
         this.redirectURIs = redirectURIs;

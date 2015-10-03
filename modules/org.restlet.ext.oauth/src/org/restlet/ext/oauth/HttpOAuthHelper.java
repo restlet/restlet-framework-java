@@ -34,8 +34,10 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Header;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.util.Series;
 
 /**
@@ -51,8 +53,7 @@ import org.restlet.util.Series;
  * }
  * </pre>
  * 
- * Here is the list of parameters that are supported. They should be set before
- * an OAuth2Server or Client is started:
+ * Here is the list of supported parameters. They should be set before starting an OAuth2 server or client:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -63,43 +64,40 @@ import org.restlet.util.Series;
  * <tr>
  * <td>authPage</td>
  * <td>String</td>
- * <td>auth_page</td>
- * <td>Specifies where an AuthorizationServerResource should redirect
- * authorization requests for user interaction. This resource will be accessed
- * using riap, i.e. riap://application/+authPage</td>
+ * <td>/auth_page</td>
+ * <td>Specifies the path of the resource an {@link AuthorizationServerResource} should redirect authorization requests
+ * for user interaction. This resource will be accessed using internal protocol {@link Protocol#RIAP} (i.e.
+ * riap://application/authPage)</td>
  * </tr>
  * <tr>
  * <td>authPageTemplate</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Specifies an html file or freemarker template for a GUI. If none is
- * provided Roles (scopes) will automatically granted. Accessed using clap, i.e.
- * clap:///+authPageTemplate</td>
- * </tr>
- * <td>authPageTemplate</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Specifies an html file or freemarker template for a GUI. If none is
- * provided Roles (scopes) will automatically granted. Used by
- * AuthPageServerResource</td>
+ * <td>Specifies the name of the authorization page. The name is used by {@link AuthPageServerResource#getPage(String)}
+ * method in order to generate the HTML representation of the authorization page. If no scope is provided, the scope
+ * "Roles" will be automatically granted.</td>
  * </tr>
  * <tr>
  * <td>authSkipApproved</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>If true no authorization page will be shown if the Roles (scopes) have
- * been previously approved by the user</td>
+ * <td>If true no authorization page will be shown if the Roles (scopes) have been previously approved by the user</td>
+ * </tr>
+ * <tr>
+ * <td>errorPageTemplate</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Specifies the name of the error page. The name is used by
+ * {@link AuthorizationBaseServerResource#getErrorPage(String, OAuthException)} method in order to generate the HTML
+ * representation of the error page. If no scope is provided, the scope "Roles" will be automatically granted.</td>
  * </tr>
  * <tr>
  * <td>loginPage</td>
  * <td>String</td>
- * <td>login</td>
- * <td>Specifing a login resource location relative to the Application root.
- * Defaults to "login". This resource will be accessed using riap, i.e.
- * riap://application/+loginPage</td>
+ * <td>/login</td>
+ * <td>Specifing a login resource location relative to the Application root. This resource will be accessed using
+ * internal protocol {@link Protocol#RIAP} (i.e. riap://application/login)</td>
  * </tr>
- * 
- * </td>
  * </table>
  * 
  * @author Kristoffer Gronowski
@@ -108,53 +106,59 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     /**
      * Returns the value of the "authPage" parameter.
      * 
-     * @param c
+     * @param context
      *            The context where to find the parameter.
      * @return The value of the "authPage" parameter.
      */
-    public static String getAuthPage(Context c) {
-        return c.getParameters().getFirstValue("authPage", "/auth_page");
+    public static String getAuthPage(Context context) {
+        return context.getParameters().getFirstValue("authPage", "/auth_page");
     }
 
     /**
      * Returns the value of the "authPageTemplate" parameter.
      * 
-     * @param c
+     * @param context
      *            The context where to find the parameter.
      * @return The value of the "authPageTemplate" parameter.
      */
-    public static String getAuthPageTemplate(Context c) {
-        return c.getParameters().getFirstValue("authPageTemplate");
+    public static String getAuthPageTemplate(Context context) {
+        return context.getParameters().getFirstValue("authPageTemplate");
     }
 
     /**
      * Returns the value of the "authSkipApproved" parameter.
      * 
-     * @param c
+     * @param context
      *            The context where to find the parameter.
      * @return The value of the "authSkipApproved" parameter.
      */
-    public static boolean getAuthSkipApproved(Context c) {
-        c.getLogger().fine("Trying to get auth page template");
-        String skip = c.getParameters().getFirstValue("authSkipApproved");
-        if (skip == null)
-            return false;
+    public static boolean getAuthSkipApproved(Context context) {
+        context.getLogger().fine("Trying to get auth page template");
+        String skip = context.getParameters().getFirstValue("authSkipApproved");
         return Boolean.parseBoolean(skip);
     }
 
-    public static String getErrorPageTemplate(Context c) {
-        return c.getParameters().getFirstValue("errorPageTemplate");
+    
+    /**
+     * Returns the value of the "errorPageTemplate" parameter.
+     * 
+     * @param context
+     *            The context where to find the parameter.
+     * @return The value of the "errorPageTemplate" parameter.
+     */
+    public static String getErrorPageTemplate(Context context) {
+        return context.getParameters().getFirstValue("errorPageTemplate");
     }
 
     /**
      * Returns the value of the "loginPage" parameter.
      * 
-     * @param c
+     * @param context
      *            The context where to find the parameter.
      * @return The value of the "loginPage" parameter.
      */
-    public static String getLoginPage(Context c) {
-        return c.getParameters().getFirstValue("login", "/login");
+    public static String getLoginPage(Context context) {
+        return context.getParameters().getFirstValue("login", "/login");
     }
 
     /**
@@ -162,11 +166,11 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      * 
      * @param authPage
      *            The value of the "authPage" parameter.
-     * @param c
+     * @param context
      *            The context to update.
      */
-    public static void setAuthPage(String authPage, Context c) {
-        c.getParameters().set("authPage", authPage);
+    public static void setAuthPage(String authPage, Context context) {
+        context.getParameters().set("authPage", authPage);
     }
 
     /**
@@ -174,11 +178,11 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      * 
      * @param authPageTemplate
      *            The value of the "authPageTemplate" parameter.
-     * @param c
+     * @param context
      *            The context to update.
      */
-    public static void setAuthPageTemplate(String authPageTemplate, Context c) {
-        c.getParameters().set("authPageTemplate", authPageTemplate);
+    public static void setAuthPageTemplate(String authPageTemplate, Context context) {
+        context.getParameters().set("authPageTemplate", authPageTemplate);
     }
 
     /**
@@ -186,15 +190,21 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      * 
      * @param skip
      *            The value of the "authSkipApproved" parameter.
-     * @param c
+     * @param context
      *            The context to update.
      */
-    public static void setAuthSkipApproved(boolean skip, Context c) {
-        c.getParameters().set("authSkipApproved", Boolean.toString(skip));
+    public static void setAuthSkipApproved(boolean skip, Context context) {
+        context.getParameters().set("authSkipApproved", Boolean.toString(skip));
     }
 
-    public static void setErrorPageTemplate(String errorPageTemplate, Context c) {
-        c.getParameters().set("errorPageTemplate", errorPageTemplate);
+    /**
+     * Sets the value of the "errorPageTemplate" parameter.
+     * 
+     * @param errorPageTemplate
+     * @param context
+     */
+    public static void setErrorPageTemplate(String errorPageTemplate, Context context) {
+        context.getParameters().set("errorPageTemplate", errorPageTemplate);
     }
 
     /**
@@ -202,11 +212,11 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      * 
      * @param loginPage
      *            The value of the "loginPage" parameter.
-     * @param c
+     * @param context
      *            The context to update.
      */
-    public static void setLoginPage(String loginPage, Context c) {
-        c.getParameters().set("loginPage", loginPage);
+    public static void setLoginPage(String loginPage, Context context) {
+        context.getParameters().set("loginPage", loginPage);
     }
 
     /**
@@ -220,8 +230,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     @Override
     public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
             Response response, Series<Header> httpHeaders) throws IOException {
-        // Format the parameters WWW-Authenticate: OAuth realm='Example
-        // Service', error='expired-token'
+        // Format the parameters WWW-Authenticate: OAuth realm='Example Service', error='expired-token'
         cw.append("realm='");
         cw.append(challenge.getRealm());
         cw.append("'");
@@ -236,15 +245,14 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void parseRequest(ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) {
+    public void parseRequest(ChallengeRequest challenge, Response response, Series<Header> httpHeaders) {
         String raw = challenge.getRawValue();
 
         if (raw != null && raw.length() > 0) {
             StringTokenizer st = new StringTokenizer(raw, ",");
             String realm = st.nextToken();
 
-            if (realm != null && realm.length() > 0) {
+            if (!StringUtils.isNullOrEmpty(realm)) {
                 int eq = realm.indexOf('=');
 
                 if (eq > 0) {
@@ -259,7 +267,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
             while (st.hasMoreTokens()) {
                 String param = st.nextToken();
 
-                if (param != null && param.length() > 0) {
+                if (!StringUtils.isNullOrEmpty(param)) {
                     int eq = param.indexOf('=');
 
                     if (eq > 0) {

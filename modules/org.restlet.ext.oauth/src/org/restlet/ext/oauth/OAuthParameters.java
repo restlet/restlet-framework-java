@@ -30,95 +30,158 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 
 /**
+ * Gathers OAuth credentials.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuthParameters implements OAuthResourceDefs {
-
+    /** The list of parameters. */
     private Form form;
 
+    /**
+     * Constructor.
+     */
     public OAuthParameters() {
         form = new Form();
     }
 
+    /**
+     * Add a new parameter.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param value
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters add(String name, String value) {
         form.add(name, value);
         return this;
     }
 
-    // protected OAuthParameters clientId(String clientId) {
-    // form.add(CLIENT_ID, clientId);
-    // return this;
-    // }
-    //
-    // protected OAuthParameters clientSecret(String clientSecret) {
-    // form.add(CLIENT_SECRET, clientSecret);
-    // return this;
-    // }
-
+    /**
+     * Adds a {@link OAuthResourceDefs#CODE} parameter.
+     * 
+     * @param code
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters code(String code) {
-        add(CODE, code);
-        return this;
+        return add(CODE, code);
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#GRANT_TYPE} parameter.
+     * 
+     * @param grantType
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters grantType(GrantType grantType) {
-        add(GRANT_TYPE, grantType.name());
-        return this;
+        return add(GRANT_TYPE, grantType.name());
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#PASSWORD} parameter.
+     * 
+     * @param password
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters password(String password) {
-        add(PASSWORD, password);
-        return this;
+        return add(PASSWORD, password);
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#REDIR_URI} parameter.
+     * 
+     * @param redirectURI
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters redirectURI(String redirectURI) {
-        add(REDIR_URI, redirectURI);
-        return this;
+        return add(REDIR_URI, redirectURI);
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#REFRESH_TOKEN} parameter.
+     * 
+     * @param refreshToken
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters refreshToken(String refreshToken) {
-        add(REFRESH_TOKEN, refreshToken);
-        return this;
+        return add(REFRESH_TOKEN, refreshToken);
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#RESPONSE_TYPE} parameter.
+     * 
+     * @param responseType
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters responseType(ResponseType responseType) {
-        add(RESPONSE_TYPE, responseType.name());
-        return this;
+        return add(RESPONSE_TYPE, responseType.name());
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#SCOPE} parameter.
+     * 
+     * @param scope
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters scope(String[] scope) {
-        add(SCOPE, Scopes.toString(scope));
-        return this;
+        return add(SCOPE, Scopes.toString(scope));
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#STATE} parameter.
+     * 
+     * @param state
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters state(String state) {
-        add(STATE, state);
-        return this;
+        return add(STATE, state);
     }
 
     protected Form toForm() {
         return form;
     }
 
+    /**
+     * Completes the URI with the OAuth parameters as query parameters.
+     * 
+     * @param uri
+     *            The URI to complete.
+     * @return The URI with the set as Oauth parameters as query.
+     */
     public Reference toReference(String uri) {
-        String query;
         try {
-            query = form.encode();
+            Reference reference = new Reference(uri);
+            reference.setQuery(form.encode());
+
+            return reference;
         } catch (IOException ex) {
             Logger.getLogger(OAuthParameters.class.getName()).log(Level.SEVERE,
-                    null, ex);
-            throw new ResourceException(ex);
+                    "Issue when encoding the OAuth parameters.", ex);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Issue when encoding the OAuth parameters.", ex);
         }
-        Reference reference = new Reference(uri);
-        reference.setQuery(query);
-        return reference;
     }
 
+    /**
+     * Returns the set of Oauth parameters as a web form.
+     * 
+     * @return The set of Oauth parameters as a web form.
+     */
     public Representation toRepresentation() {
         return form.getWebRepresentation();
     }
@@ -128,8 +191,14 @@ public class OAuthParameters implements OAuthResourceDefs {
         return form.getQueryString();
     }
 
+    /**
+     * Adds a {@link OAuthResourceDefs#USERNAME} parameter.
+     * 
+     * @param username
+     *            The value of the parameter.
+     * @return The current instance, in order to chain calls.
+     */
     public OAuthParameters username(String username) {
-        add(USERNAME, username);
-        return this;
+        return add(USERNAME, username);
     }
 }

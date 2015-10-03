@@ -26,10 +26,12 @@ package org.restlet.ext.oauth;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 
 import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.internal.AuthSession;
@@ -40,9 +42,9 @@ import org.restlet.representation.Representation;
 import freemarker.template.Configuration;
 
 /**
- * Base Restlet resource class for Authorization service resource. Handle errors
- * according to OAuth2.0 specification, and manage AuthSession. Authorization
- * Endndpoint, Authorization pages, and Login pages should extends this class.
+ * Base Restlet resource class for Authorization service resource.<br>
+ * Handle errors according to OAuth2.0 specification, and manage AuthSession. Authorization Enddpoint, Authorization
+ * pages, and Login pages should extend this class.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
@@ -56,13 +58,16 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         AuthSession session = null;
         try {
             session = getAuthSession();
-        } catch (OAuthException ignore) {
-            // FIXME
+        } catch (OAuthException e) {
+            getLogger()
+                    .log(Level.INFO,
+                            "The following exception has been thrown while getting an authorization session and will be ignored.",
+                            e);
         }
+
         if (session == null || session.getAuthFlow() == null) {
             // Session was revoked or not established.
-            Representation resp = getErrorPage(
-                    HttpOAuthHelper.getErrorPageTemplate(getContext()), oex);
+            Representation resp = getErrorPage(HttpOAuthHelper.getErrorPageTemplate(getContext()), oex);
             getResponse().setEntity(resp);
         } else {
             /*
@@ -73,11 +78,10 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
              * URI using the "application/x-www-form-urlencoded" format, per
              * Appendix B: (4.2.2.1. Error Response)
              */
-            // Use fragment component for Implicit Grant (4.2.2.1. Error
-            // Response)
-            boolean fragment = session.getAuthFlow().equals(ResponseType.token);
-            sendError(session.getRedirectionURI().getURI(), oex,
-                    session.getState(), fragment);
+
+            // Use fragment component for Implicit Grant (4.2.2.1. Error Response)
+            boolean fragment = ResponseType.token.equals(session.getAuthFlow());
+            sendError(session.getRedirectionURI().getURI(), oex, session.getState(), fragment);
         }
     }
 
@@ -85,6 +89,8 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
      * Returns the current authorization session.
      * 
      * @return The current {@link AuthSession} instance.
+     * @throws OAuthException
+     *             In case the session has timed out.
      */
     protected AuthSession getAuthSession() throws OAuthException {
         // Get some basic information
@@ -103,16 +109,14 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         } catch (AuthSessionTimeoutException ex) {
             // Remove timeout session
             getContext().getAttributes().remove(sessionId);
-            throw new OAuthException(OAuthError.server_error,
-                    "Session timeout", null);
+            throw new OAuthException(OAuthError.server_error, "Session has timed out", null);
         }
 
         return session;
     }
 
     /**
-     * Helper method to format error responses according to OAuth2 spec. (Non
-     * Redirect)
+     * Helper method to format error responses according to OAuth2 spec. (Non Redirect)
      * 
      * @param errPage
      *            errorPage template name
@@ -121,18 +125,16 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
      */
     protected Representation getErrorPage(String errPage, OAuthException ex) {
         Configuration config = new Configuration();
-        config.setTemplateLoader(new ContextTemplateLoader(getContext(),
-                "clap:///"));
+        config.setTemplateLoader(new ContextTemplateLoader(getContext(), "clap:///"));
         getLogger().fine("loading: " + errPage);
-        TemplateRepresentation response = new TemplateRepresentation(errPage,
-                config, MediaType.TEXT_HTML);
+        TemplateRepresentation response = new TemplateRepresentation(errPage, config, MediaType.TEXT_HTML);
 
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
         data.put(ERROR, ex.getError().name());
         data.put(ERROR_DESC, ex.getErrorDescription());
-        data.put(ERROR_URI, ex.getErrorURI());
+        data.put(ERROR_URI, ex.getErrorUri());
 
         response.setDataModel(data);
 
@@ -143,48 +145,51 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
      * Helper method to format error responses according to OAuth2 spec.
      * (Redirect)
      * 
-     * @param redirectURI
-     *            redirection URI to send error
+     * @param redirectionUri
+     *            redirection URI to send error.
      * @param ex
-     *            Any OAuthException with error
+     *            Any OAuthException with error.
      * @param state
-     *            state parameter as presented in the initial authorize request
+     *            state parameter as presented in the initial authorize request.
      * @param fragment
      *            true if use URL Fragment.
      */
-    protected void sendError(String redirectURI, OAuthException ex,
-            String state, boolean fragment) {
-        Reference cb = new Reference(redirectURI);
-        cb.addQueryParameter(ERROR, ex.getError().name());
-        if (state != null && state.length() > 0) {
-            cb.addQueryParameter(STATE, state);
+    protected void sendError(String redirectionUri, OAuthException ex, String state, boolean fragment) {
+
+        Reference redirectionRef = new Reference(redirectionUri);
+
+        redirectionRef.addQueryParameter(ERROR, ex.getError().name());
+        if (!StringUtils.isNullOrEmpty(state)) {
+            redirectionRef.addQueryParameter(STATE, state);
         }
         String description = ex.getErrorDescription();
-        if (description != null && description.length() > 0) {
-            cb.addQueryParameter(ERROR_DESC, description);
+        if (!StringUtils.isNullOrEmpty(description)) {
+            redirectionRef.addQueryParameter(ERROR_DESC, description);
         }
-        String errorUri = ex.getErrorURI();
-        if (errorUri != null && errorUri.length() > 0) {
-            cb.addQueryParameter(ERROR_URI, errorUri);
+        String errorUri = ex.getErrorUri();
+        if (!StringUtils.isNullOrEmpty(errorUri)) {
+            redirectionRef.addQueryParameter(ERROR_URI, errorUri);
         }
         if (fragment) {
-            cb.setFragment(cb.getQuery());
-            cb.setQuery("");
+            redirectionRef.setFragment(redirectionRef.getQuery());
+            redirectionRef.setQuery("");
         }
-        redirectTemporary(cb);
+
+        redirectTemporary(redirectionRef);
     }
 
     /**
      * Sets up a new authorization session.
      * 
-     * @param redirectUri
+     * @param redirectionUri
      *            The redirection URI.
+     * @return A new autorization session.
      */
-    protected AuthSession setupAuthSession(RedirectionURI redirectUri) {
+    protected AuthSession setupAuthSession(RedirectionURI redirectionUri) {
         getLogger().fine("Base ref = " + getReference().getParentRef());
 
         AuthSession session = AuthSession.newAuthSession();
-        session.setRedirectionURI(redirectUri);
+        session.setRedirectionURI(redirectionUri);
 
         CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
         // TODO create a secure mode setting, update all cookies
@@ -200,13 +205,21 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
 
     /**
      * Unget current authorization session.
+     * 
+     * @deprecated Use {@link #resetAuthSession()} instead.
      */
     protected void ungetAuthSession() {
+        resetAuthSession();
+    }
+
+    /**
+     * Reset the current authorization session.
+     */
+    protected void resetAuthSession() {
         String sessionId = getCookies().getFirstValue(ClientCookieID);
         // cleanup cookie.
-        if (sessionId != null && sessionId.length() > 0) {
-            ConcurrentMap<String, Object> attribs = getContext()
-                    .getAttributes();
+        if (!StringUtils.isNullOrEmpty(sessionId)) {
+            ConcurrentMap<String, Object> attribs = getContext().getAttributes();
             attribs.remove(sessionId);
         }
     }

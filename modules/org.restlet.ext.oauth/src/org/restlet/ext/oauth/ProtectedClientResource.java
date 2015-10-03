@@ -42,11 +42,11 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 /**
+ * Client resource that is able to complete any request with credentials.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class ProtectedClientResource extends ClientResource implements
-        OAuthResourceDefs {
+public class ProtectedClientResource extends ClientResource implements OAuthResourceDefs {
 
     private volatile Token token;
 
@@ -125,32 +125,31 @@ public class ProtectedClientResource extends ClientResource implements
     @Override
     public Response handleOutbound(Request request) {
         if (token == null) {
-            throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED,
-                    "Token not found");
+            throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, "Token not found");
         }
-        if (token.getTokenType().equals(TOKEN_TYPE_BEARER)) {
-            if (isUseBodyMethod()) {
-                Representation entity = request.getEntity();
-                if (entity != null
-                        && entity.getMediaType().equals(
-                                MediaType.APPLICATION_WWW_FORM)) {
-                    Form form = new Form(entity);
-                    form.add(ACCESS_TOKEN, token.getAccessToken());
-                    request.setEntity(form.getWebRepresentation());
-                } else {
-                    request.getResourceRef().addQueryParameter(ACCESS_TOKEN,
-                            token.getAccessToken());
-                }
+
+        if (!TOKEN_TYPE_BEARER.equals(token.getTokenType())) {
+            throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, "Unsupported token type: "
+                    + token.getTokenType());
+        }
+
+        if (isUseBodyMethod()) {
+            Representation entity = request.getEntity();
+            if (!request.isEntityAvailable()
+                    && MediaType.APPLICATION_WWW_FORM.equals(entity.getMediaType())) {
+                Form form = new Form(entity);
+                form.add(ACCESS_TOKEN, token.getAccessToken());
+                request.setEntity(form.getWebRepresentation());
             } else {
-                ChallengeResponse cr = new ChallengeResponse(
-                        ChallengeScheme.HTTP_OAUTH_BEARER);
-                cr.setRawValue(token.getAccessToken());
-                request.setChallengeResponse(cr);
+                request.getResourceRef().addQueryParameter(ACCESS_TOKEN, token.getAccessToken());
             }
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED,
-                    "Unsupported token type.");
+            ChallengeResponse cr = new ChallengeResponse(ChallengeScheme.HTTP_OAUTH_BEARER);
+            cr.setRawValue(token.getAccessToken());
+
+            request.setChallengeResponse(cr);
         }
+
         return super.handleOutbound(request);
     }
 
