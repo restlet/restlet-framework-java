@@ -346,7 +346,7 @@ public class StatusService extends Service {
      */
     @Deprecated
     public Status getStatus(Throwable throwable, Resource resource) {
-        return getStatus(throwable,
+        return toStatus(throwable,
                 (resource == null) ? null : resource.getRequest(),
                 (resource == null) ? null : resource.getResponse());
     }

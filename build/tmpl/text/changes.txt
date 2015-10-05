@@ -4,6 +4,8 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - Fixed StatusService.toStatus(Status, Request, Response) is not called. Issue #1156.
 
 - 2.3.5 (10/03/2015)
     - Bugs fixed
