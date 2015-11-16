@@ -989,7 +989,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (this.queryParametersDecoded == null) {
             this.queryParametersDecoded = UnmodifiableMultivaluedMap
                     .getFromSeries(this.referenceOriginal.getQueryAsForm(),
-                            false);
+                            true);
         }
         return this.queryParametersDecoded;
     }
