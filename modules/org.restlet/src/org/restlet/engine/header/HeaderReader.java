@@ -174,16 +174,19 @@ public class HeaderReader<V> {
                 result.setName(header.subSequence(start, index - 1).toString());
                 next = header.charAt(index++);
 
-                while (isSpace(next)) {
+                while (isSpace(next) && index < header.length()) {
                     // Skip any separator space between colon and header value
                     next = header.charAt(index++);
                 }
 
-                start = index - 1;
+                //If the value is not empty
+                if (index < header.length()) {
+                    start = index - 1;
 
-                // Parse the header value
-                result.setValue(header.subSequence(start, header.length())
-                        .toString());
+                    // Parse the header value
+                    result.setValue(header.subSequence(start, header.length())
+                            .toString());
+                }
             }
         }
 
