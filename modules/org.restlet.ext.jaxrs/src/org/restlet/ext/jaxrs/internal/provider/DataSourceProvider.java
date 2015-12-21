@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -47,7 +38,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Provider for {@link DataSource}s.
@@ -58,7 +49,9 @@ import org.restlet.engine.io.BioUtils;
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object,
+     *      java.lang.Class, java.lang.reflect.Type,
+     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
     @Override
     public long getSize(DataSource t, Class<?> type, Type genericType,
@@ -93,6 +86,6 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         final InputStream inputStream = dataSource.getInputStream();
-        BioUtils.copy(inputStream, entityStream);
+        IoUtils.copy(inputStream, entityStream);
     }
 }

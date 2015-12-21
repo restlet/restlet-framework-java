@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,26 +17,19 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet;
 
-import java.io.File;
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 
-import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentHelper;
-import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.engine.component.InternalRouter;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Realm;
@@ -78,13 +62,13 @@ import org.restlet.util.ServiceList;
  * the WADL Restlet extension for details).<br>
  * <br>
  * The XML Schema of the configuration files is available both <a
- * href="http://www.restlet.org/schemas/2.0/Component">online</a> and inside the
- * API JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
+ * href="http://restlet.org/schemas/2.0/Component">online</a> and inside the API
+ * JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
  * configuration:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;component xmlns=&quot;http://www.restlet.org/schemas/2.0/Component&quot;&gt;
+ * &lt;component xmlns=&quot;http://restlet.org/schemas/2.0/Component&quot;&gt;
  *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;
@@ -105,6 +89,7 @@ import org.restlet.util.ServiceList;
  * <ul>
  * <li>"logService" to configure access logging.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"taskService" to run tasks asynchronously.</li>
  * </ul>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
@@ -118,33 +103,6 @@ import org.restlet.util.ServiceList;
  * @author Jerome Louvel
  */
 public class Component extends Restlet {
-
-    /**
-     * Used as bootstrap for configuring and running a component in command
-     * line. Just provide as first and unique parameter the URI to the XML file.
-     * Note that relative paths are accepted.
-     * 
-     * @param args
-     *            The list of in-line parameters.
-     */
-    public static void main(String[] args) throws Exception {
-        try {
-            if ((args == null) || (args.length != 1)) {
-                // Display program arguments
-                System.err
-                        .println("Can't launch the component. Requires the path to an XML configuration file.\n");
-            } else {
-                // Create and start the component
-                URI currentDirURI = (new File(".")).toURI();
-                URI confURI = currentDirURI.resolve(args[0]);
-                new Component(confURI.toString()).start();
-            }
-        } catch (Exception e) {
-            System.err
-                    .println("Can't launch the component.\nAn unexpected exception occurred:");
-            e.printStackTrace(System.err);
-        }
-    }
 
     /** The modifiable list of client connectors. */
     private final ClientList clients;
@@ -185,6 +143,10 @@ public class Component extends Restlet {
         this.services = new ServiceList(getContext());
 
         if (Engine.getInstance() != null) {
+            // [ifndef gae] instruction
+            // To be done before setting the helper...
+            this.services.add(new org.restlet.service.TaskService());
+
             this.helper = new ComponentHelper(this);
             Context childContext = getContext().createChildContext();
             this.defaultHost = new VirtualHost(childContext);
@@ -192,65 +154,9 @@ public class Component extends Restlet {
             this.services.add(new LogService());
             getLogService().setContext(childContext);
             this.services.add(new StatusService());
-            getStatusService().setContext(childContext);
             this.clients.setContext(childContext);
             this.servers.setContext(childContext);
         }
-    }
-
-    /**
-     * Constructor with the reference to the XML configuration file.
-     * 
-     * @param xmlConfigRef
-     *            The URI reference to the XML configuration file.
-     */
-    public Component(Reference xmlConfigRef) {
-        this();
-
-        // Get the representation of the configuration file.
-        Representation xmlConfigRepresentation = null;
-
-        if (xmlConfigRef != null) {
-            ClientResource cr = new ClientResource(xmlConfigRef);
-            xmlConfigRepresentation = cr.get();
-
-            if (xmlConfigRepresentation != null) {
-                new ComponentXmlParser(this, xmlConfigRepresentation).parse();
-            } else {
-                getLogger().log(
-                        Level.WARNING,
-                        "Unable to get the Component XML configuration located at this URI: "
-                                + xmlConfigRef);
-            }
-        }
-    }
-
-    /**
-     * Constructor with the representation of the XML configuration file.
-     * 
-     * @param xmlConfigRepresentation
-     *            The representation of the XML configuration file.
-     */
-    public Component(Representation xmlConfigRepresentation) {
-        this();
-
-        if (xmlConfigRepresentation != null) {
-            new ComponentXmlParser(this, xmlConfigRepresentation).parse();
-        } else {
-            getLogger().log(Level.WARNING,
-                    "Unable to parse the Component XML configuration.");
-        }
-    }
-
-    /**
-     * Constructor with the URI reference to the XML configuration file.
-     * 
-     * @param xmlConfigurationRef
-     *            The URI reference to the XML configuration file.
-     */
-    public Component(String xmlConfigurationRef) {
-        this((xmlConfigurationRef == null) ? null : new Reference(
-                xmlConfigurationRef));
     }
 
     /**
@@ -376,12 +282,14 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the status service, enabled by default.
+     * Returns a task service to run concurrent tasks. The service is enabled by
+     * default.
      * 
-     * @return The status service.
+     * @return A task service.
      */
-    public StatusService getStatusService() {
-        return getServices().get(StatusService.class);
+    // [ifndef gae] method
+    public org.restlet.service.TaskService getTaskService() {
+        return getServices().get(org.restlet.service.TaskService.class);
     }
 
     @Override
@@ -510,13 +418,14 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the status service.
+     * Sets the task service.
      * 
-     * @param statusService
-     *            The status service.
+     * @param taskService
+     *            The task service.
      */
-    public void setStatusService(StatusService statusService) {
-        getServices().set(statusService);
+    // [ifndef gae] method
+    public void setTaskService(org.restlet.service.TaskService taskService) {
+        getServices().set(taskService);
     }
 
     /**
@@ -540,6 +449,8 @@ public class Component extends Restlet {
             startServices();
             startRealms();
             startHelper();
+
+            // Must be invoked as a last step
             super.start();
         }
     }

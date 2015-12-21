@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 
-<!-- =========================================================
-     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
-     ========================================================= -->
+<!-- ============================================================
+     Restlet Framework build script - Copyright 2005-2014 Restlet
+     ============================================================ -->
 
 <project name="Restlet Framework - Master" default="rebuild">
 	<!-- ============================ -->
@@ -16,7 +16,6 @@
 	<property file="build.properties" />
 
 	<!-- General properties -->
-
 	<!-- Increment the build number -->
 	<buildnumber />
 
@@ -42,6 +41,14 @@
 	<property name="editions-dir" location="editions" />
 	<property name="modules" location="../modules" />
 	<property name="libs" location="../libraries" />
+
+	<!-- Version properties -->
+	<loadproperties srcFile="${tmpl}/config/version.${meta.release-type}.properties">
+		<filterchain>
+			<expandproperties/>
+		</filterchain>
+	</loadproperties>
+
 	<property name="parent-maven-groupId" value="org.restlet" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
@@ -88,8 +95,19 @@
 	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 
+	<!-- Project checker -->
+	<taskdef name="projectChecker" classname="checker.ProjectChecker">
+		<classpath>
+			<fileset dir="${tools}/fmpp" includes="**/*.jar" />
+			<fileset dir="${tools}/forge" includes="**/*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- Check the project configuration 
+	<projectChecker rootDir="../" maven="${maven}" verbose="${verbose}" />
+-->
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: generate-edition          
+          macrodef: generate-edition
          = = = = = = = = = = = = = = = = = -->
 	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
@@ -136,6 +154,7 @@
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
 			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
 			<loadfile property="generate-javadocs" srcFile="${tmpl}/editions/javadocs.tmpl" />
+			<loadfile property="generate-mavenjavadocs" srcFile="${tmpl}/editions/maven-javadocs.tmpl" />
 			<loadfile property="stage-modules" srcFile="${tmpl}/editions/stage-modules.tmpl" />
 			<loadfile property="stage-extras" srcFile="${tmpl}/editions/stage-extras.tmpl" />
 			<loadfile property="generate-classes-extras" srcFile="${tmpl}/editions/generate-classes-extras.tmpl" />
@@ -148,6 +167,7 @@
 					<replacestring from="@paths@" to="${paths}" />
 					<replacestring from="@generate-sources@" to="${generate-sources}" />
 					<replacestring from="@generate-javadocs@" to="${generate-javadocs}" />
+					<replacestring from="@generate-mavenjavadocs@" to="${generate-mavenjavadocs}" />
 					<replacestring from="@stage-modules@" to="${stage-modules}" />
 					<replacestring from="@stage-extras@" to="${stage-extras}" />
 					<replacestring from="@generate-classes-extras@" to="${generate-classes-extras}" />
@@ -168,27 +188,11 @@
 			<!-- Post-process the build file since ant and freemarker share the same syntax. -->
 			<replace file="${editions-dir}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
-			<if>
-				<equals arg1="@{edition}" arg2="osgi" />
-				<then>
-					<!-- Generate the P2 feature files. -->
-					<echo message="Generate the P2 feature files" />
-					<fmpp sourceroot="${tmpl}/eclipse" outputroot="${editions-dir}/@{edition}/p2" dataroot="${basedir}">
-						<data expandproperties="true">
-							values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-							project: get(values, "project")
-							editions: get(values, "editions")
-							editionKey: @{edition}
-		    				edition: get(editions, @{edition})
-							currentYear: ${current-year}
-							ant: antProperties()
-		    			</data>
-						<include name="feature.tmpl" />
-					</fmpp>
-				</then>
-			</if>
-
 			<copy file="build.properties" todir="${editions-dir}/@{edition}" overwrite="true" />
+			<echo append="true" file="${editions-dir}/@{edition}/build.properties">
+				build.number: ${build.number}
+				eclipse-version-full: ${eclipse-version-full}
+			</echo>
 			<copy file="custom.properties" todir="${editions-dir}/@{edition}" overwrite="true" failonerror="false" />
 			<ant antfile="build.xml" target="generate-sources" dir="${editions-dir}/@{edition}/" inheritall="false" />
 		</sequential>
@@ -196,7 +200,7 @@
 
 
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: exec-edition          
+          macrodef: exec-edition
          = = = = = = = = = = = = = = = = = -->
 	<macrodef name="exec-edition" description="Executes a task for a target edition">
 		<attribute name="edition" />
@@ -219,7 +223,7 @@
 	</macrodef>
 
 	<!-- = = = = = = = = = = = = = = = = =
-          Definition of targets          
+          Definition of targets
          = = = = = = = = = = = = = = = = = -->
 	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files.">
 		<delete dir="${temp}/misc" />

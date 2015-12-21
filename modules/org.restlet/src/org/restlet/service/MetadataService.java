@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -109,6 +100,7 @@ public class MetadataService extends Service {
      * <li>au: AU audio file</li>
      * <li>bin: Binary file</li>
      * <li>bmp: Bitmap graphics</li>
+     * <li>cbor: Concise Binary Object Representation</li>
      * <li>class: Java bytecode</li>
      * <li>css: CSS stylesheet</li>
      * <li>csv: Comma-separated Values</li>
@@ -217,6 +209,7 @@ public class MetadataService extends Service {
      * <li>xsd: W3C XML Schema document</li>
      * <li>xsl, xslt: XSL Transform file</li>
      * <li>xul: XML User Interface Language file</li>
+     * <li>yaml: YAML text format</li>
      * <li>z: UNIX compressed archive file</li>
      * <li>zip: Zip archive</li>
      * </ul>
@@ -238,6 +231,7 @@ public class MetadataService extends Service {
         ext(dm, "au", MediaType.AUDIO_BASIC);
         ext(dm, "bin", MediaType.APPLICATION_OCTET_STREAM);
         ext(dm, "bmp", MediaType.IMAGE_BMP);
+        ext(dm, "cbor", MediaType.APPLICATION_CBOR);
         ext(dm, "class", MediaType.APPLICATION_JAVA);
         ext(dm, "css", MediaType.TEXT_CSS);
         ext(dm, "csv", MediaType.TEXT_CSV);
@@ -357,12 +351,15 @@ public class MetadataService extends Service {
         ext(dm, "xsl", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xul", MediaType.APPLICATION_XUL);
+        ext(dm, "yaml", MediaType.APPLICATION_YAML);
+        ext(dm, "yaml", MediaType.TEXT_YAML);
         ext(dm, "z", MediaType.APPLICATION_COMPRESS);
         ext(dm, "zip", MediaType.APPLICATION_ZIP);
         // [enddef]
         ext(dm, "htm", MediaType.TEXT_HTML);
         ext(dm, "html", MediaType.TEXT_HTML);
         ext(dm, "json", MediaType.APPLICATION_JSON);
+        ext(dm, "jsonsmile", MediaType.APPLICATION_JSON_SMILE);
         ext(dm, "txt", MediaType.TEXT_PLAIN, true);
         ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
         ext(dm, "xml", MediaType.TEXT_XML);

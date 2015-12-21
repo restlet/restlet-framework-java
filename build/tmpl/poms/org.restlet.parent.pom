@@ -30,7 +30,7 @@
 
 	<name>Restlet project</name>
 	<description>Lightweight REST framework</description>
-	<url>http://www.restlet.org</url>
+	<url>http://restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
 
 	<scm>
@@ -63,11 +63,6 @@
 			<id>maven-restlet</id>
 			<name>Restlet repository</name>
 			<url>http://maven.restlet.org</url>
-		</repository>
-		<repository>
-			<id>maven-db4o</id>
-			<name>Db4o repository</name>
-			<url>https://source.db4o.com/maven/</url>
 		</repository>
 	</repositories>
 

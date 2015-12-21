@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -44,11 +35,13 @@ import org.restlet.engine.io.StringInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-
 
 /**
  * JSON representation based on an JSON value. JSON (JavaScript Object Notation)
@@ -111,10 +104,55 @@ public class JsonRepresentation extends Representation {
         setCharacterSet(CharacterSet.UTF_8);
         this.jsonRepresentation = new StringRepresentation(jsonString);
     }
-    
+
     /**
-     * Converts the representation to a JSON object. This method will trigger
-     * the serialization of any wrapped JSON object.
+     * Converts the representation to a JSON array. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON array.
+     * @throws IOException
+     */
+    public JSONArray getJsonArray() throws IOException {
+        if (getValue() != null) {
+            return getValue().isArray();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON Boolean. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON Boolean.
+     * @throws IOException
+     */
+    public JSONBoolean getJsonBoolean() throws IOException {
+        if (getValue() != null) {
+            return getValue().isBoolean();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON null value. This method might
+     * trigger the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON null value.
+     * @throws IOException
+     */
+    public JSONNull getJsonNull() throws IOException {
+        if (getValue() != null) {
+            return getValue().isNull();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON object. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
      * 
      * @return The converted JSON object.
      * @throws IOException
@@ -127,6 +165,20 @@ public class JsonRepresentation extends Representation {
         return null;
     }
 
+    /**
+     * Converts the representation to a JSON string. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON string.
+     * @throws IOException
+     */
+    public JSONString getJsonString() throws IOException {
+        if (getValue() != null) {
+            return getValue().isString();
+        }
+
+        return null;
+    }
 
     @Override
     public Reader getReader() throws IOException {

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,24 +29,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
 import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
 
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
-import org.restlet.engine.ConnectorHelper;
+import org.restlet.data.Header;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.EncodingReader;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.header.RangeReader;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -80,7 +77,8 @@ public abstract class ServerCall extends Call {
      *            The parent server connector.
      */
     public ServerCall(Server server) {
-        this(server.getAddress(), server.getPort());
+        this((server == null) ? null : server.getAddress(),
+                (server == null) ? 0 : server.getPort());
     }
 
     /**
@@ -101,7 +99,7 @@ public abstract class ServerCall extends Call {
      * Ask the connector to abort the related network connection, for example
      * immediately closing the socket.
      * 
-     * @return True if the request was aborted.
+     * @return True if the connection was aborted.
      */
     public abstract boolean abort();
 
@@ -113,6 +111,15 @@ public abstract class ServerCall extends Call {
     }
 
     /**
+     * Flushes the buffers onto the network so that for example you can force
+     * headers to be written before the entity is becoming available.
+     * 
+     * @throws IOException
+     */
+    public void flushBuffers() throws IOException {
+    }
+
+    /**
      * Returns the chain of client SSL certificates, if available and
      * accessible.
      * 
@@ -120,6 +127,21 @@ public abstract class ServerCall extends Call {
      *         accessible.
      */
     public List<Certificate> getCertificates() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                try {
+                    return Arrays.asList(sslSession.getPeerCertificates());
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+
         return null;
     }
 
@@ -129,6 +151,16 @@ public abstract class ServerCall extends Call {
      * @return The SSL Cipher Suite, if available and accessible.
      */
     public String getCipherSuite() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+
         return null;
     }
 
@@ -283,12 +315,28 @@ public abstract class ServerCall extends Call {
     public abstract OutputStream getResponseEntityStream();
 
     /**
+     * Returns the SSL engine.
+     * 
+     * @return the SSL engine or null by default.
+     */
+    protected SSLEngine getSslEngine() {
+        return null;
+    }
+
+    /**
      * Returns the SSL key size, if available and accessible.
      * 
      * @return The SSL key size, if available and accessible.
      */
     public Integer getSslKeySize() {
-        return null;
+        Integer keySize = null;
+        String sslCipherSuite = getCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
     }
 
     /**
@@ -302,7 +350,7 @@ public abstract class ServerCall extends Call {
         byte[] byteArray = getSslSessionIdBytes();
 
         if (byteArray != null) {
-            return BioUtils.toHexString(byteArray);
+            return IoUtils.toHexString(byteArray);
         } else {
             return null;
         }
@@ -316,6 +364,16 @@ public abstract class ServerCall extends Call {
      *         in that format.
      */
     protected byte[] getSslSessionIdBytes() {
+        final SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            final SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getId();
+            }
+        }
+
         return null;
     }
 
@@ -337,7 +395,8 @@ public abstract class ServerCall extends Call {
                 HeaderConstants.HEADER_HOST, true);
 
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            // Take care of IPV6 addresses
+            int colonIndex = host.indexOf(':', host.indexOf(']'));
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));
@@ -449,23 +508,10 @@ public abstract class ServerCall extends Call {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-                    OutputStream responseEntityStream = getResponseEntityStream();
-                    writeResponseBody(responseEntity, responseEntityStream);
-
-                    if (responseEntityStream != null) {
-                        try {
-                            responseEntityStream.flush();
-                            responseEntityStream.close();
-                        } catch (IOException ioe) {
-                            // The stream was probably already closed by the
-                            // connector. Probably OK, low message priority.
-                            getLogger()
-                                    .log(Level.FINE,
-                                            "Exception while flushing and closing the entity stream.",
-                                            ioe);
-                        }
-                    }
+                    writeResponseBody(responseEntity);
                 }
+
+                writeResponseTail(response);
             } finally {
                 if (responseEntity != null) {
                     responseEntity.release();
@@ -489,6 +535,37 @@ public abstract class ServerCall extends Call {
     public boolean shouldResponseBeChunked(Response response) {
         return (response.getEntity() != null)
                 && !response.getEntity().hasKnownSize();
+    }
+
+    /**
+     * Attempts to write the response body. By default, it attempts to use the
+     * {@link #getResponseEntityStream()} to synchronously write the entity
+     * content.
+     * 
+     * @param responseEntity
+     *            The response entity to write.
+     * @throws IOException
+     */
+    protected void writeResponseBody(Representation responseEntity)
+            throws IOException {
+        OutputStream responseEntityStream = getResponseEntityStream();
+        try {
+            writeResponseBody(responseEntity, responseEntityStream);
+        } finally {
+            if (responseEntityStream != null) {
+                try {
+                    responseEntityStream.flush();
+                    responseEntityStream.close();
+                } catch (IOException ioe) {
+                    // The stream was probably already closed by the
+                    // connector. Probably OK, low message priority.
+                    getLogger()
+                            .log(Level.FINE,
+                                    "Exception while flushing and closing the entity stream.",
+                                    ioe);
+                }
+            }
+        }
     }
 
     /**
@@ -570,5 +647,14 @@ public abstract class ServerCall extends Call {
         headStream.write(13); // CR
         headStream.write(10); // LF
         headStream.flush();
+    }
+
+    /**
+     * Write the response tail. By default does nothing.
+     * 
+     * @param response
+     *            The response being written.
+     */
+    protected void writeResponseTail(Response response) {
     }
 }

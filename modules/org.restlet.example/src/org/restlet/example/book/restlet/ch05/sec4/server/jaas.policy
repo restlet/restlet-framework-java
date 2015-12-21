@@ -1,0 +1,13 @@
+grant {
+   permission java.lang.RuntimePermission "*";
+   permission java.net.NetPermission "*";
+   permission java.util.logging.LoggingPermission "control";
+   permission java.util.PropertyPermission "*", "read";
+   permission java.net.SocketPermission "*", "listen,accept,resolve";
+   permission javax.security.auth.AuthPermission "modifyPrincipals";
+   permission javax.security.auth.AuthPermission "doAsPrivileged";
+};
+
+grant principal org.restlet.security.Role "CFO" {
+   permission java.io.FilePermission "${user.home}", "read";
+};

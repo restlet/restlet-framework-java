@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -37,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * String manipulation utilities.
@@ -141,7 +133,7 @@ public class StringUtils {
         /**
          * Returns the numeric value of an entity according to its name.
          * 
-         * @param value
+         * @param name
          *            The name of the entity.
          * @return The numeric value of an entity according to its name.
          */
@@ -448,6 +440,36 @@ public class StringUtils {
         }
     }
 
+    /**
+     * Returns the string with the first character capitalized.
+     * 
+     * 
+     * @param string
+     *            a string reference to check
+     * @return the string with the first character capitalized.
+     */
+    public static String firstLower(String string) {
+        if (!isNullOrEmpty(string)) {
+            return string.substring(0, 1).toLowerCase() + string.substring(1);
+        }
+        return string;
+    }
+
+    /**
+     * Returns the string with the first character capitalized.
+     * 
+     * 
+     * @param string
+     *            a string reference to check
+     * @return the string with the first character capitalized.
+     */
+    public static String firstUpper(String string) {
+        if (!isNullOrEmpty(string)) {
+            return string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+        return string;
+    }
+
     // [ifndef gwt] method
     /**
      * Encodes the given String into a sequence of bytes using the Ascii
@@ -578,7 +600,8 @@ public class StringUtils {
                                         entityValue = Integer.parseInt(
                                                 entityName.substring(1), 10);
                                     }
-                                    if(!Character.isValidCodePoint(entityValue)){
+                                    if (!Character
+                                            .isValidCodePoint(entityValue)) {
                                         // Invalid Unicode character
                                         entityValue = -1;
                                     }
@@ -615,6 +638,67 @@ public class StringUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns {@code true} if the given string is null or is the empty string.
+     * 
+     * <p>
+     * Consider normalizing your string references with {@link #nullToEmpty}. If
+     * you do, you can use {@link String#isEmpty()} instead of this method, and
+     * you won't need special null-safe forms of methods like
+     * {@link String#toUpperCase} either.
+     * 
+     * @param string
+     *            a string reference to check
+     * @return {@code true} if the string is null or is the empty string
+     */
+    public static boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
+
+    /**
+     * Returns the given string if it is non-null; the empty string otherwise.
+     * 
+     * @param string
+     *            the string to test and possibly return
+     * @return {@code string} itself if it is non-null; {@code ""} if it is null
+     */
+    public static String nullToEmpty(String string) {
+        return (string == null) ? "" : string;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an list of trimmed token splitted with the split character ",".
+     * 
+     * @param stringToSplit
+     *            The String to split.
+     * @return List of tokens.
+     */
+    public static List<String> splitAndTrim(String stringToSplit) {
+        return splitAndTrim(stringToSplit, ",");
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an list of trimmed token splitted with the split character.
+     * 
+     * @param stringToSplit
+     *            The String to split.
+     * @param splitCharacter
+     *            The split Character.
+     * @return List of tokens.
+     */
+    public static List<String> splitAndTrim(String stringToSplit,
+            String splitCharacter) {
+        List<String> list = new ArrayList<>();
+        // StringTokenizer is 3 times more performant than String#split.
+        StringTokenizer st = new StringTokenizer(stringToSplit, splitCharacter);
+        while (st.hasMoreTokens()) {
+            list.add(st.nextToken().trim());
+        }
+        return list;
     }
 
     /**

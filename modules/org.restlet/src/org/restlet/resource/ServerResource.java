@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,13 +17,14 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +49,15 @@ import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
+import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.security.Role;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -98,8 +93,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public abstract class ServerResource extends UniformResource {
+public abstract class ServerResource extends Resource {
 
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;
@@ -107,8 +101,14 @@ public abstract class ServerResource extends UniformResource {
     /** Indicates if conditional handling is enabled. */
     private volatile boolean conditional;
 
+    /** The description. */
+    private volatile String description;
+
     /** Indicates if the identified resource exists. */
     private volatile boolean existing;
+
+    /** The display name. */
+    private volatile String name;
 
     /** Indicates if content negotiation of response entities is enabled. */
     private volatile boolean negotiated;
@@ -170,12 +170,18 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation delete() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.DELETE);
+        MethodAnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        try {
+            annotationInfo = getAnnotation(Method.DELETE);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -239,15 +245,14 @@ public abstract class ServerResource extends UniformResource {
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
      * the result of
-     * {@link org.restlet.service.StatusService#getStatus(Throwable, Resource)}
-     * .
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, Resource)}.
      * 
      * @param throwable
      *            The caught error or exception.
      */
     protected void doCatch(Throwable throwable) {
         Level level = Level.INFO;
-        Status status = getStatusService().getStatus(throwable, this);
+        Status status = getStatusService().toStatus(throwable, this);
 
         if (status.isServerError()) {
             level = Level.WARNING;
@@ -262,6 +267,9 @@ public abstract class ServerResource extends UniformResource {
 
         if (getResponse() != null) {
             getResponse().setStatus(status);
+            Representation errorEntity = getStatusService().toRepresentation(
+                    status, this);
+            getResponse().setEntity(errorEntity);
         }
     }
 
@@ -282,7 +290,14 @@ public abstract class ServerResource extends UniformResource {
 
             if (existing) {
                 if (isNegotiated()) {
-                    resultInfo = doGetInfo(getPreferredVariant(getVariants(Method.GET)));
+                    Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
+
+                    if (preferredVariant == null
+                            && getConnegService().isStrict()) {
+                        doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                    } else {
+                        resultInfo = doGetInfo(preferredVariant);
+                    }
                 } else {
                     resultInfo = doGetInfo();
                 }
@@ -293,8 +308,8 @@ public abstract class ServerResource extends UniformResource {
                                     .equals(getStatus()))) {
                         doError(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
-                        // Keep the current status as the developer might prefer
-                        // a special status like 'method not authorized'.
+                        // Keep the current status as the developer might
+                        // prefer a special status like 'method not authorized'.
                     }
                 } else {
                     Status status = getConditions().getStatus(getMethod(),
@@ -364,12 +379,18 @@ public abstract class ServerResource extends UniformResource {
      */
     private RepresentationInfo doGetInfo() throws ResourceException {
         RepresentationInfo result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+        MethodAnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            result = getInfo();
+        try {
+            annotationInfo = getAnnotation(Method.GET);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                result = getInfo();
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -423,6 +444,8 @@ public abstract class ServerResource extends UniformResource {
         } else {
             if (method.equals(Method.PUT)) {
                 result = put(getRequestEntity());
+            } else if (method.equals(Method.PATCH)) {
+                result = patch(getRequestEntity());
             } else if (isExisting()) {
                 if (method.equals(Method.GET)) {
                     result = get();
@@ -456,13 +479,14 @@ public abstract class ServerResource extends UniformResource {
      * @return The response entity.
      * @throws ResourceException
      */
-    private Representation doHandle(AnnotationInfo annotationInfo,
+    private Representation doHandle(MethodAnnotationInfo annotationInfo,
             Variant variant) throws ResourceException {
         Representation result = null;
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
 
         // Invoke the annotated method and get the resulting object.
         Object resultObject = null;
+
         try {
             if (parameterTypes.length > 0) {
                 List<Object> parameters = new ArrayList<Object>();
@@ -498,6 +522,11 @@ public abstract class ServerResource extends UniformResource {
             } else {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
+
+            if (resultObject != null) {
+                result = toRepresentation(resultObject, variant);
+            }
+
         } catch (IllegalArgumentException e) {
             throw new ResourceException(e);
         } catch (IllegalAccessException e) {
@@ -508,10 +537,8 @@ public abstract class ServerResource extends UniformResource {
             }
 
             throw new ResourceException(e.getTargetException());
-        }
-
-        if (resultObject != null) {
-            result = toRepresentation(resultObject, variant);
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -531,25 +558,31 @@ public abstract class ServerResource extends UniformResource {
      * @param entity
      *            The request entity (can be null, or unavailable).
      * @return The response entity.
-     * @throws ResourceException
+     * @throws IOException
      */
     private Representation doHandle(Method method, Form query,
-            Representation entity) {
+            Representation entity) throws ResourceException {
         Representation result = null;
 
-        if (getAnnotation(method) != null) {
-            // We know the method is supported, let's check the entity.
-            AnnotationInfo annotationInfo = getAnnotation(method, query, entity);
+        try {
+            if (getAnnotation(method) != null) {
+                // We know the method is supported, let's check the entity.
+                MethodAnnotationInfo annotationInfo = getAnnotation(method,
+                        query, entity);
 
-            if (annotationInfo != null) {
-                result = doHandle(annotationInfo, null);
+                if (annotationInfo != null) {
+                    result = doHandle(annotationInfo, null);
+                } else {
+                    // The request entity is not supported.
+                    doError(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                }
             } else {
-                // The request entity is not supported.
-                doError(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             }
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
+
         return result;
     }
 
@@ -574,6 +607,8 @@ public abstract class ServerResource extends UniformResource {
         } else {
             if (method.equals(Method.PUT)) {
                 result = put(getRequestEntity(), variant);
+            } else if (method.equals(Method.PATCH)) {
+                result = patch(getRequestEntity(), variant);
             } else if (isExisting()) {
                 if (method.equals(Method.GET)) {
                     if (variant instanceof Representation) {
@@ -637,7 +672,8 @@ public abstract class ServerResource extends UniformResource {
                 doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                 result = describeVariants();
             } else {
-                // Update the variant dimensions used for content negotiation
+                // Update the variant dimensions used for content
+                // negotiation
                 updateDimensions();
                 result = doHandle(preferredVariant);
             }
@@ -665,12 +701,18 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation get() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+        MethodAnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        try {
+            annotationInfo = getAnnotation(Method.GET);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -712,8 +754,10 @@ public abstract class ServerResource extends UniformResource {
      * @param method
      *            The method to match.
      * @return The annotation descriptor.
+     * @throws IOException
      */
-    private AnnotationInfo getAnnotation(Method method) {
+    private MethodAnnotationInfo getAnnotation(Method method)
+            throws IOException {
         return getAnnotation(method, getQuery(), null);
     }
 
@@ -727,11 +771,12 @@ public abstract class ServerResource extends UniformResource {
      * @param entity
      *            The request entity or null.
      * @return The annotation descriptor.
+     * @throws IOException
      */
-    private AnnotationInfo getAnnotation(Method method, Form query,
-            Representation entity) {
+    private MethodAnnotationInfo getAnnotation(Method method, Form query,
+            Representation entity) throws IOException {
         if (isAnnotated()) {
-            return AnnotationUtils.getInstance().getAnnotation(
+            return AnnotationUtils.getInstance().getMethodAnnotation(
                     getAnnotations(), method, query, entity,
                     getMetadataService(), getConverterService());
         }
@@ -750,17 +795,27 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the attribute value by looking up the given name in the response
+     * Returns the attribute value by looking up the given name in the request
      * attributes maps. The toString() method is then invoked on the attribute
-     * value.
+     * value. This is typically used for variables that are declared in the URI
+     * template used to route the call to this resource.
      * 
      * @param name
      *            The attribute name.
-     * @return The response attribute value.
+     * @return The request attribute value.
      */
     public String getAttribute(String name) {
-        Object value = getResponseAttributes().get(name);
+        Object value = getRequestAttributes().get(name);
         return (value == null) ? null : value.toString();
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description
+     */
+    public String getDescription() {
+        return this.description;
     }
 
     /**
@@ -804,6 +859,15 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the display name.
+     * 
+     * @return The display name.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
      * Returns the callback invoked after sending the response.
      * 
      * @return The callback invoked after sending the response.
@@ -835,12 +899,26 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Retrieves an existing role or creates a new one if needed based on its
+     * name. Note that a null description will be set if the role has to be
+     * created.
+     * 
+     * @param name
+     *            The role name to find or create.
+     * @return The role found or created.
+     */
+    public Role getRole(String name) {
+        return Role.get(getApplication(), name);
+    }
+
+    /**
      * Returns a modifiable list of exposed variants for the current request
      * method. You can declare variants manually by updating the result list ,
      * by overriding this method. By default, the variants will be provided
      * based on annotated methods.
      * 
      * @return The modifiable list of variants.
+     * @throws IOException
      */
     public List<Variant> getVariants() {
         return getVariants(getMethod());
@@ -868,43 +946,62 @@ public abstract class ServerResource extends UniformResource {
                 method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
-                    if (annotationInfo.isCompatible(method, getQuery(),
-                            getRequestEntity(), getMetadataService(),
-                            getConverterService())) {
-                        annoVariants = annotationInfo.getResponseVariants(
-                                getMetadataService(), getConverterService());
+                    try {
+                        if (annotationInfo instanceof MethodAnnotationInfo) {
+                            MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
 
-                        if (annoVariants != null) {
-                            // Compute an affinity score between this annotation
-                            // and the input entity.
-                            float score = 0.5f;
-                            if ((getRequest().getEntity() != null)
-                                    && getRequest().getEntity().isAvailable()) {
-                                MediaType emt = getRequest().getEntity()
-                                        .getMediaType();
-                                List<MediaType> amts = getMetadataService()
-                                        .getAllMediaTypes(
-                                                annotationInfo.getInput());
-                                if (amts != null) {
-                                    for (MediaType amt : amts) {
-                                        if (amt.equals(emt)) {
-                                            score = 1.0f;
-                                        } else if (amt.includes(emt)) {
-                                            score = Math.max(0.8f, score);
-                                        } else if (amt.isCompatible(emt)) {
-                                            score = Math.max(0.6f, score);
+                            if (methodAnnotationInfo
+                                    .isCompatible(method, getQuery(),
+                                            getRequestEntity(),
+                                            getMetadataService(),
+                                            getConverterService())) {
+                                annoVariants = methodAnnotationInfo
+                                        .getResponseVariants(
+                                                getMetadataService(),
+                                                getConverterService());
+
+                                if (annoVariants != null) {
+                                    // Compute an affinity score between this
+                                    // annotation and the input entity.
+                                    float score = 0.5f;
+                                    if ((getRequest().getEntity() != null)
+                                            && getRequest().getEntity()
+                                                    .isAvailable()) {
+                                        MediaType emt = getRequest()
+                                                .getEntity().getMediaType();
+                                        List<MediaType> amts = getMetadataService()
+                                                .getAllMediaTypes(
+                                                        methodAnnotationInfo
+                                                                .getInput());
+                                        if (amts != null) {
+                                            for (MediaType amt : amts) {
+                                                if (amt.equals(emt)) {
+                                                    score = 1.0f;
+                                                } else if (amt.includes(emt)) {
+                                                    score = Math.max(0.8f,
+                                                            score);
+                                                } else if (amt
+                                                        .isCompatible(emt)) {
+                                                    score = Math.max(0.6f,
+                                                            score);
+                                                }
+                                            }
                                         }
+                                    }
+
+                                    for (Variant v : annoVariants) {
+                                        VariantInfo vi = new VariantInfo(v,
+                                                methodAnnotationInfo);
+                                        vi.setInputScore(score);
+                                        result.add(vi);
                                     }
                                 }
                             }
-
-                            for (Variant v : annoVariants) {
-                                VariantInfo vi = new VariantInfo(v,
-                                        annotationInfo);
-                                vi.setInputScore(score);
-                                result.add(vi);
-                            }
                         }
+                    } catch (IOException e) {
+                        getLogger().log(Level.FINE,
+                                "Unable to get variants from annotation", e);
+
                     }
                 }
             }
@@ -929,7 +1026,8 @@ public abstract class ServerResource extends UniformResource {
      * {@link #updateAllowedMethods()} is invoked to give the resource a chance
      * to inform the client about the allowed methods.
      * 
-     * @return The response entity.
+     * @return The response entity, but this method is still responsible for
+     *         setting the response entity.
      */
     @Override
     public Representation handle() {
@@ -949,23 +1047,23 @@ public abstract class ServerResource extends UniformResource {
                     result = doHandle();
                 }
 
-                if (!getResponse().isEntityAvailable()) {
+                if (result != null) {
                     // If the user manually set the entity, keep it
                     getResponse().setEntity(result);
                 }
-
+            } catch (Throwable t) {
+                doCatch(t);
+            } finally {
                 if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                     updateAllowedMethods();
-                } else if (Method.GET.equals(getMethod())
-                        && Status.SUCCESS_OK.equals(getStatus())
+                } else if (Status.SUCCESS_OK.equals(getStatus())
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
-                            .fine("A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                            .fine("A response with a 200 (Ok) status should have an entity. "
+                                    + "Changing the status to 204 (No content).");
                     setStatus(Status.SUCCESS_NO_CONTENT);
                 }
-            } catch (Throwable t) {
-                doCatch(t);
             }
         }
 
@@ -1082,8 +1180,7 @@ public abstract class ServerResource extends UniformResource {
      * @return True if the authenticated subject is in the given role.
      */
     public boolean isInRole(String roleName) {
-        return getClientInfo().getRoles().contains(
-                getApplication().getRole(roleName));
+        return getClientInfo().getRoles().contains(getRole(roleName));
     }
 
     /**
@@ -1109,15 +1206,21 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation options() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
+        MethodAnnotationInfo annotationInfo;
 
-        // Updates the list of allowed methods
-        updateAllowedMethods();
+        try {
+            annotationInfo = getAnnotation(Method.OPTIONS);
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            // Updates the list of allowed methods
+            updateAllowedMethods();
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -1153,6 +1256,70 @@ public abstract class ServerResource extends UniformResource {
             doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
+        return result;
+    }
+
+    /**
+     * Apply a patch entity to the current representation of the resource
+     * retrieved by calling {@link #get()}. By default, the
+     * {@link ConverterService#applyPatch(Representation, Representation)}
+     * method is used and then the {@link #put(Representation)} method called.
+     * 
+     * @param entity
+     *            The patch entity to apply.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    protected Representation patch(Representation entity)
+            throws ResourceException {
+        AnnotationInfo annotationInfo;
+        try {
+            annotationInfo = getAnnotation(Method.PATCH);
+            if (annotationInfo != null) {
+                return doHandle(Method.PATCH, getQuery(), entity);
+            } else {
+                // Default implementation
+                return put(getConverterService().applyPatch(get(), entity));
+                // doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Apply a patch entity to the current representation of the resource
+     * retrieved by calling {@link #get()}. By default, the
+     * {@link ConverterService#applyPatch(Representation, Representation)}
+     * method is used and then the {@link #put(Representation, Variant)} method
+     * called.
+     * 
+     * @param entity
+     *            The patch entity to apply.
+     * @param variant
+     *            The variant of the response entity.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    protected Representation patch(Representation entity, Variant variant)
+            throws ResourceException {
+        Representation result = null;
+
+        try {
+            if (variant instanceof VariantInfo) {
+                result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                        variant);
+            } else {
+                // Default implementation
+                result = put(getConverterService().applyPatch(get(), entity),
+                        variant);
+                // doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
         return result;
     }
 
@@ -1467,6 +1634,16 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Sets the description.
+     * 
+     * @param description
+     *            The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Sets the set of dimensions on which the response entity may vary. The set
      * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
      * example.
@@ -1520,6 +1697,16 @@ public abstract class ServerResource extends UniformResource {
         if (getResponse() != null) {
             getResponse().setLocationRef(locationUri);
         }
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *            The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -1644,9 +1831,14 @@ public abstract class ServerResource extends UniformResource {
 
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
-                if (!getAllowedMethods().contains(
-                        annotationInfo.getRestletMethod())) {
-                    getAllowedMethods().add(annotationInfo.getRestletMethod());
+                if (annotationInfo instanceof MethodAnnotationInfo) {
+                    MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
+
+                    if (!getAllowedMethods().contains(
+                            methodAnnotationInfo.getRestletMethod())) {
+                        getAllowedMethods().add(
+                                methodAnnotationInfo.getRestletMethod());
+                    }
                 }
             }
         }

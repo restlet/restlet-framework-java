@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -43,12 +34,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Request;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
@@ -180,7 +171,7 @@ public class AwsUtils {
     public static String getHmacSha1Signature(String stringToSign, char[] secret) {
         return Base64.encode(
                 DigestUtils.toHMacSha1(stringToSign,
-                        BioUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)), false);
     }
 
     /**
@@ -197,7 +188,7 @@ public class AwsUtils {
             char[] secret) {
         return Base64.encode(
                 DigestUtils.toHMacSha256(stringToSign,
-                        BioUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)), false);
     }
 
     /**
@@ -256,7 +247,8 @@ public class AwsUtils {
             toSign.append(Reference.encode(param.getName()));
 
             if (param.getValue() != null) {
-        		toSign.append('=').append(Reference.encode(param.getValue(), true));
+                toSign.append('=').append(
+                        Reference.encode(param.getValue(), true));
             }
         }
 
@@ -307,7 +299,7 @@ public class AwsUtils {
     public static String getS3StringToSign(Request request) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                "org.restlet.http.headers");
+                HeaderConstants.ATTRIBUTE_HEADERS);
         return getS3StringToSign(request, headers);
     }
 

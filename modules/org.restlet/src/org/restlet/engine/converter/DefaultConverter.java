@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,6 +36,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.resource.VariantInfo;
+import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -81,6 +73,7 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
+        result = addObjectClass(result, byte[].class);
         result = addObjectClass(result, String.class);
         result = addObjectClass(result, InputStream.class);
         result = addObjectClass(result, Reader.class);
@@ -89,8 +82,10 @@ public class DefaultConverter extends ConverterHelper {
         if (source.getMediaType() != null) {
             MediaType mediaType = source.getMediaType();
 
-            if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
-                    || MediaType.APPLICATION_JAVA_OBJECT_XML.equals(mediaType)) {
+            if ((ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT
+                    .equals(mediaType))
+                    || (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT_XML
+                            .equals(mediaType))) {
                 result = addObjectClass(result, Object.class);
             } else if (MediaType.APPLICATION_WWW_FORM.equals(mediaType)) {
                 result = addObjectClass(result, Form.class);
@@ -105,7 +100,10 @@ public class DefaultConverter extends ConverterHelper {
         List<VariantInfo> result = null;
 
         if (source != null) {
-            if (String.class.isAssignableFrom(source)
+            if (byte[].class.isAssignableFrom(source)
+                    || StringRepresentation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (String.class.isAssignableFrom(source)
                     || StringRepresentation.class.isAssignableFrom(source)) {
                 result = addVariant(result, VARIANT_ALL);
             } else if (File.class.isAssignableFrom(source)
@@ -122,8 +120,12 @@ public class DefaultConverter extends ConverterHelper {
             } else if (Form.class.isAssignableFrom(source)) {
                 result = addVariant(result, VARIANT_FORM);
             } else if (Serializable.class.isAssignableFrom(source)) {
-                result = addVariant(result, VARIANT_OBJECT);
-                result = addVariant(result, VARIANT_OBJECT_XML);
+                if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED) {
+                    result = addVariant(result, VARIANT_OBJECT);
+                }
+                if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED) {
+                    result = addVariant(result, VARIANT_OBJECT_XML);
+                }
             }
         }
 
@@ -134,7 +136,9 @@ public class DefaultConverter extends ConverterHelper {
     public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
 
-        if (source instanceof String) {
+        if (source instanceof byte[]) {
+            result = 1.0F;
+        } else if (source instanceof String) {
             result = 1.0F;
         } else if (source instanceof File) {
             result = 1.0F;
@@ -154,20 +158,24 @@ public class DefaultConverter extends ConverterHelper {
             result = 1.0F;
         } else if (source instanceof Serializable) {
             if (target != null) {
-                if (MediaType.APPLICATION_JAVA_OBJECT.equals(target
-                        .getMediaType())) {
+                if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT.equals(target
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT
-                        .isCompatible(target.getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT
+                                .isCompatible(target.getMediaType())) {
                     result = 0.6F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(target
-                        .getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(target
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
-                        .isCompatible(target.getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT_XML
+                                .isCompatible(target.getMediaType())) {
                     result = 0.6F;
                 }
-            } else {
+            } else if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED) {
                 result = 0.5F;
             }
         }
@@ -182,6 +190,8 @@ public class DefaultConverter extends ConverterHelper {
 
         if (target != null) {
             if (target.isAssignableFrom(source.getClass())) {
+                result = 1.0F;
+            } else if (byte[].class.isAssignableFrom(target)) {
                 result = 1.0F;
             } else if (String.class.isAssignableFrom(target)) {
                 result = 1.0F;
@@ -210,17 +220,21 @@ public class DefaultConverter extends ConverterHelper {
                 result = 1.0F;
             } else if (Serializable.class.isAssignableFrom(target)
                     || target.isPrimitive()) {
-                if (MediaType.APPLICATION_JAVA_OBJECT.equals(source
-                        .getMediaType())) {
+                if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT.equals(source
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT
-                        .isCompatible(source.getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT
+                                .isCompatible(source.getMediaType())) {
                     result = 0.6F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
-                        .getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
-                        .isCompatible(source.getMediaType())) {
+                } else if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT_XML
+                                .isCompatible(source.getMediaType())) {
                     result = 0.6F;
                 } else {
                     result = 0.5F;
@@ -242,6 +256,8 @@ public class DefaultConverter extends ConverterHelper {
         if (target != null) {
             if (target.isAssignableFrom(source.getClass())) {
                 result = source;
+            } else if (byte[].class.isAssignableFrom(target)) {
+                result = source.getBytes();
             } else if (String.class.isAssignableFrom(target)) {
                 result = source.getText();
             } else if (StringRepresentation.class.isAssignableFrom(target)) {
@@ -277,7 +293,7 @@ public class DefaultConverter extends ConverterHelper {
                         IOException ioe = new IOException(
                                 "Unable to create the Object representation");
                         ioe.initCause(e);
-                        result = null;
+                        throw ioe;
                     }
                 }
             }
@@ -293,7 +309,11 @@ public class DefaultConverter extends ConverterHelper {
             Resource resource) throws IOException {
         Representation result = null;
 
-        if (source instanceof String) {
+        if (source instanceof byte[]) {
+            result = new ByteArrayRepresentation((byte[]) source,
+                    MediaType.getMostSpecific(target.getMediaType(),
+                            MediaType.APPLICATION_OCTET_STREAM));
+        } else if (source instanceof String) {
             result = new StringRepresentation((String) source,
                     MediaType.getMostSpecific(target.getMediaType(),
                             MediaType.TEXT_PLAIN));
@@ -329,10 +349,14 @@ public class DefaultConverter extends ConverterHelper {
         if (Form.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.APPLICATION_WWW_FORM, 1.0F);
         } else if (Serializable.class.isAssignableFrom(entity)) {
-            updatePreferences(preferences, MediaType.APPLICATION_JAVA_OBJECT,
-                    1.0F);
-            updatePreferences(preferences,
-                    MediaType.APPLICATION_JAVA_OBJECT_XML, 1.0F);
+            if (ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED) {
+                updatePreferences(preferences,
+                        MediaType.APPLICATION_JAVA_OBJECT, 1.0F);
+            }
+            if (ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED) {
+                updatePreferences(preferences,
+                        MediaType.APPLICATION_JAVA_OBJECT_XML, 1.0F);
+            }
         } else if (String.class.isAssignableFrom(entity)
                 || Reader.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.TEXT_PLAIN, 1.0F);

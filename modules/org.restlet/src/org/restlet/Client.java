@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -57,11 +48,6 @@ import org.restlet.engine.RestletHelper;
  * @author Jerome Louvel
  */
 public class Client extends Connector {
-    /**
-     * The number of milliseconds the client should wait for a response before
-     * aborting the request and setting its status to an error status.
-     */
-    private volatile int connectTimeout = 0;
 
     /** The helper provided by the implementation. */
     private final RestletHelper<Client> helper;
@@ -91,7 +77,7 @@ public class Client extends Connector {
     public Client(Context context, List<Protocol> protocols, String helperClass) {
         super(context, protocols);
 
-        if ((protocols != null) && (protocols.size() > 0)) {
+        if ((protocols != null) && !protocols.isEmpty()) {
             if (Engine.getInstance() != null) {
                 this.helper = Engine.getInstance().createHelper(this,
                         helperClass);
@@ -151,19 +137,6 @@ public class Client extends Connector {
     }
 
     /**
-     * Returns the connection timeout in milliseconds. The default value is 0,
-     * meaning an infinite timeout.
-     * 
-     * @return The connection timeout.
-     * @deprecated Use the equivalent "socketConnectTimeoutMs" connector
-     *             parameter.
-     */
-    @Deprecated
-    public int getConnectTimeout() {
-        return this.connectTimeout;
-    }
-
-    /**
      * Returns the helper provided by the implementation.
      * 
      * @return The helper provided by the implementation.
@@ -197,36 +170,27 @@ public class Client extends Connector {
         return getHelper() != null;
     }
 
-    /**
-     * Sets the connection timeout in milliseconds. The default value is 0,
-     * meaning an infinite timeout.
-     * 
-     * @param connectTimeout
-     *            The connection timeout.
-     * @deprecated Use the equivalent connector parameters.
-     */
-    @Deprecated
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
             if (getHelper() != null) {
                 getHelper().start();
             }
+
+            // Must be invoked as a last step
+            super.start();
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getHelper() != null) {
                 getHelper().stop();
             }
-            super.stop();
         }
     }
 

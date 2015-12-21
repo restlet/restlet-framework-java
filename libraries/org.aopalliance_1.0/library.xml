@@ -1,0 +1,20 @@
+<library id="aopalliance" symbolicName="org.aopalliance">
+	<name>AOP Alliance project</name>
+	<description>AOP Alliance project</description>
+	<version>1.0</version>
+	<homeUri>http://aopalliance.sourceforge.net</homeUri>
+	<downloadUri>http://aopalliance.sourceforge.net</downloadUri>
+	<provider>AOP Alliance</provider>
+	
+	<package name="org.aopalliance">
+		<maven>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>
+

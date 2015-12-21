@@ -2,7 +2,7 @@
 	<name>NekoHTML parser</name>
 	<description>NekoHTML parser</description>
 	<version>1.9</version>
-	<release>14</release>
+	<release>19</release>
 	<homeUri>http://nekohtml.sourceforge.net/</homeUri>
 	<downloadUri>http://sourceforge.net/projects/nekohtml/files/nekohtml/</downloadUri>
 	<provider>Andy Clark, Marc Guillemot</provider>

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,6 +25,7 @@
 package org.restlet.util;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.Request;
@@ -206,7 +198,7 @@ public class WrapperRequest extends Request {
     public Reference getOriginalRef() {
         return wrappedRequest.getOriginalRef();
     }
-    
+
     /**
      * Returns the protocol by first returning the baseRef.schemeProtocol
      * property if it is set, or the resourceRef.schemeProtocol property
@@ -272,6 +264,26 @@ public class WrapperRequest extends Request {
      */
     protected Request getWrappedRequest() {
         return this.wrappedRequest;
+    }
+
+    /**
+     * Returns the access control request headers of the target resource.
+     * 
+     * @return The access control request headers of the target resource.
+     */
+    @Override
+    public Set<String> getAccessControlRequestHeaders() {
+        return wrappedRequest.getAccessControlRequestHeaders();
+    }
+
+    /**
+     * Returns the access control request method of the target resource.
+     * 
+     * @return The access control request method of the target resource.
+     */
+    @Override
+    public Method getAccessControlRequestMethod() {
+        return wrappedRequest.getAccessControlRequestMethod();
     }
 
     @Override
@@ -490,6 +502,29 @@ public class WrapperRequest extends Request {
     @Override
     public void setRootRef(Reference rootRef) {
         getWrappedRequest().setRootRef(rootRef);
+    }
+
+    /**
+     * Sets the access control request headers of the target resource.
+     * 
+     * @param accessControlRequestHeaders
+     *            The access control request headers of the target resource.
+     */
+    @Override
+    public void setAccessControlRequestHeaders(
+            Set<String> accessControlRequestHeaders) {
+        super.setAccessControlRequestHeaders(accessControlRequestHeaders);
+    }
+
+    /**
+     * Sets the access control request method of the target resource.
+     * 
+     * @param accessControlRequestMethod
+     *            The access control request method of the target resource.
+     */
+    @Override
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
+        super.setAccessControlRequestMethod(accessControlRequestMethod);
     }
 
     @Override

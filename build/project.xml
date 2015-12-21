@@ -8,13 +8,13 @@
 		<description>Restlet Edition for Java Standard Edition.
 		</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>311-restlet</wikiUri>
+		<wikiUri>../editions/jse/</wikiUri>
 	</edition>
 	<edition id="jee">
 		<label>
@@ -25,14 +25,14 @@
 		<description>Restlet Edition for Java Enterprise Edition.
 		</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
-			<link href="http://download.oracle.com/javaee/5/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="http://docs.oracle.com/javaee/7/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>312-restlet</wikiUri>
+		<wikiUri>../editions/jee/</wikiUri>
 	</edition>
 	<edition id="osgi">
 		<label>
@@ -42,14 +42,14 @@
 		</label>
 		<description>Restlet Edition for OSGi Environments.</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 			<distribution id="p2" />
 		</distributions>
-		<wikiUri>419-restlet</wikiUri>
+		<wikiUri>../editions/osgi/</wikiUri>
 	</edition>
 	<edition id="gae">
 		<label>
@@ -59,14 +59,14 @@
 		</label>
 		<description>Restlet Edition for Google App Engine.</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
-			<link href="http://code.google.com/intl/fr/appengine/docs/java/javadoc/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="https://developers.google.com/appengine/docs/java/javadoc/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>252-restlet</wikiUri>
+		<wikiUri>../editions/gae/</wikiUri>
 	</edition>
 	<edition id="gwt">
 		<label>
@@ -76,8 +76,8 @@
 		</label>
 		<description>Restlet Edition for Google Web Toolkit.</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
-			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="http://www.gwtproject.org/javadoc/latest/" />
 			<packages>
 				<core>org.restlet</core>
 				<engine>org.restlet.client.engine</engine>
@@ -98,7 +98,7 @@
       <replace dir="${mod}/${module.package}" includes="**/.project" token="org.restlet.client" value="org.restlet.${edition}" />
 ]]>
 		</postSource>
-		<wikiUri>144-restlet</wikiUri>
+		<wikiUri>../editions/gwt/</wikiUri>
 	</edition>
 	<edition id="android">
 		<label>
@@ -109,12 +109,13 @@
 		<description>Restlet Edition for the Android platform.
 		</description>
 		<javadocs>
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 			<link href="http://developer.android.com/reference/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>266-restlet</wikiUri>
+		<wikiUri>../editions/android/</wikiUri>
 	</edition>
 </editions>

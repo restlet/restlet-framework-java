@@ -9,7 +9,7 @@
 		<maven>
             <groupId>net.oauth.core</groupId>
 			<artifactId>oauth</artifactId>
-			<version>20090617</version>
+			<version>20100527</version>
 		</maven>
 	</package>
 	<distributions>

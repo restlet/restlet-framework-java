@@ -31,7 +31,7 @@
 			<groupId>${package.name}</groupId>
 					</#if>
 				</#if>
-			<artifactId><#if dependency.library.distributions?contains("maven")>org.restlet.lib.</#if><#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+			<artifactId>${package.mavenArtifactId}</artifactId>
 				<#if dependency.library.distributions?contains("maven")>
 			<version><#noparse>${lib-</#noparse>${dependency.library.id}-version}</version>
 				<#else>

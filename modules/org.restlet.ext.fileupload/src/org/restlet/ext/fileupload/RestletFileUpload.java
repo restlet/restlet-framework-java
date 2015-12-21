@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -61,7 +52,12 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RestletFileUpload extends FileUpload {
+public class RestletFileUpload extends
+// [ifndef gae,jee] line
+        FileUpload
+// [ifdef gae,jee] line uncomment
+// org.apache.commons.fileupload.servlet.ServletFileUpload
+{
     /**
      * Constructs an uninitialized instance of this class. A factory must be
      * configured, using <code>setFileItemFactory()</code>, before attempting to
@@ -104,6 +100,7 @@ public class RestletFileUpload extends FileUpload {
         return getItemIterator(new RepresentationContext(multipartForm));
     }
 
+    // [ifndef gae] method
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation. Note
@@ -117,12 +114,12 @@ public class RestletFileUpload extends FileUpload {
      *             if there are problems reading/parsing the request or storing
      *             files.
      */
-    @SuppressWarnings("unchecked")
     public List<FileItem> parseRepresentation(Representation multipartForm)
             throws FileUploadException {
         return parseRequest(new RepresentationContext(multipartForm));
     }
 
+    // [ifndef gae] method
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation. Note
@@ -136,10 +133,13 @@ public class RestletFileUpload extends FileUpload {
      *             if there are problems reading/parsing the request or storing
      *             files.
      */
-    @SuppressWarnings("unchecked")
     public List<FileItem> parseRequest(Request request)
             throws FileUploadException {
+        // [ifndef jee] instruction
         return parseRequest(new RepresentationContext(request.getEntity()));
+        // [ifdef jee] instruction uncomment
+        // return
+        // parseRequest(org.restlet.ext.servlet.ServletUtils.getRequest(request));
     }
 
 }

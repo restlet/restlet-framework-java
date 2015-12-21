@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -35,7 +26,9 @@ package org.restlet;
 
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
@@ -83,6 +76,20 @@ public class Request extends Message {
         return (Response.getCurrent() == null) ? null : Response.getCurrent()
                 .getRequest();
     }
+
+    /**
+     * Used when issuing a preflight CORS request to let the origin server knows
+     * what headers the client is willing to send in future request to this
+     * resource.
+     */
+    private volatile Set<String> accessControlRequestHeaders;
+
+    /**
+     * Used when issuing a preflight CORS request to let the origin server knows
+     * what method the client is willing to send in future request to this
+     * resource.
+     */
+    private volatile Method accessControlRequestMethod;
 
     /** The authentication response sent by a client to an origin server. */
     private volatile ChallengeResponse challengeResponse;
@@ -164,6 +171,8 @@ public class Request extends Message {
      */
     public Request(Method method, Reference resourceRef, Representation entity) {
         super(entity);
+        this.accessControlRequestHeaders = null;
+        this.accessControlRequestMethod = null;
         this.challengeResponse = null;
         this.clientInfo = null;
         this.conditions = null;
@@ -344,6 +353,44 @@ public class Request extends Message {
      * feature.
      */
     public void commit(Response response) {
+    }
+
+    /**
+     * Returns the modifiable set of headers the client is willing to send in
+     * future request to this resource. Used when issuing a preflight CORS
+     * request to let the origin server knows what headers will be sent later.<br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Allow-Headers" header.
+     * 
+     * @return The headers the client is willing to send in future request to
+     *         this resource. Useful for CORS support.
+     */
+    public Set<String> getAccessControlRequestHeaders() {
+        // Lazy initialization with double-check.
+        Set<String> a = this.accessControlRequestHeaders;
+        if (a == null) {
+            synchronized (this) {
+                a = this.accessControlRequestHeaders;
+                if (a == null) {
+                    this.accessControlRequestHeaders = a = new CopyOnWriteArraySet<String>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Returns the method the client is willing to use in future request to this
+     * resource. Used when issuing a preflight CORS request to let the origin
+     * server knows what method will be sent later.<br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Request-Method" header.
+     * 
+     * @return The method the client is willing to send in future request to
+     *         this resource. Useful for CORS support.
+     */
+    public Method getAccessControlRequestMethod() {
+        return this.accessControlRequestMethod;
     }
 
     /**
@@ -614,8 +661,7 @@ public class Request extends Message {
     public boolean isEntityAvailable() {
         // The declaration of the "result" variable is a workaround for the GWT
         // platform.
-        boolean result = (Method.GET.equals(getMethod())
-                || Method.HEAD.equals(getMethod()) || Method.DELETE
+        boolean result = (Method.GET.equals(getMethod()) || Method.HEAD
                 .equals(getMethod()));
         if (result) {
             return false;
@@ -650,6 +696,46 @@ public class Request extends Message {
      */
     public boolean isSynchronous() {
         return getOnResponse() == null;
+    }
+
+    /**
+     * Sets the set of headers the client is willing to use in future request to
+     * this resource. Used when issuing a preflight CORS request to let the
+     * origin server knows what headers will be sent later.<br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Request-Method" header.
+     * 
+     * @param accessControlRequestHeaders
+     *            The set of headers the client is willing to send in future
+     *            request to this resource. Useful for CORS support.
+     */
+    public void setAccessControlRequestHeaders(
+            Set<String> accessControlRequestHeaders) {
+        synchronized (getAccessControlRequestHeaders()) {
+            if (accessControlRequestHeaders != this.accessControlRequestHeaders) {
+                this.accessControlRequestHeaders.clear();
+
+                if (accessControlRequestHeaders != null) {
+                    this.accessControlRequestHeaders
+                            .addAll(accessControlRequestHeaders);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the method the client is willing to use in future request to this
+     * resource. Used when issuing a preflight CORS request to let the origin
+     * server knows what method will be sent later.<br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Access-Control-Request-Method" header.
+     * 
+     * @param accessControlRequestMethod
+     *            The method the client is willing to send in future request to
+     *            this resource. Useful for CORS support.
+     */
+    public void setAccessControlRequestMethod(Method accessControlRequestMethod) {
+        this.accessControlRequestMethod = accessControlRequestMethod;
     }
 
     /**

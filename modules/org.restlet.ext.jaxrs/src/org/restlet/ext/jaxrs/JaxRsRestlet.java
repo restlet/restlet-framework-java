@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -80,6 +71,7 @@ import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.internal.provider.ConverterProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.SimpleXmlProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
@@ -136,9 +128,9 @@ public class JaxRsRestlet extends Restlet {
      */
     class ResObjAndMeth {
 
-        private ResourceObject resourceObject;
-
         private ResourceMethod resourceMethod;
+
+        private ResourceObject resourceObject;
 
         ResObjAndMeth(ResourceObject resourceObject,
                 ResourceMethod resourceMethod) {
@@ -174,11 +166,11 @@ public class JaxRsRestlet extends Restlet {
      */
     class RroRemPathAndMatchedPath {
 
+        private String matchedUriPath;
+
         private ResourceObject rootResObj;
 
         private RemainingPath u;
-
-        private String matchedUriPath;
 
         RroRemPathAndMatchedPath(ResourceObject rootResObj, RemainingPath u,
                 String matchedUriPath) {
@@ -188,16 +180,12 @@ public class JaxRsRestlet extends Restlet {
         }
     }
 
+    private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
+
     static {
         javax.ws.rs.ext.RuntimeDelegate
                 .setInstance(new org.restlet.ext.jaxrs.internal.spi.RuntimeDelegateImpl());
     }
-
-    private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
-    private final JaxRsProviders providers;
-
-    private final ResourceClasses resourceClasses;
 
     /**
      * Contains and handles the exceptions occurring while in resource objects
@@ -206,12 +194,16 @@ public class JaxRsRestlet extends Restlet {
      */
     private final ExceptionHandler excHandler;
 
+    private volatile ObjectFactory objectFactory;
+
+    private final JaxRsProviders providers;
+
+    private final ResourceClasses resourceClasses;
+
     /**
      * Contains the thread localized {@link CallContext}s.
      */
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
-
-    private volatile ObjectFactory objectFactory;
 
     /**
      * Creates a new JaxRsRestlet with the given Context. Only the default
@@ -1053,9 +1045,12 @@ public class JaxRsRestlet extends Restlet {
     private void loadDefaultProviders() {
         addDefaultProvider(new BufferedReaderProvider());
         addDefaultProvider(new ByteArrayProvider());
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.DataSourceProvider");
 
         // not yet tested
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
         // Fall-back on the Restlet converter service
         addDefaultProvider(new ConverterProvider());
@@ -1063,12 +1058,18 @@ public class JaxRsRestlet extends Restlet {
         // [ifndef gae] instruction
         addDefaultProvider(new org.restlet.ext.jaxrs.internal.provider.FileProvider());
         addDefaultProvider(new InputStreamProvider());
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
+        
+        // [ifndef android] instruction
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbProvider");
-
+        
+        // [ifndef android] instruction
         // not yet tested
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.MultipartProvider");
 
+        addDefaultProvider(new SimpleXmlProvider());
         addDefaultProvider(new ReaderProvider());
         addDefaultProvider(new StreamingOutputProvider());
         addDefaultProvider(new StringProvider());
@@ -1241,6 +1242,8 @@ public class JaxRsRestlet extends Restlet {
     @Override
     public void start() throws Exception {
         providers.initAll();
+
+        // Must be invoked as a last step
         super.start();
     }
 }

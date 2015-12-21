@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -51,26 +42,13 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * 
      * @param context
      *            The context
-     * @param realm
-     *            The authentication realm
-     */
-    public AwsAuthenticator(Context context, String realm) {
-	this(context, false, realm);
-    }
-
-    /**
-     * Creates a new HttpAwsS3Authenticator instance.
-     * 
-     * @param context
-     *            The context
      * @param optional
      *            Indicates if the authentication success is optional
      * @param realm
      *            The authentication realm
      */
-    public AwsAuthenticator(Context context, boolean optional,
-	    String realm) {
-	this(context, optional, realm, new AwsVerifier(null));
+    public AwsAuthenticator(Context context, boolean optional, String realm) {
+        this(context, optional, realm, new AwsVerifier(null));
     }
 
     /**
@@ -84,9 +62,21 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      *            The authentication realm
      * @param verifier
      */
-    public AwsAuthenticator(Context context, boolean optional,
-	    String realm, Verifier verifier) {
-	super(context, optional, ChallengeScheme.HTTP_AWS_S3, realm, verifier);
+    public AwsAuthenticator(Context context, boolean optional, String realm,
+            Verifier verifier) {
+        super(context, optional, ChallengeScheme.HTTP_AWS_S3, realm, verifier);
+    }
+
+    /**
+     * Creates a new HttpAwsS3Authenticator instance.
+     * 
+     * @param context
+     *            The context
+     * @param realm
+     *            The authentication realm
+     */
+    public AwsAuthenticator(Context context, String realm) {
+        this(context, false, realm);
     }
 
     /**
@@ -97,7 +87,22 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * is 15 minutes.
      */
     public long getMaxRequestAge() {
-	return getVerifier().getMaxRequestAge();
+        return getVerifier().getMaxRequestAge();
+    }
+
+    @Override
+    public AwsVerifier getVerifier() {
+        return (AwsVerifier) super.getVerifier();
+    }
+
+    /**
+     * Returns the secret verifier that will be wrapped by the real verifier
+     * supporting all the HTTP AWS verifications.
+     * 
+     * @return the local wrapped verifier
+     */
+    public LocalVerifier getWrappedVerifier() {
+        return getVerifier().getWrappedVerifier();
     }
 
     /**
@@ -108,12 +113,7 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      * is 15 minutes.
      */
     public void setMaxRequestAge(long value) {
-	getVerifier().setMaxRequestAge(value);
-    }
-
-    @Override
-    public AwsVerifier getVerifier() {
-	return (AwsVerifier) super.getVerifier();
+        getVerifier().setMaxRequestAge(value);
     }
 
     /**
@@ -123,20 +123,10 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      */
     @Override
     public void setVerifier(Verifier verifier) {
-	if (!(verifier instanceof AwsVerifier))
-	    throw new IllegalArgumentException();
+        if (!(verifier instanceof AwsVerifier))
+            throw new IllegalArgumentException();
 
-	super.setVerifier(verifier);
-    }
-
-    /**
-     * Returns the secret verifier that will be wrapped by the real verifier
-     * supporting all the HTTP AWS verifications.
-     * 
-     * @return the local wrapped verifier
-     */
-    public LocalVerifier getWrappedVerifier() {
-	return getVerifier().getWrappedVerifier();
+        super.setVerifier(verifier);
     }
 
     /**
@@ -147,6 +137,6 @@ public class AwsAuthenticator extends ChallengeAuthenticator {
      *            The local verifier to wrap
      */
     public void setWrappedVerifier(LocalVerifier verifier) {
-	getVerifier().setWrappedVerifier(verifier);
+        getVerifier().setWrappedVerifier(verifier);
     }
 }

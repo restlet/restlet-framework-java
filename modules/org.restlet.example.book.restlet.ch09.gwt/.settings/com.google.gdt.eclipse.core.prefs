@@ -1,0 +1,5 @@
+#Thu Jul 19 09:33:44 CEST 2012
+eclipse.preferences.version=1
+jarsExcludedFromWebInfLib=C\:/Projets/framework/java-2.1/modules/org.restlet.example.book.restlet.ch09.gwt/gwt-lib/org.restlet.ext.json.jar|C\:/Projets/framework/java-2.1/modules/org.restlet.example.book.restlet.ch09.gwt/gwt-lib/org.restlet.ext.xml.jar|C\:/Projets/framework/java-2.1/modules/org.restlet.example.book.restlet.ch09.gwt/gwt-lib/org.restlet.jar
+warSrcDir=war
+warSrcDirIsOutput=true

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,12 +29,8 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Filter;
 import org.restlet.service.StatusService;
 
@@ -64,11 +51,6 @@ import org.restlet.service.StatusService;
  * @author Jerome Louvel
  */
 public class StatusFilter extends Filter {
-    /** The email address of the administrator to contact in case of error. */
-    private volatile String contactEmail;
-
-    /** The home URI to propose in case of error. */
-    private volatile Reference homeRef;
 
     /** Indicates if existing representations should be overwritten. */
     private volatile boolean overwriting;
@@ -84,18 +66,11 @@ public class StatusFilter extends Filter {
      * @param overwriting
      *            Indicates whether an existing representation should be
      *            overwritten.
-     * @param email
-     *            Email address of the administrator to contact in case of
-     *            error.
-     * @param homeRef
-     *            The home URI to propose in case of error.
      */
     public StatusFilter(Context context, boolean overwriting, String email,
             Reference homeRef) {
         super(context);
         this.overwriting = overwriting;
-        this.contactEmail = email;
-        this.homeRef = homeRef;
         this.statusService = null;
     }
 
@@ -114,8 +89,12 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Allows filtering after its handling by the target Restlet. Does nothing
-     * by default.
+     * Allows filtering after its handling by the target Restlet. If the status
+     * is not set, set {@link org.restlet.data.Status#SUCCESS_OK} by default.
+     * 
+     * If this is an error status, try to get a representation of it with
+     * {@link org.restlet.service.StatusService#toRepresentation(Status, Request, Response)}
+     * .
      * 
      * @param request
      *            The request to handle.
@@ -130,17 +109,23 @@ public class StatusFilter extends Filter {
         }
 
         // Do we need to get a representation for the current status?
-        if (response.getStatus().isError()
-                && ((response.getEntity() == null) || isOverwriting())) {
-            response.setEntity(getRepresentation(response.getStatus(), request,
-                    response));
+        try {
+            if (response.getStatus().isError()
+                    && ((response.getEntity() == null) || isOverwriting())) {
+                response.setEntity(getStatusService().toRepresentation(
+                        response.getStatus(), request, response));
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get the custom status representation", e);
         }
     }
 
     /**
      * Handles the call by distributing it to the next Restlet. If a throwable
-     * is caught, the {@link #getStatus(Throwable, Request, Response)} method is
-     * invoked.
+     * is caught, the
+     * {@link org.restlet.service.StatusService#toStatus(Throwable, Request, Response)}
+     * method is invoked.
      * 
      * @param request
      *            The request to handle.
@@ -153,144 +138,27 @@ public class StatusFilter extends Filter {
         // Normally handle the call
         try {
             super.doHandle(request, response);
-        } catch (Throwable t) {
-            getLogger().log(Level.WARNING,
-                    "Exception or error caught in status service", t);
-            response.setStatus(getStatus(t, request, response));
+        } catch (Throwable throwable) {
+            Status status = getStatusService().toStatus(throwable, request,
+                    response);
+
+            Level level = Level.INFO;
+            if (status.isServerError()) {
+                level = Level.WARNING;
+            } else if (status.isConnectorError()) {
+                level = Level.INFO;
+            } else if (status.isClientError()) {
+                level = Level.FINE;
+            }
+            getLogger().log(level,
+                    "Exception or error caught by status service", throwable);
+
+            if (response != null) {
+                response.setStatus(status);
+            }
         }
 
         return CONTINUE;
-    }
-
-    /**
-     * Returns the email address of the administrator to contact in case of
-     * error.
-     * 
-     * @return The email address.
-     */
-    public String getContactEmail() {
-        return contactEmail;
-    }
-
-    /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Representation getDefaultRepresentation(Status status,
-            Request request, Response response) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<html>\n");
-        sb.append("<head>\n");
-        sb.append("   <title>Status page</title>\n");
-        sb.append("</head>\n");
-        sb.append("<body style=\"font-family: sans-serif;\">\n");
-
-        sb.append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
-        sb.append(StringUtils.htmlEscape(getStatusInfo(status)));
-        sb.append("</p>\n");
-        if (status.getDescription() != null) {
-            sb.append("<p>");
-            sb.append(StringUtils.htmlEscape(status.getDescription()));
-            sb.append("</p>\n");
-        }
-
-        sb.append("<p>You can get technical details <a href=\"");
-        sb.append(status.getUri());
-        sb.append("\">here</a>.<br>\n");
-
-        if (getContactEmail() != null) {
-            sb.append("For further assistance, you can contact the <a href=\"mailto:");
-            sb.append(getContactEmail());
-            sb.append("\">administrator</a>.<br>\n");
-        }
-
-        if (getHomeRef() != null) {
-            sb.append("Please continue your visit at our <a href=\"");
-            sb.append(getHomeRef());
-            sb.append("\">home page</a>.\n");
-        }
-
-        sb.append("</p>\n");
-        sb.append("</body>\n");
-        sb.append("</html>\n");
-
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
-    }
-
-    /**
-     * Returns the home URI to propose in case of error.
-     * 
-     * @return The home URI.
-     */
-    public Reference getHomeRef() {
-        return homeRef;
-    }
-
-    /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Representation getRepresentation(Status status, Request request,
-            Response response) {
-        Representation result = getStatusService().getRepresentation(status,
-                request, response);
-
-        if (result == null) {
-            result = getDefaultRepresentation(status, request, response);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status including the related error
-     * or exception and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be overriden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    protected Status getStatus(Throwable throwable, Request request,
-            Response response) {
-        return getStatusService().getStatus(throwable, request, response);
-    }
-
-    /**
-     * Returns the status information to display in the default representation.
-     * By default it returns the status's reason phrase.
-     * 
-     * @param status
-     *            The status.
-     * @return The status information.
-     * @see #getDefaultRepresentation(Status, Request, Response)
-     */
-    protected String getStatusInfo(Status status) {
-        return (status.getReasonPhrase() != null) ? status.getReasonPhrase()
-                : "No information available for this result status";
     }
 
     /**
@@ -312,26 +180,6 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Sets the email address of the administrator to contact in case of error.
-     * 
-     * @param email
-     *            The email address.
-     */
-    public void setContactEmail(String email) {
-        this.contactEmail = email;
-    }
-
-    /**
-     * Sets the home URI to propose in case of error.
-     * 
-     * @param homeRef
-     *            The home URI.
-     */
-    public void setHomeRef(Reference homeRef) {
-        this.homeRef = homeRef;
-    }
-
-    /**
      * Indicates if existing representations should be overwritten.
      * 
      * @param overwriting
@@ -350,4 +198,5 @@ public class StatusFilter extends Filter {
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
     }
+
 }

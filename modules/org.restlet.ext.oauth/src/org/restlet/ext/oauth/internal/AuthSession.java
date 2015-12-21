@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,19 +17,21 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.oauth.internal;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.ResponseType;
 
 /**
@@ -50,233 +43,148 @@ import org.restlet.ext.oauth.ResponseType;
  * The cookie that is set will get removed when the browser closes the window.
  * 
  * @author Kristoffer Gronowski
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class AuthSession {
 
-    private final ConcurrentMap<String, Object> attribs;
+    private static final String CALLBACK = "callback";
 
-    // TODO: Remove?
-    // private volatile long lastActivity = System.currentTimeMillis();
+    private static final String CLIENT_ID = "client_id";
 
-    private static final String ID = "id";
-
-    private static final String CLIENT = "client";
-
-    private static final String REQ_SCOPE = "requested_scope";
+    public static final int DEFAULT_TIMEOUT_SEC = 600;
 
     private static final String FLOW = "flow";
 
-    private static final String DYN_CALLBACK = "dynamic_callback";
+    private static final String GRANTED_SCOPE = "granted_scope";
+
+    private static final String ID = "id";
+
+    private static final String LAST_ACTIVITY = "last_activity";
 
     private static final String OWNER = "owner";
 
+    private static final String REQ_SCOPE = "requested_scope";
+
     private static final String STATE = "state";
 
-    // If executor is set sessions will be removed.
-    protected volatile ScheduledThreadPoolExecutor executor;
-
-    protected volatile long timeoutMin = 3600;
-
-    // TODO: Most likely not needed!
-    // private final ConcurrentMap<String, Object> sessions;
+    private static final String TIMEOUT_SEC = "timeout_sec";
 
     /**
+     * Instantiate new authorization session.
      * 
-     * @param sessions
-     *            map where session will be stored based on their id
-     * @param executor
-     *            pool for handling session expiration.
+     * @return a new authorization session.
      */
-    public AuthSession(ConcurrentMap<String, Object> sessions,
-            ScheduledThreadPoolExecutor executor) {
-        this.attribs = new ConcurrentHashMap<String, Object>();
+    public static AuthSession newAuthSession() {
+        AuthSession session = new AuthSession();
+        // XXX: Is UUID a non-guessable value? (10.12. Cross-Site Request
+        // Forgery)
         String sessionId = UUID.randomUUID().toString();
-        // setId(sessionId); // Generate a new ID
-        setAttribute(ID, sessionId);
-        // this.sessions = sessions;
-        sessions.put(sessionId, this);
-        // TODO start a timer...
+        session.setAttribute(ID, sessionId);
+        session.setAttribute(LAST_ACTIVITY, System.currentTimeMillis());
+        session.setSessionTimeout(DEFAULT_TIMEOUT_SEC);
+        return session;
     }
 
-    // Only from constructor
-    /*
-     * private void setId(String id) { setAttribute(ID, id); }
-     */
-
-    /**
-     * @return the session id for this object.
-     */
-    public String getId() {
-        return (String) getAttribute(ID);
+    public static AuthSession toAuthSession(Map<String, Object> attribs) {
+        AuthSession session = new AuthSession();
+        for (Object key : attribs.keySet()) {
+            session.attribs.put(key.toString(), attribs.get(key));
+        }
+        return session;
     }
 
-    /**
-     * Set the client/application that created the cookie
-     * 
-     * @param client
-     *            POJO representing a client_id/secret
-     */
+    // Normalized attributes for data storage.
+    private final ConcurrentMap<String, Object> attribs;
 
-    public void setClient(Client client) {
-        setAttribute(CLIENT, client);
+    private AuthSession() {
+        this.attribs = new ConcurrentHashMap<String, Object>();
     }
 
-    /**
-     * @return return the client that established the cookie
-     */
-    public Client getClient() {
-        return (Client) getAttribute(CLIENT);
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AuthSession)) {
+            return false;
+        }
+        AuthSession e = (AuthSession) obj;
+        return this.attribs.equals(e.attribs);
     }
 
-    /*
-     * public void removeClient() { removeAttribute("client"); }
-     */
-
-    // public void setGrantedScope(String[] scope) {
-    // setAttribute("grant_scope", scope);
-    // }
-    //
-    // public String[] getGrantedScope() {
-    // return (String[]) getAttribute("grant_scope");
-    // }
-
-    /**
-     * @param scope
-     *            array of scopes requested but not yet approved
-     */
-
-    public void setRequestedScope(String[] scope) {
-        setAttribute(REQ_SCOPE, scope);
-    }
-
-    /**
-     * 
-     * @return array of requested scopes
-     */
-
-    public String[] getRequestedScope() {
-        return (String[]) getAttribute(REQ_SCOPE);
-    }
-
-    /**
-     * 
-     * @param owner
-     *            the identity of the user of this session (openid)
-     */
-
-    public void setScopeOwner(String owner) {
-        setAttribute(OWNER, owner);
-    }
-
-    /**
-     * 
-     * @return identity of the authenticated user.
-     */
-
-    public String getScopeOwner() {
-        return (String) getAttribute(OWNER);
-    }
-
-    /**
-     * @param flow
-     *            current executing flow
-     */
-
-    public void setAuthFlow(ResponseType flow) {
-        setAttribute(FLOW, flow);
+    // private only used for storage
+    private Object getAttribute(String name) {
+        return attribs.get(name);
     }
 
     /**
      * @return the flow in progress
      */
-
     public ResponseType getAuthFlow() {
-        return (ResponseType) getAttribute(FLOW);
+        String name = (String) getAttribute(FLOW);
+        if (name == null) {
+            return null;
+        }
+        return ResponseType.valueOf(name);
     }
 
     /**
-     * @param state
-     *            to be save and returned with code
+     * @return return the client that established the cookie
      */
-
-    public void setState(String state) {
-        setAttribute(STATE, state);
+    public String getClientId() {
+        return (String) getAttribute(CLIENT_ID);
     }
 
-    /**
-     * @return client oauth state parameter
-     */
+    public String[] getGrantedScope() {
+        @SuppressWarnings("unchecked")
+        List<String> list = (List<String>) getAttribute(GRANTED_SCOPE);
 
-    public String getState() {
-        return (String) getAttribute(STATE);
+        if (list == null) {
+            return null;
+        }
+
+        return (String[]) list.toArray(new String[list.size()]);
     }
 
-    /**
-     * Allows for dynamic callback for redirection URI Only the base has to
-     * match. The entire redirect_uri is preserved to use when returning.
-     * 
-     * Example https://example.com/myapp is the oficial CB URL stored in the
-     * oauth authorization server.
-     * 
-     * A running client can use the following set of URL's
-     * https://example.com/myapp?param=foo https://example.com/myapp/resource
-     * 
-     * @param uri
-     */
-
-    public void setDynamicCallbackURI(String uri) {
-        setAttribute(DYN_CALLBACK, uri);
+    public String getId() {
+        return (String) getAttribute(ID);
     }
 
     /**
      * 
      * @return the URL used in the initial authorization call
      */
+    public RedirectionURI getRedirectionURI() {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) getAttribute(CALLBACK);
 
-    public String getDynamicCallbackURI() {
-        return (String) getAttribute(DYN_CALLBACK);
-    }
+        if (map == null) {
+            return null;
+        }
 
-    /**
-     * Resets all data except session id and authenticated user.
-     * 
-     * The rest of the parametes are just a cache from the time a client
-     * requests authorization until the code or token is generated back.
-     */
-    public void reset() {
-        removeAttribute(CLIENT);
-        removeAttribute(REQ_SCOPE);
-        removeAttribute(FLOW);
-        // removeAttribute("state");
-        removeAttribute(DYN_CALLBACK);
-    }
-
-    /**
-     * Sets the timer pool if session are being cleaned up.
-     * 
-     * @param executor
-     */
-    public void setThreadPoolExecutor(ScheduledThreadPoolExecutor executor) {
-        this.executor = executor;
+        String uri = map.get("uri").toString();
+        Boolean dynamic = (Boolean) map.get("dynamic");
+        return new RedirectionURI(uri, dynamic);
     }
 
     /**
      * 
-     * @return the current executor in use or null if non was provided.
+     * @return array of requested scopes
      */
+    public String[] getRequestedScope() {
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) getAttribute(REQ_SCOPE);
 
-    public ScheduledThreadPoolExecutor getThreadPoolExecutor() {
-        return executor;
+        if (list == null) {
+            return null;
+        }
+
+        return (String[]) list.toArray(new String[list.size()]);
     }
 
     /**
-     * Default is 3600 sec = 24h
      * 
-     * @param timeMinutes
-     *            sets the session expiry time in seconds
+     * @return identity of the authenticated user.
      */
-    public void setSessionTimeout(long timeMinutes) {
-        timeoutMin = timeMinutes;
+    public String getScopeOwner() {
+        return (String) getAttribute(OWNER);
     }
 
     /**
@@ -284,20 +192,29 @@ public class AuthSession {
      * 
      * @return current session timeout
      */
-
-    public long getSessionTimeout() {
-        return timeoutMin;
+    public int getSessionTimeout() {
+        return ((Number) getAttribute(TIMEOUT_SEC)).intValue();
     }
 
-    // private only used for storage
-
-    private Object getAttribute(String name) {
-        handleActivity();
-        return attribs.get(name);
+    /**
+     * @return client oauth state parameter
+     */
+    public String getState() {
+        return (String) getAttribute(STATE);
     }
 
+    private Object removeAttribute(String name) {
+        return attribs.remove(name);
+    }
+
+    /**
+     * Store attribute for internal use. The value must be normalized.
+     * 
+     * @param name
+     * @param value
+     *            normalized value.
+     */
     private void setAttribute(String name, Object value) {
-        handleActivity();
         if (value == null) {
             removeAttribute(name);
         } else {
@@ -305,14 +222,89 @@ public class AuthSession {
         }
     }
 
-    private Object removeAttribute(String name) {
-        handleActivity();
-        return attribs.remove(name);
+    /**
+     * @param flow
+     *            current executing flow
+     */
+    public void setAuthFlow(ResponseType flow) {
+        // Normalize
+        setAttribute(FLOW, flow.name());
     }
 
-    private void handleActivity() {
-        // long currentTime = System.currentTimeMillis();
-        // long delta = currentTime - lastActivity;
-        // lastActivity = System.currentTimeMillis();
+    /**
+     * Set the client/application that created the cookie
+     * 
+     * @param clientId
+     *            POJO representing a client_id/secret
+     */
+    public void setClientId(String clientId) {
+        setAttribute(CLIENT_ID, clientId);
+    }
+
+    public void setGrantedScope(String[] scope) {
+        setAttribute(GRANTED_SCOPE, Arrays.asList(scope));
+    }
+
+    public void setRedirectionURI(RedirectionURI uri) {
+        // Normalize
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("uri", uri.getURI());
+        map.put("dynamic", uri.isDynamicConfigured());
+        setAttribute(CALLBACK, map);
+    }
+
+    /**
+     * @param scope
+     *            array of scopes requested but not yet approved
+     */
+    public void setRequestedScope(String[] scope) {
+        setAttribute(REQ_SCOPE, Arrays.asList(scope));
+    }
+
+    /**
+     * 
+     * @param owner
+     *            the identity of the user of this session (openid)
+     */
+    public void setScopeOwner(String owner) {
+        setAttribute(OWNER, owner);
+    }
+
+    /**
+     * Default is 600 sec = 10min
+     * 
+     * @param timeSeconds
+     *            sets the session expiry time in seconds
+     */
+    public void setSessionTimeout(int timeSeconds) {
+        setAttribute(TIMEOUT_SEC, timeSeconds);
+    }
+
+    /**
+     * @param state
+     *            to be save and returned with code
+     */
+    public void setState(String state) {
+        setAttribute(STATE, state);
+    }
+
+    /**
+     * Get the Map interface that suitable for the database.
+     * 
+     * @return
+     */
+    public Map<String, Object> toMap() {
+        return attribs;
+    }
+
+    public void updateActivity() throws AuthSessionTimeoutException {
+        long currentTime = System.currentTimeMillis();
+        long lastActivity = ((Number) getAttribute(LAST_ACTIVITY)).longValue();
+        long delta = currentTime - lastActivity;
+        if ((delta / 1000) >= getSessionTimeout()) {
+            throw new AuthSessionTimeoutException();
+        }
+        lastActivity = System.currentTimeMillis();
+        setAttribute(LAST_ACTIVITY, lastActivity);
     }
 }

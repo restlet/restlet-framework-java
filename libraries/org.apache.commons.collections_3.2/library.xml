@@ -17,6 +17,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://commons.apache.org/collections/api-release/" />
+		<link href="http://commons.apache.org/proper/commons-collections/javadocs/api-3.2.1/" />
 	</javadocs>
 </library>

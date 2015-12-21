@@ -2,7 +2,7 @@
 	<name>XStream</name>
 	<description>XStream serialization library.</description>
 	<version>1.4</version>
-	<release>1</release>
+	<release>7</release>
 	<homeUri>http://xstream.codehaus.org/</homeUri>
 	<downloadUri>http://xstream.codehaus.org/download.html</downloadUri>
 	<provider>XStream Committers</provider>

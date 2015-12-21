@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,16 +17,19 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.data;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.header.HeaderWriter;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
@@ -55,7 +49,6 @@ public final class MediaType extends Metadata {
      * Keep the underscore for the ordering
      * 
      * @see http://www.ietf.org/rfc/rfc1521.txt
-     * 
      */
     private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
 
@@ -70,6 +63,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_ALL = register("application/*",
             "All application documents");
+
+    public static final MediaType APPLICATION_ALL_JSON = register(
+            "application/*+json", "All application/*+json documents");
 
     public static final MediaType APPLICATION_ALL_XML = register(
             "application/*+xml", "All application/*+xml documents");
@@ -89,6 +85,10 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_CBOR = register(
+            "application/cbor", "Concise Binary Object Representation document");
+    
     // [ifndef gwt] member
     public static final MediaType APPLICATION_COMPRESS = register(
             "application/x-compress", "Compressed file");
@@ -148,9 +148,18 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_JSON_ACTIVITY = register(
+            "application/activity+json", "Activity Streams JSON document");
+
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_JSON_PATCH = register(
+            "application/json-patch", "JSON patch document");
+
     public static final MediaType APPLICATION_JSON_SMILE = register(
-            "application/x-json-smile", "JavaScript Object Notation smile document");
-    
+            "application/x-json-smile",
+            "JavaScript Object Notation smile document");
+
     // [ifndef gwt] member
     public static final MediaType APPLICATION_KML = register(
             "application/vnd.google-earth.kml+xml",
@@ -382,6 +391,10 @@ public final class MediaType extends Metadata {
             "Simple XML serialized Resource Description Framework document");
 
     // [ifndef gwt] member
+    /**
+     * @deprecated Replaced by the official {@link #TEXT_TURTLE} media type.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_RDF_TURTLE = register(
             "application/x-turtle",
             "Plain text serialized Resource Description Framework document");
@@ -480,10 +493,6 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XMI = register(
             "application/xmi+xml", "XMI document");
 
-    @Deprecated
-    public static final MediaType APPLICATION_XMI_XML = register(
-            "application/xmi+xml", "XMI document");
-
     public static final MediaType APPLICATION_XML = register("application/xml",
             "XML document");
 
@@ -498,6 +507,10 @@ public final class MediaType extends Metadata {
     // [ifndef gwt] member
     public static final MediaType APPLICATION_XUL = register(
             "application/vnd.mozilla.xul+xml", "XUL document");
+
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_YAML = register(
+            "application/x-yaml", "YAML document");
 
     // [ifndef gwt] member
     public static final MediaType APPLICATION_ZIP = register("application/zip",
@@ -620,6 +633,10 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
 
+    // [ifndef gwt] member
+    public static final MediaType TEXT_TURTLE = register("text/turtle",
+            "Plain text serialized Resource Description Framework document");
+
     public static final MediaType TEXT_URI_LIST = register("text/uri-list",
             "List of URIs");
 
@@ -627,6 +644,10 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
+
+    // [ifndef gwt] member
+    public static final MediaType TEXT_YAML = register("text/x-yaml",
+            "YAML document");
 
     // [ifndef gwt] member
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
@@ -785,22 +806,28 @@ public final class MediaType extends Metadata {
 
         // Merge parameters taken from the name and the method argument.
         if (parameters != null && !parameters.isEmpty()) {
-            if (params == null) {
-                params = new StringBuilder();
-            }
-            HeaderWriter<Parameter> hw = new HeaderWriter<Parameter>() {
-                @Override
-                public HeaderWriter<Parameter> append(Parameter value) {
-                    return appendExtension(value);
+            try {
+                if (params == null) {
+                    params = new StringBuilder();
                 }
-            };
-            for (int i = 0; i < parameters.size(); i++) {
-                Parameter p = parameters.get(i);
-                hw.appendParameterSeparator();
-                hw.appendSpace();
-                hw.append(p);
+                HeaderWriter<Parameter> hw = new HeaderWriter<Parameter>() {
+                    @Override
+                    public HeaderWriter<Parameter> append(Parameter value) {
+                        return appendExtension(value);
+                    }
+                };
+                for (int i = 0; i < parameters.size(); i++) {
+                    Parameter p = parameters.get(i);
+                    hw.appendParameterSeparator();
+                    hw.appendSpace();
+                    hw.append(p);
+                }
+                params.append(hw.toString());
+                hw.close();
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.INFO,
+                        "Unable to parse the media type parameter", e);
             }
-            params.append(hw.toString());
         }
 
         return (params == null) ? mainType + '/' + subType : mainType + '/'
@@ -1077,11 +1104,26 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Indicates if a given media type is included in the current one. The test
-     * is true if both types are equal or if the given media type is within the
-     * range of the current one. For example, ALL includes all media types.
-     * Parameters are ignored for this comparison. A null media type is
-     * considered as included into the current one.
+     * Indicates if a given media type is included in the current one @see
+     * {@link #includes(Metadata, boolean)}. It ignores the parameters.
+     * 
+     * @param included
+     *            The media type to test for inclusion.
+     * @return True if the given media type is included in the current one.
+     * @see #isCompatible(Metadata)
+     */
+    @Override
+    public boolean includes(Metadata included) {
+        return includes(included, true);
+    }
+
+    /**
+     * Indicates if a given media type is included in the current one @see
+     * {@link #includes(Metadata, boolean)}. The test is true if both types are
+     * equal or if the given media type is within the range of the current one.
+     * For example, ALL includes all media types. Parameters are ignored for
+     * this comparison. A null media type is considered as included into the
+     * current one. It ignores the parameters.
      * <p>
      * Examples:
      * <ul>
@@ -1094,8 +1136,7 @@ public final class MediaType extends Metadata {
      * @return True if the given media type is included in the current one.
      * @see #isCompatible(Metadata)
      */
-    @Override
-    public boolean includes(Metadata included) {
+    public boolean includes(Metadata included, boolean ignoreParameters) {
         boolean result = equals(ALL) || equals(included);
 
         if (!result && (included instanceof MediaType)) {
@@ -1104,7 +1145,25 @@ public final class MediaType extends Metadata {
             if (getMainType().equals(includedMediaType.getMainType())) {
                 // Both media types are different
                 if (getSubType().equals(includedMediaType.getSubType())) {
-                    result = true;
+                    if (ignoreParameters) {
+                        result = true;
+                    } else {
+                        // Check parameters:
+                        // Media type A includes media type B if for each param
+                        // name/value pair in A, B contains the same name/value.
+                        result = true;
+                        for (int i = 0; result && i < getParameters().size(); i++) {
+                            Parameter param = getParameters().get(i);
+                            Parameter includedParam = includedMediaType
+                                    .getParameters().getFirst(param.getName());
+
+                            // If there was no param with the same name, or the
+                            // param with the same name had a different value,
+                            // then no match.
+                            result = (includedParam != null && param.getValue()
+                                    .equals(includedParam.getValue()));
+                        }
+                    }
                 } else if (getSubType().equals("*")) {
                     result = true;
                 } else if (getSubType().startsWith("*+")

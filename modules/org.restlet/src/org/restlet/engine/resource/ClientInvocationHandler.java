@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,12 +29,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
+import org.restlet.data.Status;
+import org.restlet.engine.application.StatusInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ClientProxy;
@@ -66,11 +61,11 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /** The annotations of the resource interface. */
     private final List<AnnotationInfo> annotations;
 
-    /** The associated client resource. */
-    private final ClientResource clientResource;
-
     /** The associated annotation utils. */
     private AnnotationUtils annotationUtils;
+
+    /** The associated client resource. */
+    private final ClientResource clientResource;
 
     /**
      * Constructor.
@@ -100,9 +95,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
             AnnotationUtils annotationUtils) {
         this.clientResource = clientResource;
         this.annotationUtils = annotationUtils;
+
         // Introspect the interface for Restlet annotations
-        this.annotations = this.annotationUtils
-                .getAnnotations(resourceInterface);
+        this.annotations = getAnnotationUtils().getAnnotations(
+                resourceInterface);
     }
 
     /**
@@ -112,6 +108,15 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      */
     public List<AnnotationInfo> getAnnotations() {
         return annotations;
+    }
+
+    /**
+     * Returns the associated annotation utils.
+     * 
+     * @return The associated annotation utils.
+     */
+    public AnnotationUtils getAnnotationUtils() {
+        return annotationUtils;
     }
 
     /**
@@ -126,7 +131,8 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /**
      * Allows for child classes to modify the request.
      */
-    protected Request getRequest(Method javaMethod, Object[] args) throws Throwable {
+    protected Request getRequest(Method javaMethod, Object[] args)
+            throws Throwable {
         return getClientResource().createRequest();
     }
 
@@ -145,25 +151,22 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            AnnotationInfo annotationInfo = annotationUtils.getAnnotation(
-                    annotations, javaMethod);
+            MethodAnnotationInfo annotationInfo = getAnnotationUtils()
+                    .getMethodAnnotation(getAnnotations(), javaMethod);
 
             if (annotationInfo != null) {
                 Representation requestEntity = null;
-                boolean isSynchronous = true;
 
                 if ((args != null) && args.length > 0) {
-                    // Checks if the user has defined its own
-                    // callback.
+                    // Checks if the user has defined its own callback.
                     for (int i = 0; i < args.length; i++) {
                         Object o = args[i];
 
                         if (o == null) {
                             requestEntity = null;
                         } else if (Result.class.isAssignableFrom(o.getClass())) {
-                            // Asynchronous mode where a callback
-                            // object is to be called.
-                            isSynchronous = false;
+                            // Asynchronous mode where a callback object is to
+                            // be called.
 
                             // Get the kind of result expected.
                             final Result rCallback = (Result) o;
@@ -215,7 +218,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                             getClientResource().setOnResponse(callback);
                         } else {
                             requestEntity = getClientResource()
-                                    .toRepresentation(args[i], null);
+                                    .toRepresentation(o);
                         }
                     }
                 }
@@ -238,13 +241,14 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 request.setEntity(requestEntity);
 
                 // Updates the client preferences if they weren't changed
-                if ((request.getClientInfo().getAcceptedCharacterSets().size() == 0)
+                if ((request.getClientInfo().getAcceptedCharacterSets()
+                        .isEmpty())
                         && (request.getClientInfo().getAcceptedEncodings()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedLanguages()
-                                .size() == 0)
+                                .isEmpty())
                         && (request.getClientInfo().getAcceptedMediaTypes()
-                                .size() == 0)) {
+                                .isEmpty())) {
                     List<Variant> responseVariants = annotationInfo
                             .getResponseVariants(getClientResource()
                                     .getMetadataService(), getClientResource()
@@ -258,13 +262,65 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 // Effectively handle the call
                 Response response = getClientResource().handleOutbound(request);
 
-                // Handle the response
-                if (isSynchronous) {
-                    if (response.getStatus().isError()) {
-                        getClientResource().doError(response.getStatus());
-                    }
+                // Handle the response, synchronous call
+                if (getClientResource().getOnResponse() == null) {
+                    if ((response != null) && response.getStatus().isError()) {
+                        ThrowableAnnotationInfo tai = getAnnotationUtils()
+                                .getThrowableAnnotationInfo(javaMethod,
+                                        response.getStatus().getCode());
 
-                    if (!annotationInfo.getJavaOutputType().equals(void.class)) {
+                        if (tai != null) {
+                            Class<?> throwableClazz = tai.getJavaClass();
+                            Throwable t = null;
+
+                            if (tai.isSerializable()
+                                    && response.isEntityAvailable()) {
+                                t = (Throwable) getClientResource().toObject(
+                                        response.getEntity(), throwableClazz);
+                            } else {
+                                try {
+                                    t = (Throwable) throwableClazz
+                                            .newInstance();
+                                } catch (Exception e) {
+                                    Context.getCurrentLogger()
+                                            .log(Level.FINE,
+                                                    "Unable to instantiate the client-side exception using the default constructor.");
+                                }
+
+                                if (response.isEntityAvailable()) {
+                                    StatusInfo si = getClientResource()
+                                            .toObject(response.getEntity(),
+                                                    StatusInfo.class);
+
+                                    if (si != null) {
+                                        response.setStatus(new Status(si
+                                                .getCode(), si
+                                                .getReasonPhrase(), si
+                                                .getDescription()));
+                                    }
+                                }
+                            }
+
+                            if (t != null) {
+                                throw t;
+                            }
+                            // TODO cf issues 1004 and 1018.
+                            // this code has been commented as the automatic
+                            // deserialization is problematic. We may rethink a
+                            // way to recover the status info.
+                            // } else if (response.isEntityAvailable()) {
+                            // StatusInfo si = getClientResource().toObject(
+                            // response.getEntity(), StatusInfo.class);
+                            //
+                            // if (si != null) {
+                            // response.setStatus(new Status(si.getCode(), si
+                            // .getReasonPhrase(), si.getDescription()));
+                            // }
+                        }
+
+                        getClientResource().doError(response.getStatus());
+                    } else if (!annotationInfo.getJavaOutputType().equals(
+                            void.class)) {
                         result = getClientResource()
                                 .toObject(
                                         (response == null ? null
@@ -277,5 +333,4 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 
         return result;
     }
-
 }

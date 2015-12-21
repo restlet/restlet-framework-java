@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -35,7 +26,6 @@ package org.restlet.data;
 
 import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
-import org.restlet.service.StatusService;
 
 /**
  * Status to return after handling a call.
@@ -43,9 +33,11 @@ import org.restlet.service.StatusService;
  * @author Jerome Louvel
  */
 public final class Status {
+    private static final String BASE_ADDED_HTTP = "http://tools.ietf.org/html/rfc6585";
+
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/"
+    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
             + Engine.MAJOR_NUMBER
             + '.'
             + Engine.MINOR_NUMBER
@@ -240,6 +232,15 @@ public final class Status {
      */
     public static final Status CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE = new Status(
             416);
+
+    /**
+     * The server refuses to accept the request because the user has sent too
+     * many requests in a given amount of time.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">HTTP RFC -
+     *      10.4.12 429 Too Many Requests</a>
+     */
+    public static final Status CLIENT_ERROR_TOO_MANY_REQUESTS = new Status(429);
 
     /**
      * The request requires user authentication.
@@ -634,7 +635,7 @@ public final class Status {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
      *      Code and Reason Phrase</a>
      * @param reasonPhrase
-     *            The reason phrase to check
+     *            The reason phrase to check.
      * @return The name if it is correct.
      */
     private static String checkReasonPhrase(String reasonPhrase) {
@@ -897,6 +898,9 @@ public final class Status {
         case 424:
             result = CLIENT_ERROR_FAILED_DEPENDENCY;
             break;
+        case 429:
+            result = CLIENT_ERROR_TOO_MANY_REQUESTS;
+            break;
 
         case 500:
             result = SERVER_ERROR_INTERNAL;
@@ -943,7 +947,10 @@ public final class Status {
     /** The longer description. */
     private final String description;
 
-    /** The short reason phrase. */
+    /**
+     * The short reason phrase displayed next to the status code in a HTTP
+     * response.
+     */
     private volatile String reasonPhrase;
 
     /** The related error or exception. */
@@ -968,7 +975,36 @@ public final class Status {
      * @param code
      *            The specification code.
      * @param reasonPhrase
-     *            The short reason phrase.
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public Status(int code, String reasonPhrase) {
+        this(code, null, reasonPhrase, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     */
+    public Status(int code, String reasonPhrase, String description) {
+        this(code, null, reasonPhrase, description, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The longer description.
      * @param uri
@@ -977,7 +1013,7 @@ public final class Status {
     public Status(int code, String reasonPhrase, String description, String uri) {
         this(code, null, reasonPhrase, description, uri);
     }
-    
+
     /**
      * Constructor.
      * 
@@ -998,7 +1034,41 @@ public final class Status {
      * @param throwable
      *            The related error or exception.
      * @param reasonPhrase
-     *            The short reason phrase.
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public Status(int code, Throwable throwable, String reasonPhrase) {
+        this(code, throwable, reasonPhrase, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     */
+    public Status(int code, Throwable throwable, String reasonPhrase,
+            String description) {
+        this(code, throwable, reasonPhrase, description, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The longer description.
      * @param uri
@@ -1022,7 +1092,19 @@ public final class Status {
      *            The description to associate.
      */
     public Status(Status status, String description) {
-        this(status, null, description);
+        this(status, null, null, description);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status to copy.
+     * @param description
+     *            The description to associate.
+     */
+    public Status(Status status, String reasonPhrase, String description) {
+        this(status, null, reasonPhrase, description);
     }
 
     /**
@@ -1034,7 +1116,7 @@ public final class Status {
      *            The related error or exception.
      */
     public Status(Status status, Throwable throwable) {
-        this(status, throwable, null);
+        this(status, throwable, null, null);
     }
 
     /**
@@ -1044,14 +1126,33 @@ public final class Status {
      *            The status to copy.
      * @param throwable
      *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public Status(Status status, Throwable throwable, String reasonPhrase) {
+        this(status, throwable, reasonPhrase, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *            The status to copy.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The description to associate.
      */
-    public Status(Status status, Throwable throwable, String description) {
+    public Status(Status status, Throwable throwable, String reasonPhrase,
+            String description) {
         this(status.getCode(), (throwable == null) ? status.getThrowable()
-                : throwable, status.getReasonPhrase(),
-                (description == null) ? status.getDescription() : description,
-                status.getUri());
+                : throwable, (reasonPhrase == null) ? status.getReasonPhrase()
+                : reasonPhrase, (description == null) ? status.getDescription()
+                : description, status.getUri());
     }
 
     /**
@@ -1078,8 +1179,8 @@ public final class Status {
 
     /**
      * Returns the description. This value is typically used by the
-     * {@link StatusService} to build a meaningful description of an error via a
-     * response entity.
+     * {@link org.restlet.service.StatusService} to build a meaningful
+     * description of an error via a response entity.
      * 
      * @return The description.
      */
@@ -1229,6 +1330,9 @@ public final class Status {
             case 424:
                 result = "The method could not be performed on the resource because the requested action depended on another action and that action failed";
                 break;
+            case 429:
+                result = "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
+                break;
 
             case 500:
                 result = "The server encountered an unexpected condition which prevented it from fulfilling the request";
@@ -1265,17 +1369,6 @@ public final class Status {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the name of this status.
-     * 
-     * @return The name of this status.
-     * @deprecated Use {@link #getReasonPhrase()} instead.
-     */
-    @Deprecated
-    public String getName() {
-        return getReasonPhrase();
     }
 
     /**
@@ -1430,6 +1523,9 @@ public final class Status {
                 break;
             case 424:
                 result = "Failed Dependency";
+                break;
+            case 429:
+                result = "Too Many Requests";
                 break;
 
             case 500:
@@ -1616,6 +1712,9 @@ public final class Status {
                 break;
             case 424:
                 result = BASE_WEBDAV + "#STATUS_424";
+                break;
+            case 429:
+                result = BASE_ADDED_HTTP + "#section-4";
                 break;
 
             case 500:

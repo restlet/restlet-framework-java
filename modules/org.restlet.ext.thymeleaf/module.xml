@@ -1,0 +1,15 @@
+<module id="thymeleaf" excludes="gwt" type="integration" package="org.restlet.ext.thymeleaf">
+	<name>Restlet Extension - Thymeleaf</name>
+	<description>Integration with Thymeleaf.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="thymeleaf" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>to-do</wikiUri>
+</module>

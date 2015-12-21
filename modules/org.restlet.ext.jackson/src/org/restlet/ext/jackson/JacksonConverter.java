@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -36,10 +27,6 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.util.List;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.smile.SmileFactory;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -49,11 +36,26 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
 /**
- * Converter between the JSON and Representation classes based on Jackson.
+ * Converter between the JSON, JSON Smile, CBOR, CSV, XML, YAML and Representation
+ * classes based on Jackson.
  * 
  * @author Jerome Louvel
+ * @author Thierry Boileau
  */
 public class JacksonConverter extends ConverterHelper {
+    // [ifndef android] instruction
+    /** Variant with media type application/xml. */
+    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
+            MediaType.APPLICATION_XML);
+
+    /** Variant with media type application/yaml. */
+    private static final VariantInfo VARIANT_APPLICATION_YAML = new VariantInfo(
+            MediaType.APPLICATION_YAML);
+    
+    /** Variant with media type application/cbor. */
+    private static final VariantInfo VARIANT_APPLICATION_CBOR = new VariantInfo(
+            MediaType.APPLICATION_CBOR);
+
     /** Variant with media type application/json. */
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
@@ -62,11 +64,18 @@ public class JacksonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
             MediaType.APPLICATION_JSON_SMILE);
 
-    /** The modifiable Jackson binary object mapper. */
-    private ObjectMapper binaryObjectMapper;
+    /** Variant with media type text/csv. */
+    private static final VariantInfo VARIANT_TEXT_CSV = new VariantInfo(
+            MediaType.TEXT_CSV);
 
-    /** The modifiable Jackson object mapper. */
-    private ObjectMapper objectMapper;
+    // [ifndef android] instruction
+    /** Variant with media type text/xml. */
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
+            MediaType.TEXT_XML);
+
+    /** Variant with media type text/yaml. */
+    private static final VariantInfo VARIANT_TEXT_YAML = new VariantInfo(
+            MediaType.TEXT_YAML);
 
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
@@ -79,10 +88,7 @@ public class JacksonConverter extends ConverterHelper {
      * @return The marshaling {@link JacksonRepresentation}.
      */
     protected <T> JacksonRepresentation<T> create(MediaType mediaType, T source) {
-        JacksonRepresentation<T> result = new JacksonRepresentation<T>(
-                mediaType, source);
-        result.setObjectMapper(getObjectMapper());
-        return result;
+        return new JacksonRepresentation<T>(mediaType, source);
     }
 
     /**
@@ -97,121 +103,19 @@ public class JacksonConverter extends ConverterHelper {
      */
     protected <T> JacksonRepresentation<T> create(Representation source,
             Class<T> objectClass) {
-        JacksonRepresentation<T> result = new JacksonRepresentation<T>(source,
-                objectClass);
-        result.setObjectMapper(getObjectMapper());
-        return result;
-    }
-
-    /**
-     * Creates the marshaling {@link JacksonSmileRepresentation}.
-     * 
-     * @param <T>
-     * @param mediaType
-     *            The target media type.
-     * @param source
-     *            The source object to marshal.
-     * @return The marshaling {@link JacksonSmileRepresentation}.
-     */
-    protected <T> JacksonSmileRepresentation<T> createBinary(
-            MediaType mediaType, T source) {
-        JacksonSmileRepresentation<T> result = new JacksonSmileRepresentation<T>(
-                mediaType, source);
-        result.setObjectMapper(getBinaryObjectMapper());
-        return result;
-    }
-
-    /**
-     * Creates the unmarshaling {@link JacksonSmileRepresentation}.
-     * 
-     * @param <T>
-     * @param source
-     *            The source representation to unmarshal.
-     * @param objectClass
-     *            The object class to instantiate.
-     * @return The unmarshaling {@link JacksonSmileRepresentation}.
-     */
-    protected <T> JacksonSmileRepresentation<T> createBinary(
-            Representation source, Class<T> objectClass) {
-        JacksonSmileRepresentation<T> result = new JacksonSmileRepresentation<T>(
-                source, objectClass);
-        result.setObjectMapper(getBinaryObjectMapper());
-        return result;
-    }
-
-    /**
-     * Creates a Jackson object mapper for binary representations based on a
-     * media type. By default, it calls
-     * {@link ObjectMapper#ObjectMapper(JsonFactory)} with a {@link SmileFactory}.
-     * 
-     * @return The Jackson object mapper.
-     */
-    protected ObjectMapper createBinaryObjectMapper() {
-        JsonFactory jsonFactory = new SmileFactory();
-        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-        return new ObjectMapper(jsonFactory);
-    }
-
-    /**
-     * Creates a Jackson object mapper based on a media type. By default, it
-     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
-     * 
-     * @return The Jackson object mapper.
-     */
-    protected ObjectMapper createObjectMapper() {
-        JsonFactory jsonFactory = new JsonFactory();
-        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-        return new ObjectMapper(jsonFactory);
-    }
-
-    /**
-     * Returns the modifiable Jackson binary object mapper. Useful to customize
-     * mappings.
-     * 
-     * @return The modifiable Jackson binary object mapper.
-     */
-    public ObjectMapper getBinaryObjectMapper() {
-        if (this.binaryObjectMapper == null) {
-            synchronized (this) {
-                if (this.binaryObjectMapper == null) {
-                    this.binaryObjectMapper = createBinaryObjectMapper();
-                }
-            }
-        }
-
-        return this.binaryObjectMapper;
+        return new JacksonRepresentation<T>(source, objectClass);
     }
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_JSON_SMILE.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, JacksonRepresentation.class);
-            result = addObjectClass(result, JacksonSmileRepresentation.class);
         }
 
         return result;
-    }
-
-    /**
-     * Returns the modifiable Jackson object mapper. Useful to customize
-     * mappings.
-     * 
-     * @return The modifiable Jackson object mapper.
-     */
-    public ObjectMapper getObjectMapper() {
-        if (this.objectMapper == null) {
-            synchronized (this) {
-                if (this.objectMapper == null) {
-                    this.objectMapper = createObjectMapper();
-                }
-            }
-        }
-
-        return this.objectMapper;
     }
 
     @Override
@@ -221,9 +125,40 @@ public class JacksonConverter extends ConverterHelper {
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_JSON_SMILE);
+            result = addVariant(result, VARIANT_APPLICATION_CBOR);
+            // [ifndef android] instruction
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            // [ifndef android] instruction
+            result = addVariant(result, VARIANT_TEXT_XML);
+            result = addVariant(result, VARIANT_APPLICATION_YAML);
+            result = addVariant(result, VARIANT_TEXT_YAML);
+            result = addVariant(result, VARIANT_TEXT_CSV);
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_JSON.isCompatible(variant)
+                        || VARIANT_JSON_SMILE.isCompatible(variant)
+                        || VARIANT_APPLICATION_CBOR.isCompatible(variant)
+                        // [ifndef android] line
+                        || VARIANT_APPLICATION_XML.isCompatible(variant)
+                        // [ifndef android] line
+                        || VARIANT_TEXT_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_YAML.isCompatible(variant)
+                        || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
+                            .isCompatible(variant));
     }
 
     @Override
@@ -232,14 +167,10 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
-        } else if (source instanceof JacksonSmileRepresentation<?>) {
-            result = 1.0F;
         } else {
             if (target == null) {
                 result = 0.5F;
-            } else if (VARIANT_JSON.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_JSON_SMILE.isCompatible(target)) {
+            } else if (isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -256,41 +187,14 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
-        } else if (source instanceof JacksonSmileRepresentation<?>) {
-            result = 1.0F;
         } else if ((target != null)
                 && JacksonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
-        } else if ((target != null)
-                && JacksonSmileRepresentation.class.isAssignableFrom(target)) {
-            result = 1.0F;
-        } else if (VARIANT_JSON.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
+        } else if (isCompatible(source)) {
             result = 0.8F;
         }
 
         return result;
-    }
-
-    /**
-     * Sets the Jackson binary object mapper.
-     * 
-     * @param objectMapper
-     *            The Jackson binary object mapper.
-     */
-    public void setBinaryObjectMapper(ObjectMapper objectMapper) {
-        this.binaryObjectMapper = objectMapper;
-    }
-
-    /**
-     * Sets the Jackson object mapper.
-     * 
-     * @param objectMapper
-     *            The Jackson object mapper.
-     */
-    public void setObjectMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -299,38 +203,21 @@ public class JacksonConverter extends ConverterHelper {
             Resource resource) throws IOException {
         Object result = null;
 
-        JacksonSmileRepresentation<?> bSource = null;
-        if (source instanceof JacksonSmileRepresentation) {
-            bSource = (JacksonSmileRepresentation<?>) source;
-        } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
-            bSource = createBinary(source, target);
+        // The source for the Jackson conversion
+        JacksonRepresentation<?> jacksonSource = null;
+        if (source instanceof JacksonRepresentation) {
+            jacksonSource = (JacksonRepresentation<?>) source;
+        } else if (isCompatible(source)) {
+            jacksonSource = create(source, target);
         }
-        if (bSource != null) {
+
+        if (jacksonSource != null) {
             // Handle the conversion
             if ((target != null)
-                    && JacksonSmileRepresentation.class
-                            .isAssignableFrom(target)) {
-                result = bSource;
+                    && JacksonRepresentation.class.isAssignableFrom(target)) {
+                result = jacksonSource;
             } else {
-                result = bSource.getObject();
-            }
-        } else {
-            // The source for the Jackson conversion
-            JacksonRepresentation<?> jacksonSource = null;
-            if (source instanceof JacksonRepresentation) {
-                jacksonSource = (JacksonRepresentation<?>) source;
-            } else if (VARIANT_JSON.isCompatible(source)) {
-                jacksonSource = create(source, target);
-            }
-
-            if (jacksonSource != null) {
-                // Handle the conversion
-                if ((target != null)
-                        && JacksonRepresentation.class.isAssignableFrom(target)) {
-                    result = jacksonSource;
-                } else {
-                    result = jacksonSource.getObject();
-                }
+                result = jacksonSource.getObject();
             }
         }
 
@@ -344,16 +231,11 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation) {
             result = (JacksonRepresentation<?>) source;
-        } else if (source instanceof JacksonSmileRepresentation) {
-            result = (JacksonSmileRepresentation<?>) source;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
-
-            if (VARIANT_JSON_SMILE.isCompatible(target)) {
-                result = createBinary(target.getMediaType(), source);
-            } else if (VARIANT_JSON.isCompatible(target)) {
+            if (isCompatible(target)) {
                 result = create(target.getMediaType(), source);
             }
         }
@@ -366,6 +248,14 @@ public class JacksonConverter extends ConverterHelper {
             Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_CBOR, 1.0F);
+        // [ifndef android] instruction
+        updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+        // [ifndef android] instruction
+        updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_YAML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_YAML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_CSV, 1.0F);
     }
 
 }

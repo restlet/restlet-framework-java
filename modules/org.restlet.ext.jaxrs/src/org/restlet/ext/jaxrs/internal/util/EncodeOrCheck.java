@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -42,19 +33,19 @@ import org.restlet.data.Reference;
  */
 public class EncodeOrCheck {
 
-    /** A table of hex digits */
-    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
-            '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
     /**
-     * the unreserved characters in URIs
+     * the characters forbidden in a fragment.
      */
-    public static final String UNRESERVED = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-._~";
+    public static final String FRAGMENT_FORBIDDEN;
 
     /**
      * the gen-delimiter characters in URIs
      */
     public static final String GEN_DELIMITERS = ":/?#[]@";
+
+    /** A table of hex digits */
+    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     /**
      * the sub-delimiter characters in URIs
@@ -72,9 +63,9 @@ public class EncodeOrCheck {
     public static final String RESERVED = GEN_DELIMITERS + SUB_DELIMITERS;
 
     /**
-     * the characters forbidden in a fragment.
+     * the unreserved characters in URIs
      */
-    public static final String FRAGMENT_FORBIDDEN;
+    public static final String UNRESERVED = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-._~";
     static {
         final StringBuilder stb = new StringBuilder();
         for (char c = 0; c < 256; c++) {
@@ -519,8 +510,8 @@ public class EncodeOrCheck {
             return;
         }
         if (uriPart.length() <= i + 2) {
-            final CharSequence hexDigits = uriPart.subSequence(i, uriPart
-                    .length());
+            final CharSequence hexDigits = uriPart.subSequence(i,
+                    uriPart.length());
             throw new IllegalArgumentException(
                     "A percent encoding must have two charachters, so "
                             + hexDigits + " is not allowed");

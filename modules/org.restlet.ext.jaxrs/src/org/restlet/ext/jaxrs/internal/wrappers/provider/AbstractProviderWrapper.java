@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -66,11 +57,11 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      */
     private final List<org.restlet.data.MediaType> consumedMimes;
 
-    private final List<org.restlet.data.MediaType> producedMimes;
-
     private final Class<?> genericMbrType;
 
     private final Class<?> genericMbwType;
+
+    private final List<org.restlet.data.MediaType> producedMimes;
 
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
@@ -159,8 +150,9 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException,
             InjectException, InvocationTargetException {
-        final ContextInjector iph = new ContextInjector(jaxRsProvider.getClass(),
-                tlContext, allProviders, extensionBackwardMapping);
+        final ContextInjector iph = new ContextInjector(
+                jaxRsProvider.getClass(), tlContext, allProviders,
+                extensionBackwardMapping);
         iph.injectInto(jaxRsProvider, false);
     }
 
@@ -200,34 +192,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     public abstract boolean isWriter();
 
     /**
-     * Checks, if this message body writer supports the given type (by the type
-     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
-     * 
-     * @param entityClass
-     *            the type
-     * @param genericType
-     *            the generic type
-     * @return true, if this MessageBodyWriter supports the given type, false,
-     *         if not.
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
-     *      java.lang.reflect.Type)
-     */
-    public boolean supportsWrite(Class<?> entityClass, Type genericType) {
-        if (entityClass == null) {
-            return false;
-        }
-        if (genericType == null) {
-            // LATER use Type instead of Class
-        }
-        if (this.genericMbwType == null) {
-            return false;
-        }
-        final boolean supportsWrite = this.genericMbwType
-                .isAssignableFrom(entityClass);
-        return supportsWrite;
-    }
-
-    /**
      * Checks, if this message body reader supports the given type (by the type
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
@@ -264,6 +228,34 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
                     || (mediaType == null);
         }
         return result;
+    }
+
+    /**
+     * Checks, if this message body writer supports the given type (by the type
+     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
+     * 
+     * @param entityClass
+     *            the type
+     * @param genericType
+     *            the generic type
+     * @return true, if this MessageBodyWriter supports the given type, false,
+     *         if not.
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
+     *      java.lang.reflect.Type)
+     */
+    public boolean supportsWrite(Class<?> entityClass, Type genericType) {
+        if (entityClass == null) {
+            return false;
+        }
+        if (genericType == null) {
+            // LATER use Type instead of Class
+        }
+        if (this.genericMbwType == null) {
+            return false;
+        }
+        final boolean supportsWrite = this.genericMbwType
+                .isAssignableFrom(entityClass);
+        return supportsWrite;
     }
 
     /**

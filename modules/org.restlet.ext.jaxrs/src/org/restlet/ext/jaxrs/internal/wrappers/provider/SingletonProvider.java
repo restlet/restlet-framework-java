@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -41,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -49,6 +41,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
@@ -151,67 +144,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
         }
     }
 
-    /**
-     * Checks, if this MessageBodyReader could read the given type.
-     * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @return true, if the wrapped message body reader supports reading for the
-     *         given class with the given parameters.
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
-     *      Annotation[])
-     */
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
-        try {
-            return this.getJaxRsReader().isReadable(type, genericType,
-                    annotations, mediaType);
-        } catch (NullPointerException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not readable for the given combination
-                return false;
-            }
-            throw e;
-        } catch (IllegalArgumentException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not readable for the given combination
-                return false;
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Checks, if the given class could be written by this MessageBodyWriter.
-     * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @return true, if the wrapped message writer reader supports writing for
-     *         the given class with the given parameters.
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
-     */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
-        try {
-            return this.getJaxRsWriter().isWriteable(type, genericType,
-                    annotations, mediaType);
-        } catch (NullPointerException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not writable for the given combination
-                return false;
-            }
-            throw e;
-        } catch (IllegalArgumentException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not writable for the given combination
-                return false;
-            }
-            throw e;
-        }
-    }
-
     @Override
     public final boolean equals(Object otherProvider) {
         if (this == otherProvider) {
@@ -251,6 +183,28 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     }
 
     /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getExcMapperType()
+     */
+    public Class<?> getExcMapperType() {
+        return Util.getGenericClass(jaxRsProvider.getClass(),
+                ExceptionMapper.class);
+    }
+
+    /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedCtxResolver()
+     */
+    public ContextResolver getInitializedCtxResolver() {
+        return this;
+    }
+
+    /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedExcMapper()
+     */
+    public ExceptionMapper<? extends Throwable> getInitializedExcMapper() {
+        return excMapper;
+    }
+
+    /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedReader()
      */
     public MessageBodyReader getInitializedReader() {
@@ -278,9 +232,155 @@ public class SingletonProvider extends AbstractProviderWrapper implements
         return this.writer;
     }
 
+    /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#getSize(java.lang.Object,
+     *      Class, Type, Annotation[], MediaType)
+     */
+    public long getSize(Object t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return this.writer.getSize(t, type, genericType, annotations,
+                Converter.toJaxRsMediaType(mediaType));
+    }
+
     @Override
     public final int hashCode() {
-        return this.jaxRsProvider.hashCode();
+        return SystemUtils.hashCode(this.jaxRsProvider);
+    }
+
+    /**
+     * Injects the supported dependencies into this provider and calls the
+     * method annotated with &#64;{@link PostConstruct}.
+     * 
+     * @param tlContext
+     *            The thread local wrapped {@link CallContext}
+     * @param allProviders
+     *            all providers.
+     * @param extensionBackwardMapping
+     *            the extension backward mapping
+     * @throws InjectException
+     * @throws InvocationTargetException
+     *             if a bean setter throws an exception
+     * @throws IllegalTypeException
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
+     * @see ProviderWrapper#initAtAppStartUp(ThreadLocalizedContext, Providers,
+     *      ExtensionBackwardMapping)
+     */
+    public void initAtAppStartUp(ThreadLocalizedContext tlContext,
+            Providers allProviders,
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws InjectException, InvocationTargetException,
+            IllegalTypeException {
+        initProvider(this.jaxRsProvider, tlContext, allProviders,
+                extensionBackwardMapping);
+    }
+
+    /**
+     * Returns true, if this ProviderWrapper is also a
+     * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
+     * 
+     * @return true, if this ProviderWrapper is also a
+     *         {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
+     */
+    @Override
+    public final boolean isContextResolver() {
+        return this.contextResolver != null;
+    }
+
+    /**
+     * Checks, if this provider represents an {@link ExceptionMapper}.
+     * 
+     * @return true, if this provider is an {@link ExceptionMapper}, or false if
+     *         not.
+     */
+    @Override
+    public final boolean isExceptionMapper() {
+        return this.excMapper != null;
+    }
+
+    /**
+     * Checks, if this MessageBodyReader could read the given type.
+     * 
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @return true, if the wrapped message body reader supports reading for the
+     *         given class with the given parameters.
+     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
+     *      Annotation[])
+     */
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
+        try {
+            return this.getJaxRsReader().isReadable(type, genericType,
+                    annotations, mediaType);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns true, if this ProviderWrapper is also a
+     * {@link javax.ws.rs.ext.MessageBodyReader}, otherwise false.
+     * 
+     * @return true, if this ProviderWrapper is also a
+     *         {@link javax.ws.rs.ext.MessageBodyReader}, otherwise false.
+     */
+    @Override
+    public final boolean isReader() {
+        return this.reader != null;
+    }
+
+    /**
+     * Checks, if the given class could be written by this MessageBodyWriter.
+     * 
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @return true, if the wrapped message writer reader supports writing for
+     *         the given class with the given parameters.
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
+     */
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
+        try {
+            return this.getJaxRsWriter().isWriteable(type, genericType,
+                    annotations, mediaType);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns true, if this ProviderWrapper is also a
+     * {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
+     * 
+     * @return true, if this ProviderWrapper is also a
+     *         {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
+     */
+    @Override
+    public final boolean isWriter() {
+        return this.writer != null;
     }
 
     /**
@@ -350,112 +450,5 @@ public class SingletonProvider extends AbstractProviderWrapper implements
         this.getJaxRsWriter().writeTo(object, type, genericType, annotations,
                 Converter.toJaxRsMediaType(mediaType), httpHeaders,
                 entityStream);
-    }
-
-    /**
-     * Injects the supported dependencies into this provider and calls the
-     * method annotated with &#64;{@link PostConstruct}.
-     * 
-     * @param tlContext
-     *            The thread local wrapped {@link CallContext}
-     * @param allProviders
-     *            all providers.
-     * @param extensionBackwardMapping
-     *            the extension backward mapping
-     * @throws InjectException
-     * @throws InvocationTargetException
-     *             if a bean setter throws an exception
-     * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
-     * @see ProviderWrapper#initAtAppStartUp(ThreadLocalizedContext, Providers,
-     *      ExtensionBackwardMapping)
-     */
-    public void initAtAppStartUp(ThreadLocalizedContext tlContext,
-            Providers allProviders,
-            ExtensionBackwardMapping extensionBackwardMapping)
-            throws InjectException, InvocationTargetException,
-            IllegalTypeException {
-        initProvider(this.jaxRsProvider, tlContext, allProviders,
-                extensionBackwardMapping);
-    }
-
-    /**
-     * Returns true, if this ProviderWrapper is also a
-     * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
-     * 
-     * @return true, if this ProviderWrapper is also a
-     *         {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
-     */
-    @Override
-    public final boolean isContextResolver() {
-        return this.contextResolver != null;
-    }
-
-    /**
-     * Checks, if this provider represents an {@link ExceptionMapper}.
-     * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false if
-     *         not.
-     */
-    @Override
-    public final boolean isExceptionMapper() {
-        return this.excMapper != null;
-    }
-
-    /**
-     * Returns true, if this ProviderWrapper is also a
-     * {@link javax.ws.rs.ext.MessageBodyReader}, otherwise false.
-     * 
-     * @return true, if this ProviderWrapper is also a
-     *         {@link javax.ws.rs.ext.MessageBodyReader}, otherwise false.
-     */
-    @Override
-    public final boolean isReader() {
-        return this.reader != null;
-    }
-
-    /**
-     * Returns true, if this ProviderWrapper is also a
-     * {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
-     * 
-     * @return true, if this ProviderWrapper is also a
-     *         {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
-     */
-    @Override
-    public final boolean isWriter() {
-        return this.writer != null;
-    }
-
-    /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#getSize(java.lang.Object,
-     *      Class, Type, Annotation[], MediaType)
-     */
-    public long getSize(Object t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return this.writer.getSize(t, type, genericType, annotations,
-                Converter.toJaxRsMediaType(mediaType));
-    }
-
-    /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedCtxResolver()
-     */
-    public ContextResolver getInitializedCtxResolver() {
-        return this;
-    }
-
-    /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedExcMapper()
-     */
-    public ExceptionMapper<? extends Throwable> getInitializedExcMapper() {
-        return excMapper;
-    }
-
-    /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getExcMapperType()
-     */
-    public Class<?> getExcMapperType() {
-        return Util.getGenericClass(jaxRsProvider.getClass(),
-                ExceptionMapper.class);
     }
 }

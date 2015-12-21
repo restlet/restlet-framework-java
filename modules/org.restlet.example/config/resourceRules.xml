@@ -7,7 +7,7 @@
       <service>AppEngine</service>
       <allowAnyAppId>true</allowAnyAppId>
     </apps>
-    <url>http://www.restlet.org/</url>
+    <url>http://restlet.org/</url>
     <urlMatch>HOSTPORT</urlMatch>
   </rule>
 </resourceRules>

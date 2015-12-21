@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -41,6 +32,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.HeaderUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.html.internal.FormUtils;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
@@ -263,6 +255,9 @@ public class FormDataSet extends OutputRepresentation {
      */
     public void setMultipart(boolean multipart) {
         this.multipart = multipart;
+        if (this.multipart && getMultipartBoundary() == null) {
+            this.multipartBoundary = DEFAULT_BOUNDARY;
+        }
         setMediaType(createMultipartMediaType(getMultipartBoundary()));
     }
 
@@ -273,7 +268,13 @@ public class FormDataSet extends OutputRepresentation {
      *            The boundary separating multipart entries.
      */
     public void setMultipartBoundary(String boundary) {
-        this.multipartBoundary = boundary;
+        if (boundary != null) {
+            this.multipartBoundary = boundary;
+            setMultipart(true);
+        } else {
+            this.multipartBoundary = DEFAULT_BOUNDARY;
+        }
+        setMediaType(createMultipartMediaType(getMultipartBoundary()));
     }
 
     @Override
@@ -284,15 +285,16 @@ public class FormDataSet extends OutputRepresentation {
                 outputStream.write(("--" + getMultipartBoundary()).getBytes());
                 HeaderUtils.writeCRLF(outputStream);
 
-                // Write the optional content type header line
-                if (MediaType.TEXT_PLAIN.equals(data.getMediaType())) {
-                    // Write the content disposition header line
+                if (StringUtils.isNullOrEmpty(data.getFilename())
+                        && MediaType.TEXT_PLAIN.equals(data.getMediaType())) {
+                    // Write the content disposition header line, as a simple
+                    // form field
                     String line = "Content-Disposition: form-data; name=\""
                             + data.getName() + "\"";
                     outputStream.write(line.getBytes());
                     HeaderUtils.writeCRLF(outputStream);
                 } else {
-                    // Write the content disposition header line
+                    // Write the content disposition header line as file
                     String line = "Content-Disposition: form-data; name=\""
                             + data.getName() + "\"; filename=\""
                             + data.getFilename() + "\"";

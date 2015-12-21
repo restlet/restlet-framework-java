@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -59,8 +50,6 @@ public final class Method implements Comparable<Method> {
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
 
-    private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
-
     /**
      * Used with a proxy that can dynamically switch to being a tunnel.
      * 
@@ -71,20 +60,6 @@ public final class Method implements Comparable<Method> {
     public static final Method CONNECT = new Method("CONNECT",
             "Used with a proxy that can dynamically switch to being a tunnel",
             BASE_HTTP + "#sec9.9", false, false);
-
-    /**
-     * Creates a duplicate of the source resource, identified by the
-     * Request-URI, in the destination resource, identified by the URI in the
-     * Destination header.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_COPY">WEBDAV
-     *      RFC - 8.8 COPY Method</a>
-     */
-    public static final Method COPY = new Method(
-            "COPY",
-            "Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header",
-            BASE_WEBDAV + "#METHOD_COPY", false, true);
 
     /**
      * Requests that the origin server deletes the resource identified by the
@@ -126,44 +101,6 @@ public final class Method implements Comparable<Method> {
             BASE_HTTP + "#sec9.4", true, true);
 
     /**
-     * Used to take out a lock of any access type on the resource identified by
-     * the request URI.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_LOCK">WEBDAV
-     *      RFC - 8.10 LOCK Method</a>
-     */
-    public static final Method LOCK = new Method("LOCK",
-            "Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
-                    + "#METHOD_LOCK", true, false);
-
-    /**
-     * MKCOL creates a new collection resource at the location specified by the
-     * Request URI.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MKCOL">WEBDAV
-     *      RFC - 8.3 MKCOL Method</a>
-     */
-    public static final Method MKCOL = new Method("MKCOL",
-            "Used to create a new collection (WebDAV)", BASE_WEBDAV
-                    + "#METHOD_MKCOL", false, true);
-
-    /**
-     * Logical equivalent of a copy, followed by consistency maintenance
-     * processing, followed by a delete of the source where all three actions
-     * are performed atomically.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MOVE">WEBDAV
-     *      RFC - 8.3 MKCOL Method</a>
-     */
-    public static final Method MOVE = new Method(
-            "MOVE",
-            "Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source (WebDAV)",
-            BASE_WEBDAV + "#METHOD_MOVE", false, false);
-
-    /**
      * Requests for information about the communication options available on the
      * request/response chain identified by the URI.
      * 
@@ -175,6 +112,18 @@ public final class Method implements Comparable<Method> {
             "OPTIONS",
             "Requests for information about the communication options available on the request/response chain identified by the URI",
             BASE_HTTP + "#sec9.2", true, true);
+
+    /**
+     * Requests that the origin server applies partial modifications contained
+     * in the entity enclosed in the request to the resource identified by the
+     * request URI.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH RFC 5789</a>
+     */
+    public static final Method PATCH = new Method(
+            "PATCH",
+            "Requests that the origin server applies partial modifications to the resource identified by the request URI",
+            "http://tools.ietf.org/html/rfc5789", false, false);
 
     /**
      * Requests that the origin server accepts the entity enclosed in the
@@ -189,32 +138,6 @@ public final class Method implements Comparable<Method> {
             "POST",
             "Requests that the origin server accepts the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
             BASE_HTTP + "#sec9.5", false, false);
-
-    /**
-     * Retrieves properties defined on the resource identified by the request
-     * URI.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPFIND">WEBDAV
-     *      RFC - 8.1 PROPFIND</a>
-     */
-    public static final Method PROPFIND = new Method(
-            "PROPFIND",
-            "Retrieves properties defined on the resource identified by the request URI",
-            BASE_WEBDAV + "#METHOD_PROPFIND", true, true);
-
-    /**
-     * Processes instructions specified in the request body to set and/or remove
-     * properties defined on the resource identified by the request URI.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPPATCH">WEBDAV
-     *      RFC - 8.2 PROPPATCH</a>
-     */
-    public static final Method PROPPATCH = new Method(
-            "PROPPATCH",
-            "Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
-            BASE_WEBDAV + "#METHOD_PROPPATCH", false, true);
 
     /**
      * Requests that the enclosed entity be stored under the supplied request
@@ -241,19 +164,6 @@ public final class Method implements Comparable<Method> {
             "TRACE",
             "Used to invoke a remote, application-layer loop-back of the request message",
             BASE_HTTP + "#sec9.8", true, true);
-
-    /**
-     * Removes the lock identified by the lock token from the request URI, and
-     * all other resources included in the lock.
-     * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_UNLOCK">WEBDAV
-     *      RFC - 8.11 UNLOCK Method</a>
-     */
-    public static final Method UNLOCK = new Method(
-            "UNLOCK",
-            "Removes the lock identified by the lock token from the request URI, and all other resources included in the lock",
-            BASE_WEBDAV + "#METHOD_UNLOCK", true, false);
 
     /**
      * Adds a new Method to the list of registered methods.

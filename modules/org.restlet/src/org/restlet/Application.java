@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -36,6 +27,7 @@ package org.restlet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Filter;
+import java.util.logging.Level;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
@@ -62,20 +54,21 @@ import org.restlet.util.ServiceList;
  * create the root Restlet and the actual Restlet that can be attached to one or
  * more VirtualHost instances.<br>
  * <br>
- * Applications also have many useful services associated. They are all enabled
- * by default and are available as properties that can be eventually overridden:
+ * Applications also have many useful services associated. Most are enabled by
+ * default and are available as properties that can be eventually overridden:
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and
  * representations.</li>
  * <li>"decoderService" to automatically decode or uncompress received entities.
  * </li>
- * <li>"encoderService" to automatically encode or compress sent entities.</li>
+ * <li>"encoderService" to automatically encode or compress sent entities
+ * (disabled by default).</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"rangeService" to automatically exposes ranges of response entities.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
- * <li>"taskService" to run tasks asynchronously.</li>
+ * <li>"taskService" to run tasks asynchronously (disabled by default).</li>
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
@@ -112,6 +105,9 @@ public class Application extends Restlet {
     public static void setCurrent(Application application) {
         CURRENT.set(application);
     }
+
+    /** Indicates if the debugging mode is enabled. */
+    private volatile boolean debugging;
 
     /** The helper provided by the implementation. */
     private volatile ApplicationHelper helper;
@@ -156,22 +152,28 @@ public class Application extends Restlet {
             this.helper.setContext(context);
         }
 
+        ConnegService connegService = new ConnegService();
+        ConverterService converterService = new ConverterService();
+        MetadataService metadataService = new MetadataService();
+
+        this.debugging = false;
         this.outboundRoot = null;
         this.inboundRoot = null;
         this.roles = new CopyOnWriteArrayList<Role>();
         this.services = new ServiceList(context);
         this.services.add(new TunnelService(true, true));
-        this.services.add(new StatusService());
+        this.services.add(new StatusService(true, converterService,
+                metadataService, connegService));
         this.services.add(new DecoderService());
         this.services.add(new EncoderService(false));
         this.services.add(new RangeService());
         this.services.add(new ConnectorService());
-        this.services.add(new ConnegService());
-        this.services.add(new ConverterService());
-        this.services.add(new MetadataService());
+        this.services.add(connegService);
+        this.services.add(converterService);
+        this.services.add(metadataService);
 
         // [ifndef gae]
-        this.services.add(new org.restlet.service.TaskService());
+        this.services.add(new org.restlet.service.TaskService(false));
         // [enddef]
     }
 
@@ -361,8 +363,10 @@ public class Application extends Restlet {
      * default.
      * 
      * @return A task service.
+     * @deprecated
      */
     // [ifndef gae] method
+    @Deprecated
     public org.restlet.service.TaskService getTaskService() {
         return getServices().get(org.restlet.service.TaskService.class);
     }
@@ -386,16 +390,12 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the client root Resource class.
+     * Indicates if the debugging mode is enabled. True by default.
      * 
-     * @param clientRootClass
-     *            The client root {@link ServerResource} subclass.
-     * @deprecated Use {@link #setOutboundRoot(Class)} instead
+     * @return True if the debugging mode is enabled.
      */
-    @Deprecated
-    public synchronized void setClientRoot(
-            Class<? extends ServerResource> clientRootClass) {
-        setOutboundRoot(clientRootClass);
+    public boolean isDebugging() {
+        return debugging;
     }
 
     /**
@@ -433,6 +433,16 @@ public class Application extends Restlet {
      */
     public void setConverterService(ConverterService converterService) {
         getServices().set(converterService);
+    }
+
+    /**
+     * Indicates if the debugging mode is enabled.
+     * 
+     * @param debugging
+     *            True if the debugging mode is enabled.
+     */
+    public void setDebugging(boolean debugging) {
+        this.debugging = debugging;
     }
 
     /**
@@ -582,7 +592,15 @@ public class Application extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
+            if (isDebugging()) {
+                getLogger().log(
+                        Level.INFO,
+                        "Starting " + getClass().getName()
+                                + " application in debug mode");
+            } else {
+                getLogger().log(Level.INFO,
+                        "Starting " + getClass().getName() + " application");
+            }
 
             if (getHelper() != null) {
                 getHelper().start();
@@ -597,6 +615,9 @@ public class Application extends Restlet {
             if (getOutboundRoot() != null) {
                 getOutboundRoot().start();
             }
+
+            // Must be invoked as a last step
+            super.start();
         }
     }
 
@@ -608,6 +629,9 @@ public class Application extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getOutboundRoot() != null) {
                 getOutboundRoot().stop();
             }
@@ -624,8 +648,6 @@ public class Application extends Restlet {
 
             // Clear the annotations cache
             AnnotationUtils.getInstance().clearCache();
-
-            super.stop();
         }
     }
 

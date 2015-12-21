@@ -5,12 +5,13 @@
 -noextraheaders: true
 -debug: true
 Export-Package: * 
-Import-Package: *;resolution:=optional
+Import-Package: *
 Bundle-Name: ${package.name}
 Bundle-SymbolicName: ${package.name}
 Bundle-Version: ${ant["eclipse-version-full"]}
+Bundle-ManifestVersion: 2
 Created-By: Restlet forge
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
     </@pp.nestOutputFile>
   </#list>  
 </#list>

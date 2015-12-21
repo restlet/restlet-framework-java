@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -61,8 +52,8 @@ import org.springframework.context.support.GenericApplicationContext;
  * @author Jerome Louvel</a>
  */
 public class SpringContext extends GenericApplicationContext {
-    /** The parent Restlet context. */
-    private volatile Context restletContext;
+    /** Indicates if the context has been already loaded. */
+    private volatile boolean loaded;
 
     /**
      * The modifiable list of configuration URIs for beans definitions via
@@ -70,14 +61,14 @@ public class SpringContext extends GenericApplicationContext {
      */
     private volatile List<String> propertyConfigRefs;
 
+    /** The parent Restlet context. */
+    private volatile Context restletContext;
+
     /**
      * The modifiable list of configuration URIs for beans definitions via XML
      * representations.
      */
     private volatile List<String> xmlConfigRefs;
-
-    /** Indicates if the context has been already loaded. */
-    private volatile boolean loaded;
 
     /**
      * Constructor.
@@ -151,8 +142,8 @@ public class SpringContext extends GenericApplicationContext {
             // First, read the bean definitions from properties representations
             PropertiesBeanDefinitionReader propReader = null;
             for (final String ref : getPropertyConfigRefs()) {
-                config = getRestletContext().getClientDispatcher().handle(
-                        new Request(Method.GET, ref)).getEntity();
+                config = getRestletContext().getClientDispatcher()
+                        .handle(new Request(Method.GET, ref)).getEntity();
 
                 if (config != null) {
                     propReader = new PropertiesBeanDefinitionReader(this);
@@ -163,8 +154,8 @@ public class SpringContext extends GenericApplicationContext {
             // Then, read the bean definitions from XML representations
             XmlBeanDefinitionReader xmlReader = null;
             for (final String ref : getXmlConfigRefs()) {
-                config = getRestletContext().getClientDispatcher().handle(
-                        new Request(Method.GET, ref)).getEntity();
+                config = getRestletContext().getClientDispatcher()
+                        .handle(new Request(Method.GET, ref)).getEntity();
 
                 if (config != null) {
                     xmlReader = new XmlBeanDefinitionReader(this);

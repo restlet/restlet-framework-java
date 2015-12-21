@@ -1,0 +1,20 @@
+<library id="gson" symbolicName="com.google.gson">
+	<name>Google GSon</name>
+	<description>Google GSon.</description>
+	<version>2.3</version>
+    <release>1</release>
+	<homeUri>http://code.google.com/p/google-gson/</homeUri>
+	<downloadUri>http://code.google.com/p/google-gson/downloads/list</downloadUri>
+	<provider>Google Inc.</provider>
+
+	<package id="gson" name="com.google.code.gson">
+		<maven>
+			<groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<dependency type="library" id="joda-time" />
+</library>

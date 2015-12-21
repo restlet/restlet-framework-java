@@ -4,18 +4,43 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-    - Bug fixed
-    - Enhancements
-    - Misc
-      - Updated Eclipse projects to use JavaSE 1.6 and simple Java 
-        build rather than PDE/OSGi (removed manifest.mf files) or 
-        Maven (removed pom.xml files)
     - API changes
-      - Added a resource client to the JAX-RS extension.
-        Contributed by Shaun Elliott.
-      - Added an optional namespace prefix mapper for JAXB representations when
-        marshalling Java content into XML.
-        Contributed by Emanuele Ziglioli.
-      - Added support of the Jackson Smile format.
-        Suggested by Tim Peierls.
-        
+       - Enhanced HTML extension (moved StatusInfoConverter). Issue #1005.
+       - Reference scheme reverts to http when using https. Issue #998.
+         Reported by Stephen C. Pope.
+       - Removed previous attempts to add asynchronous representation
+         handling to make room for simpler solution based on Netty.
+       - Removed WebDAV methods in Method class and engine.
+       - Removed deprecated StatusService from Component. Please use the
+         StatusService in Application instead.
+       - Added bytes array support in DefaultConverter and Representation
+         (via getBytes() method).
+    - Enhancements
+       - Added Netty connector.
+    - Bugs
+       - Reintroduced registration by default of the internal HTTP server 
+         connectors in JEE edition.
+       - FormDataSet not properly serializing text/plain files. Issue #1006.
+         Reported by John Aylward.
+       - Fixed fileupload extension for GAE and JEE editions.
+       - Fixed potential NPE. Issue #1004.
+         Reported by Philippe Perrault.
+       - Fixed malformed JSON in the JsonpRepresentation.
+         Reported by Wagner Correa Ramos.
+       - Fixed NPE when OAuth refresh token request when no scope is provided. 
+         Issue #1080. Reported by Gernot Pansy.
+    - Misc
+       - Completed the Javadocs for query parameter declarations inside
+         HTTP method annotations such as @Get("json?param=val).
+       - Removed lesser used/maintained extensions (e4, XDB)
+       - Removed connectors that will be replaced by the Netty connector
+         (Apache HTTP Client, Simple, NIO).
+       - Removed NIO related classes from Restlet Engine packages to save
+         space (we will now rely on Netty).
+       - Removed deprecated XML configuration classes.
+
+- 3.0 M1 (12/19/2014)
+    - API changes
+       - Removed lesser used/maintained extensions (JDBC, JiBX, jSSLUtils, 
+         ROME, SIP, WebDAV, XStream).
+

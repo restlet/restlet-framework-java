@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -42,7 +33,7 @@ import java.util.zip.ZipFile;
 
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.StreamRepresentation;
 
 /**
@@ -55,11 +46,11 @@ import org.restlet.representation.StreamRepresentation;
  */
 public class ZipEntryRepresentation extends StreamRepresentation {
 
-    /** The Zip file. */
-    protected final ZipFile zipFile;
-
     /** The Zip entry. */
     protected final ZipEntry entry;
+
+    /** The Zip file. */
+    protected final ZipFile zipFile;
 
     /**
      * Constructor.
@@ -70,9 +61,29 @@ public class ZipEntryRepresentation extends StreamRepresentation {
      *            The parent Zip archive file.
      * @param entry
      *            The Zip entry.
+     * @deprecated Use
+     *             {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)}
+     *             instead.
      */
     public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
             ZipEntry entry) {
+        this(mediaType, zipFile, entry, -1);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The entry media type.
+     * @param zipFile
+     *            The parent Zip archive file.
+     * @param entry
+     *            The Zip entry.
+     * @param timeToLive
+     *            The time to live before it expires (in seconds).
+     */
+    public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
+            ZipEntry entry, int timeToLive) {
         super(mediaType);
         this.zipFile = zipFile;
         this.entry = entry;
@@ -81,6 +92,18 @@ public class ZipEntryRepresentation extends StreamRepresentation {
         this.setDisposition(disposition);
         setSize(entry.getSize());
         setModificationDate(new Date(entry.getTime()));
+
+        if (timeToLive == 0) {
+            setExpirationDate(null);
+        } else if (timeToLive > 0) {
+            setExpirationDate(new Date(System.currentTimeMillis()
+                    + (1000L * timeToLive)));
+        }
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return zipFile.getInputStream(entry);
     }
 
     @Override
@@ -92,13 +115,8 @@ public class ZipEntryRepresentation extends StreamRepresentation {
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        return zipFile.getInputStream(entry);
-    }
-
-    @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        IoUtils.copy(getStream(), outputStream);
     }
 
 }

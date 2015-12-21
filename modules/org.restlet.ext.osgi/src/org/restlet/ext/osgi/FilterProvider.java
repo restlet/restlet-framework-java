@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,43 +17,28 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.osgi;
 
-import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 
 /**
- * @author Bryan Hunt
+ * This is an OSGi service interface for registering Restlet filters with a
+ * router or a resource. Users are expected to register an instance as an OSGi
+ * service. It is recommended that you extend the {@link BaseFilterProvider}
+ * implementation. You may provide your own implementation of
+ * {@link FilterProvider} if you need complete control.
  * 
+ * @author Bryan Hunt
  */
-public abstract class FilterProvider extends RestletProvider implements
-        IFilterProvider {
-    private Filter filter;
-
-    protected abstract Filter createFilter(Context context);
-
-    @Override
-    public Filter getFilter() {
-        return filter;
-    }
-
-    @Override
-    protected Restlet getFilteredRestlet() {
-        return filter;
-    }
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        if (filter == null)
-            filter = createFilter(context);
-
-        Restlet inboundRoot = super.getInboundRoot(context);
-        return inboundRoot != null ? inboundRoot : filter;
-    }
+public interface FilterProvider extends RestletProvider {
+    /**
+     * 
+     * @return the filter instance
+     */
+    Filter getFilter();
 }

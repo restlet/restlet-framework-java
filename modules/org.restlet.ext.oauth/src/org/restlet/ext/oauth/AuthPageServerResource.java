@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -36,16 +27,16 @@ package org.restlet.ext.oauth;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
+import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.Client;
 import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -56,11 +47,13 @@ import freemarker.template.Configuration;
  * Helper class to the AuhorizationResource Handles Authorization requests. By
  * default it will accept all scopes requested.
  * 
- * To intercept and allow a user to control authorization you should set
- * the OAuthHelper.setAuthPageTemplate parameter. It should contain a static HTML page 
- * or a FreeMarker page that will be loaded with the CLAP protocol straight from root.
+ * To intercept and allow a user to control authorization you should set the
+ * OAuthHelper.setAuthPageTemplate parameter. It should contain a static HTML
+ * page or a FreeMarker page that will be loaded with the CLAP protocol straight
+ * from root.
  * 
  * Example. Add an AuthPageResource to your inbound root.
+ * 
  * <pre>
  * {
  *      &#064;code
@@ -147,143 +140,14 @@ import freemarker.template.Configuration;
  * root.
  * 
  * @author Kristoffer Gronowski
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 
-public class AuthPageServerResource extends OAuthServerResource {
+public class AuthPageServerResource extends AuthorizationBaseServerResource {
 
-    /**
-     * Entry point to the AuthPageResource. The AuthorizationResource dispatches
-     * the call to this method. Should also be invoked by an eventual HTML page
-     * FORM. In the from HTTP GET should be used and a result parameter: action
-     * = Accept results in approving requested scope while action = Reject
-     * results in a rejection error back to the requestor.
-     * 
-     * @return HTML page with the graphical policy page
-     */
+    private static final String ACTION_ACCEPT = "Accept";
 
-    @Get("html")
-    public Representation showPage() {
-        String action = getQuery().getFirstValue("action");
-        // Came back after user interacted with the page
-        if (action != null) {
-            String[] scopes = getQuery().getValuesArray("scope");
-            handleAction(action, scopes);
-            return new EmptyRepresentation();
-        }
-
-        // Check if an auth page is set in the Context
-        String authPage = HttpOAuthHelper.getAuthPageTemplate(getContext());
-        getLogger().fine("this is auth page: " + authPage);
-        if (authPage != null && authPage.length() > 0) {
-            getLogger().fine("loading authPage: " + authPage);
-            // Check if we should skip the page if already approved scopes
-            boolean sameScope = HttpOAuthHelper.getAuthSkipApproved(getContext());
-            if (sameScope) {
-                String[] scopesArray = getQuery().getValuesArray("scope");
-
-                List<String> scopes = Arrays.asList(scopesArray);
-                List<String> previousScopes = Arrays.asList(getQuery()
-                        .getValuesArray("grantedScope"));
-
-                if (previousScopes.containsAll(scopes)) {
-                    // we already have approved the current scopes being
-                    // requested...
-                    getLogger().fine(
-                            "All scopes already approved. - skip auth page.");
-                    handleAction("Accept", scopesArray);
-                    return new EmptyRepresentation(); // Will redirect
-                }
-            }
-
-            getResponse().setCacheDirectives(noCache);
-            return getPage(authPage);
-        }
-        getLogger().fine("accepting scopes since no authPage: " + authPage);
-        // No page automatically accept all the scopes requested
-        handleAction("Accept", getQuery().getValuesArray("scope"));
-        getLogger().fine("action handled");
-        return new EmptyRepresentation(); // Will redirect
-    }
-
-    /**
-     * 
-     * Helper method to handle a FORM response. Returns with setting a 307 with
-     * the location header. Token if the token flow was requested or code is
-     * included.
-     * 
-     * @param action
-     *            as interacted by the user.
-     * @param scopes
-     *            the scopes that was approved.
-     */
-    protected void handleAction(String action, String[] scopes) {
-        // TODO: should maybe be removed
-        String sessionId = (String) getRequest().getAttributes().get(
-                ClientCookieID);
-        if (sessionId == null)
-            sessionId = getCookies().getFirstValue(ClientCookieID);
-
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        AuthSession session = (sessionId == null) ? null
-                : (AuthSession) attribs.get(sessionId);
-
-        if ("Reject".equals(action)) {
-            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            sendError(session, OAuthError.access_denied, session.getState(),
-                    "Rejected.", null);
-            getLogger().fine("Rejected.");
-            return;
-        }
-        getLogger().fine("Accepting scopes - in handleAction");
-        Client client = session.getClient();
-        String id = session.getScopeOwner();
-
-        String redirUrl = session.getDynamicCallbackURI();
-        getLogger().fine("OAuth2 get dynamic callback = " + redirUrl);
-        if (redirUrl == null || redirUrl.length() == 0)
-            redirUrl = client.getRedirectUri();
-
-        String location = null;
-        ResponseType flow = session.getAuthFlow();
-
-        if (flow.equals(ResponseType.token)) {
-            location = generateAgentToken(id, client, redirUrl);
-        } else if (flow.equals(ResponseType.code)) {
-            location = generateCode(id, client, redirUrl);
-        }
-
-        // Following scopes were approved
-        AuthenticatedUser user = client.findUser(session.getScopeOwner());
-        if (user == null) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "
-                    + session.getScopeOwner());
-        }
-
-        // clear scopes.... if user wants to downgrade
-        user.revokeRoles();
-
-        // TODO compare scopes and add an error if some were not approved.
-        // Scope parameter should be appended only if different.
-
-        for (String s : scopes) {
-            getLogger().fine("Adding scope = " + s + " to user = " + id);
-            user.addRole(Scopes.toRole(s), "");
-        }
-
-        String state = session.getState();
-        if (state != null && state.length() > 0) {
-            // Setting state information back.
-            Reference stateful = new Reference(location);
-            stateful.addQueryParameter(OAuthServerResource.STATE, state);
-            location = stateful.toString();
-        }
-        // Reset the state
-        session.setState(null);
-        // Save the user if using DB
-        user.persist();
-
-        redirectTemporary(location);
-    }
+    private static final String ACTION_REJECT = "Reject";
 
     /**
      * Helper method if a auth page was present in a context attribute.
@@ -321,13 +185,14 @@ public class AuthPageServerResource extends OAuthServerResource {
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
-        data.put("target", getRootRef() + HttpOAuthHelper.getAuthPage(getContext()));
+        data.put("target",
+                getRootRef() + HttpOAuthHelper.getAuthPage(getContext()));
 
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());
-        data.put("clientCallback", client.getRedirectUri());
-        data.put("clientName", client.getApplicationName());
+        data.put("clientCallback", client.getRedirectURIs());
+        data.put("clientProperties", client.getProperties());
         // scopes
         data.put("requestingScopes", scopes);
         data.put("grantedScopes", previousScopes);
@@ -338,41 +203,131 @@ public class AuthPageServerResource extends OAuthServerResource {
 
     /**
      * 
-     * Helper method to format error responses according to OAuth2 spec.
+     * Helper method to handle a FORM response. Returns with setting a 307 with
+     * the location header. Token if the token flow was requested or code is
+     * included.
      * 
-     * @param session
-     *            local server session object
-     * @param error
-     *            code, one of the valid from spec
-     * @param state
-     *            state parameter as presented in the initial auth request
-     * @param description
-     *            any text describing the error
-     * @param errorUri
-     *            uri to a page with more description about the error
+     * @param action
+     *            as interacted by the user.
+     * @param grantedScope
+     *            the scopes that was approved.
      */
+    protected void handleAction(String action, String[] grantedScope)
+            throws OAuthException {
+        // TODO: SessionId should maybe be removed
+        AuthSession session = getAuthSession();
+        session.setGrantedScope(grantedScope);
 
-    protected void sendError(AuthSession session, OAuthError error,
-            String state, String description, String errorUri) {
-        String redirUri = session.getDynamicCallbackURI();
-
-        Reference cb = new Reference(redirUri);
-        cb.addQueryParameter("error", error.name());
-        if (state != null && state.length() > 0) {
-            cb.addQueryParameter("state", state);
+        if (action.equals(ACTION_REJECT)) {
+            getLogger().fine("Rejected.");
+            throw new OAuthException(OAuthError.access_denied, "Rejected.",
+                    null);
         }
-        if (description != null && description.length() > 0) {
-            cb.addQueryParameter("error_description", description);
-        }
-        if (errorUri != null && errorUri.length() > 0) {
-            cb.addQueryParameter("error_uri", errorUri);
-        }
-        redirectTemporary(cb.toString());
+        getLogger().fine("Accepting scopes - in handleAction");
+        Client client = clients.findById(session.getClientId());
+        String scopeOwner = session.getScopeOwner();
 
-        // cleanup cookie..
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        attribs.remove(session.getId());
+        // Create redirection
+        final Reference location = new Reference(session.getRedirectionURI()
+                .getURI());
 
+        String state = session.getState();
+        if (state != null && !state.isEmpty()) {
+            // Setting state information back.
+            location.addQueryParameter(STATE, state);
+        }
+
+        // Add query parameters for each flow.
+        ResponseType flow = session.getAuthFlow();
+        if (flow.equals(ResponseType.token)) {
+            Token token = tokens
+                    .generateToken(client, scopeOwner, grantedScope);
+            location.addQueryParameter(TOKEN_TYPE, token.getTokenType());
+            location.addQueryParameter(ACCESS_TOKEN, token.getAccessToken());
+            location.addQueryParameter(EXPIRES_IN,
+                    Integer.toString(token.getExpirePeriod()));
+            String[] scope = token.getScope();
+            if (!Scopes.isIdentical(scope, session.getRequestedScope())) {
+                // OPTIONAL, if identical to the scope requested by the client,
+                // otherwise REQUIRED. (4.2.2. Access Token Response)
+                location.addQueryParameter(SCOPE, Scopes.toString(scope));
+            }
+        } else if (flow.equals(ResponseType.code)) {
+            String code = tokens.storeSession(session);
+            location.addQueryParameter(CODE, code);
+        }
+
+        // Reset the state
+        session.setState(null);
+
+        /*
+         * We might don't need to do this. // Sets the no-store Cache-Control
+         * header addCacheDirective(getResponse(), CacheDirective.noStore()); //
+         * TODO: Set Pragma: no-cache
+         */
+
+        if (flow.equals(ResponseType.token)) {
+            // Use fragment for Implicit Grant
+            location.setFragment(location.getQuery());
+            location.setQuery("");
+        }
+
+        getLogger().fine("Redirecting to -> " + location);
+        redirectTemporary(location);
     }
 
+    /**
+     * Entry point to the AuthPageResource. The AuthorizationResource dispatches
+     * the call to this method. Should also be invoked by an eventual HTML page
+     * FORM. In the from HTTP GET should be used and a result parameter: action
+     * = Accept results in approving requested scope while action = Reject
+     * results in a rejection error back to the requestor.
+     * 
+     * @return HTML page with the graphical policy page
+     */
+
+    @Get("html")
+    public Representation showPage() throws OAuthException {
+        String action = getQuery().getFirstValue("action");
+        // Came back after user interacted with the page
+        if (action != null) {
+            String[] scopes = getQuery().getValuesArray("scope");
+            handleAction(action, scopes);
+            return new EmptyRepresentation();
+        }
+
+        // Check if an auth page is set in the Context
+        String authPage = HttpOAuthHelper.getAuthPageTemplate(getContext());
+        getLogger().fine("this is auth page: " + authPage);
+        if (authPage != null && authPage.length() > 0) {
+            getLogger().fine("loading authPage: " + authPage);
+            // Check if we should skip the page if already approved scopes
+            boolean sameScope = HttpOAuthHelper
+                    .getAuthSkipApproved(getContext());
+            if (sameScope) {
+                String[] scopesArray = getQuery().getValuesArray("scope");
+
+                List<String> scopes = Arrays.asList(scopesArray);
+                List<String> previousScopes = Arrays.asList(getQuery()
+                        .getValuesArray("grantedScope"));
+
+                if (previousScopes.containsAll(scopes)) {
+                    // we already have approved the current scopes being
+                    // requested...
+                    getLogger().fine(
+                            "All scopes already approved. - skip auth page.");
+                    handleAction(ACTION_ACCEPT, scopesArray);
+                    return new EmptyRepresentation(); // Will redirect
+                }
+            }
+
+            addCacheDirective(getResponse(), CacheDirective.noCache());
+            return getPage(authPage);
+        }
+        getLogger().fine("accepting scopes since no authPage: " + authPage);
+        // No page automatically accept all the scopes requested
+        handleAction(ACTION_ACCEPT, getQuery().getValuesArray("scope"));
+        getLogger().fine("action handled");
+        return new EmptyRepresentation(); // Will redirect
+    }
 }

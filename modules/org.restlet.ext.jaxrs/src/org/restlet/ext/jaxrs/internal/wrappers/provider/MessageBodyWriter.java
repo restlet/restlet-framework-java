@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -54,19 +45,21 @@ import org.restlet.data.MediaType;
 public interface MessageBodyWriter {
 
     /**
+     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @param mediaType
-     *            The JAX-RS MediaType
-     * @return true, if the wrapped writer could write an object of the given
-     *         class with the given annotations and media type.
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
-     *      Annotation[])
+     * @return the JAX-RS MessageBodyWriter
      */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation annotations[], javax.ws.rs.core.MediaType mediaType);
+    javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
+
+    /**
+     * Returns the list of produced {@link MediaType}s of the wrapped
+     * {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return List of produced Restlet {@link MediaType}s. If the entity
+     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
+     *         , '*<!---->/*' is returned.
+     */
+    List<MediaType> getProducedMimes();
 
     /**
      * Called before <code>writeTo</code> to ascertain the length in bytes of
@@ -85,8 +78,58 @@ public interface MessageBodyWriter {
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(Object, Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    public long getSize(Object t, Class<?> type, Type genericType,
+    long getSize(Object t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType);
+
+    /**
+     * 
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @param mediaType
+     *            The JAX-RS MediaType
+     * @return true, if the wrapped writer could write an object of the given
+     *         class with the given annotations and media type.
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
+     *      Annotation[])
+     */
+    boolean isWriteable(Class<?> type, Type genericType,
+            Annotation annotations[], javax.ws.rs.core.MediaType mediaType);
+
+    /**
+     * Checks, if this message body writer supports the given type (by the type
+     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
+     * 
+     * @param entityClass
+     *            the type
+     * @param genericType
+     *            the generic type
+     * @return true, if this MessageBodyWriter supports the given type, false,
+     *         if not.
+     */
+    boolean supportsWrite(Class<?> entityClass, Type genericType);
+
+    /**
+     * Checks, if the wrapped MessageBodyWriter supports at least one of the
+     * given {@link MediaType}s.
+     * 
+     * @param mediaTypes
+     *            the Restlet {@link MediaType}s
+     * @return true, if at least one of the requested {@link MediaType}s is
+     *         supported, otherwise false.
+     */
+    boolean supportsWrite(Iterable<MediaType> mediaTypes);
+
+    /**
+     * Checks, if the wrapped MessageBodyWriter supports the given
+     * {@link MediaType}.
+     * 
+     * @param mediaType
+     *            the Restlet {@link MediaType}
+     * @return true, if the requested {@link MediaType} is supported, otherwise
+     *         false.
+     */
+    boolean supportsWrite(MediaType mediaType);
 
     /**
      * @param object
@@ -103,61 +146,9 @@ public interface MessageBodyWriter {
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(Object object, Class<?> type, Type genericType,
+    void writeTo(Object object, Class<?> type, Type genericType,
             Annotation annotations[], MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
             WebApplicationException;
-
-    /**
-     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * 
-     * @return the JAX-RS MessageBodyWriter
-     */
-    public javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
-
-    /**
-     * Returns the list of produced {@link MediaType}s of the wrapped
-     * {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * 
-     * @return List of produced Restlet {@link MediaType}s. If the entity
-     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
-     *         , '*<!---->/*' is returned.
-     */
-    public List<MediaType> getProducedMimes();
-
-    /**
-     * Checks, if the wrapped MessageBodyWriter supports at least one of the
-     * given {@link MediaType}s.
-     * 
-     * @param mediaTypes
-     *            the Restlet {@link MediaType}s
-     * @return true, if at least one of the requested {@link MediaType}s is
-     *         supported, otherwise false.
-     */
-    public boolean supportsWrite(Iterable<MediaType> mediaTypes);
-
-    /**
-     * Checks, if the wrapped MessageBodyWriter supports the given
-     * {@link MediaType}.
-     * 
-     * @param mediaType
-     *            the Restlet {@link MediaType}
-     * @return true, if the requested {@link MediaType} is supported, otherwise
-     *         false.
-     */
-    public boolean supportsWrite(MediaType mediaType);
-
-    /**
-     * Checks, if this message body writer supports the given type (by the type
-     * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
-     * 
-     * @param entityClass
-     *            the type
-     * @param genericType
-     *            the generic type
-     * @return true, if this MessageBodyWriter supports the given type, false,
-     *         if not.
-     */
-    public boolean supportsWrite(Class<?> entityClass, Type genericType);
 }

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,6 +25,7 @@
 package org.restlet.ext.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
@@ -71,7 +63,8 @@ import org.restlet.routing.VirtualHost;
  * or HTTP protocols.<br>
  * <br>
  * There are three separate ways to configure the deployment using this Servlet.
- * They are described below by order of priority:
+ * Please note that you can also combine the two first of them whereas the last
+ * one is a full alternative. They are described below by order of priority:
  * <table>
  * <tr>
  * <th>Mode</th>
@@ -82,14 +75,16 @@ import org.restlet.routing.VirtualHost;
  * <td>A "/WEB-INF/restlet.xml" file exists and contains a valid XML
  * configuration as described in the documentation of the {@link Component}
  * class. It is used to instantiate and attach the described component,
- * contained applications and connectors.</td>
+ * contained applications and connectors. Please note that you can combine the
+ * usage of such configuration file and method 2.</td>
  * </tr>
  * <tr>
  * <td><b>2</b></td>
  * <td>The "/WEB-INF/web.xml" file contains a parameter named
  * "org.restlet.component". Its value must be the path of a class that inherits
  * from {@link Component}. It is used to instantiate and attach the described
- * component, contained applications and connectors.</td>
+ * component, contained applications and connectors. Please note that you can
+ * combine the definition of your own custom Component subclass and method 1.</td>
  * </tr>
  * <tr>
  * <td><b>3</b></td>
@@ -413,49 +408,49 @@ public class ServerServlet extends HttpServlet {
      * @return The newly created Component or null if unable to create.
      */
     protected Component createComponent() {
+        // Detect customized Component
+        String componentClassName = getInitParameter(COMPONENT_KEY, null);
+        Class<?> targetClass = null;
         Component component = null;
 
-        // Look for the Component XML configuration file.
-        Client warClient = createWarClient(new Context(), getServletConfig());
-        Response response = warClient.handle(new Request(Method.GET,
-                "war:///WEB-INF/restlet.xml"));
-        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
-            component = new Component(response.getEntity());
+        if (componentClassName != null) {
+            try {
+                targetClass = loadClass(componentClassName);
+            } catch (ClassNotFoundException e) {
+                log("[Restlet] ServerServlet couldn't find the target component class. Please check that your classpath includes "
+                        + componentClassName, e);
+            }
         }
+        log("[Restlet] ServerServlet: component class is " + componentClassName);
 
-        // Look for the component class name specified in the web.xml file.
-        if (component == null) {
-            // Try to instantiate a new target component
-            // First, find the component class name
-            String componentClassName = getInitParameter(COMPONENT_KEY, null);
+        if (targetClass != null) {
+            try {
+                @SuppressWarnings("unchecked")
+                Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
+                        .getConstructor();
 
-            // Load the component class using the given class name
-            if (componentClassName != null) {
-                try {
-                    Class<?> targetClass = loadClass(componentClassName);
-
-                    // Create a new instance of the component class by
-                    // invoking the constructor with the Context parameter.
-                    component = (Component) targetClass.newInstance();
-                } catch (ClassNotFoundException e) {
-                    log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                            + componentClassName, e);
-                } catch (InstantiationException e) {
-                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                            + componentClassName, e);
-                } catch (IllegalAccessException e) {
-                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                            + componentClassName, e);
-                }
+                log("[Restlet] ServerServlet: instantiating custom component");
+                component = (Component) ctor.newInstance();
+            } catch (IllegalAccessException e) {
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
+                        + componentClassName, e);
+            } catch (InvocationTargetException e) {
+                log("[Restlet] ServerServlet encountered an exception instantiating the target class "
+                        + componentClassName, e.getTargetException());
+            } catch (InstantiationException e) {
+                log(String.format(
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                        componentClassName, "an empty constructor"), e);
+            } catch (NoSuchMethodException e) {
+                log(String.format(
+                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                        componentClassName, "an empty constructor"), e);
             }
         }
 
         // Create the default Component
         if (component == null) {
             component = new Component();
-
-            // The status service is disabled by default.
-            component.getStatusService().setEnabled(false);
 
             // Define the list of supported client protocols.
             final String clientProtocolsString = getInitParameter(CLIENTS_KEY,
@@ -499,6 +494,11 @@ public class ServerServlet extends HttpServlet {
                     this.getLocalAddr(request), this.getLocalPort(request),
                     component);
             result = new HttpServerHelper(server);
+
+            // Change the default adapter
+            Context serverContext = server.getContext();
+            serverContext.getParameters().add("adapter",
+                    "org.restlet.ext.servlet.internal.ServletServerAdapter");
 
             // Attach the hosted application(s) to the right path
             String uriPattern = this.getContextPath(request)
@@ -944,7 +944,6 @@ public class ServerServlet extends HttpServlet {
      * @param application
      *            The application to configure.
      */
-    @SuppressWarnings("unchecked")
     protected void init(Application application) {
         if (application != null) {
             Context applicationContext = application.getContext();
@@ -986,7 +985,6 @@ public class ServerServlet extends HttpServlet {
      * @param component
      *            The component to configure.
      */
-    @SuppressWarnings("unchecked")
     protected void init(Component component) {
         if (component != null) {
             // Complete the configuration of the Component

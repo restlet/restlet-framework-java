@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -69,13 +60,16 @@ public class Provider {
     }
 
     public static final String OPENID_MODE = "openid.mode";
-    public static final String OPENID_RETURNTO = "openid.return_to";
+
     public static final String OPENID_REALM = "openid.realm";
+
+    public static final String OPENID_RETURNTO = "openid.return_to";
 
     private final Map<String, UserSession> sessions = new HashMap<String, UserSession>();
 
     public Message fetchAttributes(ParameterList pl) throws Exception {
-        if(pl == null) return null;
+        if (pl == null)
+            return null;
         Message m = Message.createMessage(pl);
         if (m.hasExtension(AxMessage.OPENID_NS_AX)) {
             return m;
@@ -85,6 +79,27 @@ public class Provider {
 
     public Message fetchAttributes(UserSession us) throws Exception {
         return fetchAttributes(us.getParameterList());
+    }
+
+    public Set<AttributeExchange> getAttributes(ParameterList pl,
+            boolean required) throws Exception {
+        Message m = fetchAttributes(pl);
+        if (m == null)
+            return null;
+        MessageExtension me = m.getExtension(AxMessage.OPENID_NS_AX);
+        if (me instanceof FetchRequest) {
+            FetchRequest fr = (FetchRequest) me;
+            Map<?, ?> attrs = fr.getAttributes(required);
+            Set<AttributeExchange> toRet = new TreeSet<AttributeExchange>();
+            for (Object key : attrs.keySet()) {
+                String type = (String) attrs.get(key);
+                AttributeExchange ax = AttributeExchange.valueOfType(type);
+                if (ax != null)
+                    toRet.add(ax);
+            }
+            return toRet;
+        }
+        return null;
     }
 
     public Logger getLogger() {
@@ -102,42 +117,6 @@ public class Provider {
 
         return result;
     }
-    
-    public Set <AttributeExchange> getOptionalAttributes(UserSession us) throws Exception{
-        return getAttributes(us.getParameterList(), false);
-    }
-    
-    public Set <AttributeExchange> getOptionalAttributes(ParameterList pl) throws Exception{
-        return getAttributes(pl, false);
-    }
-    
-    public Set <AttributeExchange> getRequiredAttributes(UserSession us) throws Exception{
-        return getAttributes(us.getParameterList(), true);
-    }
-    
-    public Set <AttributeExchange> getRequiredAttributes(ParameterList pl) throws Exception{
-        return getAttributes(pl, true);
-    }
-    
-    
-    public Set <AttributeExchange> getAttributes(ParameterList pl, boolean required) throws Exception{
-        Message m = fetchAttributes(pl);
-        if(m == null) return null;
-        MessageExtension me = m.getExtension(AxMessage.OPENID_NS_AX);
-        if(me instanceof FetchRequest){
-            FetchRequest fr = (FetchRequest) me;
-            Map<?, ?> attrs = fr.getAttributes(required);
-            Set <AttributeExchange> toRet = new TreeSet <AttributeExchange> ();
-            for(Object key : attrs.keySet()){
-                String type = (String) attrs.get(key);
-                AttributeExchange ax = AttributeExchange.valueOfType(type);
-                if(ax != null)
-                    toRet.add(ax);
-            }
-            return toRet;
-        }
-        return null;
-    }
 
     @SuppressWarnings("rawtypes")
     public Map getOptionalAttributes(Message m) throws Exception {
@@ -146,11 +125,31 @@ public class Provider {
         return req.getAttributes(false);
     }
 
+    public Set<AttributeExchange> getOptionalAttributes(ParameterList pl)
+            throws Exception {
+        return getAttributes(pl, false);
+    }
+
+    public Set<AttributeExchange> getOptionalAttributes(UserSession us)
+            throws Exception {
+        return getAttributes(us.getParameterList(), false);
+    }
+
     @SuppressWarnings("rawtypes")
     public Map getRequiredAttributes(Message m) throws Exception {
         FetchRequest req = (FetchRequest) m
                 .getExtension(AxMessage.OPENID_NS_AX);
         return req.getAttributes(true);
+    }
+
+    public Set<AttributeExchange> getRequiredAttributes(ParameterList pl)
+            throws Exception {
+        return getAttributes(pl, true);
+    }
+
+    public Set<AttributeExchange> getRequiredAttributes(UserSession us)
+            throws Exception {
+        return getAttributes(us.getParameterList(), true);
     }
 
     public UserSession getSession(String sessionId) {
@@ -183,8 +182,9 @@ public class Provider {
             return new ProviderResult(OPR.OK, response.keyValueFormEncoding());
         case checkid_setup:
         case checkid_immediate:
-            if (us == null || us.getUser() == null) { // this means no authorization
-                                                 // has taken place yet
+            if (us == null || us.getUser() == null) { // this means no
+                                                      // authorization
+                // has taken place yet
                 String session = UUID.randomUUID().toString();
                 this.sessions.put(session, new UserSession(pl));
                 return new ProviderResult(OPR.GET_USER, session);
@@ -195,9 +195,11 @@ public class Provider {
             // add any attributes:
 
             if (response instanceof DirectError) {
-                return new ProviderResult(OPR.OK, response.keyValueFormEncoding());
+                return new ProviderResult(OPR.OK,
+                        response.keyValueFormEncoding());
             }
-            if (us.getUser().attributes() != null && us.getUser().attributes().size() > 0) {
+            if (us.getUser().attributes() != null
+                    && us.getUser().attributes().size() > 0) {
                 FetchResponse fr = null;
                 fr = FetchResponse.createFetchResponse();
                 for (AttributeExchange attr : us.getUser().attributes()) {

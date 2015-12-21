@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,9 +36,9 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Variant;
 
 import org.restlet.Request;
 import org.restlet.Restlet;
@@ -185,7 +176,6 @@ public class ExceptionHandler {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         this.logger.log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 
@@ -212,7 +202,6 @@ public class ExceptionHandler {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         this.logger.log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 
@@ -275,7 +264,7 @@ public class ExceptionHandler {
             throws WebApplicationException {
         String warning = "No message body writer found for " + entityClass
                 + "(generic type is " + genericType + ")";
-        
+
         if (respMediaType != null) {
             warning += "; response media type should be: " + respMediaType;
         }
@@ -406,7 +395,6 @@ public class ExceptionHandler {
         }
         this.logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage,
                 exception);
-        exception.printStackTrace();
         throw new RequestHandledException();
     }
 

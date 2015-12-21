@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -45,22 +36,34 @@ import java.util.List;
  */
 public final class DateUtils {
 
-    /** Obsoleted HTTP date format (ANSI C asctime() format). */
+    /**
+     * Obsoleted HTTP date format (ANSI C asctime() format). Pattern:
+     * "EEE MMM dd HH:mm:ss yyyy".
+     */
     public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
 
-    /** Obsoleted HTTP date format (RFC 1036). */
+    /**
+     * Obsoleted HTTP date format (RFC 1036). Pattern:
+     * "EEEE, dd-MMM-yy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1036 = unmodifiableList("EEEE, dd-MMM-yy HH:mm:ss zzz");
 
-    /** Preferred HTTP date format (RFC 1123). */
+    /**
+     * Preferred HTTP date format (RFC 1123). Pattern:
+     * "EEE, dd MMM yyyy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
-    /** W3C date format (RFC 3339). */
+    /** W3C date format (RFC 3339). Pattern: "yyyy-MM-dd'T'HH:mm:ssz". */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ssz");
 
-    /** AWS date format (ISO 8601). */
+    /** AWS date format (ISO 8601). Pattern: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'". */
     public static final List<String> FORMAT_ISO_8601 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    /** Common date format (RFC 822). */
+    /**
+     * Common date format (RFC 822). Patterns: "EEE, dd MMM yy HH:mm:ss z" or
+     * "EEE, dd MMM yy HH:mm z", "dd MMM yy HH:mm:ss z" or "dd MMM yy HH:mm z".
+     */
     public static final List<String> FORMAT_RFC_822 = unmodifiableList(
             "EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
             "dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z");
@@ -146,6 +149,19 @@ public final class DateUtils {
 
     /**
      * Formats a Date according to the first format in the array.
+     * 
+     * @param date
+     *            The date to format.
+     * @param formats
+     *            The array of date formats to use.
+     * @return The formatted date.
+     */
+    public static String format(final Date date, final List<String> formats) {
+        return format(date, formats != null ? formats.get(0) : null);
+    }
+
+    /**
+     * Formats a Date according to the given format.
      * 
      * @param date
      *            The date to format.
@@ -264,7 +280,7 @@ public final class DateUtils {
      * @return An immutable version of a given date.
      */
     public static Date unmodifiable(Date date) {
-        return (date == null) ? null : ImmutableDate.valueOf(date);
+        return (date == null) ? null : new ImmutableDate(date);
     }
 
     /**
@@ -277,6 +293,7 @@ public final class DateUtils {
      *            to be converted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
+    @SafeVarargs
     private static <T> List<T> unmodifiableList(final T... array) {
         return Collections.unmodifiableList(Arrays.asList(array));
     }

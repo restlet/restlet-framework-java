@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -72,7 +63,7 @@ import org.restlet.util.RouteList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/376-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/376-restlet.html">User Guide -
  *      Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
@@ -668,6 +659,62 @@ public class Router extends Restlet {
     }
 
     /**
+     * Attaches a permanent redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+    public TemplateRoute redirectPermanent(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_PERMANENT));
+    }
+
+    /**
+     * Attaches a redirection to this router based on a given URI pattern. It
+     * redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectSeeOther(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_SEE_OTHER));
+    }
+
+    /**
+     * Attaches a temporary redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectTemporary(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_TEMPORARY));
+    }
+
+    /**
      * Sets the default matching mode to use when selecting routes based on
      * URIs. By default it is set to {@link Template#MODE_EQUALS}.
      * 
@@ -763,8 +810,6 @@ public class Router extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
-
             for (Route route : getRoutes()) {
                 route.start();
             }
@@ -772,6 +817,9 @@ public class Router extends Restlet {
             if (getDefaultRoute() != null) {
                 getDefaultRoute().start();
             }
+
+            // Must be invoked as a last step
+            super.start();
         }
     }
 
@@ -781,6 +829,9 @@ public class Router extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getDefaultRoute() != null) {
                 getDefaultRoute().stop();
             }
@@ -788,8 +839,6 @@ public class Router extends Restlet {
             for (Route route : getRoutes()) {
                 route.stop();
             }
-
-            super.stop();
         }
     }
 

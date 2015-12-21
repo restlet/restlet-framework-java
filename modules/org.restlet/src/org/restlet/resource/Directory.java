@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -83,7 +74,7 @@ import org.restlet.representation.Variant;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/374-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/374-restlet.html">User Guide -
  *      Serving static files</a>
  * @author Jerome Louvel
  */
@@ -178,7 +169,7 @@ public class Directory extends Finder {
      * implementation used a friendly alphanum sorting.
      * 
      * @return The reference comparator.
-     * @see #setAlphaNumComparator()
+     * @see AlphaNumericComparator
      */
     public Comparator<Reference> getComparator() {
         return this.comparator;
@@ -288,29 +279,6 @@ public class Directory extends Finder {
     }
 
     /**
-     * Sets the reference comparator based on classic alphabetical order.
-     * 
-     * @see #setComparator(Comparator)
-     */
-    public void setAlphaComparator() {
-        setComparator(new AlphabeticalComparator());
-    }
-
-    /**
-     * Sets the reference comparator based on the more friendly "Alphanum
-     * Algorithm" created by David Koelle. The internal implementation used is
-     * based on an optimized public domain implementation provided by Rob
-     * Heittman from the Solertium Corporation.
-     * 
-     * @see <a href="http://www.davekoelle.com/alphanum.html">The original
-     *      Alphanum Algorithm from David Koelle</a>
-     * @see #setComparator(Comparator)
-     */
-    public void setAlphaNumComparator() {
-        setComparator(new AlphabeticalComparator());
-    }
-
-    /**
      * Sets the reference comparator used to sort index pages.
      * 
      * @param comparator
@@ -382,6 +350,29 @@ public class Directory extends Finder {
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
+    }
+
+    /**
+     * Sets the reference comparator based on classic alphabetical order.
+     * 
+     * @see #setComparator(Comparator)
+     */
+    public void useAlphaComparator() {
+        setComparator(new AlphabeticalComparator());
+    }
+
+    /**
+     * Sets the reference comparator based on the more friendly "Alphanum
+     * Algorithm" created by David Koelle. The internal implementation used is
+     * based on an optimized public domain implementation provided by Rob
+     * Heittman from the Solertium Corporation.
+     * 
+     * @see <a href="http://www.davekoelle.com/alphanum.html">The original
+     *      Alphanum Algorithm from David Koelle</a>
+     * @see #setComparator(Comparator)
+     */
+    public void useAlphaNumComparator() {
+        setComparator(new AlphabeticalComparator());
     }
 
 }

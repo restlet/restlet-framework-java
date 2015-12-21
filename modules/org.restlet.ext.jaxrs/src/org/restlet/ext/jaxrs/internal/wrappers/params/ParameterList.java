@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -67,12 +58,15 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.PathSegmentImpl;
@@ -220,86 +214,48 @@ public class ParameterList {
         private Object convertParamValueInner(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException,
                 WebApplicationException {
-            WebApplicationException constructorWae = null;
-            
+
             Object convertWithConverterUtils = convertWithConverterUtils(paramValue);
-			if(convertWithConverterUtils != null){
-				return convertWithConverterUtils;
+            if (convertWithConverterUtils != null) {
+                return convertWithConverterUtils;
             }
-            
+
+            String value = paramValue;
+            if (StringUtils.isEmpty(paramValue)) {
+                if (defaultValue == null || defaultValue.value() == null) {
+                    return null;
+                }
+                value = defaultValue.value();
+            }
+
             try {
-                final Constructor<?> constr = this.convertTo
-                        .getConstructor(String.class);
-                return constr.newInstance(paramValue);
-            } catch (WebApplicationException wae) {
-                constructorWae = wae;
+                return ConstructorUtils.invokeConstructor(convertTo, value);
             } catch (Exception e) {
-                // try valueOf(String) as next step
+                handleExceptionOnInvocation(value, e);
             }
-            Method valueOf;
-            try {
-                valueOf = this.convertTo.getMethod("valueOf", String.class);
-            } catch (SecurityException e) {
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (NoSuchMethodException e) {
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            }
-            try {
-                return valueOf.invoke(null, paramValue);
-            } catch (IllegalArgumentException e) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (IllegalAccessException e) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (InvocationTargetException ite) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                final Throwable cause = ite.getCause();
-                if (cause instanceof WebApplicationException) {
-                    throw (WebApplicationException) cause;
-                }
-                if (((paramValue == null) || (paramValue.length() <= 0))
-                        && (ite.getCause() instanceof IllegalArgumentException)) {
-                    if (defaultValue == null) {
-                        return null;
-                    }
 
-                    final String dfv = defaultValue.value();
-                    return convertParamValueInner(dfv, null);
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, ite);
+            // fixes for:
+            // https://github.com/restlet/restlet-framework-java/issues/645
+            try {
+                return MethodUtils.invokeStaticMethod(convertTo,
+                        convertTo.isEnum() ? "fromString" : "valueOf", value);
+            } catch (Exception e) {
+                handleExceptionOnInvocation(value, e);
             }
+
+            try {
+                return MethodUtils.invokeStaticMethod(convertTo,
+                        convertTo.isEnum() ? "valueOf" : "fromString", value);
+            } catch (Exception e) {
+                handleExceptionOnInvocation(value, e);
+            }
+
+            throw ConvertParameterException
+                    .object(this.convertTo,
+                            value,
+                            new Exception(
+                                    "Target object has no String constructor, valueOf or fromString method."));
         }
-
-		private Object convertWithConverterUtils(String paramValue) {
-			ConverterHelper converterHelper = ConverterUtils.getBestHelper(this.tlContext.get().getRequest()
-                    .getEntity(), this.convertTo, null);
-            List< VariantInfo > variants = converterHelper.getVariants(this.convertTo);
-            for(VariantInfo variantInfo : variants) {
-                try {
-                    Object object = converterHelper.toObject(new StringRepresentation(paramValue, variantInfo.getMediaType()), this.convertTo, null );
-                    if(object != null) {
-                        return object;
-                    }
-                }
-                catch (Exception exception) {
-                    // -- don't worry about it...proceed with the old style conversion
-                }
-            }
-            
-            return null;
-		}
 
         protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
@@ -322,6 +278,31 @@ public class ParameterList {
             return unmodifiable(coll);
         }
 
+        private Object convertWithConverterUtils(String paramValue) {
+            Object result = null;
+
+            if (this.tlContext.get().getRequest().getEntity() != null
+                    && paramValue != null) {
+                try {
+                    ConverterHelper converterHelper = ConverterUtils
+                            .getBestHelper(this.tlContext.get().getRequest()
+                                    .getEntity(), this.convertTo, null);
+                    List<VariantInfo> variants = converterHelper
+                            .getVariants(this.convertTo);
+                    for (int i = 0; result == null && i < variants.size(); i++) {
+                        result = converterHelper.toObject(
+                                new StringRepresentation(paramValue, variants
+                                        .get(i).getMediaType()),
+                                this.convertTo, null);
+                    }
+                } catch (Exception exception) {
+                    // -- don't worry about it...proceed with reflective calls
+                }
+            }
+
+            return result;
+        }
+
         /**
          * @return an new created instance of {@link #collType}. Returns null,
          *         if collType is null.
@@ -338,16 +319,6 @@ public class ParameterList {
                         "Could not instantiate the collection type "
                                 + this.collType, e);
             }
-        }
-
-        protected <A> Collection<A> unmodifiable(Collection<A> coll) {
-            if (coll instanceof List<?>)
-                return Collections.unmodifiableList((List<A>) coll);
-            if (coll instanceof SortedSet<?>)
-                return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
-            if (coll instanceof Set<?>)
-                return Collections.unmodifiableSet((Set<A>) coll);
-            return Collections.unmodifiableCollection(coll);
         }
 
         protected abstract boolean decoding();
@@ -439,6 +410,35 @@ public class ParameterList {
 
         public Object getValue() {
             return getParamValue();
+        }
+
+        private void handleExceptionOnInvocation(String value, Exception e)
+                throws ConvertParameterException {
+            final Throwable cause = e.getCause();
+            if (e instanceof WebApplicationException
+                    || cause instanceof WebApplicationException) {
+                throw (WebApplicationException) cause;
+
+                // swallow the typical invocation exceptions, convert real
+                // exceptions to ConvertParameterException
+            } else if (!(e instanceof NoSuchMethodException)
+                    && !(e instanceof IllegalAccessException)
+                    && !(e instanceof InvocationTargetException)
+                    && !(e instanceof InstantiationException)
+                    && !(e instanceof NoSuchMethodException)) {
+                throw ConvertParameterException
+                        .object(this.convertTo, value, e);
+            }
+        }
+
+        protected <A> Collection<A> unmodifiable(Collection<A> coll) {
+            if (coll instanceof List<?>)
+                return Collections.unmodifiableList((List<A>) coll);
+            if (coll instanceof SortedSet<?>)
+                return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
+            if (coll instanceof Set<?>)
+                return Collections.unmodifiableSet((Set<A>) coll);
+            return Collections.unmodifiableCollection(coll);
         }
     }
 
@@ -569,9 +569,9 @@ public class ParameterList {
 
     static class FormParamGetter extends FormOrQueryParamGetter {
 
-        private final FormParam formParam;
-
         private static Form form;
+
+        private final FormParam formParam;
 
         FormParamGetter(FormParam formParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
@@ -585,7 +585,7 @@ public class ParameterList {
             Representation entity = this.tlContext.get().getRequest()
                     .getEntity();
             if (entity != null && entity.isAvailable()) {
-                form = new Form(entity);
+                form = new Form(entity, false);
             }
 
             final String paramName = this.formParam.value();
@@ -878,7 +878,6 @@ public class ParameterList {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     static Collection<Class<? extends Annotation>> createValidAnnotations() {
         return Arrays.asList(Context.class, HeaderParam.class,
                 MatrixParam.class, QueryParam.class, PathParam.class,

@@ -1,0 +1,14 @@
+<module id="netty" includes="jse,osgi" type="connector" package="org.restlet.ext.netty">
+	<name>Restlet Extension - Netty</name>
+	<description>Integration with Netty.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="netty" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+</module>

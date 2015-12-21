@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -150,6 +141,102 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * Creates then adds a link. If one of the parameter is null, the value from
      * {@link #getDefaultLink()} is used instead if possible.
      * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(Reference sourceRef, String typeRef, Literal targetLit) {
+        return add(sourceRef, new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(Reference sourceRef, String typeRef, Reference targetRef) {
+        return add(sourceRef, new Reference(typeRef), targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, Reference typeRef, Literal targetLit) {
+        return add(new Reference(sourceRef), typeRef, targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, Reference typeRef, Reference targetRef) {
+        return add(new Reference(sourceRef), typeRef, targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, String typeRef, Literal targetLit) {
+        return add(new Reference(sourceRef), new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, String typeRef, Reference targetRef) {
+        return add(new Reference(sourceRef), new Reference(typeRef), targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
      * @param sourceGraph
      *            The source graph.
      * @param typeRef
@@ -246,7 +333,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/Turtle format.
      */
     public Representation getRdfTurtleRepresentation() {
-        return new RdfRepresentation(this, MediaType.APPLICATION_RDF_TURTLE);
+        return new RdfRepresentation(this, MediaType.TEXT_TURTLE);
     }
 
     /**

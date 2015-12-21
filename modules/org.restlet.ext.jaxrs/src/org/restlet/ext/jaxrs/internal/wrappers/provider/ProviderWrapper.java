@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -53,7 +44,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableExcepti
  */
 public interface ProviderWrapper {
 
-    public abstract boolean equals(Object otherProvider);
+    abstract boolean equals(Object otherProvider);
 
     /**
      * @return the JAX-RS provider class name
@@ -69,12 +60,6 @@ public interface ProviderWrapper {
     List<MediaType> getConsumedMimes();
 
     /**
-     * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
-     * @throws ProviderNotInitializableException  
-     */
-    abstract ContextResolver getInitializedCtxResolver() throws ProviderNotInitializableException;
-
-    /**
      * Beispiele:
      * <ul>
      * <li>ExceptionMapper&lt;IllegalArgumentException&gt; -&gt;
@@ -84,19 +69,28 @@ public interface ProviderWrapper {
      * 
      * @return the type the wrapped exception mapper could map.
      */
-    public Class<?> getExcMapperType();
+    Class<?> getExcMapperType();
+
+    /**
+     * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
+     * @throws ProviderNotInitializableException
+     */
+    abstract ContextResolver getInitializedCtxResolver()
+            throws ProviderNotInitializableException;
 
     /**
      * @return the initialized exception mapper
-     * @throws ProviderNotInitializableException 
+     * @throws ProviderNotInitializableException
      */
-    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper() throws ProviderNotInitializableException;
+    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper()
+            throws ProviderNotInitializableException;
 
     /**
      * @return an initialized reader
-     * @throws ProviderNotInitializableException 
+     * @throws ProviderNotInitializableException
      */
-    abstract MessageBodyReader getInitializedReader() throws ProviderNotInitializableException;
+    abstract MessageBodyReader getInitializedReader()
+            throws ProviderNotInitializableException;
 
     // LATER before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
@@ -105,7 +99,8 @@ public interface ProviderWrapper {
      * @return an initialized writer
      * @throws ProviderNotInitializableException
      */
-    abstract MessageBodyWriter getInitializedWriter() throws ProviderNotInitializableException;
+    abstract MessageBodyWriter getInitializedWriter()
+            throws ProviderNotInitializableException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -117,7 +112,7 @@ public interface ProviderWrapper {
      */
     List<MediaType> getProducedMimes();
 
-    public int hashCode();
+    int hashCode();
 
     /**
      * Initializes this entity provider at start up. If the life cycle is
@@ -130,7 +125,7 @@ public interface ProviderWrapper {
      * @throws InvocationTargetException
      * @throws IllegalTypeException
      */
-    public void initAtAppStartUp(ThreadLocalizedContext tlContext,
+    void initAtAppStartUp(ThreadLocalizedContext tlContext,
             Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException,
@@ -178,7 +173,7 @@ public interface ProviderWrapper {
      * @return true, if the wrapped {@link javax.ws.rs.ext.MessageBodyReader}
      *         supports the read for the given media type.
      */
-    public boolean supportsRead(MediaType mediaType);
+    boolean supportsRead(MediaType mediaType);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -189,7 +184,7 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(Iterable<MediaType> mediaTypes);
+    boolean supportsWrite(Iterable<MediaType> mediaTypes);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -200,7 +195,7 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(javax.ws.rs.core.MediaType requested);
+    boolean supportsWrite(javax.ws.rs.core.MediaType requested);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -211,5 +206,5 @@ public interface ProviderWrapper {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportsWrite(MediaType requested);
+    boolean supportsWrite(MediaType requested);
 }

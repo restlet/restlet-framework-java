@@ -1,0 +1,117 @@
+/**
+ * Copyright 2005-2014 Restlet
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
+package org.restlet.ext.apispark.internal.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Represents a Web API representation.
+ * 
+ * @author Cyprien Quilici
+ */
+public class Representation {
+
+    /** Textual description of this representation. */
+    private String description;
+
+    /** Reference to its parent type if any. */
+    private String extendedType;
+
+    /** Name of the representation. */
+    private String name;
+
+    /** List of this representation's properties. */
+    private List<Property> properties;
+
+    /** Indicates if the representation is structured or not. */
+    private boolean raw;
+
+    /** The list of Sections this Representation belongs to. */
+    private List<String> sections;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getExtendedType() {
+        return extendedType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Property> getProperties() {
+        if (properties == null) {
+            properties = new ArrayList<Property>();
+        }
+        return properties;
+    }
+
+    public Property getProperty(String name) {
+        for (Property result : getProperties()) {
+            if (name.equals(result.getName())) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public List<String> getSections() {
+        if (sections == null) {
+            sections = new ArrayList<String>();
+        }
+        return sections;
+    }
+
+    public boolean isRaw() {
+        return raw;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setExtendedType(String extendedType) {
+        this.extendedType = extendedType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
+    public void setRaw(boolean raw) {
+        this.raw = raw;
+    }
+
+    public void setSections(List<String> sections) {
+        this.sections = sections;
+    }
+}

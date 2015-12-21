@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -76,6 +67,9 @@ public class FeedContentHandler<T> extends FeedReader {
     /** Used to parsed Atom entry elements. */
     EntryContentHandler<T> entryHandler;
 
+    /** This is true if we are inside our own 'feed' element. */
+    private boolean isInFeed;
+
     /** Internal logger. */
     private Logger logger;
 
@@ -90,27 +84,6 @@ public class FeedContentHandler<T> extends FeedReader {
 
     /** Used to glean text content. */
     StringBuilder sb = null;
-
-    /**
-     * Constructor.
-     * 
-     * @param entityClass
-     *            The class of the parsed entities.
-     * @param metadata
-     *            The metadata of the remote OData service.
-     * @param logger
-     *            The logger.
-     */
-    public FeedContentHandler(Class<?> entityClass, Metadata metadata,
-            Logger logger) {
-        super();
-        this.entityClass = entityClass;
-        this.entities = new ArrayList<T>();
-        this.entryHandler = new EntryContentHandler<T>(entityClass, metadata,
-                logger);
-        this.logger = logger;
-        this.metadata = metadata;
-    }
 
     /**
      * Constructor.
@@ -135,6 +108,27 @@ public class FeedContentHandler<T> extends FeedReader {
         this.metadata = metadata;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param entityClass
+     *            The class of the parsed entities.
+     * @param metadata
+     *            The metadata of the remote OData service.
+     * @param logger
+     *            The logger.
+     */
+    public FeedContentHandler(Class<?> entityClass, Metadata metadata,
+            Logger logger) {
+        super();
+        this.entityClass = entityClass;
+        this.entities = new ArrayList<T>();
+        this.entryHandler = new EntryContentHandler<T>(entityClass, metadata,
+                logger);
+        this.logger = logger;
+        this.metadata = metadata;
+    }
+
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
@@ -144,6 +138,27 @@ public class FeedContentHandler<T> extends FeedReader {
             // Delegate to the Entry reader
             entryHandler.characters(ch, start, length);
         }
+    }
+
+    /**
+     * Handle the end of a "link" element. Doesn't close link that belongs to
+     * inner associations!
+     * 
+     * @return Returns true if the caller should not pop state.
+     * @author Emmanuel Liossis
+     */
+    public boolean closeLink() {
+        if (parseEntry) {
+            // Cascade to any expanded associations. If someone from inner
+            // expanded associations has matched the close of the "link" and has
+            // popped state, inhibit my callers from popping state.
+            return entryHandler.closeLink();
+        }
+
+        // If we have passed 'feed' tag but haven't met any 'entry' tag, inhibit
+        // callers from popping state when link closes, because in this case the
+        // link pertains to the feed.
+        return isInFeed;
     }
 
     @Override
@@ -160,24 +175,36 @@ public class FeedContentHandler<T> extends FeedReader {
         if (parseCount) {
             this.count = Integer.parseInt(sb.toString());
             parseCount = false;
-        } else if (parseEntry) {
+        }
+        // Allow also the "entry" end handling to cascade.
+        else if (parseEntry
+                || (entryHandler != null && localName.equals("entry"))) {
             // Delegate to the Entry reader
             entryHandler.endElement(uri, localName, qName);
         }
+
+        if (!parseEntry && uri.equals("http://www.w3.org/2005/Atom")
+                && localName.equals("feed")) {
+            // Mark the end of 'feed' element pertaining to this handler.
+            isInFeed = false;
+        }
+
     }
 
     @Override
     public void endEntry(Entry entry) {
-        parseEntry = false;
+        // Only add the entity to the feed if it is our entry closing,
+        // not an inner entry of an expanded association.
+        if (entryHandler.closeEntry(entry)) {
+            parseEntry = false;
 
-        // Delegate to the Entry reader
-        entryHandler.endEntry(entry);
-        T entity = entryHandler.getEntity();
+            T entity = entryHandler.getEntity();
 
-        if (entity != null) {
-            entities.add(entity);
-        } else {
-            getLogger().warning("Can't add a null entity.");
+            if (entity != null) {
+                entities.add(entity);
+            } else {
+                getLogger().warning("Can't add a null entity.");
+            }
         }
     }
 
@@ -248,6 +275,10 @@ public class FeedContentHandler<T> extends FeedReader {
         } else if (parseEntry) {
             // Delegate to the Entry reader
             entryHandler.startElement(uri, localName, qName, attrs);
+        } else if (uri.equals("http://www.w3.org/2005/Atom")
+                && localName.equals("feed")) {
+            // Mark the start of the 'feed' element pertaining to this handler.
+            isInFeed = true;
         }
     }
 

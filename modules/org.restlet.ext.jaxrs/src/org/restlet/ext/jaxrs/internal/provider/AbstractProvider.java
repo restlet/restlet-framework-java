@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -52,7 +43,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the type that can be read and written
+ *            the type that can be read and written
  * @see MessageBodyReader
  * @see MessageBodyWriter
  */
@@ -80,7 +71,7 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      * Returns the size of the given objects.
      * 
      * @param object
-     *                the object to check the size
+     *            the object to check the size
      * @return the size of the object, or -1, if it is not direct readable from
      *         the object.
      * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
@@ -102,9 +93,9 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
 
     /**
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.InputStream)

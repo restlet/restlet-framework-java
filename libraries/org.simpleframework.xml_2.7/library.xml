@@ -1,0 +1,23 @@
+<library id="simple-xml" symbolicName="org.simpleframework.xml">
+	<name>Simple XML</name>
+	<description>Simple XML.</description>
+	<version>2.7</version>
+	<release>1</release>
+	<homeUri>http://simple.sourceforge.net/</homeUri>
+	<downloadUri>http://simple.sourceforge.net/download.php</downloadUri>
+	<provider>Niall Gallagher</provider>
+
+	<package name="org.simpleframework.xml">
+		<maven>
+			<groupId>org.simpleframework</groupId>
+			<artifactId>simple-xml</artifactId>
+			<version>2.7.1</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://simple.sourceforge.net/download/stream/doc/javadoc/" />
+	</javadocs>
+</library>

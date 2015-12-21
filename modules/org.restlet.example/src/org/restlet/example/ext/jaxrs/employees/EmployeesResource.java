@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -83,7 +74,7 @@ public class EmployeesResource {
 
     /** Creates a new employee from XML or JSON */
     @POST
-    @Consumes( { "application/xml", "text/xml", "application/json" })
+    @Consumes({ "application/xml", "text/xml", "application/json" })
     public Response createEmployee(Employee employee) {
         final int staffNo = this.employeeMgr.createEmployee(employee);
         final URI location = createdLocation(staffNo);
@@ -104,7 +95,7 @@ public class EmployeesResource {
     }
 
     @GET
-    @Produces( { "application/xml", "text/xml", "application/json" })
+    @Produces({ "application/xml", "text/xml", "application/json" })
     public EmployeeList getEmployees() {
         final EmployeeList employees = this.employeeMgr.getAll();
         // set detail URIs
@@ -143,23 +134,19 @@ public class EmployeesResource {
                 ps.println("\" method=\"POST\">");
                 ps.println("<table><tr>");
                 ps.println("<td>firstname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"firstname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"firstname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>lastname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"lastname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"lastname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>sex:</td>");
                 ps.println("<td><input type=\"text\" name=\"sex\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>department:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"department\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"department\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td></td>");
-                ps
-                        .println("<td><input type=\"submit\" value=\"create employee\" /></td>");
+                ps.println("<td><input type=\"submit\" value=\"create employee\" /></td>");
                 ps.println("</tr></table>");
                 ps.println("</form>");
                 ps.println("</body></html>");
@@ -169,7 +156,8 @@ public class EmployeesResource {
 
     /** Create sub resource for one concrete employee. */
     @Path("{staffNo}")
-    public EmployeeResource getSub(@PathParam("staffNo") int staffNo) {
+    public EmployeeResource getSub(@PathParam("staffNo")
+    int staffNo) {
         if (!this.employeeMgr.exists(staffNo)) {
             throw new WebApplicationException(Status.NOT_FOUND);
         }

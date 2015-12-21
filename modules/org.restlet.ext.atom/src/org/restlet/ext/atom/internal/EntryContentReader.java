@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -69,11 +60,11 @@ public class EntryContentReader extends EntryReader {
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
-    /** The media type of the Content (for inline cases). */
-    private MediaType contentType;
-
     /** Mark the Content depth. */
     private int contentDepth;
+
+    /** The media type of the Content (for inline cases). */
+    private MediaType contentType;
 
     /** The currently parsed Category. */
     private Category currentCategory;
@@ -215,8 +206,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getAuthors().add(this.currentPerson);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                    this.currentEntry.getSource().getAuthors().add(
-                            this.currentPerson);
+                    this.currentEntry.getSource().getAuthors()
+                            .add(this.currentPerson);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equals("name")) {
@@ -241,8 +232,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getLinks().add(this.currentLink);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_LINK) {
-                    this.currentEntry.getSource().getLinks().add(
-                            this.currentLink);
+                    this.currentEntry.getSource().getLinks()
+                            .add(this.currentLink);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
                 // Set the inline content, if any
@@ -275,8 +266,8 @@ public class EntryContentReader extends EntryReader {
                     this.currentEntry.getCategories().add(this.currentCategory);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_CATEGORY) {
-                    this.currentEntry.getSource().getCategories().add(
-                            this.currentCategory);
+                    this.currentEntry.getSource().getCategories()
+                            .add(this.currentCategory);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equalsIgnoreCase("content")) {

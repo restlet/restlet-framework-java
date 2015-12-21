@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -36,19 +27,13 @@ package org.restlet.test.resource;
 import java.io.IOException;
 
 import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.Server;
 import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
-import org.restlet.test.RestletTestCase;
 
 /**
  * Test annotated resource that reimplements of one the annotated method from
@@ -56,42 +41,17 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Thierry Boileau
  */
-public class AnnotatedResource11TestCase extends RestletTestCase {
+public class AnnotatedResource11TestCase extends InternalConnectorTestCase {
 
-    private static class TestApplication extends Application {
-        @Override
-        public Restlet createInboundRoot() {
-            Router router = new Router(getContext());
-            router.attach("/test", MyResource11.class);
-            return router;
-        }
-    }
-    
-    private Component c;
-
-    private Client client;
-
-    private String uri;
-
-    protected void setUp() throws Exception {
-        super.setUp();
-        Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().registerDefaultConverters();
-        c = new Component();
-        final Server server = c.getServers().add(Protocol.HTTP, 0);
-        c.getDefaultHost().attach(new TestApplication());
-        c.start();
-        client = new Client(Protocol.HTTP);
-        uri = "http://localhost:" + server.getEphemeralPort() + "/test";
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        c.stop();
-        c = null;
-        client.stop();
-        client = null;
-        super.tearDown();
+    protected Application createApplication(final String path) {
+        return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                Router router = new Router(getContext());
+                router.attach(path, MyResource11.class);
+                return router;
+            }
+        };
     }
 
     /**
@@ -101,15 +61,14 @@ public class AnnotatedResource11TestCase extends RestletTestCase {
      * @throws ResourceException
      */
     public void test() throws IOException, ResourceException {
-        client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET, uri);
-        Response response = client.handle(request);
+        Request request = createRequest(Method.GET);
+        Response response = handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("asText-txt", response.getEntity().getText());
         response.getEntity().release();
 
-        request = new Request(Method.POST, uri);
-        response = client.handle(request);
+        request = createRequest(Method.POST);
+        response = handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("accept", response.getEntity().getText());
         response.getEntity().release();

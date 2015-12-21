@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -84,9 +75,6 @@ class ContentReader extends DefaultHandler {
     /** Current data type. */
     private String currentDataType;
 
-    /** Current language. */
-    private ScopedProperty<Language> language;
-
     /** Current object. */
     private Object currentObject;
 
@@ -95,6 +83,9 @@ class ContentReader extends DefaultHandler {
 
     /** The graph handler to call when a link is detected. */
     private GraphHandler graphHandler;
+
+    /** Current language. */
+    private ScopedProperty<Language> language;
 
     /** Used to get the content of XMl literal. */
     private int nodeDepth;
@@ -199,17 +190,20 @@ class ContentReader extends DefaultHandler {
             popSubject();
         } else if (state == State.PREDICATE) {
             if (this.consumingContent) {
-                link(getCurrentSubject(), this.currentPredicate, getLiteral(
-                        builder.toString(), null, this.language.getValue()));
+                link(getCurrentSubject(),
+                        this.currentPredicate,
+                        getLiteral(builder.toString(), null,
+                                this.language.getValue()));
                 this.consumingContent = false;
             }
         } else if (state == State.OBJECT) {
         } else if (state == State.LITERAL) {
             if (nodeDepth == 0) {
                 // End of the XML literal
-                link(getCurrentSubject(), this.currentPredicate, getLiteral(
-                        builder.toString(), this.currentDataType, this.language
-                                .getValue()));
+                link(getCurrentSubject(),
+                        this.currentPredicate,
+                        getLiteral(builder.toString(), this.currentDataType,
+                                this.language.getValue()));
             } else {
                 // Still gleaning the content of an XML literal
                 // Glean the XML content
@@ -418,8 +412,8 @@ class ContentReader extends DefaultHandler {
                     resolve(uri, name));
         }
         for (String[] arc : arcs) {
-            this.graphHandler.link(result, resolve(null, arc[0]), getLiteral(
-                    arc[1], null, this.language.getValue()));
+            this.graphHandler.link(result, resolve(null, arc[0]),
+                    getLiteral(arc[1], null, this.language.getValue()));
         }
 
         return result;

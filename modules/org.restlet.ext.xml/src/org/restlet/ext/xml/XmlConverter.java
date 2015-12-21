@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -122,7 +113,7 @@ public class XmlConverter extends ConverterHelper {
         if ((target != null)
                 && (Document.class.isAssignableFrom(target)
                         || DomRepresentation.class.isAssignableFrom(target) || SaxRepresentation.class
-                        .isAssignableFrom(target))) {
+                            .isAssignableFrom(target))) {
             if (MediaType.APPLICATION_ALL_XML.isCompatible(source
                     .getMediaType())) {
                 result = 0.8F;
@@ -143,14 +134,28 @@ public class XmlConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
 
-        if (Document.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source).getDocument();
-        } else if (DomRepresentation.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source);
-        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
-            result = new SaxRepresentation(source);
+        Object result = null;
+        if (target != null) {
+            if (Document.class.isAssignableFrom(target)) {
+                if (source instanceof DomRepresentation) {
+                    result = ((DomRepresentation) source).getDocument();
+                } else {
+                    result = new DomRepresentation(source).getDocument();
+                }
+            } else if (DomRepresentation.class.isAssignableFrom(target)) {
+                if (source instanceof DomRepresentation) {
+                    result = (DomRepresentation) source;
+                } else {
+                    result = new DomRepresentation(source);
+                }
+            } else if (SaxRepresentation.class.isAssignableFrom(target)) {
+                if (source instanceof SaxRepresentation) {
+                    result = (SaxRepresentation) source;
+                } else {
+                    result = new SaxRepresentation(source);
+                }
+            }
         }
 
         return (T) result;

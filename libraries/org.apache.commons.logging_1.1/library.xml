@@ -2,7 +2,7 @@
 	<name>Apache Commons Logging</name>
 	<description>Apache Commons Logging</description>
 	<version>1.1</version>
-    <release>1</release>
+	<release>3</release>
 	<homeUri>http://commons.apache.org/logging/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_logging.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>

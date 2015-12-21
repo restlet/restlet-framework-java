@@ -1,0 +1,1356 @@
+{
+  "contact": "apiteam@wordnik.com",
+  "contract": {
+    "description": "This is a sample server Petstore server.  You can find out more about Swagger \n    at <a href=\"http://swagger.wordnik.com\">http://swagger.wordnik.com</a> or on irc.freenode.net, #swagger.  For this sample,\n    you can use the api key \"special-key\" to test the authorization filters",
+    "name": "Swagger Sample App",
+    "representations": [
+      {
+        "description": null,
+        "name": "Tag",
+        "parentType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "name",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "name": "Pet",
+        "parentType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": "unique identifier for the pet",
+            "max": "100.0",
+            "maxOccurs": 1,
+            "min": "0.0",
+            "minOccurs": 1,
+            "name": "id",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "category",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "Category"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 1,
+            "name": "name",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "photoUrls",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": -1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "tags",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "Tag"
+          },
+          {
+            "defaultValue": null,
+            "description": "pet status in the store",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "status",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "name": "Category",
+        "parentType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "name",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "name": "File",
+        "parentType": null,
+        "properties": [],
+        "raw": true
+      },
+      {
+        "description": null,
+        "name": "Order",
+        "parentType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "petId",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "quantity",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": "Order Status",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "status",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "shipDate",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          }
+        ],
+        "raw": false
+      },
+      {
+        "description": null,
+        "name": "User",
+        "parentType": null,
+        "properties": [
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "id",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "firstName",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "username",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "lastName",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "email",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "password",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": null,
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "phone",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "string"
+          },
+          {
+            "defaultValue": null,
+            "description": "User Status",
+            "max": null,
+            "maxOccurs": 1,
+            "min": null,
+            "minOccurs": 0,
+            "name": "userStatus",
+            "possibleValues": [],
+            "uniqueItems": false,
+            "type": "integer"
+          }
+        ],
+        "raw": false
+      }
+    ],
+    "resources": [
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Finds Pets by tags",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "findPetsByTags",
+            "outRepresentation": {
+              "array": true,
+              "representation": "Pet"
+            },
+            "queryParameters": [
+              {
+                "allowMultiple": true,
+                "defaultValue": null,
+                "description": "Tags to filter by",
+                "name": "tags",
+                "possibleValues": [],
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "body": {
+                  "array": true,
+                  "representation": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid tag value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet/findByTags"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Find pet by ID",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "getPetById",
+            "outRepresentation": {
+              "array": false,
+              "representation": "Pet"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Pet not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Deletes a pet",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "DELETE",
+            "name": "deletePet",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid pet value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "partial updates to a pet",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "Pet"
+            },
+            "method": "PATCH",
+            "name": "partialUpdate",
+            "outRepresentation": {
+              "array": true,
+              "representation": "Pet"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": true,
+                  "representation": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid tag value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/json",
+              "application/xml"
+            ]
+          },
+          {
+            "description": "Updates a pet in the store with form data",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "POST",
+            "name": "updatePetWithForm",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Invalid input",
+                "name": "Error 405"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ]
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "ID of pet that needs to be fetched",
+            "name": "petId"
+          }
+        ],
+        "resourcePath": "/pet/{petId}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Add a new pet to the store",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "Pet"
+            },
+            "method": "POST",
+            "name": "addPet",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Invalid input",
+                "name": "Error 405"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "application/json",
+              "application/xml"
+            ]
+          },
+          {
+            "description": "Update an existing pet",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "Pet"
+            },
+            "method": "PUT",
+            "name": "updatePet",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Pet not found",
+                "name": "Error 404"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 405,
+                "description": null,
+                "message": "Validation exception",
+                "name": "Error 405"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Finds Pets by status",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "findPetsByStatus",
+            "outRepresentation": {
+              "array": true,
+              "representation": "Pet"
+            },
+            "queryParameters": [
+              {
+                "allowMultiple": true,
+                "defaultValue": "available",
+                "description": "Status values that need to be considered for filter",
+                "name": "status",
+                "possibleValues": [
+                  "available",
+                  "pending",
+                  "sold"
+                ],
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "body": {
+                  "array": true,
+                  "representation": "Pet"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid status value",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet/findByStatus"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "uploads an image",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "POST",
+            "name": "uploadFile",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json",
+              "application/xml",
+              "text/plain",
+              "text/html"
+            ],
+            "consumes": [
+              "multipart/form-data"
+            ]
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/pet/uploadImage"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Delete purchase order by ID",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "DELETE",
+            "name": "deleteOrder",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Order not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Find purchase order by ID",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "getOrderById",
+            "outRepresentation": {
+              "array": false,
+              "representation": "Order"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "Order"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid ID supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "Order not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "ID of the order that needs to be deleted",
+            "name": "orderId"
+          }
+        ],
+        "resourcePath": "/store/order/{orderId}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Place an order for a pet",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "Order"
+            },
+            "method": "POST",
+            "name": "placeOrder",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid order",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/store/order"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Create user",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "User"
+            },
+            "method": "POST",
+            "name": "createUser",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Creates list of users with given input array",
+            "headers": [],
+            "inRepresentation": {
+              "array": true,
+              "representation": "User"
+            },
+            "method": "POST",
+            "name": "createUsersWithArrayInput",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/createWithArray"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Creates list of users with given list input",
+            "headers": [],
+            "inRepresentation": {
+              "array": true,
+              "representation": "User"
+            },
+            "method": "POST",
+            "name": "createUsersWithListInput",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/createWithList"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Updated user",
+            "headers": [],
+            "inRepresentation": {
+              "array": false,
+              "representation": "User"
+            },
+            "method": "PUT",
+            "name": "updateUser",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Delete user",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "DELETE",
+            "name": "deleteUser",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          },
+          {
+            "description": "Get user by user name",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "getUserByName",
+            "outRepresentation": {
+              "array": false,
+              "representation": "User"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "User"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username supplied",
+                "name": "Error 400"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 404,
+                "description": null,
+                "message": "User not found",
+                "name": "Error 404"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [
+          {
+            "array": false,
+            "description": "name that need to be deleted",
+            "name": "username"
+          }
+        ],
+        "resourcePath": "/user/{username}"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Logs user into the system",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "loginUser",
+            "outRepresentation": {
+              "array": false,
+              "representation": "string"
+            },
+            "queryParameters": [
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "The user name for login",
+                "name": "username",
+                "possibleValues": [],
+                "required": true
+              },
+              {
+                "allowMultiple": false,
+                "defaultValue": null,
+                "description": "The password for login in clear text",
+                "name": "password",
+                "possibleValues": [],
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "string"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              },
+              {
+                "body": {
+                  "array": false,
+                  "representation": null
+                },
+                "code": 400,
+                "description": null,
+                "message": "Invalid username and password combination",
+                "name": "Error 400"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/login"
+      },
+      {
+        "description": null,
+        "name": null,
+        "operations": [
+          {
+            "description": "Logs out current logged in user session",
+            "headers": [],
+            "inRepresentation": null,
+            "method": "GET",
+            "name": "logoutUser",
+            "outRepresentation": {
+              "array": false,
+              "representation": "void"
+            },
+            "queryParameters": [],
+            "responses": [
+              {
+                "body": {
+                  "array": false,
+                  "representation": "void"
+                },
+                "code": 200,
+                "description": "Success",
+                "message": "The request has succeeded",
+                "name": "Success"
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "consumes": []
+          }
+        ],
+        "pathVariables": [],
+        "resourcePath": "/user/logout"
+      }
+    ]
+  },
+  "endpoints": [
+	  {
+	  	"domain": "petstore.swagger.wordnik.com",
+	  	"port": 80,
+	  	"protocol": "http",
+	  	"basePath": "/api"  	
+	  }
+	],
+  "license": "http://www.apache.org/licenses/LICENSE-2.0.html",
+  "version": "1.0.0"
+}

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -62,6 +53,34 @@ public class ResourceException extends RuntimeException {
      * 
      * @param code
      *            The specification code of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public ResourceException(int code, String reasonPhrase) {
+        this(new Status(code, reasonPhrase));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The description of the encapsulated status.
+     */
+    public ResourceException(int code, String reasonPhrase, String description) {
+        this(new Status(code, reasonPhrase, description));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code of the encapsulated status.
      * @param name
      *            The name of the encapsulated status.
      * @param description
@@ -79,8 +98,9 @@ public class ResourceException extends RuntimeException {
      * 
      * @param code
      *            The specification code of the encapsulated status.
-     * @param name
-     *            The name of the encapsulated status.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The description of the encapsulated status.
      * @param uri
@@ -88,9 +108,9 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(int code, String name, String description,
+    public ResourceException(int code, String reasonPhrase, String description,
             String uri, Throwable cause) {
-        this(new Status(code, cause, name, description, uri), cause);
+        this(new Status(code, cause, reasonPhrase, description, uri), cause);
     }
 
     /**
@@ -103,6 +123,59 @@ public class ResourceException extends RuntimeException {
      */
     public ResourceException(int code, Throwable cause) {
         this(new Status(code, cause), cause);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     */
+    public ResourceException(int code, Throwable throwable, String reasonPhrase) {
+        this(new Status(code, throwable, reasonPhrase, null, null));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     */
+    public ResourceException(int code, Throwable throwable,
+            String reasonPhrase, String description) {
+        this(new Status(code, throwable, reasonPhrase, description, null));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *            The specification code.
+     * @param throwable
+     *            The related error or exception.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
+     * @param description
+     *            The longer description.
+     * @param uri
+     *            The URI of the specification describing the method.
+     */
+    public ResourceException(int code, Throwable throwable,
+            String reasonPhrase, String description, String uri) {
+        this(new Status(code, throwable, reasonPhrase, description, uri));
     }
 
     /**

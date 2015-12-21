@@ -10,7 +10,6 @@
 	<dependencies>
 		<dependency type="library" id="servlet" maven-scope="provided" primary="true" />
 		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
-		<dependency includes="osgi" type="library" id="e4" maven-scope="compile" />
 		<dependency type="module" id="core" />
 		<dependency includes="osgi" type="module" id="osgi" />
 	</dependencies>

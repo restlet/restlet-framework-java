@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,16 +29,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -248,7 +237,7 @@ public abstract class Representation extends RepresentationInfo {
         // [ifndef gwt]
         if (isAvailable()) {
             InputStream is = getStream();
-            result = BioUtils.exhaust(is);
+            result = IoUtils.exhaust(is);
             is.close();
         }
         // [enddef]
@@ -264,13 +253,14 @@ public abstract class Representation extends RepresentationInfo {
      * @return The available size.
      */
     public long getAvailableSize() {
-        return BioUtils.getAvailableSize(this);
+        return IoUtils.getAvailableSize(this);
     }
 
     // [ifndef gwt] member
     /**
-     * Returns a channel with the representation's content. If it is supported
-     * by a file, a read-only instance of FileChannel is returned.<br>
+     * Returns a channel with the representation's content.<br>
+     * If it is supported by a file, a read-only instance of FileChannel is
+     * returned.<br>
      * This method is ensured to return a fresh channel for each invocation
      * unless it is a transient representation, in which case null is returned.
      * 
@@ -317,8 +307,10 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Returns the range where in the full content the partial content available
-     * should be applied. Note that when used with HTTP connectors, this
-     * property maps to the "Content-Range" header.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @return The content range or null if the full content is available.
      */
@@ -337,28 +329,6 @@ public abstract class Representation extends RepresentationInfo {
      * @throws IOException
      */
     public abstract Reader getReader() throws IOException;
-
-    // [ifndef gwt] method
-    /**
-     * Returns the NIO registration of the related channel with its selector.
-     * You can modify this registration to be called back when some readable
-     * content is available. Note that the listener will keep being called back
-     * until you suspend or cancel the registration returned by this method.
-     * 
-     * @return The NIO registration.
-     * @throws IOException
-     * @see #isSelectable()
-     */
-    public org.restlet.util.SelectionRegistration getRegistration()
-            throws IOException {
-        if (isSelectable()) {
-            return ((org.restlet.engine.io.SelectionChannel) getChannel())
-                    .getRegistration();
-        } else {
-            throw new IllegalStateException(
-                    "The representation isn't selectable");
-        }
-    }
 
     /**
      * Returns the total size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
@@ -384,6 +354,29 @@ public abstract class Representation extends RepresentationInfo {
      * @throws IOException
      */
     public abstract InputStream getStream() throws IOException;
+
+    // [ifndef gwt] method
+    /**
+     * Converts the representation to a bytes array. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
+     * 
+     * @return The representation as a bytes array.
+     */
+    public byte[] getBytes() throws IOException {
+        byte[] result = null;
+
+        if (isEmpty()) {
+            result = new byte[0];
+        } else if (isAvailable()) {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            write(baos);
+            baos.flush();
+            result = baos.toByteArray();
+        }
+
+        return result;
+    }
 
     // [ifndef gwt] method
     /**
@@ -456,23 +449,6 @@ public abstract class Representation extends RepresentationInfo {
     // */
     // public abstract String getText() throws IOException;
 
-    // [ifndef gwt] method
-    /**
-     * Indicates if the representation content supports NIO selection. In this
-     * case, the {@link #setListener(org.restlet.util.ReadingListener)} method
-     * can be called to be notified when new content is ready for reading.
-     * 
-     * @return True if the representation content supports NIO selection.
-     * @see org.restlet.engine.connector.ConnectionController
-     */
-    public boolean isSelectable() {
-        try {
-            return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     /**
      * Indicates if the representation's content is transient, which means that
      * it can be obtained only once. This is often the case with representations
@@ -527,8 +503,10 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] method
     /**
-     * Sets the representation digest. Note that when used with HTTP connectors,
-     * this property maps to the "Content-MD5" header.
+     * Sets the representation digest.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-MD5" header.
      * 
      * @param digest
      *            The representation digest.
@@ -561,35 +539,12 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
-    // [ifndef gwt] method
-    /**
-     * Sets a listener for NIO read events. If the listener is null, it clear
-     * any existing listener.
-     * 
-     * @param readingListener
-     *            The listener for NIO read events.
-     */
-    public void setListener(org.restlet.util.ReadingListener readingListener) {
-        try {
-            org.restlet.util.SelectionRegistration sr = getRegistration();
-
-            if ((readingListener == null)) {
-                sr.setNoInterest();
-            } else {
-                sr.setReadInterest();
-            }
-
-            sr.setListener(readingListener);
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to register the reading listener", ioe);
-        }
-    }
-
     /**
      * Sets the range where in the full content the partial content available
-     * should be applied. Note that when used with HTTP connectors, this
-     * property maps to the "Content-Range" header.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @param range
      *            The content range.
@@ -660,10 +615,7 @@ public abstract class Representation extends RepresentationInfo {
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
      * given {@link OutputStream} after writing to it as this will be handled by
-     * the Restlet connectors automatically. However, if outputStream is wrapped
-     * with an object which is {@link java.io.Flushable} such as a
-     * {@link java.io.OutputStreamWriter} make sure the wrapping object is
-     * flushed before the method returns.
+     * the Restlet connectors automatically.
      * 
      * @param outputStream
      *            The output stream.

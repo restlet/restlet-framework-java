@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -107,16 +98,16 @@ public class CallTestCase extends RestletTestCase {
      */
     public void testBaseRef() throws Exception {
         final Request request = getRequest();
-        final String resourceRefURI = "http://www.restlet.org/path/to/resource";
+        final String resourceRefURI = "http://restlet.org/path/to/resource";
         final Reference resourceRef = getReference(resourceRefURI);
         request.setResourceRef(resourceRefURI);
         assertEquals(resourceRef, request.getResourceRef());
-        String uri = "http://www.restlet.org/path";
+        String uri = "http://restlet.org/path";
         Reference reference = getReference(uri);
         request.getResourceRef().setBaseRef(uri);
         assertEquals(uri, request.getResourceRef().getBaseRef().toString());
         assertEquals(reference, request.getResourceRef().getBaseRef());
-        uri = "http://www.restlet.org/path/to";
+        uri = "http://restlet.org/path/to";
         reference = getReference(uri);
         request.getResourceRef().setBaseRef(uri);
         assertEquals(uri, request.getResourceRef().getBaseRef().toString());
@@ -132,6 +123,19 @@ public class CallTestCase extends RestletTestCase {
         client.setAddress(address);
         assertEquals(address, client.getAddress());
         assertEquals(0, client.getForwardedAddresses().size());
+    }
+
+    /**
+     * Tests client agent getting/setting.
+     */
+    public void testClientAgent() throws Exception {
+        final ClientInfo client = getRequest().getClientInfo();
+        String name = "Restlet";
+        client.setAgent(name);
+        assertEquals(name, client.getAgent());
+        name = "Restlet Client";
+        client.setAgent(name);
+        assertEquals(name, client.getAgent());
     }
 
     /**
@@ -151,19 +155,6 @@ public class CallTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests client agent getting/setting.
-     */
-    public void testClientAgent() throws Exception {
-        final ClientInfo client = getRequest().getClientInfo();
-        String name = "Restlet";
-        client.setAgent(name);
-        assertEquals(name, client.getAgent());
-        name = "Restlet Client";
-        client.setAgent(name);
-        assertEquals(name, client.getAgent());
-    }
-
-    /**
      * Tests method getting/setting.
      */
     public void testMethod() throws Exception {
@@ -180,11 +171,11 @@ public class CallTestCase extends RestletTestCase {
     public void testRedirectionRef() throws Exception {
         final Request request = getRequest();
         final Response response = getResponse(request);
-        String uri = "http://www.restlet.org/";
+        String uri = "http://restlet.org/";
         Reference reference = getReference(uri);
         response.setLocationRef(uri);
         assertEquals(reference, response.getLocationRef());
-        uri = "http://www.restlet.org/something";
+        uri = "http://restlet.org/something";
         reference = getReference(uri);
         response.setLocationRef(reference);
         assertEquals(reference, response.getLocationRef());
@@ -195,11 +186,11 @@ public class CallTestCase extends RestletTestCase {
      */
     public void testReferrerRef() throws Exception {
         final Request request = getRequest();
-        String uri = "http://www.restlet.org/";
+        String uri = "http://restlet.org/";
         Reference reference = getReference(uri);
         request.setReferrerRef(uri);
         assertEquals(reference, request.getReferrerRef());
-        uri = "http://www.restlet.org/something";
+        uri = "http://restlet.org/something";
         reference = getReference(uri);
         request.setReferrerRef(reference);
         assertEquals(reference, request.getReferrerRef());
@@ -210,11 +201,11 @@ public class CallTestCase extends RestletTestCase {
      */
     public void testResourceRef() throws Exception {
         final Request request = getRequest();
-        String uri = "http://www.restlet.org/";
+        String uri = "http://restlet.org/";
         Reference reference = getReference(uri);
         request.setResourceRef(uri);
         assertEquals(reference, request.getResourceRef());
-        uri = "http://www.restlet.org/something";
+        uri = "http://restlet.org/something";
         reference = getReference(uri);
         request.setResourceRef(reference);
         assertEquals(reference, request.getResourceRef());

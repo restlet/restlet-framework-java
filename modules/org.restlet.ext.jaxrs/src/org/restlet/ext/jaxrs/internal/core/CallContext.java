@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -79,6 +70,7 @@ import org.restlet.data.Language;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -88,6 +80,8 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.security.Role;
+import org.restlet.service.ConnegService;
+import org.restlet.service.MetadataService;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
@@ -197,17 +191,17 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     private final SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
-    /** contains the current value of the ancestor resources */
-    private final LinkedList<Object> matchedResources = new LinkedList<Object>();
-
-    /** contains the current value of the ancestor resource URIs */
-    private final LinkedList<String> matchedURIs = new LinkedList<String>();
-
     private String baseUri;
 
     private Map<String, Cookie> cookies;
 
     private Locale language;
+
+    /** contains the current value of the ancestor resources */
+    private final LinkedList<Object> matchedResources = new LinkedList<Object>();
+
+    /** contains the current value of the ancestor resource URIs */
+    private final LinkedList<String> matchedURIs = new LinkedList<String>();
 
     private MediaType mediaType;
 
@@ -337,6 +331,14 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         }
     }
 
+    private ExtendedUriBuilder createExtendedUriBuilder(Reference ref) {
+        ExtendedUriBuilder b = new ExtendedUriBuilder();
+        fillUriBuilder(ref, b);
+        String extension = ref.getExtensions();
+        b.extension(extension);
+        return b;
+    }
+
     /**
      * Creates an unmodifiable List of {@link PathSegment}s.
      * 
@@ -367,32 +369,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         return fillUriBuilder(ref, b);
     }
 
-    /**
-     * @param ref
-     * @param b
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private UriBuilder fillUriBuilder(Reference ref, final UriBuilder b)
-            throws IllegalArgumentException {
-        b.scheme(ref.getScheme(false));
-        b.userInfo(ref.getUserInfo(false));
-        b.host(ref.getHostDomain(false));
-        b.port(ref.getHostPort());
-        b.path(ref.getPath(false));
-        b.replaceQuery(ref.getQuery(false));
-        b.fragment(ref.getFragment(false));
-        return b;
-    }
-
-    private ExtendedUriBuilder createExtendedUriBuilder(Reference ref) {
-        ExtendedUriBuilder b = new ExtendedUriBuilder();
-        fillUriBuilder(ref, b);
-        String extension = ref.getExtensions();
-        b.extension(extension);
-        return b;
-    }
-
     @Override
     public boolean equals(Object anotherObject) {
         if (this == anotherObject) {
@@ -412,6 +388,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return false;
         }
         return true;
+    }
+
+    @Override
+    public ResponseBuilder evaluatePreconditions() {
+        // TODO: implement
+        return null;
     }
 
     /**
@@ -434,34 +416,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                     "The last modification date must not be null");
         }
         return evaluatePreconditionsInternal(lastModified, null);
-    }
-
-    /**
-     * Evaluates the preconditions of the current request against the given last
-     * modified date and / or the given entity tag. This method does not check,
-     * if the arguments are not null.
-     * 
-     * @param lastModified
-     * @param entityTag
-     * @return
-     * @see Request#evaluateConditions(Tag, Date)
-     */
-    private ResponseBuilder evaluatePreconditionsInternal(
-            final Date lastModified, final EntityTag entityTag) {
-        Status status = this.request.getConditions().getStatus(
-                this.request.getMethod(), true,
-                Converter.toRestletTag(entityTag), lastModified);
-
-        if (status == null)
-            return null;
-        if (status.equals(Status.REDIRECTION_NOT_MODIFIED)) {
-            final ResponseBuilder rb = Response.notModified();
-            rb.lastModified(lastModified);
-            rb.tag(entityTag);
-            return rb;
-        }
-
-        return Response.status(STATUS_PREC_FAILED);
     }
 
     /**
@@ -532,6 +486,52 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                     "The entity tag must not be null");
         }
         return evaluatePreconditionsInternal(null, entityTag);
+    }
+
+    /**
+     * Evaluates the preconditions of the current request against the given last
+     * modified date and / or the given entity tag. This method does not check,
+     * if the arguments are not null.
+     * 
+     * @param lastModified
+     * @param entityTag
+     * @return
+     * @see Request#evaluateConditions(Tag, Date)
+     */
+    private ResponseBuilder evaluatePreconditionsInternal(
+            final Date lastModified, final EntityTag entityTag) {
+        Status status = this.request.getConditions().getStatus(
+                this.request.getMethod(), true,
+                Converter.toRestletTag(entityTag), lastModified);
+
+        if (status == null)
+            return null;
+        if (status.equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            final ResponseBuilder rb = Response.notModified();
+            rb.lastModified(lastModified);
+            rb.tag(entityTag);
+            return rb;
+        }
+
+        return Response.status(STATUS_PREC_FAILED);
+    }
+
+    /**
+     * @param ref
+     * @param b
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private UriBuilder fillUriBuilder(Reference ref, final UriBuilder b)
+            throws IllegalArgumentException {
+        b.scheme(ref.getScheme(false));
+        b.userInfo(ref.getUserInfo(false));
+        b.host(ref.getHostDomain(false));
+        b.port(ref.getHostPort());
+        b.path(ref.getPath(false));
+        b.replaceQuery(ref.getQuery(false));
+        b.fragment(ref.getFragment(false));
+        return b;
     }
 
     /**
@@ -609,24 +609,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public SortedMetadata<org.restlet.data.MediaType> getAccMediaTypes() {
         return this.accMediaTypes;
-    }
-
-    /**
-     * current state of the matchedResources
-     * 
-     * @see javax.ws.rs.core.UriInfo#getMatchedResources()
-     */
-    List<Object> getMatchedResources() {
-        return this.matchedResources;
-    }
-
-    /**
-     * current state of the matchedURIs
-     * 
-     * @see javax.ws.rs.core.UriInfo#getMatchedURIs()
-     */
-    List<String> getMatchedURIs() {
-        return this.matchedURIs;
     }
 
     /**
@@ -818,6 +800,24 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         pathParam.annotationType();
         // TODO CallContext.getLastPathSegmentEnc(PathParam)
         throw new NotYetImplementedException();
+    }
+
+    /**
+     * current state of the matchedResources
+     * 
+     * @see javax.ws.rs.core.UriInfo#getMatchedResources()
+     */
+    List<Object> getMatchedResources() {
+        return this.matchedResources;
+    }
+
+    /**
+     * current state of the matchedURIs
+     * 
+     * @see javax.ws.rs.core.UriInfo#getMatchedURIs()
+     */
+    List<String> getMatchedURIs() {
+        return this.matchedURIs;
     }
 
     /**
@@ -1034,7 +1034,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<String> getRequestHeader(String headerName) {
         String[] values;
-        values = Util.getHttpHeaders(this.request).getValuesArray(headerName);
+        values = Util.getHttpHeaders(this.request).getValuesArray(headerName,
+                true);
         return Collections.unmodifiableList(Arrays.asList(values));
     }
 
@@ -1106,9 +1107,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     @Override
     public int hashCode() {
-        return this.getBaseUriStr().hashCode()
-                ^ this.getPathSegments().hashCode()
-                ^ this.getPathParameters().hashCode();
+        return SystemUtils.hashCode(getBaseUriStr(), getPathSegments(),
+                getPathParameters());
     }
 
     /**
@@ -1207,7 +1207,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
-    @SuppressWarnings("deprecation")
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
         if ((variants == null) || variants.isEmpty()) {
@@ -1216,8 +1215,22 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
         List<org.restlet.representation.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        org.restlet.representation.Variant bestRestlVar = this.request
-                .getClientInfo().getPreferredVariant(restletVariants);
+
+        ConnegService connegService = null;
+        MetadataService metadataService = null;
+        org.restlet.Application app = org.restlet.Application.getCurrent();
+
+        if (app == null) {
+            connegService = new org.restlet.service.ConnegService();
+            metadataService = new MetadataService();
+        } else {
+            connegService = app.getConnegService();
+            metadataService = app.getMetadataService();
+        }
+
+        org.restlet.representation.Variant bestRestlVar = connegService
+                .getPreferredVariant(restletVariants, this.request,
+                        metadataService);
         Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         Set<Dimension> dimensions = this.response.getDimensions();
 
@@ -1276,7 +1289,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
             Logger logger, String logMessage) throws WebApplicationException {
         logger.log(Level.WARNING, logMessage, exc);
-        exc.printStackTrace();
         throw new WebApplicationException(exc,
                 javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR);
     }

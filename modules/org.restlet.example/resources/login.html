@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>OAuth2Sample</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row" style="margin-top:50px;">
+                <div class="span8 offset2">
+                    <#if error?has_content>
+                    <div class="alert alert-error">
+                        <h4 class="alert-heading">Error: ${error}</h4>
+                        Error_Desc: ${error_description}
+                    </div>
+                    </#if>
+                </div>
+                <div class="span8 offset2">
+                    <form action="login" method="get" class="form-horizontal">
+                        <legend>Login</legend>
+                        <div class="control-group">
+                            <label class="control-label" for="username">Username:</label>
+                            <div class="controls">
+                                <input type="text" id="username" name="user_id" placeholder="Username" class="input-xlarge">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" ="password">Password:</label>
+                            <div class="controls">
+                                <input type="password" id="password" name="password" placeholder="Password" class="input-xlarge">
+                            </div>
+                        </div>
+                        <input type="hidden" name="continue" value="${continue}">
+                        <div class="form-actions">
+                            <button class="btn btn-large btn-primary">Sign In</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -57,6 +48,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -65,9 +57,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
@@ -360,23 +351,27 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public Response accessServer(Request request) {
         final Reference reference = request.getResourceRef();
+
         if (reference.getBaseRef() == null) {
             reference.setBaseRef(reference.getHostIdentifier());
         }
         request.setOriginalRef(reference.getTargetRef());
         final Restlet connector = getClientConnector();
+
         if (shouldAccessWithoutTcp()) {
             final String hostDomain = request.getResourceRef().getHostDomain();
             getHttpHeaders(request).add("host", hostDomain);
         }
+
         Response response = new Response(request);
         connector.handle(request, response);
+
         if (!usingTcp && request.getMethod().equals(Method.HEAD)) {
             response.setEntity(new WrapperRepresentation(response.getEntity()) {
 
                 @Override
                 public ReadableByteChannel getChannel() throws IOException {
-                    return NioUtils.getChannel(getStream());
+                    return IoUtils.getChannel(getStream());
                 }
 
                 @Override
@@ -492,6 +487,7 @@ public abstract class RestletServerTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.clearThreadLocalVariables();
+
         if (shouldStartServerInSetUp()) {
             startServer(createApplication());
         }

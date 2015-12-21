@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -37,7 +28,7 @@ import java.util.HashSet;
 
 import org.osgi.service.http.HttpService;
 import org.osgi.service.log.LogService;
-import org.restlet.ext.osgi.IApplicationProvider;
+import org.restlet.ext.osgi.ApplicationProvider;
 
 /**
  * @author Bryan Hunt
@@ -45,13 +36,13 @@ import org.restlet.ext.osgi.IApplicationProvider;
  * 
  */
 public class RestletServletService {
-    private HashSet<IApplicationProvider> applicationProviders = new HashSet<IApplicationProvider>();
+    private HashSet<ApplicationProvider> applicationProviders = new HashSet<ApplicationProvider>();
 
     private HttpService httpService;
 
     private LogService logService;
 
-    public void bindApplicationProvider(IApplicationProvider applicationProvider) {
+    public void bindApplicationProvider(ApplicationProvider applicationProvider) {
         applicationProviders.add(applicationProvider);
 
         if (httpService != null)
@@ -61,7 +52,7 @@ public class RestletServletService {
     public void bindHttpService(HttpService httpService) {
         this.httpService = httpService;
 
-        for (IApplicationProvider applicationProvider : applicationProviders)
+        for (ApplicationProvider applicationProvider : applicationProviders)
             registerServlet(applicationProvider);
     }
 
@@ -69,7 +60,7 @@ public class RestletServletService {
         this.logService = logService;
     }
 
-    private void registerServlet(IApplicationProvider applicationProvider) {
+    private void registerServlet(ApplicationProvider applicationProvider) {
         ApplicationServlet servlet = new ApplicationServlet(applicationProvider);
 
         try {
@@ -85,7 +76,7 @@ public class RestletServletService {
     }
 
     public void unbindApplicationProvider(
-            IApplicationProvider applicationProvider) {
+            ApplicationProvider applicationProvider) {
         applicationProviders.remove(applicationProvider);
 
         if (httpService != null) {
@@ -98,7 +89,7 @@ public class RestletServletService {
 
     public void unbindHttpService(HttpService httpService) {
         if (this.httpService == httpService) {
-            for (IApplicationProvider applicationProvider : applicationProviders) {
+            for (ApplicationProvider applicationProvider : applicationProviders) {
                 try {
                     httpService.unregister(applicationProvider.getAlias());
                 } catch (IllegalArgumentException e) {

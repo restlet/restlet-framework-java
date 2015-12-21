@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -44,6 +35,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
+import org.restlet.data.Header;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -51,7 +43,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
@@ -63,6 +54,12 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
     /** . */
     private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
+
+    /** . */
+    private static final String QUERY = "http://example.org/?start=2013-11-26T03%3A45%2B1300";
+
+    /** . */
+    private static final String QUERY_PREF = "http://example.org/?start=2013-11-26T03%3A45%2B1300&media=txt";
 
     /** . */
     private static final String START_REF_FOR_PATH_TEST = "http://www.example.com/abc/def/";
@@ -97,6 +94,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
+            @SuppressWarnings("unchecked")
             A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
@@ -438,4 +436,24 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertMediaTypes(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML,
                 MediaType.APPLICATION_XML, MediaType.ALL);
     }
+
+    public void testMethodTunnelingViaQuery() {
+        tunnelFilter.getTunnelService().setExtensionsTunnel(false);
+        tunnelFilter.getTunnelService().setHeadersTunnel(false);
+        tunnelFilter.getTunnelService().setMethodTunnel(false);
+        tunnelFilter.getTunnelService().setPreferencesTunnel(true);
+        tunnelFilter.getTunnelService().setQueryTunnel(true);
+        tunnelFilter.getTunnelService().setUserAgentTunnel(false);
+
+        createGet(QUERY);
+        this.tunnelFilter.beforeHandle(this.request, this.response);
+
+        assertEquals(QUERY, this.request.getResourceRef().toString());
+
+        createGet(QUERY_PREF);
+        this.tunnelFilter.beforeHandle(this.request, this.response);
+        assertEquals(QUERY, this.request.getResourceRef().toString());
+        assertMediaTypes(MediaType.TEXT_PLAIN);
+    }
+
 }

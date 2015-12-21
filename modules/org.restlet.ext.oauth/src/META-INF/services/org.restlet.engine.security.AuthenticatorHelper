@@ -1,1 +1,2 @@
 org.restlet.ext.oauth.HttpOAuthHelper
+org.restlet.ext.oauth.HttpOAuthMacHelper

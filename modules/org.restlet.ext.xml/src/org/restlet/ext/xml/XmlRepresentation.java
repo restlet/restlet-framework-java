@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -63,8 +54,15 @@ import org.xml.sax.SAXException;
 /**
  * Representation based on an XML document. It knows how to evaluate XPath
  * expressions and how to manage a namespace context. This class also offers
- * convenient methods to validate the document against a specified XML scheme.
+ * convenient methods to validate the document against a specified XML scheme.<br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack.
  * 
+ * @see <a
+ *      href="https://github.com/restlet/restlet-framework-java/wiki/XEE-security-enhancements">XML
+ *      Entity Expansion injection attack</a>
  * @author Jerome Louvel
  */
 public abstract class XmlRepresentation extends WriterRepresentation
@@ -72,6 +70,21 @@ public abstract class XmlRepresentation extends WriterRepresentation
         implements javax.xml.namespace.NamespaceContext
 // [enddef]
 {
+    /**
+     * True for expanding entity references when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.expandingEntityRefs", false by default.
+     */
+    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+
+    /**
+     * True for validating DTD documents when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.validatingDtd", false by default.
+     */
+    public static boolean XML_VALIDATING_DTD = Boolean
+            .getBoolean("org.restlet.ext.xml.validatingDtd");
 
     // [ifdef android] method
     /**
@@ -216,6 +229,13 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
+     * Specifies that the parser will convert CDATA nodes to text nodes and
+     * append it to the adjacent (if any) text node. By default the value of
+     * this is set to false.
+     */
+    private volatile boolean coalescing;
+
+    /**
      * A SAX {@link EntityResolver} to use when resolving external entity
      * references while parsing this type of XML representations.
      * 
@@ -230,6 +250,24 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @see DocumentBuilder#setErrorHandler(ErrorHandler)
      */
     private volatile ErrorHandler errorHandler;
+
+    /**
+     * Specifies that the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     */
+    private volatile boolean expandingEntityRefs;
+
+    /**
+     * Indicates if the parser will ignore comments. By default the value of
+     * this is set to false.
+     */
+    private volatile boolean ignoringComments;
+
+    /**
+     * Indicates if the parser will ignore extra white spaces in element
+     * content. By default the value of this is set to false.
+     */
+    private volatile boolean ignoringExtraWhitespaces;
 
     /** Indicates if processing is namespace aware. */
     private volatile boolean namespaceAware;
@@ -254,31 +292,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @see DocumentBuilderFactory#setValidating(boolean)
      */
     private volatile boolean validatingDtd;
-
-    /**
-     * Specifies that the parser will convert CDATA nodes to text nodes and
-     * append it to the adjacent (if any) text node. By default the value of
-     * this is set to false.
-     */
-    private volatile boolean coalescing;
-
-    /**
-     * Specifies that the parser will expand entity reference nodes. By default
-     * the value of this is set to true.
-     */
-    private volatile boolean expandingEntityRefs;
-
-    /**
-     * Indicates if the parser will ignore comments. By default the value of
-     * this is set to false.
-     */
-    private volatile boolean ignoringComments;
-
-    /**
-     * Indicates if the parser will ignore extra white spaces in element
-     * content. By default the value of this is set to false.
-     */
-    private volatile boolean ignoringExtraWhitespaces;
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
@@ -312,49 +325,15 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.coalescing = false;
         this.entityResolver = null;
         this.errorHandler = null;
-        this.expandingEntityRefs = false;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
         this.ignoringComments = false;
         this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
         this.namespaces = null;
-        this.validatingDtd = false;
+        this.validatingDtd = XML_VALIDATING_DTD;
         this.xIncludeAware = false;
         // [ifndef android] line
         this.schema = null;
-    }
-
-    // [ifndef android] method
-    /**
-     * Evaluates an XPath expression and returns the result as in the given
-     * return type.
-     * 
-     * @param returnType
-     *            The qualified name of the return type.
-     * @return The evaluation result.
-     * @see javax.xml.xpath.XPathException
-     * @see javax.xml.xpath.XPathConstants
-     * @deprecated Use the {@link #getBoolean(String)},
-     *             {@link #getNumber(String)}, {@link #getText(String)},
-     *             {@link #getNode(String)} and {@link #getNodes(String)}
-     *             methods instead.
-     */
-    @Deprecated
-    public Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception {
-        Object result = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-        Document xmlDocument = getDocument();
-
-        if (xmlDocument != null) {
-            result = xpath.evaluate(expression, xmlDocument, returnType);
-        } else {
-            throw new Exception(
-                    "Unable to obtain a DOM document for the XML representation. "
-                            + "XPath evaluation cancelled.");
-        }
-
-        return result;
     }
 
     // [ifndef android] method
@@ -393,8 +372,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
             dbf.setCoalescing(isCoalescing());
             dbf.setExpandEntityReferences(isExpandingEntityRefs());
             dbf.setIgnoringComments(isIgnoringComments());
-            dbf
-                    .setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
+            dbf.setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
 
             try {
                 dbf.setXIncludeAware(isXIncludeAware());
@@ -405,7 +383,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
             // [ifndef android]
             javax.xml.validation.Schema xsd = getSchema();
-            
+
             if (xsd != null) {
                 dbf.setSchema(xsd);
             }
@@ -544,8 +522,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
         boolean found = false;
 
         for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
-                .hasNext()
-                && !found;) {
+                .hasNext() && !found;) {
             String key = iterator.next();
             if (getNamespaces().get(key).equals(namespaceURI)) {
                 found = true;
@@ -639,7 +616,20 @@ public abstract class XmlRepresentation extends WriterRepresentation
     private Object internalEval(String expression,
             javax.xml.namespace.QName returnType) {
         try {
-            return evaluate(expression, returnType);
+            Object result = null;
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            xpath.setNamespaceContext(this);
+            Document xmlDocument = getDocument();
+
+            if (xmlDocument != null) {
+                result = xpath.evaluate(expression, xmlDocument, returnType);
+            } else {
+                throw new Exception(
+                        "Unable to obtain a DOM document for the XML representation. "
+                                + "XPath evaluation cancelled.");
+            }
+
+            return result;
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

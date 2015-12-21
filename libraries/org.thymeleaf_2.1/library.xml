@@ -1,0 +1,22 @@
+<library id="thymeleaf" symbolicName="org.thymeleaf">
+	<name>Thymeleaf</name>
+	<description></description>
+	<version>2.1</version>
+	<release>2</release>
+	<homeUri>http://www.thymeleaf.org/</homeUri>
+	<downloadUri>http://www.thymeleaf.org/download.html</downloadUri>
+	<provider>The THYMELEAF team</provider>
+	
+	<package name="org.thymeleaf">
+		<maven>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf</artifactId>
+			<version>2.1.2.RELEASE</version>
+		</maven>
+	</package>
+	<dependency type="library" id="ognl" />
+	<dependency type="library" id="javassist" />
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

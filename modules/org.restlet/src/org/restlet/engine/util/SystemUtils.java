@@ -1,22 +1,13 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
- * 1.0 (the "Licenses"). You can select the license that you prefer but you may
- * not use this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
@@ -26,7 +17,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -39,6 +30,20 @@ package org.restlet.engine.util;
  * @author Jerome Louvel
  */
 public class SystemUtils {
+
+    /**
+     * Indicates if both fields are equal. For this to be true, they must either
+     * be both null or return true to the {@link Object#equals(Object)} method.
+     * 
+     * @param source
+     *            The source field.
+     * @param target
+     *            The target field.
+     * @return True if both fields are equals.
+     */
+    public static boolean equals(Object source, Object target) {
+        return (target == source) || (target != null && target.equals(source));
+    }
 
     // [ifndef gwt] method
     /**
@@ -118,7 +123,7 @@ public class SystemUtils {
      * @return The hash code of a set of objects.
      */
     public static int hashCode(Object... objects) {
-        int result = 1;
+        int result = 17;
 
         if (objects != null) {
             for (final Object obj : objects) {
@@ -129,13 +134,6 @@ public class SystemUtils {
         return result;
     }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private SystemUtils() {
-    }
-
     // [ifndef gwt] method
     /**
      * Indicates if the current operating system is in the Windows family.
@@ -144,6 +142,13 @@ public class SystemUtils {
      */
     public static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private SystemUtils() {
     }
 
 }
