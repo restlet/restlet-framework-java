@@ -166,24 +166,32 @@ public class HeaderReader<V> {
                     next = header.charAt(index++);
                 }
 
-                if (index == header.length()) {
+                if (next != ':') {
+                    // Colon character is mandatory
                     throw new IOException(
                             "Unable to parse the header name. End of line reached too early.");
                 }
 
                 result.setName(header.subSequence(start, index - 1).toString());
+
+                if (index == header.length()) {
+                    // No more content to read.
+                    return result;
+                }
                 next = header.charAt(index++);
 
-                while (isSpace(next)) {
+                while ((index < header.length()) && isSpace(next)) {
                     // Skip any separator space between colon and header value
                     next = header.charAt(index++);
                 }
+                if (index < header.length()) {
+                    start = index - 1;
+                    
+                    // Parse the header value
+                    result.setValue(header.subSequence(start, header.length())
+                            .toString());
+                }
 
-                start = index - 1;
-
-                // Parse the header value
-                result.setValue(header.subSequence(start, header.length())
-                        .toString());
             }
         }
 

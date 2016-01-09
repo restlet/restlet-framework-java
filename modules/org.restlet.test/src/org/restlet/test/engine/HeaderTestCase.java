@@ -24,6 +24,7 @@
 
 package org.restlet.test.engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -225,5 +226,22 @@ public class HeaderTestCase extends RestletTestCase {
             index++;
             value = hr.readRawValue();
         }
+    }
+
+    public void testEmptyValue() throws IOException {
+        Header result = HeaderReader.readHeader("My-Header: ");
+        assertNotNull(result);
+        assertEquals("My-Header", result.getName());
+        assertNull(result.getValue());
+        try {
+            result = HeaderReader.readHeader("My-Header");
+            fail("Not allowed");
+        } catch (IOException e) {           
+        }
+        
+        result = HeaderReader.readHeader("My-Header:");
+        assertNotNull(result);
+        assertEquals("My-Header", result.getName());
+        assertNull(result.getValue());
     }
 }
