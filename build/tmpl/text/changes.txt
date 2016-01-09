@@ -23,6 +23,7 @@ Changes log
        - Removed useless log trace for HTTP_OAUTH_BEARER request with raw value. Issue #1152.
        - Cors filter does not take into account PATCH method. Issue #1178.
        - Fixed current application thread constant when issuing internal calls. Issue #1183.
+       - Fixed StringIndexOutOfBoundsException in HeaderReader when reading header with empty value. Issue #1167.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log
