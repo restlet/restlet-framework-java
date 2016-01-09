@@ -54,9 +54,6 @@ import org.restlet.routing.Filter;
  */
 public class CorsFilter extends Filter {
 
-    private static final Set<Method> DEFAULT_ALLOWED_METHODS =
-            new HashSet<>(Arrays.asList(Method.GET, Method.POST, Method.PUT, Method.DELETE));
-
     /**
      * If true, copies the value of 'Access-Control-Request-Headers' request
      * header into the 'Access-Control-Allow-Headers' response header. If false,
@@ -81,13 +78,17 @@ public class CorsFilter extends Filter {
     /** Helper for generating CORS response. */
     private CorsResponseHelper corsResponseHelper;
 
+    /** The set of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on. By default:  GET, PUT, POST, DELETE, PATCH. */
+    private Set<Method> defaultAllowedMethods = new HashSet<>(Arrays.asList(Method.GET, Method.POST, Method.PUT,
+            Method.DELETE, Method.PATCH));
+
     /** The value of 'Access-Control-Expose-Headers' response header. */
     private Set<String> exposedHeaders = null;
 
     /**
      * If true, the filter does not call the server resource for OPTIONS method
      * of CORS request and set Access-Control-Allow-Methods header with
-     * {@link #DEFAULT_ALLOWED_METHODS}. Default is false.
+     * {@link #defaultAllowedMethods}. Default is false.
      */
     private boolean skippingResourceForCorsOptions = false;
 
@@ -134,7 +135,7 @@ public class CorsFilter extends Filter {
         if (skippingResourceForCorsOptions
                 && Method.OPTIONS.equals(request.getMethod())
                 && getCorsResponseHelper().isCorsRequest(request)) {
-            response.setAllowedMethods(DEFAULT_ALLOWED_METHODS);
+            response.setAllowedMethods(getDefaultAllowedMethods());
             return Filter.SKIP;
         } else {
             return Filter.CONTINUE;
@@ -197,6 +198,14 @@ public class CorsFilter extends Filter {
     }
 
     /**
+     * Returns the list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     * @return The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     */
+    public Set<Method> getDefaultAllowedMethods() {
+        return defaultAllowedMethods;
+    }
+
+    /**
      * Returns a modifiable whitelist of headers an origin server allows for the
      * requested resource.<br>
      * Note that when used with HTTP connectors, this property maps to the
@@ -231,30 +240,13 @@ public class CorsFilter extends Filter {
     /**
      * If true, the filter does not call the server resource for OPTIONS method
      * of CORS request and set Access-Control-Allow-Methods header with
-     * {@link #DEFAULT_ALLOWED_METHODS}. Default is false.
+     * {@link #defaultAllowedMethods}. Default is false.
      *
      * @return True if the filter does not call the server resource for
      * OPTIONS method of CORS request.
      */
     public boolean isSkippingResourceForCorsOptions() {
         return skippingResourceForCorsOptions;
-    }
-
-    /**
-     * If true, copies the value of 'Access-Control-Request-Headers' request
-     * header into the 'Access-Control-Allow-Headers' response header. If false,
-     * use {@link #allowedHeaders}.
-     * 
-     * @param allowingAllRequestedHeaders
-     *            True to copy the value of 'Access-Control-Request-Headers'
-     *            request header into the 'Access-Control-Allow-Headers'
-     *            response header. If false, use {@link #allowedHeaders}.
-     * @return Itself for chaining methods calls.
-     */
-    public CorsFilter setAllowingAllRequestedHeaders(
-            boolean allowingAllRequestedHeaders) {
-        this.allowAllRequestedHeaders = allowingAllRequestedHeaders;
-        return this;
     }
 
     /**
@@ -291,6 +283,32 @@ public class CorsFilter extends Filter {
      */
     public CorsFilter setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
+        return this;
+    }
+
+    /**
+     * If true, copies the value of 'Access-Control-Request-Headers' request
+     * header into the 'Access-Control-Allow-Headers' response header. If false,
+     * use {@link #allowedHeaders}.
+     * 
+     * @param allowingAllRequestedHeaders
+     *            True to copy the value of 'Access-Control-Request-Headers'
+     *            request header into the 'Access-Control-Allow-Headers'
+     *            response header. If false, use {@link #allowedHeaders}.
+     * @return Itself for chaining methods calls.
+     */
+    public CorsFilter setAllowingAllRequestedHeaders(
+            boolean allowingAllRequestedHeaders) {
+        this.allowAllRequestedHeaders = allowingAllRequestedHeaders;
+        return this;
+    }
+
+    /**
+     * Sets the list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     * @param defaultAllowedMethods The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     */
+    public CorsFilter setDefaultAllowedMethods(Set<Method> defaultAllowedMethods) {
+        this.defaultAllowedMethods = defaultAllowedMethods;
         return this;
     }
 
