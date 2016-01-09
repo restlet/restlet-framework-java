@@ -28,6 +28,7 @@ Changes log
        - ServerResource traces Exception in the doCatch method with SEVERE log
          level, in case of 5xx errors.
        - Added Guice extension to GAE edition. Issue #1136.
+       - Upgraded Jetty connector to version 9.2.14. Issue #1180.
     - API changes
        - Added ResourceException#resource attribute and ResourceException#getRequest()
          and ResourceException#getResponse() shortcut methods.
