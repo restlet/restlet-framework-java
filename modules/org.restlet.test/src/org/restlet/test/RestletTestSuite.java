@@ -39,6 +39,7 @@ import org.restlet.test.data.FileReferenceTestCase;
 import org.restlet.test.data.FormTestCase;
 import org.restlet.test.data.LanguageTestCase;
 import org.restlet.test.data.MediaTypeTestCase;
+import org.restlet.test.data.MethodTestCase;
 import org.restlet.test.data.ProductTokenTestCase;
 import org.restlet.test.data.RangeTestCase;
 import org.restlet.test.data.RecipientInfoTestCase;
@@ -135,6 +136,7 @@ public class RestletTestSuite extends TestSuite {
         addTest(ApiSparkTestSuite.suite());
         addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
+        addTestSuite(MethodTestCase.class);
 
         // TODO: temporarily removed jaxrs test suite, cf issue #811
         // addTest(JaxRsTestSuite.suite());

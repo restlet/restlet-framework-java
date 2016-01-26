@@ -24,30 +24,28 @@
 
 package org.restlet.test.data;
 
-import org.restlet.data.Method;
-
 import junit.framework.TestCase;
+
+import org.restlet.data.Method;
 
 /**
  * Test {@link org.restlet.data.Method}.
  * <p>
- * Note: this test purposefully does *not* extends RestletTestCase. The
- * regression previously present in Restlet
- * (desribed in https://github.com/restlet/restlet-framework-java/issues/1130) depends on
- * class initialization order and vanishes when the Restlet/Engine class is
- * initialized before the class Method.
+ * Note: this test purposefully does *not* extends RestletTestCase. The regression previously present in Restlet
+ * (desribed in https://github.com/restlet/restlet-framework-java/issues/1130) depends on class initialization order and
+ * vanishes when the Restlet/Engine class is initialized before the class Method.
  * 
  * @author Andreas Wundsam
  */
 public class MethodTestCase extends TestCase {
 
-	/**
-	 * validate that Method caching works, i.e., the value returned by
-	 * Method.valueOf("GET") is the cached constant Method.GET
-	 */
-	public void testCaching() {
-		assertTrue("Method.valueOf('GET') should return cached constant Method.GET ",
-				Method.GET == Method.valueOf("GET"));
-	}
+    /**
+     * validate that Method caching works, i.e., the value returned by
+     * Method.valueOf("GET") is the cached constant Method.GET
+     */
+    public void testCaching() {
+        assertTrue("Method.valueOf('GET') should return cached constant Method.GET ",
+                Method.GET == Method.valueOf("GET"));
+    }
 
 }
