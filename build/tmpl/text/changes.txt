@@ -5,7 +5,13 @@ Changes log
 
 @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed current application thread constant when issuing internal calls. Issue #1183.
+       - Fixed StringIndexOutOfBoundsException in HeaderReader when reading header with empty value. Issue #1167.
        - Fixed StatusService.toStatus(Status, Request, Response) is not called. Issue #1156.
+       - Fixed issue with case sensitivity of query parameters with JAX-RS. Issue #1163.
+       - Fixed method value caching broken. Issue #1130.
+    - Enhancements
+       - Upgraded Jetty connector to version 9.2.14. Issue #1180.
 
 - 2.3.5 (10/03/2015)
     - Bugs fixed
@@ -22,8 +28,6 @@ Changes log
          Reported by Ralph van Etten.
        - Removed useless log trace for HTTP_OAUTH_BEARER request with raw value. Issue #1152.
        - Cors filter does not take into account PATCH method. Issue #1178.
-       - Fixed current application thread constant when issuing internal calls. Issue #1183.
-       - Fixed StringIndexOutOfBoundsException in HeaderReader when reading header with empty value. Issue #1167.
     - Enhancements
        - Added Request and response attributes to the ResourceException class.
        - ServerResource traces Exception in the doCatch method with SEVERE log
