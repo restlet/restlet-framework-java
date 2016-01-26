@@ -989,7 +989,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (this.queryParametersDecoded == null) {
             this.queryParametersDecoded = UnmodifiableMultivaluedMap
                     .getFromSeries(this.referenceOriginal.getQueryAsForm(),
-                            false);
+                            true);
         }
         return this.queryParametersDecoded;
     }
@@ -1000,12 +1000,15 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @param decode
      *            controls whether sequences of escaped octets in parameter
      *            names and values are decoded (true) or not (false).
+     * @param caseSensitive
+     *          should the parameter name should keep their case, set to true 
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
      *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
-    public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
+    public MultivaluedMap<String, String> getQueryParameters(boolean decode, 
+            boolean caseSensitive) {
         if (decode) {
             return getQueryParameters();
         }
@@ -1014,7 +1017,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             Form queryForm = Converter.toFormEncoded(this.referenceOriginal
                     .getQuery());
             this.queryParametersEncoded = UnmodifiableMultivaluedMap
-                    .getFromSeries(queryForm, false);
+                    .getFromSeries(queryForm, caseSensitive);
         }
 
         return this.queryParametersEncoded;

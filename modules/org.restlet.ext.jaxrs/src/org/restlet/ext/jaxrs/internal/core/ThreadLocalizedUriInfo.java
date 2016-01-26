@@ -200,7 +200,16 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        return getCallContext().getQueryParameters(decode);
+        return getCallContext().getQueryParameters(decode, true);
+    }
+    
+    /**
+     * @see JaxRsUriInfo#getQueryParameters(boolean)
+     * @see UriInfo#getQueryParameters(boolean)
+     */
+    public MultivaluedMap<String, String> getQueryParameters(boolean decode, 
+            boolean caseSensitive) {
+        return getCallContext().getQueryParameters(decode, caseSensitive);
     }
 
     /**
