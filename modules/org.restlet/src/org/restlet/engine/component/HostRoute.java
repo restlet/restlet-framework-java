@@ -159,12 +159,15 @@ public class HostRoute extends Route {
 
             int resourcePortValue = request.getResourceRef().getHostPort();
 
-            if (resourcePortValue == -1) {
+            if (resourcePortValue == -1
+                    && request.getResourceRef()
+                            .getSchemeProtocol() != null) {
                 resourcePortValue = request.getResourceRef()
                         .getSchemeProtocol().getDefaultPort();
             }
 
-            String resourcePort = Integer.toString(resourcePortValue);
+            String resourcePort = (resourcePortValue == -1) ? "" : Integer.toString(resourcePortValue);
+
             String resourceScheme = request.getResourceRef().getScheme();
 
             if (resourceScheme == null) {
@@ -190,13 +193,10 @@ public class HostRoute extends Route {
             if (matches(getVirtualHost().getHostDomain(), hostDomain)
                     && matches(getVirtualHost().getHostPort(), hostPort)
                     && matches(getVirtualHost().getHostScheme(), hostScheme)
-                    && matches(getVirtualHost().getResourceDomain(),
-                            resourceDomain)
+                    && matches(getVirtualHost().getResourceDomain(), resourceDomain)
                     && matches(getVirtualHost().getResourcePort(), resourcePort)
-                    && matches(getVirtualHost().getResourceScheme(),
-                            resourceScheme)
-                    && matches(getVirtualHost().getServerAddress(),
-                            serverAddress)
+                    && matches(getVirtualHost().getResourceScheme(), resourceScheme)
+                    && matches(getVirtualHost().getServerAddress(), serverAddress)
                     && matches(getVirtualHost().getServerPort(), serverPort)) {
                 result = 1F;
             }

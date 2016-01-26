@@ -10,6 +10,7 @@ Changes log
        - Fixed StatusService.toStatus(Status, Request, Response) is not called. Issue #1156.
        - Fixed issue with case sensitivity of query parameters with JAX-RS. Issue #1163.
        - Fixed method value caching broken. Issue #1130.
+       - Prevented NPE if using Redirector.MODE_SERVER_INBOUND. Issue #1182.
     - Enhancements
        - Upgraded Jetty connector to version 9.2.14. Issue #1180.
 
