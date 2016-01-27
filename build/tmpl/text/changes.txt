@@ -5,14 +5,18 @@ Changes log
 
 @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed invalid Class-Path header in manifest of the org.restlet.jar. Issue #698.
+         Reported by Marcin Zajączkowski and Christopher Dancy.
 
 - 2.3.6 (01/26/2016)
     - Bugs fixed
        - Fixed current application thread constant when issuing internal calls. Issue #1183.
        - Fixed StringIndexOutOfBoundsException in HeaderReader when reading header with empty value. Issue #1167.
+         Reported by Timur Gasrataliev.
        - Fixed StatusService.toStatus(Status, Request, Response) is not called. Issue #1156.
        - Fixed issue with case sensitivity of query parameters with JAX-RS. Issue #1163.
        - Fixed method value caching broken. Issue #1130.
+         Reported and contributed by Andreas Wundsam.
        - Prevented NPE if using Redirector.MODE_SERVER_INBOUND. Issue #1182.
     - Enhancements
        - Upgraded Jetty connector to version 9.2.14. Issue #1180.
