@@ -24,6 +24,12 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import org.json.JSONObject;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -74,7 +80,7 @@ public class TokenAuthServerResource extends OAuthServerResource {
         String tokenType = call.getString(TOKEN_TYPE);
 
         final Token token;
-        if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_BEARER)) {
+        if (tokenType.equals(TOKEN_TYPE_BEARER)) {
             token = tokens.validateToken(call.get(ACCESS_TOKEN).toString());
         }/*
           * else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) { //

@@ -24,6 +24,14 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR_DESC;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +45,6 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.json.JsonRepresentation;
@@ -48,7 +55,7 @@ import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 /**
- * Verifier for OAuth 2.0 Protected Resources<br>
+ * Verifier for OAuth 2.0 protected resources<br>
  * Typically use with ChallengeAuthenticator. "Bearer" and "MAC" challenge schemes are supported.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
@@ -61,17 +68,17 @@ public class TokenVerifier implements Verifier {
 
     private static JSONObject createBearerAuthRequest(String token) throws JSONException {
         JSONObject request = new JSONObject();
-        request.put(OAuthServerResource.TOKEN_TYPE, OAuthServerResource.TOKEN_TYPE_BEARER);
-        request.put(OAuthServerResource.ACCESS_TOKEN, token);
+        request.put(TOKEN_TYPE, TOKEN_TYPE_BEARER);
+        request.put(ACCESS_TOKEN, token);
 
         return request;
     }
 
     /** Indicates if the credentials are "Form-Encoded Body Parameter" (chap 2.2). */
-    private boolean acceptBodyMethod = false;
+    private boolean acceptingAccessTokenSentByBody = false;
 
     /** Indicates if the credentials are "URI Query Parameter" (chap 2.3). */
-    private boolean acceptQueryMethod = false;
+    private boolean acceptingAccessTokenSentByQuery = false;
 
     /** The authorization resource URI. */
     private Reference authReference;
@@ -87,26 +94,24 @@ public class TokenVerifier implements Verifier {
     }
 
     private String getAccessTokenFromBody(Request request) {
-        Method method = request.getMethod();
-        if (method.equals(Method.GET)) {
-            return null;
-        }
-
-        if (request.isEntityAvailable()
-                && !MediaType.APPLICATION_WWW_FORM.equals(request.getEntity().getMediaType())) {
+        // Try to find token in the request body
+        if (!request.isEntityAvailable()
+                || !MediaType.APPLICATION_WWW_FORM.equals(request.getEntity().getMediaType())) {
             return null;
         }
 
         Form form = new Form(request.getEntity());
-        String token = form.getFirstValue(OAuthServerResource.ACCESS_TOKEN);
+
+        // As the entity can only be read once, we restore a new copy
+        request.setEntity(form.getWebRepresentation());
+
+        String token = form.getFirstValue(ACCESS_TOKEN);
 
         if (StringUtils.isNullOrEmpty(token)) {
             return null;
         }
 
-        // Restore the body
-        request.setEntity(form.getWebRepresentation());
-        logger.fine("Found Bearer Token in Body.");
+        logger.fine("Found Bearer Token in Body");
 
         return token;
     }
@@ -114,7 +119,7 @@ public class TokenVerifier implements Verifier {
     private String getAccessTokenFromQuery(Request request) {
         // Try to find token in URI query
         Form params = request.getOriginalRef().getQueryAsForm();
-        String token = params.getFirstValue(OAuthServerResource.ACCESS_TOKEN);
+        String token = params.getFirstValue(ACCESS_TOKEN);
 
         if (!StringUtils.isNullOrEmpty(token)) {
             logger.fine("Found Bearer Token in URI query.");
@@ -128,9 +133,20 @@ public class TokenVerifier implements Verifier {
      * Indicates if the credentials are "Form-Encoded Body Parameter".
      * 
      * @return True if the credentials are "Form-Encoded Body Parameter".
+     * @Deprecated use {@link #isAcceptingAccessTokenSentByBody()} instead.
      */
+    @Deprecated
     public boolean isAcceptBodyMethod() {
-        return acceptBodyMethod;
+        return acceptingAccessTokenSentByBody;
+    }
+
+    /**
+     * Indicates if the credentials are "Form-Encoded Body Parameter".
+     * 
+     * @return True if the credentials are "Form-Encoded Body Parameter".
+     */
+    public boolean isAcceptingAccessTokenSentByBody() {
+        return acceptingAccessTokenSentByBody;
     }
 
     /**
@@ -138,8 +154,30 @@ public class TokenVerifier implements Verifier {
      * 
      * @return True if the credentials are "URI Query Parameter".
      */
+    public boolean isAcceptingAccessTokenSentByQuery() {
+        return acceptingAccessTokenSentByQuery;
+    }
+
+    /**
+     * Indicates if the credentials are "URI Query Parameter".
+     * 
+     * @return True if the credentials are "URI Query Parameter".
+     * @Deprecated use {@link #isAcceptingAccessTokenSentByQuery()} instead.
+     */
     public boolean isAcceptQueryMethod() {
-        return acceptQueryMethod;
+        return acceptingAccessTokenSentByQuery;
+    }
+
+    /**
+     * Indicates if the credentials are "Form-Encoded Body Parameter".
+     * 
+     * @param acceptBodyMethod
+     *            True if the credentials are "Form-Encoded Body Parameter".
+     * @deprecated use {@link #setAcceptingAccessTokenSentByBody(boolean)} instead.
+     */
+    @Deprecated
+    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
+        this.acceptingAccessTokenSentByBody = acceptBodyMethod;
     }
 
     /**
@@ -148,8 +186,8 @@ public class TokenVerifier implements Verifier {
      * @param acceptBodyMethod
      *            True if the credentials are "Form-Encoded Body Parameter".
      */
-    public void setAcceptBodyMethod(boolean acceptBodyMethod) {
-        this.acceptBodyMethod = acceptBodyMethod;
+    public void setAcceptingAccessTokenSentByBody(boolean acceptingAccessTokenSentByBody) {
+        this.acceptingAccessTokenSentByBody = acceptingAccessTokenSentByBody;
     }
 
     /**
@@ -158,8 +196,20 @@ public class TokenVerifier implements Verifier {
      * @param acceptQueryMethod
      *            True if the credentials are "URI Query Parameter".
      */
+    public void setAcceptingAccessTokenSentByQuery(boolean acceptingAccessTokenSentByQuery) {
+        this.acceptingAccessTokenSentByQuery = acceptingAccessTokenSentByQuery;
+    }
+
+    /**
+     * Indicates if the credentials are "URI Query Parameter".
+     * 
+     * @param acceptQueryMethod
+     *            True if the credentials are "URI Query Parameter".
+     * @deprecated use {@link #setAcceptingAccessTokenSentByQuery(boolean)} instead.
+     */
+    @Deprecated
     public void setAcceptQueryMethod(boolean acceptQueryMethod) {
-        this.acceptQueryMethod = acceptQueryMethod;
+        this.acceptingAccessTokenSentByQuery = acceptQueryMethod;
     }
 
     @Override
@@ -171,13 +221,13 @@ public class TokenVerifier implements Verifier {
             if (cr == null) {
                 // Try Bearer alternative methods
                 String bearer = null;
-                if (acceptBodyMethod) {
+                if (acceptingAccessTokenSentByBody) {
                     bearer = getAccessTokenFromBody(request);
                 }
-                if (bearer == null && acceptQueryMethod) {
+                if (bearer == null && acceptingAccessTokenSentByQuery) {
                     bearer = getAccessTokenFromQuery(request);
                     if (bearer != null) {
-                        OAuthServerResource.addCacheDirective(response, CacheDirective.privateInfo());
+                        response.getCacheDirectives().add(CacheDirective.privateInfo());
                     }
                 }
                 if (bearer == null) {
@@ -186,15 +236,17 @@ public class TokenVerifier implements Verifier {
                 logger.config("Verify: Bearer (Alternative)");
                 authRequest = createBearerAuthRequest(bearer);
             } else if (ChallengeScheme.HTTP_OAUTH_BEARER.equals(cr.getScheme())) {
-                logger.config("Verify: Bearer");
+                logger.config("Verify: " + cr.getScheme().getName());
                 final String bearer = cr.getRawValue();
                 if (StringUtils.isNullOrEmpty(bearer)) {
                     return RESULT_MISSING;
                 }
                 authRequest = createBearerAuthRequest(bearer);
-            }/*
-              * else if (cr.getScheme().equals(HTTP_MAC)) { // TODO }
-              */else {
+            } else if (ChallengeScheme.HTTP_OAUTH_MAC.equals(cr.getScheme())) {
+                logger.config("Verify: " + cr.getScheme().getName());
+                // TODO Add support of HTTP_OAUTH_MAC challenge scheme
+                return RESULT_UNSUPPORTED;
+            } else {
                 return RESULT_UNSUPPORTED;
             }
         } catch (Exception ex) {
@@ -216,11 +268,11 @@ public class TokenVerifier implements Verifier {
             return RESULT_INVALID;
         }
 
-        if (jsonResponse.has(OAuthServerResource.ERROR)) {
+        if (jsonResponse.has(ERROR)) {
             try {
-                String error = jsonResponse.getString(OAuthServerResource.ERROR);
+                String error = jsonResponse.getString(ERROR);
                 logger.warning(error);
-                logger.warning(jsonResponse.getString(OAuthServerResource.ERROR_DESC));
+                logger.warning(jsonResponse.getString(ERROR_DESC));
             } catch (JSONException ex) {
                 logger.log(Level.SEVERE, "Error while parsing the OAuth authorization error response.", ex);
             }
@@ -230,8 +282,8 @@ public class TokenVerifier implements Verifier {
 
         try {
             ClientInfo clientInfo = request.getClientInfo();
-            clientInfo.setUser(new User(jsonResponse.getString(OAuthServerResource.USERNAME)));
-            clientInfo.setRoles(Scopes.toRoles(jsonResponse.getString(OAuthServerResource.SCOPE)));
+            clientInfo.setUser(new User(jsonResponse.getString(USERNAME)));
+            clientInfo.setRoles(Scopes.toRoles(jsonResponse.getString(SCOPE)));
         } catch (JSONException ex) {
             logger.log(Level.SEVERE, "Error while parsing the OAuth authorization success response.", ex);
             return RESULT_INVALID;

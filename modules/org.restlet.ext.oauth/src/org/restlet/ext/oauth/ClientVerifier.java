@@ -24,6 +24,9 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_SECRET;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -97,12 +100,12 @@ public class ClientVerifier extends SecretVerifier {
             // Alternative method...
             Form params = new Form(request.getEntity());
 
-            clientId = params.getFirstValue(OAuthServerResource.CLIENT_ID);
+            clientId = params.getFirstValue(CLIENT_ID);
             if (StringUtils.isNullOrEmpty(clientId)) {
                 return RESULT_MISSING;
             }
 
-            String secret = params.getFirstValue(OAuthServerResource.CLIENT_SECRET);
+            String secret = params.getFirstValue(CLIENT_SECRET);
             if (StringUtils.isNullOrEmpty(secret)) {
                 clientSecret = new char[0];
             } else {

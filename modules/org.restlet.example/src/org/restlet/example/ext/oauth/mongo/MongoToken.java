@@ -24,9 +24,16 @@
 
 package org.restlet.example.ext.oauth.mongo;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.EXPIRES_IN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REFRESH_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import java.util.List;
 
-import org.restlet.ext.oauth.OAuthResourceDefs;
 import org.restlet.ext.oauth.internal.ServerToken;
 
 import com.mongodb.DBObject;
@@ -36,7 +43,7 @@ import com.mongodb.DBObject;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class MongoToken implements ServerToken, OAuthResourceDefs {
+public class MongoToken implements ServerToken {
 
     public static final String TIMESTAMP = "timestamp";
 

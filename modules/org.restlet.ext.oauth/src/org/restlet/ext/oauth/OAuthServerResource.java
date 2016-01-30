@@ -24,14 +24,14 @@
 
 package org.restlet.ext.oauth;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.STATE;
+
 import java.util.concurrent.ConcurrentMap;
 
 import org.json.JSONException;
 import org.restlet.Context;
-import org.restlet.Response;
-import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.engine.util.StringUtils;
@@ -52,26 +52,9 @@ import org.restlet.resource.ServerResource;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
  */
-public abstract class OAuthServerResource extends ServerResource implements OAuthResourceDefs {
+public abstract class OAuthServerResource extends ServerResource {
 
     public static final String PARAMETER_DEFAULT_SCOPE = "defaultScope";
-
-    /**
-     * Adds a cache directive to the response.
-     * 
-     * @param response
-     *            The current response.
-     * @param cacheDirective
-     *            The cache directive to add.
-     */
-    public static void addCacheDirective(Response response, CacheDirective cacheDirective) {
-        List<CacheDirective> cacheDirectives = response.getCacheDirectives();
-        if (cacheDirectives == null) {
-            cacheDirectives = new ArrayList<CacheDirective>();
-            response.setCacheDirectives(cacheDirectives);
-        }
-        cacheDirectives.add(cacheDirective);
-    }
 
     /**
      * Returns the representation of the given error. The format of the JSON
@@ -128,7 +111,7 @@ public abstract class OAuthServerResource extends ServerResource implements OAut
             getLogger().warning("Could not find client ID");
             throw new OAuthException(OAuthError.invalid_request, "No client_id parameter found.", null);
         }
-        
+
         Client client = clients.findById(clientId);
         getLogger().fine("Client = " + client);
         if (client == null) {
@@ -148,7 +131,7 @@ public abstract class OAuthServerResource extends ServerResource implements OAut
      */
     protected String[] getScope(Form parameters) throws OAuthException {
         String scope = parameters.getFirstValue(SCOPE);
-        
+
         if (StringUtils.isNullOrEmpty(scope)) {
             // If the client omits the scope parameter when requesting authorization, the authorization server MUST
             // either process the request using a pre-defined default value, or fail the request indicating an invalid

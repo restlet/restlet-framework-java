@@ -24,6 +24,13 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CODE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.EXPIRES_IN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.STATE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -312,7 +319,7 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
                 }
             }
 
-            addCacheDirective(getResponse(), CacheDirective.noCache());
+            getResponse().getCacheDirectives().add(CacheDirective.noCache());
             return getPage(authPage);
         }
         getLogger().fine("accepting scopes since no authPage: " + authPage);

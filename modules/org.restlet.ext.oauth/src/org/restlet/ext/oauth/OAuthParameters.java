@@ -24,6 +24,16 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.CODE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.GRANT_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.PASSWORD;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REDIR_URI;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REFRESH_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.RESPONSE_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.STATE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +50,7 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class OAuthParameters implements OAuthResourceDefs {
+public class OAuthParameters {
     /** The list of parameters. */
     private Form form;
 

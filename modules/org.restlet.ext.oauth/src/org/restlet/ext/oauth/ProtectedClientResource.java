@@ -24,6 +24,9 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
+
 import java.net.URI;
 
 import org.restlet.Context;
@@ -46,7 +49,7 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class ProtectedClientResource extends ClientResource implements OAuthResourceDefs {
+public class ProtectedClientResource extends ClientResource {
 
     private volatile Token token;
 

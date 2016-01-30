@@ -24,6 +24,11 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CODE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR;
+import static org.restlet.ext.oauth.OAuthResourceDefs.STATE;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -79,7 +84,7 @@ import org.restlet.routing.Filter;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @see org.restlet.ext.oauth.OAuthParameters
  */
-public class OAuthProxy extends Filter implements OAuthResourceDefs {
+public class OAuthProxy extends Filter {
 
     private final static List<CacheDirective> no = new ArrayList<CacheDirective>();
 

@@ -24,6 +24,9 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.REDIR_URI;
+import static org.restlet.ext.oauth.OAuthResourceDefs.RESPONSE_TYPE;
+
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.StringUtils;
@@ -211,7 +214,8 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
             client = getClient(params);
             redirectURI = getRedirectionURI(params, client);
         } catch (OAuthException ex) {
-            // MUST NOT automatically redirect the user-agent to the invalid redirection URI. (see 3.1.2.4. Invalid Endpoint)
+            // MUST NOT automatically redirect the user-agent to the invalid redirection URI. (see 3.1.2.4. Invalid
+            // Endpoint)
             return getErrorPage(HttpOAuthHelper.getErrorPageTemplate(getContext()), ex);
         } catch (Exception ex) {
             // All other exception should be caught as server_error.
@@ -226,7 +230,8 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         try {
             ResponseType[] responseTypes = getResponseType(params);
             if (responseTypes.length != 1) {
-                throw new OAuthException(OAuthError.unsupported_response_type, "Extension response types are not supported.", null);
+                throw new OAuthException(OAuthError.unsupported_response_type,
+                        "Extension response types are not supported.", null);
             }
             if (!client.isResponseTypeAllowed(responseTypes[0])) {
                 throw new OAuthException(OAuthError.unauthorized_client, "Unauthorized response type.", null);
@@ -253,7 +258,8 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         if (session.getScopeOwner() == null) {
             // Redirect to login page.
             Reference ref = new Reference("." + HttpOAuthHelper.getLoginPage(getContext()));
-            ref.addQueryParameter("continue", getRequest().getOriginalRef().toString(true, false)); // XXX: Don't need full query.
+            ref.addQueryParameter("continue", getRequest().getOriginalRef().toString(true, false)); // XXX: Don't need
+                                                                                                    // full query.
             redirectTemporary(ref.toString());
             return new EmptyRepresentation();
         }

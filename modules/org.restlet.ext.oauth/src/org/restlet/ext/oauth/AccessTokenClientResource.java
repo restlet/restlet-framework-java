@@ -24,6 +24,15 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_SECRET;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR;
+import static org.restlet.ext.oauth.OAuthResourceDefs.EXPIRES_IN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REFRESH_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+
 import java.io.IOException;
 
 import org.json.JSONException;
@@ -46,7 +55,7 @@ import org.restlet.resource.ResourceException;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class AccessTokenClientResource extends ClientResource implements OAuthResourceDefs {
+public class AccessTokenClientResource extends ClientResource {
 
     private static class TokenResponse implements Token {
 

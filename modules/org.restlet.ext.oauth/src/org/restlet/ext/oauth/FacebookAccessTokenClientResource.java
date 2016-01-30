@@ -24,6 +24,10 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
+
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.Token;

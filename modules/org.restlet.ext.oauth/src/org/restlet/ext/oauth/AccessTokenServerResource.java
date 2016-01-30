@@ -24,6 +24,17 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CODE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.EXPIRES_IN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.GRANT_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.PASSWORD;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REDIR_URI;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REFRESH_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import java.util.logging.Level;
 
 import javax.naming.AuthenticationException;
@@ -136,7 +147,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setEntity(responseErrorRepresentation(oex));
         // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
+        getResponse().getCacheDirectives().add(CacheDirective.noStore());
         getResponse().getHeaders().add(HeaderConstants.HEADER_PRAGMA, "no-cache");
     }
 
@@ -445,7 +456,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
          * information, as well as the "Pragma" response header field [RFC2616]
          * with a value of "no-cache". (5.1. Successful Response)
          */
-        addCacheDirective(getResponse(), CacheDirective.noStore());
+        getResponse().getCacheDirectives().add(CacheDirective.noStore());
         getResponse().getHeaders().add(HeaderConstants.HEADER_PRAGMA, "no-cache");
 
         return new JsonRepresentation(response);

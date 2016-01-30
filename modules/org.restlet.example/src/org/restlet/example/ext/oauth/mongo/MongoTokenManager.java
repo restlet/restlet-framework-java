@@ -24,6 +24,15 @@
 
 package org.restlet.example.ext.oauth.mongo;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ACCESS_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.CLIENT_ID;
+import static org.restlet.ext.oauth.OAuthResourceDefs.EXPIRES_IN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.REFRESH_TOKEN;
+import static org.restlet.ext.oauth.OAuthResourceDefs.SCOPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE;
+import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
+import static org.restlet.ext.oauth.OAuthResourceDefs.USERNAME;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +40,6 @@ import java.util.Map;
 
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.OAuthException;
-import org.restlet.ext.oauth.OAuthResourceDefs;
 import org.restlet.ext.oauth.internal.AbstractTokenManager;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.Client;
@@ -48,8 +56,7 @@ import com.mongodb.DBObject;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class MongoTokenManager extends AbstractTokenManager implements
-        OAuthResourceDefs {
+public class MongoTokenManager extends AbstractTokenManager {
 
     private DBCollection tokens;
 

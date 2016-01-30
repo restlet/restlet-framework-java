@@ -24,6 +24,11 @@
 
 package org.restlet.ext.oauth;
 
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR_DESC;
+import static org.restlet.ext.oauth.OAuthResourceDefs.ERROR_URI;
+import static org.restlet.ext.oauth.OAuthResourceDefs.STATE;
+
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
