@@ -381,37 +381,36 @@ public class DirectoryServerResource extends ServerResource {
     protected Representation get() throws ResourceException {
         // Content negotiation has been disabled
         // The variant that may need to meet the request conditions
-        Representation result = null;
 
         List<Variant> variants = getVariants(Method.GET);
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        } else if (variants.size() == 1) {
-            result = (Representation) variants.get(0);
-        } else {
-            ReferenceList variantRefs = new ReferenceList();
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+        }
 
-            for (Variant variant : variants) {
-                if (variant.getLocationRef() != null) {
-                    variantRefs.add(variant.getLocationRef());
-                } else {
-                    getLogger()
-                            .warning(
-                                    "A resource with multiple variants should provide a location for each variant when content negotiation is turned off");
-                }
-            }
+        if (variants.size() == 1) {
+            return (Representation) variants.get(0);
+        }
 
-            if (!variantRefs.isEmpty()) {
-                // Return the list of variants
-                setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                result = variantRefs.getTextRepresentation();
+        ReferenceList variantRefs = new ReferenceList();
+
+        for (Variant variant : variants) {
+            if (variant.getLocationRef() != null) {
+                variantRefs.add(variant.getLocationRef());
             } else {
-                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                getLogger()
+                        .warning(
+                                "A resource with multiple variants should provide a location for each variant when content negotiation is turned off");
             }
         }
 
-        return result;
+        if (!variantRefs.isEmpty()) {
+            // Return the list of variants
+            setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+            return variantRefs.getTextRepresentation();
+        }
+
+        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     /**
