@@ -84,7 +84,7 @@ public class TemplateDispatcher extends Filter {
             request.setResourceRef(template.format(request, response));
         }
 
-        request.setOriginalRef(request.getResourceRef().getTargetRef());
+        request.setOriginalRef(ReferenceUtils.getOriginalRef(request.getResourceRef(), request.getHeaders()));
         return CONTINUE;
     }
 

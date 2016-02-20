@@ -28,9 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Series;
 
 /**
  * Test {@link org.restlet.data.Reference}.
@@ -198,6 +202,17 @@ public class ReferenceTestCase extends RestletTestCase {
         newForm.add("b", "2");
         newForm.add("c", "4");
         assertEquals("a=1;b=2;c=4", newForm.getMatrixString());
+    }
+    
+    public void testOriginalRef() {
+        Reference ref = new Reference("http://localhost/test");
+        Series<Header> headers = new Series<>(Header.class);
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_PROTO, "HTTPS");
+        headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "123");
+
+        Reference originalRef = ReferenceUtils.getOriginalRef(ref, headers);
+        assertEquals(originalRef.getSchemeProtocol(), Protocol.HTTPS);
+        assertEquals(originalRef.getHostPort(), 123);
     }
 
     /**

@@ -32,7 +32,6 @@ import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.http.HttpGenerator;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;

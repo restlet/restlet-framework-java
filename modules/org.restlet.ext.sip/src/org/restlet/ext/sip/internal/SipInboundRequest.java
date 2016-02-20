@@ -58,6 +58,7 @@ import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.request.InboundRequest;
 import org.restlet.ext.sip.Address;
@@ -1145,7 +1146,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 }
             }
 
-            setOriginalRef(getResourceRef().getTargetRef());
+            setOriginalRef(ReferenceUtils.getOriginalRef(getResourceRef(), headers));
         }
 
         // Set the request date
