@@ -41,6 +41,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
@@ -58,6 +59,7 @@ import org.restlet.engine.header.StringReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -164,8 +166,7 @@ public class HttpRequest extends Request {
         sb.append(httpCall.getProtocol().getSchemeName()).append("://");
         sb.append(httpCall.getHostDomain());
         if ((httpCall.getHostPort() != -1)
-                && (httpCall.getHostPort() != httpCall.getProtocol()
-                        .getDefaultPort())) {
+                && (httpCall.getHostPort() != httpCall.getProtocol().getDefaultPort())) {
             sb.append(':').append(httpCall.getHostPort());
         }
         setHostRef(sb.toString());
@@ -185,12 +186,11 @@ public class HttpRequest extends Request {
                 }
             }
 
-            setOriginalRef(getResourceRef().getTargetRef());
+            setOriginalRef(ReferenceUtils.getOriginalRef(getResourceRef(), httpCall.getRequestHeaders()));
         }
 
         // Set the request date
-        String dateHeader = httpCall.getRequestHeaders().getFirstValue(
-                HeaderConstants.HEADER_DATE, true);
+        String dateHeader = httpCall.getRequestHeaders().getFirstValue(HeaderConstants.HEADER_DATE, true);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);

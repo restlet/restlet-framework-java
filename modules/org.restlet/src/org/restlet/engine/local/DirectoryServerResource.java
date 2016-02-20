@@ -186,16 +186,16 @@ public class DirectoryServerResource extends ServerResource {
         }
 
         // Update the member variables
-        this.relativePart = getReference().getRemainingPart(false, false);
         setNegotiated(this.directory.isNegotiatingContent());
-
-        // Restore the original URI in case the call has been tunneled.
-        if ((getApplication() != null)
-                && getApplication().getTunnelService().isExtensionsTunnel()) {
-            this.originalRef = getOriginalRef();
-
-            if (this.originalRef != null) {
-                this.originalRef.setBaseRef(getReference().getBaseRef());
+        this.relativePart = getReference().getRemainingPart(false, false);
+        this.originalRef = getOriginalRef();
+        if (this.originalRef != null) {
+            // Restore the original URI in case the call has been tunneled.
+            if ((getApplication() != null)
+                    && getApplication().getTunnelService().isExtensionsTunnel()) {
+                Reference originalBaseRef = new Reference(this.originalRef);
+                originalBaseRef.setPath(getReference().getBaseRef().getPath());
+                this.originalRef.setBaseRef(originalBaseRef);
                 this.relativePart = this.originalRef.getRemainingPart();
             }
         }
@@ -729,12 +729,11 @@ public class DirectoryServerResource extends ServerResource {
         }
 
         // detected a directory, but the current reference lacks the trailing "/", let's redirect.
-        Reference directoryReference = (this.originalRef != null) ? this.originalRef : getReference();
-
+        Reference directoryReference = (this.originalRef != null) ? this.originalRef : getReference().getTargetRef();
         if (directoryReference.hasQuery()) {
-            redirectSeeOther(directoryReference.getPath() + "/?" + directoryReference.getQuery());
+            redirectSeeOther(directoryReference.toString(false, false) + "/?" + directoryReference.getQuery());
         } else {
-            redirectSeeOther(directoryReference.getPath() + "/");
+            redirectSeeOther(directoryReference.toString(false, false) + "/");
         }
 
         return null;

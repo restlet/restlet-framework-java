@@ -25,8 +25,12 @@
 package org.restlet.engine.util;
 
 import org.restlet.Request;
+import org.restlet.data.Header;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
+import org.restlet.util.Series;
 
 /**
  * Utilities related to URI references.
@@ -45,8 +49,8 @@ public class ReferenceUtils {
      * @return The absolute request URI.
      */
     public static Reference update(Reference resourceRef, Request request) {
-        Reference result = resourceRef.isAbsolute() ? resourceRef : resourceRef
-                .getTargetRef();
+        Reference result = resourceRef.isAbsolute() ? resourceRef :
+                resourceRef.getTargetRef();
 
         // Optionally update the request before formatting its URI
         result = AuthenticatorUtils.updateReference(result,
@@ -87,6 +91,35 @@ public class ReferenceUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the original reference especially by detecting potential proxy forwardings.
+     * 
+     * @param resourceRef
+     *            The request's resource reference.
+     * @param headers
+     *            The set of request's headers.
+     * @return The original reference.
+     */
+    public static Reference getOriginalRef(Reference resourceRef, Series<Header> headers) {
+        Reference originalRef = resourceRef.getTargetRef();
+
+        if (headers == null) {
+            return originalRef;
+        }
+        
+        String value = headers.getFirstValue(HeaderConstants.HEADER_X_FORWARDED_PORT);
+        if (value != null) {
+            originalRef.setHostPort(Integer.parseInt(value));
+        }
+
+        value = headers.getFirstValue(HeaderConstants.HEADER_X_FORWARDED_PROTO);
+        if (value != null) {
+            originalRef.setScheme(value);
+        }
+
+        return originalRef;
     }
 
     /**

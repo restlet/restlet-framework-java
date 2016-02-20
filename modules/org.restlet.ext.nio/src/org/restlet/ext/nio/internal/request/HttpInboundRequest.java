@@ -60,6 +60,7 @@ import org.restlet.engine.header.StringReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.util.Series;
 
@@ -746,16 +747,16 @@ public class HttpInboundRequest extends Request implements InboundRequest {
             } else {
                 // IPv6 address handling.
                 //
-                // Two possible cases, host == "[::1]:8182" --using the 8182
-                // port. host == "[::1]" ------ using the default port 80.
+                // Two possible cases:
+                // - host == "[::1]:8182" --using the 8182 port.
+                // - host == "[::1]" ------ using the default port 80.
                 //
                 // For IPv6 address, we use ']' to separate the domain and the
                 // port, because it's unique.
                 if (rightSquareBracketIndex + 1 < host.length()) {
                     // Using specified port
                     hostDomain = host.substring(0, rightSquareBracketIndex + 1);
-                    hostPort = Integer.valueOf(host
-                            .substring(rightSquareBracketIndex + 2));
+                    hostPort = Integer.valueOf(host.substring(rightSquareBracketIndex + 2));
                 } else if (rightSquareBracketIndex + 1 == host.length()) {
                     // Must be using default port 80,
                     hostDomain = host;
@@ -767,15 +768,11 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                                 + hostDomain + ", hostPort: " + hostPort);
             }
         } else {
-            Protocol serverProtocol = getConnection().getHelper().getHelped()
-                    .getProtocols().get(0);
+            Protocol serverProtocol = getConnection().getHelper().getHelped().getProtocols().get(0);
 
-            if (!Protocol.SIP.getSchemeName().equals(
-                    serverProtocol.getSchemeName())
-                    && !Protocol.SIPS.getSchemeName().equals(
-                            serverProtocol.getSchemeName())) {
-                Context.getCurrentLogger()
-                        .info("Couldn't find the mandatory \"Host\" HTTP header. Falling back to the IP address.");
+            if (!Protocol.SIP.getSchemeName().equals(serverProtocol.getSchemeName())
+                    && !Protocol.SIPS.getSchemeName().equals(serverProtocol.getSchemeName())) {
+                Context.getCurrentLogger().info("Couldn't find the mandatory \"Host\" HTTP header. Falling back to the IP address.");
                 hostDomain = getConnection().getAddress();
                 hostPort = getConnection().getPort();
 
@@ -784,8 +781,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 }
 
                 if (hostPort == -1) {
-                    hostPort = getConnection().getHelper().getHelped()
-                            .getActualPort();
+                    hostPort = getConnection().getHelper().getHelped().getActualPort();
                 }
 
                 if (hostPort == -1) {
@@ -795,8 +791,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         }
 
         // Set the host reference
-        Protocol protocol = getConnection().getHelper().getHelped()
-                .getProtocols().get(0);
+        Protocol protocol = getConnection().getHelper().getHelped().getProtocols().get(0);
         StringBuilder sb = new StringBuilder();
         sb.append(protocol.getSchemeName()).append("://");
         sb.append(hostDomain);
@@ -814,20 +809,18 @@ public class HttpInboundRequest extends Request implements InboundRequest {
             if (getResourceRef().isRelative()) {
                 // Take care of the "/" between the host part and the segments.
                 if (!resourceUri.startsWith("/")) {
-                    setResourceRef(new Reference(getHostRef().toString() + "/"
-                            + resourceUri));
+                    setResourceRef(new Reference(getHostRef().toString() + "/" + resourceUri));
                 } else {
-                    setResourceRef(new Reference(getHostRef().toString()
-                            + resourceUri));
+                    setResourceRef(new Reference(getHostRef().toString() + resourceUri));
                 }
             }
 
-            setOriginalRef(getResourceRef().getTargetRef());
+            setOriginalRef(ReferenceUtils.getOriginalRef(getResourceRef(), headers));
         }
 
         // Set the request date
-        String dateHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_DATE, true);
+        String dateHeader = (getHeaders() == null) ? null : 
+            getHeaders().getFirstValue(HeaderConstants.HEADER_DATE, true);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);
@@ -840,8 +833,8 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         setDate(date);
 
         // Set the max forwards
-        String maxForwardsHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS, true);
+        String maxForwardsHeader = (getHeaders() == null) ? null : 
+            getHeaders().getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS, true);
         if (maxForwardsHeader != null) {
             try {
                 setMaxForwards(Integer.parseInt(maxForwardsHeader));
