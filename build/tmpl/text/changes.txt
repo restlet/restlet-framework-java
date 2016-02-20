@@ -8,6 +8,8 @@ Changes log
        - Fixed invalid Class-Path header in manifest of the org.restlet.jar. Issue #698.
          Reported by Marcin Zajączkowski and Christopher Dancy.
        - Fixed computation of request#originalRef when behind a proxy. Issue #1191.
+    - Enhancements
+       - Upgraded org.json to version 20160212. Issue #1195.
 
 - 2.3.6 (01/26/2016)
     - Bugs fixed

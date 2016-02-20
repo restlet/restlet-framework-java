@@ -2,16 +2,19 @@
 	<name>JSON framework</name>
 	<description>JSON framework.</description>
 	<version>2.0</version>
-	<homeUri>http://www.json.org/</homeUri>
-	<downloadUri>http://www.json.org/java/index.html</downloadUri>
+	<homeUri>https://github.com/douglascrockford/JSON-java</homeUri>
+	<downloadUri>https://github.com/douglascrockford/JSON-java
+	</downloadUri>
 	<provider>JSON.org</provider>
-	
-	<package name="org.json" />
+
+	<package name="org.json">
+		<maven>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160212</version>
+		</maven>
+	</package>
 	<distributions>
 		<distribution id="classic" />
-		<distribution id="maven" />
 	</distributions>
-	<javadocs>
-		<link href="http://www.json.org/javadoc/" />
-	</javadocs>
 </library>
