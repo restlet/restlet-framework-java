@@ -60,8 +60,7 @@ public class MongoClientManager extends AbstractClientManager {
         BasicDBObject client = new BasicDBObject("_id", clientId);
 
         if (clientSecret != null) {
-            client.put(MongoClient.CLIENT_SECRET,
-                    String.copyValueOf(clientSecret));
+            client.put(MongoClient.CLIENT_SECRET, String.copyValueOf(clientSecret));
         }
 
         switch (clientType) {

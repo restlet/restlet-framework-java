@@ -67,9 +67,8 @@ public class MongoClient implements Client {
     public char[] getClientSecret() {
         if (client.containsField(CLIENT_SECRET)) {
             return client.get(CLIENT_SECRET).toString().toCharArray();
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -84,9 +83,8 @@ public class MongoClient implements Client {
             }
 
             return uris;
-        } else {
-            return null;
         }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -101,9 +99,8 @@ public class MongoClient implements Client {
             return ClientType.PUBLIC;
         } else if (type.equals("confidential")) {
             return ClientType.CONFIDENTIAL;
-        } else {
-            throw new IllegalStateException("Unknown Client Type");
         }
+        throw new IllegalStateException("Unknown Client Type");
     }
 
     public boolean isResponseTypeAllowed(ResponseType responseType) {

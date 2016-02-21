@@ -71,7 +71,8 @@ public class ClientManagerTest {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(Client.PROPERTY_APPLICATION_NAME, "Test1");
         Client client1 = clients.createClient(ClientType.PUBLIC,
-                new String[] { "http://example.com/cb" }, properties);
+                new String[] { "http://example.com/cb" }, 
+                properties);
         clientIdToFind = client1.getClientId();
 
         Client client2 = clients.createClient(ClientType.CONFIDENTIAL, null,
@@ -86,7 +87,7 @@ public class ClientManagerTest {
                 new Object[] { ResponseType.token });
         try {
             clients.createClient(ClientType.CONFIDENTIAL, null, properties);
-            fail("IllegalArgumentException expected.");
+            fail("IllegalArgumentException expected because no redirect URIS have been defined.");
         } catch (IllegalArgumentException ex) {
             assertTrue(true);
         }

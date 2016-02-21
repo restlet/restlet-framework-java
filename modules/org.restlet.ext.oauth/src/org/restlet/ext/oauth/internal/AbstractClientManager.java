@@ -44,10 +44,12 @@ import org.restlet.ext.oauth.internal.Client.ClientType;
 public abstract class AbstractClientManager implements ClientManager {
 
     public static final Object[] DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL = new Object[] {
-            ResponseType.code, GrantType.authorization_code,
-            GrantType.client_credentials, GrantType.refresh_token };
+            ResponseType.code,
+            GrantType.authorization_code,
+            GrantType.client_credentials,
+            GrantType.refresh_token };
 
-    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] { ResponseType.token, };
+    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] { ResponseType.token };
 
     public static final int RESEED_CLIENTS = 100;
 
@@ -65,16 +67,12 @@ public abstract class AbstractClientManager implements ClientManager {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException(ex);
         }
-        defaultSupportedFlow = new EnumMap<ClientType, Object[]>(
-                ClientType.class);
-        defaultSupportedFlow.put(ClientType.PUBLIC,
-                DEFAULT_SUPPORTED_FLOWS_PUBLIC);
-        defaultSupportedFlow.put(ClientType.CONFIDENTIAL,
-                DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL);
+        defaultSupportedFlow = new EnumMap<ClientType, Object[]>(ClientType.class);
+        defaultSupportedFlow.put(ClientType.PUBLIC, DEFAULT_SUPPORTED_FLOWS_PUBLIC);
+        defaultSupportedFlow.put(ClientType.CONFIDENTIAL, DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL);
     }
 
-    public Client createClient(ClientType clientType, String[] redirectURIs,
-            Map<String, Object> properties) {
+    public Client createClient(ClientType clientType, String[] redirectURIs, Map<String, Object> properties) {
         if (properties == null) {
             properties = new HashMap<String, Object>();
         }
@@ -85,18 +83,14 @@ public abstract class AbstractClientManager implements ClientManager {
             properties.put(Client.PROPERTY_SUPPORTED_FLOWS, flows);
         }
 
-        /*
-         * The authorization server MUST require the following clients to
-         * register their redirection endpoint: o Public clients. o Confidential
-         * clients utilizing the implicit grant type. (3.1.2.2. Registration
-         * Requirements)
-         */
+        // The authorization server MUST require the following clients to register their redirection endpoint:
+        // o Public clients.
+        // o Confidential clients utilizing the implicit grant type. (3.1.2.2. Registration Requirements)
         if (clientType == ClientType.PUBLIC
-                || (clientType == ClientType.CONFIDENTIAL && Arrays.asList(
-                        (Object[]) flows).contains(ResponseType.token))) {
+                || (clientType == ClientType.CONFIDENTIAL
+                && Arrays.asList((Object[]) flows).contains(ResponseType.token))) {
             if (redirectURIs == null || redirectURIs.length == 0) {
-                throw new IllegalArgumentException(
-                        "RedirectionURI(s) required.");
+                throw new IllegalArgumentException("RedirectionURI(s) required.");
             }
         }
 
@@ -114,12 +108,13 @@ public abstract class AbstractClientManager implements ClientManager {
             clientSecret = Base64.encode(secret, false).toCharArray();
         }
 
-        return createClient(clientId, clientSecret, clientType, redirectURIs,
-                properties);
+        return createClient(clientId, clientSecret, clientType, redirectURIs, properties);
     }
 
     protected abstract Client createClient(String clientId,
-            char[] clientSecret, ClientType clientType, String[] redirectURIs,
+            char[] clientSecret,
+            ClientType clientType,
+            String[] redirectURIs,
             Map<String, Object> properties);
 
     /**
@@ -145,8 +140,7 @@ public abstract class AbstractClientManager implements ClientManager {
      * @param issueClientSecretToPublicClients
      *            the issueClientSecretToPublicClients to set
      */
-    public void setIssueClientSecretToPublicClients(
-            boolean issueClientSecretToPublicClients) {
+    public void setIssueClientSecretToPublicClients(boolean issueClientSecretToPublicClients) {
         this.issueClientSecretToPublicClients = issueClientSecretToPublicClients;
     }
 }

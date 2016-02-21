@@ -109,9 +109,12 @@ public class AuthSessionTest {
     private static void isNormalized(Object val) {
         assertThat(
                 val,
-                anyOf(instanceOf(String.class), instanceOf(Number.class),
-                        instanceOf(Boolean.class), instanceOf(Date.class),
-                        instanceOf(Map.class), instanceOf(List.class),
+                anyOf(instanceOf(String.class), 
+                        instanceOf(Number.class),
+                        instanceOf(Boolean.class), 
+                        instanceOf(Date.class),
+                        instanceOf(Map.class), 
+                        instanceOf(List.class),
                         instanceOf(byte[].class)));
 
         if (val instanceof Map) {

@@ -56,9 +56,12 @@ public class ScopesTest {
         String result = Scopes.toScope(roles);
         assertThat(
                 result,
-                anyOf(equalTo("foo bar baz"), equalTo("foo baz bar"),
-                        equalTo("bar foo baz"), equalTo("bar baz foo"),
-                        equalTo("baz foo bar"), equalTo("baz bar foo")));
+                anyOf(equalTo("foo bar baz"), 
+                        equalTo("foo baz bar"),
+                        equalTo("bar foo baz"), 
+                        equalTo("bar baz foo"),
+                        equalTo("baz foo bar"), 
+                        equalTo("baz bar foo")));
     }
 
     /**
