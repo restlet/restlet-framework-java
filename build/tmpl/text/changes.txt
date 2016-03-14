@@ -3,7 +3,7 @@
 Changes log
 ===========
 
-@version-full@ (@release-date@)
+- 2.3.7 (03/14/2016)
     - Bugs fixed
        - Fixed invalid Class-Path header in manifest of the org.restlet.jar. Issue #698.
          Reported by Marcin Zajączkowski and Christopher Dancy.
