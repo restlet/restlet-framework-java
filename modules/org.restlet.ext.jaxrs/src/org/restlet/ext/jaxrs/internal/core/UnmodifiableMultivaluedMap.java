@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.restlet.util.NamedValue;
 import org.restlet.util.Series;
 
@@ -48,9 +50,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     /**
      * Creates a MultiValuedMap of unmodifiable Lists.
      */
-    private static MultivaluedMapImpl<String, String> copySeries(
+    private static MultivaluedMap<String, String> copySeries(
             Series<?> series, boolean caseInsensitive) {
-        MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>();
+        MultivaluedMap<String, String> mmap = new MultivaluedHashMap<String, String>();
 
         for (NamedValue<String> namedValue : series) {
             String key = caseInsensitive ? namedValue.getName().toLowerCase()
@@ -97,7 +99,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
                     (MultivaluedMapImpl<String, String>) mmap, caseSensitive);
         }
         return new UnmodifiableMultivaluedMap<String, String>(
-                new MultivaluedMapImpl<String, String>(mmap), caseSensitive);
+                new MultivaluedHashMap<String, String>(mmap), caseSensitive);
     }
 
     /**

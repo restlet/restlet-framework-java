@@ -44,6 +44,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
@@ -54,7 +55,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.Form;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.test.ext.jaxrs.services.others.Person;
 import org.restlet.test.ext.jaxrs.services.tests.ProviderTest;
@@ -273,7 +273,7 @@ public class ProviderTestService {
     @Path("MultivaluedMap")
     @Produces("application/x-www-form-urlencoded")
     public MultivaluedMap<String, String> mMapGet() {
-        final MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
+        final MultivaluedMap<String, String> mmap = new MultivaluedHashMap<String, String>();
         mmap.add("firstname", "Angela");
         mmap.add("lastname", "Merkel");
         return mmap;

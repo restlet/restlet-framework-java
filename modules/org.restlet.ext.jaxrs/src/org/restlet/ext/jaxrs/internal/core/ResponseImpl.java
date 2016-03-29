@@ -24,8 +24,11 @@
 
 package org.restlet.ext.jaxrs.internal.core;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 /**
  * Implementation of {@link Response}.
@@ -60,7 +63,7 @@ public class ResponseImpl extends Response {
     public ResponseImpl clone() {
         final ResponseImpl newResp = new ResponseImpl(this.status);
         newResp.entity = this.entity;
-        newResp.metadata = new MultivaluedMapImpl<String, Object>(this.metadata);
+        newResp.metadata = new MultivaluedHashMap<String, Object>(this.metadata);
         return newResp;
     }
 

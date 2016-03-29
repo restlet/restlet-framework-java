@@ -30,12 +30,14 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Link.Builder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.restlet.ext.jaxrs.internal.core.ResponseBuilderImpl;
 import org.restlet.ext.jaxrs.internal.core.UriBuilderImpl;
 import org.restlet.ext.jaxrs.internal.core.VariantListBuilderImpl;
@@ -118,5 +120,10 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     @Override
     public VariantListBuilder createVariantListBuilder() {
         return new VariantListBuilderImpl();
+    }
+
+    @Override
+    public Builder createLinkBuilder() {
+        return new LinkBuilderImpl();
     }
 }

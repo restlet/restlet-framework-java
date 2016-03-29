@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -41,7 +42,6 @@ import javax.ws.rs.core.Response.Status;
 import junit.framework.TestCase;
 
 import org.restlet.engine.Engine;
-import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.test.ext.jaxrs.services.providers.IllegalArgExcMapper;
@@ -86,7 +86,7 @@ public class ExceptionMappersTest extends TestCase {
         }
 
         public MultivaluedMap<String, String> getRequestHeaders() {
-            return new MultivaluedMapImpl<String, String>();
+            return new MultivaluedHashMap<String, String>();
         }
     }
 

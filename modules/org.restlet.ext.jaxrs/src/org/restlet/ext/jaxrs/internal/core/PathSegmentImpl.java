@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 
@@ -57,9 +58,9 @@ public class PathSegmentImpl implements PathSegment {
      * @return Method is public for testing, otherwise it would be package
      *         visible.
      */
-    public static MultivaluedMapImpl<String, String> parseMatrixParams(
+    public static MultivaluedMap<String, String> parseMatrixParams(
             String matrParamString, boolean decoding) {
-        final MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
+        final MultivaluedMap<String, String> matrixParameters = new MultivaluedHashMap<String, String>();
         if (matrParamString == null) {
             return matrixParameters;
         }

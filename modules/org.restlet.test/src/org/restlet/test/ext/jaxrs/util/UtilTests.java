@@ -25,13 +25,13 @@
 package org.restlet.test.ext.jaxrs.util;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import junit.framework.TestCase;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
@@ -129,7 +129,7 @@ public class UtilTests extends TestCase {
     }
 
     public void setUp() {
-        this.httpHeaders = new MultivaluedMapImpl<String, Object>();
+        this.httpHeaders = new MultivaluedHashMap<String, Object>();
     }
 
     @Override

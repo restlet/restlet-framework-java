@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.restlet.Response;
 import org.restlet.data.Header;
-import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.util.Series;
 
 /**
@@ -207,7 +207,7 @@ public class WrappedRequestForHttpHeaders implements
 
     private MultivaluedMap<String, Object> getJaxRsRespHeaders() {
         if (this.jaxRsRespHeaders == null) {
-            this.jaxRsRespHeaders = new MultivaluedMapImpl<String, Object>();
+            this.jaxRsRespHeaders = new MultivaluedHashMap<String, Object>();
         }
         return this.jaxRsRespHeaders;
     }

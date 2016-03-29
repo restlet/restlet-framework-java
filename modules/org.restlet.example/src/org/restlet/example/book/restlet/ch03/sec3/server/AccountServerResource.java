@@ -24,7 +24,7 @@
 
 package org.restlet.example.book.restlet.ch03.sec3.server;
 
-import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch03.sec3.common.AccountResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 

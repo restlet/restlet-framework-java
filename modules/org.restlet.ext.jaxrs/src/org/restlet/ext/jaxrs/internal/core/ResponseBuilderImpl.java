@@ -24,6 +24,7 @@
 
 package org.restlet.ext.jaxrs.internal.core;
 
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
@@ -519,5 +521,53 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             getMetadata().putSingle(HttpHeaders.VARY, vary);
         }
         return this;
+    }
+
+    @Override
+    public ResponseBuilder allow(String... arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder allow(Set<String> arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder entity(Object arg0, Annotation[] arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder link(URI arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder link(String arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder links(Link... arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder replaceAll(MultivaluedMap<String, Object> arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseBuilder variants(Variant... arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
