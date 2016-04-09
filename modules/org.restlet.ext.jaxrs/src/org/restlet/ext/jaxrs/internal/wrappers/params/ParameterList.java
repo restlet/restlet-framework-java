@@ -424,8 +424,7 @@ public class ParameterList {
             } else if (!(e instanceof NoSuchMethodException)
                     && !(e instanceof IllegalAccessException)
                     && !(e instanceof InvocationTargetException)
-                    && !(e instanceof InstantiationException)
-                    && !(e instanceof NoSuchMethodException)) {
+                    && !(e instanceof InstantiationException)) {
                 throw ConvertParameterException
                         .object(this.convertTo, value, e);
             }
