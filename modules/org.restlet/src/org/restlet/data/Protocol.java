@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.util.StringUtils;
+
 /**
  * Protocol used by client and server connectors. Connectors enable the
  * communication between components by implementing standard protocols.
@@ -182,7 +184,7 @@ public final class Protocol {
     public static Protocol valueOf(String name) {
         Protocol result = null;
 
-        if ((name != null) && !name.equals("")) {
+        if (!StringUtils.isNullOrEmpty(name)) {
             if (name.equalsIgnoreCase(AJP.getSchemeName())) {
                 result = AJP;
             } else if (name.equalsIgnoreCase(CLAP.getSchemeName())) {

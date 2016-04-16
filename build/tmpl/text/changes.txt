@@ -4,6 +4,9 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - Fixed NullPointerException when requestind a Directory with a query string. Issue #1206.
+         Reported by Ralph van Etten.
 
 - 2.3.7 (03/14/2016)
     - Bugs fixed

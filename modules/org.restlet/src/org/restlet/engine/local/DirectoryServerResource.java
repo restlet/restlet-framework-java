@@ -196,7 +196,7 @@ public class DirectoryServerResource extends ServerResource {
                 Reference originalBaseRef = new Reference(this.originalRef);
                 originalBaseRef.setPath(getReference().getBaseRef().getPath());
                 this.originalRef.setBaseRef(originalBaseRef);
-                this.relativePart = this.originalRef.getRemainingPart();
+                this.relativePart = this.originalRef.getRemainingPart(false, false);
             }
         }
 

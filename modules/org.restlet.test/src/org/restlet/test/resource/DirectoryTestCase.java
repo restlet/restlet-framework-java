@@ -58,6 +58,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.ReferenceUtils;
@@ -156,6 +157,8 @@ public class DirectoryTestCase extends RestletTestCase {
     File testDir;
 
     public void testDirectory() throws Exception {
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().registerDefaultConverters();
         // Create a new Restlet component
         Component clientComponent = new Component();
         clientComponent.getClients().add(FILE);
@@ -260,6 +263,11 @@ public class DirectoryTestCase extends RestletTestCase {
 
         protected TestRequest header(Header header) {
             request.getHeaders().add(header);
+            return this;
+        }
+
+        protected TestRequest query(String name, String value) {
+            request.getResourceRef().addQueryParameter(name, value);
             return this;
         }
 
@@ -473,6 +481,13 @@ public class DirectoryTestCase extends RestletTestCase {
                 .entityLanguage(FRENCH)
                 .handle(PUT);
         assertEquals(SUCCESS_CREATED, response.getStatus());
+
+        response = new TestRequest(this.baseFileUrl)
+                .baseRef(this.webSiteURL)
+                .query("x", "y")
+                .handle(GET);
+        assertEquals(SUCCESS_OK, response.getStatus());
+        assertTrue(response.getEntityAsText().equals("this is test 3b"));
 
         // Test 4 : Try to get the representation of the new file
         response = new TestRequest(this.baseFileUrl)
