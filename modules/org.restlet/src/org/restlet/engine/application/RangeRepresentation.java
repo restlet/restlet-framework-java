@@ -82,8 +82,7 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     // [ifndef gwt] method
     @Override
-    public java.nio.channels.ReadableByteChannel getChannel()
-            throws IOException {
+    public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
         return IoUtils.getChannel(getStream());
     }
 

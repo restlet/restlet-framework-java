@@ -24,6 +24,8 @@
 
 package org.restlet.engine.application;
 
+import static org.restlet.data.Range.isBytesRange;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -57,11 +59,11 @@ public class RangeFilter extends Filter {
             response.getServerInfo().setAcceptingRanges(true);
 
             if (request.getMethod().isSafe() && response.isEntityAvailable()) {
-                boolean rangedEntity = response.getEntity().getRange() != null;
+                Range responseRange = response.getEntity().getRange();
+                boolean rangedEntity = responseRange != null && isBytesRange(responseRange);
 
                 if (response.getStatus().isSuccess()) {
-                    if (Status.SUCCESS_PARTIAL_CONTENT.equals(response
-                            .getStatus())) {
+                    if (Status.SUCCESS_PARTIAL_CONTENT.equals(response.getStatus())) {
                         if (!rangedEntity) {
                             getLogger()
                                     .warning(
@@ -73,43 +75,37 @@ public class RangeFilter extends Filter {
                     } else {
                         // At this time, list of ranges are not supported.
                         if (request.getRanges().size() == 1
-                                && (!request.getConditions().hasSomeRange() || request
-                                        .getConditions()
-                                        .getRangeStatus(response.getEntity())
-                                        .isSuccess())) {
+                                && (!request.getConditions().hasSomeRange()
+                                || request.getConditions().getRangeStatus(response.getEntity()).isSuccess())) {
                             Range requestedRange = request.getRanges().get(0);
 
                             if ((!response.getEntity().hasKnownSize())
-                                    && ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
-                                            .getSize() == Range.SIZE_MAX) && !(requestedRange
-                                            .getIndex() == Range.INDEX_LAST && requestedRange
-                                            .getSize() == Range.SIZE_MAX))) {
+                                    && ((requestedRange.getIndex() == Range.INDEX_LAST
+                                    || requestedRange.getSize() == Range.SIZE_MAX)
+                                    && !(requestedRange.getIndex() == Range.INDEX_LAST
+                                    && requestedRange.getSize() == Range.SIZE_MAX))) {
                                 // The end index cannot be properly computed
                                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
                                 getLogger()
                                         .warning(
                                                 "Unable to serve this range since at least the end index of the range cannot be computed.");
                                 response.setEntity(null);
-                            } else if (!requestedRange.equals(response
-                                    .getEntity().getRange())) {
+                            } else if (!requestedRange.equals(responseRange)) {
                                 if (rangedEntity) {
-                                    getLogger()
-                                            .info("The range of the response entity is not equal to the requested one.");
+                                    getLogger().info(
+                                            "The range of the response entity is not equal to the requested one.");
                                 }
 
                                 if (response.getEntity().hasKnownSize()
-                                        && requestedRange.getSize() > response
-                                                .getEntity().getAvailableSize()) {
+                                        && requestedRange.getSize() > response.getEntity().getAvailableSize()) {
                                     requestedRange.setSize(Range.SIZE_MAX);
                                 }
 
-                                response.setEntity(new RangeRepresentation(
-                                        response.getEntity(), requestedRange));
+                                response.setEntity(new RangeRepresentation(response.getEntity(), requestedRange));
                                 response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
                             }
                         } else if (request.getRanges().size() > 1) {
-                            // Return a server error as this feature isn't
-                            // supported yet
+                            // Return a server error as this feature isn't supported yet
                             response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                             getLogger()
                                     .warning(
