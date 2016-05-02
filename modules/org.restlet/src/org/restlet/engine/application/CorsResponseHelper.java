@@ -63,8 +63,8 @@ public class CorsResponseHelper {
     public boolean allowedCredentials = false;
 
     /**
-     * The value of 'Access-Control-Allow-Headers' response header. Used only if
-     * {@link #allowAllRequestedHeaders} is false.
+     * The value of 'Access-Control-Allow-Headers' response header. Used only if {@link #allowAllRequestedHeaders} is
+     * false.
      */
     public Set<String> allowedHeaders = null;
 
@@ -73,6 +73,9 @@ public class CorsResponseHelper {
 
     /** The value of 'Access-Control-Expose-Headers' response header. */
     public Set<String> exposedHeaders = null;
+
+    /** The value of 'Access-Control-Max-Age' response header. Default is that the header is not set. */
+    public int maxAge = -1;
 
     /**
      * Adds CORS headers to the given response.
@@ -159,6 +162,10 @@ public class CorsResponseHelper {
 
             // Header 'Access-Control-Allow-Headers'
             response.setAccessControlAllowHeaders(requestedHeaders);
+            
+            if (getMaxAge() > 0) {
+                response.setAccessControlMaxAge(getMaxAge());
+            }
         } else {
             // simple request
 
@@ -220,6 +227,17 @@ public class CorsResponseHelper {
     }
 
     /**
+     * Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.<br>
+     * In case of a negative value, the results of a preflight request is not meant to be cached.<br>
+     * Note that when used with HTTP connectors, this property maps to the "Access-Control-Max-Age" header.
+     * 
+     * @return Indicates how long the results of a preflight request can be cached in a preflight result cache.
+     */
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    /**
      * Returns true if all requested headers are allowed (case-insensitive).
      * 
      * @param allowHeaders
@@ -266,9 +284,9 @@ public class CorsResponseHelper {
 
     /**
      * Returns true if the request is a CORS request.
-     *
+     * 
      * @param request
-     *      The current request.
+     *            The current request.
      * @return true if the request is a CORS request.
      */
     public boolean isCorsRequest(Request request) {
@@ -329,6 +347,18 @@ public class CorsResponseHelper {
      */
     public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
+    }
+
+    /**
+     * Sets the value of 'Access-Control-Max-Age' response header.<br>
+     * In case of negative value, the header is not set.
+     * 
+     * @param maxAge
+     *            The value of 'Access-Control-Max-Age' response header.
+     */
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+
     }
 
 }

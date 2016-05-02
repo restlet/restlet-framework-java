@@ -90,6 +90,8 @@ public final class HeaderConstants {
     public static final String HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 
     public static final String HEADER_ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    
+    public static final String HEADER_ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
 
     public static final String HEADER_ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
 

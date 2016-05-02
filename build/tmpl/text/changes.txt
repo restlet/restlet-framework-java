@@ -10,6 +10,8 @@ Changes log
        - Fixed support of non-bytes ranges. Issue #1132.
        - Fixed encoding issue when using CookieAuthenticator. Issue #1159.
          Reported by Arjohn Kampman.
+       - Added support of 'Access-Control-Max-Age'. Issue #1109.
+         Reported by Tal Liron.
 
 - 2.3.7 (03/14/2016)
     - Bugs fixed

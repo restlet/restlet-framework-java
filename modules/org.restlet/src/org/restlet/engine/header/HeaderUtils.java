@@ -79,6 +79,7 @@ public class HeaderUtils {
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
                     HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
+                    HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE,
                     HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
                     HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
                     HeaderConstants.HEADER_ACCEPT,
@@ -642,6 +643,12 @@ public class HeaderUtils {
                     StringWriter.write(response.getAccessControlExposeHeaders()),
                     headers);
         }
+        if (response.getAccessControlMaxAge() > 0) {
+            addHeader(
+                    HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE,
+                    Integer.toString(response.getAccessControlMaxAge()),
+                    headers);
+        }
 
         // ----------------------------------
         // 3) Add supported extension headers
@@ -848,9 +855,8 @@ public class HeaderUtils {
                     MethodReader.addValues(header,
                             response.getAccessControlAllowMethods());
                 } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS)) {
-                    StringReader.addValues(header,
-                            response.getAccessControlExposeHeaders());
+                        HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE)) {
+                    response.setAccessControlMaxAge(Integer.parseInt(header.getValue()));
                 }
             }
         }

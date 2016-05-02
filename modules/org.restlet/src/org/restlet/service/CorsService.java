@@ -81,6 +81,9 @@ public class CorsService extends Service {
     /** The value of 'Access-Control-Expose-Headers' response header. */
     private Set<String> exposedHeaders = null;
 
+    /** The value of 'Access-Control-Max-Age' response header. Default is that the header is not set. */
+    private int maxAge = -1;
+
     /**
      * If true, the filter does not call the server resource for OPTIONS method
      * of CORS request and set Access-Control-Allow-Methods header with
@@ -113,7 +116,8 @@ public class CorsService extends Service {
                 .setAllowedHeaders(allowedHeaders)
                 .setExposedHeaders(exposedHeaders)
                 .setSkippingResourceForCorsOptions(skippingResourceForCorsOptions)
-                .setDefaultAllowedMethods(getDefaultAllowedMethods());
+                .setDefaultAllowedMethods(getDefaultAllowedMethods())
+                .setMaxAge(maxAge);
     }
 
     /**
@@ -161,6 +165,17 @@ public class CorsService extends Service {
      */
     public Set<String> getExposedHeaders() {
         return exposedHeaders;
+    }
+
+    /**
+     * Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.<br>
+     * In case of a negative value, the results of a preflight request is not meant to be cached.<br>
+     * Note that when used with HTTP connectors, this property maps to the "Access-Control-Max-Age" header.
+     * 
+     * @return Indicates how long the results of a preflight request can be cached in a preflight result cache.
+     */
+    public int getMaxAge() {
+        return maxAge;
     }
 
     /**
@@ -260,6 +275,17 @@ public class CorsService extends Service {
      */
     public void setExposedHeaders(Set<String> exposedHeaders) {
         this.exposedHeaders = exposedHeaders;
+    }
+
+    /**
+     * Sets the value of 'Access-Control-Max-Age' response header.<br>
+     * In case of negative value, the header is not set.
+     * 
+     * @param maxAge
+     *            The value of 'Access-Control-Max-Age' response header.
+     */
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
     }
 
     /**

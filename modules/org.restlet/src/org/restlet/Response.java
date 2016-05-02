@@ -116,8 +116,13 @@ public class Response extends Message {
     private volatile Set<String> accessControlExposeHeaders;
 
     /**
-     * Estimated amount of time since a response was generated or revalidated by
-     * the origin server.
+     * When used in the context of CORS support, it indicates how long the results of a preflight request can be cached
+     * in a preflight result cache.
+     */
+    private volatile int accessControlMaxAge;
+
+    /**
+     * Estimated amount of time since a response was generated or revalidated by the origin server.
      */
     private volatile int age;
 
@@ -326,6 +331,17 @@ public class Response extends Message {
             }
         }
         return a;
+    }
+
+    /**
+     * Indicates how long the results of a preflight CORS request can be cached in a preflight result cache.<br>
+     * In case of a negative value, the results of a preflight request is not meant to be cached.<br>
+     * Note that when used with HTTP connectors, this property maps to the "Access-Control-Max-Age" header.
+     * 
+     * @return Indicates how long the results of a preflight request can be cached in a preflight result cache.
+     */
+    public int getAccessControlMaxAge() {
+        return accessControlMaxAge;
     }
 
     /**
@@ -541,8 +557,7 @@ public class Response extends Message {
      * processing a request on the server-side, setting this property to 'false'
      * let you ask to the server connector to wait before sending the response
      * back to the client when the initial calling thread returns. This will let
-     * you do further updates to the response and manually calling
-     * {@link #commit()} later on, using another thread.
+     * you do further updates to the response and manually calling {@link #commit()} later on, using another thread.
      * 
      * @return True if the response should be automatically committed.
      */
@@ -565,8 +580,7 @@ public class Response extends Message {
     }
 
     /**
-     * Indicates if the response is final or provisional. It relies on the
-     * {@link Status#isInformational()} method.
+     * Indicates if the response is final or provisional. It relies on the {@link Status#isInformational()} method.
      * 
      * @return True if the response is final.
      */
@@ -575,8 +589,7 @@ public class Response extends Message {
     }
 
     /**
-     * Indicates if the response is provisional or final. It relies on the
-     * {@link Status#isInformational()} method.
+     * Indicates if the response is provisional or final. It relies on the {@link Status#isInformational()} method.
      * 
      * @return True if the response is provisional.
      */
@@ -601,8 +614,8 @@ public class Response extends Message {
      * to reuse the same method for the new request.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -635,8 +648,8 @@ public class Response extends Message {
      * originally requested resource.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -663,8 +676,8 @@ public class Response extends Message {
      * to reuse the same method for the new request.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -686,6 +699,19 @@ public class Response extends Message {
     public void setAccessControlAllowCredentials(
             Boolean accessControlAllowCredentials) {
         this.accessControlAllowCredentials = accessControlAllowCredentials;
+    }
+
+    /**
+     * When used as part of a response to a preflight CORS request, indicates how long (in seconds) the results of a
+     * preflight request can be cached in a preflight result cache.<br>
+     * Note that when used with HTTP connectors, this property maps to the "Access-Control-Max-Age" header.<br>
+     * In case of negative value, the header is not set.
+     * 
+     * @param accessControlMaxAge
+     *            How long the results of a preflight request can be cached in a preflight result cache.
+     */
+    public void setAccessControlMaxAge(int accessControlMaxAge) {
+        this.accessControlMaxAge = accessControlMaxAge;
     }
 
     /**
@@ -928,8 +954,7 @@ public class Response extends Message {
      * Sets the reference that the client should follow for redirections or
      * resource creations. If you pass a relative location URI, it will be
      * resolved with the current base reference of the request's resource
-     * reference (see {@link Request#getResourceRef()} and
-     * {@link Reference#getBaseRef()}.<br>
+     * reference (see {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Location" header.
@@ -954,8 +979,8 @@ public class Response extends Message {
 
     /**
      * Sets the modifiable list of authentication requests sent by a proxy to a
-     * client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example. Note that when used with HTTP
+     * client. The list instance set must be thread-safe (use {@link CopyOnWriteArrayList} for example. Note that when
+     * used with HTTP
      * connectors, this property maps to the "Proxy-Authenticate" header. This
      * method clears the current list and adds all entries in the parameter
      * list.

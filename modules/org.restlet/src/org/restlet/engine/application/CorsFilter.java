@@ -67,8 +67,8 @@ public class CorsFilter extends Filter {
     private boolean allowedCredentials = false;
 
     /**
-     * The value of 'Access-Control-Allow-Headers' response header. Used only if
-     * {@link #allowAllRequestedHeaders} is false.
+     * The value of 'Access-Control-Allow-Headers' response header. Used only if {@link #allowAllRequestedHeaders} is
+     * false.
      */
     private Set<String> allowedHeaders = null;
 
@@ -78,17 +78,23 @@ public class CorsFilter extends Filter {
     /** Helper for generating CORS response. */
     private CorsResponseHelper corsResponseHelper;
 
-    /** The set of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on. By default:  GET, PUT, POST, DELETE, PATCH. */
+    /**
+     * The set of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on. By
+     * default: GET, PUT, POST, DELETE, PATCH.
+     */
     private Set<Method> defaultAllowedMethods = new HashSet<>(Arrays.asList(Method.GET, Method.POST, Method.PUT,
             Method.DELETE, Method.PATCH));
 
     /** The value of 'Access-Control-Expose-Headers' response header. */
     private Set<String> exposedHeaders = null;
 
+    /** The value of 'Access-Control-Max-Age' response header. Default is that the header is not set. */
+    private int maxAge = -1;
+
     /**
      * If true, the filter does not call the server resource for OPTIONS method
-     * of CORS request and set Access-Control-Allow-Methods header with
-     * {@link #defaultAllowedMethods}. Default is false.
+     * of CORS request and set Access-Control-Allow-Methods header with {@link #defaultAllowedMethods}. Default is
+     * false.
      */
     private boolean skippingResourceForCorsOptions = false;
 
@@ -122,9 +128,22 @@ public class CorsFilter extends Filter {
     }
 
     /**
-     * Skip the call to the server resource if the {@link #skippingResourceForCorsOptions}
-     * is true and if the current request use the OPTIONS method and is a CORS request.
-     *
+     * Add CORS headers to response
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response
+     */
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        getCorsResponseHelper().addCorsResponseHeaders(request, response);
+    }
+
+    /**
+     * Skip the call to the server resource if the {@link #skippingResourceForCorsOptions} is true and if the current
+     * request use the OPTIONS method and is a CORS request.
+     * 
      * @param request
      *            The request to handle.
      * @param response
@@ -140,19 +159,6 @@ public class CorsFilter extends Filter {
         } else {
             return Filter.CONTINUE;
         }
-    }
-
-    /**
-     * Add CORS headers to response
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response
-     */
-    @Override
-    protected void afterHandle(Request request, Response response) {
-        getCorsResponseHelper().addCorsResponseHeaders(request, response);
     }
 
     /**
@@ -181,8 +187,7 @@ public class CorsFilter extends Filter {
     }
 
     /**
-     * Returns a lazy-initialized instance of
-     * {@link org.restlet.engine.application.CorsResponseHelper}.
+     * Returns a lazy-initialized instance of {@link org.restlet.engine.application.CorsResponseHelper}.
      */
     protected CorsResponseHelper getCorsResponseHelper() {
         if (corsResponseHelper == null) {
@@ -193,12 +198,14 @@ public class CorsFilter extends Filter {
                     .setAllowAllRequestedHeaders(allowAllRequestedHeaders);
             corsResponseHelper.setAllowedHeaders(allowedHeaders);
             corsResponseHelper.setExposedHeaders(exposedHeaders);
+            corsResponseHelper.setMaxAge(maxAge);
         }
         return corsResponseHelper;
     }
 
     /**
      * Returns the list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     * 
      * @return The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
      */
     public Set<Method> getDefaultAllowedMethods() {
@@ -216,6 +223,17 @@ public class CorsFilter extends Filter {
      */
     public Set<String> getExposedHeaders() {
         return exposedHeaders;
+    }
+
+    /**
+     * Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.<br>
+     * In case of a negative value, the results of a preflight request is not meant to be cached.<br>
+     * Note that when used with HTTP connectors, this property maps to the "Access-Control-Max-Age" header.
+     * 
+     * @return Indicates how long the results of a preflight request can be cached in a preflight result cache.
+     */
+    public int getMaxAge() {
+        return maxAge;
     }
 
     /**
@@ -239,11 +257,11 @@ public class CorsFilter extends Filter {
 
     /**
      * If true, the filter does not call the server resource for OPTIONS method
-     * of CORS request and set Access-Control-Allow-Methods header with
-     * {@link #defaultAllowedMethods}. Default is false.
-     *
+     * of CORS request and set Access-Control-Allow-Methods header with {@link #defaultAllowedMethods}. Default is
+     * false.
+     * 
      * @return True if the filter does not call the server resource for
-     * OPTIONS method of CORS request.
+     *         OPTIONS method of CORS request.
      */
     public boolean isSkippingResourceForCorsOptions() {
         return skippingResourceForCorsOptions;
@@ -305,7 +323,10 @@ public class CorsFilter extends Filter {
 
     /**
      * Sets the list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
-     * @param defaultAllowedMethods The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned on.
+     * 
+     * @param defaultAllowedMethods
+     *            The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned
+     *            on.
      */
     public CorsFilter setDefaultAllowedMethods(Set<Method> defaultAllowedMethods) {
         this.defaultAllowedMethods = defaultAllowedMethods;
@@ -325,11 +346,23 @@ public class CorsFilter extends Filter {
     }
 
     /**
+     * Sets the value of 'Access-Control-Max-Age' response header.<br>
+     * In case of negative value, the header is not set.
+     * 
+     * @param maxAge
+     *            The value of 'Access-Control-Max-Age' response header.
+     */
+    public CorsFilter setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+        return this;
+    }
+
+    /**
      * Sets the value of skipResourceForCorsOptions field.
-     *
+     * 
      * @param skipResourceForCorsOptions
-     *          True if the filter does not call the server resource for
-     *          OPTIONS method of CORS request.
+     *            True if the filter does not call the server resource for
+     *            OPTIONS method of CORS request.
      * @return Itself for chaining methods calls.
      */
     public CorsFilter setSkippingResourceForCorsOptions(boolean skipResourceForCorsOptions) {
