@@ -24,6 +24,7 @@
 
 package org.restlet.ext.crypto.internal;
 
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 
 import javax.crypto.Cipher;
@@ -76,7 +77,7 @@ public final class CryptoUtils {
             throws GeneralSecurityException {
         byte[] original = doFinal(algo, secretKey, Cipher.DECRYPT_MODE,
                 encrypted);
-        return new String(original);
+        return new String(original, Charset.forName("UTF-8"));
     }
 
     /**
@@ -130,7 +131,7 @@ public final class CryptoUtils {
      */
     public static byte[] encrypt(String algo, byte[] secretKey, String content)
             throws GeneralSecurityException {
-        return doFinal(algo, secretKey, Cipher.ENCRYPT_MODE, content.getBytes());
+        return doFinal(algo, secretKey, Cipher.ENCRYPT_MODE, content.getBytes(Charset.forName("UTF-8")));
     }
 
     /**

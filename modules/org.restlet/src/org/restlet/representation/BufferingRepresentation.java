@@ -136,9 +136,9 @@ public class BufferingRepresentation extends WrapperRepresentation {
         buffer();
 
         if (getBuffer() != null) {
-            return (getCharacterSet() != null) ? new String(getBuffer(),
-                    getCharacterSet().toCharset().name()) : new String(
-                    getBuffer());
+            return (getCharacterSet() != null) ? 
+                    new String(getBuffer(), getCharacterSet().toCharset().name()) : 
+                    new String(getBuffer());
         }
 
         return null;

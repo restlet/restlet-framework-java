@@ -266,7 +266,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
      * @return The raw credentials.
      * @throws GeneralSecurityException
      */
-    protected String formatCredentials(ChallengeResponse challenge)
+    public String formatCredentials(ChallengeResponse challenge)
             throws GeneralSecurityException {
         // Data buffer
         StringBuffer sb = new StringBuffer();
@@ -542,16 +542,16 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
      * @return The credentials as a proper challenge response.
      */
     protected ChallengeResponse parseCredentials(String cookieValue) {
-        // 1) Decode Base64 string
-        byte[] encrypted = Base64.decode(cookieValue);
-
-        if (encrypted == null) {
-            getLogger().warning(
-                    "Cannot decode cookie credentials : " + cookieValue);
-        }
-
-        // 2) Decrypt the credentials
         try {
+            // 1) Decode Base64 string
+            byte[] encrypted = Base64.decode(cookieValue);
+            
+            if (encrypted == null) {
+                getLogger().warning(
+                        "Cannot decode cookie credentials : " + cookieValue);
+            }
+            
+            // 2) Decrypt the credentials
             String decrypted = CryptoUtils.decrypt(getEncryptAlgorithm(),
                     getEncryptSecretKey(), encrypted);
 
