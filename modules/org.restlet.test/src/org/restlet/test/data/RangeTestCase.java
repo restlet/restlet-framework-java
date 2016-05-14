@@ -154,6 +154,12 @@ public class RangeTestCase extends RestletTestCase {
 
     // Sample string.
     private static String str1000;
+    
+    static {
+        char[] tab = new char[1000];
+        Arrays.fill(tab, '1');
+        str1000 = new String(tab);        
+    }
 
     /** Component used for the tests. */
     private Component component;
@@ -166,10 +172,6 @@ public class RangeTestCase extends RestletTestCase {
         component.getClients().add(Protocol.FILE);
         component.getDefaultHost().attach(new TestRangeApplication());
         component.start();
-
-        char[] tab = new char[1000];
-        Arrays.fill(tab, '1');
-        str1000 = new String(tab);
     }
 
     @Override

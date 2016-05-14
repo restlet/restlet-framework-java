@@ -409,7 +409,7 @@ public class PathRegExp {
                 } else if ((state == REGEXP_READ)
                         || (state == REGEXP_READ_READY)) {
                     pathPattern.append(regExp);
-                    if (!regExp.equals(DEFAULT_REG_EXP)) {
+                    if (!regExp.toString().equals(DEFAULT_REG_EXP)) {
                         this.noNonDefaultRegExp++;
                     }
                 } else {

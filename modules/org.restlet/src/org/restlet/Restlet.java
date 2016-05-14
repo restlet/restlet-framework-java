@@ -178,6 +178,7 @@ public abstract class Restlet implements Uniform {
         if (isStarted()) {
             stop();
         }
+        super.finalize();
     }
 
     // [ifndef gwt] method

@@ -117,7 +117,7 @@ public class ObapClientHelper extends LocalClientHelper {
             }
 
             // Get the URL to the bundle 'resource'
-            if (bundle != null) {
+            if (bundle != null && path != null) {
                 // As the path may be percent-encoded, it has to be
                 // percent-decoded.
                 url = bundle.getResource(Reference.decode(path));

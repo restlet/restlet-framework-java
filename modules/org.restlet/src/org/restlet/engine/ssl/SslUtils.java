@@ -55,8 +55,7 @@ public class SslUtils {
         if (keySize == null) {
             final int encAlgorithmIndex = sslCipherSuite.indexOf("WITH_");
             if (encAlgorithmIndex >= 0) {
-                final String encAlgorithm = sslCipherSuite
-                        .substring(encAlgorithmIndex + 5);
+                final String encAlgorithm = sslCipherSuite.substring(encAlgorithmIndex + 5);
 
                 /*
                  * (Encryption algorithms and key sizes, quoted from RFC 2246)

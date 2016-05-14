@@ -754,191 +754,130 @@ public final class Status {
      * @return The associated status.
      */
     public static Status valueOf(int code) {
-        Status result = null;
-
         switch (code) {
         case 100:
-            result = INFO_CONTINUE;
-            break;
+            return INFO_CONTINUE;
         case 101:
-            result = INFO_SWITCHING_PROTOCOL;
-            break;
+            return INFO_SWITCHING_PROTOCOL;
         case 102:
-            result = INFO_PROCESSING;
-            break;
+            return INFO_PROCESSING;
         case 110:
-            result = INFO_STALE_RESPONSE;
-            break;
+            return INFO_STALE_RESPONSE;
         case 111:
-            result = INFO_REVALIDATION_FAILED;
-            break;
+            return INFO_REVALIDATION_FAILED;
         case 112:
-            result = INFO_DISCONNECTED_OPERATION;
-            break;
+            return INFO_DISCONNECTED_OPERATION;
         case 113:
-            result = INFO_HEURISTIC_EXPIRATION;
-            break;
+            return INFO_HEURISTIC_EXPIRATION;
         case 199:
-            result = INFO_MISC_WARNING;
-            break;
+            return INFO_MISC_WARNING;
 
         case 200:
-            result = SUCCESS_OK;
-            break;
+            return SUCCESS_OK;
         case 201:
-            result = SUCCESS_CREATED;
-            break;
+            return SUCCESS_CREATED;
         case 202:
-            result = SUCCESS_ACCEPTED;
-            break;
+            return SUCCESS_ACCEPTED;
         case 203:
-            result = SUCCESS_NON_AUTHORITATIVE;
-            break;
+            return SUCCESS_NON_AUTHORITATIVE;
         case 204:
-            result = SUCCESS_NO_CONTENT;
-            break;
+            return SUCCESS_NO_CONTENT;
         case 205:
-            result = SUCCESS_RESET_CONTENT;
-            break;
+            return SUCCESS_RESET_CONTENT;
         case 206:
-            result = SUCCESS_PARTIAL_CONTENT;
-            break;
+            return SUCCESS_PARTIAL_CONTENT;
         case 207:
-            result = SUCCESS_MULTI_STATUS;
-            break;
+            return SUCCESS_MULTI_STATUS;
         case 214:
-            result = SUCCESS_TRANSFORMATION_APPLIED;
-            break;
+            return SUCCESS_TRANSFORMATION_APPLIED;
         case 299:
-            result = SUCCESS_MISC_PERSISTENT_WARNING;
-            break;
+            return SUCCESS_MISC_PERSISTENT_WARNING;
 
         case 300:
-            result = REDIRECTION_MULTIPLE_CHOICES;
-            break;
+            return REDIRECTION_MULTIPLE_CHOICES;
         case 301:
-            result = REDIRECTION_PERMANENT;
-            break;
+            return REDIRECTION_PERMANENT;
         case 302:
-            result = REDIRECTION_FOUND;
-            break;
+            return REDIRECTION_FOUND;
         case 303:
-            result = REDIRECTION_SEE_OTHER;
-            break;
+            return REDIRECTION_SEE_OTHER;
         case 304:
-            result = REDIRECTION_NOT_MODIFIED;
-            break;
+            return REDIRECTION_NOT_MODIFIED;
         case 305:
-            result = REDIRECTION_USE_PROXY;
-            break;
+            return REDIRECTION_USE_PROXY;
         case 307:
-            result = REDIRECTION_TEMPORARY;
-            break;
+            return REDIRECTION_TEMPORARY;
 
         case 400:
-            result = CLIENT_ERROR_BAD_REQUEST;
-            break;
+            return CLIENT_ERROR_BAD_REQUEST;
         case 401:
-            result = CLIENT_ERROR_UNAUTHORIZED;
-            break;
+            return CLIENT_ERROR_UNAUTHORIZED;
         case 402:
-            result = CLIENT_ERROR_PAYMENT_REQUIRED;
-            break;
+            return CLIENT_ERROR_PAYMENT_REQUIRED;
         case 403:
-            result = CLIENT_ERROR_FORBIDDEN;
-            break;
+            return CLIENT_ERROR_FORBIDDEN;
         case 404:
-            result = CLIENT_ERROR_NOT_FOUND;
-            break;
+            return CLIENT_ERROR_NOT_FOUND;
         case 405:
-            result = CLIENT_ERROR_METHOD_NOT_ALLOWED;
-            break;
+            return CLIENT_ERROR_METHOD_NOT_ALLOWED;
         case 406:
-            result = CLIENT_ERROR_NOT_ACCEPTABLE;
-            break;
+            return CLIENT_ERROR_NOT_ACCEPTABLE;
         case 407:
-            result = CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
-            break;
+            return CLIENT_ERROR_PROXY_AUTHENTIFICATION_REQUIRED;
         case 408:
-            result = CLIENT_ERROR_REQUEST_TIMEOUT;
-            break;
+            return CLIENT_ERROR_REQUEST_TIMEOUT;
         case 409:
-            result = CLIENT_ERROR_CONFLICT;
-            break;
+            return CLIENT_ERROR_CONFLICT;
         case 410:
-            result = CLIENT_ERROR_GONE;
-            break;
+            return CLIENT_ERROR_GONE;
         case 411:
-            result = CLIENT_ERROR_LENGTH_REQUIRED;
-            break;
+            return CLIENT_ERROR_LENGTH_REQUIRED;
         case 412:
-            result = CLIENT_ERROR_PRECONDITION_FAILED;
-            break;
+            return CLIENT_ERROR_PRECONDITION_FAILED;
         case 413:
-            result = CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
-            break;
+            return CLIENT_ERROR_REQUEST_ENTITY_TOO_LARGE;
         case 414:
-            result = CLIENT_ERROR_REQUEST_URI_TOO_LONG;
-            break;
+            return CLIENT_ERROR_REQUEST_URI_TOO_LONG;
         case 415:
-            result = CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
-            break;
+            return CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE;
         case 416:
-            result = CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
-            break;
+            return CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
         case 417:
-            result = CLIENT_ERROR_EXPECTATION_FAILED;
-            break;
+            return CLIENT_ERROR_EXPECTATION_FAILED;
         case 422:
-            result = CLIENT_ERROR_UNPROCESSABLE_ENTITY;
-            break;
+            return CLIENT_ERROR_UNPROCESSABLE_ENTITY;
         case 423:
-            result = CLIENT_ERROR_LOCKED;
-            break;
+            return CLIENT_ERROR_LOCKED;
         case 424:
-            result = CLIENT_ERROR_FAILED_DEPENDENCY;
-            break;
+            return CLIENT_ERROR_FAILED_DEPENDENCY;
         case 429:
-            result = CLIENT_ERROR_TOO_MANY_REQUESTS;
-            break;
+            return CLIENT_ERROR_TOO_MANY_REQUESTS;
 
         case 500:
-            result = SERVER_ERROR_INTERNAL;
-            break;
+            return SERVER_ERROR_INTERNAL;
         case 501:
-            result = SERVER_ERROR_NOT_IMPLEMENTED;
-            break;
+            return SERVER_ERROR_NOT_IMPLEMENTED;
         case 502:
-            result = SERVER_ERROR_BAD_GATEWAY;
-            break;
+            return SERVER_ERROR_BAD_GATEWAY;
         case 503:
-            result = SERVER_ERROR_SERVICE_UNAVAILABLE;
-            break;
+            return SERVER_ERROR_SERVICE_UNAVAILABLE;
         case 504:
-            result = SERVER_ERROR_GATEWAY_TIMEOUT;
-            break;
+            return SERVER_ERROR_GATEWAY_TIMEOUT;
         case 505:
-            result = SERVER_ERROR_VERSION_NOT_SUPPORTED;
-            break;
+            return SERVER_ERROR_VERSION_NOT_SUPPORTED;
         case 507:
-            result = SERVER_ERROR_INSUFFICIENT_STORAGE;
-            break;
+            return SERVER_ERROR_INSUFFICIENT_STORAGE;
 
         case 1000:
-            result = CONNECTOR_ERROR_CONNECTION;
-            break;
+            return CONNECTOR_ERROR_CONNECTION;
         case 1001:
-            result = CONNECTOR_ERROR_COMMUNICATION;
-            break;
+            return CONNECTOR_ERROR_COMMUNICATION;
         case 1002:
-            result = CONNECTOR_ERROR_INTERNAL;
-            break;
+            return CONNECTOR_ERROR_INTERNAL;
 
         default:
-            result = new Status(code);
+            return new Status(code);
         }
-
-        return result;
     }
 
     /** The specification code. */
@@ -1185,190 +1124,133 @@ public final class Status {
      * @return The description.
      */
     public String getDescription() {
-        String result = this.description;
-
-        if (result == null) {
-            switch (this.code) {
-            case 100:
-                result = "The client should continue with its request";
-                break;
-            case 101:
-                result = "The server is willing to change the application protocol being used on this connection";
-                break;
-            case 102:
-                result = "Interim response used to inform the client that the server has accepted the complete request, but has not yet completed it";
-                break;
-            case 110:
-                result = "MUST be included whenever the returned response is stale";
-                break;
-            case 111:
-                result = "MUST be included if a cache returns a stale response because an attempt to revalidate the response failed, due to an inability to reach the server";
-                break;
-            case 112:
-                result = "SHOULD be included if the cache is intentionally disconnected from the rest of the network for a period of time";
-                break;
-            case 113:
-                result = "MUST be included if the cache heuristically chose a freshness lifetime greater than 24 hours and the response's age is greater than 24 hours";
-                break;
-            case 199:
-                result = "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action, besides presenting the warning to the user";
-                break;
-
-            case 200:
-                result = "The request has succeeded";
-                break;
-            case 201:
-                result = "The request has been fulfilled and resulted in a new resource being created";
-                break;
-            case 202:
-                result = "The request has been accepted for processing, but the processing has not been completed";
-                break;
-            case 203:
-                result = "The returned meta-information is not the definitive set as available from the origin server";
-                break;
-            case 204:
-                result = "The server has fulfilled the request but does not need to return an entity-body, and might want to return updated meta-information";
-                break;
-            case 205:
-                result = "The server has fulfilled the request and the user agent should reset the document view which caused the request to be sent";
-                break;
-            case 206:
-                result = "The server has fulfilled the partial get request for the resource";
-                break;
-            case 207:
-                result = "Provides status for multiple independent operations";
-                break;
-            case 214:
-                result = "MUST be added by an intermediate cache or proxy if it applies any transformation changing the content-coding (as specified in the Content-Encoding header) or media-type (as specified in the Content-Type header) of the response, or the entity-body of the response, unless this Warning code already appears in the response";
-                break;
-            case 299:
-                result = "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action";
-                break;
-
-            case 300:
-                result = "The requested resource corresponds to any one of a set of representations";
-                break;
-            case 301:
-                result = "The requested resource has been assigned a new permanent URI";
-                break;
-            case 302:
-                result = "The requested resource can be found under a different URI";
-                break;
-            case 303:
-                result = "The response to the request can be found under a different URI";
-                break;
-            case 304:
-                result = "The client has performed a conditional GET request and the document has not been modified";
-                break;
-            case 305:
-                result = "The requested resource must be accessed through the proxy given by the location field";
-                break;
-            case 307:
-                result = "The requested resource resides temporarily under a different URI";
-                break;
-
-            case 400:
-                result = "The request could not be understood by the server due to malformed syntax";
-                break;
-            case 401:
-                result = "The request requires user authentication";
-                break;
-            case 402:
-                result = "This code is reserved for future use";
-                break;
-            case 403:
-                result = "The server understood the request, but is refusing to fulfill it";
-                break;
-            case 404:
-                result = "The server has not found anything matching the request URI";
-                break;
-            case 405:
-                result = "The method specified in the request is not allowed for the resource identified by the request URI";
-                break;
-            case 406:
-                result = "The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request";
-                break;
-            case 407:
-                result = "This code is similar to Unauthorized, but indicates that the client must first authenticate itself with the proxy";
-                break;
-            case 408:
-                result = "The client did not produce a request within the time that the server was prepared to wait";
-                break;
-            case 409:
-                result = "The request could not be completed due to a conflict with the current state of the resource";
-                break;
-            case 410:
-                result = "The requested resource is no longer available at the server and no forwarding address is known";
-                break;
-            case 411:
-                result = "The server refuses to accept the request without a defined content length";
-                break;
-            case 412:
-                result = "The precondition given in one or more of the request header fields evaluated to false when it was tested on the server";
-                break;
-            case 413:
-                result = "The server is refusing to process a request because the request entity is larger than the server is willing or able to process";
-                break;
-            case 414:
-                result = "The server is refusing to service the request because the request URI is longer than the server is willing to interpret";
-                break;
-            case 415:
-                result = "The server is refusing to service the request because the entity of the request is in a format not supported by the requested resource for the requested method";
-                break;
-            case 416:
-                result = "For byte ranges, this means that the first byte position were greater than the current length of the selected resource";
-                break;
-            case 417:
-                result = "The expectation given in the request header could not be met by this server";
-                break;
-            case 422:
-                result = "The server understands the content type of the request entity and the syntax of the request entity is correct but was unable to process the contained instructions";
-                break;
-            case 423:
-                result = "The source or destination resource of a method is locked";
-                break;
-            case 424:
-                result = "The method could not be performed on the resource because the requested action depended on another action and that action failed";
-                break;
-            case 429:
-                result = "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
-                break;
-
-            case 500:
-                result = "The server encountered an unexpected condition which prevented it from fulfilling the request";
-                break;
-            case 501:
-                result = "The server does not support the functionality required to fulfill the request";
-                break;
-            case 502:
-                result = "The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request";
-                break;
-            case 503:
-                result = "The server is currently unable to handle the request due to a temporary overloading or maintenance of the server";
-                break;
-            case 504:
-                result = "The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server specified by the URI (e.g. HTTP, FTP, LDAP) or some other auxiliary server (e.g. DNS) it needed to access in attempting to complete the request";
-                break;
-            case 505:
-                result = "The server does not support, or refuses to support, the protocol version that was used in the request message";
-                break;
-            case 507:
-                result = "The method could not be performed on the resource because the server is unable to store the representation needed to successfully complete the request";
-                break;
-
-            case 1000:
-                result = "The connector failed to connect to the server";
-                break;
-            case 1001:
-                result = "The connector failed to complete the communication with the server";
-                break;
-            case 1002:
-                result = "The connector encountered an unexpected condition which prevented it from fulfilling the request";
-                break;
-            }
+        if (this.description != null) {
+            return this.description;
         }
 
-        return result;
+        switch (this.code) {
+        case 100:
+            return "The client should continue with its request";
+        case 101:
+            return "The server is willing to change the application protocol being used on this connection";
+        case 102:
+            return "Interim response used to inform the client that the server has accepted the complete request, but has not yet completed it";
+        case 110:
+            return "MUST be included whenever the returned response is stale";
+        case 111:
+            return "MUST be included if a cache returns a stale response because an attempt to revalidate the response failed, due to an inability to reach the server";
+        case 112:
+            return "SHOULD be included if the cache is intentionally disconnected from the rest of the network for a period of time";
+        case 113:
+            return "MUST be included if the cache heuristically chose a freshness lifetime greater than 24 hours and the response's age is greater than 24 hours";
+        case 199:
+            return "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action, besides presenting the warning to the user";
+
+        case 200:
+            return "The request has succeeded";
+        case 201:
+            return "The request has been fulfilled and resulted in a new resource being created";
+        case 202:
+            return "The request has been accepted for processing, but the processing has not been completed";
+        case 203:
+            return "The returned meta-information is not the definitive set as available from the origin server";
+        case 204:
+            return "The server has fulfilled the request but does not need to return an entity-body, and might want to return updated meta-information";
+        case 205:
+            return "The server has fulfilled the request and the user agent should reset the document view which caused the request to be sent";
+        case 206:
+            return "The server has fulfilled the partial get request for the resource";
+        case 207:
+            return "Provides status for multiple independent operations";
+        case 214:
+            return "MUST be added by an intermediate cache or proxy if it applies any transformation changing the content-coding (as specified in the Content-Encoding header) or media-type (as specified in the Content-Type header) of the response, or the entity-body of the response, unless this Warning code already appears in the response";
+        case 299:
+            return "The warning text MAY include arbitrary information to be presented to a human user, or logged. A system receiving this warning MUST NOT take any automated action";
+
+        case 300:
+            return "The requested resource corresponds to any one of a set of representations";
+        case 301:
+            return "The requested resource has been assigned a new permanent URI";
+        case 302:
+            return "The requested resource can be found under a different URI";
+        case 303:
+            return "The response to the request can be found under a different URI";
+        case 304:
+            return "The client has performed a conditional GET request and the document has not been modified";
+        case 305:
+            return "The requested resource must be accessed through the proxy given by the location field";
+        case 307:
+            return "The requested resource resides temporarily under a different URI";
+
+        case 400:
+            return "The request could not be understood by the server due to malformed syntax";
+        case 401:
+            return "The request requires user authentication";
+        case 402:
+            return "This code is reserved for future use";
+        case 403:
+            return "The server understood the request, but is refusing to fulfill it";
+        case 404:
+            return "The server has not found anything matching the request URI";
+        case 405:
+            return "The method specified in the request is not allowed for the resource identified by the request URI";
+        case 406:
+            return "The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request";
+        case 407:
+            return "This code is similar to Unauthorized, but indicates that the client must first authenticate itself with the proxy";
+        case 408:
+            return "The client did not produce a request within the time that the server was prepared to wait";
+        case 409:
+            return "The request could not be completed due to a conflict with the current state of the resource";
+        case 410:
+            return "The requested resource is no longer available at the server and no forwarding address is known";
+        case 411:
+            return "The server refuses to accept the request without a defined content length";
+        case 412:
+            return "The precondition given in one or more of the request header fields evaluated to false when it was tested on the server";
+        case 413:
+            return "The server is refusing to process a request because the request entity is larger than the server is willing or able to process";
+        case 414:
+            return "The server is refusing to service the request because the request URI is longer than the server is willing to interpret";
+        case 415:
+            return "The server is refusing to service the request because the entity of the request is in a format not supported by the requested resource for the requested method";
+        case 416:
+            return "For byte ranges, this means that the first byte position were greater than the current length of the selected resource";
+        case 417:
+            return "The expectation given in the request header could not be met by this server";
+        case 422:
+            return "The server understands the content type of the request entity and the syntax of the request entity is correct but was unable to process the contained instructions";
+        case 423:
+            return "The source or destination resource of a method is locked";
+        case 424:
+            return "The method could not be performed on the resource because the requested action depended on another action and that action failed";
+        case 429:
+            return "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
+
+        case 500:
+            return "The server encountered an unexpected condition which prevented it from fulfilling the request";
+        case 501:
+            return "The server does not support the functionality required to fulfill the request";
+        case 502:
+            return "The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request";
+        case 503:
+            return "The server is currently unable to handle the request due to a temporary overloading or maintenance of the server";
+        case 504:
+            return "The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server specified by the URI (e.g. HTTP, FTP, LDAP) or some other auxiliary server (e.g. DNS) it needed to access in attempting to complete the request";
+        case 505:
+            return "The server does not support, or refuses to support, the protocol version that was used in the request message";
+        case 507:
+            return "The method could not be performed on the resource because the server is unable to store the representation needed to successfully complete the request";
+
+        case 1000:
+            return "The connector failed to connect to the server";
+        case 1001:
+            return "The connector failed to complete the communication with the server";
+        case 1002:
+            return "The connector encountered an unexpected condition which prevented it from fulfilling the request";
+        }
+
+        return null;
     }
 
     /**
@@ -1379,190 +1261,133 @@ public final class Status {
      * @return The reason phrase of this status.
      */
     public String getReasonPhrase() {
-        String result = this.reasonPhrase;
-
-        if (result == null) {
-            switch (this.code) {
-            case 100:
-                result = "Continue";
-                break;
-            case 101:
-                result = "Switching Protocols";
-                break;
-            case 102:
-                result = "Processing";
-                break;
-            case 110:
-                result = "Response is stale";
-                break;
-            case 111:
-                result = "Revalidation failed";
-                break;
-            case 112:
-                result = "Disconnected operation";
-                break;
-            case 113:
-                result = "Heuristic expiration";
-                break;
-            case 199:
-                result = "Miscellaneous warning";
-                break;
-
-            case 200:
-                result = "OK";
-                break;
-            case 201:
-                result = "Created";
-                break;
-            case 202:
-                result = "Accepted";
-                break;
-            case 203:
-                result = "Non-Authoritative Information";
-                break;
-            case 204:
-                result = "No Content";
-                break;
-            case 205:
-                result = "Reset Content";
-                break;
-            case 206:
-                result = "Partial Content";
-                break;
-            case 207:
-                result = "Multi-Status";
-                break;
-            case 214:
-                result = "Transformation applied";
-                break;
-            case 299:
-                result = "Miscellaneous persistent warning";
-                break;
-
-            case 300:
-                result = "Multiple Choices";
-                break;
-            case 301:
-                result = "Moved Permanently";
-                break;
-            case 302:
-                result = "Found";
-                break;
-            case 303:
-                result = "See Other";
-                break;
-            case 304:
-                result = "Not Modified";
-                break;
-            case 305:
-                result = "Use Proxy";
-                break;
-            case 307:
-                result = "Temporary Redirect";
-                break;
-
-            case 400:
-                result = "Bad Request";
-                break;
-            case 401:
-                result = "Unauthorized";
-                break;
-            case 402:
-                result = "Payment Required";
-                break;
-            case 403:
-                result = "Forbidden";
-                break;
-            case 404:
-                result = "Not Found";
-                break;
-            case 405:
-                result = "Method Not Allowed";
-                break;
-            case 406:
-                result = "Not Acceptable";
-                break;
-            case 407:
-                result = "Proxy Authentication Required";
-                break;
-            case 408:
-                result = "Request Timeout";
-                break;
-            case 409:
-                result = "Conflict";
-                break;
-            case 410:
-                result = "Gone";
-                break;
-            case 411:
-                result = "Length Required";
-                break;
-            case 412:
-                result = "Precondition Failed";
-                break;
-            case 413:
-                result = "Request Entity Too Large";
-                break;
-            case 414:
-                result = "Request URI Too Long";
-                break;
-            case 415:
-                result = "Unsupported Media Type";
-                break;
-            case 416:
-                result = "Requested Range Not Satisfiable";
-                break;
-            case 417:
-                result = "Expectation Failed";
-                break;
-            case 422:
-                result = "Unprocessable Entity";
-                break;
-            case 423:
-                result = "Locked";
-                break;
-            case 424:
-                result = "Failed Dependency";
-                break;
-            case 429:
-                result = "Too Many Requests";
-                break;
-
-            case 500:
-                result = "Internal Server Error";
-                break;
-            case 501:
-                result = "Not Implemented";
-                break;
-            case 502:
-                result = "Bad Gateway";
-                break;
-            case 503:
-                result = "Service Unavailable";
-                break;
-            case 504:
-                result = "Gateway Timeout";
-                break;
-            case 505:
-                result = "Version Not Supported";
-                break;
-            case 507:
-                result = "Insufficient Storage";
-                break;
-
-            case 1000:
-                result = "Connection Error";
-                break;
-            case 1001:
-                result = "Communication Error";
-                break;
-            case 1002:
-                result = "Internal Connector Error";
-                break;
-            }
+        if (this.reasonPhrase != null) {
+            return this.reasonPhrase;
         }
 
-        return result;
+        switch (this.code) {
+        case 100:
+            return "Continue";
+        case 101:
+            return "Switching Protocols";
+        case 102:
+            return "Processing";
+        case 110:
+            return "Response is stale";
+        case 111:
+            return "Revalidation failed";
+        case 112:
+            return "Disconnected operation";
+        case 113:
+            return "Heuristic expiration";
+        case 199:
+            return "Miscellaneous warning";
+
+        case 200:
+            return "OK";
+        case 201:
+            return "Created";
+        case 202:
+            return "Accepted";
+        case 203:
+            return "Non-Authoritative Information";
+        case 204:
+            return "No Content";
+        case 205:
+            return "Reset Content";
+        case 206:
+            return "Partial Content";
+        case 207:
+            return "Multi-Status";
+        case 214:
+            return "Transformation applied";
+        case 299:
+            return "Miscellaneous persistent warning";
+
+        case 300:
+            return "Multiple Choices";
+        case 301:
+            return "Moved Permanently";
+        case 302:
+            return "Found";
+        case 303:
+            return "See Other";
+        case 304:
+            return "Not Modified";
+        case 305:
+            return "Use Proxy";
+        case 307:
+            return "Temporary Redirect";
+
+        case 400:
+            return "Bad Request";
+        case 401:
+            return "Unauthorized";
+        case 402:
+            return "Payment Required";
+        case 403:
+            return "Forbidden";
+        case 404:
+            return "Not Found";
+        case 405:
+            return "Method Not Allowed";
+        case 406:
+            return "Not Acceptable";
+        case 407:
+            return "Proxy Authentication Required";
+        case 408:
+            return "Request Timeout";
+        case 409:
+            return "Conflict";
+        case 410:
+            return "Gone";
+        case 411:
+            return "Length Required";
+        case 412:
+            return "Precondition Failed";
+        case 413:
+            return "Request Entity Too Large";
+        case 414:
+            return "Request URI Too Long";
+        case 415:
+            return "Unsupported Media Type";
+        case 416:
+            return "Requested Range Not Satisfiable";
+        case 417:
+            return "Expectation Failed";
+        case 422:
+            return "Unprocessable Entity";
+        case 423:
+            return "Locked";
+        case 424:
+            return "Failed Dependency";
+        case 429:
+            return "Too Many Requests";
+
+        case 500:
+            return "Internal Server Error";
+        case 501:
+            return "Not Implemented";
+        case 502:
+            return "Bad Gateway";
+        case 503:
+            return "Service Unavailable";
+        case 504:
+            return "Gateway Timeout";
+        case 505:
+            return "Version Not Supported";
+        case 507:
+            return "Insufficient Storage";
+
+        case 1000:
+            return "Connection Error";
+        case 1001:
+            return "Communication Error";
+        case 1002:
+            return "Internal Connector Error";
+        }
+
+        return null;
     }
 
     /**
@@ -1580,181 +1405,127 @@ public final class Status {
      * @return The URI of the specification describing the status.
      */
     public String getUri() {
-        String result = this.uri;
-
-        if (result == null) {
-            switch (this.code) {
-            case 100:
-                result = BASE_HTTP + "#sec10.1.1";
-                break;
-            case 101:
-                result = BASE_HTTP + "#sec10.1.2";
-                break;
-            case 102:
-                result = BASE_WEBDAV + "#STATUS_102";
-                break;
-            case 110:
-            case 111:
-            case 112:
-            case 113:
-            case 199:
-            case 214:
-            case 299:
-                result = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46";
-                break;
-
-            case 200:
-                result = BASE_HTTP + "#sec10.2.1";
-                break;
-            case 201:
-                result = BASE_HTTP + "#sec10.2.2";
-                break;
-            case 202:
-                result = BASE_HTTP + "#sec10.2.3";
-                break;
-            case 203:
-                result = BASE_HTTP + "#sec10.2.4";
-                break;
-            case 204:
-                result = BASE_HTTP + "#sec10.2.5";
-                break;
-            case 205:
-                result = BASE_HTTP + "#sec10.2.6";
-                break;
-            case 206:
-                result = BASE_HTTP + "#sec10.2.7";
-                break;
-            case 207:
-                result = BASE_WEBDAV + "#STATUS_207";
-                break;
-
-            case 300:
-                result = BASE_HTTP + "#sec10.3.1";
-                break;
-            case 301:
-                result = BASE_HTTP + "#sec10.3.2";
-                break;
-            case 302:
-                result = BASE_HTTP + "#sec10.3.3";
-                break;
-            case 303:
-                result = BASE_HTTP + "#sec10.3.4";
-                break;
-            case 304:
-                result = BASE_HTTP + "#sec10.3.5";
-                break;
-            case 305:
-                result = BASE_HTTP + "#sec10.3.6";
-                break;
-            case 307:
-                result = BASE_HTTP + "#sec10.3.8";
-                break;
-
-            case 400:
-                result = BASE_HTTP + "#sec10.4.1";
-                break;
-            case 401:
-                result = BASE_HTTP + "#sec10.4.2";
-                break;
-            case 402:
-                result = BASE_HTTP + "#sec10.4.3";
-                break;
-            case 403:
-                result = BASE_HTTP + "#sec10.4.4";
-                break;
-            case 404:
-                result = BASE_HTTP + "#sec10.4.5";
-                break;
-            case 405:
-                result = BASE_HTTP + "#sec10.4.6";
-                break;
-            case 406:
-                result = BASE_HTTP + "#sec10.4.7";
-                break;
-            case 407:
-                result = BASE_HTTP + "#sec10.4.8";
-                break;
-            case 408:
-                result = BASE_HTTP + "#sec10.4.9";
-                break;
-            case 409:
-                result = BASE_HTTP + "#sec10.4.10";
-                break;
-            case 410:
-                result = BASE_HTTP + "#sec10.4.11";
-                break;
-            case 411:
-                result = BASE_HTTP + "#sec10.4.12";
-                break;
-            case 412:
-                result = BASE_HTTP + "#sec10.4.13";
-                break;
-            case 413:
-                result = BASE_HTTP + "#sec10.4.14";
-                break;
-            case 414:
-                result = BASE_HTTP + "#sec10.4.15";
-                break;
-            case 415:
-                result = BASE_HTTP + "#sec10.4.16";
-                break;
-            case 416:
-                result = BASE_HTTP + "#sec10.4.17";
-                break;
-            case 417:
-                result = BASE_HTTP + "#sec10.4.18";
-                break;
-            case 422:
-                result = BASE_WEBDAV + "#STATUS_422";
-                break;
-            case 423:
-                result = BASE_WEBDAV + "#STATUS_423";
-                break;
-            case 424:
-                result = BASE_WEBDAV + "#STATUS_424";
-                break;
-            case 429:
-                result = BASE_ADDED_HTTP + "#section-4";
-                break;
-
-            case 500:
-                result = BASE_HTTP + "#sec10.5.1";
-                break;
-            case 501:
-                result = BASE_HTTP + "#sec10.5.2";
-                break;
-            case 502:
-                result = BASE_HTTP + "#sec10.5.3";
-                break;
-            case 503:
-                result = BASE_HTTP + "#sec10.5.4";
-                break;
-            case 504:
-                result = BASE_HTTP + "#sec10.5.5";
-                break;
-            case 505:
-                result = BASE_HTTP + "#sec10.5.6";
-                break;
-            case 507:
-                result = BASE_WEBDAV + "#STATUS_507";
-                break;
-
-            case 1000:
-                result = BASE_RESTLET
-                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_CONNECTION";
-                break;
-            case 1001:
-                result = BASE_RESTLET
-                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_COMMUNICATION";
-                break;
-            case 1002:
-                result = BASE_RESTLET
-                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_INTERNAL";
-                break;
-            }
+        if (this.uri != null) {
+            return this.uri;
         }
 
-        return result;
+        switch (this.code) {
+        case 100:
+            return BASE_HTTP + "#sec10.1.1";
+        case 101:
+            return BASE_HTTP + "#sec10.1.2";
+        case 102:
+            return BASE_WEBDAV + "#STATUS_102";
+        case 110:
+        case 111:
+        case 112:
+        case 113:
+        case 199:
+        case 214:
+        case 299:
+            return "http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46";
+
+        case 200:
+            return BASE_HTTP + "#sec10.2.1";
+        case 201:
+            return BASE_HTTP + "#sec10.2.2";
+        case 202:
+            return BASE_HTTP + "#sec10.2.3";
+        case 203:
+            return BASE_HTTP + "#sec10.2.4";
+        case 204:
+            return BASE_HTTP + "#sec10.2.5";
+        case 205:
+            return BASE_HTTP + "#sec10.2.6";
+        case 206:
+            return BASE_HTTP + "#sec10.2.7";
+        case 207:
+            return BASE_WEBDAV + "#STATUS_207";
+
+        case 300:
+            return BASE_HTTP + "#sec10.3.1";
+        case 301:
+            return BASE_HTTP + "#sec10.3.2";
+        case 302:
+            return BASE_HTTP + "#sec10.3.3";
+        case 303:
+            return BASE_HTTP + "#sec10.3.4";
+        case 304:
+            return BASE_HTTP + "#sec10.3.5";
+        case 305:
+            return BASE_HTTP + "#sec10.3.6";
+        case 307:
+            return BASE_HTTP + "#sec10.3.8";
+
+        case 400:
+            return BASE_HTTP + "#sec10.4.1";
+        case 401:
+            return BASE_HTTP + "#sec10.4.2";
+        case 402:
+            return BASE_HTTP + "#sec10.4.3";
+        case 403:
+            return BASE_HTTP + "#sec10.4.4";
+        case 404:
+            return BASE_HTTP + "#sec10.4.5";
+        case 405:
+            return BASE_HTTP + "#sec10.4.6";
+        case 406:
+            return BASE_HTTP + "#sec10.4.7";
+        case 407:
+            return BASE_HTTP + "#sec10.4.8";
+        case 408:
+            return BASE_HTTP + "#sec10.4.9";
+        case 409:
+            return BASE_HTTP + "#sec10.4.10";
+        case 410:
+            return BASE_HTTP + "#sec10.4.11";
+        case 411:
+            return BASE_HTTP + "#sec10.4.12";
+        case 412:
+            return BASE_HTTP + "#sec10.4.13";
+        case 413:
+            return BASE_HTTP + "#sec10.4.14";
+        case 414:
+            return BASE_HTTP + "#sec10.4.15";
+        case 415:
+            return BASE_HTTP + "#sec10.4.16";
+        case 416:
+            return BASE_HTTP + "#sec10.4.17";
+        case 417:
+            return BASE_HTTP + "#sec10.4.18";
+        case 422:
+            return BASE_WEBDAV + "#STATUS_422";
+        case 423:
+            return BASE_WEBDAV + "#STATUS_423";
+        case 424:
+            return BASE_WEBDAV + "#STATUS_424";
+        case 429:
+            return BASE_ADDED_HTTP + "#section-4";
+
+        case 500:
+            return BASE_HTTP + "#sec10.5.1";
+        case 501:
+            return BASE_HTTP + "#sec10.5.2";
+        case 502:
+            return BASE_HTTP + "#sec10.5.3";
+        case 503:
+            return BASE_HTTP + "#sec10.5.4";
+        case 504:
+            return BASE_HTTP + "#sec10.5.5";
+        case 505:
+            return BASE_HTTP + "#sec10.5.6";
+        case 507:
+            return BASE_WEBDAV + "#STATUS_507";
+
+        case 1000:
+            return BASE_RESTLET + "org/restlet/data/Status.html#CONNECTOR_ERROR_CONNECTION";
+        case 1001:
+            return BASE_RESTLET + "org/restlet/data/Status.html#CONNECTOR_ERROR_COMMUNICATION";
+        case 1002:
+            return BASE_RESTLET + "org/restlet/data/Status.html#CONNECTOR_ERROR_INTERNAL";
+        }
+
+        return null;
     }
 
     /** {@inheritDoc} */

@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import java.util.Objects;
+
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -141,6 +143,25 @@ public abstract class ChallengeMessage {
         this.realm = realm;
         this.opaque = opaque;
         this.digestAlgorithm = digestAlgorithm;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ChallengeMessage)) {
+            return false;
+        }
+
+        final ChallengeMessage that = (ChallengeMessage) obj;
+
+        return getParameters().equals(that.getParameters())
+                && Objects.equals(getRealm(), that.getRealm())
+                && Objects.equals(getScheme(), that.getScheme())
+                && Objects.equals(getServerNonce(), that.getServerNonce())
+                && Objects.equals(getOpaque(), that.getOpaque())
+                && Objects.equals(getDigestAlgorithm(), that.getDigestAlgorithm());
     }
 
     /**

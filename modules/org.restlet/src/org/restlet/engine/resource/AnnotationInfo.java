@@ -29,6 +29,11 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Objects;
+import java.util.logging.Level;
+
+import org.restlet.Context;
+import org.restlet.engine.util.SystemUtils;
 
 // [excludes gwt]
 /**
@@ -196,37 +201,18 @@ public abstract class AnnotationInfo {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = (other instanceof AnnotationInfo);
-
-        if (result && (other != this)) {
-            AnnotationInfo otherAnnotation = (AnnotationInfo) other;
-
-            // Compare the method
-            if (result) {
-                result = ((getJavaMethod() == null)
-                        && (otherAnnotation.getJavaMethod() == null) || (getJavaMethod() != null)
-                        && getJavaMethod().equals(
-                                otherAnnotation.getJavaMethod()));
-            }
-
-            // Compare the resource interface
-            if (result) {
-                result = ((getJavaClass() == null)
-                        && (otherAnnotation.getJavaClass() == null) || (getJavaClass() != null)
-                        && getJavaClass()
-                                .equals(otherAnnotation.getJavaClass()));
-            }
-
-            // Compare the annotation value
-            if (result) {
-                result = ((getAnnotationValue() == null)
-                        && (otherAnnotation.getAnnotationValue() == null) || (getAnnotationValue() != null)
-                        && getAnnotationValue().equals(
-                                otherAnnotation.getAnnotationValue()));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof AnnotationInfo)) {
+            return false;
         }
 
-        return result;
+        AnnotationInfo that = (AnnotationInfo) other;
+
+        return Objects.equals(getJavaMethod(), that.getJavaMethod())
+                && Objects.equals(getJavaClass(), that.getJavaClass())
+                && Objects.equals(getAnnotationValue(), that.getAnnotationValue());
     }
 
     /**
@@ -257,7 +243,7 @@ public abstract class AnnotationInfo {
                 result = getJavaActualType(getJavaClass(), genericTypeName);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            Context.getCurrentLogger().log(Level.WARNING, "Cannot get actual type of generic type: " + genericType, t);
         }
 
         return result;
@@ -270,6 +256,11 @@ public abstract class AnnotationInfo {
      */
     public Class<?> getJavaClass() {
         return javaClass;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(annotationValue, javaClass, javaMethod);
     }
 
     /**

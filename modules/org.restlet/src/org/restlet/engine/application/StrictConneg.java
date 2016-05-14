@@ -110,93 +110,80 @@ public class StrictConneg extends Conneg {
      * @return The annotation descriptor score.
      */
     protected float scoreAnnotation(MethodAnnotationInfo annotation) {
-        float result = -1.0F;
+        if (annotation == null) {
+            return 0.0F;
+        }
+        
+        float score = doScoreAnnotation(annotation);
+        
+        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+            Context.getCurrentLogger()
+                    .fine("Score of annotation \"" + annotation + "\"= " + score);
+        }
+        return score;
+    }
 
-        if (annotation != null) {
-            if (annotation.getQuery() != null) {
-                if ((getRequest().getResourceRef() == null)
-                        || (getRequest().getResourceRef().getQuery() == null)) {
-                    // Query constraint defined, but no query provided, no fit
-                    result = -1.0F;
-                } else {
-                    // Query constraint defined and a query provided, see if fit
-                    Form constraintParams = new Form(annotation.getQuery());
-                    Form actualParams = getRequest().getResourceRef()
-                            .getQueryAsForm();
-                    Set<Parameter> matchedParams = new HashSet<Parameter>();
-                    Parameter constraintParam;
-                    Parameter actualParam;
+    private float doScoreAnnotation(MethodAnnotationInfo annotation) {
+        if (annotation.getQuery() == null) {
+            if ((getRequest().getResourceRef() == null)
+                    || (getRequest().getResourceRef().getQuery() == null)) {
+                // No query filter, but no query provided, average fit
+                return 0.5F;
+            }
 
-                    boolean allConstraintsMatched = true;
-                    boolean constraintMatched = false;
+            // No query filter, but a query provided, lower fit
+            return 0.25F;
+        }
+        
+        if ((getRequest().getResourceRef() == null)
+                || (getRequest().getResourceRef().getQuery() == null)) {
+            // Query constraint defined, but no query provided, no fit
+            return -1.0F;
+        }
+        
+        // Query constraint defined and a query provided, see if fit
+        Form constraintParams = new Form(annotation.getQuery());
+        Form actualParams = getRequest().getResourceRef().getQueryAsForm();
+        Set<Parameter> matchedParams = new HashSet<Parameter>();
+        Parameter constraintParam;
+        Parameter actualParam;
 
-                    // Verify that each query constraint has been matched
-                    for (int i = 0; (i < constraintParams.size())
-                            && allConstraintsMatched; i++) {
-                        constraintParam = constraintParams.get(i);
-                        constraintMatched = false;
+        boolean allConstraintsMatched = true;
+        boolean constraintMatched = false;
 
-                        for (int j = 0; j < actualParams.size(); j++) {
-                            actualParam = actualParams.get(j);
+        // Verify that each query constraint has been matched
+        for (int i = 0; allConstraintsMatched && (i < constraintParams.size()); i++) {
+            constraintParam = constraintParams.get(i);
+            constraintMatched = false;
 
-                            if (constraintParam.getName().equals(
-                                    actualParam.getName())) {
-                                // Potential match found based on name
-                                if ((constraintParam.getValue() == null)
-                                        || constraintParam.getValue().equals(
-                                                actualParam.getValue())) {
-                                    // Actual match found!
-                                    constraintMatched = true;
-                                    matchedParams.add(actualParam);
-                                }
-                            }
-                        }
+            for (int j = 0; !constraintMatched && (j < actualParams.size()); j++) {
+                actualParam = actualParams.get(j);
 
-                        allConstraintsMatched = allConstraintsMatched
-                                && constraintMatched;
+                if (constraintParam.getName().equals(actualParam.getName())) {
+                    // Potential match found based on name
+                    if ((constraintParam.getValue() == null)
+                            || constraintParam.getValue().equals(actualParam.getValue())) {
+                        // Actual match found!
+                        constraintMatched = true;
+                        matchedParams.add(actualParam);
                     }
-
-                    // Test if all actual query parameters matched a constraint,
-                    // so
-                    // increase score
-                    boolean allActualMatched = (actualParams.size() == matchedParams
-                            .size());
-
-                    if (allConstraintsMatched) {
-                        if (allActualMatched) {
-                            // All filter parameters matched, no additional
-                            // parameter found
-                            result = 1.0F;
-                        } else {
-                            // All filter parameters matched, but additional
-                            // parameters found
-                            result = 0.75F;
-                        }
-                    } else {
-                        result = -1.0F;
-                    }
-                }
-            } else {
-                if ((getRequest().getResourceRef() == null)
-                        || (getRequest().getResourceRef().getQuery() == null)) {
-                    // No query filter, but no query provided, average fit
-                    result = 0.5F;
-                } else {
-                    // No query filter, but a query provided, lower fit
-                    result = 0.25F;
                 }
             }
 
-            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                Context.getCurrentLogger()
-                        .fine("Score of annotation \"" + annotation + "\"= "
-                                + result);
-            }
-        } else {
-            result = 0.0F;
+            allConstraintsMatched = allConstraintsMatched && constraintMatched;
         }
 
-        return result;
+        if (allConstraintsMatched) {
+            // Test if all actual query parameters matched a constraint, so increase score
+            if (actualParams.size() == matchedParams.size()) {
+                // All filter parameters matched, no additional parameter found
+                return 1.0F;
+            }
+            // All filter parameters matched, but additional parameters found
+            return 0.75F;
+        }
+
+        return -1.0F;
     }
 
     /**

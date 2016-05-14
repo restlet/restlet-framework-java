@@ -258,7 +258,6 @@ public class FormReader {
         if (this.stream != null) {
             try {
                 boolean readingName = true;
-                boolean readingValue = false;
                 StringBuilder nameBuffer = new StringBuilder();
                 StringBuilder valueBuffer = new StringBuilder();
                 int nextChar = 0;
@@ -270,16 +269,12 @@ public class FormReader {
                         if (nextChar == '=') {
                             if (nameBuffer.length() > 0) {
                                 readingName = false;
-                                readingValue = true;
                             } else {
-                                throw new IOException(
-                                        "Empty parameter name detected. Please check your form data");
+                                throw new IOException("Empty parameter name detected. Please check your form data");
                             }
-                        } else if ((nextChar == this.separator)
-                                || (nextChar == -1)) {
+                        } else if (endOfCurrentParameterReached(nextChar)) {
                             if (nameBuffer.length() > 0) {
-                                result = FormUtils.create(nameBuffer, null,
-                                        this.decode, this.characterSet);
+                                result = FormUtils.create(nameBuffer, null, this.decode, this.characterSet);
                             } else if (nextChar == -1) {
                                 // Do nothing return null preference
                             } else {
@@ -289,22 +284,25 @@ public class FormReader {
                         } else {
                             nameBuffer.append((char) nextChar);
                         }
-                    } else if (readingValue) {
-                        if ((nextChar == this.separator) || (nextChar == -1)) {
-                            result = FormUtils.create(nameBuffer, valueBuffer,
-                                    this.decode, this.characterSet);
+                    } else {
+                        // reading value
+                        if (endOfCurrentParameterReached(nextChar)) {
+                            result = FormUtils.create(nameBuffer, valueBuffer, this.decode, this.characterSet);
                         } else {
                             valueBuffer.append((char) nextChar);
                         }
                     }
                 }
             } catch (UnsupportedEncodingException uee) {
-                throw new IOException(
-                        "Unsupported encoding. Please contact the administrator");
+                throw new IOException("Unsupported encoding. Please contact the administrator");
             }
         }
 
         return result;
+    }
+
+    private boolean endOfCurrentParameterReached(int nextChar) {
+        return (nextChar == this.separator) || (nextChar == -1);
     }
 
     /**

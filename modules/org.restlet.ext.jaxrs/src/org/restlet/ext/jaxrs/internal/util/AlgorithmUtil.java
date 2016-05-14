@@ -40,14 +40,13 @@ import org.restlet.ext.jaxrs.internal.wrappers.RrcOrRml;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
 
 /**
- * This class contains helper methods for the algorithm in
- * {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+ * This class contains helper methods for the algorithm in {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
  * 
  * @author Stephan Koops
  */
 public class AlgorithmUtil {
 
-    private static enum ConsOrProdMime {
+    private enum ConsOrProdMime {
         /**
          * Declares that the methods etc. for the consume mime shoud be used
          */
@@ -77,11 +76,9 @@ public class AlgorithmUtil {
      * @param matchResult
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link Request} and the Restlet
-     *            {@link Response}.
+     *            the called URI, the Restlet {@link Request} and the Restlet {@link Response}.
      */
-    public static void addPathVarsToMap(MatchingResult matchResult,
-            CallContext callContext) {
+    public static void addPathVarsToMap(MatchingResult matchResult, CallContext callContext) {
         final Map<String, String> variables = matchResult.getVariables();
         for (final Map.Entry<String, String> varEntry : variables.entrySet()) {
             final String key = varEntry.getKey();
@@ -92,10 +89,9 @@ public class AlgorithmUtil {
 
     private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut) {
-        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<>();
         for (final ResourceMethod resourceMethod : resourceMethods) {
-            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
-                    inOut);
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (final MediaType resMethMediaType : mimes) {
                 if (resMethMediaType.equals(MediaType.ALL)) {
                     returnMethods.put(resourceMethod, mimes);
@@ -108,14 +104,12 @@ public class AlgorithmUtil {
     private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<>();
         for (final ResourceMethod resourceMethod : resourceMethods) {
-            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
-                    inOut);
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (final MediaType resMethMediaType : mimes) {
                 for (final MediaType mediaType : mediaTypes) {
-                    final String resMethMainType = resMethMediaType
-                            .getMainType();
+                    final String resMethMainType = resMethMediaType .getMainType();
                     final String wishedMainType = mediaType.getMainType();
                     if (resMethMainType.equals(wishedMainType)) {
                         returnMethods.put(resourceMethod, mimes);
@@ -133,12 +127,13 @@ public class AlgorithmUtil {
      * @return Never returns null.
      */
     private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
-            Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
+            Collection<ResourceMethod> resourceMethods, 
+            ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<>();
+        
         for (final ResourceMethod resourceMethod : resourceMethods) {
-            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
-                    inOut);
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (final MediaType resMethMediaType : mimes) {
                 for (final MediaType mediaType : mediaTypes) {
                     if (resMethMediaType.equals(mediaType, true)) {
@@ -163,8 +158,7 @@ public class AlgorithmUtil {
             return findMethodsSupportAllTypes(resourceMethods, inOut);
         }
         OrderedMap<ResourceMethod, List<MediaType>> mms;
-        mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut,
-                mediaTypes);
+        mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut, mediaTypes);
         if (mms.isEmpty()) {
             mms = findMethodsSupportType(resourceMethods, inOut, mediaTypes);
             if (mms.isEmpty()) {
@@ -200,8 +194,7 @@ public class AlgorithmUtil {
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
             Method requHttpMethod) {
         final Collection<ResourceMethod> resourceMethods;
-        resourceMethods = new SortedOrderedBag<ResourceMethod>(COMP,
-                unsortedResourceMethods);
+        resourceMethods = new SortedOrderedBag<ResourceMethod>(COMP, unsortedResourceMethods);
         // 3 b+c
         SortedMetadata<MediaType> givenMediaTypes;
         if (givenMediaType != null) {
@@ -245,12 +238,10 @@ public class AlgorithmUtil {
                                 final Method bestMethodHttp;
                                 bestMethodHttp = bestResMethod.getHttpMethod();
                                 if (bestMethodHttp.equals(Method.GET)
-                                        && currentResMethod.getHttpMethod()
-                                                .equals(Method.HEAD)) {
+                                        && currentResMethod.getHttpMethod().equals(Method.HEAD)) {
                                     // ignore HEAD method
                                 } else if (bestMethodHttp.equals(Method.HEAD)
-                                        && currentResMethod.getHttpMethod()
-                                                .equals(Method.GET)) {
+                                        && currentResMethod.getHttpMethod().equals(Method.GET)) {
                                     bestResMethod = currentResMethod;
                                 } else {
                                     // use one of the methods, e.g. the first
@@ -291,14 +282,12 @@ public class AlgorithmUtil {
      * 2008-08-27, Section 3.7.2, Part 1.e and nearly the same part 2f+2g.<br>
      * Sort E using
      * <ol>
-     * <li>the number of literal characters in each member as the primary key
-     * (descending order),</li>
-     * <li>the number of capturing groups as a secondary key (descending order),
-     * </li>
-     * <li>the number of capturing groups with non-default regular expressions
-     * (i.e. not "([^/]+?)") as the tertiary key (descending order), and</li>
-     * <li>the source of each member as quaternary key sorting those derived
-     * from T<sub>method</sub> ahead of those derived from T<sub>locator</sub>.</li>
+     * <li>the number of literal characters in each member as the primary key (descending order),</li>
+     * <li>the number of capturing groups as a secondary key (descending order),</li>
+     * <li>the number of capturing groups with non-default regular expressions (i.e. not "([^/]+?)") as the tertiary key
+     * (descending order), and</li>
+     * <li>the source of each member as quaternary key sorting those derived from T<sub>method</sub> ahead of those
+     * derived from T<sub>locator</sub>.</li>
      * </ol>
      * 
      * @param <R>
@@ -309,11 +298,11 @@ public class AlgorithmUtil {
      * @return the resource method or sub resource locator or root resource
      *         class, or null, if the Map is null or empty.
      */
-    public static <R extends RrcOrRml> R getFirstByNoOfLiteralCharsNoOfCapturingGroups(
-            Collection<R> rrcOrRmls) {
+    public static <R extends RrcOrRml> R getFirstByNoOfLiteralCharsNoOfCapturingGroups(Collection<R> rrcOrRmls) {
         if ((rrcOrRmls == null) || rrcOrRmls.isEmpty()) {
             return null;
         }
+
         final Iterator<R> srmlIter = rrcOrRmls.iterator();
         R bestSrml = srmlIter.next();
         if (rrcOrRmls.size() == 1) {
@@ -326,8 +315,8 @@ public class AlgorithmUtil {
             final PathRegExp srmlRegExp = srml.getPathRegExp();
             final int srmlNoLitChars = srmlRegExp.getNoOfLiteralChars();
             final int srmlNoCaptGroups = srmlRegExp.getNoOfCapturingGroups();
-            final int srmlNoNonDefCaptGroups = srmlRegExp
-                    .getNoNonDefCaprGroups();
+            final int srmlNoNonDefCaptGroups = srmlRegExp.getNoNonDefCaprGroups();
+
             if (srmlNoLitChars > bestSrmlChars) {
                 bestSrml = srml;
                 bestSrmlChars = srmlNoLitChars;
@@ -335,34 +324,39 @@ public class AlgorithmUtil {
                 bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
                 continue;
             }
-            if (srmlNoLitChars == bestSrmlChars) {
-                if (srmlNoCaptGroups > bestSrmlNoCaptGroups) {
-                    bestSrml = srml;
-                    bestSrmlChars = srmlNoLitChars;
-                    bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                    bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
-                    continue;
-                }
-                if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
-                    if (srmlNoNonDefCaptGroups > bestSrmlNoNonDefCaptGroups) {
-                        bestSrml = srml;
-                        bestSrmlChars = srmlNoLitChars;
-                        bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                        bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
-                        continue;
-                    }
-                    if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
-                        if ((srml instanceof ResourceMethod)
-                                && (bestSrml instanceof SubResourceLocator)) {
-                            // prefare methods ahead locators
-                            bestSrml = srml;
-                            bestSrmlChars = srmlNoLitChars;
-                            bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                            bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
-                            continue;
-                        }
-                    }
-                }
+            if (srmlNoLitChars != bestSrmlChars) {
+                continue;
+            }
+            
+            if (srmlNoCaptGroups > bestSrmlNoCaptGroups) {
+                bestSrml = srml;
+                bestSrmlChars = srmlNoLitChars;
+                bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
+                continue;
+            }
+            if (srmlNoCaptGroups != bestSrmlNoCaptGroups) {
+                continue;
+            }
+            
+            if (srmlNoNonDefCaptGroups > bestSrmlNoNonDefCaptGroups) {
+                bestSrml = srml;
+                bestSrmlChars = srmlNoLitChars;
+                bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
+                continue;
+            }
+            if (srmlNoNonDefCaptGroups != bestSrmlNoNonDefCaptGroups) {
+                continue;
+            }
+            if ((srml instanceof ResourceMethod)
+                    && (bestSrml instanceof SubResourceLocator)) {
+                // prefare methods ahead locators
+                bestSrml = srml;
+                bestSrmlChars = srmlNoLitChars;
+                bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
+                continue;
             }
         }
         return bestSrml;

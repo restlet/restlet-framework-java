@@ -133,7 +133,7 @@ public class ResourceInfo extends DocumentedInfo {
                 doc = new DocumentationInfo();
                 info.getDocumentations().add(doc);
             } else {
-                info.getDocumentations().get(0);
+                doc = info.getDocumentations().get(0);
             }
 
             doc.setTitle(title);

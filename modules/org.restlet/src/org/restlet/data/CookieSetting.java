@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import java.util.Objects;
+
 import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
 
@@ -178,35 +180,19 @@ public final class CookieSetting extends Cookie {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        boolean result = (obj == this);
-
-        // if obj == this no need to go further
-        if (!result) {
-            // test for equality at Cookie level i.e. name and value.
-            if (super.equals(obj)) {
-                // if obj isn't a cookie setting or is null don't evaluate
-                // further
-                if (obj instanceof CookieSetting) {
-                    CookieSetting that = (CookieSetting) obj;
-                    result = (this.maxAge == that.maxAge)
-                            && (this.secure == that.secure);
-
-                    if (result) // if "maxAge" and "secure" properties are equal
-                    // test comments
-                    {
-                        if (!(this.comment == null)) // compare comments
-                        // taking care of nulls
-                        {
-                            result = (this.comment.equals(that.comment));
-                        } else {
-                            result = (that.comment == null);
-                        }
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof CookieSetting)) {
+            return false;
         }
 
-        return result;
+        CookieSetting that = (CookieSetting) obj;
+
+        return super.equals(obj)
+                && this.maxAge == that.maxAge
+                && this.secure == that.secure
+                && Objects.equals(this.comment, that.comment);
     }
 
     /**

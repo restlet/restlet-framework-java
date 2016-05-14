@@ -115,8 +115,7 @@ public class PathSegmentImpl implements PathSegment {
      * @param indexForErrMess
      *            If the user adds more than one path segment with one call, you
      *            can give the index for an error message here. Set -1, if none.
-     *            See
-     *            {@link EncodeOrCheck#checkForInvalidUriChars(String, int, String)}
+     *            See {@link EncodeOrCheck#checkForInvalidUriChars(String, int, String)}
      * @throws IllegalArgumentException
      *             the segment is null, if decode and encode is both true
      */
@@ -151,14 +150,11 @@ public class PathSegmentImpl implements PathSegment {
         if (!(object instanceof PathSegmentImpl)) {
             return false;
         }
-        final PathSegment other = (PathSegment) object;
-        if (!getPath().equals(other.getPath())) {
-            return false;
-        }
-        if (!getMatrixParameters().equals(other.getMatrixParameters())) {
-            return false;
-        }
-        return true;
+        
+        final PathSegment that = (PathSegment) object;
+
+        return getPath().equals(that.getPath())
+                && getMatrixParameters().equals(that.getMatrixParameters());
     }
 
     /**

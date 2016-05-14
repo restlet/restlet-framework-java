@@ -25,6 +25,7 @@
 package org.restlet.data;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
@@ -128,27 +129,16 @@ public class Parameter implements Comparable<Parameter>, NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        // if obj == this no need to go further
-        boolean result = (obj == this);
-
-        if (!result) {
-            result = obj instanceof Parameter;
-
-            // if obj isn't a parameter or is null don't evaluate further
-            if (result) {
-                Parameter that = (Parameter) obj;
-                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
-                        .equals(that.getName())));
-
-                // if names are both null or equal continue
-                if (result) {
-                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
-                            .equals(that.getValue())));
-                }
-            }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Parameter)) {
+            return false;
         }
 
-        return result;
+        Parameter that = (Parameter) obj;
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue());
     }
 
     /*

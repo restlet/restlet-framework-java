@@ -84,9 +84,8 @@ import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 
 /**
- * Contains all request specific data of the interfaces injectable for &#64;
- * {@link Context}. Implementation of the JAX-RS interfaces {@link HttpHeaders},
- * {@link UriInfo}, {@link javax.ws.rs.core.Request} and {@link SecurityContext}
+ * Contains all request specific data of the interfaces injectable for &#64; {@link Context}. Implementation of the
+ * JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo}, {@link javax.ws.rs.core.Request} and {@link SecurityContext}
  * .<br>
  * This class is not required to be thread safe, because it is only used for one
  * client request in one thread at the same time.
@@ -319,8 +318,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Checks, if this object is changeable. If not, a
-     * {@link IllegalStateException} is thrown.
+     * Checks, if this object is changeable. If not, a {@link IllegalStateException} is thrown.
      * 
      * @throws IllegalStateException
      */
@@ -377,17 +375,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (!(anotherObject instanceof UriInfo)) {
             return false;
         }
-        final UriInfo other = (UriInfo) anotherObject;
-        if (!getBaseUri().equals(other.getBaseUri())) {
-            return false;
-        }
-        if (!this.getPathSegments().equals(other.getPathSegments())) {
-            return false;
-        }
-        if (!Util.equals(this.getPathParameters(), other.getPathParameters())) {
-            return false;
-        }
-        return true;
+        final UriInfo that = (UriInfo) anotherObject;
+
+        return getBaseUri().equals(that.getBaseUri())
+                && this.getPathSegments().equals(that.getPathSegments())
+                && Util.equals(this.getPathParameters(), that.getPathParameters());
     }
 
     @Override
@@ -434,22 +426,20 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @throws java.lang.IllegalStateException
      *             if called outside the scope of a request
      * 
-     * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
-     *      javax.ws.rs.core.EntityTag)
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
-     *      2616, section 10.3.5: Status 304: Not Modified</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC
-     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
-     *      section 13.3: (Caching) Validation Model</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,
-     *      section 14.24: Header "If-Match"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616,
-     *      section 14.25: Header "If-Modified-Since"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616,
-     *      section 14.26: Header "If-None-Match"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616,
-     *      section 14.28: Header "If-Unmodified-Since"</a>
+     * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date, javax.ws.rs.core.EntityTag)
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC 2616, section 10.3.5: Status 304: Not
+     *      Modified</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC 2616, section 10.4.13: Status 412:
+     *      Precondition Failed</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616, section 13.3: (Caching) Validation
+     *      Model</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616, section 14.24: Header "If-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616, section 14.25: Header
+     *      "If-Modified-Since"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616, section 14.26: Header
+     *      "If-None-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616, section 14.28: Header
+     *      "If-Unmodified-Since"</a>
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
@@ -537,8 +527,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     /**
      * Get the absolute path of the request. This includes everything preceding
      * the path (host, port etc) but excludes query parameters and fragment.
-     * This is a shortcut for
-     * <code>uriInfo.getBase().resolve(uriInfo.getPath()).</code>
+     * This is a shortcut for <code>uriInfo.getBase().resolve(uriInfo.getPath()).</code>
      * 
      * @return the absolute path of the request
      * @see UriInfo#getAbsolutePath()
@@ -602,8 +591,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Returns the accepted media types as Restlet
-     * {@link org.restlet.data.MediaType}s.
+     * Returns the accepted media types as Restlet {@link org.restlet.data.MediaType}s.
      * 
      * @return the accepted {@link org.restlet.data.MediaType}s.
      */
@@ -846,8 +834,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * Get the path of the current request relative to the base URI as a string.
-     * All sequences of escaped octets are decoded, equivalent to
-     * <code>getPath(true)</code>.
+     * All sequences of escaped octets are decoded, equivalent to <code>getPath(true)</code>.
      * 
      * @return the relative URI path.
      * @see UriInfo#getPath()
@@ -876,8 +863,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * Get the values of any embedded URI template parameters. All sequences of
-     * escaped octets are decoded, equivalent to
-     * <code>getTemplateParameters(true)</code>.
+     * escaped octets are decoded, equivalent to <code>getTemplateParameters(true)</code>.
      * 
      * @return an unmodifiable map of parameter names and values
      * @throws java.lang.IllegalStateException
@@ -929,11 +915,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Get the path of the current request relative to the base URI as a list of
-     * {@link PathSegment}. This method is useful when the path needs to be
+     * Get the path of the current request relative to the base URI as a list of {@link PathSegment}. This method is
+     * useful when the path needs to be
      * parsed, particularly when matrix parameters may be present in the path.
-     * All sequences of escaped octets are decoded, equivalent to
-     * <code>getPathSegments(true)</code>.
+     * All sequences of escaped octets are decoded, equivalent to <code>getPathSegments(true)</code>.
      * 
      * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
      *         map of each path segment is also unmodifiable.
@@ -947,8 +932,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Get the path of the current request relative to the base URI as a list of
-     * {@link PathSegment}. This method is useful when the path needs to be
+     * Get the path of the current request relative to the base URI as a list of {@link PathSegment}. This method is
+     * useful when the path needs to be
      * parsed, particularly when matrix parameters may be present in the path.
      * 
      * @param decode
@@ -977,8 +962,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * Get the URI query parameters of the current request. All sequences of
-     * escaped octets are decoded, equivalent to
-     * <code>getQueryParameters(true)</code>.
+     * escaped octets are decoded, equivalent to <code>getQueryParameters(true)</code>.
      * 
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
@@ -1001,13 +985,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *            controls whether sequences of escaped octets in parameter
      *            names and values are decoded (true) or not (false).
      * @param caseSensitive
-     *          should the parameter name should keep their case, set to true 
+     *            should the parameter name should keep their case, set to true
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
      *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
-    public MultivaluedMap<String, String> getQueryParameters(boolean decode, 
+    public MultivaluedMap<String, String> getQueryParameters(boolean decode,
             boolean caseSensitive) {
         if (decode) {
             return getQueryParameters();
@@ -1132,8 +1116,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Returns a boolean indicating whether this request was made using a secure
      * channel, such as HTTPS.
      * 
-     * @return <code>true</code> if the request was made using a secure channel,
-     *         <code>false</code> otherwise
+     * @return <code>true</code> if the request was made using a secure channel, <code>false</code> otherwise
      * @see SecurityContext#isSecure()
      */
     public boolean isSecure() {

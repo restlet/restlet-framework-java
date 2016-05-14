@@ -287,8 +287,7 @@ public final class CharacterSet extends Metadata {
     @Override
     public boolean equals(Object object) {
         return (object instanceof CharacterSet)
-                && getName()
-                        .equalsIgnoreCase(((CharacterSet) object).getName());
+                && getName().equalsIgnoreCase(((CharacterSet) object).getName());
     }
 
     @Override

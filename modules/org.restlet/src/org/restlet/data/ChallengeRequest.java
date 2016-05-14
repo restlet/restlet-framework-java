@@ -26,12 +26,14 @@ package org.restlet.data;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.restlet.engine.util.SystemUtils;
 
 /**
  * Authentication challenge sent by an origin server to a client. Upon reception
- * of this request, the client should send a new request with the proper
- * {@link ChallengeResponse} set.<br>
+ * of this request, the client should send a new request with the proper {@link ChallengeResponse} set.<br>
  * <br>
  * Note that when used with HTTP connectors, this class maps to the
  * "WWW-Authenticate" header.
@@ -77,35 +79,18 @@ public final class ChallengeRequest extends ChallengeMessage {
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
-        boolean result = (obj == this);
-
-        // if obj == this no need to go further
-        if (!result) {
-            // if obj isn't a challenge request or is null don't evaluate
-            // further
-            if (obj instanceof ChallengeRequest) {
-                final ChallengeRequest that = (ChallengeRequest) obj;
-                result = (getParameters().equals(that.getParameters()));
-
-                if (result) {
-                    if (getRealm() != null) {
-                        result = getRealm().equals(that.getRealm());
-                    } else {
-                        result = (that.getRealm() == null);
-                    }
-
-                    if (result) {
-                        if (getScheme() != null) {
-                            result = getScheme().equals(that.getScheme());
-                        } else {
-                            result = (that.getScheme() == null);
-                        }
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ChallengeRequest)) {
+            return false;
         }
 
-        return result;
+        final ChallengeRequest that = (ChallengeRequest) obj;
+
+        return getParameters().equals(that.getParameters())
+                && Objects.equals(getRealm(), that.getRealm())
+                && Objects.equals(getScheme(), that.getScheme());
     }
 
     /**
@@ -150,6 +135,11 @@ public final class ChallengeRequest extends ChallengeMessage {
         }
         return r;
     }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(super.hashCode(), qualityOptions, domainRefs, stale);
+    }
 
     /**
      * Indicates if the previous request from the client was stale.
@@ -173,8 +163,7 @@ public final class ChallengeRequest extends ChallengeMessage {
 
     /**
      * Sets the URI references that define the protection domains for the digest
-     * authentication. Note that the parameters are copied into a new
-     * {@link CopyOnWriteArrayList} instance.
+     * authentication. Note that the parameters are copied into a new {@link CopyOnWriteArrayList} instance.
      * 
      * @param domainUris
      *            The base URI references.

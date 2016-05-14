@@ -174,8 +174,8 @@ public class EntryContentHandler<T> extends EntryReader {
     }
 
     /**
-     * Close the given entry, in case we really handle an entry (@see current
-     * {@link State}). Multiple levels expand fix start.
+     * Close the given entry, in case we really handle an entry (@see current {@link State}). Multiple levels expand fix
+     * start.
      * 
      * @param entry
      *            The entry to close.
@@ -322,26 +322,22 @@ public class EntryContentHandler<T> extends EntryReader {
                 parsePropertyNull = false;
             } else {
                 Object obj = entity;
-                if (propertyPath.size() > 1) {
+                if (obj != null && propertyPath.size() > 1) {
                     // Complex property.
                     for (int i = 0; i < propertyPath.size() - 1; i++) {
                         try {
-                            Object o = ReflectUtils.invokeGetter(obj,
-                                    propertyPath.get(i));
+                            Object o = ReflectUtils.invokeGetter(obj, propertyPath.get(i));
                             if (o == null) {
                                 // Try to instantiate it
-                                Field[] fields = obj.getClass()
-                                        .getDeclaredFields();
+                                Field[] fields = obj.getClass().getDeclaredFields();
                                 for (Field field : fields) {
-                                    if (field.getName().equalsIgnoreCase(
-                                            propertyPath.get(i))) {
+                                    if (field.getName().equalsIgnoreCase(propertyPath.get(i))) {
                                         o = field.getType().newInstance();
                                         break;
                                     }
                                 }
                             }
-                            ReflectUtils.invokeSetter(obj, propertyPath.get(i),
-                                    o);
+                            ReflectUtils.invokeSetter(obj, propertyPath.get(i), o);
                             obj = o;
                         } catch (Exception e) {
                             obj = null;
@@ -362,8 +358,7 @@ public class EntryContentHandler<T> extends EntryReader {
                     propertyPath.remove(propertyPath.size() - 1);
                 }
                 if (propertyPath.isEmpty()) {
-                    // There is only one state for parsing complex or simple
-                    // properties.
+                    // There is only one state for parsing complex or simple properties.
                     popState();
                 }
             }

@@ -24,7 +24,10 @@
 
 package org.restlet.engine.resource;
 
+import java.util.Objects;
+
 import org.restlet.data.Status;
+import org.restlet.engine.util.SystemUtils;
 
 // [excludes gwt]
 /**
@@ -34,11 +37,11 @@ import org.restlet.data.Status;
  */
 public class ThrowableAnnotationInfo extends AnnotationInfo {
 
-    /** The status parsed from the annotation value. */
-    private final Status status;
-
     /** Indicates if the {@link Status#getThrowable()} should be serialized. */
     private final boolean serializable;
+
+    /** The status parsed from the annotation value. */
+    private final Status status;
 
     /**
      * Constructor.
@@ -68,21 +71,17 @@ public class ThrowableAnnotationInfo extends AnnotationInfo {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = (other instanceof ThrowableAnnotationInfo);
-
-        if (result && (other != this)) {
-            ThrowableAnnotationInfo otherAnnotation = (ThrowableAnnotationInfo) other;
-            result = super.equals(otherAnnotation);
-
-            // Compare the Restlet method
-            if (result) {
-                result = ((getStatus() == null)
-                        && (otherAnnotation.getStatus() == null) || (getStatus() != null)
-                        && getStatus().equals(otherAnnotation.getStatus()));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof ThrowableAnnotationInfo)) {
+            return false;
         }
 
-        return result;
+        ThrowableAnnotationInfo that = (ThrowableAnnotationInfo) other;
+
+        return super.equals(that) 
+                && Objects.equals(getStatus(), that.getStatus());
     }
 
     /**
@@ -92,6 +91,11 @@ public class ThrowableAnnotationInfo extends AnnotationInfo {
      */
     public Status getStatus() {
         return status;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(super.hashCode(), status);
     }
 
     /**

@@ -320,8 +320,7 @@ public class Metadata extends SaxRepresentation {
             if (et != null) {
                 for (Property property : et.getProperties()) {
                     if (property.getName().equals(propertyName)
-                            || property.getNormalizedName()
-                                    .equals(propertyName)) {
+                            || property.getNormalizedName().equals(propertyName)) {
                         result = property;
                         break;
                     }
@@ -331,8 +330,7 @@ public class Metadata extends SaxRepresentation {
                 if (ct != null) {
                     for (Property property : ct.getProperties()) {
                         if (property.getName().equals(propertyName)
-                                || property.getNormalizedName().equals(
-                                        propertyName)) {
+                                || property.getNormalizedName().equals(propertyName)) {
                             result = property;
                             break;
                         }

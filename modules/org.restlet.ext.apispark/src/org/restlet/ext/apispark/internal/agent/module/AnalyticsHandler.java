@@ -283,7 +283,7 @@ public class AnalyticsHandler {
          */
         private long getRetryTime(int attemptNumber) {
             long newTime = RETRY_AFTER
-                    * ((int) Math.pow(2.0, attemptNumber - 1));
+                    * ((int) Math.pow(2.0d, attemptNumber - 1));
             return Math.min(newTime, MAX_TIME);
         }
     }

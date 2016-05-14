@@ -63,8 +63,7 @@ public class Request extends Message {
 
     // [ifndef gwt] method
     /**
-     * Returns the request associated to the current thread. This is reusing the
-     * {@link Response#getCurrent()} method.<br>
+     * Returns the request associated to the current thread. This is reusing the {@link Response#getCurrent()} method.<br>
      * <br>
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
@@ -515,8 +514,7 @@ public class Request extends Message {
 
     /**
      * Returns the original reference as requested by the client. Note that this
-     * property is not used during request routing. See the
-     * {@link #getResourceRef()} method for details.
+     * property is not used during request routing. See the {@link #getResourceRef()} method for details.
      * 
      * @return The original reference.
      * @see #getResourceRef()
@@ -608,8 +606,7 @@ public class Request extends Message {
      * object. Therefore, the resource reference can become different from the
      * original reference.
      * 
-     * Finally, when sending out requests via a dispatcher such as
-     * {@link Context#getClientDispatcher()} or
+     * Finally, when sending out requests via a dispatcher such as {@link Context#getClientDispatcher()} or
      * {@link Context#getServerDispatcher()}, if the reference contains URI
      * template variables, those variables are automatically resolved using the
      * request's attributes.
@@ -661,8 +658,8 @@ public class Request extends Message {
     public boolean isEntityAvailable() {
         // The declaration of the "result" variable is a workaround for the GWT
         // platform.
-        boolean result = (Method.GET.equals(getMethod()) || Method.HEAD
-                .equals(getMethod()));
+        boolean result = (Method.GET.equals(getMethod())
+                || Method.HEAD.equals(getMethod()));
         if (result) {
             return false;
         }

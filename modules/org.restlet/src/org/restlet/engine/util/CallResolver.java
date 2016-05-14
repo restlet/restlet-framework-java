@@ -24,12 +24,17 @@
 
 package org.restlet.engine.util;
 
+import static org.restlet.engine.util.DateUtils.FORMAT_RFC_1123;
+
 import java.util.Date;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Reference;
+import org.restlet.data.ServerInfo;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
 import org.restlet.util.Resolver;
 
 /**
@@ -58,6 +63,118 @@ public class CallResolver extends Resolver<Object> {
         this.response = response;
     }
 
+    @Override
+    public Object resolve(String variableName) {
+        // Check for a matching response attribute
+        Object result = (this.response != null) ? this.response.getAttributes().get(variableName) : null;
+        if (result != null) {
+            return result;
+        }
+
+        // Check for a matching request attribute
+        result = (this.request != null) ? this.request.getAttributes().get(variableName) : null;
+        if (result != null) {
+            return result;
+        }
+
+        if (variableName == null) {
+            return null;
+        }
+
+        // Check for a matching request or response property
+        if (this.request != null) {
+            ChallengeResponse cr = this.request.getChallengeResponse();
+            Representation entity = this.request.getEntity();
+
+            switch (variableName) {
+            case "c":
+                return Boolean.toString(this.request.isConfidential());
+            case "cia":
+                return this.request.getClientInfo().getAddress();
+            case "ciua":
+                return this.request.getClientInfo().getUpstreamAddress();
+            case "cig":
+                return this.request.getClientInfo().getAgent();
+            case "cri":
+                return (cr != null) ? cr.getIdentifier() : null;
+            case "crs":
+                return (cr != null && cr.getScheme() != null) ? cr.getScheme().getTechnicalName() : null;
+            case "d":
+                return DateUtils.format(new Date(), FORMAT_RFC_1123.get(0));
+            case "ecs":
+                return (entity != null && entity.getCharacterSet() != null) ? entity.getCharacterSet().getName() : null;
+            case "ee":
+                return getEncodingsAsString(entity);
+            case "eed":
+                return getExpirationDateAsString(entity);
+            case "el":
+                return getLanguagesAsString(entity);
+            case "emd":
+                return getModificationDateAsString(entity);
+            case "emt":
+                return (entity != null && entity.getMediaType() != null) ? entity.getMediaType().getName() : null;
+            case "es":
+                return (entity != null && entity.getSize() != -1) ? Long.toString(entity.getSize()) : null;
+            case "et":
+                return (entity != null && entity.getTag() != null) ? entity.getTag().getName() : null;
+            case "f":
+                return getReferenceContent(variableName.substring(1), this.request.getReferrerRef());
+            case "h":
+                return getReferenceContent(variableName.substring(1), this.request.getHostRef());
+            case "m":
+                return (this.request.getMethod() != null) ? this.request.getMethod().getName() : null;
+            case "p":
+                return (this.request.getProtocol() != null) ? this.request.getProtocol().getName() : null;
+            default:
+                if (variableName.startsWith("o")) {
+                    return getReferenceContent(variableName.substring(1), this.request.getRootRef());
+                } else if (variableName.startsWith("r")) {
+                    return getReferenceContent(variableName.substring(1), this.request.getResourceRef());
+                }
+                break;
+            }
+        }
+
+        if (this.response != null) {
+            Representation entity = this.response.getEntity();
+            Status status = this.response.getStatus();
+            ServerInfo serverInfo = this.response.getServerInfo();
+
+            switch (variableName) {
+            case "ECS":
+                return (entity != null && entity.getCharacterSet() != null) ? entity.getCharacterSet().getName() : null;
+            case "EE":
+                return getEncodingsAsString(entity);
+            case "EED":
+                return getExpirationDateAsString(entity);
+            case "EL":
+                return getLanguagesAsString(entity);
+            case "EMD":
+                return getModificationDateAsString(entity);
+            case "EMT":
+                return (entity != null && entity.getMediaType() != null) ? entity.getMediaType().getName() : null;
+            case "ES":
+                return (entity != null && entity.getSize() != -1) ? Long.toString(entity.getSize()) : null;
+            case "ET":
+                return (entity != null && entity.getTag() != null) ? entity.getTag().getName() : null;
+            case "S":
+                return (status != null) ? Integer.toString(status.getCode()) : null;
+            case "SIA":
+                return serverInfo.getAddress();
+            case "SIG":
+                return serverInfo.getAgent();
+            case "SIP":
+                return (serverInfo.getPort() != -1) ? Integer.toString(serverInfo.getPort()) : null;
+            default:
+                if (variableName.startsWith("R")) {
+                    return getReferenceContent(variableName.substring(1), this.response.getLocationRef());
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns the content corresponding to a reference property.
      * 
@@ -68,258 +185,78 @@ public class CallResolver extends Resolver<Object> {
      * @return The content corresponding to a reference property.
      */
     private String getReferenceContent(String partName, Reference reference) {
-        String result = null;
-
-        if (reference != null && partName != null) {
-            if (partName.equals("a")) {
-                result = reference.getAuthority();
-            } else if (partName.startsWith("b")) {
-                result = getReferenceContent(partName.substring(1),
-                        reference.getBaseRef());
-            } else if (partName.startsWith("t")) {
-                result = getReferenceContent(partName.substring(1),
-                        reference.getTargetRef());
-            } else if (partName.equals("e")) {
-                result = reference.getRelativePart();
-            } else if (partName.equals("f")) {
-                result = reference.getFragment();
-            } else if (partName.equals("h")) {
-                result = reference.getHostIdentifier();
-            } else if (partName.equals("i")) {
-                result = reference.getIdentifier();
-            } else if (partName.equals("p")) {
-                result = reference.getPath();
-            } else if (partName.equals("q")) {
-                result = reference.getQuery();
-            } else if (partName.equals("r")) {
-                result = reference.getRemainingPart();
-            } else if (partName.isEmpty()) {
-                result = reference.toString(false, false);
-            }
+        if (reference == null || partName == null) {
+            return null;
         }
 
-        return result;
+        switch (partName) {
+        case "a":
+            return reference.getAuthority();
+        case "e":
+            return reference.getRelativePart();
+        case "f":
+            return reference.getFragment();
+        case "h":
+            return reference.getHostIdentifier();
+        case "i":
+            return reference.getIdentifier();
+        case "p":
+            return reference.getPath();
+        case "q":
+            return reference.getQuery();
+        case "r":
+            return reference.getRemainingPart();
+        default:
+            if (partName.startsWith("b")) {
+                return getReferenceContent(partName.substring(1), reference.getBaseRef());
+            } else if (partName.startsWith("t")) {
+                return getReferenceContent(partName.substring(1), reference.getTargetRef());
+            } else if (partName.isEmpty()) {
+                return reference.toString(false, false);
+            }
+            break;
+        }
+
+        return null;
     }
 
-    @Override
-    public Object resolve(String variableName) {
-        Object result = null;
+    private Object getModificationDateAsString(Representation entity) {
+        return (entity != null && (entity.getModificationDate() != null)) ?
+                DateUtils.format(entity.getModificationDate(), FORMAT_RFC_1123.get(0)) :
+                null;
+    }
 
-        // Check for a matching response attribute
-        if (this.response != null
-                && this.response.getAttributes().containsKey(variableName)) {
-            result = this.response.getAttributes().get(variableName);
-        }
+    private Object getExpirationDateAsString(Representation entity) {
+        return (entity != null && entity.getExpirationDate() != null) ?
+                DateUtils.format(entity.getExpirationDate(), FORMAT_RFC_1123.get(0)) :
+                null;
+    }
 
-        // Check for a matching request attribute
-        if ((result == null) && (this.request != null)
-                && this.request.getAttributes().containsKey(variableName)) {
-            result = this.request.getAttributes().get(variableName);
-        }
-
-        // Check for a matching request or response property
-        if (result == null) {
-            if (this.request != null && variableName != null) {
-                if (variableName.equals("c")) {
-                    result = Boolean.toString(this.request.isConfidential());
-                } else if (variableName.equals("cia")) {
-                    result = this.request.getClientInfo().getAddress();
-                } else if (variableName.equals("ciua")) {
-                    result = this.request.getClientInfo().getUpstreamAddress();
-                } else if (variableName.equals("cig")) {
-                    result = this.request.getClientInfo().getAgent();
-                } else if (variableName.equals("cri")) {
-                    ChallengeResponse cr = this.request.getChallengeResponse();
-                    if (cr != null) {
-                        result = cr.getIdentifier();
-                    }
-                } else if (variableName.equals("crs")) {
-                    ChallengeResponse cr = this.request.getChallengeResponse();
-                    if (cr != null && cr.getScheme() != null) {
-                        result = cr.getScheme().getTechnicalName();
-                    }
-                } else if (variableName.equals("d")) {
-                    result = DateUtils.format(new Date(),
-                            DateUtils.FORMAT_RFC_1123.get(0));
-                } else if (variableName.equals("ecs")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getCharacterSet() != null)) {
-                        result = this.request.getEntity().getCharacterSet()
-                                .getName();
-                    }
-                } else if (variableName.equals("ee")) {
-                    if ((this.request.getEntity() != null)
-                            && (!this.request.getEntity().getEncodings()
-                                    .isEmpty())) {
-                        final StringBuilder value = new StringBuilder();
-                        for (int i = 0; i < this.request.getEntity()
-                                .getEncodings().size(); i++) {
-                            if (i > 0) {
-                                value.append(", ");
-                            }
-                            value.append(this.request.getEntity()
-                                    .getEncodings().get(i).getName());
-                        }
-                        result = value.toString();
-                    }
-                } else if (variableName.equals("eed")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getExpirationDate() != null)) {
-                        result = DateUtils.format(this.request.getEntity()
-                                .getExpirationDate(), DateUtils.FORMAT_RFC_1123
-                                .get(0));
-                    }
-                } else if (variableName.equals("el")) {
-                    if ((this.request.getEntity() != null)
-                            && (!this.request.getEntity().getLanguages()
-                                    .isEmpty())) {
-                        final StringBuilder value = new StringBuilder();
-                        for (int i = 0; i < this.request.getEntity()
-                                .getLanguages().size(); i++) {
-                            if (i > 0) {
-                                value.append(", ");
-                            }
-                            value.append(this.request.getEntity()
-                                    .getLanguages().get(i).getName());
-                        }
-                        result = value.toString();
-                    }
-                } else if (variableName.equals("emd")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getModificationDate() != null)) {
-                        result = DateUtils.format(this.request.getEntity()
-                                .getModificationDate(),
-                                DateUtils.FORMAT_RFC_1123.get(0));
-                    }
-                } else if (variableName.equals("emt")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getMediaType() != null)) {
-                        result = this.request.getEntity().getMediaType()
-                                .getName();
-                    }
-                } else if (variableName.equals("es")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getSize() != -1)) {
-                        result = Long.toString(this.request.getEntity()
-                                .getSize());
-                    }
-                } else if (variableName.equals("et")) {
-                    if ((this.request.getEntity() != null)
-                            && (this.request.getEntity().getTag() != null)) {
-                        result = this.request.getEntity().getTag().getName();
-                    }
-                } else if (variableName.startsWith("f")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            this.request.getReferrerRef());
-                } else if (variableName.startsWith("h")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            this.request.getHostRef());
-                } else if (variableName.equals("m")) {
-                    if (this.request.getMethod() != null) {
-                        result = this.request.getMethod().getName();
-                    }
-                } else if (variableName.startsWith("o")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            this.request.getRootRef());
-                } else if (variableName.equals("p")) {
-                    if (this.request.getProtocol() != null) {
-                        result = this.request.getProtocol().getName();
-                    }
-                } else if (variableName.startsWith("r")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            this.request.getResourceRef());
+    private Object getLanguagesAsString(Representation entity) {
+        if (entity != null && !entity.getLanguages().isEmpty()) {
+            final StringBuilder value = new StringBuilder();
+            for (int i = 0; i < entity.getLanguages().size(); i++) {
+                if (i > 0) {
+                    value.append(", ");
                 }
+                value.append(entity.getLanguages().get(i).getName());
             }
-
-            if ((result == null) && (this.response != null)) {
-                if (variableName.equals("ECS")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getCharacterSet() != null)) {
-                        result = this.response.getEntity().getCharacterSet()
-                                .getName();
-                    }
-                } else if (variableName.equals("EE")) {
-                    if ((this.response.getEntity() != null)
-                            && (!this.response.getEntity().getEncodings()
-                                    .isEmpty())) {
-                        final StringBuilder value = new StringBuilder();
-                        for (int i = 0; i < this.response.getEntity()
-                                .getEncodings().size(); i++) {
-                            if (i > 0) {
-                                value.append(", ");
-                            }
-                            value.append(this.response.getEntity()
-                                    .getEncodings().get(i).getName());
-                        }
-                        result = value.toString();
-                    }
-                } else if (variableName.equals("EED")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getExpirationDate() != null)) {
-                        result = DateUtils.format(this.response.getEntity()
-                                .getExpirationDate(), DateUtils.FORMAT_RFC_1123
-                                .get(0));
-                    }
-                } else if (variableName.equals("EL")) {
-                    if ((this.response.getEntity() != null)
-                            && (!this.response.getEntity().getLanguages()
-                                    .isEmpty())) {
-                        final StringBuilder value = new StringBuilder();
-                        for (int i = 0; i < this.response.getEntity()
-                                .getLanguages().size(); i++) {
-                            if (i > 0) {
-                                value.append(", ");
-                            }
-                            value.append(this.response.getEntity()
-                                    .getLanguages().get(i).getName());
-                        }
-                        result = value.toString();
-                    }
-                } else if (variableName.equals("EMD")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getModificationDate() != null)) {
-                        result = DateUtils.format(this.response.getEntity()
-                                .getModificationDate(),
-                                DateUtils.FORMAT_RFC_1123.get(0));
-                    }
-                } else if (variableName.equals("EMT")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getMediaType() != null)) {
-                        result = this.response.getEntity().getMediaType()
-                                .getName();
-                    }
-                } else if (variableName.equals("ES")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getSize() != -1)) {
-                        result = Long.toString(this.response.getEntity()
-                                .getSize());
-                    }
-                } else if (variableName.equals("ET")) {
-                    if ((this.response.getEntity() != null)
-                            && (this.response.getEntity().getTag() != null)) {
-                        result = this.response.getEntity().getTag().getName();
-                    }
-                } else if (variableName.startsWith("R")) {
-                    result = getReferenceContent(variableName.substring(1),
-                            this.response.getLocationRef());
-                } else if (variableName.equals("S")) {
-                    if (this.response.getStatus() != null) {
-                        result = Integer.toString(this.response.getStatus()
-                                .getCode());
-                    }
-                } else if (variableName.equals("SIA")) {
-                    result = this.response.getServerInfo().getAddress();
-                } else if (variableName.equals("SIG")) {
-                    result = this.response.getServerInfo().getAgent();
-                } else if (variableName.equals("SIP")) {
-                    if (this.response.getServerInfo().getPort() != -1) {
-                        result = Integer.toString(this.response.getServerInfo()
-                                .getPort());
-                    }
-                }
-            }
+            return value.toString();
         }
+        return null;
+    }
 
-        return result;
+    private Object getEncodingsAsString(Representation entity) {
+        if (entity != null && !entity.getEncodings().isEmpty()) {
+            final StringBuilder value = new StringBuilder();
+            for (int i = 0; i < entity.getEncodings().size(); i++) {
+                if (i > 0) {
+                    value.append(", ");
+                }
+                value.append(entity.getEncodings().get(i).getName());
+            }
+            return value.toString();
+        }
+        return null;
     }
 }

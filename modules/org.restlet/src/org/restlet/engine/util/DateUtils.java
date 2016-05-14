@@ -70,8 +70,7 @@ public final class DateUtils {
 
     // [ifndef gwt] member
     /** Remember the often used GMT time zone. */
-    private static final java.util.TimeZone TIMEZONE_GMT = java.util.TimeZone
-            .getTimeZone("GMT");
+    private static final java.util.TimeZone TIMEZONE_GMT = java.util.TimeZone.getTimeZone("GMT");
 
     // [ifdef gwt] member uncomment
     // private static final com.google.gwt.i18n.client.TimeZone TIMEZONE_GMT =
@@ -226,11 +225,11 @@ public final class DateUtils {
      * @return The parsed date.
      */
     public static Date parse(String date, List<String> formats) {
-        Date result = null;
-
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
         }
+
+        Date result = null;
 
         String format = null;
         int formatsSize = formats.size();
@@ -243,8 +242,7 @@ public final class DateUtils {
             if (FORMAT_RFC_3339.get(0).equals(format)) {
                 parser = new InternetDateFormat(TIMEZONE_GMT);
             } else {
-                parser = new java.text.SimpleDateFormat(format,
-                        java.util.Locale.US);
+                parser = new java.text.SimpleDateFormat(format, java.util.Locale.US);
                 parser.setTimeZone(TIMEZONE_GMT);
             }
             // [enddef]

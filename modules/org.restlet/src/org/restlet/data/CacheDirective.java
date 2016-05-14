@@ -25,6 +25,7 @@
 package org.restlet.data;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
@@ -52,12 +53,10 @@ public final class CacheDirective implements NamedValue<String> {
      * @param maxAge
      *            Maximum age in seconds.
      * @return A new "max-age" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP
-     *      1.1 - Modifications of the Basic Expiration Mechanism</a>
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP
-     *      1.1 - Cache Revalidation and Reload Controls</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP 1.1 - Modifications of the
+     *      Basic Expiration Mechanism</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP 1.1 - Cache Revalidation and
+     *      Reload Controls</a>
      */
     public static CacheDirective maxAge(int maxAge) {
         return new CacheDirective(HeaderConstants.CACHE_MAX_AGE,
@@ -72,9 +71,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on requests only.
      * 
      * @return A new "max-stale" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP
-     *      1.1 - Modifications of the Basic Expiration Mechanism</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP 1.1 - Modifications of the
+     *      Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale() {
         return new CacheDirective(HeaderConstants.CACHE_MAX_STALE);
@@ -90,9 +88,8 @@ public final class CacheDirective implements NamedValue<String> {
      * @param maxStale
      *            Maximum stale age in seconds.
      * @return A new "max-stale" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP
-     *      1.1 - Modifications of the Basic Expiration Mechanism</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP 1.1 - Modifications of the
+     *      Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale(int maxStale) {
         return new CacheDirective(HeaderConstants.CACHE_MAX_STALE,
@@ -111,9 +108,8 @@ public final class CacheDirective implements NamedValue<String> {
      * @param minFresh
      *            Minimum freshness lifetime in seconds.
      * @return A new "min-fresh" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP
-     *      1.1 - Modifications of the Basic Expiration Mechanism</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP 1.1 - Modifications of the
+     *      Basic Expiration Mechanism</a>
      */
     public static CacheDirective minFresh(int minFresh) {
         return new CacheDirective(HeaderConstants.CACHE_MIN_FRESH,
@@ -127,9 +123,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on responses only.
      * 
      * @return A new "must-revalidate" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP
-     *      1.1 - Cache Revalidation and Reload Controls</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP 1.1 - Cache Revalidation and
+     *      Reload Controls</a>
      */
     public static CacheDirective mustRevalidate() {
         return new CacheDirective(HeaderConstants.CACHE_MUST_REVALIDATE);
@@ -143,9 +138,7 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on requests or responses.
      * 
      * @return A new "no-cache" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective noCache() {
         return new CacheDirective(HeaderConstants.CACHE_NO_CACHE);
@@ -162,9 +155,7 @@ public final class CacheDirective implements NamedValue<String> {
      *            Field names, typically a HTTP header name, that must not be
      *            sent by caches.
      * @return A new "no-cache" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective noCache(List<String> fieldNames) {
         StringBuilder sb = new StringBuilder();
@@ -193,9 +184,7 @@ public final class CacheDirective implements NamedValue<String> {
      *            A field name, typically a HTTP header name, that must not be
      *            sent by caches.
      * @return A new "no-cache" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective noCache(String fieldName) {
         return new CacheDirective(HeaderConstants.CACHE_NO_CACHE, "\""
@@ -210,9 +199,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on requests or responses.
      * 
      * @return A new "no-store" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.2">HTTP
-     *      1.1 - What May be Stored by Caches</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.2">HTTP 1.1 - What May be Stored by
+     *      Caches</a>
      */
     public static CacheDirective noStore() {
         return new CacheDirective(HeaderConstants.CACHE_NO_STORE);
@@ -225,9 +213,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on requests or responses.
      * 
      * @return A new "no-transform" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.5">HTTP
-     *      1.1 - No-Transform Directive</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.5">HTTP 1.1 - No-Transform
+     *      Directive</a>
      */
     public static CacheDirective noTransform() {
         return new CacheDirective(HeaderConstants.CACHE_NO_TRANSFORM);
@@ -240,9 +227,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on requests only.
      * 
      * @return A new "only-if-cached" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP
-     *      1.1 - Cache Revalidation and Reload Controls</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP 1.1 - Cache Revalidation and
+     *      Reload Controls</a>
      */
     public static CacheDirective onlyIfCached() {
         return new CacheDirective(HeaderConstants.CACHE_ONLY_IF_CACHED);
@@ -256,9 +242,7 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on responses only.
      * 
      * @return A new "private" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo() {
         return new CacheDirective(HeaderConstants.CACHE_PRIVATE);
@@ -275,9 +259,7 @@ public final class CacheDirective implements NamedValue<String> {
      *            Field names, typically a HTTP header name, that must be
      *            private.
      * @return A new "private" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo(List<String> fieldNames) {
         StringBuilder sb = new StringBuilder();
@@ -305,9 +287,7 @@ public final class CacheDirective implements NamedValue<String> {
      * @param fieldName
      *            A field name, typically a HTTP header name, that is private.
      * @return A new "private" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo(String fieldName) {
         return new CacheDirective(HeaderConstants.CACHE_PRIVATE, "\""
@@ -322,9 +302,8 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on responses only.
      * 
      * @return A new "proxy-revalidate" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP
-     *      1.1 - Cache Revalidation and Reload Controls</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.4">HTTP 1.1 - Cache Revalidation and
+     *      Reload Controls</a>
      */
     public static CacheDirective proxyMustRevalidate() {
         return new CacheDirective(HeaderConstants.CACHE_PROXY_MUST_REVALIDATE);
@@ -338,9 +317,7 @@ public final class CacheDirective implements NamedValue<String> {
      * Note that this directive can be used on responses only.
      * 
      * @return A new "public" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP
-     *      1.1 - What is Cacheable</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1">HTTP 1.1 - What is Cacheable</a>
      */
     public static CacheDirective publicInfo() {
         return new CacheDirective(HeaderConstants.CACHE_PUBLIC);
@@ -356,9 +333,8 @@ public final class CacheDirective implements NamedValue<String> {
      * @param sharedMaxAge
      *            Maximum age in seconds.
      * @return A new "s-maxage" directive.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP
-     *      1.1 - Modifications of the Basic Expiration Mechanism</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.3">HTTP 1.1 - Modifications of the
+     *      Basic Expiration Mechanism</a>
      */
     public static CacheDirective sharedMaxAge(int sharedMaxAge) {
         return new CacheDirective(HeaderConstants.CACHE_SHARED_MAX_AGE,
@@ -415,32 +391,19 @@ public final class CacheDirective implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        // if obj == this no need to go further
-        boolean result = (obj == this);
-
-        if (!result) {
-            result = obj instanceof CacheDirective;
-
-            // if obj isn't a cache directive or is null don't evaluate further
-            if (result) {
-                CacheDirective that = (CacheDirective) obj;
-                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
-                        .equals(that.getName())));
-
-                // if names are both null or equal continue
-                if (result) {
-                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
-                            .equals(that.getValue())));
-
-                    // if values are both null or equal continue
-                    if (result) {
-                        result = (this.digit == that.digit);
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
         }
 
-        return result;
+        if (!(obj instanceof CacheDirective)) {
+            return false;
+        }
+
+        CacheDirective that = (CacheDirective) obj;
+        
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue())
+                && (this.digit == that.digit);
     }
 
     /**

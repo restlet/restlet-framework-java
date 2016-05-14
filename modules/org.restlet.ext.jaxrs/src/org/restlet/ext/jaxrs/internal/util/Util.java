@@ -24,6 +24,7 @@
 
 package org.restlet.ext.jaxrs.internal.util;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static org.restlet.data.CharacterSet.UTF_8;
 
@@ -104,8 +105,7 @@ public class Util {
      * 
      * @see #JAX_RS_DEFAULT_CHARACTER_SET
      */
-    public static final String JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING = JAX_RS_DEFAULT_CHARACTER_SET
-            .toString();
+    public static final String JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING = JAX_RS_DEFAULT_CHARACTER_SET.toString();
 
     /**
      * This comparator sorts the concrete MediaTypes to the beginning and the
@@ -129,8 +129,7 @@ public class Util {
             if (rt != 0) {
                 return rt;
             }
-            return mediaType1.toString().compareToIgnoreCase(
-                    mediaType2.toString());
+            return mediaType1.toString().compareToIgnoreCase(mediaType2.toString());
         }
     };
 
@@ -335,12 +334,11 @@ public class Util {
     }
 
     /**
-     * Copies the headers of the given {@link Response} into the given
-     * {@link Series}.
+     * Copies the headers of the given {@link Response} into the given {@link Series}.
      * 
      * @param restletResponse
-     *            The response to update. Should contain a
-     *            {@link Representation} to copy the representation headers from
+     *            The response to update. Should contain a {@link Representation} to copy the representation headers
+     *            from
      *            it.
      * @return The copied headers.
      */
@@ -479,8 +477,7 @@ public class Util {
     }
 
     /**
-     * Converts the given Date into a String. Copied from
-     * {@link org.restlet.engine.Call}.
+     * Converts the given Date into a String. Copied from {@link org.restlet.engine.Call}.
      * 
      * @param date
      *            Date to format
@@ -887,8 +884,7 @@ public class Util {
     }
 
     /**
-     * Returns the HTTP headers of the Restlet {@link Request} as {@link Series}
-     * .
+     * Returns the HTTP headers of the Restlet {@link Request} as {@link Series} .
      * 
      * @param request
      * @return Returns the HTTP headers of the Request.
@@ -908,8 +904,7 @@ public class Util {
     }
 
     /**
-     * Returns the HTTP headers of the Restlet {@link Response} as
-     * {@link Series}.
+     * Returns the HTTP headers of the Restlet {@link Response} as {@link Series}.
      * 
      * @param response
      * @return Returns the HTTP headers of the Response.
@@ -1101,8 +1096,7 @@ public class Util {
      *            The name of the {@link Method} to search.
      * @return Returns a {@link Collection} all of {@link Method}s with the
      *         given name. Never returns null. If no methods are found an empty
-     *         Collection will be returned. The method {@link Iterator#remove()}
-     *         of this collection is supported.
+     *         Collection will be returned. The method {@link Iterator#remove()} of this collection is supported.
      * @throws IllegalArgumentException
      *             if the clazz or the method name is null.
      */
@@ -1470,8 +1464,7 @@ public class Util {
      * @param toInject
      *            the object to inject in the first parameter object.
      * @throws InjectException
-     *             if the injection was not possible. See
-     *             {@link InjectException#getCause()} for the reason.
+     *             if the injection was not possible. See {@link InjectException#getCause()} for the reason.
      */
     public static void inject(final Object resource, final Field field,
             final Object toInject) throws InjectException {
@@ -1724,8 +1717,7 @@ public class Util {
             final char c = pathTemplate.charAt(i);
             if (c == '{') {
                 throw new IllegalPathException(pathForExcMess,
-                        "A variable must not " + "contain an extra '{' in \""
-                                + pathTemplate + "\"");
+                        format("A variable must not contain an extra '{' in \"%s\"", pathTemplate));
             } else if (c == ' ' || c == '\t') {
                 if (state == NAME_READ)
                     state = NAME_READ_READY;
@@ -1733,26 +1725,22 @@ public class Util {
             } else if (c == ':') {
                 if (state == NAME_READ_START) {
                     throw new IllegalPathException(pathForExcMess,
-                            "The variable name at position must not be null at "
-                                    + braceIndex + " of \"" + pathTemplate
-                                    + "\"");
+                            format("The variable name at position must not be null at %d of \"%s\"",
+                                    braceIndex,
+                                    pathTemplate));
                 }
-                if (state == NAME_READ || state == NAME_READ_READY) {
-                    for (int j = i; j < l; j++) {
-                        if (pathTemplate.charAt(j) == '}') {
-                            stb.append('}');
-                            return j;
-                        }
+                for (int j = i; j < l; j++) {
+                    if (pathTemplate.charAt(j) == '}') {
+                        stb.append('}');
+                        return j;
                     }
-                    throw new IllegalPathException(pathForExcMess,
-                            "No '}' found after '{' at position " + braceIndex
-                                    + " of \"" + pathTemplate + "\"");
                 }
+                throw new IllegalPathException(pathForExcMess,
+                        format("No '}' found after '{' at position %d of \"%s\"", braceIndex, pathTemplate));
             } else if (c == '}') {
                 if (state == NAME_READ_START) {
                     throw new IllegalPathException(pathForExcMess,
-                            "The template variable name '{}' is not allowed in "
-                                    + "\"" + pathTemplate + "\"");
+                            format("The template variable name '{}' is not allowed in \"%s\"", pathTemplate));
                 }
                 stb.append('}');
                 return i;
@@ -1765,18 +1753,16 @@ public class Util {
                 stb.append(c);
             } else {
                 throw new IllegalPathException(pathForExcMess,
-                        "Invalid character found at position " + i + " of \""
-                                + pathTemplate + "\"");
+                        format("Invalid character found at position %d of \"%s\"", i, pathTemplate));
             }
         }
         throw new IllegalPathException(pathForExcMess,
-                "No '}' found after '{' " + "at position " + braceIndex
-                        + " of \"" + pathTemplate + "\"");
+                format("No '}' found after '{' " + "at position %d of \"%s\"", braceIndex, pathTemplate));
     }
 
     /**
-     * Returns a new {@link List}, which contains all
-     * {@link org.restlet.data.MediaType}s of the given List, sorted by it's
+     * Returns a new {@link List}, which contains all {@link org.restlet.data.MediaType}s of the given List, sorted by
+     * it's
      * concreteness, the concrete {@link org.restlet.data.MediaType} at the
      * beginning.
      * 
@@ -1786,8 +1772,7 @@ public class Util {
      */
     public static List<org.restlet.data.MediaType> sortByConcreteness(
             Collection<org.restlet.data.MediaType> mediaTypes) {
-        final List<org.restlet.data.MediaType> newList = new ArrayList<org.restlet.data.MediaType>(
-                mediaTypes.size());
+        final List<org.restlet.data.MediaType> newList = new ArrayList<org.restlet.data.MediaType>(mediaTypes.size());
         for (final org.restlet.data.MediaType mediaType : mediaTypes) {
             if (specificness(mediaType) > 0) {
                 newList.add(mediaType);

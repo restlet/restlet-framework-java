@@ -251,7 +251,7 @@ public class TypeUtils {
      */
     public static String toEdm(Object value, Type type) {
         String adoNetType = type.getName();
-        if (value == null && adoNetType == null) {
+        if (value == null || adoNetType == null) {
             return null;
         }
 
@@ -438,7 +438,7 @@ public class TypeUtils {
      */
     public static String toEdmKey(Object value, Type type) {
         String adoNetType = type.getName();
-        if (value == null && adoNetType == null) {
+        if (value == null || adoNetType == null) {
             return null;
         }
 

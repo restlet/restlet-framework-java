@@ -75,7 +75,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * default value provided by system property
      * "org.restlet.ext.xml.expandingEntityRefs", false by default.
      */
-    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+    public final static boolean XML_EXPANDING_ENTITY_REFS = Boolean
             .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
 
     /**
@@ -83,7 +83,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * default value provided by system property
      * "org.restlet.ext.xml.validatingDtd", false by default.
      */
-    public static boolean XML_VALIDATING_DTD = Boolean
+    public final static boolean XML_VALIDATING_DTD = Boolean
             .getBoolean("org.restlet.ext.xml.validatingDtd");
 
     // [ifdef android] method

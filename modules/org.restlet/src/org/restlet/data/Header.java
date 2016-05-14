@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import java.util.Objects;
+
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
 
@@ -63,27 +65,16 @@ public class Header implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        // if obj == this no need to go further
-        boolean result = (obj == this);
-
-        if (!result) {
-            result = obj instanceof Header;
-
-            // if obj isn't a header or is null don't evaluate further
-            if (result) {
-                Header that = (Header) obj;
-                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
-                        .equals(that.getName())));
-
-                // if names are both null or equal continue
-                if (result) {
-                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
-                            .equals(that.getValue())));
-                }
-            }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Header)) {
+            return false;
         }
 
-        return result;
+        Header that = (Header) obj;
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue());
     }
 
     /**

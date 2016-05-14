@@ -69,8 +69,7 @@ import org.restlet.resource.Result;
 import org.restlet.util.Series;
 
 /**
- * Reflection proxy invocation handler created for the
- * {@link JaxRsClientResource#wrap(Class)} and related methods.
+ * Reflection proxy invocation handler created for the {@link JaxRsClientResource#wrap(Class)} and related methods.
  * 
  * @see JaxRsClientResource
  * @see ClientInvocationHandler
@@ -116,7 +115,7 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
     private void addFormParam(Form form, String representationAsText,
             Annotation annotation) {
         form.add(new Parameter(((FormParam) annotation).value(),
-                        representationAsText));
+                representationAsText));
     }
 
     private void addHeaderParam(Request request, String representationAsText,
@@ -163,7 +162,7 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
         request.getResourceRef().setPath(existingPath);
     }
-    
+
     private void addQueryParam(Request request, String representationAsText,
             Annotation annotation) {
         request.getResourceRef().addQueryParameter(
@@ -216,39 +215,29 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
             // Get the kind of result expected.
             final Result rCallback = (Result) value;
-            ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
+            ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ?
+                    (java.lang.reflect.ParameterizedType) genericParameterType
                     : null;
-            final Class<?> actualType = (parameterizedType
-                    .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                    .getActualTypeArguments()[0] : null;
+            final Class<?> actualType = (
+                    parameterizedType != null
+                    && parameterizedType.getActualTypeArguments()[0] instanceof Class<?>) ?
+                            (Class<?>) parameterizedType.getActualTypeArguments()[0] :
+                            null;
 
             // Define the callback
             Uniform callback = new Uniform() {
                 @SuppressWarnings("unchecked")
-                public void handle(Request request,
-                        Response response) {
+                public void handle(Request request, Response response) {
                     if (response.getStatus().isError()) {
-                        rCallback.onFailure(new ResourceException(
-                                response.getStatus()));
+                        rCallback.onFailure(new ResourceException(response.getStatus()));
                     } else {
                         if (actualType != null) {
                             Object result = null;
-                            boolean serializationError = false;
-
                             try {
-                                result = getClientResource()
-                                        .toObject(
-                                                response.getEntity(),
-                                                actualType);
-                            } catch (Exception e) {
-                                serializationError = true;
-                                rCallback
-                                        .onFailure(new ResourceException(
-                                                e));
-                            }
-
-                            if (!serializationError) {
+                                result = getClientResource().toObject(response.getEntity(), actualType);
                                 rCallback.onSuccess(result);
+                            } catch (Exception e) {
+                                rCallback.onFailure(new ResourceException(e));
                             }
                         } else {
                             rCallback.onSuccess(null);
@@ -259,20 +248,18 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 
             getClientResource().setOnResponse(callback);
         } else if (annotations != null && annotations.length > 0) {
-            String representationAsText = getRepresentationAsText(value);                
+            String representationAsText = getRepresentationAsText(value);
 
             if (representationAsText != null) {
                 for (Annotation annotation : annotations) {
                     if (annotation instanceof HeaderParam) {
-                        addHeaderParam(request, representationAsText,
-                                annotation);
+                        addHeaderParam(request, representationAsText, annotation);
                     } else if (annotation instanceof QueryParam) {
                         addQueryParam(request, representationAsText, annotation);
                     } else if (annotation instanceof FormParam) {
                         addFormParam(form, representationAsText, annotation);
                     } else if (annotation instanceof CookieParam) {
-                        addCookieParam(request, representationAsText,
-                                annotation);
+                        addCookieParam(request, representationAsText, annotation);
                     } else if (annotation instanceof MatrixParam) {
                         // TODO
                     } else if (annotation instanceof PathParam) {
@@ -282,11 +269,10 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
             }
         } else {
             // Set the entity
-            request.setEntity(getClientResource().toRepresentation(
-                    value));
+            request.setEntity(getClientResource().toRepresentation(value));
         }
     }
-    
+
     @Override
     public Object invoke(Object proxy, Method javaMethod, Object[] args)
             throws Throwable {
@@ -318,7 +304,7 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
                 for (int i = 0; i < args.length; i++) {
                     Object o = args[i];
                     Type genericParameterType = genericParameterTypes[i];
-                    
+
                     handleJavaMethodParameter(request, o, genericParameterType, parameterAnnotations[i], form);
                 }
                 if (!form.isEmpty()) {
@@ -444,7 +430,7 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
                         fullUriFromPath += "/" + methodPath;
                     }
                 }
-                
+
                 request.getResourceRef().setPath(fullUriFromPath);
             }
         }

@@ -525,6 +525,8 @@ public class Router extends Restlet {
                 try {
                     Thread.sleep(getRetryDelay());
                 } catch (InterruptedException e) {
+                    // MITRE, CWE-391 - Unchecked Error Condition
+                    Thread.currentThread().interrupt();
                 }
             }
 

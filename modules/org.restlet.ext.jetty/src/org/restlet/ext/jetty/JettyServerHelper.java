@@ -219,8 +219,7 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public abstract class JettyServerHelper extends
-        org.restlet.engine.adapter.HttpServerHelper {
+public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper {
 
     /**
      * Jetty server wrapped by a parent Restlet HTTP server connector.
@@ -317,57 +316,45 @@ public abstract class JettyServerHelper extends
 
         if (spdyVersion == 0)
             return new ConnectionFactory[] { http };
-        else {
-            /*
-             * try { SPDYServerConnectionFactory.
-             * checkProtocolNegotiationAvailable(); } catch( Exception e ) {
-             * getLogger().log( Level.WARNING,
-             * "Jetty NPN boot is not available in -Xbootclasspath", e ); return
-             * null; }
-             */
 
-            // Push strategy
-            String pushStrategyName = getSpdyPushStrategy();
+        /*
+         * try { SPDYServerConnectionFactory.
+         * checkProtocolNegotiationAvailable(); } catch( Exception e ) {
+         * getLogger().log( Level.WARNING,
+         * "Jetty NPN boot is not available in -Xbootclasspath", e ); return
+         * null; }
+         */
 
-            if (pushStrategyName == null)
-                pushStrategyName = "org.eclipse.jetty.spdy.server.http.PushStrategy$None";
-            else if ("referrer".equalsIgnoreCase(pushStrategyName))
-                pushStrategyName = "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
+        // Push strategy
+        String pushStrategyName = getSpdyPushStrategy();
 
-            PushStrategy pushStrategy;
-            try {
-                pushStrategy = (PushStrategy) Class.forName(pushStrategyName)
-                        .newInstance();
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Unable to create the Jetty SPDY push strategy", e);
-                return null;
-            }
+        if (pushStrategyName == null)
+            pushStrategyName = "org.eclipse.jetty.spdy.server.http.PushStrategy$None";
+        else if ("referrer".equalsIgnoreCase(pushStrategyName))
+            pushStrategyName = "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
 
-            // SDPY connection factories
-            HTTPSPDYServerConnectionFactory spdy3 = spdyVersion == 3 ? new HTTPSPDYServerConnectionFactory(
-                    3, configuration, pushStrategy) : null;
-            HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(
-                    2, configuration, pushStrategy);
-
-            // NPN connection factory
-            NPNServerConnectionFactory npn;
-
-            if (spdyVersion == 3)
-                npn = new NPNServerConnectionFactory(spdy3.getProtocol(),
-                        spdy2.getProtocol(), http.getProtocol());
-            else
-                npn = new NPNServerConnectionFactory(spdy2.getProtocol(),
-                        http.getProtocol());
-
-            npn.setDefaultProtocol(http.getProtocol());
-
-            // All factories
-            if (spdyVersion == 3)
-                return new ConnectionFactory[] { npn, spdy3, spdy2, http };
-            else
-                return new ConnectionFactory[] { npn, spdy2, http };
+        PushStrategy pushStrategy;
+        try {
+            pushStrategy = (PushStrategy) Class.forName(pushStrategyName).newInstance();
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Unable to create the Jetty SPDY push strategy", e);
+            return null;
         }
+
+        HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(2, configuration, pushStrategy);
+
+        if (spdyVersion == 3) {
+            HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3, configuration, pushStrategy);
+            NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol());
+            npn.setDefaultProtocol(http.getProtocol());
+            
+            return new ConnectionFactory[] { npn, spdy3, spdy2, http };
+        }
+        
+        NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy2.getProtocol(), http.getProtocol());
+        npn.setDefaultProtocol(http.getProtocol());
+        
+        return new ConnectionFactory[] { npn, spdy2, http };
     }
 
     /**

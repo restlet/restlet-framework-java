@@ -89,20 +89,17 @@ import org.restlet.ext.sdc.internal.SdcServerConnection;
  * <td>enabledCipherSuites</td>
  * <td>String</td>
  * <td>TLS_RSA_WITH_AES_128_CBC_SHA</td>
- * <td>Whitespace-separated list of enabled cipher suites and/or can be
- * specified multiple times.</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be specified multiple times.</td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
- * <td>Let you specify a {@link SslContextFactory} qualified class name as a
- * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting.</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a parameter, or an instance as an attribute
+ * for a more complete and flexible SSL context setting.</td>
  * </tr>
  * </table>
- * For the default SSL parameters see the Javadocs of the
- * {@link DefaultSslContextFactory} class.
+ * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
  * 
  * @author Jerome Louvel
  */
@@ -143,8 +140,7 @@ public class SdcClientHelper extends HttpClientHelper {
 
             if (cr != null) {
                 if (cr.getScheme().equals(ChallengeScheme.valueOf("SDC"))) {
-                    String key = cr.getIdentifier() + ":"
-                            + String.valueOf(cr.getSecret());
+                    String key = cr.getIdentifier() + ":" + String.valueOf(cr.getSecret());
                     int retryAttempts = 3;
                     int retryDelay = 3000;
                     SdcServerConnection ssc = null;
@@ -156,7 +152,8 @@ public class SdcClientHelper extends HttpClientHelper {
                             try {
                                 Thread.sleep(retryDelay);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                // MITRE, CWE-391 - Unchecked Error Condition
+                                Thread.currentThread().interrupt();
                             }
                         }
                     }
@@ -167,9 +164,10 @@ public class SdcClientHelper extends HttpClientHelper {
                                         "Unable to find an established SDC tunnel for this request: ",
                                         request.getResourceRef());
                     } else {
-                        result = new SdcClientCall(this, ssc, request
-                                .getMethod().toString(), ReferenceUtils.update(
-                                request.getResourceRef(), request).toString());
+                        result = new SdcClientCall(this,
+                                ssc,
+                                request.getMethod().toString(),
+                                ReferenceUtils.update(request.getResourceRef(), request).toString());
                     }
                 }
             }
@@ -296,6 +294,8 @@ public class SdcClientHelper extends HttpClientHelper {
                             "Interrupted while waiting for starting latch. Stopping...",
                             ex);
             stop();
+            // MITRE, CWE-391 - Unchecked Error Condition
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -91,9 +91,8 @@ public class DomRepresentation extends XmlRepresentation {
      *            A source XML representation to parse.
      */
     public DomRepresentation(Representation xmlRepresentation) {
-        super((xmlRepresentation == null) ? null : xmlRepresentation
-                .getMediaType());
-        this.setAvailable(xmlRepresentation.isAvailable());
+        super((xmlRepresentation == null) ? null : xmlRepresentation.getMediaType());
+        this.setAvailable((xmlRepresentation == null) ? false : xmlRepresentation.isAvailable());
         this.xmlRepresentation = xmlRepresentation;
     }
 
@@ -161,12 +160,9 @@ public class DomRepresentation extends XmlRepresentation {
         if (this.document == null) {
             if (this.xmlRepresentation != null) {
                 try {
-                    this.document = getDocumentBuilder()
-                            .parse(getInputSource());
+                    this.document = getDocumentBuilder().parse(getInputSource());
                 } catch (SAXException se) {
-                    throw new IOException(
-                            "Couldn't read the XML representation. "
-                                    + se.getMessage());
+                    throw new IOException("Couldn't read the XML representation. " + se.getMessage());
                 }
             } else {
                 this.document = getDocumentBuilder().newDocument();
@@ -189,7 +185,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public InputSource getInputSource() throws IOException {
-        if (this.xmlRepresentation.isAvailable()) {
+        if (this.xmlRepresentation != null && this.xmlRepresentation.isAvailable()) {
             return new InputSource(this.xmlRepresentation.getStream());
         }
         return new InputSource((InputStream) null);

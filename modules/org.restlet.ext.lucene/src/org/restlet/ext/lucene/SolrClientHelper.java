@@ -42,6 +42,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.connector.ClientHelper;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.lucene.internal.SolrRepresentation;
 import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
 
@@ -73,7 +74,7 @@ import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
  */
 public class SolrClientHelper extends ClientHelper {
 
-    public static Protocol SOLR_PROTOCOL = new Protocol("solr", "Solr",
+    public final static Protocol SOLR_PROTOCOL = new Protocol("solr", "Solr",
             "Solr indexer helper", Protocol.UNKNOWN_PORT);
 
     /** The core Solr container. */
@@ -103,16 +104,14 @@ public class SolrClientHelper extends ClientHelper {
 
         String coreName = request.getResourceRef().getHostDomain();
 
-        if (coreName == null || "".equals(coreName)) {
-            coreName = getContext().getParameters()
-                    .getFirstValue("DefaultCore");
+        if (StringUtils.isNullOrEmpty(coreName)) {
+            coreName = getContext().getParameters().getFirstValue("DefaultCore");
         }
 
         SolrCore core = coreContainer.getCore(coreName);
 
         if (core == null) {
-            response.setStatus(Status.SERVER_ERROR_INTERNAL, "No such core: "
-                    + coreName);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, "No such core: " + coreName);
             return;
         }
 
@@ -121,8 +120,7 @@ public class SolrClientHelper extends ClientHelper {
 
         if (handler == null) {
             if ("/select".equals(path) || "/select/".equalsIgnoreCase(path)) {
-                String qt = request.getResourceRef().getQueryAsForm()
-                        .getFirstValue(CommonParams.QT);
+                String qt = request.getResourceRef().getQueryAsForm().getFirstValue(CommonParams.QT);
                 handler = core.getRequestHandler(qt);
                 if (handler == null) {
                     response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -131,7 +129,9 @@ public class SolrClientHelper extends ClientHelper {
                 }
             }
             // Perhaps the path is to manage the cores
-            if (handler == null && coreContainer != null
+            if (handler == null
+                    && coreContainer != null
+                    && path != null
                     && path.equals(coreContainer.getAdminPath())) {
                 handler = coreContainer.getMultiCoreHandler();
             }
@@ -139,20 +139,17 @@ public class SolrClientHelper extends ClientHelper {
 
         if (handler == null) {
             core.close();
-            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                    "unknown handler: " + path);
+            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "unknown handler: " + path);
             return;
         }
 
         try {
-            SolrQueryRequest solrReq = new SolrRestletQueryRequest(request,
-                    core);
+            SolrQueryRequest solrReq = new SolrRestletQueryRequest(request, core);
             SolrQueryResponse solrResp = new SolrQueryResponse();
             core.execute(handler, solrReq, solrResp);
 
             if (solrResp.getException() != null) {
-                response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                        solrResp.getException());
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, solrResp.getException());
             } else {
                 response.setEntity(new SolrRepresentation(
                         MediaType.APPLICATION_XML, solrReq, solrResp));

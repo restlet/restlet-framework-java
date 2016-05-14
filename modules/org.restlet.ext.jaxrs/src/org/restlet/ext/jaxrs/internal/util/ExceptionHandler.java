@@ -258,8 +258,10 @@ public class ExceptionHandler {
      *             the exception to throw according to the JAX-RS specification.
      */
     public WebApplicationException noMessageBodyWriter(
-            Class<? extends Object> entityClass, Type genericType,
-            Annotation[] annotations, MediaType respMediaType,
+            Class<? extends Object> entityClass, 
+            Type genericType,
+            Annotation[] annotations, 
+            MediaType respMediaType,
             SortedMetadata<MediaType> accMediaTypes)
             throws WebApplicationException {
         String warning = "No message body writer found for " + entityClass
@@ -272,7 +274,7 @@ public class ExceptionHandler {
             warning += "; accepted media types are: " + accMediaTypes;
         }
         this.logger.warning(warning);
-        annotations.toString(); // LATER log also annotations
+        //annotations.toString(); // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

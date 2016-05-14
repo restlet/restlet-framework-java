@@ -220,6 +220,10 @@ public class ReflectUtils {
                             }
                         }
                     }
+                    if (p == null) {
+                        // can't set a property on a null value
+                        return;
+                    }
                     o = p;
                 }
                 pty = strings[strings.length - 1];
@@ -228,8 +232,7 @@ public class ReflectUtils {
             String setterName = null;
             char firstLetter = pty.charAt(0);
             if (Character.isLowerCase(firstLetter)) {
-                setterName = "set" + Character.toUpperCase(firstLetter)
-                        + pty.substring(1);
+                setterName = "set" + Character.toUpperCase(firstLetter) + pty.substring(1);
             } else {
                 setterName = "set" + pty;
             }

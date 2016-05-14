@@ -568,7 +568,7 @@ public class ParameterList {
 
     static class FormParamGetter extends FormOrQueryParamGetter {
 
-        private static Form form;
+        private Form form;
 
         private final FormParam formParam;
 
@@ -581,12 +581,12 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            Representation entity = this.tlContext.get().getRequest()
-                    .getEntity();
-            if (entity != null && entity.isAvailable()) {
-                form = new Form(entity, false);
+            if (form == null && this.tlContext.get().getRequest().isEntityAvailable()) {
+                form = new Form(this.tlContext.get().getRequest().getEntity(), false);
             }
-
+            if (form == null) {
+                return null;
+            }
             final String paramName = this.formParam.value();
             try {
                 return super.getParamValue(form, paramName);

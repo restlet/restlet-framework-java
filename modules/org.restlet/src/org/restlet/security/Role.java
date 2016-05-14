@@ -26,6 +26,7 @@ package org.restlet.security;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Application;
@@ -189,10 +190,11 @@ public class Role implements Principal {
     public boolean equals(Object o) {
         if (!(o instanceof Role))
             return false;
-        Role role = (Role) o;
-        return SystemUtils.equals(role.getApplication(), getApplication())
-                && SystemUtils.equals(role.getName(), getName())
-                && SystemUtils.equals(role.getChildRoles(), getChildRoles());
+        
+        Role that = (Role) o;
+        return Objects.equals(that.getApplication(), getApplication())
+                && Objects.equals(that.getName(), getName())
+                && Objects.equals(that.getChildRoles(), getChildRoles());
     }
 
     /**

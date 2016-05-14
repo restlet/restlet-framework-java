@@ -86,7 +86,6 @@ public class CookieReader extends HeaderReader<Cookie> {
         Parameter result = null;
 
         boolean readingName = true;
-        boolean readingValue = false;
         StringBuilder nameBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();
         int nextChar = 0;
@@ -95,27 +94,21 @@ public class CookieReader extends HeaderReader<Cookie> {
             nextChar = read();
 
             if (readingName) {
-                if ((HeaderUtils.isSpace(nextChar))
-                        && (nameBuffer.length() == 0)) {
+                if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
                     // Skip spaces
-                } else if ((nextChar == -1) || (nextChar == ';')
-                        || (nextChar == ',')) {
+                } else if ((nextChar == -1) || (nextChar == ';') || (nextChar == ',')) {
                     if (nameBuffer.length() > 0) {
                         // End of pair with no value
                         result = Parameter.create(nameBuffer, null);
                     } else if (nextChar == -1) {
                         // Do nothing return null preference
                     } else {
-                        throw new IOException(
-                                "Empty cookie name detected. Please check your cookies");
+                        throw new IOException("Empty cookie name detected. Please check your cookies");
                     }
                 } else if (nextChar == '=') {
                     readingName = false;
-                    readingValue = true;
-                } else if (HeaderUtils.isTokenChar(nextChar)
-                        || (this.globalVersion < 1)) {
-                    if (readAttribute && nextChar != '$'
-                            && (nameBuffer.length() == 0)) {
+                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
+                    if (readAttribute && nextChar != '$' && (nameBuffer.length() == 0)) {
                         unread();
                         nextChar = -1;
                     } else {
@@ -125,9 +118,9 @@ public class CookieReader extends HeaderReader<Cookie> {
                     throw new IOException(
                             "Separator and control characters are not allowed within a token. Please check your cookie header");
                 }
-            } else if (readingValue) {
-                if ((HeaderUtils.isSpace(nextChar))
-                        && (valueBuffer.length() == 0)) {
+            } else {
+                // reading value
+                if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.length() == 0)) {
                     // Skip spaces
                 } else if ((nextChar == -1) || (nextChar == ';')) {
                     // End of pair
@@ -136,8 +129,7 @@ public class CookieReader extends HeaderReader<Cookie> {
                     // Step back
                     unread();
                     valueBuffer.append(readQuotedString());
-                } else if (HeaderUtils.isTokenChar(nextChar)
-                        || (this.globalVersion < 1)) {
+                } else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
                     valueBuffer.append((char) nextChar);
                 } else {
                     throw new IOException(

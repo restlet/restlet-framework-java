@@ -48,8 +48,7 @@ import org.restlet.resource.Result;
 
 // [excludes gwt]
 /**
- * Reflection proxy invocation handler created for the
- * {@link ClientResource#wrap(Class)} and related methods.
+ * Reflection proxy invocation handler created for the {@link ClientResource#wrap(Class)} and related methods.
  * 
  * @author Jerome Louvel
  * 
@@ -175,9 +174,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                             Type genericParameterType = genericParameterTypes[i];
                             ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
                                     : null;
-                            final Class<?> actualType = (parameterizedType
-                                    .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                                    .getActualTypeArguments()[0] : null;
+                            final Class<?> actualType = (parameterizedType != null
+                                    && parameterizedType.getActualTypeArguments()[0] instanceof Class<?>) ?
+                                    (Class<?>) parameterizedType.getActualTypeArguments()[0] :
+                                    null;
 
                             // Define the callback
                             Uniform callback = new Uniform() {

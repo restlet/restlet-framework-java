@@ -646,6 +646,7 @@ public class ClientResource extends Resource {
     @Override
     protected void finalize() throws Throwable {
         release();
+        super.finalize();
     }
 
     /**
@@ -1184,18 +1185,20 @@ public class ClientResource extends Resource {
      * @return The response's entity, if any.
      */
     public Representation handleInbound(Response response) {
-        Representation result = null;
+        if (response == null) {
+            return null;
+        }
 
         // Verify that the request was synchronous
         if (response.getRequest().isSynchronous()) {
             if (response.getStatus().isError()) {
                 doError(response.getStatus());
-            } else {
-                result = (response == null) ? null : response.getEntity();
+                return null;
             }
+            return response.getEntity();
         }
 
-        return result;
+        return null;
     }
 
     /**
@@ -1690,6 +1693,8 @@ public class ClientResource extends Resource {
             } catch (InterruptedException e) {
                 getLogger().log(Level.FINE,
                         "Retry delay sleep was interrupted", e);
+                // MITRE, CWE-391 - Unchecked Error Condition
+                Thread.currentThread().interrupt();
             }
             // [enddef]
             // [ifdef gwt] uncomment

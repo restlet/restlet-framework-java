@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 import org.restlet.Context;
@@ -39,6 +40,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -117,22 +119,17 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = (other instanceof MethodAnnotationInfo);
-
-        if (result && (other != this)) {
-            MethodAnnotationInfo otherAnnotation = (MethodAnnotationInfo) other;
-            result = super.equals(otherAnnotation);
-
-            // Compare the Restlet method
-            if (result) {
-                result = ((getRestletMethod() == null)
-                        && (otherAnnotation.getRestletMethod() == null) || (getRestletMethod() != null)
-                        && getRestletMethod().equals(
-                                otherAnnotation.getRestletMethod()));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof MethodAnnotationInfo)) {
+            return false;
         }
 
-        return result;
+        MethodAnnotationInfo that = (MethodAnnotationInfo) other;
+
+        return super.equals(that)
+                && Objects.equals(getRestletMethod(), that.getRestletMethod());
     }
 
     /**
@@ -364,6 +361,11 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         }
 
         return result;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(super.hashCode(), restletMethod);
     }
 
     /**

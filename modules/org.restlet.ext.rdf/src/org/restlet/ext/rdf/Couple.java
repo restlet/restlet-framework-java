@@ -24,6 +24,8 @@
 
 package org.restlet.ext.rdf;
 
+import java.util.Objects;
+
 import org.restlet.engine.util.SystemUtils;
 
 /**
@@ -59,20 +61,17 @@ public class Couple<T, U> {
 
     @Override
     public boolean equals(Object other) {
-        boolean result = (this == other);
-
-        if (!result && (other instanceof Couple)) {
-            Couple<?, ?> couple = (Couple<?, ?>) other;
-
-            if (((couple.getFirst() == null) && (getFirst() == null))
-                    || ((getFirst() != null) && getFirst().equals(
-                            couple.getFirst()))) {
-                result = (((couple.getSecond() == null) && (getSecond() == null)) || ((getSecond() != null) && getSecond()
-                        .equals(couple.getSecond())));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Couple)) {
+            return false;
         }
 
-        return result;
+        Couple<?, ?> that = (Couple<?, ?>) other;
+
+        return Objects.equals(getFirst(), that.getFirst())
+                && Objects.equals(getSecond(), that.getSecond());
     }
 
     /**

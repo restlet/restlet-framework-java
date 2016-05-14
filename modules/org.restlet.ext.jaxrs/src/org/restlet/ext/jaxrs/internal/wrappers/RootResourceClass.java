@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
@@ -106,8 +105,7 @@ public abstract class RootResourceClass extends ResourceClass implements
      * @param jaxRsClass
      *            the root resource class to wrap
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
      *            all entity providers.
      * @param extensionBackwardMapping
@@ -174,13 +172,11 @@ public abstract class RootResourceClass extends ResourceClass implements
      *            object responsible for instantiating the root resource class.
      *            Optional, thus can be null.
      * @return a wrapped root resource instance
-     * @throws InvocationTargetException
      * @throws InstantiateException
-     * @throws MissingAnnotationException
-     * @throws WebApplicationException
+     * @throws InvocationTargetException
      */
-    public abstract ResourceObject getInstance(ObjectFactory objectFactory)
-            throws InstantiateException, InvocationTargetException;
+    public abstract ResourceObject getInstance(ObjectFactory objectFactory) throws InstantiateException,
+            InvocationTargetException;
 
     /**
      * @return Returns the regular expression for the URI template

@@ -31,20 +31,6 @@ package org.restlet.engine.util;
  */
 public class SystemUtils {
 
-    /**
-     * Indicates if both fields are equal. For this to be true, they must either
-     * be both null or return true to the {@link Object#equals(Object)} method.
-     * 
-     * @param source
-     *            The source field.
-     * @param target
-     *            The target field.
-     * @return True if both fields are equals.
-     */
-    public static boolean equals(Object source, Object target) {
-        return (target == source) || (target != null && target.equals(source));
-    }
-
     // [ifndef gwt] method
     /**
      * Parses the "java.version" system property and returns the first digit of

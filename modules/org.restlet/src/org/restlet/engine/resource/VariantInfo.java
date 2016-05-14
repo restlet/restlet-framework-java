@@ -24,7 +24,10 @@
 
 package org.restlet.engine.resource;
 
+import java.util.Objects;
+
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Variant;
 
 // [excludes gwt]
@@ -89,21 +92,17 @@ public class VariantInfo extends Variant {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = super.equals(other) && (other instanceof VariantInfo);
-
-        if (result && (other != this)) {
-            VariantInfo otherVariant = (VariantInfo) other;
-
-            // Compare the annotation info
-            if (result) {
-                result = ((getAnnotationInfo() == null)
-                        && (otherVariant.getAnnotationInfo() == null) || (getAnnotationInfo() != null)
-                        && getAnnotationInfo().equals(
-                                otherVariant.getAnnotationInfo()));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof VariantInfo)) {
+            return false;
         }
 
-        return result;
+        VariantInfo that = (VariantInfo) other;
+
+        return super.equals(that)
+                && Objects.equals(getAnnotationInfo(), that.getAnnotationInfo());
     }
 
     /**
@@ -122,6 +121,11 @@ public class VariantInfo extends Variant {
      */
     public float getInputScore() {
         return inputScore;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(super.hashCode(), annotationInfo);
     }
 
     /**

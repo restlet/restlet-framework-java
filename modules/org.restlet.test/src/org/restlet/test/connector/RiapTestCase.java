@@ -50,9 +50,11 @@ public class RiapTestCase extends RestletTestCase {
     private static final String DEFAULT_MSG = "no-default";
 
     // Just Some Serializable dummy object handle...
-    private static final Serializable JUST_SOME_OBJ = new Serializable() {
+    public static class Dummy implements Serializable {
         private static final long serialVersionUID = 1L;
-    };
+    }
+
+    private static final Serializable JUST_SOME_OBJ = new Dummy();
 
     private static final String ECHO_TEST_MSG = JUST_SOME_OBJ.toString();
 

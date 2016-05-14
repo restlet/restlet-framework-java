@@ -25,6 +25,7 @@
 package org.restlet.data;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.engine.header.HeaderConstants;
@@ -46,9 +47,7 @@ public final class Expectation implements NamedValue<String> {
      * not intend to send a request entity.
      * 
      * @return A new "100-continue" expectation.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.20">HTTP
-     *      1.1 - Expect header</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.20">HTTP 1.1 - Expect header</a>
      */
     public static Expectation continueResponse() {
         return new Expectation(HeaderConstants.EXPECT_CONTINUE);
@@ -89,31 +88,19 @@ public final class Expectation implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        // if obj == this no need to go further
-        boolean result = (obj == this);
-
-        if (!result) {
-            result = obj instanceof Expectation;
-
-            // if obj isn't an expectation or is null don't evaluate further
-            if (result) {
-                Expectation that = (Expectation) obj;
-                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
-                        .equals(that.getName())));
-
-                // if names are both null or equal continue
-                if (result) {
-                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
-                            .equals(that.getValue())));
-
-                    if (result) {
-                        result = getParameters().equals(that.getParameters());
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
         }
 
-        return result;
+        if (!(obj instanceof Expectation)) {
+            return false;
+        }
+
+        Expectation that = (Expectation) obj;
+
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue())
+                && getParameters().equals(that.getParameters());
     }
 
     /**

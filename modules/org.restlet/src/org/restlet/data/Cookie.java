@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import java.util.Objects;
+
 import org.restlet.Request;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
@@ -39,8 +41,7 @@ import org.restlet.util.NamedValue;
  * header.
  * 
  * @see Request#getCookies()
- * @see <a href="http://wiki.restlet.org/docs_2.2/58-restlet.html">User Guide -
- *      Getting parameter values</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.2/58-restlet.html">User Guide - Getting parameter values</a>
  * @author Jerome Louvel
  */
 public class Cookie implements NamedValue<String> {
@@ -119,45 +120,22 @@ public class Cookie implements NamedValue<String> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        // if obj == this no need to go further
-        boolean result = (obj == this);
-
-        if (!result) {
-            result = obj instanceof Cookie;
-
-            // if obj isn't a cookie or is null don't evaluate further
-            if (result) {
-                Cookie that = (Cookie) obj;
-                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
-                        .equals(that.getName())));
-
-                // if names are both null or equal continue
-                if (result) {
-                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
-                            .equals(that.getValue())));
-
-                    // if values are both null or equal continue
-                    if (result) {
-                        result = (this.version == that.version);
-
-                        // if versions are equal continue
-                        if (result) {
-                            result = (((that.getDomain() == null) && (getDomain() == null)) || ((getDomain() != null) && getDomain()
-                                    .equals(that.getDomain())));
-
-                            // if domains are equal continue
-                            if (result) {
-                                // compare paths taking
-                                result = (((that.getPath() == null) && (getPath() == null)) || ((getPath() != null) && getPath()
-                                        .equals(that.getPath())));
-                            }
-                        }
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
         }
 
-        return result;
+        if (!(obj instanceof Cookie)) {
+            // if obj isn't a cookie or is null don't evaluate further
+            return false;
+        }
+
+        Cookie that = (Cookie) obj;
+
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue())
+                && (this.version == that.version)
+                && Objects.equals(getDomain(), that.getDomain())
+                && Objects.equals(getPath(), that.getPath());
     }
 
     /**

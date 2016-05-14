@@ -166,13 +166,11 @@ public class Provider {
             pl = us.getParameterList();
 
         }
-        mode = OpenIdMode.valueOf(pl.getParameterValue(OPENID_MODE));
-
         try {
-
+            mode = OpenIdMode.valueOf(pl.getParameterValue(OPENID_MODE));
         } catch (Exception e) {
             Engine.getAnonymousLogger().warning(
-                    "No Known openid.mode: " + modeParam);
+                    "Unknown openid.mode: " + modeParam);
             mode = OpenIdMode.errorMode;
         }
         Engine.getAnonymousLogger().info("processRequest: " + mode);

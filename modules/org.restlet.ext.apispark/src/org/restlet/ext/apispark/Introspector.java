@@ -129,7 +129,7 @@ public class Introspector {
         Engine.register();
         String ulogin = null;
         String upwd = null;
-        String serviceUrl = null;
+        String serviceUrl = "https://apispark.restlet.com/";
         String defSource = null;
         String compName = null;
         String language = null;
@@ -251,9 +251,6 @@ public class Introspector {
                     + " is not currently supported. ");
         }
 
-        if (StringUtils.isNullOrEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.restlet.com/";
-        }
         if (!serviceUrl.endsWith("/")) {
             serviceUrl += "/";
         }

@@ -42,12 +42,10 @@ import org.restlet.security.Verifier;
  * Verifier that leverages the JAAS pluggable authentication mechanism.
  * 
  * @author Jerome Louvel
- * @see <a
- *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
+ * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
  *      Tutorials</a>
- * @see <a
- *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
- *      Reference Guide</a>
+ * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS Reference
+ *      Guide</a>
  */
 public class JaasVerifier implements Verifier {
 
@@ -131,8 +129,8 @@ public class JaasVerifier implements Verifier {
     /**
      * Sets the user principal class name. If a {@link User} is not associated
      * with the {@link Request}'s {@link ClientInfo} and if one of the
-     * principals returned after the JAAS login is of this type, a new
-     * {@link User} will be associated with the {@link ClientInfo} using its
+     * principals returned after the JAAS login is of this type, a new {@link User} will be associated with the
+     * {@link ClientInfo} using its
      * name.
      * 
      * @param userPrincipalClassName
@@ -180,10 +178,8 @@ public class JaasVerifier implements Verifier {
              */
             for (Principal principal : subject.getPrincipals()) {
                 if ((!principal.equals(request.getClientInfo().getUser()))
-                        && (!request.getClientInfo().getRoles()
-                                .contains(principal))
-                        && (!request.getClientInfo().getPrincipals()
-                                .contains(principal))) {
+                        && (!request.getClientInfo().getRoles().contains(principal))
+                        && (!request.getClientInfo().getPrincipals().contains(principal))) {
                     request.getClientInfo().getPrincipals().add(principal);
                 }
                 /*
@@ -192,11 +188,8 @@ public class JaasVerifier implements Verifier {
                  * principal's name.
                  */
                 if ((request.getClientInfo().getUser() == null)
-                        && (this.userPrincipalClassName != null)
-                        && (principal.getClass().getName()
-                                .equals(this.userPrincipalClassName))) {
-                    request.getClientInfo().setUser(
-                            new User(principal.getName()));
+                        && (principal.getClass().getName().equals(this.userPrincipalClassName))) {
+                    request.getClientInfo().setUser(new User(principal.getName()));
                 }
             }
         } catch (LoginException le) {

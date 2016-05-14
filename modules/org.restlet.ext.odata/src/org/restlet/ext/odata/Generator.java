@@ -89,26 +89,25 @@ public class Generator {
             } else {
                 try {
                     outputDir = new File(".").getCanonicalFile();
+                    if (outputDir.exists()) {
+                        System.out.println("step 2 - check the ouput directory");
+                        if (!outputDir.isDirectory()) {
+                            errorMessage = outputDir.getPath()
+                                    + " is not a valid directory.";
+                        }
+
+                    } else {
+                        try {
+                            System.out.println("step 2 - create the ouput directory");
+                            outputDir.mkdirs();
+                        } catch (Throwable e) {
+                            errorMessage = "Cannot create " + outputDir.getPath()
+                                    + " due to: " + e.getMessage();
+                        }
+                    }
                 } catch (IOException e) {
                     errorMessage = "Unable to get the target directory. "
                             + e.getMessage();
-                }
-            }
-
-            if (outputDir.exists()) {
-                System.out.println("step 2 - check the ouput directory");
-                if (!outputDir.isDirectory()) {
-                    errorMessage = outputDir.getPath()
-                            + " is not a valid directory.";
-                }
-
-            } else {
-                try {
-                    System.out.println("step 2 - create the ouput directory");
-                    outputDir.mkdirs();
-                } catch (Throwable e) {
-                    errorMessage = "Cannot create " + outputDir.getPath()
-                            + " due to: " + e.getMessage();
                 }
             }
         }

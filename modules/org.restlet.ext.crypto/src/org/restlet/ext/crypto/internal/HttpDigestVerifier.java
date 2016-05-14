@@ -113,8 +113,7 @@ public class HttpDigestVerifier extends
             result = RESULT_MISSING;
         } else {
             String nonce = cr.getServerNonce();
-            String uri = (cr.getDigestRef() == null) ? null : cr.getDigestRef()
-                    .toString();
+            String uri = (cr.getDigestRef() == null) ? null : cr.getDigestRef().toString();
             String qop = cr.getQuality();
             int nc = cr.getServerNounceCount();
             String cnonce = cr.getClientNonce();

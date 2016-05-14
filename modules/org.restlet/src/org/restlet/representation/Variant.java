@@ -27,6 +27,7 @@ package org.restlet.representation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -35,6 +36,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.WrapperList;
 
 /**
@@ -147,46 +149,20 @@ public class Variant {
      */
     @Override
     public boolean equals(Object other) {
-        boolean result = (other instanceof Variant);
-
-        if (result && (other != this)) {
-            Variant otherVariant = (Variant) other;
-
-            // Compare the character set
-            if (result) {
-                result = ((getCharacterSet() == null)
-                        && (otherVariant.getCharacterSet() == null) || (getCharacterSet() != null)
-                        && getCharacterSet().equals(
-                                otherVariant.getCharacterSet()));
-            }
-
-            // Compare the media type
-            if (result) {
-                result = ((getMediaType() == null)
-                        && (otherVariant.getMediaType() == null) || (getMediaType() != null)
-                        && getMediaType().equals(otherVariant.getMediaType()));
-            }
-
-            // Compare the languages
-            if (result) {
-                result = getLanguages().equals(otherVariant.getLanguages());
-            }
-
-            // Compare the encodings
-            if (result) {
-                result = getEncodings().equals(otherVariant.getEncodings());
-            }
-
-            // Compare the location URI
-            if (result) {
-                result = ((getLocationRef() == null)
-                        && (otherVariant.getLocationRef() == null) || (getLocationRef() != null)
-                        && getLocationRef().equals(
-                                otherVariant.getLocationRef()));
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Variant)) {
+            return false;
         }
 
-        return result;
+        Variant that = (Variant) other;
+
+        return Objects.equals(getCharacterSet(), that.getCharacterSet())
+                && Objects.equals(getMediaType(), that.getMediaType())
+                && getLanguages().equals(that.getLanguages())
+                && getEncodings().equals(that.getEncodings())
+                && Objects.equals(getLocationRef(), that.getLocationRef());
     }
 
     /**
@@ -373,6 +349,11 @@ public class Variant {
      */
     public MediaType getMediaType() {
         return this.mediaType;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(super.hashCode(), characterSet, encodings, locationRef, languages, mediaType);
     }
 
     /**

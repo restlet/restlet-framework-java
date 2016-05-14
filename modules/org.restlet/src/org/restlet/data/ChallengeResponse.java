@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import java.util.Objects;
+
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
@@ -69,8 +71,7 @@ public final class ChallengeResponse extends ChallengeMessage {
     private volatile int serverNounceCount;
 
     /**
-     * The time when the response was issued, as returned by
-     * {@link System#currentTimeMillis()}.
+     * The time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      */
     private volatile long timeIssued;
 
@@ -110,8 +111,7 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The user secret used to compute the secret, with an optional
      *            digest applied.
      * @param secretAlgorithm
-     *            The digest algorithm of the user secret (see {@link Digest}
-     *            class).
+     *            The digest algorithm of the user secret (see {@link Digest} class).
      */
     public ChallengeResponse(ChallengeRequest challengeRequest,
             Response response, String identifier, char[] secret,
@@ -186,8 +186,7 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param serverNounceCount
      *            The server nonce count.
      * @param timeIssued
-     *            The time when the response was issued, as returned by
-     *            {@link System#currentTimeMillis()}.
+     *            The time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      */
     public ChallengeResponse(ChallengeScheme scheme,
             Series<Parameter> parameters, String identifier, char[] secret,
@@ -270,58 +269,39 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        boolean result = (obj == this);
-
         // if obj == this no need to go further
-        if (!result) {
-            // if obj isn't a challenge request or is null don't evaluate
-            // further
-            if (obj instanceof ChallengeResponse) {
-                ChallengeResponse that = (ChallengeResponse) obj;
-
-                if (getRawValue() != null) {
-                    result = getRawValue().equals(that.getRawValue());
-                } else {
-                    result = (that.getRawValue() == null);
-                }
-
-                if (result) {
-                    if (getIdentifier() != null) {
-                        result = getIdentifier().equals(that.getIdentifier());
-                    } else {
-                        result = (that.getIdentifier() == null);
-                    }
-
-                    if (result) {
-                        if (getScheme() != null) {
-                            result = getScheme().equals(that.getScheme());
-                        } else {
-                            result = (that.getScheme() == null);
-                        }
-
-                        if (result) {
-                            if ((getSecret() == null)
-                                    || (that.getSecret() == null)) {
-                                // check if both are null
-                                result = (getSecret() == that.getSecret());
-                            } else {
-                                if (getSecret().length == that.getSecret().length) {
-                                    boolean equals = true;
-                                    for (int i = 0; (i < getSecret().length)
-                                            && equals; i++) {
-                                        equals = (getSecret()[i] == that
-                                                .getSecret()[i]);
-                                    }
-                                    result = equals;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if (obj == this) {
+            return true;
         }
 
-        return result;
+        // if obj isn't a challenge request or is null don't evaluate further
+        if (!(obj instanceof ChallengeResponse)) {
+            return false;
+        }
+
+        ChallengeResponse that = (ChallengeResponse) obj;
+
+        if (!Objects.equals(getRawValue(), that.getRawValue())
+                || !Objects.equals(getIdentifier(), that.getIdentifier())
+                || !Objects.equals(getScheme(), that.getScheme())) {
+            return false;
+        }
+
+        if ((getSecret() == null)
+                || (that.getSecret() == null)) {
+            // check if both are null
+            return (getSecret() == that.getSecret());
+        }
+
+        if (getSecret().length != that.getSecret().length) {
+            return false;
+        }
+
+        boolean equals = true;
+        for (int i = 0; equals && (i < getSecret().length); i++) {
+            equals = (getSecret()[i] == that.getSecret()[i]);
+        }
+        return equals;
     }
 
     /**
@@ -418,8 +398,7 @@ public final class ChallengeResponse extends ChallengeMessage {
     }
 
     /**
-     * Returns the time when the response was issued, as returned by
-     * {@link System#currentTimeMillis()}.
+     * Returns the time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      * 
      * @return The time when the response was issued.
      */
@@ -518,8 +497,7 @@ public final class ChallengeResponse extends ChallengeMessage {
     }
 
     /**
-     * Sets the time when the response was issued, as returned by
-     * {@link System#currentTimeMillis()}.
+     * Sets the time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      * 
      * @param timeIssued
      *            The time when the response was issued.

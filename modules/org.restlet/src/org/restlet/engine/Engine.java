@@ -49,11 +49,9 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
 
 /**
- * Engine supporting the Restlet API. The engine acts as a registry of various
- * {@link Helper} types: {@link org.restlet.engine.security.AuthenticatorHelper}
- * , {@link org.restlet.engine.connector.ClientHelper},
- * {@link org.restlet.engine.converter.ConverterHelper} and
- * {@link org.restlet.engine.connector.ServerHelper} classes.<br>
+ * Engine supporting the Restlet API. The engine acts as a registry of various {@link Helper} types:
+ * {@link org.restlet.engine.security.AuthenticatorHelper} , {@link org.restlet.engine.connector.ClientHelper},
+ * {@link org.restlet.engine.converter.ConverterHelper} and {@link org.restlet.engine.connector.ServerHelper} classes.<br>
  * <br>
  * Note that by default the JULI logging mechanism is used but it is possible to
  * replace it by providing an alternate {@link LoggerFacade} implementation. For
@@ -202,28 +200,34 @@ public class Engine {
         if ((System.getProperty("java.util.logging.config.file") == null)
                 && (System.getProperty("java.util.logging.config.class") == null)) {
             StringBuilder sb = new StringBuilder();
-            sb.append("handlers=");
-            sb.append(java.util.logging.ConsoleHandler.class.getCanonicalName())
+            sb.append("handlers=")
+                    .append(java.util.logging.ConsoleHandler.class.getCanonicalName())
                     .append('\n');
 
             if (getLogLevel() != null) {
-                sb.append(".level=" + getLogLevel().getName()).append('\n');
+                sb.append(".level=")
+                        .append(getLogLevel().getName())
+                        .append('\n');
             }
 
             if (getRestletLogLevel() != null) {
-                sb.append("org.restlet.level=" + getRestletLogLevel().getName())
+                sb.append("org.restlet.level=")
+                        .append(getRestletLogLevel().getName())
                         .append('\n');
             }
 
             if (getLogFormatter() != null) {
-                String handler = java.util.logging.ConsoleHandler.class
-                        .getCanonicalName();
-                sb.append(handler + ".formatter="
-                        + getLogFormatter().getCanonicalName() + "\n");
+                String handler = java.util.logging.ConsoleHandler.class.getCanonicalName();
+                sb.append(handler)
+                        .append(".formatter=")
+                        .append(getLogFormatter().getCanonicalName())
+                        .append("\n");
 
                 if (getLogLevel() != null) {
-                    sb.append(handler + ".level=" + getLogLevel().getName()
-                            + "\n");
+                    sb.append(handler)
+                            .append(".level=")
+                            .append(getLogLevel().getName())
+                            .append("\n");
                 }
             }
 
@@ -239,8 +243,7 @@ public class Engine {
     }
 
     /**
-     * Returns an anonymous logger. By default it calls
-     * {@link #getLogger(String)} with a "" name.
+     * Returns an anonymous logger. By default it calls {@link #getLogger(String)} with a "" name.
      * 
      * @return The logger.
      */
@@ -768,8 +771,7 @@ public class Engine {
     /**
      * Returns the class loader. It uses the delegation model with the Engine
      * class's class loader as a parent. If this parent doesn't find a class or
-     * resource, it then tries the user class loader (via
-     * {@link #getUserClassLoader()} and finally the
+     * resource, it then tries the user class loader (via {@link #getUserClassLoader()} and finally the
      * {@link Thread#getContextClassLoader()}.
      * 
      * @return The engine class loader.
@@ -1040,13 +1042,11 @@ public class Engine {
 
     // [ifndef gae,gwt] method
     /**
-     * Registers a factory that is used by the URL class to create the
-     * {@link java.net.URLConnection} instances when the
-     * {@link java.net.URL#openConnection()} or
-     * {@link java.net.URL#openStream()} methods are invoked.
+     * Registers a factory that is used by the URL class to create the {@link java.net.URLConnection} instances when the
+     * {@link java.net.URL#openConnection()} or {@link java.net.URL#openStream()} methods are invoked.
      * <p>
-     * The implementation is based on the client dispatcher of the current
-     * context, as provided by {@link Context#getCurrent()} method.
+     * The implementation is based on the client dispatcher of the current context, as provided by
+     * {@link Context#getCurrent()} method.
      */
     public void registerUrlFactory() {
         // Set up an java.net.URLStreamHandlerFactory for

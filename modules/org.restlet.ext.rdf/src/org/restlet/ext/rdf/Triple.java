@@ -24,6 +24,8 @@
 
 package org.restlet.ext.rdf;
 
+import java.util.Objects;
+
 import org.restlet.engine.util.SystemUtils;
 
 /**
@@ -67,24 +69,18 @@ public class Triple<T, U, V> {
 
     @Override
     public boolean equals(Object other) {
-        boolean result = (this == other);
-
-        if (!result && (other instanceof Triple)) {
-            Triple<?, ?, ?> triple = (Triple<?, ?, ?>) other;
-
-            if (((triple.getFirst() == null) && (getFirst() == null))
-                    || ((getFirst() != null) && getFirst().equals(
-                            triple.getFirst()))) {
-                if (((triple.getSecond() == null) && (getSecond() == null))
-                        || ((getSecond() != null) && getSecond().equals(
-                                triple.getSecond()))) {
-                    result = (((triple.getThird() == null) && (getThird() == null)) || ((getThird() != null) && getThird()
-                            .equals(triple.getThird())));
-                }
-            }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Triple)) {
+            return false;
         }
 
-        return result;
+        Triple<?, ?, ?> that = (Triple<?, ?, ?>) other;
+
+        return Objects.equals(getFirst(), that.getFirst())
+                && Objects.equals(getSecond(), that.getSecond())
+                && Objects.equals(getThird(), that.getThird());
     }
 
     /**

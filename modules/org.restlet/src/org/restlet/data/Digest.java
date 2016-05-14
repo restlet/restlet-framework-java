@@ -26,6 +26,7 @@ package org.restlet.data;
 
 import java.util.Arrays;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 
 /**
@@ -102,14 +103,13 @@ public class Digest {
 
     @Override
     public boolean equals(Object obj) {
-        boolean result = (obj instanceof Digest);
-
-        if (result) {
-            Digest d = (Digest) obj;
-            result = getAlgorithm().equals(d.getAlgorithm());
-            result = result && Arrays.equals(getValue(), d.getValue());
+        if (obj instanceof Digest) {
+            Digest that = (Digest) obj;
+            if (getAlgorithm().equals(that.getAlgorithm())) {
+                return Arrays.equals(getValue(), that.getValue());
+            }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -134,6 +134,11 @@ public class Digest {
         }
 
         return result;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(algorithm, value);
     }
 
     @Override

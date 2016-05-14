@@ -220,8 +220,7 @@ public final class ChallengeScheme {
     @Override
     public boolean equals(final Object object) {
         return (object instanceof ChallengeScheme)
-                && ((ChallengeScheme) object).getName().equalsIgnoreCase(
-                        getName());
+                && ((ChallengeScheme) object).getName().equalsIgnoreCase(getName());
     }
 
     /**

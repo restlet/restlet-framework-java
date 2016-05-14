@@ -140,7 +140,7 @@ public class RelayingParty {
         if (fetch != null)
             authReq.addExtension(fetch);
 
-        if (di.isVersion2()) {
+        if (di != null && di.isVersion2()) {
             getLogger().info("sending auth request using OpenId 2 form");
             res.setEntity(getForm(authReq));
         } else {

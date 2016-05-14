@@ -65,6 +65,7 @@ public class ZipEntryRepresentation extends StreamRepresentation {
      *             {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)}
      *             instead.
      */
+    @Deprecated
     public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
             ZipEntry entry) {
         this(mediaType, zipFile, entry, -1);

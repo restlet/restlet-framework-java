@@ -24,6 +24,8 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.util.SystemUtils;
+
 /**
  * Describes a range of bytes.
  * 
@@ -184,6 +186,11 @@ public class Range {
      */
     public String getUnitName() {
         return unitName;
+    }
+    
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(index, instanceSize, size, unitName);
     }
 
     /**
