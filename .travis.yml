@@ -1,6 +1,16 @@
 language: java
+sudo: false
+install: true
+
 jdk:
   - oraclejdk7
+
 script:
  - "cd build"
  - "ant rebuild"
+ - "cd $TRAVIS_BUILD_DIR"
+ - ./runSonarQubeAnalysis.sh
+
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
