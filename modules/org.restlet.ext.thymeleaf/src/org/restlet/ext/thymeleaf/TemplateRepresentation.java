@@ -179,7 +179,7 @@ public class TemplateRepresentation extends WriterRepresentation {
      */
     public TemplateRepresentation(String templateName, Locale locale,
             Map<String, Object> dataModel, MediaType mediaType) {
-        this(templateName, createTemplateEngine(), locale, mediaType);
+        this(templateName, createTemplateEngine(), locale, dataModel, mediaType);
     }
 
     /**
