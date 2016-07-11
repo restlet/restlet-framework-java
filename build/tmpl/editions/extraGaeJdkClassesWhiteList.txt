@@ -1,4 +1,0 @@
-# list of packages or classes that are implicitely part of the official GAE whitelist of supported JDK classes 
-javax.servlet.*
-javax.ws.rs.*
-javax.mail.*
