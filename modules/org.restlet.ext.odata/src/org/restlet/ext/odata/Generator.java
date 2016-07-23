@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -61,8 +62,7 @@ public class Generator {
      * Takes two (or three) parameters:<br>
      * <ol>
      * <li>The URI of the OData service</li>
-     * <li>The output directory (optional, used the current directory by
-     * default)</li>
+     * <li>The output directory (optional, used the current directory by default)</li>
      * <li>The name of the generated service class name (optional)</li>
      * </ol>
      * 
@@ -164,6 +164,9 @@ public class Generator {
     /** The name of the service class (in case there is only one in the schema). */
     private String serviceClassName;
 
+    /** The credentials used to request the OData service. */
+    private ChallengeResponse serviceCredentials;
+
     /** The URI of the target data service. */
     private Reference serviceRef;
 
@@ -231,6 +234,7 @@ public class Generator {
      */
     public void generate(File outputDir) throws Exception {
         Service service = new Service(serviceRef);
+        service.setCredentials(serviceCredentials);
         Metadata metadata = (Metadata) service.getMetadata();
         if (metadata == null) {
             throw new Exception("Can't get the metadata for this service: "
@@ -362,5 +366,15 @@ public class Generator {
      */
     public void generate(String outputDir) throws Exception {
         generate(new File(outputDir));
+    }
+
+    /**
+     * Set the credentials used to request the OData service.
+     * 
+     * @param serviceCredentials
+     *            The credentials.
+     */
+    public void setServiceCredentials(ChallengeResponse serviceCredentials) {
+        this.serviceCredentials = serviceCredentials;
     }
 }

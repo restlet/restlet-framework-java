@@ -112,6 +112,8 @@ public class Service {
     /** The credentials used to authenticate requests. */
     private ChallengeResponse credentials;
 
+    private boolean hasServiceUriBeenChecked;
+
     /** The latest request sent to the service. */
     private Request latestRequest;
 
@@ -146,36 +148,7 @@ public class Service {
      *            The reference to the WCF service.
      */
     public Service(Reference serviceRef) {
-        try {
-            // Test the given service URI which may be actually redirected.
-            ClientResource cr = new ClientResource(serviceRef);
-            if (cr.getNext() == null) {
-                // The context does not provide a client connector.
-                // Let instantiate our own.
-                Protocol rProtocol = cr.getProtocol();
-                Reference rReference = cr.getReference();
-                Protocol protocol = (rProtocol != null) ? rProtocol
-                        : (rReference != null) ? rReference.getSchemeProtocol()
-                                : null;
-
-                if (protocol != null) {
-                    this.clientConnector = new Client(protocol);
-                    // Set the next handler for reuse
-                    cr.setNext(this.clientConnector);
-                }
-            }
-
-            cr.setFollowingRedirects(false);
-            cr.get();
-
-            if (cr.getStatus().isRedirection()) {
-                this.serviceRef = cr.getLocationRef();
-            } else {
-                this.serviceRef = cr.getReference();
-            }
-        } catch (Throwable e) {
-            this.serviceRef = serviceRef;
-        }
+        this.serviceRef = serviceRef;
     }
 
     /**
@@ -253,6 +226,35 @@ public class Service {
         }
     }
 
+    private void checkServiceReference(Reference serviceRef) {
+        try {
+            // Test the given service URI which may be actually redirected.
+            ClientResource cr = createResource(serviceRef);
+            if (cr.getNext() == null) {
+                // The context does not provide a client connector.
+                // Let instantiate our own.
+                Protocol rProtocol = cr.getProtocol();
+                Reference rReference = cr.getReference();
+                Protocol protocol = (rProtocol != null) ? rProtocol
+                        : (rReference != null) ? rReference.getSchemeProtocol()
+                                : null;
+
+                if (protocol != null) {
+                    this.clientConnector = new Client(protocol);
+                    // Set the next handler for reuse
+                    cr.setNext(this.clientConnector);
+                }
+            }
+
+            cr.setFollowingRedirects(true);
+            cr.get();
+            this.serviceRef = cr.getResponse().getRequest().getResourceRef();
+        } catch (Throwable e) {
+            this.serviceRef = serviceRef;
+        }
+        hasServiceUriBeenChecked = true;
+    }
+
     /**
      * Creates a query to a specific entity hosted by this service.
      * 
@@ -288,7 +290,7 @@ public class Service {
         resource.setChallengeResponse(getCredentials());
 
         if (getClientVersion() != null || getMaxClientVersion() != null) {
-            Series<Header> headers = new Series<Header>(Header.class);
+            Series<Header> headers = resource.getRequest().getHeaders();
 
             if (getClientVersion() != null) {
                 headers.add("DataServiceVersion", getClientVersion());
@@ -297,8 +299,6 @@ public class Service {
             if (getMaxClientVersion() != null) {
                 headers.add("MaxDataServiceVersion", getMaxClientVersion());
             }
-
-            resource.setAttribute(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         }
 
         return resource;
@@ -533,6 +533,9 @@ public class Service {
      * @return The reference to the WCF service.
      */
     public Reference getServiceRef() {
+        if (!hasServiceUriBeenChecked) {
+            checkServiceReference(serviceRef);
+        }
         return serviceRef;
     }
 
@@ -816,9 +819,7 @@ public class Service {
      * @return The representation returned by the invocation of the service.
      * @throws ResourceException
      *             Thrown when the service call is not successfull.
-     * @see <a
-     *      href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service
-     *      Operations</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service Operations</a>
      */
     public Representation invokeComplex(String service,
             Series<Parameter> parameters) throws ResourceException {
@@ -879,9 +880,7 @@ public class Service {
      *             Thrown when the service call is not successfull.
      * @throws Exception
      *             Thrown when the value cannot be parsed.
-     * @see <a
-     *      href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service
-     *      Operations</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service Operations</a>
      */
     public String invokeSimple(String service, Series<Parameter> parameters)
             throws ResourceException, Exception {
