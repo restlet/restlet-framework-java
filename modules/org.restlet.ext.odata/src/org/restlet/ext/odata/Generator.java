@@ -49,6 +49,8 @@ import org.restlet.resource.ClientResource;
 
 import freemarker.template.Configuration;
 
+import static org.restlet.engine.util.CollectionsUtils.isNullOrEmpty;
+
 /**
  * Code generator for accessing OData services. The generator use metadata
  * exposed by an online service to generate client-side artifacts facilitating
@@ -257,13 +259,9 @@ public class Generator {
                         .getText());
 
         for (Schema schema : metadata.getSchemas()) {
-            if ((schema.getEntityTypes() != null && !schema.getEntityTypes()
-                    .isEmpty())
-                    || (schema.getComplexTypes() != null && !schema
-                            .getComplexTypes().isEmpty())) {
+            if (!isNullOrEmpty(schema.getEntityTypes()) || !isNullOrEmpty(schema.getComplexTypes())) {
                 String packageName = TypeUtils.getPackageName(schema);
-                File packageDir = new File(outputDir, packageName.replace(".",
-                        System.getProperty("file.separator")));
+                File packageDir = new File(outputDir, packageName.replace(".", System.getProperty("file.separator")));
                 packageDir.mkdirs();
 
                 // For each entity type
@@ -276,13 +274,11 @@ public class Generator {
                     dataModel.put("className", className);
                     dataModel.put("packageName", packageName);
 
-                    TemplateRepresentation templateRepresentation = new TemplateRepresentation(
-                            entityTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
+                    TemplateRepresentation templateRepresentation = new TemplateRepresentation(entityTmpl, fmc, dataModel, MediaType.TEXT_PLAIN);
                     templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                     // Write the template representation as a Java class
-                    OutputStream fos = new FileOutputStream(new File(
-                            packageDir, type.getClassName() + ".java"));
+                    OutputStream fos = new FileOutputStream(new File(packageDir, type.getClassName() + ".java"));
                     templateRepresentation.write(fos);
                     fos.flush();
                 }
@@ -308,8 +304,7 @@ public class Generator {
                 }
             }
         }
-        if (metadata.getContainers() != null
-                && !metadata.getContainers().isEmpty()) {
+        if (!isNullOrEmpty(metadata.getContainers())) {
             for (EntityContainer entityContainer : metadata.getContainers()) {
                 Schema schema = entityContainer.getSchema();
                 // Generate Service subclass
@@ -349,8 +344,7 @@ public class Generator {
                 templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                 // Write the template representation as a Java class
-                OutputStream fos = new FileOutputStream(new File(outputDir,
-                        className + ".java"));
+                OutputStream fos = new FileOutputStream(new File(outputDir, className + ".java"));
                 templateRepresentation.write(fos);
                 fos.flush();
             }

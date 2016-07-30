@@ -34,6 +34,8 @@ import org.restlet.data.Reference;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 
+import static org.restlet.engine.util.CollectionsUtils.isNullOrEmpty;
+
 /**
  * Represents the metadata of an OData service.
  * 
@@ -212,7 +214,7 @@ public class Metadata extends SaxRepresentation {
     public String getKeyValue(EntityType type, Object entity) {
         StringBuffer result = new StringBuffer();
 
-        if (type.getKeys() != null && !type.getKeys().isEmpty()) {
+        if (!isNullOrEmpty(type.getKeys())) {
             if (type.getKeys().size() == 1) {
                 Property key = type.getKeys().get(0);
                 String keyName = key.getNormalizedName();
@@ -220,8 +222,7 @@ public class Metadata extends SaxRepresentation {
                         + keyName.substring(0, 1).toUpperCase()
                         + keyName.substring(1);
                 try {
-                    Method getter = entity.getClass().getDeclaredMethod(
-                            getterName, (Class[]) null);
+                    Method getter = entity.getClass().getDeclaredMethod(getterName, (Class[]) null);
                     Object value = getter.invoke(entity, (Object[]) null);
                     String strValue = TypeUtils.toEdmKey(value, key.getType());
                     if (strValue != null) {
@@ -242,11 +243,9 @@ public class Metadata extends SaxRepresentation {
                             + keyName.substring(0, 1).toUpperCase()
                             + keyName.substring(1);
                     try {
-                        Method getter = entity.getClass().getDeclaredMethod(
-                                getterName, (Class[]) null);
+                        Method getter = entity.getClass().getDeclaredMethod(getterName, (Class[]) null);
                         Object value = getter.invoke(entity, (Object[]) null);
-                        String strValue = TypeUtils.toEdmKey(value,
-                                key.getType());
+                        String strValue = TypeUtils.toEdmKey(value, key.getType());
                         if (strValue != null) {
                             result.append(strValue);
                         } else {

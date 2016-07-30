@@ -848,8 +848,7 @@ public class Service {
                             .getParameters()) {
                         resource.getReference().addQueryParameter(
                                 parameter.getName(),
-                                TypeUtils.getLiteralForm(parameters
-                                        .getFirstValue(parameter.getName()),
+                                TypeUtils.getLiteralForm(parameters.getFirstValue(parameter.getName()),
                                         parameter.getType()));
                     }
                 }
@@ -953,6 +952,26 @@ public class Service {
                                 + getServiceRef(), e);
             }
         }
+    }
+
+    /**
+     * Allows to specify a new Edm type converter.
+     * 
+     * @param edmConverter
+     *            The new EdmType converter.
+     */
+    public void registerEdmConverter(EdmConverter edmConverter) {
+        TypeUtils.registerEdmConverter(edmConverter);
+    }
+
+    /**
+     * Allows to specify a new Java type handler.
+     * 
+     * @param javaTypeHandler
+     *            The new Java type handler.
+     */
+    public static void registerJavaTypeHandler(JavaTypeHandler javaTypeHandler) {
+        TypeUtils.registerJavaTypeHandler(javaTypeHandler);
     }
 
     /**
