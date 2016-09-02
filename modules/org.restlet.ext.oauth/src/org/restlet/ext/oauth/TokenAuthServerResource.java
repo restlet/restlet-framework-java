@@ -74,7 +74,7 @@ public class TokenAuthServerResource extends OAuthServerResource {
         String tokenType = call.getString(TOKEN_TYPE);
 
         final Token token;
-        if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_BEARER)) {
+        if (tokenType.equalsIgnoreCase(OAuthServerResource.TOKEN_TYPE_BEARER)) {
             token = tokens.validateToken(call.get(ACCESS_TOKEN).toString());
         }/*
           * else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) { //

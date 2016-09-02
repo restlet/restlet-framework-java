@@ -127,8 +127,7 @@ public class ProtectedClientResource extends ClientResource implements OAuthReso
         if (token == null) {
             throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, "Token not found");
         }
-
-        if (!TOKEN_TYPE_BEARER.equals(token.getTokenType())) {
+        if (!TOKEN_TYPE_BEARER.equalsIgnoreCase(token.getTokenType())) {
             throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED, "Unsupported token type: "
                     + token.getTokenType());
         }
