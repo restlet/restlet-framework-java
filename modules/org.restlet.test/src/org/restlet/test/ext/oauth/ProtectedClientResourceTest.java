@@ -152,4 +152,14 @@ public class ProtectedClientResourceTest extends OAuthTestBase {
         resource.addQueryParameter("foo", "bar");
         resource.get();
     }
+    
+    //Test compatibility with modules that don't match token type case
+    @Test
+    public void testCase4() {
+        ProtectedClientResource resource = new ProtectedClientResource(
+                new Reference(baseURI, "/app/resource1"));
+        resource.setToken(SPRING_STUB_TOKEN);
+        resource.setUseBodyMethod(false);
+        resource.get();
+    }
 }

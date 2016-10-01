@@ -91,6 +91,42 @@ public class OAuthTestBase {
             return false;
         }
     };
+    
+    public static Token SPRING_STUB_TOKEN = new ServerToken() {
+
+        public String getAccessToken() {
+            return STUB_ACCESS_TOKEN;
+        }
+
+        public String getTokenType() {
+        	//Spring returns bearer in lower case
+            return "bearer";
+        }
+
+        public int getExpirePeriod() {
+            return 3600;
+        }
+
+        public String getRefreshToken() {
+            return STUB_REFRESH_TOKEN;
+        }
+
+        public String[] getScope() {
+            return new String[] { "a", "b" };
+        }
+
+        public String getUsername() {
+            return STUB_USERNAME;
+        }
+
+        public String getClientId() {
+            return STUB_CLIENT_ID;
+        }
+
+        public boolean isExpired() {
+            return false;
+        }
+    };
 
     public static final Client STUB_CLIENT = new Client() {
 

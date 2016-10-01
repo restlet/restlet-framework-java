@@ -128,7 +128,7 @@ public class ProtectedClientResource extends ClientResource implements
             throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED,
                     "Token not found");
         }
-        if (token.getTokenType().equals(TOKEN_TYPE_BEARER)) {
+        if (TOKEN_TYPE_BEARER.equalsIgnoreCase(token.getTokenType())) {
             if (isUseBodyMethod()) {
                 Representation entity = request.getEntity();
                 if (entity != null
