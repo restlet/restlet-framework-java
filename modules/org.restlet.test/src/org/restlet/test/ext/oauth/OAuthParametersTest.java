@@ -67,10 +67,11 @@ public class OAuthParametersTest {
     
     @Test
     public void testToReferenceFromReference() {
-    	Reference originalReference = new Reference("http://localhost/test");
+    	Reference originalReference = new Reference("http://localhost/test?existing=thing");
     	
         Reference reference = parameters.toReference(originalReference);
         Form form = reference.getQueryAsForm();
+        assertEquals("thing", form.getFirstValue("existing"));
         assertEquals("val1", form.getFirstValue("foo"));
         assertEquals("val2", form.getFirstValue("bar"));
         assertEquals("val3", form.getFirstValue("buz"));
