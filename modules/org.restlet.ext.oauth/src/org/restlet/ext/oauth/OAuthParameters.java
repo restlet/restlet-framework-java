@@ -118,6 +118,23 @@ public class OAuthParameters implements OAuthResourceDefs {
         reference.setQuery(query);
         return reference;
     }
+    
+    public Reference toReference(Reference ref) {
+        String query;
+        
+        try {
+            query = form.encode();
+        } catch (IOException ex) {
+            Logger.getLogger(OAuthParameters.class.getName()).log(Level.SEVERE,
+                    null, ex);
+            throw new ResourceException(ex);
+        }
+        
+        Reference reference = new Reference(ref);
+        reference.setQuery(query);
+        
+        return reference;
+    }
 
     public Representation toRepresentation() {
         return form.getWebRepresentation();

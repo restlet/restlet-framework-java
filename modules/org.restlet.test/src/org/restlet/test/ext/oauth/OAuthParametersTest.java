@@ -64,4 +64,15 @@ public class OAuthParametersTest {
         assertEquals("val2", form.getFirstValue("bar"));
         assertEquals("val3", form.getFirstValue("buz"));
     }
+    
+    @Test
+    public void testToReferenceFromReference() {
+    	Reference originalReference = new Reference("http://localhost/test");
+    	
+        Reference reference = parameters.toReference(originalReference);
+        Form form = reference.getQueryAsForm();
+        assertEquals("val1", form.getFirstValue("foo"));
+        assertEquals("val2", form.getFirstValue("bar"));
+        assertEquals("val3", form.getFirstValue("buz"));
+    }
 }
