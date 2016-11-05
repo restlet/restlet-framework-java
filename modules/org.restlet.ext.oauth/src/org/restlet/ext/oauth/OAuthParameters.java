@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.oauth.internal.Scopes;
@@ -175,6 +176,24 @@ public class OAuthParameters implements OAuthResourceDefs {
                     "Issue when encoding the OAuth parameters.", ex);
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Issue when encoding the OAuth parameters.", ex);
         }
+    }
+
+    /**
+     * Completes the URI with the OAuth parameters as query parameters.
+     * 
+     * @param uri
+     *            The URI to complete.
+     * @return The URI with the set as Oauth parameters as query.
+     */
+    public Reference toReference(Reference ref) {
+        Reference reference = new Reference(ref);
+
+        // Add each parameter to avoid overwriting existing parameters
+        for (Parameter param : form) {
+            reference.addQueryParameter(param);
+        }
+
+        return reference;
     }
 
     /**

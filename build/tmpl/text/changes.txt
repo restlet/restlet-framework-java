@@ -14,6 +14,9 @@ Changes log
          Reported by Tal Liron.
        - Fixed potential NullPointerException when copying Servlet's request attributes.
          Reported and contributed by Colin Puy.
+    - Enhancements
+       - Added overload to OAuthParameters.toReference which accepts an existing Reference.
+         Contributed by Ryan O'Meara.
 
 - 2.3.7 (03/14/2016)
     - Bugs fixed
