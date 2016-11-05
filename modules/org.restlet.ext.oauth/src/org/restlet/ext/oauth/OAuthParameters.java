@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
@@ -116,6 +117,17 @@ public class OAuthParameters implements OAuthResourceDefs {
         }
         Reference reference = new Reference(uri);
         reference.setQuery(query);
+        return reference;
+    }
+    
+    public Reference toReference(Reference ref) {
+    	Reference reference = new Reference(ref);
+        
+        //Add each parameter to avoid overwriting existing parameters
+        for(Parameter param : form){
+        	reference.addQueryParameter(param);
+        }
+        
         return reference;
     }
 
