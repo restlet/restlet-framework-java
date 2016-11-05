@@ -682,7 +682,7 @@ public final class Status {
      */
     public static boolean isError(int code) {
         return isClientError(code) || isServerError(code)
-                || isConnectorError(code);
+                || isConnectorError(code) || isGlobalError(code);
     }
 
     /**
