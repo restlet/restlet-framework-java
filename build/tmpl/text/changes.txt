@@ -5,13 +5,15 @@ Changes log
 
 @version-full@ (@release-date@)
     - Bugs fixed
-       - Fixed NullPointerException when requestind a Directory with a query string. Issue #1206.
+       - Fixed NullPointerException when requesting a Directory with a query string. Issue #1206.
          Reported by Ralph van Etten.
        - Fixed support of non-bytes ranges. Issue #1132.
        - Fixed encoding issue when using CookieAuthenticator. Issue #1159.
          Reported by Arjohn Kampman.
        - Added support of 'Access-Control-Max-Age'. Issue #1109.
          Reported by Tal Liron.
+       - Fixed potential NullPointerException when copying Servlet's request attributes.
+         Reported and contributed by Colin Puy.
 
 - 2.3.7 (03/14/2016)
     - Bugs fixed
