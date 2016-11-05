@@ -14,6 +14,8 @@ Changes log
          Reported by Tal Liron.
        - Fixed potential NullPointerException when copying Servlet's request attributes.
          Reported and contributed by Colin Puy.
+       - Fixed computation of the agent name in case Safari browser. Issue #1238.
+         Reported by Abhishek Nandi.
     - Enhancements
        - Added overload to OAuthParameters.toReference which accepts an existing Reference.
          Contributed by Ryan O'Meara.
