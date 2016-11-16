@@ -85,8 +85,10 @@ public class ServletServerAdapter extends ServerAdapter {
             for (final Enumeration<String> namesEnum = servletCall.getRequest()
                     .getAttributeNames(); namesEnum.hasMoreElements();) {
                 attributeName = namesEnum.nextElement();
-                result.getAttributes().put(attributeName,
-                        servletCall.getRequest().getAttribute(attributeName));
+                Object attribute = servletCall.getRequest().getAttribute(attributeName);
+                if (attribute != null) {
+                    result.getAttributes().put(attributeName, attribute);
+                }
             }
         }
 
