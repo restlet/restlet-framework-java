@@ -69,12 +69,12 @@ public class PipeStream {
 
                     final Integer value = queue.poll(QUEUE_TIMEOUT,
                             TimeUnit.SECONDS);
-                    this.endReached = (value == -1);
 
                     if (value == null) {
                         throw new IOException(
                                 "Timeout while reading from the queue-based input stream");
                     } else {
+                        this.endReached = (value == -1);
                         return value.intValue();
                     }
                 } catch (InterruptedException ie) {
