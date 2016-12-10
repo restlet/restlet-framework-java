@@ -24,6 +24,7 @@
 
 package org.restlet.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -32,12 +33,10 @@ import java.util.Vector;
 
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
- * This allows an easy sub-classing. By default, it wraps a thread-safe
- * {@link Vector} instance.
+ * This allows an easy sub-classing. By default, it wraps a thread-safe {@link Vector} instance.
  * 
  * @author Jerome Louvel
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
- *      wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @see java.util.Collections
  * @see java.util.List
  */
@@ -157,7 +156,16 @@ public class WrapperList<E> implements List<E>, Iterable<E> {
      */
     @Override
     public boolean equals(Object o) {
-        return getDelegate().equals(o);
+        if (this == o) {
+            return true;
+        }
+
+        if (o instanceof List) {
+            List<?> that = (List<?>) o;
+            return Arrays.equals(this.toArray(), that.toArray());
+        }
+
+        return false;
     }
 
     /**

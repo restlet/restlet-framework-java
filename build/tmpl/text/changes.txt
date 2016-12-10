@@ -16,6 +16,8 @@ Changes log
          Reported and contributed by Colin Puy.
        - Fixed computation of the agent name in case Safari browser. Issue #1238.
          Reported by Abhishek Nandi.
+       - Fixed potential dead lock when compating two instances of WrapperList. Issue #1243.
+         Contributed by Tim Peierls.
     - Enhancements
        - Added overload to OAuthParameters.toReference which accepts an existing Reference.
          Contributed by Ryan O'Meara.
