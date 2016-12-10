@@ -24,6 +24,9 @@
 
 package org.restlet;
 
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +40,6 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -105,8 +107,7 @@ public abstract class Message {
     // [ifndef gwt] method
     /**
      * If the entity is transient or its size unknown in advance but available,
-     * then the entity is wrapped with a
-     * {@link org.restlet.representation.BufferingRepresentation}.<br>
+     * then the entity is wrapped with a {@link org.restlet.representation.BufferingRepresentation}.<br>
      * <br>
      * Be careful as this method could create potentially very large byte
      * buffers in memory that could impact your application performance.
@@ -117,10 +118,9 @@ public abstract class Message {
      */
     public void bufferEntity() {
         if ((getEntity() != null)
-                && (getEntity().isTransient() || (getEntity().getSize() == Representation.UNKNOWN_SIZE))
+                && (getEntity().isTransient() || getEntity().getSize() == UNKNOWN_SIZE)
                 && getEntity().isAvailable()) {
-            setEntity(new org.restlet.representation.BufferingRepresentation(
-                    getEntity()));
+            setEntity(new org.restlet.representation.BufferingRepresentation(getEntity()));
         }
     }
 
@@ -153,17 +153,15 @@ public abstract class Message {
      * <tr>
      * <td>org.restlet.http.headers</td>
      * <td>org.restlet.util.Series&lt;org.restlet.engine.header.Header&gt;</td>
-     * <td>Server HTTP connectors must provide all request headers and client
-     * HTTP connectors must provide all response headers, exactly as they were
-     * received. In addition, developers can also use this attribute to specify
-     * <b>non-standard</b> headers that should be added to the request or to the
-     * response.</td>
+     * <td>Server HTTP connectors must provide all request headers and client HTTP connectors must provide all response
+     * headers, exactly as they were received. In addition, developers can also use this attribute to specify
+     * <b>non-standard</b> headers that should be added to the request or to the response.</td>
      * </tr>
      * <tr>
      * <td>org.restlet.https.clientCertificates</td>
      * <td>List<java.security.cert.Certificate></td>
-     * <td>For requests received via a secure connector, indicates the ordered
-     * list of client certificates, if they are available and accessible.</td>
+     * <td>For requests received via a secure connector, indicates the ordered list of client certificates, if they are
+     * available and accessible.</td>
      * </tr>
      * </table>
      * <br>
@@ -242,8 +240,7 @@ public abstract class Message {
     public String getEntityAsText() {
         if (this.entityText == null) {
             try {
-                this.entityText = (getEntity() == null) ? null : getEntity()
-                        .getText();
+                this.entityText = (getEntity() == null) ? null : getEntity().getText();
             } catch (java.io.IOException e) {
                 Context.getCurrentLogger().log(java.util.logging.Level.FINE,
                         "Unable to get the entity text.", e);
@@ -263,14 +260,13 @@ public abstract class Message {
      */
     @SuppressWarnings("unchecked")
     public Series<Header> getHeaders() {
-        Series<Header> headers = (Series<Header>) getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
+        Series<Header> headers = (Series<Header>) getAttributes().get(ATTRIBUTE_HEADERS);
         if (headers == null) {
             // [ifndef gwt] instruction
             headers = new Series<Header>(Header.class);
             // [ifdef gwt] instruction uncomment
             // headers = new org.restlet.engine.util.HeaderSeries();
-            getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+            getAttributes().put(ATTRIBUTE_HEADERS, headers);
         }
         return headers;
     }

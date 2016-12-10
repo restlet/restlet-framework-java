@@ -125,8 +125,7 @@ public class ClientAdapter extends Adapter {
             Series<Header> responseHeaders = httpCall.getResponseHeaders();
 
             // Put the response headers in the call's attributes map
-            response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
-                    responseHeaders);
+            response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, responseHeaders);
 
             HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {

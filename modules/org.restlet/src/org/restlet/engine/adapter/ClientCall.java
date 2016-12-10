@@ -24,6 +24,13 @@
 
 package org.restlet.engine.adapter;
 
+import static org.restlet.data.Encoding.IDENTITY;
+import static org.restlet.data.Status.CONNECTOR_ERROR_COMMUNICATION;
+import static org.restlet.data.Status.REDIRECTION_NOT_MODIFIED;
+import static org.restlet.data.Status.SUCCESS_NO_CONTENT;
+import static org.restlet.data.Status.SUCCESS_RESET_CONTENT;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +39,6 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Encoding;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -87,8 +93,7 @@ public abstract class ClientCall extends Call {
     }
 
     /**
-     * Returns the content length of the request entity if know,
-     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * Returns the content length of the request entity if know, {@link Representation#UNKNOWN_SIZE} otherwise.
      * 
      * @return The request content length.
      */
@@ -148,26 +153,24 @@ public abstract class ClientCall extends Call {
     public Representation getResponseEntity(Response response) {
         Representation result = null;
         // boolean available = false;
-        long size = Representation.UNKNOWN_SIZE;
+        long size = UNKNOWN_SIZE;
 
         // Compute the content length
         Series<Header> responseHeaders = getResponseHeaders();
         String transferEncoding = responseHeaders.getFirstValue(
                 HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         if ((transferEncoding != null)
-                && !Encoding.IDENTITY.getName().equalsIgnoreCase(
-                        transferEncoding)) {
-            size = Representation.UNKNOWN_SIZE;
+                && !IDENTITY.getName().equalsIgnoreCase(transferEncoding)) {
+            size = UNKNOWN_SIZE;
         } else {
             size = getContentLength();
         }
 
         if (!getMethod().equals(Method.HEAD.getName())
                 && !response.getStatus().isInformational()
-                && !response.getStatus()
-                        .equals(Status.REDIRECTION_NOT_MODIFIED)
-                && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
+                && !response.getStatus().equals(REDIRECTION_NOT_MODIFIED)
+                && !response.getStatus().equals(SUCCESS_NO_CONTENT)
+                && !response.getStatus().equals(SUCCESS_RESET_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
             InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
@@ -187,7 +190,7 @@ public abstract class ClientCall extends Call {
             result.setSize(size);
 
             // Informs that the size has not been specified in the header.
-            if (size == Representation.UNKNOWN_SIZE) {
+            if (size == UNKNOWN_SIZE) {
                 getLogger()
                         .fine("The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
             }
@@ -205,8 +208,7 @@ public abstract class ClientCall extends Call {
      *            The expected entity size or -1 if unknown.
      * @return The response channel if it exists.
      */
-    public abstract java.nio.channels.ReadableByteChannel getResponseEntityChannel(
-            long size);
+    public abstract java.nio.channels.ReadableByteChannel getResponseEntityChannel(long size);
 
     /**
      * Returns the response entity stream if it exists.
@@ -276,8 +278,7 @@ public abstract class ClientCall extends Call {
      */
     public Status sendRequest(Request request) {
         Status result = null;
-        Representation entity = request.isEntityAvailable() ? request
-                .getEntity() : null;
+        Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
 
         // Get the connector service to callback
         org.restlet.service.ConnectorService connectorService = ConnectorHelper
@@ -317,7 +318,7 @@ public abstract class ClientCall extends Call {
                     .log(Level.FINE,
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
+            result = new Status(CONNECTOR_ERROR_COMMUNICATION, ioe);
         } finally {
             if (entity != null) {
                 entity.release();
@@ -343,10 +344,8 @@ public abstract class ClientCall extends Call {
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public void sendRequest(Request request, Response response,
-            org.restlet.Uniform callback) throws Exception {
-        Context.getCurrentLogger().warning(
-                "Currently callbacks are not available for this connector.");
+    public void sendRequest(Request request, Response response, org.restlet.Uniform callback) throws Exception {
+        Context.getCurrentLogger().warning("Currently callbacks are not available for this connector.");
     }
 
     /**
@@ -355,7 +354,8 @@ public abstract class ClientCall extends Call {
      * @return True if the request should be chunked
      */
     protected boolean shouldRequestBeChunked(Request request) {
-        return request.isEntityAvailable() && (request.getEntity() != null)
+        return request.isEntityAvailable()
+                && (request.getEntity() != null)
                 && !request.getEntity().hasKnownSize();
     }
 }

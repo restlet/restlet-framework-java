@@ -24,7 +24,77 @@
 
 package org.restlet.engine.header;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.util.logging.Level.WARNING;
+import static org.restlet.data.Digest.ALGORITHM_MD5;
+import static org.restlet.data.Disposition.TYPE_NONE;
+import static org.restlet.data.Method.OPTIONS;
+import static org.restlet.data.Range.RANGE_BYTES_UNIT;
 import static org.restlet.data.Range.isBytesRange;
+import static org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT_CHARSET;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT_ENCODING;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT_LANGUAGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT_PATCH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCEPT_RANGES;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD;
+import static org.restlet.engine.header.HeaderConstants.HEADER_AGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ALLOW;
+import static org.restlet.engine.header.HeaderConstants.HEADER_AUTHENTICATION_INFO;
+import static org.restlet.engine.header.HeaderConstants.HEADER_AUTHORIZATION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CACHE_CONTROL;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONNECTION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_DISPOSITION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_ENCODING;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_LANGUAGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_LENGTH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_LOCATION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_MD5;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_RANGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_CONTENT_TYPE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_COOKIE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_DATE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_ETAG;
+import static org.restlet.engine.header.HeaderConstants.HEADER_EXPECT;
+import static org.restlet.engine.header.HeaderConstants.HEADER_EXPIRES;
+import static org.restlet.engine.header.HeaderConstants.HEADER_FROM;
+import static org.restlet.engine.header.HeaderConstants.HEADER_HOST;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_MATCH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_MODIFIED_SINCE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_NONE_MATCH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_RANGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_UNMODIFIED_SINCE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_LAST_MODIFIED;
+import static org.restlet.engine.header.HeaderConstants.HEADER_LOCATION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_MAX_FORWARDS;
+import static org.restlet.engine.header.HeaderConstants.HEADER_PRAGMA;
+import static org.restlet.engine.header.HeaderConstants.HEADER_PROXY_AUTHENTICATE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_PROXY_AUTHORIZATION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_RANGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_REFERRER;
+import static org.restlet.engine.header.HeaderConstants.HEADER_RETRY_AFTER;
+import static org.restlet.engine.header.HeaderConstants.HEADER_SERVER;
+import static org.restlet.engine.header.HeaderConstants.HEADER_SET_COOKIE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_SET_COOKIE2;
+import static org.restlet.engine.header.HeaderConstants.HEADER_TRAILER;
+import static org.restlet.engine.header.HeaderConstants.HEADER_TRANSFER_ENCODING;
+import static org.restlet.engine.header.HeaderConstants.HEADER_TRANSFER_EXTENSION;
+import static org.restlet.engine.header.HeaderConstants.HEADER_UPGRADE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_USER_AGENT;
+import static org.restlet.engine.header.HeaderConstants.HEADER_VARY;
+import static org.restlet.engine.header.HeaderConstants.HEADER_VIA;
+import static org.restlet.engine.header.HeaderConstants.HEADER_WARNING;
+import static org.restlet.engine.header.HeaderConstants.HEADER_WWW_AUTHENTICATE;
+import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,14 +115,10 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
-import org.restlet.data.Digest;
-import org.restlet.data.Disposition;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.CaseInsensitiveHashSet;
@@ -74,73 +140,73 @@ public class HeaderUtils {
      */
     private static final Set<String> STANDARD_HEADERS = Collections
             .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
-                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
-                    HeaderConstants.HEADER_ACCEPT,
-                    HeaderConstants.HEADER_ACCEPT_CHARSET,
-                    HeaderConstants.HEADER_ACCEPT_ENCODING,
-                    HeaderConstants.HEADER_ACCEPT_LANGUAGE,
-                    HeaderConstants.HEADER_ACCEPT_PATCH,
-                    HeaderConstants.HEADER_ACCEPT_RANGES,
-                    HeaderConstants.HEADER_AGE,
-                    HeaderConstants.HEADER_ALLOW,
-                    HeaderConstants.HEADER_AUTHENTICATION_INFO,
-                    HeaderConstants.HEADER_AUTHORIZATION,
-                    HeaderConstants.HEADER_CACHE_CONTROL,
-                    HeaderConstants.HEADER_CONNECTION,
-                    HeaderConstants.HEADER_CONTENT_DISPOSITION,
-                    HeaderConstants.HEADER_CONTENT_ENCODING,
-                    HeaderConstants.HEADER_CONTENT_LANGUAGE,
-                    HeaderConstants.HEADER_CONTENT_LENGTH,
-                    HeaderConstants.HEADER_CONTENT_LOCATION,
-                    HeaderConstants.HEADER_CONTENT_MD5,
-                    HeaderConstants.HEADER_CONTENT_RANGE,
-                    HeaderConstants.HEADER_CONTENT_TYPE,
-                    HeaderConstants.HEADER_COOKIE,
-                    HeaderConstants.HEADER_DATE,
-                    HeaderConstants.HEADER_ETAG,
-                    HeaderConstants.HEADER_EXPECT,
-                    HeaderConstants.HEADER_EXPIRES,
-                    HeaderConstants.HEADER_FROM,
-                    HeaderConstants.HEADER_HOST,
-                    HeaderConstants.HEADER_IF_MATCH,
-                    HeaderConstants.HEADER_IF_MODIFIED_SINCE,
-                    HeaderConstants.HEADER_IF_NONE_MATCH,
-                    HeaderConstants.HEADER_IF_RANGE,
-                    HeaderConstants.HEADER_IF_UNMODIFIED_SINCE,
-                    HeaderConstants.HEADER_LAST_MODIFIED,
-                    HeaderConstants.HEADER_LOCATION,
-                    HeaderConstants.HEADER_MAX_FORWARDS,
-                    HeaderConstants.HEADER_PROXY_AUTHENTICATE,
-                    HeaderConstants.HEADER_PROXY_AUTHORIZATION,
-                    HeaderConstants.HEADER_RANGE,
-                    HeaderConstants.HEADER_REFERRER,
-                    HeaderConstants.HEADER_RETRY_AFTER,
-                    HeaderConstants.HEADER_SERVER,
-                    HeaderConstants.HEADER_SET_COOKIE,
-                    HeaderConstants.HEADER_SET_COOKIE2,
-                    HeaderConstants.HEADER_USER_AGENT,
-                    HeaderConstants.HEADER_VARY,
-                    HeaderConstants.HEADER_VIA,
-                    HeaderConstants.HEADER_WARNING,
-                    HeaderConstants.HEADER_WWW_AUTHENTICATE)));
+                    HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
+                    HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+                    HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+                    HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+                    HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
+                    HEADER_ACCESS_CONTROL_MAX_AGE,
+                    HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+                    HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+                    HEADER_ACCEPT,
+                    HEADER_ACCEPT_CHARSET,
+                    HEADER_ACCEPT_ENCODING,
+                    HEADER_ACCEPT_LANGUAGE,
+                    HEADER_ACCEPT_PATCH,
+                    HEADER_ACCEPT_RANGES,
+                    HEADER_AGE,
+                    HEADER_ALLOW,
+                    HEADER_AUTHENTICATION_INFO,
+                    HEADER_AUTHORIZATION,
+                    HEADER_CACHE_CONTROL,
+                    HEADER_CONNECTION,
+                    HEADER_CONTENT_DISPOSITION,
+                    HEADER_CONTENT_ENCODING,
+                    HEADER_CONTENT_LANGUAGE,
+                    HEADER_CONTENT_LENGTH,
+                    HEADER_CONTENT_LOCATION,
+                    HEADER_CONTENT_MD5,
+                    HEADER_CONTENT_RANGE,
+                    HEADER_CONTENT_TYPE,
+                    HEADER_COOKIE,
+                    HEADER_DATE,
+                    HEADER_ETAG,
+                    HEADER_EXPECT,
+                    HEADER_EXPIRES,
+                    HEADER_FROM,
+                    HEADER_HOST,
+                    HEADER_IF_MATCH,
+                    HEADER_IF_MODIFIED_SINCE,
+                    HEADER_IF_NONE_MATCH,
+                    HEADER_IF_RANGE,
+                    HEADER_IF_UNMODIFIED_SINCE,
+                    HEADER_LAST_MODIFIED,
+                    HEADER_LOCATION,
+                    HEADER_MAX_FORWARDS,
+                    HEADER_PROXY_AUTHENTICATE,
+                    HEADER_PROXY_AUTHORIZATION,
+                    HEADER_RANGE,
+                    HEADER_REFERRER,
+                    HEADER_RETRY_AFTER,
+                    HEADER_SERVER,
+                    HEADER_SET_COOKIE,
+                    HEADER_SET_COOKIE2,
+                    HEADER_USER_AGENT,
+                    HEADER_VARY,
+                    HEADER_VIA,
+                    HEADER_WARNING,
+                    HEADER_WWW_AUTHENTICATE)));
 
     /**
      * Set of unsupported headers that will be covered in future versions.
      */
     private static final Set<String> UNSUPPORTED_STANDARD_HEADERS = Collections
             .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
-                    HeaderConstants.HEADER_PRAGMA,
-                    HeaderConstants.HEADER_TRAILER,
-                    HeaderConstants.HEADER_TRANSFER_ENCODING,
-                    HeaderConstants.HEADER_TRANSFER_EXTENSION,
-                    HeaderConstants.HEADER_UPGRADE)));
+                    HEADER_PRAGMA,
+                    HEADER_TRAILER,
+                    HEADER_TRANSFER_ENCODING,
+                    HEADER_TRANSFER_EXTENSION,
+                    HEADER_UPGRADE)));
 
     /**
      * Adds the entity headers based on the {@link Representation} to the {@link Series}.
@@ -153,29 +219,24 @@ public class HeaderUtils {
     public static void addEntityHeaders(Representation entity,
             Series<Header> headers) {
         if (entity == null || !entity.isAvailable()) {
-            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
-        } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
-            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH,
-                    Long.toString(entity.getAvailableSize()), headers);
+            addHeader(HEADER_CONTENT_LENGTH, "0", headers);
+        } else if (entity.getAvailableSize() != UNKNOWN_SIZE) {
+            addHeader(HEADER_CONTENT_LENGTH, Long.toString(entity.getAvailableSize()), headers);
         }
 
         if (entity != null) {
-            addHeader(HeaderConstants.HEADER_CONTENT_ENCODING,
-                    EncodingWriter.write(entity.getEncodings()), headers);
-            addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE,
-                    LanguageWriter.write(entity.getLanguages()), headers);
+            addHeader(HEADER_CONTENT_ENCODING, EncodingWriter.write(entity.getEncodings()), headers);
+            addHeader(HEADER_CONTENT_LANGUAGE, LanguageWriter.write(entity.getLanguages()), headers);
 
             if (entity.getLocationRef() != null) {
-                addHeader(HeaderConstants.HEADER_CONTENT_LOCATION, entity
-                        .getLocationRef().getTargetRef().toString(), headers);
+                addHeader(HEADER_CONTENT_LOCATION, entity.getLocationRef().getTargetRef().toString(), headers);
             }
 
             // [ifndef gwt]
             if (entity.getDigest() != null
-                    && Digest.ALGORITHM_MD5.equals(entity.getDigest()
-                            .getAlgorithm())) {
+                    && ALGORITHM_MD5.equals(entity.getDigest().getAlgorithm())) {
                 addHeader(
-                        HeaderConstants.HEADER_CONTENT_MD5,
+                        HEADER_CONTENT_MD5,
                         new String(org.restlet.engine.util.Base64.encode(entity
                                 .getDigest().getValue(), false)), headers);
             }
@@ -184,40 +245,33 @@ public class HeaderUtils {
             if (entity.getRange() != null) {
                 Range range = entity.getRange();
                 if (isBytesRange(range)) {
-                    addHeader(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeWriter.write(range, entity.getSize()),
-                            headers);
+                    addHeader(HEADER_CONTENT_RANGE, RangeWriter.write(range, entity.getSize()), headers);
                 } else {
-                    addHeader(HeaderConstants.HEADER_CONTENT_RANGE,
-                            RangeWriter.write(range, range.getInstanceSize()),
-                            headers);
+                    addHeader(HEADER_CONTENT_RANGE, RangeWriter.write(range, range.getInstanceSize()), headers);
                 }
             }
 
             if (entity.getMediaType() != null) {
-                addHeader(HeaderConstants.HEADER_CONTENT_TYPE,
-                        ContentType.writeHeader(entity), headers);
+                addHeader(HEADER_CONTENT_TYPE, ContentType.writeHeader(entity), headers);
             }
 
             if (entity.getExpirationDate() != null) {
-                addHeader(HeaderConstants.HEADER_EXPIRES,
-                        DateWriter.write(entity.getExpirationDate()), headers);
+                addHeader(HEADER_EXPIRES, DateWriter.write(entity.getExpirationDate()), headers);
             }
 
             if (entity.getModificationDate() != null) {
-                addHeader(HeaderConstants.HEADER_LAST_MODIFIED,
+                addHeader(HEADER_LAST_MODIFIED,
                         DateWriter.write(entity.getModificationDate()), headers);
             }
 
             if (entity.getTag() != null) {
-                addHeader(HeaderConstants.HEADER_ETAG,
+                addHeader(HEADER_ETAG,
                         TagWriter.write(entity.getTag()), headers);
             }
 
             if (entity.getDisposition() != null
-                    && !Disposition.TYPE_NONE.equals(entity.getDisposition()
-                            .getType())) {
-                addHeader(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                    && !TYPE_NONE.equals(entity.getDisposition().getType())) {
+                addHeader(HEADER_CONTENT_DISPOSITION,
                         DispositionWriter.write(entity.getDisposition()),
                         headers);
             }
@@ -243,8 +297,7 @@ public class HeaderUtils {
                                     "Addition of the standard header \""
                                             + param.getName()
                                             + "\" is not allowed. Please use the equivalent property in the Restlet API.");
-                } else if (UNSUPPORTED_STANDARD_HEADERS.contains(param
-                        .getName())) {
+                } else if (UNSUPPORTED_STANDARD_HEADERS.contains(param.getName())) {
                     Context.getCurrentLogger()
                             .warning(
                                     "Addition of the standard header \""
@@ -267,7 +320,7 @@ public class HeaderUtils {
      *            The target headers {@link Series}.
      */
     public static void addGeneralHeaders(Message message, Series<Header> headers) {
-        addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
+        addHeader(HEADER_CACHE_CONTROL,
                 CacheDirectiveWriter.write(message.getCacheDirectives()),
                 headers);
 
@@ -275,14 +328,11 @@ public class HeaderUtils {
             message.setDate(new Date());
         }
 
-        addHeader(HeaderConstants.HEADER_DATE,
-                DateWriter.write(message.getDate()), headers);
+        addHeader(HEADER_DATE, DateWriter.write(message.getDate()), headers);
 
-        addHeader(HeaderConstants.HEADER_VIA,
-                RecipientInfoWriter.write(message.getRecipientsInfo()), headers);
+        addHeader(HEADER_VIA, RecipientInfoWriter.write(message.getRecipientsInfo()), headers);
 
-        addHeader(HeaderConstants.HEADER_WARNING,
-                WarningWriter.write(message.getWarnings()), headers);
+        addHeader(HEADER_WARNING, WarningWriter.write(message.getWarnings()), headers);
     }
 
     /**
@@ -297,8 +347,7 @@ public class HeaderUtils {
      */
     public static void addHeader(String headerName, String headerValue,
             Series<Header> headers) {
-        if ((headerName != null) && (headerValue != null)
-                && (headerValue.length() > 0)) {
+        if (headerName != null && !isNullOrEmpty(headerValue)) {
             try {
                 headers.add(headerName, headerValue);
             } catch (Throwable t) {
@@ -321,12 +370,11 @@ public class HeaderUtils {
             Series<Header> headers) {
         if (entity != null) {
             if (entity.getTag() != null) {
-                HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG,
-                        TagWriter.write(entity.getTag()), headers);
+                addHeader(HEADER_ETAG, TagWriter.write(entity.getTag()), headers);
             }
 
             if (entity.getLocationRef() != null) {
-                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION,
+                addHeader(HEADER_CONTENT_LOCATION,
                         entity.getLocationRef().getTargetRef().toString(),
                         headers);
             }
@@ -341,54 +389,51 @@ public class HeaderUtils {
      * @param headers
      *            The {@link Series} to copy the headers to.
      */
-    @SuppressWarnings("unchecked")
     public static void addRequestHeaders(Request request, Series<Header> headers) {
         ClientInfo clientInfo = request.getClientInfo();
 
         if (!clientInfo.getAcceptedMediaTypes().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT,
+            addHeader(HEADER_ACCEPT,
                     PreferenceWriter.write(clientInfo.getAcceptedMediaTypes()),
                     headers);
         } else {
-            addHeader(HeaderConstants.HEADER_ACCEPT, MediaType.ALL.getName(),
-                    headers);
+            addHeader(HEADER_ACCEPT, MediaType.ALL.getName(), headers);
         }
 
         if (!clientInfo.getAcceptedCharacterSets().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET,
+            addHeader(HEADER_ACCEPT_CHARSET,
                     PreferenceWriter.write(clientInfo
                             .getAcceptedCharacterSets()), headers);
         }
 
         if (!clientInfo.getAcceptedEncodings().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING,
+            addHeader(HEADER_ACCEPT_ENCODING,
                     PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
                     headers);
         }
 
         if (!clientInfo.getAcceptedLanguages().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+            addHeader(HEADER_ACCEPT_LANGUAGE,
                     PreferenceWriter.write(clientInfo.getAcceptedLanguages()),
                     headers);
         }
 
         if (!clientInfo.getAcceptedPatches().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_PATCH,
+            addHeader(HEADER_ACCEPT_PATCH,
                     PreferenceWriter.write(clientInfo.getAcceptedPatches()),
                     headers);
         }
 
         // [ifndef gwt]
         if (!clientInfo.getExpectations().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_EXPECT,
+            addHeader(HEADER_EXPECT,
                     ExpectationWriter.write(clientInfo.getExpectations()),
                     headers);
         }
         // [enddef]
 
         if (clientInfo.getFrom() != null) {
-            addHeader(HeaderConstants.HEADER_FROM, request.getClientInfo()
-                    .getFrom(), headers);
+            addHeader(HEADER_FROM, request.getClientInfo().getFrom(), headers);
         }
 
         // Manually add the host name and port when it is potentially
@@ -401,71 +446,59 @@ public class HeaderUtils {
             int hostRefPortValue = hostRef.getHostPort();
 
             if ((hostRefPortValue != -1)
-                    && (hostRefPortValue != request.getProtocol()
-                            .getDefaultPort())) {
+                    && (hostRefPortValue != request.getProtocol().getDefaultPort())) {
                 host = host + ':' + hostRefPortValue;
             }
 
-            addHeader(HeaderConstants.HEADER_HOST, host, headers);
+            addHeader(HEADER_HOST, host, headers);
         }
 
         Conditions conditions = request.getConditions();
-        addHeader(HeaderConstants.HEADER_IF_MATCH,
-                TagWriter.write(conditions.getMatch()), headers);
-        addHeader(HeaderConstants.HEADER_IF_NONE_MATCH,
-                TagWriter.write(conditions.getNoneMatch()), headers);
+        addHeader(HEADER_IF_MATCH, TagWriter.write(conditions.getMatch()), headers);
+        addHeader(HEADER_IF_NONE_MATCH, TagWriter.write(conditions.getNoneMatch()), headers);
 
         if (conditions.getModifiedSince() != null) {
-            addHeader(HeaderConstants.HEADER_IF_MODIFIED_SINCE,
-                    DateWriter.write(conditions.getModifiedSince()), headers);
+            addHeader(HEADER_IF_MODIFIED_SINCE, DateWriter.write(conditions.getModifiedSince()), headers);
         }
 
         if (conditions.getRangeTag() != null
                 && conditions.getRangeDate() != null) {
             Context.getCurrentLogger()
-                    .log(Level.WARNING,
+                    .log(WARNING,
                             "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
         } else if (conditions.getRangeTag() != null) {
-            addHeader(HeaderConstants.HEADER_IF_RANGE,
-                    TagWriter.write(conditions.getRangeTag()), headers);
+            addHeader(HEADER_IF_RANGE, TagWriter.write(conditions.getRangeTag()), headers);
         } else if (conditions.getRangeDate() != null) {
-            addHeader(HeaderConstants.HEADER_IF_RANGE,
-                    DateWriter.write(conditions.getRangeDate()), headers);
+            addHeader(HEADER_IF_RANGE, DateWriter.write(conditions.getRangeDate()), headers);
         }
 
         if (conditions.getUnmodifiedSince() != null) {
-            addHeader(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE,
-                    DateWriter.write(conditions.getUnmodifiedSince()), headers);
+            addHeader(HEADER_IF_UNMODIFIED_SINCE, DateWriter.write(conditions.getUnmodifiedSince()), headers);
         }
 
         if (request.getMaxForwards() > -1) {
-            addHeader(HeaderConstants.HEADER_MAX_FORWARDS,
-                    Integer.toString(request.getMaxForwards()), headers);
+            addHeader(HEADER_MAX_FORWARDS, Integer.toString(request.getMaxForwards()), headers);
         }
 
         if (!request.getRanges().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_RANGE,
-                    RangeWriter.write(request.getRanges()), headers);
+            addHeader(HEADER_RANGE, RangeWriter.write(request.getRanges()), headers);
         }
 
         if (request.getReferrerRef() != null) {
-            addHeader(HeaderConstants.HEADER_REFERRER, request.getReferrerRef()
-                    .toString(), headers);
+            addHeader(HEADER_REFERRER, request.getReferrerRef().toString(), headers);
         }
 
         if (request.getClientInfo().getAgent() != null) {
-            addHeader(HeaderConstants.HEADER_USER_AGENT, request
-                    .getClientInfo().getAgent(), headers);
+            addHeader(HEADER_USER_AGENT, request.getClientInfo().getAgent(), headers);
             // [ifndef gwt]
         } else {
-            addHeader(HeaderConstants.HEADER_USER_AGENT, Engine.VERSION_HEADER,
-                    headers);
+            addHeader(HEADER_USER_AGENT, Engine.VERSION_HEADER, headers);
             // [enddef]
         }
 
         // [ifndef gwt]
         if (clientInfo.getExpectations().size() > 0) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING,
+            addHeader(HEADER_ACCEPT_ENCODING,
                     PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
                     headers);
         }
@@ -475,13 +508,13 @@ public class HeaderUtils {
 
         if (request.getAccessControlRequestHeaders() != null) {
             addHeader(
-                    HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+                    HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
                     StringWriter.write(request.getAccessControlRequestHeaders()),
                     headers);
         }
 
         if (request.getAccessControlRequestMethod() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+            addHeader(HEADER_ACCESS_CONTROL_REQUEST_METHOD,
                     request.getAccessControlRequestMethod().getName(), headers);
         }
 
@@ -489,16 +522,15 @@ public class HeaderUtils {
         // 3) Add supported extension headers
         // ----------------------------------
 
-        if (request.getCookies().size() > 0) {
-            addHeader(HeaderConstants.HEADER_COOKIE,
-                    CookieWriter.write(request.getCookies()), headers);
+        if (!request.getCookies().isEmpty()) {
+            addHeader(HEADER_COOKIE, CookieWriter.write(request.getCookies()), headers);
         }
 
         // -------------------------------------
         // 4) Add user-defined extension headers
         // -------------------------------------
-        Series<Header> additionalHeaders = (Series<Header>) request
-                .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+
+        Series<Header> additionalHeaders = request.getHeaders();
         addExtensionHeaders(headers, additionalHeaders);
 
         // ---------------------------------------
@@ -515,21 +547,18 @@ public class HeaderUtils {
                     .formatResponse(challengeResponse, request, headers);
 
             if (authHeader != null) {
-                addHeader(HeaderConstants.HEADER_AUTHORIZATION, authHeader,
-                        headers);
+                addHeader(HEADER_AUTHORIZATION, authHeader, headers);
             }
         }
 
-        ChallengeResponse proxyChallengeResponse = request
-                .getProxyChallengeResponse();
+        ChallengeResponse proxyChallengeResponse = request.getProxyChallengeResponse();
 
         if (proxyChallengeResponse != null) {
             String authHeader = org.restlet.engine.security.AuthenticatorUtils
                     .formatResponse(proxyChallengeResponse, request, headers);
 
             if (authHeader != null) {
-                addHeader(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
-                        authHeader, headers);
+                addHeader(HEADER_PROXY_AUTHORIZATION, authHeader, headers);
             }
         }
         // [enddef]
@@ -544,52 +573,44 @@ public class HeaderUtils {
      * @param headers
      *            The {@link Series} to copy the headers to.
      */
-    @SuppressWarnings("unchecked")
     public static void addResponseHeaders(Response response,
             Series<Header> headers) {
         if (response.getServerInfo().isAcceptingRanges()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_RANGES, Range.RANGE_BYTES_UNIT, headers);
+            addHeader(HEADER_ACCEPT_RANGES, RANGE_BYTES_UNIT, headers);
         }
 
         if (response.getAge() > 0) {
-            addHeader(HeaderConstants.HEADER_AGE,
-                    Integer.toString(response.getAge()), headers);
+            addHeader(HEADER_AGE, Integer.toString(response.getAge()), headers);
         }
 
-        if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
-                || Method.OPTIONS.equals(response.getRequest().getMethod())) {
-            addHeader(HeaderConstants.HEADER_ALLOW,
-                    MethodWriter.write(response.getAllowedMethods()), headers);
+        if (CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(response.getStatus())
+                || OPTIONS.equals(response.getRequest().getMethod())) {
+            addHeader(HEADER_ALLOW, MethodWriter.write(response.getAllowedMethods()), headers);
         }
 
         if (response.getLocationRef() != null) {
             // The location header must contain an absolute URI.
-            addHeader(HeaderConstants.HEADER_LOCATION, response
-                    .getLocationRef().getTargetRef().toString(), headers);
+            addHeader(HEADER_LOCATION, response.getLocationRef().getTargetRef().toString(), headers);
         }
 
         if (response.getProxyChallengeRequests() != null) {
-            for (ChallengeRequest challengeRequest : response
-                    .getProxyChallengeRequests()) {
-                addHeader(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
+            for (ChallengeRequest challengeRequest : response.getProxyChallengeRequests()) {
+                addHeader(HEADER_PROXY_AUTHENTICATE,
                         org.restlet.engine.security.AuthenticatorUtils
-                                .formatRequest(challengeRequest, response,
-                                        headers), headers);
+                                .formatRequest(challengeRequest, response, headers),
+                        headers);
             }
         }
 
         if (response.getRetryAfter() != null) {
-            addHeader(HeaderConstants.HEADER_RETRY_AFTER,
-                    DateWriter.write(response.getRetryAfter()), headers);
+            addHeader(HEADER_RETRY_AFTER, DateWriter.write(response.getRetryAfter()), headers);
         }
 
         if ((response.getServerInfo() != null)
                 && (response.getServerInfo().getAgent() != null)) {
-            addHeader(HeaderConstants.HEADER_SERVER, response.getServerInfo()
-                    .getAgent(), headers);
+            addHeader(HEADER_SERVER, response.getServerInfo().getAgent(), headers);
         } else {
-            addHeader(HeaderConstants.HEADER_SERVER, Engine.VERSION_HEADER,
-                    headers);
+            addHeader(HEADER_SERVER, Engine.VERSION_HEADER, headers);
         }
 
         // Send the Vary header only to none-MSIE user agents as MSIE seems
@@ -597,43 +618,38 @@ public class HeaderUtils {
         if (!((response.getRequest().getClientInfo().getAgent() != null) && response
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
-            addHeader(HeaderConstants.HEADER_VARY,
-                    DimensionWriter.write(response.getDimensions()), headers);
+            addHeader(HEADER_VARY, DimensionWriter.write(response.getDimensions()), headers);
         }
 
         // Set the security data
         if (response.getChallengeRequests() != null) {
-            for (ChallengeRequest challengeRequest : response
-                    .getChallengeRequests()) {
-                addHeader(HeaderConstants.HEADER_WWW_AUTHENTICATE,
+            for (ChallengeRequest challengeRequest : response.getChallengeRequests()) {
+                addHeader(HEADER_WWW_AUTHENTICATE,
                         org.restlet.engine.security.AuthenticatorUtils
-                                .formatRequest(challengeRequest, response,
-                                        headers), headers);
+                                .formatRequest(challengeRequest, response, headers),
+                        headers);
             }
         }
 
         // CORS headers
 
         if (response.getAccessControlAllowCredentials() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
+            addHeader(HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
                     response.getAccessControlAllowCredentials().toString(),
                     headers);
         }
 
         if (response.getAccessControlAllowHeaders() != null) {
-            addHeader(
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+            addHeader(HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
                     StringWriter.write(response.getAccessControlAllowHeaders()),
                     headers);
         }
         if (response.getAccessControlAllowOrigin() != null) {
-            addHeader(HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-                    response.getAccessControlAllowOrigin(), headers);
+            addHeader(HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, response.getAccessControlAllowOrigin(), headers);
         }
 
         if (response.getAccessControlAllowMethods() != null) {
-            addHeader(
-                    HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+            addHeader(HEADER_ACCESS_CONTROL_ALLOW_METHODS,
                     MethodWriter.write(response.getAccessControlAllowMethods()),
                     headers);
         }
@@ -656,25 +672,23 @@ public class HeaderUtils {
 
         // Add the Authentication-Info header
         if (response.getAuthenticationInfo() != null) {
-            addHeader(HeaderConstants.HEADER_AUTHENTICATION_INFO,
+            addHeader(HEADER_AUTHENTICATION_INFO,
                     org.restlet.engine.security.AuthenticatorUtils
-                            .formatAuthenticationInfo(response
-                                    .getAuthenticationInfo()), headers);
+                            .formatAuthenticationInfo(response.getAuthenticationInfo()),
+                    headers);
         }
 
         // Cookies settings should be written in a single header, but Web
         // browsers does not seem to support it.
         for (CookieSetting cookieSetting : response.getCookieSettings()) {
-            addHeader(HeaderConstants.HEADER_SET_COOKIE,
-                    CookieSettingWriter.write(cookieSetting), headers);
+            addHeader(HEADER_SET_COOKIE, CookieSettingWriter.write(cookieSetting), headers);
         }
 
         // -------------------------------------
         // 4) Add user-defined extension headers
         // -------------------------------------
 
-        Series<Header> additionalHeaders = (Series<Header>) response
-                .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+        Series<Header> additionalHeaders = response.getHeaders();
         addExtensionHeaders(headers, additionalHeaders);
     }
 
@@ -697,8 +711,7 @@ public class HeaderUtils {
                 extensionHeaders.add(header);
             }
         }
-        message.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
-                extensionHeaders);
+        message.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, extensionHeaders);
     }
 
     /**
@@ -709,8 +722,7 @@ public class HeaderUtils {
      * @param request
      *            The request to update.
      */
-    public static void copyExtensionHeaders(Series<Header> headers,
-            Message message) {
+    public static void copyExtensionHeaders(Series<Header> headers, Message message) {
         if (headers != null) {
             Series<Header> extensionHeaders = message.getHeaders();
             for (Header header : headers) {
@@ -729,15 +741,12 @@ public class HeaderUtils {
      * @param response
      *            The response to update.
      */
-    public static void copyResponseTransportHeaders(Series<Header> headers,
-            Response response) {
+    public static void copyResponseTransportHeaders(Series<Header> headers, Response response) {
         if (headers != null) {
             for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_LOCATION)) {
+                if (HEADER_LOCATION.equalsIgnoreCase(header.getName())) {
                     response.setLocationRef(header.getValue());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_AGE)) {
+                } else if (HEADER_AGE.equalsIgnoreCase(header.getName())) {
                     try {
                         response.setAge(Integer.parseInt(header.getValue()));
                     } catch (NumberFormatException nfe) {
@@ -746,8 +755,7 @@ public class HeaderUtils {
                                 "Error during Age header parsing. Header: "
                                         + header.getValue(), nfe);
                     }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_DATE)) {
+                } else if (HEADER_DATE.equalsIgnoreCase(header.getName())) {
                     Date date = DateUtils.parse(header.getValue());
 
                     if (date == null) {
@@ -755,20 +763,16 @@ public class HeaderUtils {
                     }
 
                     response.setDate(date);
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_RETRY_AFTER)) {
+                } else if (HEADER_RETRY_AFTER.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
                     Date retryAfter = DateUtils.parse(header.getValue());
 
                     if (retryAfter == null) {
                         // The date might be expressed as a number of seconds
                         try {
-                            int retryAfterSecs = Integer.parseInt(header
-                                    .getValue());
-                            java.util.Calendar calendar = java.util.Calendar
-                                    .getInstance();
-                            calendar.add(java.util.Calendar.SECOND,
-                                    retryAfterSecs);
+                            int retryAfterSecs = Integer.parseInt(header.getValue());
+                            java.util.Calendar calendar = java.util.Calendar.getInstance();
+                            calendar.add(java.util.Calendar.SECOND, retryAfterSecs);
                             retryAfter = calendar.getTime();
                         } catch (NumberFormatException nfe) {
                             Context.getCurrentLogger().log(
@@ -780,13 +784,10 @@ public class HeaderUtils {
 
                     response.setRetryAfter(retryAfter);
                     // [enddef]
-                } else if ((header.getName()
-                        .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE))
-                        || (header.getName()
-                                .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
+                } else if (HEADER_SET_COOKIE.equalsIgnoreCase(header.getName())
+                        || HEADER_SET_COOKIE2.equalsIgnoreCase(header.getName())) {
                     try {
-                        CookieSettingReader cr = new CookieSettingReader(
-                                header.getValue());
+                        CookieSettingReader cr = new CookieSettingReader(header.getValue());
                         response.getCookieSettings().add(cr.readValue());
                     } catch (Exception e) {
                         Context.getCurrentLogger().log(
@@ -794,68 +795,47 @@ public class HeaderUtils {
                                 "Error during cookie setting parsing. Header: "
                                         + header.getValue(), e);
                     }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
+                } else if (HEADER_WWW_AUTHENTICATE.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
                     List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
                     response.getChallengeRequests().addAll(crs);
                     // [enddef]
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_PROXY_AUTHENTICATE)) {
+                } else if (HEADER_PROXY_AUTHENTICATE.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
                     List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
                     response.getProxyChallengeRequests().addAll(crs);
                     // [enddef]
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_AUTHENTICATION_INFO)) {
+                } else if (HEADER_AUTHENTICATION_INFO.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
                     AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
                             .parseAuthenticationInfo(header.getValue());
                     response.setAuthenticationInfo(authenticationInfo);
                     // [enddef]
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_SERVER)) {
+                } else if (HEADER_SERVER.equalsIgnoreCase(header.getName())) {
                     response.getServerInfo().setAgent(header.getValue());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ALLOW)) {
-                    MethodReader
-                            .addValues(header, response.getAllowedMethods());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_VARY)) {
+                } else if (HEADER_ALLOW.equalsIgnoreCase(header.getName())) {
+                    MethodReader.addValues(header, response.getAllowedMethods());
+                } else if (HEADER_VARY.equalsIgnoreCase(header.getName())) {
                     DimensionReader.addValues(header, response.getDimensions());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_VIA)) {
-                    RecipientInfoReader.addValues(header,
-                            response.getRecipientsInfo());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_WARNING)) {
+                } else if (HEADER_VIA.equalsIgnoreCase(header.getName())) {
+                    RecipientInfoReader.addValues(header, response.getRecipientsInfo());
+                } else if (HEADER_WARNING.equalsIgnoreCase(header.getName())) {
                     WarningReader.addValues(header, response.getWarnings());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CACHE_CONTROL)) {
-                    CacheDirectiveReader.addValues(header,
-                            response.getCacheDirectives());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCEPT_RANGES)) {
+                } else if (HEADER_CACHE_CONTROL.equalsIgnoreCase(header.getName())) {
+                    CacheDirectiveReader.addValues(header, response.getCacheDirectives());
+                } else if (HEADER_ACCEPT_RANGES.equalsIgnoreCase(header.getName())) {
                     TokenReader tr = new TokenReader(header.getValue());
-                    response.getServerInfo().setAcceptingRanges(tr.readValues().contains(Range.RANGE_BYTES_UNIT));
-                } else if (header.getName()
-                        .equalsIgnoreCase(
-                                HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS)) {
-                    response.setAccessControlAllowCredentials(Boolean
-                            .parseBoolean(header.getValue()));
-                    StringReader.addValues(header,
-                            response.getAccessControlAllowHeaders());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN)) {
+                    response.getServerInfo().setAcceptingRanges(tr.readValues().contains(RANGE_BYTES_UNIT));
+                } else if (HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS.equalsIgnoreCase(header.getName())) {
+                    response.setAccessControlAllowCredentials(parseBoolean(header.getValue()));
+                    StringReader.addValues(header, response.getAccessControlAllowHeaders());
+                } else if (HEADER_ACCESS_CONTROL_ALLOW_ORIGIN.equalsIgnoreCase(header.getName())) {
                     response.setAccessControlAllowOrigin(header.getValue());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCESS_CONTROL_ALLOW_METHODS)) {
-                    MethodReader.addValues(header,
-                            response.getAccessControlAllowMethods());
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCESS_CONTROL_MAX_AGE)) {
+                } else if (HEADER_ACCESS_CONTROL_ALLOW_METHODS.equalsIgnoreCase(header.getName())) {
+                    MethodReader.addValues(header, response.getAccessControlAllowMethods());
+                } else if (HEADER_ACCESS_CONTROL_MAX_AGE.equalsIgnoreCase(header.getName())) {
                     response.setAccessControlMaxAge(Integer.parseInt(header.getValue()));
                 }
             }
@@ -876,14 +856,12 @@ public class HeaderUtils {
      */
     public static Representation extractEntityHeaders(Iterable<Header> headers,
             Representation representation) throws NumberFormatException {
-        Representation result = (representation == null) ? new EmptyRepresentation()
-                : representation;
+        Representation result = (representation == null) ? new EmptyRepresentation() : representation;
         boolean entityHeaderFound = false;
 
         if (headers != null) {
             for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_TYPE)) {
+                if (HEADER_CONTENT_TYPE.equalsIgnoreCase(header.getName())) {
                     ContentType contentType = new ContentType(header.getValue());
                     result.setMediaType(contentType.getMediaType());
 
@@ -893,42 +871,29 @@ public class HeaderUtils {
                     }
 
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                } else if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(header.getName())) {
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_EXPIRES)) {
-                    result.setExpirationDate(HeaderReader.readDate(
-                            header.getValue(), false));
+                } else if (HEADER_EXPIRES.equalsIgnoreCase(header.getName())) {
+                    result.setExpirationDate(HeaderReader.readDate(header.getValue(), false));
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                    new EncodingReader(header.getValue()).addValues(result
-                            .getEncodings());
+                } else if (HEADER_CONTENT_ENCODING.equalsIgnoreCase(header.getName())) {
+                    new EncodingReader(header.getValue()).addValues(result.getEncodings());
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                    new LanguageReader(header.getValue()).addValues(result
-                            .getLanguages());
+                } else if (HEADER_CONTENT_LANGUAGE.equalsIgnoreCase(header.getName())) {
+                    new LanguageReader(header.getValue()).addValues(result.getLanguages());
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_LAST_MODIFIED)) {
-                    result.setModificationDate(HeaderReader.readDate(
-                            header.getValue(), false));
+                } else if (HEADER_LAST_MODIFIED.equalsIgnoreCase(header.getName())) {
+                    result.setModificationDate(HeaderReader.readDate(header.getValue(), false));
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ETAG)) {
+                } else if (HEADER_ETAG.equalsIgnoreCase(header.getName())) {
                     result.setTag(Tag.parse(header.getValue()));
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LOCATION)) {
+                } else if (HEADER_CONTENT_LOCATION.equalsIgnoreCase(header.getName())) {
                     result.setLocationRef(header.getValue());
                     entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
+                } else if (HEADER_CONTENT_DISPOSITION.equalsIgnoreCase(header.getName())) {
                     try {
-                        result.setDisposition(new DispositionReader(header
-                                .getValue()).readValue());
+                        result.setDisposition(new DispositionReader(header.getValue()).readValue());
                         entityHeaderFound = true;
                     } catch (IOException ioe) {
                         Context.getCurrentLogger().log(
@@ -936,15 +901,12 @@ public class HeaderUtils {
                                 "Error during Content-Disposition header parsing. Header: "
                                         + header.getValue(), ioe);
                     }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_RANGE)) {
+                } else if (HEADER_CONTENT_RANGE.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
-                    org.restlet.engine.header.RangeReader.update(
-                            header.getValue(), result);
+                    org.restlet.engine.header.RangeReader.update(header.getValue(), result);
                     entityHeaderFound = true;
                     // [enddef]
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_MD5)) {
+                } else if (HEADER_CONTENT_MD5.equalsIgnoreCase(header.getName())) {
                     // [ifndef gwt]
                     // Since an MD5 hash is 128 bits long, its base64 encoding
                     // is 22 bytes if unpadded, or 24 bytes if padded. If the
@@ -980,17 +942,16 @@ public class HeaderUtils {
      * @return The request content length.
      */
     public static long getContentLength(Series<Header> headers) {
-        long contentLength = Representation.UNKNOWN_SIZE;
+        long contentLength = UNKNOWN_SIZE;
 
         if (headers != null) {
             // Extract the content length header
             for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                if (HEADER_CONTENT_LENGTH.equalsIgnoreCase(header.getName())) {
                     try {
                         contentLength = Long.parseLong(header.getValue());
                     } catch (NumberFormatException e) {
-                        contentLength = Representation.UNKNOWN_SIZE;
+                        contentLength = UNKNOWN_SIZE;
                     }
                 }
             }

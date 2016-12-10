@@ -24,6 +24,11 @@
 
 package org.restlet.engine.adapter;
 
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_VERSION;
+
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.List;
@@ -33,7 +38,6 @@ import org.restlet.Context;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -189,7 +193,8 @@ public class ServerAdapter extends Adapter {
             // [ifndef gae]
             if (response.getHttpCall().isConnectionBroken(t)) {
                 // output a single log line for this common case to avoid filling servers logs
-                getLogger().log(Level.INFO, "The connection was broken. It was probably closed by the client. Reason: " + t.getMessage());
+                getLogger().log(Level.INFO,
+                        "The connection was broken. It was probably closed by the client. Reason: " + t.getMessage());
             } else
             // [enddef]
             {
@@ -226,12 +231,10 @@ public class ServerAdapter extends Adapter {
      */
     public HttpRequest toRequest(ServerCall httpCall) {
         HttpRequest result = new HttpRequest(getContext(), httpCall);
-        result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
-                httpCall.getRequestHeaders());
+        result.getAttributes().put(ATTRIBUTE_HEADERS, httpCall.getRequestHeaders());
 
         if (httpCall.getVersion() != null) {
-            result.getAttributes().put(HeaderConstants.ATTRIBUTE_VERSION,
-                    httpCall.getVersion());
+            result.getAttributes().put(ATTRIBUTE_VERSION, httpCall.getVersion());
         }
 
         if (httpCall.isConfidential()) {
@@ -250,16 +253,13 @@ public class ServerAdapter extends Adapter {
             Integer keySize = httpCall.getSslKeySize();
 
             if (keySize != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
+                result.getAttributes().put(ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
             }
 
             String sslSessionId = httpCall.getSslSessionId();
 
             if (sslSessionId != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID,
-                        sslSessionId);
+                result.getAttributes().put(ATTRIBUTE_HTTPS_SSL_SESSION_ID, sslSessionId);
             }
         }
 
