@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+       - In IE 10 and seq., request without body are sent with an "undefined" body. Issue #1252.
+         Reported by Etienne Griette.
 
 - 2.3.8 (12/10/2016)
     - Bugs fixed

@@ -213,14 +213,7 @@ public class GwtClientCall extends ClientCall {
 	public void sendRequest(final org.restlet.Request request,
 			final org.restlet.Response response,
 			final Uniform onResponseCallback) throws Exception {
-		final Representation entity = request.isEntityAvailable() ? request
-				.getEntity() : null;
-		if (entity != null) {
-			String requestData = entity.getText();
-			if (requestData != null) {
-				getRequestBuilder().setRequestData("" + requestData);
-			}
-		}
+		getRequestBuilder().setRequestData(request.isEntityAvailable() ? request.getEntity().getText() : null);
 
 		// Set the request headers
 		for (final org.restlet.data.Header header : getRequestHeaders()) {
