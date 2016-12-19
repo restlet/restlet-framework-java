@@ -16,6 +16,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://xstream.codehaus.org/javadoc/" />
+		<link href="http://x-stream.github.io/javadoc/" />
 	</javadocs>
 </library>

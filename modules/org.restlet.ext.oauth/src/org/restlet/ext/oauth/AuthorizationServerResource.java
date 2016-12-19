@@ -166,8 +166,8 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
      * @return
      * @throws OAuthException
      */
-    protected ResponseType[] getResponseType(Form params) throws OAuthException {
-        String responseType = params.getFirstValue(RESPONSE_TYPE);
+    protected ResponseType[] getResponseType(Form parameters) throws OAuthException {
+        String responseType = parameters.getFirstValue(RESPONSE_TYPE);
         if (StringUtils.isNullOrEmpty(responseType)) {
             throw new OAuthException(OAuthError.invalid_request, "No \"response_type\" parameter found.", null);
         }

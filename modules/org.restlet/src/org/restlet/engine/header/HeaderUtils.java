@@ -693,12 +693,10 @@ public class HeaderUtils {
     }
 
     /**
-     * Copies extension headers into a request.
+     * Remove the headers that are mapped to the framework's API from the given message's list of headers.
      * 
-     * @param headers
-     *            The headers to copy.
-     * @param request
-     *            The request to update.
+     * @param message
+     *            The message to update.
      */
     public static void keepExtensionHeadersOnly(Message message) {
         Series<Header> headers = message.getHeaders();
@@ -719,8 +717,8 @@ public class HeaderUtils {
      * 
      * @param headers
      *            The headers to copy.
-     * @param request
-     *            The request to update.
+     * @param message
+     *            The message to update.
      */
     public static void copyExtensionHeaders(Series<Header> headers, Message message) {
         if (headers != null) {

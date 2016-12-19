@@ -181,7 +181,7 @@ public class OAuthParameters implements OAuthResourceDefs {
     /**
      * Completes the URI with the OAuth parameters as query parameters.
      * 
-     * @param uri
+     * @param ref
      *            The URI to complete.
      * @return The URI with the set as Oauth parameters as query.
      */

@@ -422,7 +422,6 @@ public class Redirector extends Restlet {
      * 
      * @param initialRequest
      *            The initial request returned.
-     * @return The updated request.
      */
     protected void rewrite(Request initialRequest) {
         if (isHeadersCleaning()) {
@@ -440,9 +439,8 @@ public class Redirector extends Restlet {
      * to true, it removes all headers, otherwise it keeps only the extension
      * (or non HTTP standard) headers<br>
      * 
-     * @param initialRequest
-     *            The initial request returned.
-     * @return The updated request.
+     * @param initialResponse
+     *            The initial response returned.
      */
     protected void rewrite(Response initialResponse) {
         if (isHeadersCleaning()) {

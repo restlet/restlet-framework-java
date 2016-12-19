@@ -3,12 +3,13 @@
 Changes log
 ===========
 
-- @version-full@ (@release-date@)
+- 2.3.9 (12/19/2016)
     - Bugs fixed
        - In IE 10 and seq., request without body are sent with an "undefined" body. Issue #1252.
          Reported by Etienne Griette.
        - Fixed potential NPE when a queue returns null in PipeStream. Issue #1246.
          Reported and contributed by Grégoire Juge. 
+
 - 2.3.8 (12/10/2016)
     - Bugs fixed
        - Fixed NullPointerException when requesting a Directory with a query string. Issue #1206.

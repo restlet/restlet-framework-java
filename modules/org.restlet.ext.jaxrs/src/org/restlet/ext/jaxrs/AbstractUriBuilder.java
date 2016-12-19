@@ -249,7 +249,7 @@ public abstract class AbstractUriBuilder extends UriBuilder {
      * @throws UriBuilderException
      *             if a URI cannot be constructed based on the current state of
      *             the builder.
-     * @see javax.ws.rs.core.UriBuilder#build(java.util.Map)
+     * @see javax.ws.rs.core.UriBuilder#buildFromMap(Map)
      */
     private URI buildFromMap(final Map<String, ? extends Object> values,
             final boolean encode) throws IllegalArgumentException,

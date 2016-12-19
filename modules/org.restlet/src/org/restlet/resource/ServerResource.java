@@ -66,17 +66,16 @@ import org.restlet.util.Series;
  * <br>
  * It's life cycle is managed by a {@link Finder} created either explicitly or
  * more likely implicitly when your {@link ServerResource} subclass is attached
- * to a {@link Filter} or a {@link Router} via the {@link Filter#setNext(Class)}
- * or {@link Router#attach(String, Class)} methods for example. After
- * instantiation using the default constructor, the final
- * {@link #init(Context, Request, Response)} method is invoked, setting the
- * context, request and response. You can intercept this by overriding the
- * {@link #doInit()} method. Then, if the response status is still a success,
+ * to a {@link Filter} or a {@link Router} via the {@link Filter#setNext(Class)} or {@link Router#attach(String, Class)}
+ * methods for example. After
+ * instantiation using the default constructor, the final {@link #init(Context, Request, Response)} method is invoked,
+ * setting the
+ * context, request and response. You can intercept this by overriding the {@link #doInit()} method. Then, if the
+ * response status is still a success,
  * the {@link #handle()} method is invoked to actually handle the call. Finally,
  * the final {@link #release()} method is invoked to do the necessary clean-up,
  * which you can intercept by overriding the {@link #doRelease()} method. During
- * this life cycle, if any exception is caught, then the
- * {@link #doCatch(Throwable)} method is invoked.<br>
+ * this life cycle, if any exception is caught, then the {@link #doCatch(Throwable)} method is invoked.<br>
  * <br>
  * Note that when an annotated method manually sets the response entity, if this
  * entity is available then it will be preserved and the result of the annotated
@@ -129,8 +128,7 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
-     * Default constructor. Note that the
-     * {@link #init(Context, Request, Response)}() method will be invoked right
+     * Default constructor. Note that the {@link #init(Context, Request, Response)}() method will be invoked right
      * after the creation of the resource.
      */
     public ServerResource() {
@@ -155,18 +153,16 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Deletes the resource and all its representations. This method is only
-     * invoked if content negotiation has been disabled as indicated by the
-     * {@link #isNegotiated()}, otherwise the {@link #delete(Variant)} method is
+     * invoked if content negotiation has been disabled as indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #delete(Variant)} method is
      * invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The optional response entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP DELETE method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7" >HTTP DELETE method</a>
      */
     protected Representation delete() throws ResourceException {
         Representation result = null;
@@ -192,20 +188,17 @@ public abstract class ServerResource extends Resource {
      * passed to indicate which representation should be returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the {@link #delete()}
-     * method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #delete()} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param variant
      *            The variant of the response entity.
      * @return The optional response entity.
      * @throws ResourceException
      * @see #get(Variant)
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP DELETE method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7" >HTTP DELETE method</a>
      */
     protected Representation delete(Variant variant) throws ResourceException {
         Representation result = null;
@@ -244,8 +237,7 @@ public abstract class ServerResource extends Resource {
     /**
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
-     * the result of
-     * {@link org.restlet.service.StatusService#toStatus(Throwable, Resource)}.
+     * the result of {@link org.restlet.service.StatusService#toStatus(Throwable, Resource)}.
      * 
      * @param throwable
      *            The caught error or exception.
@@ -371,8 +363,7 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
-     * Returns a descriptor of the response entity returned by a
-     * {@link Method#GET} call.
+     * Returns a descriptor of the response entity returned by a {@link Method#GET} call.
      * 
      * @return The response entity.
      * @throws ResourceException
@@ -397,8 +388,7 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
-     * Returns a descriptor of the response entity returned by a negotiated
-     * {@link Method#GET} call.
+     * Returns a descriptor of the response entity returned by a negotiated {@link Method#GET} call.
      * 
      * @param variant
      *            The selected variant descriptor.
@@ -427,10 +417,8 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Effectively handles a call without content negotiation of the response
-     * entity. The default behavior is to dispatch the call to one of the
-     * {@link #get()}, {@link #post(Representation)},
-     * {@link #put(Representation)}, {@link #delete()}, {@link #head()} or
-     * {@link #options()} methods.
+     * entity. The default behavior is to dispatch the call to one of the {@link #get()}, {@link #post(Representation)},
+     * {@link #put(Representation)}, {@link #delete()}, {@link #head()} or {@link #options()} methods.
      * 
      * @return The response entity.
      * @throws ResourceException
@@ -546,10 +534,9 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Handles a call and checks the request's method and entity. If the method
-     * is not supported, the response status is set to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}. If the request's entity
-     * is no supported, the response status is set to
-     * {@link Status#CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE}.
+     * is not supported, the response status is set to {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * If the request's entity
+     * is no supported, the response status is set to {@link Status#CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE}.
      * 
      * @param method
      *            The request method.
@@ -588,9 +575,8 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Effectively handles a call with content negotiation of the response
-     * entity. The default behavior is to dispatch the call to one of the
-     * {@link #get(Variant)}, {@link #post(Representation,Variant)},
-     * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
+     * entity. The default behavior is to dispatch the call to one of the {@link #get(Variant)},
+     * {@link #post(Representation,Variant)}, {@link #put(Representation,Variant)}, {@link #delete(Variant)},
      * {@link #head(Variant)} or {@link #options(Variant)} methods.
      * 
      * @param variant
@@ -650,13 +636,11 @@ public abstract class ServerResource extends Resource {
     /**
      * Effectively handles a call with content negotiation of the response
      * entity. The default behavior is to dispatch the call to call a matching
-     * annotated method or one of the {@link #get(Variant)},
-     * {@link #post(Representation,Variant)},
-     * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
-     * {@link #head(Variant)} or {@link #options(Variant)} methods.<br>
+     * annotated method or one of the {@link #get(Variant)}, {@link #post(Representation,Variant)},
+     * {@link #put(Representation,Variant)}, {@link #delete(Variant)}, {@link #head(Variant)} or
+     * {@link #options(Variant)} methods.<br>
      * <br>
-     * If no acceptable variant is found, the
-     * {@link Status#CLIENT_ERROR_NOT_ACCEPTABLE} status is set.
+     * If no acceptable variant is found, the {@link org.restlet.data.Status#CLIENT_ERROR_NOT_ACCEPTABLE} status is set.
      * 
      * @return The response entity.
      * @throws ResourceException
@@ -687,17 +671,15 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Returns a full representation. This method is only invoked if content
-     * negotiation has been disabled as indicated by the {@link #isNegotiated()}
-     * , otherwise the {@link #get(Variant)} method is invoked.<br>
+     * negotiation has been disabled as indicated by the {@link #isNegotiated()} , otherwise the {@link #get(Variant)}
+     * method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP GET method</a>
      */
     protected Representation get() throws ResourceException {
         Representation result = null;
@@ -723,11 +705,10 @@ public abstract class ServerResource extends Resource {
      * passed to indicate which representation should be returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()}
-     * method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param variant
      *            The variant whose full representation must be returned.
@@ -823,8 +804,7 @@ public abstract class ServerResource extends Resource {
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
      * create. This method is only invoked if content negotiation has been
-     * disabled as indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #getInfo(Variant)} method is invoked.<br>
+     * disabled as indicated by the {@link #isNegotiated()}, otherwise the {@link #getInfo(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to invoke the {@link #get()} method.
      * 
@@ -843,8 +823,7 @@ public abstract class ServerResource extends Resource {
      * should be returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #getInfo(Variant)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #getInfo(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to invoke the {@link #get(Variant)} method.
      * 
@@ -1013,16 +992,14 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
-     * Handles any call to this resource. The default implementation check the
-     * {@link #isConditional()} and {@link #isNegotiated()} method to determine
-     * which one of the {@link #doConditionalHandle()},
-     * {@link #doNegotiatedHandle()} and {@link #doHandle()} methods should be
+     * Handles any call to this resource. The default implementation check the {@link #isConditional()} and
+     * {@link #isNegotiated()} method to determine
+     * which one of the {@link #doConditionalHandle()}, {@link #doNegotiatedHandle()} and {@link #doHandle()} methods
+     * should be
      * invoked. It also catches any {@link ResourceException} thrown and updates
-     * the response status using the
-     * {@link #setStatus(Status, Throwable, String)} method.<br>
+     * the response status using the {@link #setStatus(Status, Throwable, String)} method.<br>
      * <br>
-     * After handling, if the status is set to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}, then
+     * After handling, if the status is set to {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}, then
      * {@link #updateAllowedMethods()} is invoked to give the resource a chance
      * to inform the client about the allowed methods.
      * 
@@ -1083,17 +1060,14 @@ public abstract class ServerResource extends Resource {
     /**
      * Returns a representation whose metadata will be returned to the client.
      * This method is only invoked if content negotiation has been disabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #head(Variant)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #head(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The resource's representation.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      GET method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP GET method</a>
      */
     protected Representation head() throws ResourceException {
         return get();
@@ -1105,8 +1079,7 @@ public abstract class ServerResource extends Resource {
      * returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the {@link #head()}
-     * method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #head()} method is invoked.<br>
      * <br>
      * The default implementation directly returns the variant if it is already
      * an instance of {@link Representation}. In other cases, you need to
@@ -1136,8 +1109,7 @@ public abstract class ServerResource extends Resource {
      * processing a request on the server-side, setting this property to 'false'
      * let you ask to the server connector to wait before sending the response
      * back to the client when the initial calling thread returns. This will let
-     * you do further updates to the response and manually calling
-     * {@link #commit()} later on, using another thread.
+     * you do further updates to the response and manually calling {@link #commit()} later on, using another thread.
      * 
      * @return True if the response should be automatically committed.
      */
@@ -1197,11 +1169,10 @@ public abstract class ServerResource extends Resource {
     /**
      * Indicates the communication options available for this resource. This
      * method is only invoked if content negotiation has been disabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #options(Variant)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #options(Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The optional response entity.
      */
@@ -1233,11 +1204,10 @@ public abstract class ServerResource extends Resource {
      * returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #options()} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #options()} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param variant
      *            The variant of the response entity.
@@ -1263,8 +1233,8 @@ public abstract class ServerResource extends Resource {
     /**
      * Apply a patch entity to the current representation of the resource
      * retrieved by calling {@link #get()}. By default, the
-     * {@link ConverterService#applyPatch(Representation, Representation)}
-     * method is used and then the {@link #put(Representation)} method called.
+     * {@link ConverterService#applyPatch(Representation, Representation)} method is used and then the
+     * {@link #put(Representation)} method called.
      * 
      * @param entity
      *            The patch entity to apply.
@@ -1292,8 +1262,8 @@ public abstract class ServerResource extends Resource {
     /**
      * Apply a patch entity to the current representation of the resource
      * retrieved by calling {@link #get()}. By default, the
-     * {@link ConverterService#applyPatch(Representation, Representation)}
-     * method is used and then the {@link #put(Representation, Variant)} method
+     * {@link ConverterService#applyPatch(Representation, Representation)} method is used and then the
+     * {@link #put(Representation, Variant)} method
      * called.
      * 
      * @param entity
@@ -1327,20 +1297,17 @@ public abstract class ServerResource extends Resource {
     /**
      * Posts a representation to the resource at the target URI reference. This
      * method is only invoked if content negotiation has been disabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #post(Representation, Variant)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #post(Representation, Variant)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param entity
      *            The posted entity.
      * @return The optional response entity.
      * @throws ResourceException
      * @see #get(Variant)
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      POST method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP POST method</a>
      */
     protected Representation post(Representation entity)
             throws ResourceException {
@@ -1353,11 +1320,10 @@ public abstract class ServerResource extends Resource {
      * returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #post(Representation)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #post(Representation)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param entity
      *            The posted entity.
@@ -1365,9 +1331,7 @@ public abstract class ServerResource extends Resource {
      *            The variant of the response entity.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
-     *      >HTTP POST method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5" >HTTP POST method</a>
      */
     protected Representation post(Representation entity, Variant variant)
             throws ResourceException {
@@ -1386,19 +1350,17 @@ public abstract class ServerResource extends Resource {
     /**
      * Creates or updates a resource with the given representation as new state
      * to be stored. This method is only invoked if content negotiation has been
-     * disabled as indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #put(Representation, Variant)} method is invoked.<br>
+     * disabled as indicated by the {@link #isNegotiated()}, otherwise the {@link #put(Representation, Variant)} method
+     * is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param entity
      *            The representation to store.
      * @return The optional result entity.
      * @throws ResourceException
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      PUT method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP PUT method</a>
      */
     protected Representation put(Representation entity)
             throws ResourceException {
@@ -1411,11 +1373,10 @@ public abstract class ServerResource extends Resource {
      * representation should be returned if any.<br>
      * <br>
      * This method is only invoked if content negotiation has been enabled as
-     * indicated by the {@link #isNegotiated()}, otherwise the
-     * {@link #put(Representation)} method is invoked.<br>
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #put(Representation)} method is invoked.<br>
      * <br>
      * The default behavior is to set the response status to
-     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
+     * {@link org.restlet.data.Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.<br>
      * 
      * @param representation
      *            The representation to store.
@@ -1424,9 +1385,7 @@ public abstract class ServerResource extends Resource {
      * @return The optional result entity.
      * @throws ResourceException
      * @see #get(Variant)
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
-     *      >HTTP PUT method</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6" >HTTP PUT method</a>
      */
     protected Representation put(Representation representation, Variant variant)
             throws ResourceException {
@@ -1460,8 +1419,8 @@ public abstract class ServerResource extends Resource {
      * to reuse the same method for the new request.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -1496,8 +1455,8 @@ public abstract class ServerResource extends Resource {
      * originally requested resource.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -1526,8 +1485,8 @@ public abstract class ServerResource extends Resource {
      * to reuse the same method for the new request.<br>
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
-     * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
+     * base reference of the request's resource reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *            The target URI.
@@ -1587,8 +1546,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Sets the list of authentication requests sent by an origin server to a
-     * client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example.
+     * client. The list instance set must be thread-safe (use {@link CopyOnWriteArrayList} for example.
      * 
      * @param requests
      *            The list of authentication requests sent by an origin server
@@ -1687,8 +1645,7 @@ public abstract class ServerResource extends Resource {
      * Sets the reference that the client should follow for redirections or
      * resource creations. If you pass a relative location URI, it will be
      * resolved with the current base reference of the request's resource
-     * reference (see {@link Request#getResourceRef()} and
-     * {@link Reference#getBaseRef()}.
+     * reference (see {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param locationUri
      *            The URI to set.
@@ -1733,8 +1690,7 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Sets the list of proxy authentication requests sent by an origin server
-     * to a client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example.
+     * to a client. The list instance set must be thread-safe (use {@link CopyOnWriteArrayList} for example.
      * 
      * @param requests
      *            The list of proxy authentication requests sent by an origin
@@ -1821,9 +1777,8 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
-     * Invoked when the list of allowed methods needs to be updated. The
-     * {@link #getAllowedMethods()} or the {@link #setAllowedMethods(Set)}
-     * methods should be used. The default implementation lists the annotated
+     * Invoked when the list of allowed methods needs to be updated. The {@link #getAllowedMethods()} or the
+     * {@link #setAllowedMethods(Set)} methods should be used. The default implementation lists the annotated
      * methods.
      */
     public void updateAllowedMethods() {
@@ -1847,8 +1802,8 @@ public abstract class ServerResource extends Resource {
 
     /**
      * Update the dimensions that were used for content negotiation. By default,
-     * it adds the {@link Dimension#CHARACTER_SET}, {@link Dimension#ENCODING},
-     * {@link Dimension#LANGUAGE}and {@link Dimension#MEDIA_TYPE} constants.
+     * it adds the {@link Dimension#CHARACTER_SET}, {@link Dimension#ENCODING}, {@link Dimension#LANGUAGE}and
+     * {@link Dimension#MEDIA_TYPE} constants.
      */
     protected void updateDimensions() {
         getDimensions().add(Dimension.CHARACTER_SET);

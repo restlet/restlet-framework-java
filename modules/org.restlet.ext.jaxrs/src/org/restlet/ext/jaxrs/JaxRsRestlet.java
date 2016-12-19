@@ -275,7 +275,7 @@ public class JaxRsRestlet extends Restlet {
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
      *             if null was given
-     * @see {@link javax.ws.rs.ext.Provider}
+     * @see class       {@link javax.ws.rs.ext.Provider}
      */
     private boolean addDefaultProvider(Object jaxRsProvider) {
         try {
@@ -311,7 +311,7 @@ public class JaxRsRestlet extends Restlet {
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
      *             if null was given
-     * @see {@link javax.ws.rs.ext.Provider}
+     * @see class {@link javax.ws.rs.ext.Provider}
      */
     private boolean addSingleton(Object jaxRsProvider, boolean defaultProvider)
             throws IllegalArgumentException {
@@ -483,7 +483,7 @@ public class JaxRsRestlet extends Restlet {
      * @param o
      * @param subResourceLocator
      * @param callContext
-     * @return
+     * @return ResourceObject
      * @throws WebApplicationException
      * @throws RequestHandledException
      */

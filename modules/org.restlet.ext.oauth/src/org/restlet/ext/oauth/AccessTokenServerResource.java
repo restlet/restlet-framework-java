@@ -347,8 +347,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @throws OAuthException
      *             In case the parameter is not set.
      */
-    protected String getRedirectURI(Form params) throws OAuthException {
-        return getParameter(params, REDIR_URI);
+    protected String getRedirectURI(Form parameters) throws OAuthException {
+        return getParameter(parameters, REDIR_URI);
     }
 
     /**
@@ -359,8 +359,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @throws OAuthException
      *             In case the parameter is not set.
      */
-    protected String getRefreshToken(Form params) throws OAuthException {
-        return getParameter(params, REFRESH_TOKEN);
+    protected String getRefreshToken(Form parameters) throws OAuthException {
+        return getParameter(parameters, REFRESH_TOKEN);
     }
 
     /**
@@ -371,8 +371,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @throws OAuthException
      *             In case the parameter is not set.
      */
-    protected String getUsername(Form params) throws OAuthException {
-        return getParameter(params, USERNAME);
+    protected String getUsername(Form parameters) throws OAuthException {
+        return getParameter(parameters, USERNAME);
     }
 
     /**
