@@ -43,6 +43,8 @@ import org.restlet.ext.atom.Feed;
 import org.restlet.ext.odata.internal.edm.Property;
 import org.restlet.ext.odata.internal.edm.TypeUtils;
 
+import static org.restlet.engine.util.CollectionsUtils.isNullOrEmpty;
+
 /**
  * Handles Java reflection operations.
  * 
@@ -74,11 +76,9 @@ public class ReflectUtils {
      */
     public static Class<?> getEntryClass(Feed feed) {
         Class<?> result = null;
-        if (feed != null && feed.getEntries() != null
-                && !feed.getEntries().isEmpty()) {
+        if (feed != null && !isNullOrEmpty(feed.getEntries())) {
             for (Entry entry : feed.getEntries()) {
-                if (entry.getCategories() != null
-                        && !entry.getCategories().isEmpty()) {
+                if (!isNullOrEmpty(entry.getCategories())) {
                     Category category = entry.getCategories().get(0);
                     try {
                         result = Class.forName(TypeUtils
@@ -420,8 +420,7 @@ public class ReflectUtils {
             String propertyValue) throws Exception {
         if (property.getType() != null) {
             invokeSetter(entity, property.getNormalizedName(),
-                    TypeUtils.fromEdm(propertyValue, property.getType()
-                            .getName()));
+                    TypeUtils.fromEdm(propertyValue, property.getType().getName()));
         }
 
     }

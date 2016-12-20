@@ -31,10 +31,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.restlet.Context;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.odata.EdmConverter;
+import org.restlet.ext.odata.JavaTypeHandler;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
@@ -65,6 +68,9 @@ public class TypeUtils {
     public static final NumberFormat timeFormat = DecimalFormat
             .getIntegerInstance(Locale.US);
 
+    private static EdmConverter edmConverter = new EdmConverter();
+    private static JavaTypeHandler javaTypeHandler = new JavaTypeHandler();
+    
     /**
      * Converts the String representation of the target WCF type to its
      * corresponding value.
@@ -80,44 +86,7 @@ public class TypeUtils {
             return null;
         }
 
-        Object result = null;
-        try {
-            if (adoNetType.endsWith("Binary")) {
-                result = Base64.decode(value);
-            } else if (adoNetType.endsWith("Boolean")) {
-                result = Boolean.valueOf(value);
-            } else if (adoNetType.endsWith("DateTime")) {
-                result = DateUtils.parse(value, dateTimeFormats);
-            } else if (adoNetType.endsWith("DateTimeOffset")) {
-                result = DateUtils.parse(value, dateTimeFormats);
-            } else if (adoNetType.endsWith("Time")) {
-                result = timeFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Decimal")) {
-                result = decimalFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Single")) {
-                result = singleFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Double")) {
-                result = doubleFormat.parseObject(value);
-            } else if (adoNetType.endsWith("Guid")) {
-                result = value;
-            } else if (adoNetType.endsWith("Int16")) {
-                result = Short.valueOf(value);
-            } else if (adoNetType.endsWith("Int32")) {
-                result = Integer.valueOf(value);
-            } else if (adoNetType.endsWith("Int64")) {
-                result = Long.valueOf(value);
-            } else if (adoNetType.endsWith("Byte")) {
-                result = Byte.valueOf(value);
-            } else if (adoNetType.endsWith("String")) {
-                result = value;
-            }
-        } catch (Exception e) {
-            Context.getCurrentLogger().warning(
-                    "Cannot convert " + value + " from this EDM type "
-                            + adoNetType);
-        }
-
-        return result;
+        return edmConverter.fromEdm(value, adoNetType);
     }
 
     /**
@@ -183,28 +152,7 @@ public class TypeUtils {
             return null;
         }
 
-        String result = null;
-        try {
-            if (adoNetType.endsWith("Binary")) {
-                result = "'" + value + "'";
-            } else if (adoNetType.endsWith("DateTime")) {
-                result = "datetime'" + value + "'";
-            } else if (adoNetType.endsWith("DateTimeOffset")) {
-                result = "datetimeoffset'" + value + "'";
-            } else if (adoNetType.endsWith("Time")) {
-                result = "time'" + value + "'";
-            } else if (adoNetType.endsWith("Guid")) {
-                result = "guid'" + value + "'";
-            } else if (adoNetType.endsWith("String")) {
-                result = "'" + value + "'";
-            }
-        } catch (Exception e) {
-            Context.getCurrentLogger().warning(
-                    "Cannot convert " + value + " from this EDM type "
-                            + adoNetType);
-        }
-
-        return result;
+        return edmConverter.getLiteralForm(value, adoNetType);
     }
 
     /**
@@ -239,7 +187,29 @@ public class TypeUtils {
         }
         return builder.toString();
     }
+    
+    /**
+     * Allows to specify a new Edm type converter.
+     * @param edmConverter
+     *          The new Edm type converter.
+     */
+    public static void registerEdmConverter(EdmConverter edmConverter) {
+        Objects.requireNonNull(edmConverter);
+        
+        TypeUtils.edmConverter = edmConverter;
+    }
 
+    /**
+     * Allows to specify a new Java type handler.
+     * @param javaTypeHandler
+     *          The new Java type handler.
+     */
+    public static void registerJavaTypeHandler(JavaTypeHandler javaTypeHandler) {
+        Objects.requireNonNull(javaTypeHandler);
+        
+        TypeUtils.javaTypeHandler = javaTypeHandler;
+    }
+    
     /**
      * Converts a value to the String representation of the target WCF type.
      * 
@@ -255,68 +225,7 @@ public class TypeUtils {
             return null;
         }
 
-        String result = null;
-        if (adoNetType.endsWith("Binary")) {
-            if ((byte[].class).isAssignableFrom(value.getClass())) {
-                result = toEdmBinary((byte[]) value);
-            }
-        } else if (adoNetType.endsWith("Boolean")) {
-            if ((Boolean.class).isAssignableFrom(value.getClass())) {
-                result = toEdmBoolean((Boolean) value);
-            }
-        } else if (adoNetType.endsWith("DateTime")) {
-            if ((Date.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDateTime((Date) value);
-            }
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
-            if ((Date.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDateTime((Date) value);
-            }
-        } else if (adoNetType.endsWith("Time")) {
-            if ((Long.class).isAssignableFrom(value.getClass())) {
-                result = toEdmTime((Long) value);
-            }
-        } else if (adoNetType.endsWith("Decimal")) {
-            if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDecimal((Double) value);
-            }
-        } else if (adoNetType.endsWith("Single")) {
-            if ((Float.class).isAssignableFrom(value.getClass())) {
-                result = toEdmSingle((Float) value);
-            } else if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmSingle((Double) value);
-            }
-        } else if (adoNetType.endsWith("Double")) {
-            if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDouble((Double) value);
-            }
-        } else if (adoNetType.endsWith("Guid")) {
-            result = value.toString();
-        } else if (adoNetType.endsWith("Int16")) {
-            if ((Short.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt16((Short) value);
-            }
-        } else if (adoNetType.endsWith("Int32")) {
-            if ((Integer.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt32((Integer) value);
-            }
-        } else if (adoNetType.endsWith("Int64")) {
-            if ((Long.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt64((Long) value);
-            }
-        } else if (adoNetType.endsWith("Byte")) {
-            if ((Byte.class).isAssignableFrom(value.getClass())) {
-                result = toEdmByte((Byte) value);
-            }
-        } else if (adoNetType.endsWith("String")) {
-            result = value.toString();
-        }
-
-        if (result == null) {
-            result = value.toString();
-        }
-
-        return result;
+        return edmConverter.toEdm(value, type);
     }
 
     /**
@@ -442,68 +351,7 @@ public class TypeUtils {
             return null;
         }
 
-        String result = null;
-        if (adoNetType.endsWith("Binary")) {
-            if ((byte[].class).isAssignableFrom(value.getClass())) {
-                result = toEdmBinary((byte[]) value);
-            }
-        } else if (adoNetType.endsWith("Boolean")) {
-            if ((Boolean.class).isAssignableFrom(value.getClass())) {
-                result = toEdmBoolean((Boolean) value);
-            }
-        } else if (adoNetType.endsWith("DateTime")) {
-            if ((Date.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDateTime((Date) value);
-            }
-        } else if (adoNetType.endsWith("DateTimeOffset")) {
-            if ((Date.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDateTime((Date) value);
-            }
-        } else if (adoNetType.endsWith("Time")) {
-            if ((Long.class).isAssignableFrom(value.getClass())) {
-                result = toEdmTime((Long) value);
-            }
-        } else if (adoNetType.endsWith("Decimal")) {
-            if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDecimal((Double) value);
-            }
-        } else if (adoNetType.endsWith("Single")) {
-            if ((Float.class).isAssignableFrom(value.getClass())) {
-                result = toEdmSingle((Float) value);
-            } else if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmSingle((Double) value);
-            }
-        } else if (adoNetType.endsWith("Double")) {
-            if ((Double.class).isAssignableFrom(value.getClass())) {
-                result = toEdmDouble((Double) value);
-            }
-        } else if (adoNetType.endsWith("Guid")) {
-            result = value.toString();
-        } else if (adoNetType.endsWith("Int16")) {
-            if ((Short.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt16((Short) value);
-            }
-        } else if (adoNetType.endsWith("Int32")) {
-            if ((Integer.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt32((Integer) value);
-            }
-        } else if (adoNetType.endsWith("Int64")) {
-            if ((Long.class).isAssignableFrom(value.getClass())) {
-                result = toEdmInt64((Long) value);
-            }
-        } else if (adoNetType.endsWith("Byte")) {
-            if ((Byte.class).isAssignableFrom(value.getClass())) {
-                result = toEdmByte((Byte) value);
-            }
-        } else if (adoNetType.endsWith("String")) {
-            result = "'" + value.toString() + "'";
-        }
-
-        if (result == null) {
-            result = value.toString();
-        }
-
-        return result;
+        return edmConverter.toEdmKey(value, type);
     }
 
     /**
@@ -549,38 +397,7 @@ public class TypeUtils {
      * @return The corresponding Java class or scalar type.
      */
     public static Class<?> toJavaClass(String edmTypeName) {
-        Class<?> result = Object.class;
-        if (edmTypeName.endsWith("Binary")) {
-            result = byte[].class;
-        } else if (edmTypeName.endsWith("Boolean")) {
-            result = Boolean.class;
-        } else if (edmTypeName.endsWith("DateTime")) {
-            result = Date.class;
-        } else if (edmTypeName.endsWith("DateTimeOffset")) {
-            result = Date.class;
-        } else if (edmTypeName.endsWith("Time")) {
-            result = Long.class;
-        } else if (edmTypeName.endsWith("Decimal")) {
-            result = Double.class;
-        } else if (edmTypeName.endsWith("Single")) {
-            result = Double.class;
-        } else if (edmTypeName.endsWith("Double")) {
-            result = Double.class;
-        } else if (edmTypeName.endsWith("Guid")) {
-            result = String.class;
-        } else if (edmTypeName.endsWith("Int16")) {
-            result = Short.class;
-        } else if (edmTypeName.endsWith("Int32")) {
-            result = Integer.class;
-        } else if (edmTypeName.endsWith("Int64")) {
-            result = Long.class;
-        } else if (edmTypeName.endsWith("Byte")) {
-            result = Byte.class;
-        } else if (edmTypeName.endsWith("String")) {
-            result = String.class;
-        }
-
-        return result;
+        return javaTypeHandler.toJavaClass(edmTypeName);
     }
 
     /**
@@ -591,38 +408,7 @@ public class TypeUtils {
      * @return The name of the corresponding Java class or scalar type.
      */
     public static String toJavaTypeName(String edmTypeName) {
-        String result = "Object";
-        if (edmTypeName.endsWith("Binary")) {
-            result = "byte[]";
-        } else if (edmTypeName.endsWith("Boolean")) {
-            result = "boolean";
-        } else if (edmTypeName.endsWith("DateTime")) {
-            result = "Date";
-        } else if (edmTypeName.endsWith("DateTimeOffset")) {
-            result = "Date";
-        } else if (edmTypeName.endsWith("Time")) {
-            result = "long";
-        } else if (edmTypeName.endsWith("Decimal")) {
-            result = "double";
-        } else if (edmTypeName.endsWith("Single")) {
-            result = "double";
-        } else if (edmTypeName.endsWith("Double")) {
-            result = "double";
-        } else if (edmTypeName.endsWith("Guid")) {
-            result = "String";
-        } else if (edmTypeName.endsWith("Int16")) {
-            result = "short";
-        } else if (edmTypeName.endsWith("Int32")) {
-            result = "int";
-        } else if (edmTypeName.endsWith("Int64")) {
-            result = "long";
-        } else if (edmTypeName.endsWith("Byte")) {
-            result = "byte";
-        } else if (edmTypeName.endsWith("String")) {
-            result = "String";
-        }
-
-        return result;
+        return javaTypeHandler.toJavaTypeName(edmTypeName);
     }
 
 }
