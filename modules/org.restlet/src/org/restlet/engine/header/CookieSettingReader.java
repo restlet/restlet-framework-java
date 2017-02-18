@@ -228,9 +228,8 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                     result.setMaxAge(Integer.MAX_VALUE);
                     Context.getCurrentLogger()
                             .warning(
-                                    String.format(
-                                            "Unable to parse the cookie setting max-age value \"%s\", used Integer.MAX_VALUE instead %d",
-                                            pair.getValue(), Integer.MAX_VALUE));
+                                    "Unable to parse the cookie setting max-age value \"" + pair.getValue()
+                                            + "\", used Integer.MAX_VALUE instead: " + Integer.MAX_VALUE);
                 }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_PORT)) {
                 // No yet supported
