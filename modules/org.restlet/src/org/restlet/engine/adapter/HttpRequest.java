@@ -24,8 +24,13 @@
 
 package org.restlet.engine.adapter;
 
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_MATCH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_MODIFIED_SINCE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_NONE_MATCH;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_RANGE;
+import static org.restlet.engine.header.HeaderConstants.HEADER_IF_UNMODIFIED_SINCE;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -41,7 +46,6 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
-import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
@@ -56,10 +60,12 @@ import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.StringReader;
+import org.restlet.engine.header.TagReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.ReferenceUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -394,24 +400,17 @@ public class HttpRequest extends Request {
 
         if (!this.conditionAdded) {
             // Extract the header values
-            String ifMatchHeader = getHttpCall().getRequestHeaders().getValues(
-                    HeaderConstants.HEADER_IF_MATCH);
-            String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
-                    .getValues(HeaderConstants.HEADER_IF_NONE_MATCH);
+            String ifMatchHeader = getHttpCall().getRequestHeaders().getValues(HEADER_IF_MATCH);
+            String ifNoneMatchHeader = getHttpCall().getRequestHeaders().getValues(HEADER_IF_NONE_MATCH);
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
-            String ifRangeHeader = getHttpCall().getRequestHeaders()
-                    .getFirstValue(HeaderConstants.HEADER_IF_RANGE, true);
+            String ifRangeHeader = getHttpCall().getRequestHeaders().getFirstValue(HEADER_IF_RANGE, true);
 
             for (Header header : getHttpCall().getRequestHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = HeaderReader.readDate(header.getValue(),
-                            false);
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = HeaderReader.readDate(
-                            header.getValue(), false);
+                if (header.getName().equalsIgnoreCase(HEADER_IF_MODIFIED_SINCE)) {
+                    ifModifiedSince = HeaderReader.readDate(header.getValue(), false);
+                } else if (header.getName().equalsIgnoreCase(HEADER_IF_UNMODIFIED_SINCE)) {
+                    ifUnmodifiedSince = HeaderReader.readDate(header.getValue(), false);
                 }
             }
 
@@ -427,59 +426,20 @@ public class HttpRequest extends Request {
             }
 
             // Set the If-Match tags
-            List<Tag> match = null;
-            Tag current = null;
             if (ifMatchHeader != null) {
                 try {
-                    HeaderReader<Object> hr = new HeaderReader<Object>(
-                            ifMatchHeader);
-                    String value = hr.readRawValue();
-
-                    while (value != null) {
-                        current = Tag.parse(value);
-
-                        // Is it the first tag?
-                        if (match == null) {
-                            match = new ArrayList<Tag>();
-                            result.setMatch(match);
-                        }
-
-                        // Add the new tag
-                        match.add(current);
-
-                        // Read the next token
-                        value = hr.readRawValue();
-                    }
+                    new TagReader(ifMatchHeader).addValues(result.getMatch());
                 } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
-                            "Unable to process the if-match header: "
-                                    + ifMatchHeader);
+                            "Unable to process the if-match header: " + ifMatchHeader);
                 }
             }
 
             // Set the If-None-Match tags
-            List<Tag> noneMatch = null;
             if (ifNoneMatchHeader != null) {
                 try {
-                    HeaderReader<Object> hr = new HeaderReader<Object>(
-                            ifNoneMatchHeader);
-                    String value = hr.readRawValue();
-
-                    while (value != null) {
-                        current = Tag.parse(value);
-
-                        // Is it the first tag?
-                        if (noneMatch == null) {
-                            noneMatch = new ArrayList<Tag>();
-                            result.setNoneMatch(noneMatch);
-                        }
-
-                        noneMatch.add(current);
-
-                        // Read the next token
-                        value = hr.readRawValue();
-                    }
+                    new TagReader(ifNoneMatchHeader).addValues(result.getNoneMatch());
                 } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
@@ -488,7 +448,7 @@ public class HttpRequest extends Request {
                 }
             }
 
-            if (ifRangeHeader != null && ifRangeHeader.length() > 0) {
+            if (!StringUtils.isNullOrEmpty(ifRangeHeader)) {
                 Tag tag = Tag.parse(ifRangeHeader);
 
                 if (tag != null) {

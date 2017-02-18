@@ -26,7 +26,6 @@ package org.restlet.ext.sip.internal;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,6 +54,7 @@ import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.header.RecipientInfoReader;
+import org.restlet.engine.header.TagReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
@@ -513,29 +513,9 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 }
 
                 // Set the If-Match tags
-                List<Tag> match = null;
-                Tag current = null;
                 if (ifMatchHeader != null) {
                     try {
-                        HeaderReader<Object> hr = new HeaderReader<Object>(
-                                ifMatchHeader);
-                        String value = hr.readRawValue();
-
-                        while (value != null) {
-                            current = Tag.parse(value);
-
-                            // Is it the first tag?
-                            if (match == null) {
-                                match = new ArrayList<Tag>();
-                                result.setMatch(match);
-                            }
-
-                            // Add the new tag
-                            match.add(current);
-
-                            // Read the next token
-                            value = hr.readRawValue();
-                        }
+                        new TagReader(ifMatchHeader).addValues(result.getMatch());
                     } catch (Exception e) {
                         this.context.getLogger().log(
                                 Level.INFO,
@@ -545,27 +525,9 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 }
 
                 // Set the If-None-Match tags
-                List<Tag> noneMatch = null;
                 if (ifNoneMatchHeader != null) {
                     try {
-                        HeaderReader<Object> hr = new HeaderReader<Object>(
-                                ifNoneMatchHeader);
-                        String value = hr.readRawValue();
-
-                        while (value != null) {
-                            current = Tag.parse(value);
-
-                            // Is it the first tag?
-                            if (noneMatch == null) {
-                                noneMatch = new ArrayList<Tag>();
-                                result.setNoneMatch(noneMatch);
-                            }
-
-                            noneMatch.add(current);
-
-                            // Read the next token
-                            value = hr.readRawValue();
-                        }
+                        new TagReader(ifNoneMatchHeader).addValues(result.getNoneMatch());
                     } catch (Exception e) {
                         this.context.getLogger().log(
                                 Level.INFO,

@@ -221,11 +221,9 @@ public class Converter {
      * @return The corresponding JAX-RS-Entity-Tag
      */
     public static EntityTag toJaxRsEntityTag(Tag restletEntityTag) {
-        if (restletEntityTag == null) {
-            return null;
-        }
-        return new EntityTag(restletEntityTag.getName(),
-                restletEntityTag.isWeak());
+        return (restletEntityTag == null)
+                ? null
+                : new EntityTag(restletEntityTag.getName(), restletEntityTag.isWeak());
     }
 
     /**
