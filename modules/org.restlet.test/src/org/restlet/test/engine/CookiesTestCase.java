@@ -192,4 +192,11 @@ public class CookiesTestCase extends RestletTestCase {
         testCookieValues("Cookie 1=One; Cookie 2=Two; Cookie 3=Three; Cookie 4=Four; Cookie 5=\"Five\"; Cookie 6=\"Six\"");
     }
 
+    public void testParsingTooLongMaxAgeShouldBeCapedToIntegerMAX_VALUE() throws IOException {
+        CookieSettingReader cr = new CookieSettingReader(
+                "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; max-age=31536000000; path=/; domain=.admeta.com");
+        CookieSetting cookie = cr.readValue();
+        assertEquals(cookie.getMaxAge(), Integer.MAX_VALUE);
+    }
+
 }

@@ -222,7 +222,16 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                                             + pair.getValue());
                 }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE)) {
-                result.setMaxAge(Integer.valueOf(pair.getValue()));
+                try {
+                    result.setMaxAge(Integer.valueOf(pair.getValue()));
+                } catch (NumberFormatException numberFormatException) {
+                    result.setMaxAge(Integer.MAX_VALUE);
+                    Context.getCurrentLogger()
+                            .warning(
+                                    String.format(
+                                            "Unable to parse the cookie setting max-age value \"%s\", used Integer.MAX_VALUE instead %d",
+                                            pair.getValue(), Integer.MAX_VALUE));
+                }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_PORT)) {
                 // No yet supported
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_SECURE)) {

@@ -5,6 +5,9 @@ Changes log
 
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - Invalid max-age value for cookie settings replaced by Integer.MAX_VALUE constant. Issue #1251.
+         Reported by Chad Gatesman.
     - Enhancements
        - Add literal conversion support for the Boolean, Byte, Int16, Int32, Int64, Decimal, Single and Double 
          Edm types in the OData extension.
