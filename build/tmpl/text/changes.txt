@@ -3,6 +3,13 @@
 Changes log
 ===========
 
+
+@version-full@ (@release-date@)
+    - Enhancements
+       - Add literal conversion support for the Boolean, Byte, Int16, Int32, Int64, Decimal, Single and Double 
+         Edm types in the OData extension.
+         Reported and contributed by Serge Sozonoff.
+
 - 2.3.9 (12/19/2016)
     - Bugs fixed
        - In IE 10 and seq., request without body are sent with an "undefined" body. Issue #1252.
