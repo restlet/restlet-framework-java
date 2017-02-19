@@ -24,15 +24,15 @@
 
 package org.restlet.engine.connector;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Internal HTTP server connector.
@@ -56,8 +56,22 @@ public class HttpServerHelper extends NetServerHelper {
 
     @Override
     public void start() throws Exception {
-        this.server = HttpServer.create(new InetSocketAddress(getHelped()
-                .getPort()), 0);
+        String addr = getHelped().getAddress();
+        // Use ephemeral port
+        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+
+        if (addr != null) {
+            // This call may throw UnknownHostException and otherwise always
+            // returns an instance of INetAddress.
+            // Note: textual representation of inet addresses are supported
+            InetAddress iaddr = InetAddress.getByName(addr);
+            setAddress(new InetSocketAddress(iaddr, port));
+        } else {
+            setAddress(new InetSocketAddress(port));
+        }
+
+        // Complete initialization
+        server = HttpServer.create(getAddress(), 0);
         server.createContext("/", new HttpHandler() {
             @Override
             public void handle(HttpExchange httpExchange) throws IOException {
