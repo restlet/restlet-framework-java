@@ -86,32 +86,27 @@ public class HttpsServerHelper extends NetServerHelper {
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
-        // Initialize the SSL context
-        SslContextFactory sslContextFactory = SslUtils
-                .getSslContextFactory(this);
-        SSLContext sslContext = sslContextFactory.createSslContext();
-        String addr = getHelped().getAddress();
-
-        if (addr != null) {
+        // Use ephemeral port
+        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+        if (getHelped().getAddress() != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
             // Note: textual representation of inet addresses are supported
-            InetAddress iaddr = InetAddress.getByName(addr);
+            InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
 
             // Note: the backlog of 50 is the default
-            setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
+            setAddress(new InetSocketAddress(iaddr, port));
         } else {
-            int port = getHelped().getPort();
-
-            // Use ephemeral port
-            if (port > 0) {
-                setAddress(new InetSocketAddress(getHelped().getPort()));
-            }
+            // Listens to any local IP address
+            setAddress(new InetSocketAddress(port));
         }
 
         // Complete initialization
-        this.server = HttpsServer.create(new InetSocketAddress(getHelped()
-                .getPort()), 0);
+        this.server = HttpsServer.create(getAddress(), 0);
+
+        // Initialize the SSL context
+        SslContextFactory sslContextFactory = SslUtils.getSslContextFactory(this);
+        SSLContext sslContext = sslContextFactory.createSslContext();
         final SSLParameters sslParams = sslContext.getDefaultSSLParameters();
         server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             public void configure(HttpsParameters params) {

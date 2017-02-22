@@ -25,6 +25,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.restlet.Server;
@@ -56,8 +57,22 @@ public class HttpServerHelper extends NetServerHelper {
 
     @Override
     public void start() throws Exception {
-        this.server = HttpServer.create(new InetSocketAddress(getHelped()
-                .getPort()), 0);
+        // Use ephemeral port
+        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+        if (getHelped().getAddress() != null) {
+            // This call may throw UnknownHostException and otherwise always
+            // returns an instance of INetAddress.
+            // Note: textual representation of inet addresses are supported
+            InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
+
+            // Note: the backlog of 50 is the default
+            setAddress(new InetSocketAddress(iaddr, port));
+        } else {
+            // Listens to any local IP address
+            setAddress(new InetSocketAddress(port));
+        }
+
+        this.server = HttpServer.create(getAddress(), 0);
         server.createContext("/", new HttpHandler() {
             @Override
             public void handle(HttpExchange httpExchange) throws IOException {

@@ -8,8 +8,10 @@ Changes log
     - Bugs fixed
        - Invalid max-age value for cookie settings replaced by Integer.MAX_VALUE constant. Issue #1251.
          Reported by Chad Gatesman.
-       - Fixed parsing of If-Match header in case it contains an invalid tag . Issue #1258.
+       - Fixed parsing of If-Match header in case it contains an invalid tag. Issue #1258.
          Reported by Guillaume Blondeau.
+       - Make the internal server connector listening to specific IP address, if provided. Issue #1256.
+         Reported by Juan Manuel de Blas.
     - Enhancements
        - Add literal conversion support for the Boolean, Byte, Int16, Int32, Int64, Decimal, Single and Double 
          Edm types in the OData extension.
