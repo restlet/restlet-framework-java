@@ -24,24 +24,22 @@
 
 package org.restlet.engine.connector;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
+import com.sun.net.httpserver.HttpsServer;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsParameters;
-import com.sun.net.httpserver.HttpsServer;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Internal HTTPS server connector. Here is the list of additional parameters
@@ -90,28 +88,24 @@ public class HttpsServerHelper extends NetServerHelper {
         SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
         SSLContext sslContext = sslContextFactory.createSslContext();
+
         String addr = getHelped().getAddress();
+        // Use ephemeral port
+        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
 
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
             // Note: textual representation of inet addresses are supported
             InetAddress iaddr = InetAddress.getByName(addr);
-
-            // Note: the backlog of 50 is the default
-            setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
+            setAddress(new InetSocketAddress(iaddr, port));
         } else {
-            int port = getHelped().getPort();
-
-            // Use ephemeral port
-            if (port > 0) {
-                setAddress(new InetSocketAddress(getHelped().getPort()));
-            }
+            setAddress(new InetSocketAddress(port));
         }
 
         // Complete initialization
-        this.server = HttpsServer.create(new InetSocketAddress(getHelped()
-                .getPort()), 0);
+        server = HttpsServer.create(getAddress(), 0);
+
         final SSLParameters sslParams = sslContext.getDefaultSSLParameters();
         server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             public void configure(HttpsParameters params) {
