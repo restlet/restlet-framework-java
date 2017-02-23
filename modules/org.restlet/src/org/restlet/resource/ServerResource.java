@@ -265,6 +265,10 @@ public abstract class ServerResource extends Resource {
         getLogger().log(level, "Exception or error caught in server resource",
                 throwable);
 
+        if (status.equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
+            updateAllowedMethods();
+        }
+
         if (getResponse() != null) {
             getResponse().setStatus(status);
             Representation errorEntity = getStatusService().toRepresentation(
