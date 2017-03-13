@@ -73,6 +73,10 @@ public abstract class Call {
             result = isBroken(exception.getCause());
         }
 
+        if (!result && exception.getCause() != null) {
+            result = isBroken(exception.getCause());
+        }
+
         return result;
     }
 
