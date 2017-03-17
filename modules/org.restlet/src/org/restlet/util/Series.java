@@ -249,11 +249,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * Returns the first parameter found with the given name.
      * 
      * @param name
-     *            The parameter name (case sensitive).
+     *            The parameter name (case insensitive).
      * @return The first parameter found with the given name.
      */
     public T getFirst(String name) {
-        return getFirst(name, false);
+        return getFirst(name, true);
     }
 
     /**
@@ -279,11 +279,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *            The parameter name (case sensitive).
+     *            The parameter name (case insensitive).
      * @return The value of the first parameter found with the given name.
      */
     public String getFirstValue(String name) {
-        return getFirstValue(name, false);
+        return getFirstValue(name, true);
     }
 
     /**
@@ -328,7 +328,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *            The parameter name (case sensitive).
+     *            The parameter name (case insensitive).
      * @param defaultValue
      *            The default value to return if no matching parameter found or
      *            if the parameter has a null value.
@@ -336,7 +336,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      *         default value.
      */
     public String getFirstValue(String name, String defaultValue) {
-        return getFirstValue(name, false, defaultValue);
+        return getFirstValue(name, true, defaultValue);
     }
 
     /**
@@ -413,11 +413,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * name.
      * 
      * @param name
-     *            The parameter name to match (case sensitive).
+     *            The parameter name to match (case insensitive).
      * @return The array of values.
      */
     public String[] getValuesArray(String name) {
-        return getValuesArray(name, false);
+        return getValuesArray(name, true);
     }
 
     /**
@@ -478,7 +478,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * @return The array of values.
      */
     public String[] getValuesArray(String name, String defaultValue) {
-        return getValuesArray(name, false, defaultValue);
+        return getValuesArray(name, true, defaultValue);
     }
 
     /**
@@ -504,11 +504,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * Removes all the parameters with a given name.
      * 
      * @param name
-     *            The parameter name (case sensitive).
+     *            The parameter name (case insensitive).
      * @return True if the list changed.
      */
     public boolean removeAll(String name) {
-        return removeAll(name, false);
+        return removeAll(name, true);
     }
 
     /**
@@ -541,11 +541,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * name ignoring the case.
      * 
      * @param name
-     *            The name of the entries to be removed (case sensitive).
+     *            The name of the entries to be removed (case insensitive).
      * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeFirst(String name) {
-        return removeFirst(name, false);
+        return removeFirst(name, true);
     }
 
     /**
@@ -576,7 +576,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
     /**
      * Replaces the value of the first parameter with the given name and removes
      * all other parameters with the same name. The name matching is case
-     * sensitive.
+     * insensitive.
      * 
      * @param name
      *            The parameter name.
@@ -585,7 +585,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * @return The parameter set or added.
      */
     public T set(String name, String value) {
-        return set(name, value, false);
+        return set(name, value, true);
     }
 
     /**
@@ -653,11 +653,11 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * Returns a list of all the values associated to the parameter name.
      * 
      * @param name
-     *            The parameter name (case sensitive).
+     *            The parameter name (case insensitive).
      * @return The list of values.
      */
     public Series<T> subList(String name) {
-        return subList(name, false);
+        return subList(name, true);
     }
 
     /**
