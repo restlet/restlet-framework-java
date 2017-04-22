@@ -117,10 +117,6 @@ public class CallResolver extends Resolver<Object> {
                 return (entity != null && entity.getSize() != -1) ? Long.toString(entity.getSize()) : null;
             case "et":
                 return (entity != null && entity.getTag() != null) ? entity.getTag().getName() : null;
-            case "f":
-                return getReferenceContent(variableName.substring(1), this.request.getReferrerRef());
-            case "h":
-                return getReferenceContent(variableName.substring(1), this.request.getHostRef());
             case "m":
                 return (this.request.getMethod() != null) ? this.request.getMethod().getName() : null;
             case "p":
@@ -128,6 +124,10 @@ public class CallResolver extends Resolver<Object> {
             default:
                 if (variableName.startsWith("o")) {
                     return getReferenceContent(variableName.substring(1), this.request.getRootRef());
+                } else if (variableName.startsWith("f")) {
+                    return getReferenceContent(variableName.substring(1), this.request.getReferrerRef());
+                } else if (variableName.startsWith("h")) {
+                    return getReferenceContent(variableName.substring(1), this.request.getHostRef());
                 } else if (variableName.startsWith("r")) {
                     return getReferenceContent(variableName.substring(1), this.request.getResourceRef());
                 }

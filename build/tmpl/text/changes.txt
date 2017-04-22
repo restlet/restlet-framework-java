@@ -12,6 +12,7 @@ Changes log
          Reported by Guillaume Blondeau.
        - Make the internal server connector listening to specific IP address, if provided. Issue #1256.
          Reported by Juan Manuel de Blas.
+       - Fixed resolution of variables f* and h*. Issue #1260.
     - Enhancements
        - Add literal conversion support for the Boolean, Byte, Int16, Int32, Int64, Decimal, Single and Double 
          Edm types in the OData extension.
