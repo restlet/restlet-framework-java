@@ -1,5 +1,7 @@
 # Restlet Framework
 
+[![Build status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java) [![Quality Gate](https://nemo.sonarqube.org/api/badges/gate?key=restlet-framework-java)](https://nemo.sonarqube.org/dashboard/index/restlet-framework-java)
+
 ## The leading RESTful Web API framework for Java
 
 Thanks to Restlet Framework's powerful routing and filtering capabilities, unified client and server Java API, developers can build secure and scalable RESTful web APIs.
@@ -24,5 +26,3 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
 Copyright 2015 Restlet
-
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java)
