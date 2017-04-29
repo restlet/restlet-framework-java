@@ -53,7 +53,7 @@
         ],
         "properties": [
           {
-            "defaultValue": null,
+            "defaultValue": "1",
             "description": "unique identifier for the pet",
             "max": null,
             "maxOccurs": 1,
@@ -357,6 +357,12 @@
           }
         ],
         "raw": false
+      },
+      {
+      	"name": "anonymousRepresentation6"
+      },
+      {
+      	"name": "anonymousRepresentation7"
       }
     ],
     "resources": [
@@ -1107,7 +1113,7 @@
             "name": "loginUser",
             "queryParameters": [
               {
-                "allowMultiple": false,
+                "allowMultiple": true,
                 "defaultValue": null,
                 "description": "The user name for login",
                 "name": "username",
@@ -1115,7 +1121,7 @@
                 "required": true
               },
               {
-                "allowMultiple": false,
+                "allowMultiple": true,
                 "defaultValue": null,
                 "description": "The password for login in clear text",
                 "name": "password",

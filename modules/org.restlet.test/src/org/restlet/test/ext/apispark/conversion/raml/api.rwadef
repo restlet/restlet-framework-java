@@ -1,0 +1,18 @@
+{
+  "contract" : {
+    "name" : "Notes"
+  },
+  "endpoints" : [ {
+    "authenticationProtocol" : "HTTP_DIGEST",
+    "basePath" : "/{country}/admin",
+    "domain" : "example.com",
+    "protocol" : "http"
+  }, {
+    "authenticationProtocol" : "HTTP_DIGEST",
+    "basePath" : "/{country}/admin",
+    "domain" : "example.com",
+    "protocol" : "https"
+  } ],
+  "specVersion" : "1.0.0",
+  "version" : "v4.0"
+}

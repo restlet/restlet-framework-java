@@ -776,7 +776,8 @@
           "description": "unique identifier for the pet",
           "minimum": 0,
           "maximum": 100,
-          "position": 1
+          "position": 1,
+          "default": 1
         },
         "category": {
           "$ref": "#/definitions/Category",

@@ -14,7 +14,7 @@ import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-import com.wordnik.swagger.util.Json;
+import io.swagger.util.Json;
 
 public class ImportUtils {
 

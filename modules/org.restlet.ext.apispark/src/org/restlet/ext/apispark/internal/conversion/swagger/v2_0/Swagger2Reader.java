@@ -1,13 +1,39 @@
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Info;
+import io.swagger.models.Model;
+import io.swagger.models.Operation;
+import io.swagger.models.Path;
+import io.swagger.models.RefModel;
+import io.swagger.models.Response;
+import io.swagger.models.Scheme;
+import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
+import io.swagger.models.auth.ApiKeyAuthDefinition;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.OAuth2Definition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.HeaderParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.RefParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.ext.apispark.internal.conversion.ConversionUtils;
 import org.restlet.ext.apispark.internal.model.Contract;
 import org.restlet.ext.apispark.internal.model.Definition;
@@ -19,29 +45,7 @@ import org.restlet.ext.apispark.internal.model.Representation;
 import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Section;
 
-import com.wordnik.swagger.models.ArrayModel;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Operation;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.RefModel;
-import com.wordnik.swagger.models.Response;
-import com.wordnik.swagger.models.Scheme;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.auth.ApiKeyAuthDefinition;
-import com.wordnik.swagger.models.auth.BasicAuthDefinition;
-import com.wordnik.swagger.models.auth.OAuth2Definition;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.HeaderParameter;
-import com.wordnik.swagger.models.parameters.Parameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.parameters.QueryParameter;
-import com.wordnik.swagger.models.parameters.RefParameter;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.Property;
-import com.wordnik.swagger.models.properties.RefProperty;
+import com.google.common.base.Joiner;
 
 /**
  * Translator : RWADef <- Swagger 2.0.
@@ -62,17 +66,17 @@ public class Swagger2Reader {
             if (swaggerParameter instanceof QueryParameter) {
                 org.restlet.ext.apispark.internal.model.QueryParameter queryParameter =
                         new org.restlet.ext.apispark.internal.model.QueryParameter();
-                fillRwadefQueryParameter(queryParameter, (QueryParameter) swaggerParameter);
+                fillQueryParameter(queryParameter, (QueryParameter) swaggerParameter);
                 parameters.put(key, queryParameter);
 
             } else if (swaggerParameter instanceof PathParameter) {
                 PathVariable pathVariable = new PathVariable();
-                fillRwadefPathVariable(pathVariable, (PathParameter) swaggerParameter);
+                fillPathVariable(pathVariable, (PathParameter) swaggerParameter);
                 parameters.put(key, pathVariable);
 
             } else if (swaggerParameter instanceof HeaderParameter) {
                 Header header = new Header();
-                fillRwadefHeader(header, (HeaderParameter) swaggerParameter);
+                fillHeader(header, (HeaderParameter) swaggerParameter);
                 parameters.put(key, header);
 
             } else if (swaggerParameter instanceof BodyParameter) {
@@ -160,20 +164,69 @@ public class Swagger2Reader {
     }
 
     private static void fillRepresentations(Swagger swagger, Contract contract) {
-        if (swagger.getDefinitions() == null) {
-            return;
+        // A Representation in Restlet is equivalent to a Schema Object in the
+        // Swagger 2.0 spec.
+        //
+        // Schema Objects can be found in 3 different locations in a Swagger
+        // model:
+        // - paths/{path}/{method}/parameters/schema
+        // - paths/{path}/{method}/responses/{statusCode}/schema
+        // - definitions/{name}
+        //
+        // A schema can reference another schema in definitions, but can
+        // also contain an inline anonymous schema.
+        int anonymousRepresentationCounter = 1;
+        for (Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            for (Operation operation : pathEntry.getValue().getOperations()) {
+                for (Parameter parameter : operation.getParameters()) {
+                    if (parameter instanceof BodyParameter) {
+                        fillRepresentation(
+                                ((BodyParameter) parameter).getSchema(),
+                                "anonymousRepresentation"
+                                        + anonymousRepresentationCounter,
+                                contract);
+                        anonymousRepresentationCounter += 1;
+                    }
+                }
+                for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
+                    Property schemaProperty = responseEntry.getValue()
+                            .getSchema();
+                    if (schemaProperty instanceof RefProperty
+                            && ((RefProperty) schemaProperty).get$ref() != null) {
+                        continue; // schema is defined elsewhere
+                    }
+                    String pathToPotentialInlineSchema = Joiner.on("/").join(
+                            "paths", pathEntry.getKey(),
+                            operation.getOperationId(), "responses",
+                            responseEntry.getKey(), "schema");
+                    LOGGER.warning(String
+                            .format("Looks like you might have an inline schema at %s. "
+                                    + "Restlet Framework does not support inline schemas in responses. "
+                                    + "Your schema was ignored. "
+                                    + "Please place your schema in the definitions of your Swagger file.",
+                                    pathToPotentialInlineSchema));
+                }
+            }
         }
+        for (Entry<String, Model> definition : swagger.getDefinitions()
+                .entrySet()) {
+            fillRepresentation(definition.getValue(), definition.getKey(), contract);
+        }
+    }
 
-        for (String key : swagger.getDefinitions().keySet()) {
-            Model model = swagger.getDefinitions().get(key);
-            Representation representation = new Representation();
-            representation.setDescription(model.getDescription());
-            representation.setName(key);
-            representation.setRaw(false);
-            // TODO: example not implemented in RWADef (built from properties examples)
-            fillRwadefProperties(model, representation);
-            contract.getRepresentations().add(representation);
+    private static void fillRepresentation(Model model, String name,
+            Contract contract) {
+        if (model.getReference() != null) {
+            return; // schema is defined elsewhere
         }
+        Representation representation = new Representation();
+        representation.setDescription(model.getDescription());
+        representation.setName(name);
+        representation.setRaw(false);
+        // TODO: example not implemented in RWADef (built from
+        // properties examples)
+        fillProperties(model, representation);
+        contract.getRepresentations().add(representation);
     }
 
     private static void fillResources(Swagger swagger, Contract contract,
@@ -199,7 +252,7 @@ public class Swagger2Reader {
                     PathVariable pathVariable = null;
                     if (parameter instanceof PathParameter) {
                         pathVariable = new PathVariable();
-                        fillRwadefPathVariable(pathVariable, (PathParameter) parameter);
+                        fillPathVariable(pathVariable, (PathParameter) parameter);
                     } else if (parameter instanceof RefParameter) {
                         RefParameter refParameter = (RefParameter) parameter;
                         Object savedParameter = parameters.get(refParameter.getSimpleRef());
@@ -213,14 +266,14 @@ public class Swagger2Reader {
                     }
                 }
             }
-            fillRwadefOperations(path, resource, contract, produces, consumes, parameters);
+            fillOperations(path, resource, contract, produces, consumes, parameters);
 
             contract.getResources().add(resource);
         }
 
     }
 
-    private static void fillRwadefEndpoints(Swagger swagger, Definition definition) {
+    private static void fillEndpoints(Swagger swagger, Definition definition) {
         String authenticationProtocol = null;
 
         if (swagger.getSecurityDefinitions() != null) {
@@ -247,7 +300,7 @@ public class Swagger2Reader {
         }
     }
 
-    private static void fillRwadefGeneralInformation(Swagger swagger, Definition definition,
+    private static void fillGeneralInformation(Swagger swagger, Definition definition,
             List<String> produces, List<String> consumes) {
 
         Info info = swagger.getInfo();
@@ -290,7 +343,7 @@ public class Swagger2Reader {
         definition.setAttribution(null);
     }
 
-    private static void fillRwadefHeader(Header header, HeaderParameter swaggerHeader) {
+    private static void fillHeader(Header header, HeaderParameter swaggerHeader) {
         header.setName(swaggerHeader.getName());
         header.setRequired(swaggerHeader.getRequired());
         header.setDescription(swaggerHeader.getDescription());
@@ -305,7 +358,7 @@ public class Swagger2Reader {
         header.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefOperation(Operation swaggerOperation, Resource resource,
+    private static void fillOperation(Operation swaggerOperation, Resource resource,
             Contract contract, String methodName,
             List<String> produces, List<String> consumes,
             Map<String, Object> parameters) {
@@ -326,32 +379,32 @@ public class Swagger2Reader {
         operation.setMethod(methodName);
         operation.setName(swaggerOperation.getOperationId());
 
-        fillRwadefParameters(swaggerOperation, operation, resource, parameters);
-        fillRwadefResponses(swaggerOperation, operation, contract, parameters);
+        fillParameters(swaggerOperation, operation, resource, parameters);
+        fillResponses(swaggerOperation, operation, contract, parameters);
         fillInputPayload(swaggerOperation, operation, contract);
 
         resource.getOperations().add(operation);
     }
 
-    private static void fillRwadefOperations(Path path, Resource resource,
+    private static void fillOperations(Path path, Resource resource,
             Contract contract, List<String> produces, List<String> consumes,
             Map<String, Object> parameters) {
 
-        fillRwadefOperation(path.getGet(), resource, contract, Method.GET.getName(),
+        fillOperation(path.getGet(), resource, contract, Method.GET.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPost(), resource, contract, Method.POST.getName(),
+        fillOperation(path.getPost(), resource, contract, Method.POST.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPut(), resource, contract, Method.PUT.getName(),
+        fillOperation(path.getPut(), resource, contract, Method.PUT.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getDelete(), resource, contract, Method.DELETE.getName(),
+        fillOperation(path.getDelete(), resource, contract, Method.DELETE.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getOptions(), resource, contract, Method.OPTIONS.getName(),
+        fillOperation(path.getOptions(), resource, contract, Method.OPTIONS.getName(),
                 produces, consumes, parameters);
-        fillRwadefOperation(path.getPatch(), resource, contract, Method.PATCH.getName(),
+        fillOperation(path.getPatch(), resource, contract, Method.PATCH.getName(),
                 produces, consumes, parameters);
     }
 
-    private static void fillRwadefParameters(Operation swaggerOperation,
+    private static void fillParameters(Operation swaggerOperation,
             org.restlet.ext.apispark.internal.model.Operation operation, Resource resource,
             Map<String, Object> parameters) {
         if (swaggerOperation.getParameters() == null) {
@@ -389,14 +442,14 @@ public class Swagger2Reader {
                         new org.restlet.ext.apispark.internal.model.QueryParameter();
                 QueryParameter swaggerQueryParameter = (QueryParameter) swaggerParameter;
 
-                fillRwadefQueryParameter(queryParameter, swaggerQueryParameter);
+                fillQueryParameter(queryParameter, swaggerQueryParameter);
                 operation.getQueryParameters().add(queryParameter);
             } else if (swaggerParameter instanceof PathParameter) {
                 org.restlet.ext.apispark.internal.model.PathVariable pathVariable =
                         new org.restlet.ext.apispark.internal.model.PathVariable();
                 PathParameter swaggerPathVariable = (PathParameter) swaggerParameter;
 
-                fillRwadefPathVariable(pathVariable, swaggerPathVariable);
+                fillPathVariable(pathVariable, swaggerPathVariable);
                 if (resource.getPathVariable(pathVariable.getName()) == null) {
                     resource.getPathVariables().add(pathVariable);
                 }
@@ -404,7 +457,7 @@ public class Swagger2Reader {
                 Header header = new Header();
                 HeaderParameter swaggerHeader = new HeaderParameter();
 
-                fillRwadefHeader(header, swaggerHeader);
+                fillHeader(header, swaggerHeader);
                 operation.getHeaders().add(header);
             } else {
                 if (!(swaggerParameter instanceof BodyParameter)) {
@@ -415,7 +468,7 @@ public class Swagger2Reader {
         }
     }
 
-    private static void fillRwadefPathVariable(PathVariable pathVariable, PathParameter swaggerPathVariable) {
+    private static void fillPathVariable(PathVariable pathVariable, PathParameter swaggerPathVariable) {
         pathVariable.setName(swaggerPathVariable.getName());
         pathVariable.setRequired(swaggerPathVariable.getRequired());
         pathVariable.setDescription(swaggerPathVariable.getDescription());
@@ -428,7 +481,7 @@ public class Swagger2Reader {
         pathVariable.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefProperties(Model model, Representation representation) {
+    private static void fillProperties(Model model, Representation representation) {
         if (model.getProperties() == null) {
             return;
         }
@@ -438,7 +491,8 @@ public class Swagger2Reader {
                     new org.restlet.ext.apispark.internal.model.Property();
             Property swaggerProperty = model.getProperties().get(key);
 
-            property.setDefaultValue(swaggerProperty.getDefault());
+            property.setDefaultValue(SwaggerUtils.toString(SwaggerUtils
+                    .getDefaultValue(swaggerProperty)));
             property.setDescription(swaggerProperty.getDescription());
             // TODO: enumeration not implemented in Swagger 2.0
             property.setExample(swaggerProperty.getExample());
@@ -468,7 +522,7 @@ public class Swagger2Reader {
      * @param swaggerQueryParameter
      *            The Swagger query parameter.
      */
-    private static void fillRwadefQueryParameter(org.restlet.ext.apispark.internal.model.QueryParameter queryParameter,
+    private static void fillQueryParameter(org.restlet.ext.apispark.internal.model.QueryParameter queryParameter,
             QueryParameter swaggerQueryParameter) {
 
         // TODO: allowMultiple not implemented in Swagger 2.0
@@ -488,38 +542,68 @@ public class Swagger2Reader {
         queryParameter.setType(SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat));
     }
 
-    private static void fillRwadefResponses(Operation swaggerOperation,
+    private static void fillResponses(Operation swaggerOperation,
             org.restlet.ext.apispark.internal.model.Operation operation,
             Contract contract, Map<String, Object> parameters) {
         if (swaggerOperation == null) {
             return;
         }
-
+        boolean operationHasSpecificSuccessResponse = false;
         if (swaggerOperation.getResponses() != null) {
-            for (String key : swaggerOperation.getResponses().keySet()) {
-                Response swaggerResponse = swaggerOperation.getResponses().get(key);
-                org.restlet.ext.apispark.internal.model.Response response =
-                        new org.restlet.ext.apispark.internal.model.Response();
-
+            for (Entry<String, Response> responseEntry : swaggerOperation
+                    .getResponses().entrySet()) {
+                String key = responseEntry.getKey();
+                Response swaggerResponse = responseEntry.getValue();
+                if ("default".equals(key)) {
+                    continue; // the default response is handled at the end
+                }
                 int statusCode;
                 try {
                     statusCode = Integer.parseInt(key);
-                    response.setCode(statusCode);
-                } catch (Exception e) {
-                    // TODO: what to do with "Default" responses ?
-                    LOGGER.warning("Response " + key + " for operation " + swaggerOperation.getOperationId() +
-                            " could not be retrieved because its key is not a valid status code.");
+                } catch (NumberFormatException e) {
+                    LOGGER.warning(String.format(
+                            "Response '%s' for operation '%s' "
+                                    + "could not be retrieved because its "
+                                    + "key is not a valid status code.", key,
+                            swaggerOperation.getOperationId()));
                     continue;
                 }
+                if (Status.isSuccess(statusCode)) {
+                    operationHasSpecificSuccessResponse = true;
+                }
+                fillResponse(statusCode, swaggerResponse, swaggerOperation,
+                        operation, contract, parameters);
+            }
 
-                response.setDescription(swaggerResponse.getDescription());
-                response.setName(ConversionUtils.generateResponseName(statusCode));
-
-                fillOutputPayload(swaggerResponse, response, swaggerOperation, contract, parameters);
-
-                operation.getResponses().add(response);
+            Response defaultSwaggerResponse = swaggerOperation.getResponses()
+                    .get("default");
+            if (defaultSwaggerResponse != null
+                    && !operationHasSpecificSuccessResponse) {
+                fillResponse(200, defaultSwaggerResponse, swaggerOperation,
+                        operation, contract, parameters);
+            } else if (defaultSwaggerResponse != null) {
+                LOGGER.warning(String.format(
+                        "The 'default' response for the operation '%s' was "
+                                + "ignored because there is already a success response "
+                                + "and the Restlet Framework does not support "
+                                + "'default' responses for other status codes.",
+                                swaggerOperation.getOperationId()));
             }
         }
+    }
+
+    private static void fillResponse(int statusCode,
+            Response swaggerResponse,
+            Operation swaggerOperation,
+            org.restlet.ext.apispark.internal.model.Operation operation,
+            Contract contract, Map<String, Object> parameters) {
+        org.restlet.ext.apispark.internal.model.Response response = new org.restlet.ext.apispark.internal.model.Response();
+        response.setCode(statusCode);
+        response.setDescription(swaggerResponse.getDescription());
+        response.setName(ConversionUtils.generateResponseName(statusCode));
+        fillOutputPayload(swaggerResponse, response, swaggerOperation,
+                contract, parameters);
+        operation.getResponses().add(response);
     }
 
     private static void fillSections(Swagger swagger, Contract contract) {
@@ -538,8 +622,8 @@ public class Swagger2Reader {
     /**
      * Translates a Swagger definition to a Restlet Web API Definition
      * 
-     * @param Swagger
-     *            The translated Swagger 2.0 definition
+     * @param swagger
+     *            The Swagger 2.0 definition to translate
      * 
      * @return The Restlet Web API definition
      */
@@ -549,11 +633,11 @@ public class Swagger2Reader {
         Definition definition = new Definition();
 
         // fill RWADef main attributes
-        fillRwadefEndpoints(swagger, definition);
+        fillEndpoints(swagger, definition);
 
         List<String> produces = new ArrayList<>();
         List<String> consumes = new ArrayList<>();
-        fillRwadefGeneralInformation(swagger, definition, produces, consumes);
+        fillGeneralInformation(swagger, definition, produces, consumes);
 
         // fill definition.sections
         Contract contract = definition.getContract();

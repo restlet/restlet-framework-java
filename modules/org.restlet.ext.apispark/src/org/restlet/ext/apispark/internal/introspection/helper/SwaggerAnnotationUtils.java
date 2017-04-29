@@ -42,14 +42,14 @@ import org.restlet.ext.apispark.internal.model.Response;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 /**
  * Tools for Swagger annotations.
@@ -169,7 +169,7 @@ public class SwaggerAnnotationUtils {
      * Adds data from the {@link ApiModelProperty} annotation to the operation.
      * 
      * @param apiOperation
-     *            The {@link com.wordnik.swagger.annotations.ApiOperation} annotation.
+     *            The {@link io.swagger.annotations.ApiOperation} annotation.
      * @param resource
      *            The {@link org.restlet.ext.apispark.internal.model.Resource} to update.
      * @param operation

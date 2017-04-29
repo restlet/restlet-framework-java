@@ -24,7 +24,7 @@
 
 package org.restlet.ext.apispark.internal.conversion.swagger.v2_0;
 
-import com.wordnik.swagger.models.properties.Property;
+import io.swagger.models.properties.Property;
 
 /**
  * Internal class representing a Swagger type

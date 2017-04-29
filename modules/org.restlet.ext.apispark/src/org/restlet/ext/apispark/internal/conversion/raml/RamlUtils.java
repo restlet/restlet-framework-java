@@ -73,6 +73,26 @@ public class RamlUtils {
     private static final List<String> numericTypesList = Arrays.asList(
             "integer", "int", "double", "long", "float");
 
+    static enum SecurityScheme {
+        OAUTH_1("OAuth 1.0"), OAUTH_2("OAuth 2.0"),
+        BASIC("Basic Authentication"), DIGEST("Digest Authentication"),
+        CUSTOM("x\\-.*");
+
+        private String regex;
+
+        SecurityScheme(String regex) {
+            this.regex = regex;
+        }
+
+        public boolean test(String name) {
+            if (StringUtils.isNullOrEmpty(name)) {
+                return false;
+            }
+
+            return name.matches(regex);
+        }
+    }
+
     /**
      * Generates the JsonSchema of a Representation's Property of primitive
      * type.

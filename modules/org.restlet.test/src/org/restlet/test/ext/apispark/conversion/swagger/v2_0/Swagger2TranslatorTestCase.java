@@ -24,6 +24,21 @@
 
 package org.restlet.test.ext.apispark.conversion.swagger.v2_0;
 
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.Path;
+import io.swagger.models.RefModel;
+import io.swagger.models.Swagger;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.IntegerProperty;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,21 +63,7 @@ import org.restlet.ext.apispark.internal.model.Resource;
 import org.restlet.ext.apispark.internal.model.Response;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.FileRepresentation;
-
-import com.wordnik.swagger.models.Contact;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.ModelImpl;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.RefModel;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.auth.BasicAuthDefinition;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.BodyParameter;
-import com.wordnik.swagger.models.parameters.PathParameter;
-import com.wordnik.swagger.models.properties.ArrayProperty;
-import com.wordnik.swagger.models.properties.IntegerProperty;
-import com.wordnik.swagger.models.properties.RefProperty;
-import com.wordnik.swagger.models.properties.StringProperty;
+import org.restlet.test.ext.apispark.conversion.DefinitionComparator;
 
 public class Swagger2TranslatorTestCase extends Swagger2TestCase {
 
@@ -239,7 +240,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         assertEquals("version", infoSwagger.getVersion());
         Contact contactSwagger = infoSwagger.getContact();
         assertEquals("contact", contactSwagger.getName());
-        com.wordnik.swagger.models.License licenseSwagger = infoSwagger.getLicense();
+        io.swagger.models.License licenseSwagger = infoSwagger.getLicense();
         assertEquals("licenseName", licenseSwagger.getName());
         assertEquals("licenseUrl", licenseSwagger.getUrl());
         assertEquals("contract.name", infoSwagger.getTitle());
@@ -248,7 +249,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         // resource 1
         Path path1 = swagger.getPath("resourcePath1");
         assertNotNull(path1);
-        com.wordnik.swagger.models.Operation path1Get = path1.getGet();
+        io.swagger.models.Operation path1Get = path1.getGet();
         assertNotNull(path1Get);
         assertEquals("nameoperation1", path1Get.getOperationId());
         assertEquals("description", path1Get.getDescription());
@@ -279,7 +280,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         RefModel schemaBodyParameter = (RefModel) bodyParameter.getSchema();
         assertEquals("#/definitions/nameRepresentation1", schemaBodyParameter.get$ref());
         // queryParameter 1
-        com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter1 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
+        io.swagger.models.parameters.QueryParameter op1QueryParameter1 = (io.swagger.models.parameters.QueryParameter) path1Get
                 .getParameters().get(3);
         assertEquals("query", op1QueryParameter1.getIn());
         assertEquals("nameQueryParameter1", op1QueryParameter1.getName());
@@ -287,7 +288,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         assertEquals("integer", op1QueryParameter1.getType());
         assertEquals("description", op1QueryParameter1.getDescription());
         // queryParameter 2
-        com.wordnik.swagger.models.parameters.QueryParameter op1QueryParameter2 = (com.wordnik.swagger.models.parameters.QueryParameter) path1Get
+        io.swagger.models.parameters.QueryParameter op1QueryParameter2 = (io.swagger.models.parameters.QueryParameter) path1Get
                 .getParameters().get(4);
         assertEquals("query", op1QueryParameter2.getIn());
         assertEquals("nameQueryParameter2", op1QueryParameter2.getName());
@@ -295,7 +296,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         assertEquals("string", op1QueryParameter2.getType());
         assertEquals("description", op1QueryParameter2.getDescription());
         // response 1
-        com.wordnik.swagger.models.Response op1Response1 = path1Get
+        io.swagger.models.Response op1Response1 = path1Get
                 .getResponses().get("200");
         assertNotNull(op1Response1);
         assertEquals("Success", op1Response1.getDescription());
@@ -304,7 +305,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .getSchema();
         assertTrue(op1Response1ArrayProperty.getItems() instanceof IntegerProperty);
         // response 2
-        com.wordnik.swagger.models.Response op1Response2 = path1Get
+        io.swagger.models.Response op1Response2 = path1Get
                 .getResponses().get("300");
         assertNotNull(op1Response2);
         assertEquals("Status 300", op1Response2.getDescription());
@@ -313,7 +314,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                 .getSchema();
         assertEquals("#/definitions/Entity2", op1Response2RefProperty.get$ref());
         // response 3
-        com.wordnik.swagger.models.Response op1Response3 = path1Get
+        io.swagger.models.Response op1Response3 = path1Get
                 .getResponses().get("400");
         assertNotNull(op1Response3);
         assertEquals("Error 400", op1Response3.getDescription());
@@ -381,7 +382,7 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
                         .getFile(), MediaType.APPLICATION_JSON),
                 Definition.class).getObject();
 
-        compareDefinitions(savedDefinition, translatedDefinition);
+        DefinitionComparator.compareDefinitions(savedDefinition, translatedDefinition);
     }
 
 }
