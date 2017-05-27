@@ -5,6 +5,9 @@ Changes log
 
 
 @version-full@ (@release-date@)
+    - Vulnerabilities fixed
+       - Upgraded jackson dependency to 2.8.8 - CVE-2016-7051. Issue #1264.
+         Reported by Philippe Perrault.
     - Bugs fixed
        - Invalid max-age value for cookie settings replaced by Integer.MAX_VALUE constant. Issue #1251.
          Reported by Chad Gatesman.

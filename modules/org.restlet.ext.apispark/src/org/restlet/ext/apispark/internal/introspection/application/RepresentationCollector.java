@@ -50,6 +50,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
@@ -118,10 +121,12 @@ public class RepresentationCollector {
             if (typeInfo.isPojo()) {
                 // add properties definition
 
-                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
-                        .getRepresentationClazz());
+                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo.getRepresentationClazz());
 
-                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass.construct(typeInfo.getRepresentationClazz(), new JacksonAnnotationIntrospector(), null).getAnnotation(JsonIgnoreProperties.class);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass
+                        .construct(mapper.constructType(typeInfo.getRepresentationClazz()), mapper.getSerializationConfig())
+                        .getAnnotation(JsonIgnoreProperties.class);
                 List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
 
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
