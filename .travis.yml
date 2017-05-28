@@ -3,4 +3,4 @@ jdk:
   - oraclejdk7
 script:
  - "cd build"
- - "ant rebuild"
+ - "ant rebuild -lib ./tools/junit/"
