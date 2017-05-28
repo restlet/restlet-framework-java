@@ -3,8 +3,7 @@
 Changes log
 ===========
 
-
-@version-full@ (@release-date@)
+- 2.3.10 (05/28/2017)
     - Bugs fixed
        - Invalid max-age value for cookie settings replaced by Integer.MAX_VALUE constant. Issue #1251.
          Reported by Chad Gatesman.
