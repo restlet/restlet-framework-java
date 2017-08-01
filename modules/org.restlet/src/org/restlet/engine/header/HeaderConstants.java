@@ -153,6 +153,8 @@ public final class HeaderConstants {
 
     public static final String HEADER_MAX_FORWARDS = "Max-Forwards";
 
+    public static final String HEADER_ORIGIN = "Origin";
+
     public static final String HEADER_PRAGMA = "Pragma";
 
     public static final String HEADER_PROXY_AUTHENTICATE = "Proxy-Authenticate";

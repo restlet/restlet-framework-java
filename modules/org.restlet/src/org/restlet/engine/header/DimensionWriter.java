@@ -93,6 +93,8 @@ public class DimensionWriter extends HeaderWriter<Dimension> {
             append(HeaderConstants.HEADER_ACCEPT);
         } else if (dimension == Dimension.AUTHORIZATION) {
             append(HeaderConstants.HEADER_AUTHORIZATION);
+        } else if (dimension == Dimension.ORIGIN) {
+            append(HeaderConstants.HEADER_ORIGIN);
         }
 
         return this;
