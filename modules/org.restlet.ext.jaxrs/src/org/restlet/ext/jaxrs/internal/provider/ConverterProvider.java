@@ -86,8 +86,8 @@ public class ConverterProvider extends AbstractProvider<Object> {
 
         try {
             // Convert the object into a representation
-            Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                    mediaType.toString()));
+            Variant targetVariant = new Variant(mediaType != null ?
+                new org.restlet.data.MediaType(mediaType.toString()) : null);
             representation = getConverterService().toRepresentation(object,
                     targetVariant, null);
         } catch (IOException e) {
