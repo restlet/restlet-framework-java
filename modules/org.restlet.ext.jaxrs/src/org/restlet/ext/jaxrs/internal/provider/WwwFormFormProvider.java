@@ -24,6 +24,8 @@
 
 package org.restlet.ext.jaxrs.internal.provider;
 
+import static org.restlet.ext.jaxrs.internal.util.Converter.toRestletMediaType;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +41,6 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -64,10 +65,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
      * @return
      */
     static Form getForm(MediaType mediaType, InputStream entityStream) {
-        org.restlet.data.MediaType restletMediaType = Converter
-                .toRestletMediaType(mediaType);
-        Form form = new Form(new InputRepresentation(entityStream,
-                restletMediaType));
+        Form form = new Form(new InputRepresentation(entityStream, toRestletMediaType(mediaType)));
         Request.getCurrent().setEntity(form.getWebRepresentation());
         return form;
     }

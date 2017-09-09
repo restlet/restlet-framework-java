@@ -31,6 +31,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.header.HeaderWriter;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -863,7 +864,7 @@ public final class MediaType extends Metadata {
     public static MediaType valueOf(String name) {
         MediaType result = null;
 
-        if ((name != null) && !name.equals("")) {
+        if (!StringUtils.isNullOrEmpty(name)) {
             result = getTypes().get(name);
             if (result == null) {
                 result = new MediaType(name);

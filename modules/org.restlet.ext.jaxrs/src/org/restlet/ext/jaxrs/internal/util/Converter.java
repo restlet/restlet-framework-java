@@ -235,8 +235,7 @@ public class Converter {
      *            the CharacterSet for the MediaType; may be null.
      * @return the converted MediaType
      */
-    public static MediaType toJaxRsMediaType(
-            org.restlet.data.MediaType restletMediaType) {
+    public static MediaType toJaxRsMediaType(org.restlet.data.MediaType restletMediaType) {
         return toJaxRsMediaType(restletMediaType, null);
     }
 
@@ -472,15 +471,12 @@ public class Converter {
      * @param jaxRsMediaType
      * @return the converted MediaType
      */
-    public static org.restlet.data.MediaType toRestletMediaType(
-            MediaType jaxRsMediaType) {
+    public static org.restlet.data.MediaType toRestletMediaType(MediaType jaxRsMediaType) {
         if (jaxRsMediaType == null) {
             return null;
         }
-        final Series<Parameter> parameters = Converter
-                .toRestletSeries(jaxRsMediaType.getParameters());
-        final String name = jaxRsMediaType.getType() + "/"
-                + jaxRsMediaType.getSubtype();
+        final Series<Parameter> parameters = toRestletSeries(jaxRsMediaType.getParameters());
+        final String name = jaxRsMediaType.getType() + "/" + jaxRsMediaType.getSubtype();
         return new org.restlet.data.MediaType(name, parameters);
     }
 

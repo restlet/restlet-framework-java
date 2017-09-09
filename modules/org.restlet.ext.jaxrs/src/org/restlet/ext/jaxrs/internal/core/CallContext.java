@@ -181,7 +181,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private List<Locale> acceptedLanguages;
 
     /**
-     * the unmodifiable List of accepted {@link MediaType}s. Lazy initialization
+     * The unmodifiable List of accepted {@link MediaType}s. Lazy initialization
      * by getter.
      * 
      * @see #getAcceptableMediaTypes()

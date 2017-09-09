@@ -194,9 +194,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     private Collection<Variant> createSupportedVariants() {
         final Collection<Variant> supportedVariants = new ArrayList<Variant>();
         for (final MediaType mediaType : getProducedMimes()) {
-            javax.ws.rs.core.MediaType mt;
-            mt = Converter.toJaxRsMediaType(mediaType);
-            supportedVariants.add(new Variant(mt, null, null));
+            supportedVariants.add(new Variant(Converter.toJaxRsMediaType(mediaType), null, null));
         }
         return supportedVariants;
     }

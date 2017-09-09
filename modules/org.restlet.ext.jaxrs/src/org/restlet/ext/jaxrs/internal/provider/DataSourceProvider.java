@@ -49,8 +49,7 @@ import org.restlet.engine.io.IoUtils;
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object,
-     *      java.lang.Class, java.lang.reflect.Type,
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type,
      *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
     @Override
@@ -60,15 +59,14 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
     }
 
     /**
-     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
-     *      MultivaluedMap, InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[], MultivaluedMap, InputStream)
      */
     @Override
     public DataSource readFrom(Class<DataSource> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return new ByteArrayDataSource(entityStream, mediaType.toString());
+        return new ByteArrayDataSource(entityStream, mediaType == null ? null : mediaType.toString());
     }
 
     @Override
@@ -77,8 +75,7 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
     }
 
     /**
-     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
-     *      MediaType, MultivaluedMap, OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
     @Override
     public void writeTo(DataSource dataSource, Class<?> type, Type genericType,

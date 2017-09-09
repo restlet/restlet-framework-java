@@ -24,6 +24,8 @@
 
 package org.restlet.ext.jaxrs.internal.provider;
 
+import static org.restlet.ext.jaxrs.internal.util.Converter.toRestletMediaType;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -86,13 +88,10 @@ public class ConverterProvider extends AbstractProvider<Object> {
 
         try {
             // Convert the object into a representation
-            Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                    mediaType.toString()));
-            representation = getConverterService().toRepresentation(object,
-                    targetVariant, null);
+            Variant targetVariant = new Variant(toRestletMediaType(mediaType));
+            representation = getConverterService().toRepresentation(object, targetVariant, null);
         } catch (IOException e) {
-            Context.getCurrentLogger().log(Level.FINE,
-                    "Unable to get the size", e);
+            Context.getCurrentLogger().log(Level.FINE, "Unable to get the size", e);
         }
 
         return (representation == null) ? -1 : representation.getSize();
@@ -102,10 +101,8 @@ public class ConverterProvider extends AbstractProvider<Object> {
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
 
-        Variant sourceVariant = new Variant(new org.restlet.data.MediaType(
-                mediaType.toString()));
-        List<Class<?>> classes = getConverterService().getObjectClasses(
-                sourceVariant);
+        Variant sourceVariant = new Variant(toRestletMediaType(mediaType));
+        List<Class<?>> classes = getConverterService().getObjectClasses(sourceVariant);
 
         for (Class<?> clazz : classes) {
             if (clazz.isAssignableFrom(type)) {
@@ -122,8 +119,7 @@ public class ConverterProvider extends AbstractProvider<Object> {
         List<? extends Variant> variants;
 
         try {
-            Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                    mediaType.toString()));
+            Variant targetVariant = new Variant(toRestletMediaType(mediaType));
             variants = getConverterService().getVariants(type, targetVariant);
         } catch (IOException e) {
             throw new ResourceException(e);
@@ -138,9 +134,7 @@ public class ConverterProvider extends AbstractProvider<Object> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
 
-        Representation sourceRepresentation = new InputRepresentation(
-                entityStream, new org.restlet.data.MediaType(
-                        mediaType.toString()));
+        Representation sourceRepresentation = new InputRepresentation(entityStream, toRestletMediaType(mediaType));
         return getConverterService().toObject(sourceRepresentation, type, null);
     }
 
@@ -151,8 +145,7 @@ public class ConverterProvider extends AbstractProvider<Object> {
             OutputStream entityStream) throws IOException {
 
         // Convert the object into a representation
-        Variant targetVariant = new Variant(new org.restlet.data.MediaType(
-                mediaType.toString()));
+        Variant targetVariant = new Variant(toRestletMediaType(mediaType));
         Representation representation = getConverterService().toRepresentation(
                 object, targetVariant, null);
 
