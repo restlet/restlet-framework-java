@@ -44,8 +44,7 @@ import org.restlet.resource.Resource;
  */
 public class VelocityConverter extends ConverterHelper {
 
-    private static final VariantInfo VARIANT_ALL = new VariantInfo(
-            MediaType.ALL);
+    private static final VariantInfo VARIANT_ALL = new VariantInfo(MediaType.ALL);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
@@ -73,8 +72,7 @@ public class VelocityConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> float score(Representation source, Class<T> target,
-            Resource resource) {
+    public <T> float score(Representation source, Class<T> target, Resource resource) {
         return -1.0f;
     }
 
@@ -85,12 +83,10 @@ public class VelocityConverter extends ConverterHelper {
     }
 
     @Override
-    public Representation toRepresentation(Object source, Variant target,
-            Resource resource) throws IOException {
+    public Representation toRepresentation(Object source, Variant target, Resource resource) throws IOException {
 
         if (source instanceof Template) {
-            TemplateRepresentation tr = new TemplateRepresentation(
-                    (Template) source, target.getMediaType());
+            TemplateRepresentation tr = new TemplateRepresentation((Template) source, target.getMediaType());
             tr.setDataModel(resource.getRequest(), resource.getResponse());
             return tr;
         }
@@ -99,8 +95,7 @@ public class VelocityConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
-            Class<T> entity) {
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences, Class<T> entity) {
         if (Template.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.ALL, 1.0F);
         }

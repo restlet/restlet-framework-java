@@ -58,9 +58,9 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.restlet.data.Form;
 import org.restlet.data.Header;
 import org.restlet.data.Parameter;

@@ -25,14 +25,14 @@
 package org.restlet.ext.velocity;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
+import org.apache.velocity.util.ExtProperties;
 import org.restlet.representation.Representation;
 
 /**
@@ -71,45 +71,35 @@ public class RepresentationResourceLoader extends ResourceLoader {
     @Override
     public long getLastModified(Resource resource) {
         final Representation original = getStore().get(resource.getName());
-        return (original != null) ? original.getModificationDate().getTime()
-                : 0;
-    }
-
-    @Override
-    public InputStream getResourceStream(String name)
-            throws ResourceNotFoundException {
-        InputStream result = null;
-
-        try {
-            Representation resultRepresentation = getStore().get(name);
-
-            if (resultRepresentation == null) {
-                resultRepresentation = this.defaultRepresentation;
-
-                if (resultRepresentation == null) {
-                    throw new ResourceNotFoundException(
-                            "Could not locate resource '" + name + "'");
-                }
-
-                result = resultRepresentation.getStream();
-            } else {
-                result = resultRepresentation.getStream();
-            }
-        } catch (IOException ioe) {
-            throw new ResourceNotFoundException(ioe);
-        }
-
-        return result;
-    }
-
-    @Override
-    public void init(ExtendedProperties configuration) {
-
+        return original == null ? 0 : original.getModificationDate().getTime();
     }
 
     @Override
     public boolean isSourceModified(Resource resource) {
         return getLastModified(resource) != resource.getLastModified();
+    }
+
+    @Override
+    public Reader getResourceReader(String source, String encoding) throws ResourceNotFoundException {
+        try {
+            Representation resultRepresentation = getStore().get(source);
+
+            if (resultRepresentation == null) {
+                resultRepresentation = this.defaultRepresentation;
+            }
+
+            if (resultRepresentation == null) {
+                throw new ResourceNotFoundException("Could not locate resource '" + source + "'");
+            }
+
+            return resultRepresentation.getReader();
+        } catch (IOException ioe) {
+            throw new ResourceNotFoundException(ioe);
+        }
+    }
+
+    @Override
+    public void init(ExtProperties configuration) {
     }
 
 }

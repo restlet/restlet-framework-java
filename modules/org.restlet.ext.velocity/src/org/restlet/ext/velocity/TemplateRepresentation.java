@@ -59,8 +59,7 @@ public class TemplateRepresentation extends WriterRepresentation {
      * 
      * @see Resolver
      */
-    private class ResolverContext implements
-            org.apache.velocity.context.Context {
+    private class ResolverContext implements org.apache.velocity.context.Context {
         /** The inner resolver instance. */
         private final Resolver<? extends Object> resolver;
 
@@ -75,15 +74,9 @@ public class TemplateRepresentation extends WriterRepresentation {
             this.resolver = resolver;
         }
 
-        /**
-         * Indicates whether the specified key is in the context.
-         * 
-         * @param key
-         *            The key to look for.
-         * @Return True if the key is in the context, false otherwise.
-         */
-        public boolean containsKey(Object key) {
-            return this.resolver.resolve((String) key) != null;
+        @Override
+        public boolean containsKey(String key) {
+            return get(key) != null;
         }
 
         /**
@@ -102,7 +95,8 @@ public class TemplateRepresentation extends WriterRepresentation {
          * 
          * @Return null.
          */
-        public Object[] getKeys() {
+        @Override
+        public String[] getKeys() {
             return null;
         }
 
@@ -126,7 +120,8 @@ public class TemplateRepresentation extends WriterRepresentation {
          *            The name of the value to remove.
          * @return null.
          */
-        public Object remove(Object value) {
+        @Override
+        public Object remove(String key) {
             return null;
         }
 
