@@ -81,6 +81,9 @@ public class DimensionReader extends HeaderReader<Dimension> {
             } else if (value
                     .equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
                 result = Dimension.CLIENT_AGENT;
+            } else if (value
+                    .equalsIgnoreCase(HeaderConstants.HEADER_ORIGIN)) {
+                result = Dimension.ORIGIN;
             } else if (value.equals("*")) {
                 result = Dimension.UNSPECIFIED;
             }
