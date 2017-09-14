@@ -1,0 +1,38 @@
+<#include "/header.ftl"/>
+<#global content>
+<div style="width:440px;">
+	<h4>Create a new user.</h4>
+    <form action="${resourceRef}" method="post" accept-charset="UTF-8">
+		<#if errorMessage??>
+		<div class="error">${errorMessage}</div>
+		</#if>
+		<table>
+			<tr>
+				<td>First name:</td>
+				<td><input type="text" name="firstName" /></td>
+			</tr>
+			<tr>
+				<td>Last name:</td>
+				<td><input type="text" name="lastName" /></td>
+			</tr>
+			<tr>
+				<td>Image:</td>
+				<td><input type="text" name="image" size="40" /></td>
+			</tr>
+		</table>
+		<p><input type="submit" name="createUser" title="Create a new User" value="Create" /></p>
+    </form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">Users</a></h3>
+      <ul>
+	<#list users as user> 
+         <li><a href="<@concatUris parentUri=resourceRef relativeUri=user.id!"" />">${user.firstName!"-"} ${user.lastName!"-"}</a></li>
+	</#list>
+      </ul>
+   </div>
+</#global>
+<#include "/footer.ftl"/>
