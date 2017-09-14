@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed NPE in JAX-RS backend when request's entity has no media type. Issue #1271.
          Reported by Thomas Mortagne.
+       - Fixed support of HTTP proxy over SSL. Issue #1274.
+         Reported by Jean-Christophe Malapert.
 
 - 2.3.10 (05/28/2017)
     - Bugs fixed

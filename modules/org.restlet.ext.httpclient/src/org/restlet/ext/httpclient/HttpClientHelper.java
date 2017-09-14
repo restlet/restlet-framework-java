@@ -58,6 +58,7 @@ import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
@@ -123,14 +124,20 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * <tr>
  * <td>proxyHost</td>
  * <td>String</td>
- * <td>System property "http.proxyHost"</td>
+ * <td>System property "http.proxyHost" or "https.proxyHost"</td>
  * <td>The host name of the HTTP proxy.</td>
  * </tr>
  * <tr>
  * <td>proxyPort</td>
  * <td>int</td>
- * <td>System property "http.proxyPort" or "3128"</td>
+ * <td>System property "http.proxyPort" or "https.proxyPort" or "3128"</td>
  * <td>The port of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyScheme</td>
+ * <td>String</td>
+ * <td>If System property "https.proxyPort" is set, "https", otherwise "http"</td>
+ * <td>The scheme used to communicate with the the HTTP proxy ("http" or "https").</td>
  * </tr>
  * <tr>
  * <td>retryHandler</td>
@@ -258,7 +265,7 @@ public class HttpClientHelper extends
 
         String httpProxyHost = getProxyHost();
         if (httpProxyHost != null) {
-            HttpHost proxy = new HttpHost(httpProxyHost, getProxyPort(), "https");
+            HttpHost proxy = new HttpHost(httpProxyHost, getProxyPort(), getProxyScheme());
             params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
     }
@@ -420,8 +427,11 @@ public class HttpClientHelper extends
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        return getHelpedParameters().getFirstValue("proxyHost",
-                System.getProperty("http.proxyHost"));
+        if (doesSystemPropertiesDefineHttpsProxy()) {
+            return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("https.proxyHost"));            
+        } else {
+            return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("http.proxyHost"));
+        }
     }
 
     /**
@@ -430,8 +440,32 @@ public class HttpClientHelper extends
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "proxyPort", System.getProperty("http.proxyPort", "3128")));
+        if (doesSystemPropertiesDefineHttpsProxy()) {
+            return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort", System.getProperty("https.proxyPort", "3128")));
+        } else {
+            return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort", System.getProperty("http.proxyPort", "3128")));
+        }
+    }
+
+    /**
+     * Returns the scheme used to communicate with the HTTP proxy.
+     * 
+     * @return the scheme used to communicate with the HTTP proxy.
+     */
+    public String getProxyScheme() {
+        if (doesSystemPropertiesDefineHttpsProxy()) {
+            return getHelpedParameters().getFirstValue("proxyScheme", "https");
+        } else {
+            return getHelpedParameters().getFirstValue("proxyScheme", "http");
+        }
+    }
+    
+    /**
+     * Indicates if the System properties defines a HTTP proxy over SSL.
+     * @return true if the System properties defines a HTTP proxy over SSL.
+     */
+    private boolean doesSystemPropertiesDefineHttpsProxy() {
+        return StringUtils.isNullOrEmpty(System.getProperty("https.proxyHost"));
     }
 
     /**

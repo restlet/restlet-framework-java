@@ -37,6 +37,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.controller.ConnectionController;
 import org.restlet.ext.nio.internal.state.ConnectionState;
@@ -55,13 +56,13 @@ import org.restlet.ext.nio.internal.state.ConnectionState;
  * <tr>
  * <td>proxyHost</td>
  * <td>String</td>
- * <td>System property "http.proxyHost"</td>
+ * <td>System property "http.proxyHost" or "https.proxyHost"</td>
  * <td>The host name of the HTTP proxy.</td>
  * </tr>
  * <tr>
  * <td>proxyPort</td>
  * <td>int</td>
- * <td>System property "http.proxyPort"</td>
+ * <td>System property "http.proxyPort" or "https.proxyPort"</td>
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
@@ -317,14 +318,18 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         return result;
     }
 
+
     /**
      * Returns the host name of the HTTP proxy, if specified.
      * 
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        return getHelpedParameters().getFirstValue("proxyHost",
-                System.getProperty("http.proxyHost"));
+        if (doesSystemPropertiesDefineHttpsProxy()) {
+            return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("https.proxyHost"));            
+        } else {
+            return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("http.proxyHost"));
+        }
     }
 
     /**
@@ -333,14 +338,19 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        String proxyPort = getHelpedParameters().getFirstValue("proxyPort",
-                System.getProperty("http.proxyPort"));
-
-        if (proxyPort == null) {
-            proxyPort = "3128";
+        if (doesSystemPropertiesDefineHttpsProxy()) {
+            return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort", System.getProperty("https.proxyPort", "3128")));
+        } else {
+            return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort", System.getProperty("http.proxyPort", "3128")));
         }
+    }
 
-        return Integer.parseInt(proxyPort);
+    /**
+     * Indicates if the System properties defines a HTTP proxy over SSL.
+     * @return true if the System properties defines a HTTP proxy over SSL.
+     */
+    private boolean doesSystemPropertiesDefineHttpsProxy() {
+        return StringUtils.isNullOrEmpty(System.getProperty("https.proxyHost"));
     }
 
     /**
@@ -365,7 +375,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         // Does this helper relies on a proxy?
         String proxyDomain = getProxyHost();
 
-        if (proxyDomain != null && !"".equals(proxyDomain)) {
+        if (!StringUtils.isNullOrEmpty(proxyDomain)) {
             hostDomain = proxyDomain;
             try {
                 hostPort = getProxyPort();
