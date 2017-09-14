@@ -14,15 +14,15 @@ http://restlet.com
 
 To learn more about Restlet Framework, please have a look at the following resources:
 
-* [User Guide](http://restlet.com/technical-resources/restlet-framework/guide/2.3)
-* [Tutorials](http://restlet.com/technical-resources/restlet-framework/tutorials/2.3)
-* [JavaDocs](http://restlet.com/technical-resources/restlet-framework/javadocs/2.3)
-* [Change Log](http://restlet.com/technical-resources/restlet-framework/misc/2.3/changes)
+* [User Guide](http://restlet.com/technical-resources/restlet-framework/guide/2.4)
+* [Tutorials](http://restlet.com/technical-resources/restlet-framework/tutorials/2.4)
+* [JavaDocs](http://restlet.com/technical-resources/restlet-framework/javadocs/2.4)
+* [Change Log](http://restlet.com/technical-resources/restlet-framework/misc/2.4/changes)
 * [Download](http://restlet.com/downloads/current/)
 * [Issue Tracker](https://github.com/restlet/restlet-framework-java/issues)
 * [Mailing List](https://groups.google.com/a/restlet.org/forum/#!forum/framework-discuss)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2015 Restlet
+Copyright 2017 Restlet
 
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java)
+[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.4)](https://travis-ci.org/restlet/restlet-framework-java)
