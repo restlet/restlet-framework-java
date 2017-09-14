@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.restlet.jse</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>2.4-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.restlet.ext.jetty</artifactId>
+	<name>Restlet Extension - Jetty</name>
+	<description>Integration with Jetty.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-client</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-core</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-http-common</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-http-server</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.spdy</groupId>
+			<artifactId>spdy-server</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>9.2.14.v20151106</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+				
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jse</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>2.4-SNAPSHOT</version>
+			
+		</dependency>
+	</dependencies>
+</project>
