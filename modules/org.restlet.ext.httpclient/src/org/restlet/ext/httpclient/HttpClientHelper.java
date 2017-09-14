@@ -258,7 +258,7 @@ public class HttpClientHelper extends
 
         String httpProxyHost = getProxyHost();
         if (httpProxyHost != null) {
-            HttpHost proxy = new HttpHost(httpProxyHost, getProxyPort());
+            HttpHost proxy = new HttpHost(httpProxyHost, getProxyPort(), "https");
             params.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
     }
