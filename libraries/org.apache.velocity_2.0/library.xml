@@ -8,7 +8,7 @@
 
 	<package name="org.apache.velocity">
 		<maven>
-			<artifactId>velocity</artifactId>
+			<artifactId>velocity-engine-core</artifactId>
 		</maven>
 	</package>
 	<distributions>

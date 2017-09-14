@@ -8,8 +8,8 @@
 
 	<package name="org.apache.commons.lang">
 		<maven>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</maven>
 	</package>
 	<distributions>
