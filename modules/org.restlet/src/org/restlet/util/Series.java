@@ -37,14 +37,13 @@ import org.restlet.Context;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class
- * uses the Parameter class as the template type. This allows you to use an
+ * uses the {@link NamedValue} class as the template type. This allows you to use an
  * instance of this class as any other java.util.List, in particular all the
  * helper methods in java.util.Collections.
  * 
  * @author Jerome Louvel
  * @param <T>
  *            The contained type
- * @see org.restlet.data.Parameter
  * @see java.util.Collections
  * @see java.util.List
  */
