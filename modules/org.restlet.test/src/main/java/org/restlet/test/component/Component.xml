@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component xmlns="http://restlet.org/schemas/2.0/Component"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://restlet.org/schemas/2.0/Component">
+
+	<client protocol="FILE" name="file client" />
+	<client protocols="HTTP HTTPS" name="http client" />
+	<server protocols="HTTP HTTPS" name="http server" />
+
+	<defaultHost>
+		<attach uriPattern="/abcd/{xyz}"
+			targetClass="org.restlet.test.MyApplication" />
+		<attach uriPattern="/efgh/{xyz}"
+			targetDescriptor="clap://class/org.restlet.test.MyApplication.wadl" />
+	</defaultHost>
+
+</component>
