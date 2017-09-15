@@ -5,36 +5,24 @@
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.engine.local;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 import org.restlet.Client;
 import org.restlet.Request;
@@ -48,22 +36,34 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
 /**
  * ZIP and JAR client connector. Only works for archives available as local
  * files.<br>
  * <br>
  * Handles GET, HEAD and PUT request on resources referenced as :
  * zip:file://<file path>
- * 
+ *
  * @author Remi Dewitte <remi@gide.net>
  */
 public class ZipClientHelper extends LocalClientHelper {
 
     /**
      * Constructor.
-     * 
+     *
      * @param client
-     *            The helped client.
+     *         The helped client.
      */
     public ZipClientHelper(Client client) {
         super(client);
@@ -74,17 +74,17 @@ public class ZipClientHelper extends LocalClientHelper {
     /**
      * Handles a call for a local entity. By default, only GET and HEAD methods
      * are implemented.
-     * 
+     *
      * @param request
-     *            The request to handle.
+     *         The request to handle.
      * @param response
-     *            The response to update.
+     *         The response to update.
      * @param decodedPath
-     *            The URL decoded entity path.
+     *         The URL decoded entity path.
      */
     @Override
     protected void handleLocal(Request request, Response response,
-            String decodedPath) {
+                               String decodedPath) {
         int spi = decodedPath.indexOf("!/");
         String fileUri;
         String entryName;
@@ -119,20 +119,20 @@ public class ZipClientHelper extends LocalClientHelper {
 
     /**
      * Handles a GET call.
-     * 
+     *
      * @param request
-     *            The request to answer.
+     *         The request to answer.
      * @param response
-     *            The response to update.
+     *         The response to update.
      * @param file
-     *            The Zip archive file.
+     *         The Zip archive file.
      * @param entryName
-     *            The Zip archive entry name.
+     *         The Zip archive entry name.
      * @param metadataService
-     *            The metadata service.
+     *         The metadata service.
      */
     protected void handleGet(Request request, Response response, File file,
-            String entryName, final MetadataService metadataService) {
+                             String entryName, final MetadataService metadataService) {
 
         if (!file.exists()) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -191,18 +191,18 @@ public class ZipClientHelper extends LocalClientHelper {
 
     /**
      * Handles a PUT call.
-     * 
+     *
      * @param request
-     *            The request to answer.
+     *         The request to answer.
      * @param response
-     *            The response to update.
+     *         The response to update.
      * @param file
-     *            The Zip archive file.
+     *         The Zip archive file.
      * @param entryName
-     *            The Zip archive entry name.
+     *         The Zip archive entry name.
      */
     protected void handlePut(Request request, Response response, File file,
-            String entryName) {
+                             String entryName) {
         boolean zipExists = file.exists();
         ZipOutputStream zipOut = null;
 
@@ -255,8 +255,9 @@ public class ZipClientHelper extends LocalClientHelper {
                     response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
                     return;
                 } finally {
-                    if (zipOut != null)
+                    if (zipOut != null) {
                         zipOut.close();
+                    }
                 }
                 response.setStatus(Status.SUCCESS_CREATED);
             } else {
@@ -264,15 +265,13 @@ public class ZipClientHelper extends LocalClientHelper {
                     response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
                             "Directory cannot be replaced by a file or file by a directory.");
                 } else {
-                    File writeTo = null;
+                    File writeTo;
                     ZipFile zipFile = null;
                     try {
                         writeTo = File.createTempFile("restlet_zip_", "zip");
                         zipFile = new ZipFile(file);
-                        zipOut = new ZipOutputStream(new BufferedOutputStream(
-                                new FileOutputStream(writeTo)));
-                        Enumeration<? extends ZipEntry> entries = zipFile
-                                .entries();
+                        zipOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(writeTo)));
+                        Enumeration<? extends ZipEntry> entries = zipFile.entries();
                         boolean replaced = false;
                         while (entries.hasMoreElements()) {
                             ZipEntry e = entries.nextElement();
@@ -281,9 +280,9 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                IoUtils.copy(
-                                        new BufferedInputStream(zipFile
-                                                .getInputStream(e)), zipOut);
+                                try (final BufferedInputStream zipStream = new BufferedInputStream(zipFile.getInputStream(e))) {
+                                    IoUtils.copy(zipStream, zipOut);
+                                }
                                 zipOut.closeEntry();
                             }
                         }
@@ -294,17 +293,20 @@ public class ZipClientHelper extends LocalClientHelper {
                         zipOut.close();
                     } finally {
                         try {
-                            if (zipFile != null)
+                            if (zipFile != null) {
                                 zipFile.close();
+                            }
                         } finally {
-                            if (zipOut != null)
+                            if (zipOut != null) {
                                 zipOut.close();
+                            }
                         }
                     }
 
                     if (!(IoUtils.delete(file) && writeTo.renameTo(file))) {
-                        if (!file.exists())
+                        if (!file.exists()) {
                             file.createNewFile();
+                        }
                         FileInputStream fis = null;
                         FileOutputStream fos = null;
                         try {
@@ -316,11 +318,13 @@ public class ZipClientHelper extends LocalClientHelper {
                             response.setStatus(Status.SUCCESS_OK);
                         } finally {
                             try {
-                                if (fis != null)
+                                if (fis != null) {
                                     fis.close();
+                                }
                             } finally {
-                                if (fos != null)
+                                if (fos != null) {
                                     fos.close();
+                                }
                             }
                         }
                     } else {
@@ -330,34 +334,35 @@ public class ZipClientHelper extends LocalClientHelper {
             }
         } catch (Exception e) {
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
-            return;
         }
     }
 
     /**
      * Writes an entity to a given ZIP output stream with a given ZIP entry
      * name.
-     * 
+     *
      * @param entity
-     *            The entity to write.
+     *         The entity to write.
      * @param out
-     *            The ZIP output stream.
+     *         The ZIP output stream.
      * @param entryName
-     *            The ZIP entry name.
+     *         The ZIP entry name.
      * @return True if the writing was successful.
      * @throws IOException
      */
     private boolean writeEntityStream(Representation entity,
-            ZipOutputStream out, String entryName) throws IOException {
+                                      ZipOutputStream out, String entryName) throws IOException {
         if (entity != null && !entryName.endsWith("/")) {
             ZipEntry entry = new ZipEntry(entryName);
-            if (entity.getModificationDate() != null)
+            if (entity.getModificationDate() != null) {
                 entry.setTime(entity.getModificationDate().getTime());
-            else {
+            } else {
                 entry.setTime(System.currentTimeMillis());
             }
             out.putNextEntry(entry);
-            IoUtils.copy(new BufferedInputStream(entity.getStream()), out);
+            try (final BufferedInputStream entityStream = new BufferedInputStream(entity.getStream())) {
+                IoUtils.copy(entityStream, out);
+            }
             out.closeEntry();
             return true;
         }
