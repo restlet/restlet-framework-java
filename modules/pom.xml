@@ -214,11 +214,9 @@
     </licenses>
 
     <build>
-        <sourceDirectory>${basedir}/src</sourceDirectory>
         <resources>
             <resource>
                 <filtering>false</filtering>
-                <directory>${basedir}/src</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>
