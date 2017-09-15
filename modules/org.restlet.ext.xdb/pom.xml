@@ -8,11 +8,17 @@
         <version>2.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.restlet.ext.wadl</artifactId>
-    <name>Restlet Extension - WADL</name>
-    <description>Support for the WADL specification.</description>
+    <artifactId>org.restlet.ext.xdb</artifactId>
+    <name>Restlet Extension - Oracle XML DB</name>
+    <description>Integration within OracleJVM via the Oracle XML DB feature.</description>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
@@ -21,13 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.e4</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.xml</artifactId>
+            <artifactId>org.restlet.ext.servlet</artifactId>
             <version>2.4-SNAPSHOT</version>
 
         </dependency>

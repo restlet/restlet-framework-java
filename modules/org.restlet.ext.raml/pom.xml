@@ -1,101 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.restlet.dev</groupId>
-		<artifactId>org.restlet.parent</artifactId>
-		<version>2.4-SNAPSHOT</version>
-	</parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.restlet.dev</groupId>
+        <artifactId>org.restlet.parent</artifactId>
+        <version>2.4-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>org.restlet.ext.raml</artifactId>
-	<name>Restlet Extension - Raml</name>
-	<description>Support for the RAML specification.</description>
+    <artifactId>org.restlet.ext.raml</artifactId>
+    <name>Restlet Extension - Raml</name>
+    <description>Support for the RAML specification.</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>org.raml</groupId>
-			<artifactId>raml-parser</artifactId>
-			<version>0.8.7</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-csv</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-smile</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jsonSchema</artifactId>
-			<version>2.4.4</version>
-				
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>2.4-SNAPSHOT</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.jackson</artifactId>
-			<version>2.4-SNAPSHOT</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.apispark</artifactId>
-			<version>2.4-SNAPSHOT</version>
-			
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.raml</groupId>
+            <artifactId>raml-parser</artifactId>
+            <version>0.8.19</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-smile</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jsonSchema</artifactId>
+            <version>2.4.4</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.dev</groupId>
+            <artifactId>org.restlet</artifactId>
+            <version>2.4-SNAPSHOT</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.dev</groupId>
+            <artifactId>org.restlet.ext.jackson</artifactId>
+            <version>2.4-SNAPSHOT</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.dev</groupId>
+            <artifactId>org.restlet.ext.apispark</artifactId>
+            <version>2.4-SNAPSHOT</version>
+
+        </dependency>
+    </dependencies>
 </project>

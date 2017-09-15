@@ -8,26 +8,26 @@
         <version>2.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.restlet.ext.wadl</artifactId>
-    <name>Restlet Extension - WADL</name>
-    <description>Support for the WADL specification.</description>
+    <artifactId>org.restlet.ext.servlet</artifactId>
+    <name>Restlet Extension - Servlet</name>
+    <description>Integration with Servlet API.</description>
 
     <dependencies>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.dev</groupId>
+            <artifactId>org.restlet.ext.osgi</artifactId>
+            <version>2.4-SNAPSHOT</version>
+
+        </dependency>
+        <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.e4</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.xml</artifactId>
             <version>2.4-SNAPSHOT</version>
 
         </dependency>

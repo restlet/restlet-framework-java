@@ -8,26 +8,20 @@
         <version>2.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.restlet.ext.wadl</artifactId>
-    <name>Restlet Extension - WADL</name>
-    <description>Support for the WADL specification.</description>
+    <artifactId>org.restlet.ext.gae</artifactId>
+    <name>Restlet Extension - GAE</name>
+    <description>Integration to the Google App Engine UserService for the GAE edition.</description>
 
     <dependencies>
         <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <version>1.9.15</version>
+
+        </dependency>
+        <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.e4</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.xml</artifactId>
             <version>2.4-SNAPSHOT</version>
 
         </dependency>

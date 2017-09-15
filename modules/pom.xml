@@ -140,13 +140,16 @@
     <modules>
         <module>org.restlet</module>
         <module>org.restlet.example</module>
+        <module>org.restlet.ext.apispark</module>
         <module>org.restlet.ext.atom</module>
         <module>org.restlet.ext.crypto</module>
         <module>org.restlet.ext.e4</module>
         <module>org.restlet.ext.emf</module>
         <module>org.restlet.ext.fileupload</module>
         <module>org.restlet.ext.freemarker</module>
+        <module>org.restlet.ext.gae</module>
         <module>org.restlet.ext.gson</module>
+        <module>org.restlet.ext.guice</module>
         <module>org.restlet.ext.gwt</module>
         <module>org.restlet.ext.html</module>
         <module>org.restlet.ext.httpclient</module>
@@ -165,11 +168,12 @@
         <module>org.restlet.ext.oauth</module>
         <module>org.restlet.ext.odata</module>
         <module>org.restlet.ext.openid</module>
-        <!--<module>org.restlet.ext.osgi</module>-->
+        <module>org.restlet.ext.osgi</module>
+        <module>org.restlet.ext.raml</module>
         <module>org.restlet.ext.rdf</module>
         <module>org.restlet.ext.rome</module>
         <module>org.restlet.ext.sdc</module>
-        <!--<module>org.restlet.ext.servlet</module>-->
+        <module>org.restlet.ext.servlet</module>
         <module>org.restlet.ext.simple</module>
         <module>org.restlet.ext.sip</module>
         <module>org.restlet.ext.slf4j</module>
@@ -178,7 +182,7 @@
         <module>org.restlet.ext.thymeleaf</module>
         <module>org.restlet.ext.velocity</module>
         <module>org.restlet.ext.wadl</module>
-        <!--<module>org.restlet.ext.xdb</module>-->
+        <module>org.restlet.ext.xdb</module>
         <module>org.restlet.ext.xml</module>
         <module>org.restlet.ext.xstream</module>
     </modules>
@@ -228,6 +232,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
