@@ -60,6 +60,9 @@ public class CodeBlockFilter extends FilterReader {
     private static final Pattern startBlockPattern = Pattern
             .compile("\\s*//\\s*\\[(?<def>ifdef|ifndef) (?<editions>.*)\\s*\\](?<parameters>.*)");
 
+    private static final Pattern excludeBlockPattern = Pattern
+            .compile("\\s*//\\s*\\[exclude (?<editions>.*)\\s*\\]");
+
     private static final Pattern rangeWithUncommentPattern = Pattern.compile("\\s*(?<range>\\w*)\\s*uncomment\\s*");
 
     private static final Pattern rangePattern = Pattern.compile("\\s*(?<range>\\w+)\\s*");
@@ -117,23 +120,19 @@ public class CodeBlockFilter extends FilterReader {
     }
 
     public int read(char[] cbuf, int off, int len) throws IOException {
-        int fillCount = 0;
+        int nbRead = 0;
 
         for (int i = off; i < off + len; i++) {
             int next = this.read();
             if (next == -1) {
-                return -1;
+                break;
             }
 
             cbuf[i] = (char) next;
-            fillCount++;
+            nbRead++;
         }
 
-        if (fillCount == 0) {
-            fillCount = -1;
-        }
-
-        return fillCount;
+        return (nbRead == 0)? -1 : nbRead;
     }
 
     /**
@@ -147,6 +146,10 @@ public class CodeBlockFilter extends FilterReader {
 
         if (currentLine == null) {
             return null;
+        }
+
+        if (excludeBlockPattern.matcher(currentLine).matches()) {
+            currentLine = readNextLine();
         }
 
         // Indicates if the incoming lines are to be ignored.

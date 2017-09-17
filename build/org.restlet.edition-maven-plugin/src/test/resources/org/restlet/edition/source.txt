@@ -1,4 +1,5 @@
-  ligne 1 
+  // [exclude jse]
+  ligne 1
   // [ifdef jse]
   ligne 2 
   ligne 3 

@@ -12,15 +12,15 @@ import junit.framework.TestCase;
 public class CodeBlockFilterTest extends TestCase {
 
     public void testCodeFilterJse() throws IOException {
-        Reader expectedReader = new InputStreamReader(getClass().getResourceAsStream("source.jse.java"));
-        Reader sourceToFilterReader = new InputStreamReader(getClass().getResourceAsStream("source.java"));
+        Reader expectedReader = new InputStreamReader(getClass().getResourceAsStream("source.jse.txt"));
+        Reader sourceToFilterReader = new InputStreamReader(getClass().getResourceAsStream("source.txt"));
 
         assertEquals(readAll(expectedReader), readAll(new CodeBlockFilter(sourceToFilterReader, "jse")));
     }
 
     public void testCodeFilterGwt() throws IOException {
-        Reader expectedReader = new InputStreamReader(getClass().getResourceAsStream("source.gwt.java"));
-        Reader sourceToFilterReader = new InputStreamReader(getClass().getResourceAsStream("source.java"));
+        Reader expectedReader = new InputStreamReader(getClass().getResourceAsStream("source.gwt.txt"));
+        Reader sourceToFilterReader = new InputStreamReader(getClass().getResourceAsStream("source.txt"));
 
         assertEquals(readAll(expectedReader), readAll(new CodeBlockFilter(sourceToFilterReader, "gwt")));
     }

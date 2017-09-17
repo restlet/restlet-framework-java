@@ -1,4 +1,4 @@
-  ligne 1 
+  ligne 1
   ligne 4 
   ligne 5 
   ligne 6 
