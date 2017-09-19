@@ -1,6 +1,6 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in

@@ -24,18 +24,6 @@
 
 package org.restlet.engine.local;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.LocalReference;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.ReferenceList;
-import org.restlet.data.Status;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Representation;
-import org.restlet.service.MetadataService;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -47,6 +35,18 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.LocalReference;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.ReferenceList;
+import org.restlet.data.Status;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
 
 /**
  * ZIP and JAR client connector. Only works for archives available as local

@@ -24,11 +24,6 @@
 
 package org.restlet.representation;
 
-import org.restlet.Context;
-import org.restlet.data.Digest;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.util.WrapperRepresentation;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +36,11 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
+
+import org.restlet.Context;
+import org.restlet.data.Digest;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation capable of computing a digest. It wraps another representation
