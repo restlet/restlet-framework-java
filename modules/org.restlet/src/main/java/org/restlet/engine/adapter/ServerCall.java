@@ -118,7 +118,7 @@ public abstract class ServerCall extends Call {
      * accessible.
      *
      * @return The chain of client SSL certificates, if available and
-     * accessible.
+     *         accessible.
      */
     public List<Certificate> getCertificates() {
         return null;
@@ -245,10 +245,8 @@ public abstract class ServerCall extends Call {
                     result.setDisposition(new DispositionReader(header
                             .getValue()).readValue());
                 } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Content-Disposition header parsing. Header: "
-                                    + header.getValue(), ioe);
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Error during Content-Disposition header parsing. Header: " + header.getValue(), ioe);
                 }
             }
         }
@@ -293,7 +291,7 @@ public abstract class ServerCall extends Call {
      * accessible.
      *
      * @return The SSL session ID, in hexadecimal encoding, if available and
-     * accessible.
+     *         accessible.
      */
     public String getSslSessionId() {
         byte[] byteArray = getSslSessionIdBytes();
@@ -310,7 +308,7 @@ public abstract class ServerCall extends Call {
      * in that format (to be used by getSslSessionId).
      *
      * @return The SSL session ID, as a byte array, if available and accessible
-     * in that format.
+     *         in that format.
      */
     protected byte[] getSslSessionIdBytes() {
         return null;
@@ -503,7 +501,7 @@ public abstract class ServerCall extends Call {
      * @throws IOException
      */
     protected void writeResponseBody(Representation entity,
-                                     OutputStream responseEntityStream) throws IOException {
+            OutputStream responseEntityStream) throws IOException {
         // Send the entity to the client
         if (responseEntityStream != null) {
             entity.write(responseEntityStream);

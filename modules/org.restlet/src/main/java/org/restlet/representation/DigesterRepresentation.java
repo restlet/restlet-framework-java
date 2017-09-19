@@ -87,7 +87,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * @throws NoSuchAlgorithmException
      */
     public DigesterRepresentation(Representation wrappedRepresentation,
-                                  String algorithm) throws NoSuchAlgorithmException {
+            String algorithm) throws NoSuchAlgorithmException {
         super(wrappedRepresentation);
         this.algorithm = algorithm;
         this.computedDigest = MessageDigest.getInstance(algorithm);

@@ -84,7 +84,7 @@ public class ZipClientHelper extends LocalClientHelper {
      */
     @Override
     protected void handleLocal(Request request, Response response,
-                               String decodedPath) {
+            String decodedPath) {
         int spi = decodedPath.indexOf("!/");
         String fileUri;
         String entryName;
@@ -132,7 +132,7 @@ public class ZipClientHelper extends LocalClientHelper {
      *         The metadata service.
      */
     protected void handleGet(Request request, Response response, File file,
-                             String entryName, final MetadataService metadataService) {
+            String entryName, final MetadataService metadataService) {
 
         if (!file.exists()) {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -202,7 +202,7 @@ public class ZipClientHelper extends LocalClientHelper {
      *         The Zip archive entry name.
      */
     protected void handlePut(Request request, Response response, File file,
-                             String entryName) {
+            String entryName) {
         boolean zipExists = file.exists();
         ZipOutputStream zipOut = null;
 
@@ -351,7 +351,7 @@ public class ZipClientHelper extends LocalClientHelper {
      * @throws IOException
      */
     private boolean writeEntityStream(Representation entity,
-                                      ZipOutputStream out, String entryName) throws IOException {
+            ZipOutputStream out, String entryName) throws IOException {
         if (entity != null && !entryName.endsWith("/")) {
             ZipEntry entry = new ZipEntry(entryName);
             if (entity.getModificationDate() != null) {

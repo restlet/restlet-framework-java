@@ -79,7 +79,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      *         The annotation value.
      */
     public MethodAnnotationInfo(Class<?> javaClass, Method restletMethod,
-                                java.lang.reflect.Method javaMethod, String annotationValue) {
+            java.lang.reflect.Method javaMethod, String annotationValue) {
         super(javaClass, javaMethod, annotationValue);
         this.restletMethod = restletMethod;
 
@@ -209,7 +209,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      * @throws IOException
      */
     public List<Variant> getRequestVariants(MetadataService metadataService,
-                                            org.restlet.service.ConverterService converterService)
+            org.restlet.service.ConverterService converterService)
             throws IOException {
         List<Variant> result = null;
         Class<?>[] classes = getJavaInputTypes();
@@ -243,7 +243,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      * @throws IOException
      */
     public List<Variant> getResponseVariants(MetadataService metadataService,
-                                             org.restlet.service.ConverterService converterService)
+            org.restlet.service.ConverterService converterService)
             throws IOException {
         List<Variant> result = null;
 
@@ -283,7 +283,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      * @return A list of variants.
      */
     private List<Variant> getVariants(MetadataService metadataService,
-                                      String annotationValue) {
+            String annotationValue) {
         List<Variant> result = null;
 
         if (annotationValue != null) {
@@ -385,8 +385,8 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      * @throws IOException
      */
     public boolean isCompatible(Method restletMethod, Form queryParams,
-                                Representation requestEntity, MetadataService metadataService,
-                                org.restlet.service.ConverterService converterService)
+            Representation requestEntity, MetadataService metadataService,
+            org.restlet.service.ConverterService converterService)
             throws IOException {
         boolean result = true;
 
@@ -430,8 +430,8 @@ public class MethodAnnotationInfo extends AnnotationInfo {
      * @throws IOException
      */
     public boolean isCompatibleRequestEntity(Representation requestEntity,
-                                             MetadataService metadataService,
-                                             org.restlet.service.ConverterService converterService)
+            MetadataService metadataService,
+            org.restlet.service.ConverterService converterService)
             throws IOException {
         boolean result = true;
 

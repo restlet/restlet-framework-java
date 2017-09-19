@@ -688,7 +688,7 @@ public class StringUtils {
      * @return List of tokens.
      */
     public static List<String> splitAndTrim(String stringToSplit,
-                                            String splitCharacter) {
+            String splitCharacter) {
         List<String> list = new ArrayList<>();
         // StringTokenizer is 3 times more performant than String#split.
         StringTokenizer st = new StringTokenizer(stringToSplit, splitCharacter);
@@ -725,7 +725,7 @@ public class StringUtils {
      * @return The stripped source string.
      */
     public static String strip(String source, char delimiter, boolean start,
-                               boolean end) {
+            boolean end) {
         int beginIndex = 0;
         int endIndex = source.length();
         boolean stripping = true;
