@@ -16,6 +16,7 @@
 	</package>
 	<distributions>
 		<distribution id="classic" />
+		<distribution id="maven" />
 	</distributions>
 	<javadocs>
 		<link href="http://simple.sourceforge.net/download/stream/doc/javadoc/" />
