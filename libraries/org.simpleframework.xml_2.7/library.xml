@@ -9,9 +9,9 @@
 
 	<package name="org.simpleframework.xml">
 		<maven>
-			<groupId>org.simpleframework</groupId>
-			<artifactId>simple-xml</artifactId>
-			<version>2.7.1</version>
+			<groupId>org.restlet.lib</groupId>
+			<artifactId>org.simpleframework.simple-xml</artifactId>
+			<version>2.7.2</version>
 		</maven>
 	</package>
 	<distributions>
