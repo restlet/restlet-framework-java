@@ -3,7 +3,7 @@
 Changes log
 ===========
 
-@version-full@ (@release-date@)
+- 2.3.11 (09/28/2017)
     - Bugs fixed
        - Fixed NPE in JAX-RS backend when request's entity has no media type. Issue #1271.
          Reported by Thomas Mortagne.
