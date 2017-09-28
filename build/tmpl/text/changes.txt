@@ -7,9 +7,12 @@ Changes log
     - Bugs fixed
        - Fixed NPE in JAX-RS backend when request's entity has no media type. Issue #1271.
          Reported by Thomas Mortagne.
+       - XEE injection security fix in Jax-rs extension. Issue #1286.
+         Reported by Man Yue Mo.
     - Enhancements
        - Added support of Header Origin and Origin dimension. Issue #1275.
          Reported and contributed by adolski.
+
 - 2.3.10 (05/28/2017)
     - Bugs fixed
        - Invalid max-age value for cookie settings replaced by Integer.MAX_VALUE constant. Issue #1251.
