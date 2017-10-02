@@ -4,4 +4,7 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - XEE injection security in XML extension.
+         Reported by Man Yue Mo.
 
