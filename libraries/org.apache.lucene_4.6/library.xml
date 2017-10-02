@@ -16,6 +16,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://lucene.apache.org/java/2_9_2/api/core/" />
+		<link href="http://lucene.apache.org/core/2_9_2/api/core/" />
 	</javadocs>
 </library>

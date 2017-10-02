@@ -16,6 +16,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://java.sun.com/products/javamail/javadocs/" />
+<!--		<link href="http://java.sun.com/products/javamail/javadocs/" /> -->
 	</javadocs>
 </library>

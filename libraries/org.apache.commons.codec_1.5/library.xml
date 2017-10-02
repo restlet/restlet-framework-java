@@ -16,6 +16,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://commons.apache.org/codec/apidocs/" />
+		<link href="http://commons.apache.org/proper/commons-codec/apidocs/" />
 	</javadocs>
 </library>

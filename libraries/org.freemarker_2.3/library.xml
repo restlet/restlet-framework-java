@@ -16,6 +16,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://freemarker.sourceforge.net/docs/api/" />
+		<link href="http://freemarker.org/docs/api/" />
 	</javadocs>
 </library>
