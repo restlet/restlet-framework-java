@@ -4,6 +4,9 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+       - XEE injection security in XML extension.
+         Reported by Man Yue Mo.
 
 - 2.3.11 (09/28/2017)
     - Bugs fixed

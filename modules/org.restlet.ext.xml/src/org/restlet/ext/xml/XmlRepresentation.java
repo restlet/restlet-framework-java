@@ -370,7 +370,10 @@ public abstract class XmlRepresentation extends WriterRepresentation
             dbf.setNamespaceAware(isNamespaceAware());
             dbf.setValidating(isValidatingDtd());
             dbf.setCoalescing(isCoalescing());
-            dbf.setExpandEntityReferences(isExpandingEntityRefs());
+            dbf.setExpandEntityReferences(false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities",isExpandingEntityRefs());
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities",isExpandingEntityRefs());
+            
             dbf.setIgnoringComments(isIgnoringComments());
             dbf.setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
 
