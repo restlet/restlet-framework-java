@@ -18,6 +18,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://lucene.apache.org/tika/0.6/api/" />
+		<link href="http://tika.apache.org/1.4/api/" />
 	</javadocs>
 </library>

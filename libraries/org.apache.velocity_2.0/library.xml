@@ -17,7 +17,6 @@
 	<dependency type="library" id="collections" />
 	<dependency type="library" id="lang" />
 	<javadocs>
-		<link
-			href="http://velocity.apache.org/engine/releases/velocity-${lib-velocity-version}/apidocs/" />
+		<link href="http://velocity.apache.org/engine/${lib-velocity-version}/apidocs/" />
 	</javadocs>
 </library>
