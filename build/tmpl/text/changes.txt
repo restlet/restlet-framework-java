@@ -3,6 +3,10 @@
 Changes log
 ===========
 
+@version-full@ (@release-date@)
+    - Misc
+      - Refreshed copyright headers
+
 - 2.3.12 (10/02/2017)
     - Bugs fixed
        - XEE injection security in XML extension.
@@ -161,6 +165,7 @@ Changes log
     - Misc
        - Completed the Javadocs for query parameter declarations inside
          HTTP method annotations such as @Get("json?param=val).
+
 
     - Enhancements
       - Allowed to turn off header cleaning in Redirector for server-side

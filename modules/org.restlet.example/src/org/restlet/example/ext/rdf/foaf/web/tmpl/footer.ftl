@@ -21,7 +21,7 @@
       </div>
       <div id="footer">
          <a href="http://restlet.com" title="Restlet site"><img src="${rootRef}/images/logos/logo100" alt="Logo Restlet" /></a>
-         <small>Copyright 2005-2014 <a href="http://restlet.com" title="Restlet site">Restlet</a></small>
+         <small>Copyright 2005-2017 <a href="http://restlet.com" title="Restlet site">Restlet</a></small>
       </div>	
    </body>
 </html>
