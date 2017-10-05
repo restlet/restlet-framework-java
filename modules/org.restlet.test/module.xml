@@ -31,7 +31,7 @@
 		<dependency type="module" id="jetty" includes="jse" />
 		<dependency type="module" id="json" />
 		<dependency type="module" id="lucene" />
-		<dependency type="module" id="nio" includes="jse" />
+		<dependency type="module" id="nio" />
 		<dependency type="module" id="oauth" includes="jse" />
 		<dependency type="module" id="odata" />
 		<dependency type="module" id="rdf" />
