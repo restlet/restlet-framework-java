@@ -17,35 +17,35 @@
     <source edition="android">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+         <exclude name="src/main/java/org/restlet/ext/jackson/internal/Activator.java" />
 ]]>
         </files-sets>
     </source>
     <source edition="gae">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+         <exclude name="src/main/java/org/restlet/ext/jackson/internal/Activator.java" />
 ]]>
         </files-sets>
     </source>
     <source edition="gwt">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+         <exclude name="src/main/java/org/restlet/ext/jackson/internal/Activator.java" />
 ]]>
         </files-sets>
     </source>
     <source edition="jee">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+         <exclude name="src/main/java/org/restlet/ext/jackson/internal/Activator.java" />
 ]]>
         </files-sets>
     </source>
     <source edition="jse">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/jackson/internal/Activator.java" />
+         <exclude name="src/main/java/org/restlet/ext/jackson/internal/Activator.java" />
 ]]>
         </files-sets>
     </source>
@@ -55,5 +55,4 @@
                     ]]>
         </files-sets>
     </source>
-    <wikiUri>299-restlet</wikiUri>
 </module>

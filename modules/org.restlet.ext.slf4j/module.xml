@@ -11,5 +11,4 @@
 		<dependency type="library" id="slf4j" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<wikiUri>316-restlet</wikiUri>
 </module>

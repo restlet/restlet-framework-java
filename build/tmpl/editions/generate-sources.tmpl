@@ -6,12 +6,13 @@
 </#noparse>
 <#list edition.modules as module>
       <!-- copy and filter the java source code -->
-      <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true" includeEmptyDirs="false">
+      <copy todir="<#noparse>${mod}</#noparse>/${module.package}/src" overwrite="true" includeEmptyDirs="false">
          <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
-            <include name="**/*.java" />
+            <include name="src/main/java/**/*.java" />
+            <include name="src/main/${editionKey}/**/*.java" />
          </fileset>
-   <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+         <chainedmapper><cutdirsmapper dirs="3"/><#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)>${module.source[editionKey].mappers}</#if></chainedmapper>
          <filterchain>
             <filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
                <param name="edition" value="${editionKey}" />
@@ -20,8 +21,8 @@
          </filterchain>
       </copy>
       <!-- copy and filter the non Java code -->
-      <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true" includeEmptyDirs="false">
-         <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
+      <copy todir="<#noparse>${mod}</#noparse>/${module.package}/src" overwrite="true" includeEmptyDirs="false">
+         <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" includes="src/main/java/**/*,src/main/resources/**/*,src/main/${editionKey}/**/*" excludes="bin/**">
    <#compress>
          <#list editions?keys as ed>
             <#if ed != edition.id><exclude name="**/*.${ed}*" /></#if>
@@ -30,7 +31,7 @@
    <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
             <exclude name="**/*.java" />
          </fileset>
-   <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+         <chainedmapper><cutdirsmapper dirs="3"/><#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)>${module.source[editionKey].mappers}</#if></chainedmapper>
    <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)><filterchain>${module.source[editionKey].filters}</filterchain></#if>
       </copy>
    <#if module.primaryLibrary??>

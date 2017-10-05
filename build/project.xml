@@ -14,7 +14,6 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>../editions/jse/</wikiUri>
 	</edition>
 	<edition id="jee">
 		<label>
@@ -32,7 +31,6 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>../editions/jee/</wikiUri>
 	</edition>
 	<edition id="osgi">
 		<label>
@@ -49,7 +47,6 @@
 			<distribution id="maven" />
 			<distribution id="p2" />
 		</distributions>
-		<wikiUri>../editions/osgi/</wikiUri>
 	</edition>
 	<edition id="gae">
 		<label>
@@ -66,7 +63,6 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>../editions/gae/</wikiUri>
 	</edition>
 	<edition id="gwt">
 		<label>
@@ -98,7 +94,6 @@
       <replace dir="${mod}/${module.package}" includes="**/.project" token="org.restlet.client" value="org.restlet.${edition}" />
 ]]>
 		</postSource>
-		<wikiUri>../editions/gwt/</wikiUri>
 	</edition>
 	<edition id="android">
 		<label>
@@ -116,6 +111,5 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>../editions/android/</wikiUri>
 	</edition>
 </editions>

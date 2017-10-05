@@ -17,5 +17,4 @@
         <dependency type="module" id="xml"/>
         <dependency type="module" id="json"/>
     </dependencies>
-    <wikiUri>404-restlet</wikiUri>
 </module>

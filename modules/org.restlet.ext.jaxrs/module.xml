@@ -23,21 +23,20 @@
 	<source edition="gae">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/FileProvider.java" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="android">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/AbstractJaxbProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/DataSourceProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileUploadProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbElementProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/JaxbProvider.java" />
-         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/MultipartProvider.java" />        
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/AbstractJaxbProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/DataSourceProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/FileUploadProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/JaxbElementProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/JaxbProvider.java" />
+         <exclude name="src/main/java/org/restlet/ext/jaxrs/internal/provider/MultipartProvider.java" />        
 ]]>
 		</files-sets>
 	</source>
-	<wikiUri>57-restlet</wikiUri>
 </module>

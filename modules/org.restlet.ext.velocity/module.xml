@@ -13,5 +13,4 @@
 		<dependency type="library" id="velocity" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<wikiUri>71-restlet</wikiUri>
 </module>

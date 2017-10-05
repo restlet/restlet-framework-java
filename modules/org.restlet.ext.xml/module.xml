@@ -18,9 +18,9 @@
 		</files-mappers>
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/xml/SaxRepresentation.java" />
-         <exclude name="src/org/restlet/ext/xml/Transformer.java" />
-         <exclude name="src/org/restlet/ext/xml/TransformRepresentation.java" />
+         <exclude name="src/main/java/org/restlet/ext/xml/SaxRepresentation.java" />
+         <exclude name="src/main/java/org/restlet/ext/xml/Transformer.java" />
+         <exclude name="src/main/java/org/restlet/ext/xml/TransformRepresentation.java" />
 ]]>
 		</files-sets>
 	</source>
@@ -35,12 +35,11 @@
          <custom classname="selector.EditionFileSelector" classpathref="forge-path">
             <param name="edition" value="gwt"/>
          </custom>
-         <exclude name="src/org/restlet/ext/xml/*.java" />
-         <exclude name="src/org/restlet/ext/xml/internal/**" />
-         <exclude name="src/META-INF/**" />
+         <exclude name="src/main/java/org/restlet/ext/xml/*.java" />
+         <exclude name="src/main/java/org/restlet/ext/xml/internal/**" />
+         <exclude name="src/main/resources/META-INF/**" />
 ]]>
 		</files-sets>
 	</source>
 	<stage edition="gwt" includesource="true" />
-	<wikiUri>317-restlet</wikiUri>
 </module>

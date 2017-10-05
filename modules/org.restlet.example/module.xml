@@ -43,7 +43,7 @@
 		<files-sets>
 <![CDATA[
         <exclude name="OSGI-INF/*" />
-        <exclude name="src/org/restlet/example/ext/osgi/**" />
+        <exclude name="src/main/java/org/restlet/example/ext/osgi/**" />
 ]]>
 		</files-sets>
 	</source>
@@ -51,7 +51,7 @@
 		<files-sets>
 <![CDATA[
         <exclude name="OSGI-INF/*" /> 
-        <exclude name="src/org/restlet/example/ext/osgi/**" />
+        <exclude name="src/main/java/org/restlet/example/ext/osgi/**" />
 ]]>
 		</files-sets>
 	</source>

@@ -12,7 +12,4 @@
 		<dependency type="library" id="aopalliance" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<!--
-	<wikiUri>66-restlet</wikiUri>
-	-->
 </module>

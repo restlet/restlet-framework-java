@@ -17,18 +17,17 @@
 	<source edition="android">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/odata/Generator.java" />
-         <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
+         <exclude name="src/main/java/org/restlet/ext/odata/Generator.java" />
+         <exclude name="src/main/java/org/restlet/ext/odata/internal/templates/**" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="gae">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/odata/Generator.java" />
-         <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
+         <exclude name="src/main/java/org/restlet/ext/odata/Generator.java" />
+         <exclude name="src/main/java/org/restlet/ext/odata/internal/templates/**" />
 ]]>
 		</files-sets>
 	</source>
-	<wikiUri>287-restlet</wikiUri>
 </module>

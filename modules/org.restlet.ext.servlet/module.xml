@@ -19,8 +19,8 @@
 		<files-sets>
 <![CDATA[
         <exclude name="OSGI-INF*" />
-        <exclude name="src/org/restlet/ext/servlet/ApplicationServlet.java" />
-        <exclude name="src/org/restlet/ext/servlet/RestletServletService.java" />
+        <exclude name="src/main/java/org/restlet/ext/servlet/ApplicationServlet.java" />
+        <exclude name="src/main/java/org/restlet/ext/servlet/RestletServletService.java" />
 ]]>
 		</files-sets>
 	</source>
@@ -28,10 +28,9 @@
 		<files-sets>
 <![CDATA[
         <exclude name="OSGI-INF*" /> 
-        <exclude name="src/org/restlet/ext/servlet/ApplicationServlet.java" />
-        <exclude name="src/org/restlet/ext/servlet/RestletServletService.java" />
+        <exclude name="src/main/java/org/restlet/ext/servlet/ApplicationServlet.java" />
+        <exclude name="src/main/java/org/restlet/ext/servlet/RestletServletService.java" />
 ]]>
 		</files-sets>
 	</source>
-	<wikiUri>81-restlet</wikiUri>
 </module>

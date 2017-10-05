@@ -16,9 +16,8 @@
    <source edition="jse">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/gwt/GwtShellServletWrapper.java" />
+         <exclude name="src/main/java/org/restlet/ext/gwt/GwtShellServletWrapper.java" />
 ]]>
       </files-sets>
    </source>
-   <wikiUri>315-restlet</wikiUri>
 </module>

@@ -10,5 +10,4 @@
 		<dependency type="module" id="core" />
 		<dependency type="library" id="appengine" />
 	</dependencies>
-	<wikiUri>405-restlet</wikiUri>
 </module>

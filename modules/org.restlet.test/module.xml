@@ -54,7 +54,7 @@
 <![CDATA[
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
-         <exclude name="src/org/restlet/test/gwt/**" />
+         <exclude name="src/main/java/org/restlet/test/gwt/**" />
 ]]>
 		</files-sets>
 	</source>
@@ -63,14 +63,14 @@
 <![CDATA[
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
-         <exclude name="src/org/restlet/test/gwt/**" />
-         <exclude name="src/org/restlet/test/engine/BaseConnectorsTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/ChunkedEncodingPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/ChunkedEncodingTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/GetTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/GetChunkedTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/PostPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/RemoteClientAddressTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/gwt/**" />
+         <exclude name="src/main/java/org/restlet/test/engine/BaseConnectorsTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/ChunkedEncodingPutTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/ChunkedEncodingTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/GetTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/GetChunkedTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/PostPutTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/RemoteClientAddressTestCase.java" />
 ]]>
 		</files-sets>
 	</source>
@@ -79,8 +79,8 @@
 <![CDATA[
          <include name="tomcat/**" />
          <include name="target/**" />
-         <include name="src/org/restlet/test/gwt/**" />
-         <exclude name="src/org/restlet/test/ext/odata/**" />
+         <include name="src/main/java/org/restlet/test/gwt/**" />
+         <exclude name="src/main/java/org/restlet/test/ext/odata/**" />
 ]]>
 		</files-sets>
 	</source>
@@ -89,24 +89,24 @@
 <![CDATA[
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
-         <exclude name="src/org/restlet/test/bench/**" />
-         <exclude name="src/org/restlet/test/gwt/**" />
-         <exclude name="src/org/restlet/test/engine/connector/BaseConnectorsTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/GetChunkedTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/GetQueryParamTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/GetTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/PostPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/RemoteClientAddressTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/SslBaseConnectorsTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/SslClientContextGetTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/connector/SslGetTestCase.java" />
-         <exclude name="src/org/restlet/test/ext/jaxrs/QueryTestCase*" />
-         <exclude name="src/org/restlet/test/resource/*" />
-         <exclude name="src/org/restlet/test/service/StatusServiceTestCase.java" />
-         <exclude name="src/org/restlet/test/ext/ssl/**" />
-         <exclude name="src/org/restlet/test/ext/oauth/**" />
+         <exclude name="src/main/java/org/restlet/test/bench/**" />
+         <exclude name="src/main/java/org/restlet/test/gwt/**" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/BaseConnectorsTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/ChunkedEncodingPutTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/ChunkedEncodingTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/GetChunkedTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/GetQueryParamTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/GetTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/PostPutTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/RemoteClientAddressTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/SslBaseConnectorsTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/SslClientContextGetTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/engine/connector/SslGetTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/ext/jaxrs/QueryTestCase*" />
+         <exclude name="src/main/java/org/restlet/test/resource/*" />
+         <exclude name="src/main/java/org/restlet/test/service/StatusServiceTestCase.java" />
+         <exclude name="src/main/java/org/restlet/test/ext/ssl/**" />
+         <exclude name="src/main/java/org/restlet/test/ext/oauth/**" />
 ]]>
 		</files-sets>
 	</source>
@@ -115,8 +115,8 @@
 <![CDATA[
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
-         <exclude name="src/org/restlet/test/gwt/**" />
-         <exclude name="src/org/restlet/test/ext/xdb/**" />
+         <exclude name="src/main/java/org/restlet/test/gwt/**" />
+         <exclude name="src/main/java/org/restlet/test/ext/xdb/**" />
 ]]>
 		</files-sets>
 	</source>
