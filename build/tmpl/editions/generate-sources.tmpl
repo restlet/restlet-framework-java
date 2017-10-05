@@ -34,8 +34,8 @@
    <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)><filterchain>${module.source[editionKey].filters}</filterchain></#if>
       </copy>
    <#if module.primaryLibrary??>
-      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />
-      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html,**/package-info.java" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html,**/package-info.java" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
    </#if>
    <#if edition.postSource??>${edition.postSource?replace("\\$\\{module\\.package\\}", module.package, "r")}</#if>
       <if>
