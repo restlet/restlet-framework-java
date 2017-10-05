@@ -13,5 +13,4 @@
 		<dependency type="module" id="core" />
 		<dependency type="module" id="servlet" includes="gae,jee" />
 	</dependencies>
-	<wikiUri>64-restlet</wikiUri>
 </module>

@@ -16,5 +16,4 @@
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="apispark" />
 	</dependencies>
-	<!--<wikiUri>xx-tobedefined</wikiUri> -->
 </module>

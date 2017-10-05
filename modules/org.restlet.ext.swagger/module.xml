@@ -18,7 +18,6 @@
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="apispark" />
 	</dependencies>
-<!--	<wikiUri>xx-tobedefined</wikiUri> -->
 <!-- Remove some classes to be refactored. -->
 	<source edition="android">
 		<files-sets>
