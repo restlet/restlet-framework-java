@@ -37,7 +37,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Defines a potential value for a parent parameter description.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class OptionInfo extends DocumentedInfo {
 
     /** Value of this option element. */

@@ -28,7 +28,9 @@ package org.restlet.ext.wadl;
  * Enumerates the supported styles of parameters.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public enum ParameterStyle {
 
     HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;

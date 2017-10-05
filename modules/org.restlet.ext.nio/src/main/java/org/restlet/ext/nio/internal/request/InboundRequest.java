@@ -33,7 +33,9 @@ import org.restlet.util.Series;
  * Marker interface for inbound requests.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public interface InboundRequest {
 
     /**

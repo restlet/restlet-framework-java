@@ -35,7 +35,9 @@ import org.restlet.representation.Representation;
  * Solr content stream wrapping a Restlet representation.
  * 
  * @author Rémi Dewitte <remi@gide.net>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SolrRepresentationContentStream implements ContentStream {
 
     /** The wrapped representation. */

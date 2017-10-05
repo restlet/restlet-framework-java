@@ -72,7 +72,9 @@ import org.restlet.ext.nio.internal.request.InboundRequest;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     /** The server socket channel. */

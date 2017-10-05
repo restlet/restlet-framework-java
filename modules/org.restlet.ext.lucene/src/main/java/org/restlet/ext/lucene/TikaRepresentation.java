@@ -49,7 +49,9 @@ import org.xml.sax.SAXException;
  * wanted.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class TikaRepresentation extends SaxRepresentation {
 
     /** The Tika metadata used for both input and output. */

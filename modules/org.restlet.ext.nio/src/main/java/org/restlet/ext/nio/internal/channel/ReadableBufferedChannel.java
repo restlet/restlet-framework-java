@@ -37,7 +37,9 @@ import org.restlet.ext.nio.internal.util.CompletionListener;
  * Readable byte channel based on a source socket channel that must only be
  * partially read. It is capable of first using the remaining buffer before
  * reading more.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ReadableBufferedChannel extends
         BufferedSelectionChannel<ReadableSelectionChannel> implements
         ReadableSelectionChannel, CompletionListener {

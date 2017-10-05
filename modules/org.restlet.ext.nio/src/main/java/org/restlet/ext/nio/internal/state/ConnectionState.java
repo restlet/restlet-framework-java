@@ -28,7 +28,9 @@ package org.restlet.ext.nio.internal.state;
  * Enumeration of the states of a connection.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public enum ConnectionState {
 
     /** The network connection has been successfully closed. */

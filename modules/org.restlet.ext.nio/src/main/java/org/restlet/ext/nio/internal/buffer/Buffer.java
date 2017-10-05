@@ -38,7 +38,9 @@ import org.restlet.ext.nio.internal.util.NioUtils;
  * Wrapper around a byte buffer and its state.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class Buffer {
 
     /**

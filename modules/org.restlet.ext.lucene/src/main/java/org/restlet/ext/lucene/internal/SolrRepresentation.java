@@ -41,7 +41,9 @@ import org.restlet.representation.WriterRepresentation;
  * or JSON.
  * 
  * @author Remi Dewitte <remi@gide.net>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SolrRepresentation extends WriterRepresentation {
 
     /** The wrapped Solr query request. */

@@ -47,7 +47,9 @@ import org.restlet.util.Series;
  * Client-side inbound way.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class ClientInboundWay extends InboundWay {
 
     /**

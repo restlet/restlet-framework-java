@@ -45,7 +45,9 @@ import org.w3c.dom.NodeList;
  * the {@link JavaMailClientHelper} class.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class RepresentationMessage extends MimeMessage {
 
     /**

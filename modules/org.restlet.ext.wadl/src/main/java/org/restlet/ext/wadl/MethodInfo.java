@@ -48,7 +48,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes the expected requests and responses of a resource method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class MethodInfo extends DocumentedInfo {
 
     /**

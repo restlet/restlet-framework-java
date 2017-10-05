@@ -35,7 +35,9 @@ import org.restlet.Request;
  * Solr query request wrapping a Restlet request.
  * 
  * @author Remi Dewitte <remi@gide.net>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SolrRestletQueryRequest extends SolrQueryRequestBase {
 
     /**

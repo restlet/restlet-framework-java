@@ -52,7 +52,9 @@ import org.restlet.util.Series;
  * are invoked, like {@link #describe()} and delegate methods.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class WadlServerResource extends ServerResource {
 
     /**

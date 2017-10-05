@@ -34,7 +34,9 @@ import org.restlet.util.SelectionRegistration;
 /**
  * Readable byte channel based on a source socket channel that must only be
  * partially read.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class WritableSocketChannel extends WrapperSocketChannel implements
         WritableSelectionChannel {
 

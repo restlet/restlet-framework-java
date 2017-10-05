@@ -39,7 +39,9 @@ import org.xml.sax.SAXException;
  * or Relax NG standards.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class GrammarsInfo extends DocumentedInfo {
 
     /** Definitions of data format descriptions to be included by reference. */

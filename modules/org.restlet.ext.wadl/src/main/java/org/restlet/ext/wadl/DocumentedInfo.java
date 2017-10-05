@@ -34,7 +34,9 @@ import org.w3c.dom.Node;
 /**
  * Superclass of WADL elements that supports dcumentation.
  * 
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class DocumentedInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;

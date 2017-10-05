@@ -38,7 +38,9 @@ import org.restlet.ext.nio.internal.state.IoState;
  * HTTP server outbound way.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class HttpServerOutboundWay extends ServerOutboundWay {
 
     /** The queue of messages. */

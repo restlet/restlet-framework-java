@@ -34,7 +34,9 @@ import org.restlet.ext.nio.internal.connection.SslConnection;
  * HTTPS client inbound way.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class HttpsClientInboundWay extends HttpClientInboundWay {
 
     /**

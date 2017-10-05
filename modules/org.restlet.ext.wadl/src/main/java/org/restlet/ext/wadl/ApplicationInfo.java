@@ -38,7 +38,9 @@ import org.xml.sax.SAXException;
  * Root of a WADL description document.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ApplicationInfo extends DocumentedInfo {
 
     /** Container for definitions of the format of data exchanged. */

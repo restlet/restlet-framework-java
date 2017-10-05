@@ -44,7 +44,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes a class of closely related resources.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ResourceInfo extends DocumentedInfo {
 
     /**

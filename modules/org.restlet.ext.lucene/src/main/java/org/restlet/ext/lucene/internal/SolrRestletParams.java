@@ -34,7 +34,9 @@ import org.restlet.data.Form;
  * Wrap Restlet query parameters as Solr params.
  * 
  * @author Remi Dewitte <remi@gide.net>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SolrRestletParams extends SolrParams {
 
     private static final long serialVersionUID = 1L;

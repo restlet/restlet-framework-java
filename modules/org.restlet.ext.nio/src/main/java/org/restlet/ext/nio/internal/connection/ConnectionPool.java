@@ -35,7 +35,9 @@ import org.restlet.ext.nio.ConnectionHelper;
  * A connection pool to prevent to recreation of heavy byte buffers.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
 
     /** The parent helper. */

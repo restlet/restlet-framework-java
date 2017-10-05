@@ -34,7 +34,9 @@ import org.restlet.resource.ServerResource;
  * {@link ServerResource} or better {@link WadlServerResource} instances.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public interface WadlDescribable {
 
     /**

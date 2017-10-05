@@ -38,7 +38,9 @@ import org.restlet.ext.nio.internal.connection.Connection;
  * HTTP server inbound way.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class HttpServerInboundWay extends ServerInboundWay {
 
     /** The queue of messages. */

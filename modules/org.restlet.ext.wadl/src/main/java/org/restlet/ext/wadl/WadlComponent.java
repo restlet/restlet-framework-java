@@ -42,7 +42,9 @@ import org.restlet.representation.Representation;
  * should be especially careful when storing state in member variables.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class WadlComponent extends Component {
 
     /**

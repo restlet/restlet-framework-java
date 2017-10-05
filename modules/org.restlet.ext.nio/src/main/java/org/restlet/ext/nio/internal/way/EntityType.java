@@ -28,7 +28,9 @@ package org.restlet.ext.nio.internal.way;
  * Enumeration of entity IO types.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public enum EntityType {
 
     /** NIO blocking byte channel. */

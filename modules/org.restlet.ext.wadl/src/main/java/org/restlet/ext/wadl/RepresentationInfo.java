@@ -42,7 +42,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes a variant representation for a target resource.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class RepresentationInfo extends DocumentedInfo {
 
     /** Identifier for that element. */

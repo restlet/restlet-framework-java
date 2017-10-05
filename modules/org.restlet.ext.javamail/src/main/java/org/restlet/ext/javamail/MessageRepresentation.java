@@ -48,7 +48,9 @@ import org.w3c.dom.Element;
  * XML representation of a JavaMail message.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class MessageRepresentation extends DomRepresentation {
 
     /**

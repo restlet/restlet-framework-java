@@ -47,7 +47,9 @@ import org.restlet.util.SelectionRegistration;
  * Input stream connected to a non-blocking readable channel.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ChannelInputStream extends InputStream implements BufferProcessor {
 
     /** The internal byte buffer. */

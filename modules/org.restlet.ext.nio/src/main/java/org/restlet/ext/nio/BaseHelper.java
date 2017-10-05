@@ -171,7 +171,9 @@ import org.restlet.ext.nio.internal.controller.ConnectionController;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class BaseHelper<T extends Connector> extends
         ConnectorHelper<T> {
 

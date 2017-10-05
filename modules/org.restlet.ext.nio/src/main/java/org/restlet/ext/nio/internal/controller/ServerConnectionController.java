@@ -45,7 +45,9 @@ import org.restlet.ext.nio.internal.connection.Connection;
  * Listens on a server socket channel for incoming connections.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ServerConnectionController extends ConnectionController {
 
     /** The latch to countdown when the socket is ready to accept connections. */

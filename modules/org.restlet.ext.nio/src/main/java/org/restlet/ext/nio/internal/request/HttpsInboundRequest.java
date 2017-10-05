@@ -37,7 +37,9 @@ import org.restlet.ext.nio.internal.connection.SslConnection;
  * Request wrapper for server HTTPS calls.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class HttpsInboundRequest extends HttpInboundRequest {
 
     /**

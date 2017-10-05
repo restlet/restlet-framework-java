@@ -51,7 +51,9 @@ import org.w3c.dom.Node;
  * located in mails.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class TriggerResource extends ServerResource {
 
     public static final String ATTRIBUTE_MAILBOX_CHALLENGE_SCHEME = "org.restlet.ext.javamail.mailbox.authentication.scheme";

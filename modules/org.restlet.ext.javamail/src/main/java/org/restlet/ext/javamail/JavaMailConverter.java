@@ -42,7 +42,9 @@ import org.w3c.dom.DOMException;
  * MessageRepresentation.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class JavaMailConverter extends ConverterHelper {
 
     @Override

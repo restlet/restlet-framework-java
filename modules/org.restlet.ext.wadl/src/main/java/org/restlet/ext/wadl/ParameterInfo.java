@@ -40,7 +40,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * element.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ParameterInfo extends DocumentedInfo {
 
     /** Default value of this parameter. */

@@ -35,7 +35,9 @@ import org.restlet.engine.util.StringUtils;
 // [excludes gwt]
 /**
  * Readable byte channel capable of encoding chunked entities.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ReadableChunkingChannel extends
         WrapperChannel<ReadableByteChannel> implements ReadableByteChannel {
 

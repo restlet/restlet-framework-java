@@ -31,7 +31,9 @@ import java.nio.channels.Channel;
  * Wrapper channel.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class WrapperChannel<T extends Channel> implements Channel {
 
     /** The wrapped channel. */

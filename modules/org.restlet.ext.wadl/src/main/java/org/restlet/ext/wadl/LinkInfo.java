@@ -38,7 +38,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Allows description of links between representations and resources.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class LinkInfo extends DocumentedInfo {
     /**
      * Identifies the relationship of the resource identified by the link to the
