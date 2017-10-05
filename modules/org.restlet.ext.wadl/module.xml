@@ -19,21 +19,21 @@
 	<source edition="gae">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+         <exclude name="src/main/java/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="jee">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+         <exclude name="src/main/java/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="jse">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+         <exclude name="src/main/java/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
 ]]>
 		</files-sets>
 	</source>

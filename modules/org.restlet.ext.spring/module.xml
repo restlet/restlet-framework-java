@@ -18,7 +18,7 @@
     <source edition="jse">
         <files-sets>
             <![CDATA[
-         <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
+         <exclude name="src/main/java/org/restlet/ext/spring/*Servlet.java" />
 ]]>
         </files-sets>
     </source>

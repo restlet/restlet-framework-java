@@ -10,11 +10,11 @@
 
 	<dependencies>
 		<dependency type="library" id="slf4j" />
-		<dependency type="library" id="raml" />
+		<dependency type="library" id="raml" primary="true" />
 		<dependency type="library" id="jackson" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="apispark" />
 	</dependencies>
-	<wikiUri>xx-tobedefined</wikiUri>
+	<!--<wikiUri>xx-tobedefined</wikiUri> -->
 </module>
