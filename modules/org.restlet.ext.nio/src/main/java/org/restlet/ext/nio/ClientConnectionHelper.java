@@ -73,7 +73,9 @@ import org.restlet.ext.nio.internal.state.ConnectionState;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     protected static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";

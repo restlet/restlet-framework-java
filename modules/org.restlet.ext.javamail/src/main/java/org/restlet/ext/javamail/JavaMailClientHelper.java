@@ -142,7 +142,9 @@ import com.sun.mail.pop3.POP3Folder;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class JavaMailClientHelper extends ClientHelper {
 
     /**

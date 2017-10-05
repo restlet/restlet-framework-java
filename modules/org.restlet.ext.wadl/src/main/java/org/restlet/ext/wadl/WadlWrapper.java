@@ -33,7 +33,9 @@ import org.restlet.util.WrapperRestlet;
  * WADL documentation for instances of classes such as {@link Directory}.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class WadlWrapper extends WrapperRestlet implements
         WadlDescribable {
 

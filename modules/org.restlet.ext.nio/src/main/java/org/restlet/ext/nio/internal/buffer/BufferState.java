@@ -29,7 +29,9 @@ package org.restlet.ext.nio.internal.buffer;
  * non-blocking filling.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public enum BufferState {
 
     /** Buffer or builder ready for reading or draining. */

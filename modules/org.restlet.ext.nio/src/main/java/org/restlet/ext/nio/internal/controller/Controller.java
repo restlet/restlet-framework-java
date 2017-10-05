@@ -34,7 +34,9 @@ import org.restlet.ext.nio.ConnectionHelper;
  * Controls the IO work of parent connector helper.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class Controller {
 
     /** The parent connector helper. */

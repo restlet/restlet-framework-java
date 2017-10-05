@@ -40,7 +40,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes the properties of a response associated to a parent method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ResponseInfo extends DocumentedInfo {
 
     /** List of parameters. */

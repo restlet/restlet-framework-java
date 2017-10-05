@@ -35,7 +35,9 @@ import org.restlet.util.SelectionRegistration;
 // [excludes gwt]
 /**
  * Byte channel wrapping a byte buffer.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class BufferedSelectionChannel<T extends SelectionChannel>
         extends WrapperSelectionChannel<T> implements BufferProcessor {
 

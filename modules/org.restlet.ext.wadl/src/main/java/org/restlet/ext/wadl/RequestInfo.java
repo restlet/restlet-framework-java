@@ -37,7 +37,9 @@ import org.xml.sax.SAXException;
  * Describes the properties of a request associated to a parent method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class RequestInfo extends DocumentedInfo {
 
     /** List of parameters. */

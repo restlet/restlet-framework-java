@@ -38,7 +38,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes a reusable type of resources.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ResourceTypeInfo extends DocumentedInfo {
 
     /** Identifier for that element. */

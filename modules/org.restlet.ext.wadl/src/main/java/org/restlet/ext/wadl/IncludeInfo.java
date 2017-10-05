@@ -38,7 +38,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Allows inclusion of grammars by reference.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class IncludeInfo extends DocumentedInfo {
 
     /** URI for the referenced definitions. */

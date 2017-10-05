@@ -48,7 +48,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Document WADL description elements.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class DocumentationInfo {
 
     /** The language of that documentation element. */

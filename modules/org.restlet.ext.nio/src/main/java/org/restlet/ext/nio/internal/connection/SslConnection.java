@@ -57,7 +57,9 @@ import org.restlet.ext.nio.internal.state.IoState;
  * @author Jerome Louvel
  * 
  * @param <T>
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** Whether a handshake is in progress. */

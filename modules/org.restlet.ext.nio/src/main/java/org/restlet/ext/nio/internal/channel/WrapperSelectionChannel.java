@@ -31,7 +31,9 @@ import org.restlet.util.SelectionRegistration;
  * Wrapper selection channel.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class WrapperSelectionChannel<T extends SelectionChannel> extends
         WrapperChannel<T> implements SelectionChannel {
 

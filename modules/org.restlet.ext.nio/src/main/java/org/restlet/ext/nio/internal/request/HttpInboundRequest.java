@@ -68,7 +68,9 @@ import org.restlet.util.Series;
  * Request wrapper for server HTTP calls.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class HttpInboundRequest extends Request implements InboundRequest {
     /**
      * Adds a new header to the given request.

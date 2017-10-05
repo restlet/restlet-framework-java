@@ -29,7 +29,9 @@ package org.restlet.ext.nio.internal.state;
  * outbound IO states.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public enum IoState {
 
     /** No activity going on. */

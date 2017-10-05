@@ -39,7 +39,9 @@ import org.restlet.ext.nio.internal.util.CompletionListener;
 // [excludes gwt]
 /**
  * Readable byte channel capable of decoding chunked entities.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
     /** The chunk state. */

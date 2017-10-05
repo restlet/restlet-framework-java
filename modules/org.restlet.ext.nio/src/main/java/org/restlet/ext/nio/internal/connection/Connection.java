@@ -58,7 +58,9 @@ import org.restlet.util.SelectionRegistration;
  * @param <T>
  *            The parent connector type.
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class Connection<T extends Connector> implements SelectionListener {
 
     /** The parent connector helper. */

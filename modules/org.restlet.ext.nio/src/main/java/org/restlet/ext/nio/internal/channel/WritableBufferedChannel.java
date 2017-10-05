@@ -34,7 +34,9 @@ import org.restlet.ext.nio.internal.buffer.Buffer;
 /**
  * Writable byte channel based on a target socket channel. It is capable of
  * first filling a buffer before draining it to the target channel.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class WritableBufferedChannel extends
         BufferedSelectionChannel<WritableSelectionChannel> implements
         WritableSelectionChannel {

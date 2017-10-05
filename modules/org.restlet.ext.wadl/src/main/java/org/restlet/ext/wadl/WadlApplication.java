@@ -95,7 +95,9 @@ import org.restlet.routing.VirtualHost;
  * should be especially careful when storing state in member variables. <br>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class WadlApplication extends Application {
 
     /**

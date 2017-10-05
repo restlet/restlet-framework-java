@@ -42,7 +42,9 @@ import org.restlet.ext.nio.internal.channel.ChannelInputStream;
  * Utility methods for NIO processing.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class NioUtils {
 
     /**

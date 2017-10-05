@@ -28,7 +28,9 @@ package org.restlet.ext.nio.internal.state;
  * Enumeration of the states of the HTTP reading or writing.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public enum MessageState {
 
     /** The body is being processed. */

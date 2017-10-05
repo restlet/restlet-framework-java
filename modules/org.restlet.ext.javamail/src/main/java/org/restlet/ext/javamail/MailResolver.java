@@ -63,7 +63,9 @@ import org.w3c.dom.NodeList;
  * <td>Mail text part</li>
  * </tr>
  * </table>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class MailResolver extends Resolver<String> {
     /** Mail identifier. */
     private final String identifier;

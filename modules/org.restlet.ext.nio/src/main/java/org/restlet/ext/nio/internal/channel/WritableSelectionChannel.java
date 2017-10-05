@@ -32,7 +32,9 @@ import org.restlet.engine.io.SelectionChannel;
  * Writable byte channel that is based on a selectable channel.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public interface WritableSelectionChannel extends SelectionChannel,
         WritableByteChannel {
 

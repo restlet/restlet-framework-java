@@ -40,7 +40,9 @@ import org.restlet.resource.Resource;
  * {@link WadlRepresentation} ones.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class WadlConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_WADL = new VariantInfo(

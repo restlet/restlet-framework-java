@@ -150,7 +150,9 @@ import org.restlet.routing.VirtualHost;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public abstract class ConnectionHelper<T extends Connector> extends
         BaseHelper<T> {
     /** The connection pool. */

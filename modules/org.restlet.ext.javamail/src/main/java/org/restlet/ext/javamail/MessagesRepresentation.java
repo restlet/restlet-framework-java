@@ -40,7 +40,9 @@ import com.sun.mail.pop3.POP3Folder;
  * XML representation of a list of JavaMail messages.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class MessagesRepresentation extends DomRepresentation {
 
     /**

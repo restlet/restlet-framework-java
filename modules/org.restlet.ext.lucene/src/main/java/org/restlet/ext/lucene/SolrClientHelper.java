@@ -71,7 +71,9 @@ import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
  * "DefaultCore" which gives default core for "solr:///..." requests.
  * 
  * @author Remi Dewitte <remi@gide.net>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SolrClientHelper extends ClientHelper {
 
     public final static Protocol SOLR_PROTOCOL = new Protocol("solr", "Solr",

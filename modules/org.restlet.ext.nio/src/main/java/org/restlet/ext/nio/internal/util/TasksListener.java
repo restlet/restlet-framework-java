@@ -28,7 +28,9 @@ package org.restlet.ext.nio.internal.util;
  * Callback interface used for delegated task completion.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public interface TasksListener {
 
     /**

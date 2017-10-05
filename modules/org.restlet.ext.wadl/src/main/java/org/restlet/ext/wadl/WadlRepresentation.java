@@ -64,7 +64,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * stylesheet</a> bundled which relies on EXSLT features.<br>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class WadlRepresentation extends SaxRepresentation {
 
     // -------------------

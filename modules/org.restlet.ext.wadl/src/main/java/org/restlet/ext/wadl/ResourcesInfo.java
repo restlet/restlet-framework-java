@@ -39,7 +39,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Describes the root resources of an application.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ResourcesInfo extends DocumentedInfo {
     /** Base URI for each child resource identifier. */
     private Reference baseRef;

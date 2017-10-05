@@ -47,7 +47,9 @@ import org.restlet.util.SelectionRegistration;
  * Controls the IO work of parent connector helper and manages its connections.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ConnectionController extends Controller implements Runnable,
         WakeupListener {
 

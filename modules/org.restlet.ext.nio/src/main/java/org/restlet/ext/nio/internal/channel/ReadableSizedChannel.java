@@ -35,7 +35,9 @@ import org.restlet.ext.nio.internal.util.CompletionListener;
 // [excludes gwt]
 /**
  * Readable byte channel enforcing a maximum size.
+ * @deprecated Will be removed to favor lower-level network extensions allowing more control at the Restlet API level.
  */
+@Deprecated
 public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
         implements ReadableByteChannel {
 
