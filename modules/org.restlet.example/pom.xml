@@ -26,12 +26,6 @@
 
         </dependency>
         <dependency>
-            <groupId>rome</groupId>
-            <artifactId>rome</artifactId>
-            <version>1.0</version>
-
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.8.7</version>
@@ -135,18 +129,6 @@
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.sdc</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.sip</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet.ext.spring</artifactId>
             <version>2.4-SNAPSHOT</version>
 
@@ -160,12 +142,6 @@
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
-            <version>2.4-SNAPSHOT</version>
-
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.xstream</artifactId>
             <version>2.4-SNAPSHOT</version>
 
         </dependency>

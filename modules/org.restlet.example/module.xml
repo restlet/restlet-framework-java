@@ -30,12 +30,9 @@
 		<dependency type="module" id="openid" />
 		<dependency type="module" id="osgi" includes="osgi" />
 		<dependency type="module" id="rdf" />
-		<dependency type="module" id="sdc" />
-		<dependency type="module" id="sip" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="xml" />
-		<dependency type="module" id="xstream" />
 		<dependency type="module" id="wadl" />
 	</dependencies>
 
