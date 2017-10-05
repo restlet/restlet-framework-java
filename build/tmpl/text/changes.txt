@@ -7,4 +7,4 @@ Changes log
     - Misc
       - Removed deprecated extensions e4, JDBC, JSSLUtils, ROME, SDC, SIP, XDB, XStream.
       - Deprecated extensions Javamail, Lucene, Nio, Wadl.
-
+      - Refreshed copyright headers.
