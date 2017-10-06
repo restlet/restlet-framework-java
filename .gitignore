@@ -80,3 +80,6 @@
 .DS_Store
 .idea
 target
+.classpath
+.project
+.settings
