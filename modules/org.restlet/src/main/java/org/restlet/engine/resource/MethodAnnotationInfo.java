@@ -5,20 +5,20 @@
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -46,9 +46,10 @@ import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
 // [excludes gwt]
+
 /**
  * Descriptor for method annotations.
- * 
+ *
  * @author Jerome Louvel
  */
 public class MethodAnnotationInfo extends AnnotationInfo {
@@ -67,15 +68,15 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Constructor.
-     * 
+     *
      * @param javaClass
-     *            The class or interface that hosts the annotated Java method.
+     *         The class or interface that hosts the annotated Java method.
      * @param restletMethod
-     *            The matching Restlet method.
+     *         The matching Restlet method.
      * @param javaMethod
-     *            The annotated Java method.
+     *         The annotated Java method.
      * @param annotationValue
-     *            The annotation value.
+     *         The annotation value.
      */
     public MethodAnnotationInfo(Class<?> javaClass, Method restletMethod,
             java.lang.reflect.Method javaMethod, String annotationValue) {
@@ -112,9 +113,9 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Indicates if the current object is equal to the given object.
-     * 
+     *
      * @param other
-     *            The other object.
+     *         The other object.
      * @return True if the current object includes the other.
      */
     @Override
@@ -134,7 +135,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the input part of the annotation value.
-     * 
+     *
      * @return The input part of the annotation value.
      */
     public String getInput() {
@@ -143,10 +144,9 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the generic type for the given input parameter.
-     * 
+     *
      * @param index
-     *            The input parameter index.
-     * 
+     *         The input parameter index.
      * @return The generic type.
      */
     private Class<?> getJavaInputType(int index) {
@@ -156,7 +156,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the input types of the Java method.
-     * 
+     *
      * @return The input types of the Java method.
      */
     public Class<?>[] getJavaInputTypes() {
@@ -172,7 +172,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the output type of the Java method.
-     * 
+     *
      * @return The output type of the Java method.
      */
     public Class<?> getJavaOutputType() {
@@ -182,7 +182,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the output part of the annotation value.
-     * 
+     *
      * @return The output part of the annotation value.
      */
     public String getOutput() {
@@ -191,7 +191,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the optional query part of the annotation value.
-     * 
+     *
      * @return The optional query part of the annotation value.
      */
     public String getQuery() {
@@ -199,15 +199,15 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     }
 
     // [ifndef gwt] method
+
     /**
      * Returns a list of request variants based on the annotation value.
-     * 
+     *
      * @param metadataService
-     *            The metadata service to use.
+     *         The metadata service to use.
      * @return A list of request variants.
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     public List<Variant> getRequestVariants(MetadataService metadataService,
             org.restlet.service.ConverterService converterService)
             throws IOException {
@@ -231,17 +231,17 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     }
 
     // [ifndef gwt] method
+
     /**
      * Returns a list of response variants based on the annotation value.
-     * 
+     *
      * @param metadataService
-     *            The metadata service to use.
+     *         The metadata service to use.
      * @param converterService
-     *            The converter service to use.
+     *         The converter service to use.
      * @return A list of response variants.
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     public List<Variant> getResponseVariants(MetadataService metadataService,
             org.restlet.service.ConverterService converterService)
             throws IOException {
@@ -263,7 +263,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
     /**
      * Returns the matching Restlet method.
-     * 
+     *
      * @return The matching Restlet method.
      */
     public Method getRestletMethod() {
@@ -271,14 +271,15 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     }
 
     // [ifndef gwt] method
+
     /**
      * Returns the list of representation variants associated to a given
      * annotation value, corresponding to either an input or output entity.
-     * 
+     *
      * @param metadataService
-     *            The metadata service to use.
+     *         The metadata service to use.
      * @param annotationValue
-     *            The entity annotation value.
+     *         The entity annotation value.
      * @return A list of variants.
      */
     private List<Variant> getVariants(MetadataService metadataService,
@@ -312,13 +313,13 @@ public class MethodAnnotationInfo extends AnnotationInfo {
                         for (Metadata metadata : metadataList) {
                             if (metadata instanceof MediaType) {
                                 if (mediaTypes == null) {
-                                    mediaTypes = new ArrayList<MediaType>();
+                                    mediaTypes = new ArrayList<>();
                                 }
 
                                 mediaTypes.add((MediaType) metadata);
                             } else if (metadata instanceof Language) {
                                 if (languages == null) {
-                                    languages = new ArrayList<Language>();
+                                    languages = new ArrayList<>();
                                 }
 
                                 languages.add((Language) metadata);
@@ -340,7 +341,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
                     for (MediaType mediaType : mediaTypes) {
                         if ((result == null) || (!result.contains(mediaType))) {
                             if (result == null) {
-                                result = new ArrayList<Variant>();
+                                result = new ArrayList<>();
                             }
 
                             variant = new Variant(mediaType);
@@ -362,7 +363,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
         return result;
     }
-    
+
     @Override
     public int hashCode() {
         return SystemUtils.hashCode(super.hashCode(), restletMethod);
@@ -371,15 +372,15 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     /**
      * Indicates if the annotated method described is compatible with the given
      * parameters.
-     * 
+     *
      * @param restletMethod
-     *            The Restlet method to match.
+     *         The Restlet method to match.
      * @param requestEntity
-     *            Optional request entity.
+     *         Optional request entity.
      * @param metadataService
-     *            The metadata service to use.
+     *         The metadata service to use.
      * @param converterService
-     *            The converter service to use.
+     *         The converter service to use.
      * @return True if the annotated method is compatible.
      * @throws IOException
      */
@@ -394,7 +395,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
             Form requiredParams = new Form(getQuery());
 
             for (Iterator<Parameter> iter = requiredParams.iterator(); iter
-                    .hasNext() && result;) {
+                    .hasNext() && result; ) {
                 result = queryParams.contains(iter.next());
             }
         }
@@ -417,15 +418,15 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     /**
      * Indicates if the given request entity is compatible with the annotated
      * method described.
-     * 
+     *
      * @param requestEntity
-     *            Optional request entity.
+     *         Optional request entity.
      * @param metadataService
-     *            The metadata service to use.
+     *         The metadata service to use.
      * @param converterService
-     *            The converter service to use.
+     *         The converter service to use.
      * @return True if the given request entity is compatible with the annotated
-     *         method described.
+     * method described.
      * @throws IOException
      */
     public boolean isCompatibleRequestEntity(Representation requestEntity,

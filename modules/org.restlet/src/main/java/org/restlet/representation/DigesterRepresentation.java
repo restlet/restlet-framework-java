@@ -5,20 +5,20 @@
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -52,10 +52,9 @@ import org.restlet.util.WrapperRepresentation;
  * This wrapper allows to get the computed digest at the same time the
  * representation is read or written. It does not need two separate operations
  * which may require specific attention for transient representations.
- * 
- * @see Representation#isTransient().
- * 
+ *
  * @author Jerome Louvel
+ * @see Representation#isTransient().
  */
 public class DigesterRepresentation extends WrapperRepresentation {
     /** The digest algorithm. */
@@ -68,9 +67,9 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * Constructor.<br>
      * By default, the instance relies on the {@link Digest#ALGORITHM_MD5}
      * digest algorithm.
-     * 
+     *
      * @param wrappedRepresentation
-     *            The wrapped representation.
+     *         The wrapped representation.
      * @throws NoSuchAlgorithmException
      */
     public DigesterRepresentation(Representation wrappedRepresentation)
@@ -80,11 +79,11 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     /**
      * Constructor.<br>
-     * 
+     *
      * @param wrappedRepresentation
-     *            The wrapped representation.
+     *         The wrapped representation.
      * @param algorithm
-     *            The digest algorithm.
+     *         The digest algorithm.
      * @throws NoSuchAlgorithmException
      */
     public DigesterRepresentation(Representation wrappedRepresentation,
@@ -101,9 +100,9 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * and since this method reads entirely the representation's stream, user
      * must take care of the content of the representation in case the latter is
      * transient.
-     * 
+     *
      * {@link #isTransient}
-     * 
+     *
      * @return True if both digests are not null and equals.
      */
     public boolean checkDigest() {
@@ -119,12 +118,12 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * and since this method reads entirely the representation's stream, user
      * must take care of the content of the representation in case the latter is
      * transient.
-     * 
+     *
      * {@link #isTransient}
-     * 
+     *
      * @param algorithm
-     *            The algorithm used to compute the digest to compare with. See
-     *            constant values in {@link org.restlet.data.Digest}.
+     *         The algorithm used to compute the digest to compare with. See
+     *         constant values in {@link org.restlet.data.Digest}.
      * @return True if both digests are not null and equals.
      */
     public boolean checkDigest(String algorithm) {
@@ -161,12 +160,12 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * Since this method reads entirely the representation's stream, user must
      * take care of the content of the representation in case the latter is
      * transient.
-     * 
+     *
      * {@link #isTransient}
-     * 
+     *
      * @param algorithm
-     *            The algorithm used to compute the digest. See constant values
-     *            in {@link org.restlet.data.Digest}.
+     *         The algorithm used to compute the digest. See constant values
+     *         in {@link org.restlet.data.Digest}.
      * @return The computed digest or null if the digest cannot be computed.
      */
     public Digest computeDigest(String algorithm) {
@@ -176,18 +175,13 @@ public class DigesterRepresentation extends WrapperRepresentation {
             result = getComputedDigest();
         } else if (isAvailable()) {
             try {
-                java.security.MessageDigest md = java.security.MessageDigest
-                        .getInstance(algorithm);
-                java.security.DigestInputStream dis = new java.security.DigestInputStream(
-                        getStream(), md);
-                org.restlet.engine.io.IoUtils.exhaust(dis);
+                java.security.MessageDigest md = java.security.MessageDigest.getInstance(algorithm);
+                try (java.security.DigestInputStream dis = new java.security.DigestInputStream(getStream(), md)) {
+                    org.restlet.engine.io.IoUtils.exhaust(dis);
+                }
                 result = new org.restlet.data.Digest(algorithm, md.digest());
-            } catch (java.security.NoSuchAlgorithmException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
+            } catch (NoSuchAlgorithmException | IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING, "Unable to check the digest of the representation.", e);
             }
         }
 
@@ -197,9 +191,10 @@ public class DigesterRepresentation extends WrapperRepresentation {
     /**
      * Exhausts the content of the representation by reading it and silently
      * discarding anything read.
-     * 
+     *
      * @return The number of bytes consumed or -1 if unknown.
      */
+    @Override
     public long exhaust() throws IOException {
         long result = -1L;
 
@@ -219,7 +214,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
      * Returns the current computed digest value of the representation. User
      * must be aware that, if the representation has not been entirely read or
      * written, the computed digest value may not be accurate.
-     * 
+     *
      * @return The current computed digest value.
      */
     public Digest getComputedDigest() {
@@ -233,7 +228,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     /**
      * {@inheritDoc}<br>
-     * 
+     *
      * The stream of the underlying representation is wrapped with a new
      * instance of the {@link DigestInputStream} class, which allows to compute
      * progressively the digest value.
@@ -263,7 +258,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     /**
      * {@inheritDoc}<br>
-     * 
+     *
      * The output stream is wrapped with a new instance of the
      * {@link DigestOutputStream} class, which allows to compute progressively
      * the digest value.

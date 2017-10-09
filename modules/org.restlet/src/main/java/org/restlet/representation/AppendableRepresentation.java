@@ -5,20 +5,20 @@
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -32,7 +32,7 @@ import org.restlet.data.MediaType;
 
 /**
  * Represents an appendable sequence of characters.
- * 
+ *
  * @author Jerome Louvel
  */
 public class AppendableRepresentation extends StringRepresentation implements
@@ -44,7 +44,6 @@ public class AppendableRepresentation extends StringRepresentation implements
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
-     * 
      */
     public AppendableRepresentation() {
         this(null);
@@ -53,9 +52,9 @@ public class AppendableRepresentation extends StringRepresentation implements
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
-     * 
+     *
      * @param text
-     *            The string value.
+     *         The string value.
      */
     public AppendableRepresentation(CharSequence text) {
         super(text);
@@ -64,11 +63,11 @@ public class AppendableRepresentation extends StringRepresentation implements
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
-     * 
+     *
      * @param text
-     *            The string value.
+     *         The string value.
      * @param language
-     *            The language.
+     *         The language.
      */
     public AppendableRepresentation(CharSequence text, Language language) {
         super(text, language);
@@ -77,11 +76,11 @@ public class AppendableRepresentation extends StringRepresentation implements
     /**
      * Constructor. The following metadata are used by default: no language and
      * the ISO-8859-1 character set.
-     * 
+     *
      * @param text
-     *            The string value.
+     *         The string value.
      * @param mediaType
-     *            The media type.
+     *         The media type.
      */
     public AppendableRepresentation(CharSequence text, MediaType mediaType) {
         super(text, mediaType);
@@ -90,13 +89,13 @@ public class AppendableRepresentation extends StringRepresentation implements
     /**
      * Constructor. The following metadata are used by default: ISO-8859-1
      * character set.
-     * 
+     *
      * @param text
-     *            The string value.
+     *         The string value.
      * @param mediaType
-     *            The media type.
+     *         The media type.
      * @param language
-     *            The language.
+     *         The language.
      */
     public AppendableRepresentation(CharSequence text, MediaType mediaType,
             Language language) {
@@ -105,24 +104,25 @@ public class AppendableRepresentation extends StringRepresentation implements
 
     /**
      * Constructor.
-     * 
+     *
      * @param text
-     *            The string value.
+     *         The string value.
      * @param mediaType
-     *            The media type.
+     *         The media type.
      * @param language
-     *            The language.
+     *         The language.
      * @param characterSet
-     *            The character set.
+     *         The character set.
      */
     public AppendableRepresentation(CharSequence text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(text, mediaType, language, characterSet);
     }
 
+    @Override
     public Appendable append(char c) throws IOException {
         if (this.appendableText == null) {
-            this.appendableText = new StringBuilder(c);
+            this.appendableText = new StringBuilder().append(c);
         } else {
             this.appendableText.append(c);
         }
@@ -130,6 +130,7 @@ public class AppendableRepresentation extends StringRepresentation implements
         return this;
     }
 
+    @Override
     public Appendable append(CharSequence csq) throws IOException {
         if (this.appendableText == null) {
             this.appendableText = new StringBuilder(csq);
@@ -140,6 +141,7 @@ public class AppendableRepresentation extends StringRepresentation implements
         return this;
     }
 
+    @Override
     public Appendable append(CharSequence csq, int start, int end)
             throws IOException {
         if (this.appendableText == null) {

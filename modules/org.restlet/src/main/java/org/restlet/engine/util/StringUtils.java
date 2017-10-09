@@ -5,20 +5,20 @@
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -32,31 +32,34 @@ import java.util.StringTokenizer;
 
 /**
  * String manipulation utilities.
- * 
+ *
  * @author Jerome Louvel
  */
 public class StringUtils {
 
     /**
      * Represents an XML or HTML character entity reference.
-     * 
+     *
      * @author Thierry Boileau
-     * 
      */
     private static class CharacterEntity {
-        /** Character reference. */
+        /**
+         * Character reference.
+         */
         private String name;
 
-        /** Numeric character reference. */
+        /**
+         * Numeric character reference.
+         */
         private Integer numericValue;
 
         /**
          * Constructor.
-         * 
+         *
          * @param numericValue
-         *            The numeric value of the entity.
+         *         The numeric value of the entity.
          * @param name
-         *            the name of the entity.
+         *         the name of the entity.
          */
         public CharacterEntity(Integer numericValue, String name) {
             super();
@@ -66,7 +69,7 @@ public class StringUtils {
 
         /**
          * Returns the name of the entity.
-         * 
+         *
          * @return The name of the entity.
          */
         public String getName() {
@@ -75,7 +78,7 @@ public class StringUtils {
 
         /**
          * Returns the numeric value of the entity.
-         * 
+         *
          * @return The numeric value of the entity.
          */
         public Integer getNumericValue() {
@@ -86,9 +89,8 @@ public class StringUtils {
     /**
      * Stores a list en entities and is able to return one given its numeric
      * value or name.
-     * 
+     *
      * @author Thierry Boileau
-     * 
      */
     private static class CharacterEntitySolver {
         /** Map of names of entities according to their numeric value. */
@@ -102,17 +104,16 @@ public class StringUtils {
          */
         public CharacterEntitySolver() {
             toName = new String[10000];
-            toValue = new HashMap<String, Integer>();
+            toValue = new HashMap<>();
         }
 
         /**
          * Adds an entity to solve.
-         * 
+         *
          * @param value
-         *            The numeric value of the entity.
+         *         The numeric value of the entity.
          * @param name
-         *            The name of the entity.
-         * @return The solver.
+         *         The name of the entity.
          */
         public void add(Integer value, String name) {
             toName[value] = name;
@@ -121,9 +122,9 @@ public class StringUtils {
 
         /**
          * Returns the entity name according to its numeric value.
-         * 
+         *
          * @param value
-         *            The numeric value of the entity.
+         *         The numeric value of the entity.
          * @return The entity name according to its numeric value.
          */
         public String getName(int value) {
@@ -132,9 +133,9 @@ public class StringUtils {
 
         /**
          * Returns the numeric value of an entity according to its name.
-         * 
+         *
          * @param name
-         *            The name of the entity.
+         *         The name of the entity.
          * @return The numeric value of an entity according to its name.
          */
         public Integer getValue(String name) {
@@ -159,12 +160,12 @@ public class StringUtils {
     private static List<CharacterEntity> xml10;
 
     static {
-        xml10 = new ArrayList<CharacterEntity>();
+        xml10 = new ArrayList<>();
         xml10.add(new CharacterEntity(34, "quot"));
         xml10.add(new CharacterEntity(38, "amp"));
         xml10.add(new CharacterEntity(62, "gt"));
         xml10.add(new CharacterEntity(60, "lt"));
-        htmlLat1 = new ArrayList<CharacterEntity>();
+        htmlLat1 = new ArrayList<>();
         htmlLat1.add(new CharacterEntity(160, "nbsp"));
         htmlLat1.add(new CharacterEntity(161, "iexcl"));
         htmlLat1.add(new CharacterEntity(162, "cent"));
@@ -261,7 +262,7 @@ public class StringUtils {
         htmlLat1.add(new CharacterEntity(253, "yacute"));
         htmlLat1.add(new CharacterEntity(254, "thorn"));
         htmlLat1.add(new CharacterEntity(255, "yuml"));
-        htmlSymbol = new ArrayList<CharacterEntity>();
+        htmlSymbol = new ArrayList<>();
         htmlSymbol.add(new CharacterEntity(402, "fnof"));
         htmlSymbol.add(new CharacterEntity(913, "Alpha"));
         htmlSymbol.add(new CharacterEntity(914, "Beta"));
@@ -385,7 +386,7 @@ public class StringUtils {
         htmlSymbol.add(new CharacterEntity(9827, "clubs"));
         htmlSymbol.add(new CharacterEntity(9829, "hearts"));
         htmlSymbol.add(new CharacterEntity(9830, "diams"));
-        htmlSpecial = new ArrayList<CharacterEntity>();
+        htmlSpecial = new ArrayList<>();
         htmlSpecial.add(new CharacterEntity(34, "quot"));
         htmlSpecial.add(new CharacterEntity(38, "amp"));
         htmlSpecial.add(new CharacterEntity(39, "apos"));
@@ -420,11 +421,6 @@ public class StringUtils {
         htmlSpecial.add(new CharacterEntity(8249, "lsaquo"));
         htmlSpecial.add(new CharacterEntity(8250, "rsaquo"));
         htmlSpecial.add(new CharacterEntity(8364, "euro"));
-        List<CharacterEntity> list = new ArrayList<CharacterEntity>();
-        list.addAll(xml10);
-        list.addAll(htmlLat1);
-        list.addAll(htmlSymbol);
-        list.addAll(htmlSpecial);
         html40Entities = new CharacterEntitySolver();
         for (CharacterEntity entity : xml10) {
             html40Entities.add(entity.getNumericValue(), entity.getName());
@@ -442,10 +438,9 @@ public class StringUtils {
 
     /**
      * Returns the string with the first character capitalized.
-     * 
-     * 
+     *
      * @param string
-     *            a string reference to check
+     *         a string reference to check
      * @return the string with the first character capitalized.
      */
     public static String firstLower(String string) {
@@ -457,10 +452,9 @@ public class StringUtils {
 
     /**
      * Returns the string with the first character capitalized.
-     * 
-     * 
+     *
      * @param string
-     *            a string reference to check
+     *         a string reference to check
      * @return the string with the first character capitalized.
      */
     public static String firstUpper(String string) {
@@ -471,14 +465,15 @@ public class StringUtils {
     }
 
     // [ifndef gwt] method
+
     /**
      * Encodes the given String into a sequence of bytes using the Ascii
      * character set.
-     * 
+     *
      * @param string
-     *            The string to encode.
+     *         The string to encode.
      * @return The String encoded with the Ascii character set as an array of
-     *         bytes.
+     * bytes.
      */
     public static byte[] getAsciiBytes(String string) {
         if (string != null) {
@@ -493,14 +488,15 @@ public class StringUtils {
     }
 
     // [ifndef gwt] method
+
     /**
      * Encodes the given String into a sequence of bytes using the Latin1
      * character set.
-     * 
+     *
      * @param string
-     *            The string to encode.
+     *         The string to encode.
      * @return The String encoded with the Latin1 character set as an array of
-     *         bytes.
+     * bytes.
      */
     public static byte[] getLatin1Bytes(String string) {
         if (string != null) {
@@ -517,11 +513,11 @@ public class StringUtils {
     /**
      * Returns the given {@link String} according to the HTML 4.0 encoding
      * rules.
-     * 
+     *
      * @param str
-     *            The {@link String} to encode.
+     *         The {@link String} to encode.
      * @return The converted {@link String} according to the HTML 4.0 encoding
-     *         rules.
+     * rules.
      */
     public static String htmlEscape(String str) {
         if (str == null) {
@@ -550,11 +546,11 @@ public class StringUtils {
     /**
      * Returns the given {@link String} decoded according to the HTML 4.0
      * decoding rules.
-     * 
+     *
      * @param str
-     *            The {@link String} to decode.
+     *         The {@link String} to decode.
      * @return The given {@link String} decoded according to the HTML 4.0
-     *         decoding rules.
+     * decoding rules.
      */
     public static String htmlUnescape(String str) {
         if (str == null) {
@@ -642,15 +638,14 @@ public class StringUtils {
 
     /**
      * Returns {@code true} if the given string is null or is the empty string.
-     * 
-     * <p>
+     *
      * Consider normalizing your string references with {@link #nullToEmpty}. If
      * you do, you can use {@link String#isEmpty()} instead of this method, and
      * you won't need special null-safe forms of methods like
      * {@link String#toUpperCase} either.
-     * 
+     *
      * @param string
-     *            a string reference to check
+     *         a string reference to check
      * @return {@code true} if the string is null or is the empty string
      */
     public static boolean isNullOrEmpty(String string) {
@@ -659,9 +654,9 @@ public class StringUtils {
 
     /**
      * Returns the given string if it is non-null; the empty string otherwise.
-     * 
+     *
      * @param string
-     *            the string to test and possibly return
+     *         the string to test and possibly return
      * @return {@code string} itself if it is non-null; {@code ""} if it is null
      */
     public static String nullToEmpty(String string) {
@@ -669,11 +664,12 @@ public class StringUtils {
     }
 
     // [ifndef gwt] method
+
     /**
      * Returns an list of trimmed token splitted with the split character ",".
-     * 
+     *
      * @param stringToSplit
-     *            The String to split.
+     *         The String to split.
      * @return List of tokens.
      */
     public static List<String> splitAndTrim(String stringToSplit) {
@@ -681,13 +677,14 @@ public class StringUtils {
     }
 
     // [ifndef gwt] method
+
     /**
      * Returns an list of trimmed token splitted with the split character.
-     * 
+     *
      * @param stringToSplit
-     *            The String to split.
+     *         The String to split.
      * @param splitCharacter
-     *            The split Character.
+     *         The split Character.
      * @return List of tokens.
      */
     public static List<String> splitAndTrim(String stringToSplit,
@@ -703,11 +700,11 @@ public class StringUtils {
 
     /**
      * Strips a delimiter character from both ends of the source string.
-     * 
+     *
      * @param source
-     *            The source string to strip.
+     *         The source string to strip.
      * @param delimiter
-     *            The character to remove.
+     *         The character to remove.
      * @return The stripped string.
      */
     public static String strip(String source, char delimiter) {
@@ -716,15 +713,15 @@ public class StringUtils {
 
     /**
      * Strips a delimiter character from a source string.
-     * 
+     *
      * @param source
-     *            The source string to strip.
+     *         The source string to strip.
      * @param delimiter
-     *            The character to remove.
+     *         The character to remove.
      * @param start
-     *            Indicates if start of source should be stripped.
+     *         Indicates if start of source should be stripped.
      * @param end
-     *            Indicates if end of source should be stripped.
+     *         Indicates if end of source should be stripped.
      * @return The stripped source string.
      */
     public static String strip(String source, char delimiter, boolean start,
@@ -759,7 +756,5 @@ public class StringUtils {
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
-    private StringUtils() {
-    }
-
+    private StringUtils() {}
 }

@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -56,7 +56,7 @@ import java.util.logging.Level;
 
 /**
  * Abstract HTTP server connector call.
- * 
+ *
  * @author Jerome Louvel
  */
 public abstract class ServerCall extends Call {
@@ -66,9 +66,9 @@ public abstract class ServerCall extends Call {
 
     /**
      * Constructor.
-     * 
+     *
      * @param server
-     *            The parent server connector.
+     *         The parent server connector.
      */
     public ServerCall(Server server) {
         this((server == null) ? null : server.getAddress(),
@@ -77,11 +77,11 @@ public abstract class ServerCall extends Call {
 
     /**
      * Constructor.
-     * 
+     *
      * @param serverAddress
-     *            The server IP address.
+     *         The server IP address.
      * @param serverPort
-     *            The server port.
+     *         The server port.
      */
     public ServerCall(String serverAddress, int serverPort) {
         setServerAddress(serverAddress);
@@ -92,7 +92,7 @@ public abstract class ServerCall extends Call {
     /**
      * Ask the connector to abort the related network connection, for example
      * immediately closing the socket.
-     * 
+     *
      * @return True if the connection was aborted.
      */
     public abstract boolean abort();
@@ -107,7 +107,7 @@ public abstract class ServerCall extends Call {
     /**
      * Flushes the buffers onto the network so that for example you can force
      * headers to be written before the entity is becoming available.
-     * 
+     *
      * @throws IOException
      */
     public void flushBuffers() throws IOException {
@@ -116,7 +116,7 @@ public abstract class ServerCall extends Call {
     /**
      * Returns the chain of client SSL certificates, if available and
      * accessible.
-     * 
+     *
      * @return The chain of client SSL certificates, if available and
      *         accessible.
      */
@@ -126,7 +126,7 @@ public abstract class ServerCall extends Call {
 
     /**
      * Returns the SSL Cipher Suite, if available and accessible.
-     * 
+     *
      * @return The SSL Cipher Suite, if available and accessible.
      */
     public String getCipherSuite() {
@@ -136,7 +136,7 @@ public abstract class ServerCall extends Call {
     /**
      * Returns the content length of the request entity if know,
      * {@link Representation#UNKNOWN_SIZE} otherwise.
-     * 
+     *
      * @return The request content length.
      */
     protected long getContentLength() {
@@ -145,7 +145,7 @@ public abstract class ServerCall extends Call {
 
     /**
      * Returns the host domain name.
-     * 
+     *
      * @return The host domain name.
      */
     @Override
@@ -158,7 +158,7 @@ public abstract class ServerCall extends Call {
 
     /**
      * Returns the host port.
-     * 
+     *
      * @return The host port.
      */
     @Override
@@ -171,11 +171,11 @@ public abstract class ServerCall extends Call {
 
     /**
      * Returns the request entity if available.
-     * 
+     *
      * @return The request entity if available.
      */
     public Representation getRequestEntity() {
-        Representation result = null;
+        Representation result;
         long contentLength = getContentLength();
         boolean chunkedEncoding = HeaderUtils
                 .isChunkedEncoding(getRequestHeaders());
@@ -192,9 +192,7 @@ public abstract class ServerCall extends Call {
             if (connectionClosed) {
                 // We need to detect if there is really an entity or not as only
                 // the end of connection can let us know at this point
-                PushbackInputStream pbi = new PushbackInputStream(requestStream);
-
-                try {
+                try (PushbackInputStream pbi = new PushbackInputStream(requestStream)) {
                     int next = pbi.read();
 
                     if (next != -1) {
@@ -247,10 +245,8 @@ public abstract class ServerCall extends Call {
                     result.setDisposition(new DispositionReader(header
                             .getValue()).readValue());
                 } catch (IOException ioe) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Error during Content-Disposition header parsing. Header: "
-                                    + header.getValue(), ioe);
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Error during Content-Disposition header parsing. Header: " + header.getValue(), ioe);
                 }
             }
         }
@@ -260,31 +256,30 @@ public abstract class ServerCall extends Call {
 
     /**
      * Returns the request entity stream if it exists.
-     * 
+     *
      * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
+     *         The expected entity size or -1 if unknown.
      * @return The request entity stream if it exists.
      */
     public abstract InputStream getRequestEntityStream(long size);
 
     /**
      * Returns the request head stream if it exists.
-     * 
+     *
      * @return The request head stream if it exists.
      */
     public abstract InputStream getRequestHeadStream();
 
     /**
      * Returns the response entity stream if it exists.
-     * 
+     *
      * @return The response entity stream if it exists.
      */
     public abstract OutputStream getResponseEntityStream();
 
     /**
      * Returns the SSL key size, if available and accessible.
-     * 
+     *
      * @return The SSL key size, if available and accessible.
      */
     public Integer getSslKeySize() {
@@ -294,7 +289,7 @@ public abstract class ServerCall extends Call {
     /**
      * Returns the SSL session ID, in hexadecimal encoding, if available and
      * accessible.
-     * 
+     *
      * @return The SSL session ID, in hexadecimal encoding, if available and
      *         accessible.
      */
@@ -311,7 +306,7 @@ public abstract class ServerCall extends Call {
     /**
      * Returns the SSL session ID, as a byte array, if available and accessible
      * in that format (to be used by getSslSessionId).
-     * 
+     *
      * @return The SSL session ID, as a byte array, if available and accessible
      *         in that format.
      */
@@ -358,7 +353,7 @@ public abstract class ServerCall extends Call {
 
     /**
      * Reads the HTTP request head (request line and headers).
-     * 
+     *
      * @throws IOException
      */
     protected void readRequestHead(InputStream headStream) throws IOException {
@@ -429,11 +424,11 @@ public abstract class ServerCall extends Call {
      * implementation only writes the response entity on the response stream or
      * channel. Subclasses will probably also copy the response headers and
      * status.
-     * 
+     *
      * @param response
-     *            The high-level response.
+     *         The high-level response.
      * @throws IOException
-     *             if the Response could not be written to the network.
+     *         if the Response could not be written to the network.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
@@ -484,9 +479,9 @@ public abstract class ServerCall extends Call {
     /**
      * Indicates if the response should be chunked because its length is
      * unknown.
-     * 
+     *
      * @param response
-     *            The response to analyze.
+     *         The response to analyze.
      * @return True if the response should be chunked.
      */
     public boolean shouldResponseBeChunked(Response response) {
@@ -498,11 +493,11 @@ public abstract class ServerCall extends Call {
      * Effectively writes the response body. The entity to write is guaranteed
      * to be non null. Attempts to write the entity on the response channel or
      * response stream by default.
-     * 
+     *
      * @param entity
-     *            The representation to write as entity of the body.
+     *         The representation to write as entity of the body.
      * @param responseEntityStream
-     *            The response entity stream or null if a channel is used.
+     *         The response entity stream or null if a channel is used.
      * @throws IOException
      */
     protected void writeResponseBody(Representation entity,
@@ -516,9 +511,9 @@ public abstract class ServerCall extends Call {
 
     /**
      * Writes the response status line and headers. Does nothing by default.
-     * 
+     *
      * @param response
-     *            The response.
+     *         The response.
      * @throws IOException
      */
     protected void writeResponseHead(Response response) throws IOException {
@@ -527,11 +522,11 @@ public abstract class ServerCall extends Call {
 
     /**
      * Writes the response head to the given output stream.
-     * 
+     *
      * @param response
-     *            The response.
+     *         The response.
      * @param headStream
-     *            The output stream to write to.
+     *         The output stream to write to.
      * @throws IOException
      */
     protected void writeResponseHead(Response response, OutputStream headStream)
