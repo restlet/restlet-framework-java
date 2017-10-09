@@ -24,14 +24,6 @@
 
 package org.restlet.ext.oauth;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-
 import org.json.JSONException;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -43,12 +35,20 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Filter;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * A restlet filter for initiating a web server flow or comparable to OAuth 2.0
@@ -424,7 +424,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
         byte[] secret = new byte[20];
         random.nextBytes(secret);
-        String state = Base64.encode(secret, false);
+        String state = Base64.getEncoder().encodeToString(secret);
 
         CookieSetting cs = new CookieSetting("_state", sessionId);
         response.getCookieSettings().add(cs);

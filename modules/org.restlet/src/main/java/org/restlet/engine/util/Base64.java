@@ -32,7 +32,9 @@ import org.restlet.engine.io.IoUtils;
  * Minimal but fast Base64 codec.
  * 
  * @author Ray Waldin (ray@waldin.net)
+ * @deprecated Use the JDK {@link java.util.Base64} standard class.
  */
+@Deprecated
 public class Base64 {
 
     /** alphabet used for encoding bytes into base64 */
@@ -80,7 +82,9 @@ public class Base64 {
      * @param chars
      *            The characters array to decode.
      * @return The decoded byte array.
+     * @deprecated Use the JDK {@link java.util.Base64#getDecoder()} instead.
      */
+    @Deprecated
     public static byte[] decode(final char[] chars) {
         // prepare to ignore newline chars
         int newlineCount = 0;
@@ -168,7 +172,9 @@ public class Base64 {
      * @param encodedString
      *            The string to decode.
      * @return The decoded byte array.
+     * @deprecated Use the JDK {@link java.util.Base64#getDecoder()} instead.
      */
+    @Deprecated
     public static byte[] decode(String encodedString) {
         return decode(encodedString.toCharArray());
     }
@@ -182,7 +188,9 @@ public class Base64 {
      * @param newlines
      *            Indicates whether or not newlines are desired.
      * @return The encoded string.
+     * @deprecated Use the JDK {@link java.util.Base64#getEncoder()} instead. Note that calls with newlines parameter set to 'true' are not handled by the JDK class.
      */
+    @Deprecated
     public static String encode(byte[] bytes, boolean newlines) {
         return encode(bytes, 0, bytes.length, newlines);
     }
@@ -201,7 +209,9 @@ public class Base64 {
      *            Indicates whether or not newlines are desired.
      * 
      * @return The encoded string.
+     * @deprecated Use the JDK {@link java.util.Base64#getEncoder()} instead. Note that calls with newlines parameter set to 'true' are not handled by the JDK class.
      */
+    @Deprecated
     public static String encode(byte[] bytes, int off, int len, boolean newlines) {
         char[] output = new char[(((len + 2) / 3) * 4)
                 + (newlines ? len / 43 : 0)];
@@ -247,7 +257,9 @@ public class Base64 {
      * @param newlines
      *            Indicates whether or not newlines are desired.
      * @return The encoded string.
+     * @deprecated Use the JDK {@link java.util.Base64#getEncoder()} instead. Note that calls with newlines parameter set to 'true' are not handled by the JDK class.
      */
+    @Deprecated
     public static String encode(char[] chars, boolean newlines) {
         return encode(IoUtils.toByteArray(chars), newlines);
     }
@@ -264,7 +276,9 @@ public class Base64 {
      * @param newlines
      *            Indicates whether or not newlines are desired.
      * @return The encoded string.
+     * @deprecated Use the JDK {@link java.util.Base64#getEncoder()} instead. Note that calls with newlines parameter set to 'true' are not handled by the JDK class.
      */
+    @Deprecated
     public static String encode(char[] chars, String charset, boolean newlines) {
         return encode(IoUtils.toByteArray(chars, charset), newlines);
     }

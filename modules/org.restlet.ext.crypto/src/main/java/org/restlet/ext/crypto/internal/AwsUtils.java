@@ -24,6 +24,7 @@
 
 package org.restlet.ext.crypto.internal;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +41,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.crypto.DigestUtils;
@@ -169,9 +169,9 @@ public class AwsUtils {
      * @return The AWS compatible signature
      */
     public static String getHmacSha1Signature(String stringToSign, char[] secret) {
-        return Base64.encode(
+        return Base64.getEncoder().encodeToString(
                 DigestUtils.toHMacSha1(stringToSign,
-                        IoUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)));
     }
 
     /**
@@ -186,9 +186,9 @@ public class AwsUtils {
      */
     public static String getHmacSha256Signature(String stringToSign,
             char[] secret) {
-        return Base64.encode(
+        return Base64.getEncoder().encodeToString(
                 DigestUtils.toHMacSha256(stringToSign,
-                        IoUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)));
     }
 
     /**

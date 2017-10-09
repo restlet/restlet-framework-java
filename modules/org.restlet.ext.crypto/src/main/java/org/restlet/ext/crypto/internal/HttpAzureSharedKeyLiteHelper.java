@@ -24,8 +24,6 @@
 
 package org.restlet.ext.crypto.internal;
 
-import java.util.Date;
-
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -35,11 +33,14 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.util.Series;
+
+import java.util.Base64;
+import java.util.Date;
 
 /**
  * Implements the Shared Key Lite authentication for Azure services. This
@@ -113,8 +114,8 @@ public class HttpAzureSharedKeyLiteHelper extends AuthenticatorHelper {
         // Append the SharedKey credentials
         cw.append(challenge.getIdentifier())
                 .append(':')
-                .append(Base64.encode(
+                .append(Base64.getEncoder().encodeToString(
                         DigestUtils.toHMacSha256(rest.toString(),
-                                Base64.decode(challenge.getSecret())), true));
+                                Base64.getDecoder().decode(IoUtils.toByteArray(challenge.getSecret())))));
     }
 }

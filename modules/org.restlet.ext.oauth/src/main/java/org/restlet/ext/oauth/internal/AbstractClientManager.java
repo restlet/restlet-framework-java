@@ -24,18 +24,18 @@
 
 package org.restlet.ext.oauth.internal;
 
+import org.restlet.ext.oauth.GrantType;
+import org.restlet.ext.oauth.ResponseType;
+import org.restlet.ext.oauth.internal.Client.ClientType;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import org.restlet.engine.util.Base64;
-import org.restlet.ext.oauth.GrantType;
-import org.restlet.ext.oauth.ResponseType;
-import org.restlet.ext.oauth.internal.Client.ClientType;
 
 /**
  * 
@@ -105,7 +105,7 @@ public abstract class AbstractClientManager implements ClientManager {
             }
             byte[] secret = new byte[20];
             random.nextBytes(secret);
-            clientSecret = Base64.encode(secret, false).toCharArray();
+            clientSecret = Base64.getEncoder().encodeToString(secret).toCharArray();
         }
 
         return createClient(clientId, clientSecret, clientType, redirectURIs, properties);

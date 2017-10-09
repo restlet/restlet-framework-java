@@ -39,7 +39,9 @@ import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderReader;
-import org.restlet.engine.util.Base64;
+import java.util.Base64;
+
+import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
 
 /**
@@ -80,8 +82,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                 credentials.write(challenge.getIdentifier());
                 credentials.write(":");
                 credentials.write(challenge.getSecret());
-                cw.append(Base64.encode(credentials.toCharArray(),
-                        "ISO-8859-1", false));
+                cw.append(Base64.getEncoder().encodeToString(IoUtils.toByteArray(credentials.toCharArray(), "ISO-8859-1")));
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
@@ -135,7 +136,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     public void parseResponse(ChallengeResponse challenge, Request request,
             Series<Header> httpHeaders) {
         try {
-            byte[] credentialsEncoded = Base64.decode(challenge.getRawValue());
+            byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
 
             if (credentialsEncoded == null) {
                 getLogger()

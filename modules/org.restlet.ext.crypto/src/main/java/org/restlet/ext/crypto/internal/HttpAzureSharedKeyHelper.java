@@ -24,6 +24,7 @@
 
 package org.restlet.ext.crypto.internal;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedMap;
@@ -39,8 +40,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.crypto.DigestUtils;
@@ -199,8 +200,8 @@ public class HttpAzureSharedKeyHelper extends AuthenticatorHelper {
         // Append the SharedKey credentials
         cw.append(challenge.getIdentifier())
                 .append(':')
-                .append(Base64.encode(
+                .append(Base64.getEncoder().encodeToString(
                         DigestUtils.toHMacSha256(rest.toString(),
-                                Base64.decode(challenge.getSecret())), true));
+                                Base64.getDecoder().decode(IoUtils.toByteArray(challenge.getSecret())))));
     }
 }
