@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -423,7 +424,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
         byte[] secret = new byte[20];
         random.nextBytes(secret);
-        String state = java.util.Base64.getEncoder().encodeToString(secret);
+        String state = Base64.getEncoder().encodeToString(secret);
 
         CookieSetting cs = new CookieSetting("_state", sessionId);
         response.getCookieSettings().add(cs);
