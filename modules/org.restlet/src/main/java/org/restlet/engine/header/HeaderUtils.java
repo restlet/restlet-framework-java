@@ -237,8 +237,8 @@ public class HeaderUtils {
                     && ALGORITHM_MD5.equals(entity.getDigest().getAlgorithm())) {
                 addHeader(
                         HEADER_CONTENT_MD5,
-                        new String(org.restlet.engine.util.Base64.encode(entity
-                                .getDigest().getValue(), false)), headers);
+                        new String(java.util.Base64.getEncoder().encode(entity
+                                .getDigest().getValue())), headers);
             }
             // [enddef]
 
@@ -918,7 +918,7 @@ public class HeaderUtils {
                     }
                     result.setDigest(new org.restlet.data.Digest(
                             org.restlet.data.Digest.ALGORITHM_MD5,
-                            org.restlet.engine.util.Base64.decode(base64hash)));
+                            java.util.Base64.getDecoder().decode(base64hash)));
                     entityHeaderFound = true;
                     // [enddef]
                 }

@@ -25,6 +25,7 @@
 package org.restlet.ext.crypto.internal;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -42,7 +43,6 @@ import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.AuthenticatorUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.util.Series;
 
@@ -74,7 +74,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     public static boolean isNonceValid(String nonce, String secretKey,
             long lifespan) throws Exception {
         try {
-            String decodedNonce = new String(Base64.decode(nonce));
+            String decodedNonce = new String(Base64.getDecoder().decode(nonce));
             long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
                     decodedNonce.indexOf(':')));
 

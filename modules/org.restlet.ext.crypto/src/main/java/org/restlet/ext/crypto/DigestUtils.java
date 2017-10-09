@@ -28,12 +28,12 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.restlet.data.Digest;
-import org.restlet.engine.util.Base64;
 
 /**
  * Security data manipulation utilities.
@@ -297,9 +297,9 @@ public class DigestUtils {
     public static String toSha1(String target, String charsetName)
             throws UnsupportedEncodingException {
         try {
-            return Base64.encode(
+            return Base64.getEncoder().encodeToString(
                     MessageDigest.getInstance("SHA1").digest(
-                            target.getBytes(charsetName)), false);
+                            target.getBytes(charsetName)));
         } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No SHA1 algorithm, unable to compute SHA1");

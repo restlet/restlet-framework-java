@@ -24,17 +24,18 @@
 
 package org.restlet.engine.security;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Header;
 import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.util.Base64;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 
 /**
  * Implements the SMTP PLAIN authentication.
@@ -59,8 +60,7 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
             credentials.write(challenge.getIdentifier());
             credentials.write("^@");
             credentials.write(challenge.getSecret());
-            cw.append(Base64.encode(credentials.toCharArray(), "US-ASCII",
-                    false));
+            cw.append(Base64.getEncoder().encodeToString(IoUtils.toByteArray(credentials.toCharArray(), "US-ASCII")));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");

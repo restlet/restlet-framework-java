@@ -24,14 +24,6 @@
 
 package org.restlet.engine.adapter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.security.cert.Certificate;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
@@ -47,12 +39,20 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
+import java.security.cert.Certificate;
+import java.util.Base64;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Abstract HTTP server connector call.
@@ -240,8 +240,7 @@ public abstract class ServerCall extends Call {
                 RangeReader.update(header.getValue(), result);
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_MD5)) {
-                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
-                        .decode(header.getValue())));
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64.getDecoder().decode(header.getValue())));
             } else if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
                 try {

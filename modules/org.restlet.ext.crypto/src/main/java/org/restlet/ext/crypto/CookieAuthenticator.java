@@ -25,6 +25,7 @@
 package org.restlet.ext.crypto;
 
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -38,7 +39,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.util.Base64;
 import org.restlet.ext.crypto.internal.CryptoUtils;
 import org.restlet.security.ChallengeAuthenticator;
 
@@ -293,8 +293,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         sb.append('/');
         sb.append(isb);
 
-        return Base64.encode(CryptoUtils.encrypt(getEncryptAlgorithm(),
-                getEncryptSecretKey(), sb.toString()), false);
+        return Base64.getEncoder().encodeToString(CryptoUtils.encrypt(getEncryptAlgorithm(),
+                getEncryptSecretKey(), sb.toString()));
     }
 
     /**
@@ -544,7 +544,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     protected ChallengeResponse parseCredentials(String cookieValue) {
         try {
             // 1) Decode Base64 string
-            byte[] encrypted = Base64.decode(cookieValue);
+            byte[] encrypted = Base64.getDecoder().decode(cookieValue);
             
             if (encrypted == null) {
                 getLogger().warning(

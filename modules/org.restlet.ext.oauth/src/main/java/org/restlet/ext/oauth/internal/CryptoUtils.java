@@ -25,11 +25,11 @@
 package org.restlet.ext.oauth.internal;
 
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.restlet.engine.util.Base64;
 import org.restlet.ext.crypto.DigestUtils;
 
 /**
@@ -93,7 +93,7 @@ public final class CryptoUtils {
      */
     public static String decrypt(String algo, String base64Secret,
             byte[] encrypted) throws GeneralSecurityException {
-        return decrypt(algo, Base64.decode(base64Secret), encrypted);
+        return decrypt(algo, Base64.getDecoder().decode(base64Secret), encrypted);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class CryptoUtils {
      */
     public static byte[] encrypt(String algo, String base64Secret,
             String content) throws GeneralSecurityException {
-        return encrypt(algo, Base64.decode(base64Secret), content);
+        return encrypt(algo, Base64.getDecoder().decode(base64Secret), content);
     }
 
     /**
@@ -164,9 +164,9 @@ public final class CryptoUtils {
      */
     public static String makeNonce(String secretKey) {
         final long currentTimeMS = System.currentTimeMillis();
-        return Base64.encode(
+        return Base64.getEncoder().encodeToString(
                 (currentTimeMS + ":" + DigestUtils.toMd5(currentTimeMS + ":"
-                        + secretKey)).getBytes(), true);
+                        + secretKey)).getBytes());
     }
 
     /**
