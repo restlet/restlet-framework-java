@@ -501,4 +501,13 @@ public abstract class Message {
         }
     }
 
+    public long getAgeInMs() {
+    	
+    	if(date != null) {
+    		return System.currentTimeMillis() - date.getTime();
+    	}
+    	
+    	return 0;
+    }
+    
 }
