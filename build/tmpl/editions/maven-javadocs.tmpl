@@ -13,6 +13,7 @@ maven JAVADOC target -->
 		         doctitle="Restlet ${mod-@{name}-maven-javadoc-title} ${mod-@{name}-id} ${version-full} - ${edition-full-label}"
 		         overview="${temp}/javadocs-overviews/overview.html"
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 source="${jdk.compilation.version}"
 		         verbose="${verbose}">
 				<bottom>
 					<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
