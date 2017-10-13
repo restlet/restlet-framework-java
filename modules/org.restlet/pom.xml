@@ -13,5 +13,11 @@
     <description>RESTful web framework for Java (API and Engine).</description>
 
     <dependencies>
+	    <!-- https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core -->
+		<dependency>
+		    <groupId>io.dropwizard.metrics</groupId>
+		    <artifactId>metrics-core</artifactId>
+		    <version>3.2.5</version>
+		</dependency>
     </dependencies>
 </project>
