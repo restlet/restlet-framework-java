@@ -14,6 +14,6 @@
 		<dependency type="library" id="jackson" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
-		<dependency type="module" id="apispark" />
+		<dependency type="module" id="platform" />
 	</dependencies>
 </module>
