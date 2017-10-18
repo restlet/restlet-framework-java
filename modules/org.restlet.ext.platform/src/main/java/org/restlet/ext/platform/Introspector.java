@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -26,6 +26,7 @@ package org.restlet.ext.platform;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -45,10 +46,14 @@ import org.restlet.ext.platform.internal.model.Definition;
 import org.restlet.ext.platform.internal.utils.CliUtils;
 import org.restlet.ext.platform.internal.utils.IntrospectionUtils;
 
+import static java.util.Collections.singletonList;
+import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
+import static org.restlet.ext.platform.internal.introspection.application.ApplicationIntrospector.getDefinition;
+
 /**
  * Generates the Web API documentation of a Restlet based {@link Application}
  * and imports it into the Restlet Cloud console.
- * 
+ *
  * @author Thierry Boileau
  */
 public class Introspector {
@@ -56,8 +61,7 @@ public class Introspector {
     /** Internal logger. */
     private static Logger LOGGER = Engine.getLogger(Introspector.class);
 
-    private static final List<String> SUPPORTED_LANGUAGES = Arrays
-            .asList("swagger");
+    private static final List<String> SUPPORTED_LANGUAGES = singletonList("swagger");
 
     private static void failWithErrorMessage(String message) {
         LOGGER.severe(message + "Use parameter --help for help.");
@@ -65,10 +69,9 @@ public class Introspector {
     }
 
     private static Definition getDefinitionFromJaxrsSources(String defSource,
-            boolean useSectionNamingPackageStrategy, String applicationName,
-            String endpoint, List<String> jaxRsResources) {
-        javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector
-                .getApplication(defSource);
+                                                            boolean useSectionNamingPackageStrategy, String applicationName,
+                                                            String endpoint, List<String> jaxRsResources) {
+        javax.ws.rs.core.Application jaxrsApplication = JaxRsIntrospector.getApplication(defSource);
         @SuppressWarnings("rawtypes")
         List<Class> resources = new ArrayList<>();
         try {
@@ -76,23 +79,20 @@ public class Introspector {
                 resources.add(Class.forName(c));
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Cannot locate the JAXRS resource class.",
-                    e);
+            LOGGER.log(Level.SEVERE, "Cannot locate the JAXRS resource class.", e);
             System.exit(1);
         }
         Reference baseRef = endpoint != null ? new Reference(endpoint) : null;
-        return JaxRsIntrospector.getDefinition(jaxrsApplication,
-                applicationName, resources, baseRef,
-                useSectionNamingPackageStrategy);
+        return JaxRsIntrospector.getDefinition(jaxrsApplication, applicationName, resources, baseRef, useSectionNamingPackageStrategy);
     }
 
     /**
      * Returns the value according to its index.
-     * 
+     *
      * @param args
-     *            The argument table.
+     *         The argument table.
      * @param index
-     *            The index of the argument.
+     *         The index of the argument.
      * @return The value of the given argument.
      */
     private static String getParameter(String[] args, int index) {
@@ -100,8 +100,7 @@ public class Introspector {
             return null;
         } else {
             String value = args[index];
-            if ("-s".equals(value) || "-u".equals(value) || "-p".equals(value)
-                    || "-d".equals(value) || "-c".equals(value)) {
+            if ("-s".equals(value) || "-u".equals(value) || "-p".equals(value) || "-c".equals(value)) {
                 // In case the given value is actually an option, reset it.
                 value = null;
             }
@@ -111,10 +110,11 @@ public class Introspector {
 
     /**
      * Main class, invokes this class without argument to get help instructions.
-     * 
+     *
      * @param args
-     *            Main arguments.
+     *         Main arguments.
      * @throws TranslationException
+     *         when conversion from Swagger fails.
      */
     public static void main(String[] args) throws TranslationException {
         try {
@@ -136,7 +136,6 @@ public class Introspector {
 
         String cellId = null;
         String cellVersion = null;
-        String cellType = null;
 
         boolean createNewCell = false;
         boolean createNewVersion = false;
@@ -164,10 +163,6 @@ public class Introspector {
                 serviceUrl = getParameter(args, ++i);
             } else if ("-c".equals(arg) || "--create-connector".equals(arg)) {
                 createNewCell = true;
-                cellType = "webapiconnector";
-            } else if ("-d".equals(arg) || "--create-descriptor".equals(arg)) {
-                createNewCell = true;
-                cellType = "webapidescriptor";
             } else if ("--component".equals(arg)) {
                 compName = getParameter(args, ++i);
             } else if ("-i".equals(arg) || "--id".equals(arg)) {
@@ -192,16 +187,15 @@ public class Introspector {
             } else if ("--endpoint".equals(arg)) {
                 endpoint = getParameter(args, ++i);
             } else if ("--jaxrs-resources".equals(arg)) {
-                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(
-                        ","));
+                jaxRsResources = Arrays.asList(getParameter(args, ++i).split(","));
             } else {
                 defSource = arg;
             }
         }
 
         if (!createNewCell && !createNewVersion && !updateCell) {
-            failWithErrorMessage("You should specify the wanted action among -d (--create-descriptor), -c (--create-connector), "
-                    + "-U (--update) or -n (--new-version). ");
+            failWithErrorMessage(
+                    "You should specify the wanted action among -c (--create-connector),  -U (--update) or -n (--new-version). ");
         }
 
         if (createNewCell) {
@@ -214,7 +208,7 @@ public class Introspector {
         }
         if (createNewVersion) {
             if (createNewCell || updateCell) {
-                failWithErrorMessage("In create new version mode, you can't use -d (--create-descriptor), -c (--create-connector) or -n (--new-version). ");
+                failWithErrorMessage("In create new version mode, you can't use -c (--create-connector) or -n (--new-version). ");
             }
             if (cellId == null) {
                 failWithErrorMessage("In create new version mode, you should specify the cell id with -i (--id). ");
@@ -225,30 +219,26 @@ public class Introspector {
         }
         if (updateCell) {
             if (createNewCell || createNewVersion) {
-                failWithErrorMessage("In update mode, you can't use -d (--create-descriptor), -c (--create-connector) or -N (--new-version). ");
+                failWithErrorMessage("In update mode, you can't use -c (--create-connector) or -N (--new-version). ");
             }
             if (cellId == null || cellVersion == null) {
                 failWithErrorMessage("In update mode, you should specify the cell id with -i (--id) and the cell version with -v (--version). ");
             }
             if (!IntrospectionUtils.STRATEGIES.contains(updateStrategy)) {
-                failWithErrorMessage("The strategy: " + updateStrategy
-                        + " is not available. ");
+                failWithErrorMessage("The strategy: " + updateStrategy + " is not available. ");
             }
         }
 
-        if (StringUtils.isNullOrEmpty(ulogin)
-                || StringUtils.isNullOrEmpty(upwd)) {
+        if (isNullOrEmpty(ulogin) || isNullOrEmpty(upwd)) {
             failWithErrorMessage("You should specify your API spark login and password with -u (--username) and -p (--password). ");
         }
 
-        if (StringUtils.isNullOrEmpty(defSource) && jaxRsResources.isEmpty()) {
+        if (isNullOrEmpty(defSource) && jaxRsResources.isEmpty()) {
             failWithErrorMessage("You should specify the definition source to use (value no prefixed by any option). ");
         }
 
-        if (!StringUtils.isNullOrEmpty(language)
-                && !SUPPORTED_LANGUAGES.contains(language)) {
-            failWithErrorMessage("The language " + language
-                    + " is not currently supported. ");
+        if (!isNullOrEmpty(language) && !SUPPORTED_LANGUAGES.contains(language)) {
+            failWithErrorMessage("The language " + language + " is not currently supported. ");
         }
 
         if (!serviceUrl.endsWith("/")) {
@@ -256,12 +246,7 @@ public class Introspector {
         }
 
         Engine.getLogger("").getHandlers()[0]
-                .setFilter(new java.util.logging.Filter() {
-                    public boolean isLoggable(LogRecord record) {
-                        return record.getLoggerName().startsWith(
-                                "org.restlet.ext.platform");
-                    }
-                });
+                .setFilter(record -> record.getLoggerName().startsWith("org.restlet.ext.platform"));
 
         // Validate the application class name
         Definition definition = null;
@@ -269,11 +254,9 @@ public class Introspector {
         // get definition
         if (language != null) {
             if ("swagger".equals(language)) {
-                definition = SwaggerUtils
-                        .getDefinition(defSource, ulogin, upwd);
+                definition = SwaggerUtils.getDefinition(defSource, ulogin, upwd);
             } else {
-                failWithErrorMessage("The language " + language
-                        + " is not currently supported. ");
+                failWithErrorMessage("The language " + language + " is not currently supported. ");
             }
         } else {
             if (defSource != null) {
@@ -281,8 +264,7 @@ public class Introspector {
                 try {
                     clazz = Class.forName(defSource);
                 } catch (ClassNotFoundException e) {
-                    LOGGER.log(Level.SEVERE,
-                            "Cannot locate the application class.", e);
+                    LOGGER.log(Level.SEVERE, "Cannot locate the application class.", e);
                     System.exit(1);
                 }
 
@@ -296,22 +278,16 @@ public class Introspector {
                     if (applicationName != null) {
                         application.setName(applicationName);
                     }
-                    definition = ApplicationIntrospector.getDefinition(
-                            application, baseRef, component,
-                            useSectionNamingPackageStrategy);
-                } else if (javax.ws.rs.core.Application.class
-                        .isAssignableFrom(clazz)) {
-                    definition = getDefinitionFromJaxrsSources(defSource,
-                            useSectionNamingPackageStrategy, applicationName,
-                            endpoint, jaxRsResources);
+                    definition = getDefinition(application, baseRef, component, useSectionNamingPackageStrategy);
+                } else if (javax.ws.rs.core.Application.class.isAssignableFrom(clazz)) {
+                    definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy,
+                            applicationName, endpoint, jaxRsResources);
                 } else {
-                    LOGGER.log(Level.SEVERE, "Class " + defSource
-                            + " is not supported");
+                    LOGGER.log(Level.SEVERE, "Class " + defSource + " is not supported");
                     System.exit(1);
                 }
             } else if (!jaxRsResources.isEmpty()) {
-                definition = getDefinitionFromJaxrsSources(defSource,
-                        useSectionNamingPackageStrategy, applicationName,
+                definition = getDefinitionFromJaxrsSources(defSource, useSectionNamingPackageStrategy, applicationName,
                         endpoint, jaxRsResources);
             }
         }
@@ -320,11 +296,10 @@ public class Introspector {
             failWithErrorMessage("Please provide a valid application class name or definition URL.");
         }
 
-        IntrospectionUtils.sendDefinition(definition, ulogin, upwd, serviceUrl,
-                cellType, cellId, cellVersion, createNewCell, createNewVersion,
-                updateCell, updateStrategy, LOGGER);
+        IntrospectionUtils.sendDefinition(definition, ulogin, upwd, serviceUrl, cellId, cellVersion, createNewCell,
+                createNewVersion, updateCell, updateStrategy, LOGGER);
 
-        LOGGER.info("Instrospection complete");
+        LOGGER.info("Introspection complete");
     }
 
     /**
@@ -345,25 +320,20 @@ public class Introspector {
         cli.print();
         cli.print0("EXAMPLES");
         cli.print1(
-                "org.restlet.ext.platform.Introspector -u 1234 -p Xy12 --create-descriptor com.acme.Application",
+                "org.restlet.ext.platform.Introspector -u 1234 -p Xy12 --create-connector com.acme.Application",
                 "org.restlet.ext.platform.Introspector -u 1234 -p Xy12 --new-version --id 60 com.acme.Application",
                 "org.restlet.ext.platform.Introspector -u 1234 -p Xy12 --update --update-strategy replace --id 60 --version 1 --language swagger http://acme.com/api/swagger");
 
         cli.print();
         cli.print0("OPTIONS");
-        cli.print12("-h, --help" + "Prints this help.");
+        cli.print12("-h, --help", "Prints this help.");
         cli.print();
         cli.print1("[credentials]");
-        cli.print12("-u, --username username",
-                "The mandatory Restlet Cloud user name.");
-        cli.print12("-p, --password password",
-                "The mandatory Restlet Cloud user secret key.");
+        cli.print12("-u, --username username", "The mandatory Restlet Cloud user name.");
+        cli.print12("-p, --password password", "The mandatory Restlet Cloud user secret key.");
         cli.print();
         cli.print1("[actions]");
-        cli.print12("-d, --create-descriptor",
-                "Creates a new descriptor from introspection.");
-        cli.print12("-c, --create-connector",
-                "Creates a new connector from introspection.");
+        cli.print12("-c, --create-connector", "Creates a new connector from introspection.");
         cli.print12(
                 "-n, --new-version",
                 "Creates a new version of the descriptor/connector identified by the -i (--id) option");

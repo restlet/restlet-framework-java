@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -54,7 +54,7 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Tools library.
- * 
+ *
  * @author Thierry Boileau
  */
 public class IntrospectionUtils {
@@ -76,23 +76,21 @@ public class IntrospectionUtils {
         }
         return introspectionHelpers;
     }
+
     /**
      * Indicates if the given value is either null or empty.
-     * 
+     *
      * @param value
-     *            The value.
+     *         The value.
      * @return True if the value is either null or empty.
      */
     public static boolean isEmpty(String value) {
         return value == null || value.isEmpty();
     }
 
-    public static void sendDefinition(Definition definition,
-                                      String ulogin, String upwd, String serviceUrl,
-                                      String cellType, String cellId, String cellVersion,
-                                      boolean createNewCell, boolean createNewVersion,
-                                      boolean updateCell, String updateStrategy,
-                                      Logger logger) {
+    public static void sendDefinition(Definition definition, String ulogin, String upwd, String serviceUrl,
+                                      String cellId, String cellVersion, boolean createNewCell, boolean createNewVersion,
+                                      boolean updateCell, String updateStrategy, Logger logger) {
 
         String url = serviceUrl + "api/";
 
@@ -106,9 +104,9 @@ public class IntrospectionUtils {
             cr.addQueryParameter("type", "rwadef");
 
             if (createNewCell) {
-                cr.addQueryParameter("cellType", cellType);
+                cr.addQueryParameter("cellType", "webapiconnector");
                 cr.addSegment("apis").addSegment("");
-                logger.info("Create a new cell of type " + cellType);
+                logger.info("Create a new connector");
                 cr.post(definitionRepresentation, MediaType.APPLICATION_JSON);
             } else if (createNewVersion) {
                 cr.addSegment("apis").addSegment(cellId)
@@ -127,7 +125,7 @@ public class IntrospectionUtils {
                 throw new RuntimeException("No action error");
             }
 
-            logger.fine("Call success to "+ cr.getRequest());
+            logger.fine("Call success to " + cr.getRequest());
 
             if (!cr.getResponse().getStatus().isSuccess()) {
                 throw new RuntimeException("Request failed with following status: " + cr.getResponse().getStatus());
@@ -150,7 +148,7 @@ public class IntrospectionUtils {
                                 + cr.getLocationRef());
             }
         } catch (ResourceException e) {
-            logger.fine("Error during call to "+ cr.getRequest());
+            logger.fine("Error during call to " + cr.getRequest());
             if (e.getStatus().isConnectorError()) {
                 throw new RuntimeException("Restlet Cloud communication error. Please check the root cause below.", e);
             } else if (e.getStatus().isClientError()) {
@@ -173,9 +171,9 @@ public class IntrospectionUtils {
     /**
      * Sorts the sections, representations and resources alphabetically in the
      * given RWADef definition
-     * 
+     *
      * @param definition
-     *            The RWADef definition
+     *         The RWADef definition
      */
     public static void sortDefinition(Definition definition) {
         Collections.sort(definition.getContract().getSections(),
