@@ -4,8 +4,6 @@ install: true
 jdk:
   - oraclejdk8
 script:
-  - "cd build"
-  - "ant rebuild -lib ./tools/junit/"
   - "cd $TRAVIS_BUILD_DIR"
   - ./runSonarQubeAnalysis.sh
 
