@@ -310,7 +310,7 @@ public class ConverterService extends Service {
     public Representation toRepresentation(Object source, Variant target,
             Resource resource) throws IOException {
         Representation result = null;
-        boolean loggable = (resource == null) ? true : resource.isLoggable();
+        boolean loggable = (resource == null) || resource.isLoggable();
         ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                 resource);
 
@@ -334,9 +334,10 @@ public class ConverterService extends Service {
                     } else {
                         target = variants.get(0);
                     }
-                } else {
-                    target = new Variant();
                 }
+            }
+            if (target == null) {
+                target = new Variant();
             }
 
             result = ch.toRepresentation(source, target, resource);
