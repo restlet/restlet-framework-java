@@ -9,7 +9,7 @@
 
 	<dependencies>
 		<dependency type="module" id="core" />
-		<dependency type="library" id="osgi" maven-scope="compile" />
-		<dependency type="library" id="e4" maven-scope="compile" />
+		<dependency type="library" id="osgi" maven-scope="provided" />
+		<dependency type="library" id="e4" maven-scope="provided" />
 	</dependencies>
 </module>
