@@ -27,6 +27,7 @@ package org.restlet.test.engine;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.engine.application.CorsResponseFilterTestCase;
 import org.restlet.test.engine.connector.ConnectorsTestSuite;
 import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
@@ -68,6 +69,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(UnclosableOutputStreamTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(ReaderInputStreamTestCase.class);
+        addTestSuite(CorsResponseFilterTestCase.class);
 
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
