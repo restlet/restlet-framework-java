@@ -10,7 +10,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
+		<dependency includes="osgi" type="library" id="osgi" maven-scope="provided" />
 		<dependency includes="gwt" type="library" id="gwt" />
 		<dependency includes="gae" type="library" id="appengine" />
 	</dependencies>

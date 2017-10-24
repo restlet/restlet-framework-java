@@ -10,8 +10,8 @@
 	<dependencies>
 		<dependency type="module" id="core" />
 		<dependency type="module" id="xml" />
-		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
-		<dependency includes="osgi" type="library" id="e4" maven-scope="compile" />
+		<dependency includes="osgi" type="library" id="osgi" maven-scope="provided" />
+		<dependency includes="osgi" type="library" id="e4" maven-scope="provided" />
 	</dependencies>
 	<source edition="gae">
 		<files-sets>
