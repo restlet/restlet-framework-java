@@ -54,7 +54,7 @@ import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
 public class JettyServerCall extends ServerCall {
 
     /** The wrapped Jetty HTTP channel. */
-    private final HttpChannel<?> channel;
+    private final HttpChannel channel;
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
@@ -67,7 +67,7 @@ public class JettyServerCall extends ServerCall {
      * @param channel
      *            The wrapped Jetty HTTP channel.
      */
-    public JettyServerCall(Server server, HttpChannel<?> channel) {
+    public JettyServerCall(Server server, HttpChannel channel) {
         super(server);
         this.channel = channel;
         this.requestHeadersAdded = false;
@@ -119,7 +119,7 @@ public class JettyServerCall extends ServerCall {
      * 
      * @return The wrapped Jetty HTTP channel.
      */
-    public HttpChannel<?> getChannel() {
+    public HttpChannel getChannel() {
         return this.channel;
     }
 
@@ -204,7 +204,7 @@ public class JettyServerCall extends ServerCall {
     public String getRequestUri() {
         String queryString = getChannel().getRequest().getQueryString();
 
-        return getChannel().getRequest().getUri().toString()
+        return getChannel().getRequest().getRequestURL().toString()
                 + (isNullOrEmpty(queryString) ? "" : "?" + queryString);
     }
 

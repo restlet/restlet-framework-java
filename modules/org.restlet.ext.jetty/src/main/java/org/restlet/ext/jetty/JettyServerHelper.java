@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
 
 import javax.servlet.ServletException;
 
@@ -38,12 +37,8 @@ import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LowResourceMonitor;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.spdy.server.NPNServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.HTTPSPDYServerConnectionFactory;
-import org.eclipse.jetty.spdy.server.http.PushStrategy;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
@@ -236,7 +231,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
          *            The channel to handle.
          */
         @Override
-        public void handle(HttpChannel<?> channel) throws IOException,
+        public void handle(HttpChannel channel) throws IOException,
                 ServletException {
             try {
                 helper.handle(new JettyServerCall(helper.getHelped(), channel));
@@ -247,7 +242,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         }
 
         @Override
-        public void handleAsync(HttpChannel<?> channel) throws IOException,
+        public void handleAsync(HttpChannel channel) throws IOException,
                 ServletException {
             // TODO: should we handle async differently?
             try {
