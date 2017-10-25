@@ -24,16 +24,6 @@
 
 package org.restlet.ext.jetty.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.Certificate;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.HttpChannel;
 import org.restlet.Response;
@@ -43,6 +33,17 @@ import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.logging.Level;
+
+import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
 
 /**
  * Call that is used by the Jetty HTTP server connectors.
@@ -173,10 +174,10 @@ public class JettyServerCall extends ServerCall {
         if (!this.requestHeadersAdded) {
             // Copy the headers from the request object
             for (Enumeration<String> names = getChannel().getRequest()
-                    .getHeaderNames(); names.hasMoreElements();) {
+                    .getHeaderNames(); names.hasMoreElements(); ) {
                 final String headerName = names.nextElement();
                 for (Enumeration<String> values = getChannel().getRequest()
-                        .getHeaders(headerName); values.hasMoreElements();) {
+                        .getHeaders(headerName); values.hasMoreElements(); ) {
                     final String headerValue = values.nextElement();
                     result.add(headerName, headerValue);
                 }
@@ -201,7 +202,10 @@ public class JettyServerCall extends ServerCall {
      */
     @Override
     public String getRequestUri() {
-        return getChannel().getRequest().getUri().toString();
+        String queryString = getChannel().getRequest().getQueryString();
+
+        return getChannel().getRequest().getUri().toString()
+                + (isNullOrEmpty(queryString) ? "" : "?" + queryString);
     }
 
     /**
@@ -267,34 +271,40 @@ public class JettyServerCall extends ServerCall {
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
-        for (Iterator<Header> iter = getResponseHeaders().iterator(); iter.hasNext();) {
-            Header header = iter.next();
+        for (Header header : getResponseHeaders()) {
             switch (header.getName()) {
-            case HeaderConstants.HEADER_DATE:
-                if (!getChannel().getHttpConfiguration().getSendDateHeader()) {
+                case HeaderConstants.HEADER_DATE:
+                    if (!getChannel().getHttpConfiguration().getSendDateHeader()) {
+                        getChannel().getResponse().addHeader(header.getName(), header.getValue());
+                    }
+                    break;
+                default:
                     getChannel().getResponse().addHeader(header.getName(), header.getValue());
-                }
-                break;
-            default:
-                getChannel().getResponse().addHeader(header.getName(), header.getValue());
-                break;
+                    break;
             }
+        }
+
+        int statusCode = getStatusCode();
+
+        // the Jetty connector dislikes status >= 1000, in this case, the status line of the response looks like "HTTP/1.1 :01 :01"
+        // let's replace it with a standard "Internal server error" status.
+        if (statusCode >= 1000) {
+            statusCode = Status.SERVER_ERROR_INTERNAL.getCode();
         }
 
         // Set the status code in the response. We do this after adding the
         // headers because when we have to rely on the 'sendError' method,
         // the Servlet containers are expected to commit their response.
-        if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
+        if (Status.isError(statusCode) && (response.getEntity() == null)) {
             try {
-                getChannel().getResponse().sendError(getStatusCode(),
-                        getReasonPhrase());
+                getChannel().getResponse().sendError(statusCode, getReasonPhrase());
             } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }
         } else {
             // Send the response entity
-            getChannel().getResponse().setStatus(getStatusCode());
+            getChannel().getResponse().setStatus(statusCode);
             try {
                 super.sendResponse(response);
             } catch (IllegalStateException e) {

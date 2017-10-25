@@ -106,7 +106,7 @@ public class JettyHandler extends AbstractHandler {
             HttpServletRequest servletRequest,
             HttpServletResponse servletResponse) throws IOException,
             ServletException {
-        final HttpChannel<?> channel = HttpChannel.getCurrentHttpChannel();
+        final HttpChannel<?> channel = request.getHttpChannel();
         final Request baseRequest = (servletRequest instanceof Request) ? (Request) servletRequest
                 : channel.getRequest();
         this.helper

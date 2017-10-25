@@ -24,6 +24,9 @@
 
 package org.restlet.ext.jetty;
 
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -47,4 +50,9 @@ public class HttpServerHelper extends JettyServerHelper {
         getProtocols().add(Protocol.HTTP);
     }
 
+    @Override
+    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
+        // Create and configure the Jetty HTTP connector
+        return new ConnectionFactory[]{new HttpConnectionFactory(configuration) };
+    }
 }

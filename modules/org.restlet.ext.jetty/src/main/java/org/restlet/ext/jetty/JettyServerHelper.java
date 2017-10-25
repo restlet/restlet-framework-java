@@ -197,20 +197,6 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>30000</td>
  * <td>Low resource monitor stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
  * </tr>
- * <tr>
- * <td>spdy.version</td>
- * <td>int</td>
- * <td>0</td>
- * <td>SPDY max version; can be 0, 2, or 3; if 0, SPDY is not used. Make sure to install the NON boot jar for the
- * matching JDK 1.7 version in the JVM boot classpath in order to make it work.</td>
- * </tr>
- * <tr>
- * <td>spdy.pushStrategy</td>
- * <td>String</td>
- * <td>null</td>
- * <td>SPDY push strategy; can be null or "referrer" (shortcut for
- * "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class name.</td>
- * </tr>
  * </table>
  * 
  * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
@@ -256,7 +242,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
                 helper.handle(new JettyServerCall(helper.getHelped(), channel));
             } catch (Throwable e) {
                 channel.getEndPoint().close();
-                throw new IOException("Restlet exception", e);
+                throw new IOException("Exception when closing Jetty HttpChannel", e);
             }
         }
 
@@ -268,7 +254,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
                 helper.handle(new JettyServerCall(helper.getHelped(), channel));
             } catch (Throwable e) {
                 channel.getEndPoint().close();
-                throw new IOException("Restlet exception", e);
+                throw new IOException("Exception when closing Jetty HttpChannel", e);
             }
         }
     }
@@ -297,7 +283,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         configuration.setRequestHeaderSize(getHttpRequestHeaderSize());
         configuration.setResponseHeaderSize(getHttpResponseHeaderSize());
         configuration.setOutputBufferSize(getHttpOutputBufferSize());
-        // ask Jetty connector to let us handling the Date header.
+        // ask Jetty connector to let us handling the Date header,
+        // otherwise two Date headers are generated in the request
         configuration.setSendDateHeader(false);
         return configuration;
     }
@@ -309,53 +296,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      *            The HTTP configuration.
      * @return New internal Jetty connection factories.
      */
-    protected ConnectionFactory[] createConnectionFactories(
-            HttpConfiguration configuration) {
-        HttpConnectionFactory http = new HttpConnectionFactory(configuration);
-        int spdyVersion = getSpdyVersion();
-
-        if (spdyVersion == 0)
-            return new ConnectionFactory[] { http };
-
-        /*
-         * try { SPDYServerConnectionFactory.
-         * checkProtocolNegotiationAvailable(); } catch( Exception e ) {
-         * getLogger().log( Level.WARNING,
-         * "Jetty NPN boot is not available in -Xbootclasspath", e ); return
-         * null; }
-         */
-
-        // Push strategy
-        String pushStrategyName = getSpdyPushStrategy();
-
-        if (pushStrategyName == null)
-            pushStrategyName = "org.eclipse.jetty.spdy.server.http.PushStrategy$None";
-        else if ("referrer".equalsIgnoreCase(pushStrategyName))
-            pushStrategyName = "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy";
-
-        PushStrategy pushStrategy;
-        try {
-            pushStrategy = (PushStrategy) Class.forName(pushStrategyName).newInstance();
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty SPDY push strategy", e);
-            return null;
-        }
-
-        HTTPSPDYServerConnectionFactory spdy2 = new HTTPSPDYServerConnectionFactory(2, configuration, pushStrategy);
-
-        if (spdyVersion == 3) {
-            HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3, configuration, pushStrategy);
-            NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol());
-            npn.setDefaultProtocol(http.getProtocol());
-            
-            return new ConnectionFactory[] { npn, spdy3, spdy2, http };
-        }
-        
-        NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy2.getProtocol(), http.getProtocol());
-        npn.setDefaultProtocol(http.getProtocol());
-        
-        return new ConnectionFactory[] { npn, spdy2, http };
-    }
+    protected abstract ConnectionFactory[] createConnectionFactories(
+            HttpConfiguration configuration);
 
     /**
      * Creates a Jetty connector.
@@ -681,30 +623,6 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     public boolean getLowResourceMonitorThreads() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "lowResource.threads", "true"));
-    }
-
-    /**
-     * SPDY push strategy. Defaults to null.
-     * <p>
-     * Can be null or "referrer" (shortcut for "org.eclipse.jetty.spdy.server.http.ReferrerPushStrategy") or a class
-     * name.
-     * 
-     * @return SPDY push strategy or null.
-     */
-    public String getSpdyPushStrategy() {
-        return getHelpedParameters().getFirstValue("spdy.pushStrategy");
-    }
-
-    /**
-     * SPDY max version. Defaults to 0.
-     * <p>
-     * Can be 0, 2, or 3. If 0, SPDY is not used.
-     * 
-     * @return Low resource monitor stop timeout.
-     */
-    public int getSpdyVersion() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "spdy.version", "0"));
     }
 
     /**

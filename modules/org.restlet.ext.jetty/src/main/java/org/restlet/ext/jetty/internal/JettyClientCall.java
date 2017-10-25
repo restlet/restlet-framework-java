@@ -241,8 +241,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public int getStatusCode() {
-        final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
-        return httpResponse == null ? null : httpResponse.getStatus();
+        return getHttpResponse().getStatus();
     }
 
     /**

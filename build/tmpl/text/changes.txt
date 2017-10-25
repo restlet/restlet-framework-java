@@ -10,3 +10,4 @@ Changes log
       - Refreshed copyright headers.
       - Upgraded JDK version 1.8.
       - Leveraged JDK's version of Base64.
+      - Upgraded Jetty to version 9.3.21.v20170918. Leads to remove support of SPDY protocol.
