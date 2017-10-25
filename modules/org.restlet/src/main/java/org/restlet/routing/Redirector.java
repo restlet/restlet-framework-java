@@ -152,8 +152,10 @@ public class Redirector extends Restlet {
     public static final int MODE_SERVER_OUTBOUND = 6;
 
     /**
-     * Indicates if the headers of HTTP requests stored in the request's
-     * attributes, and the .
+     * Indicates if all headers of HTTP requests stored in the request's
+     * attributes, must be removed before the redirection. If set to true, it 
+     * removes all headers, otherwise it keeps only the extension (or non 
+     * HTTP standard) headers
      */
     protected volatile boolean headersCleaning;
 
