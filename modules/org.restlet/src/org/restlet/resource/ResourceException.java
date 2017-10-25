@@ -37,11 +37,14 @@ public class ResourceException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    /** The resource associated to this exception. Could be null. */
-    private final Resource resource;
-
     /** The status associated to this exception. */
     private final Status status;
+
+    /** The request associated to this exception. Could be null. */
+    private final Request request;
+
+    /** The response associated to this exception. Could be null.  */
+    private final Response response;
 
     /**
      * Constructor.
@@ -186,7 +189,7 @@ public class ResourceException extends RuntimeException {
      *            The status to associate.
      */
     public ResourceException(Status status) {
-        this(status, (Throwable) ((status == null) ? null : status.getThrowable()));
+        this(status, (status == null) ? null : status.getThrowable());
     }
 
     /**
@@ -194,14 +197,26 @@ public class ResourceException extends RuntimeException {
      * 
      * @param status
      *            The status to associate.
+     * @deprecated use constructor with status, request and response instead.
      */
+    @Deprecated
     public ResourceException(Status status, Resource resource) {
-        this(status, (Throwable) ((status == null) ? null : status.getThrowable()), resource);
+        this(status, (status == null) ? null : status.getThrowable(), resource.getRequest(), resource.getResponse());
     }
 
     /**
      * Constructor.
-     * 
+     *
+     * @param status
+     *            The status to associate.
+     */
+    public ResourceException(Status status, Request request, Response response) {
+        this(status, (status == null) ? null : status.getThrowable(), request, response);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param status
      *            The status to copy.
      * @param description
@@ -227,34 +242,36 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param status
      *            The status to associate.
      * @param cause
      *            The wrapped cause error or exception.
      */
     public ResourceException(Status status, Throwable cause) {
-        this(status, cause, null);
+        this(status, cause, null, null);
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param status
      *            The status to associate.
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(Status status, Throwable cause, Resource resource) {
+    public ResourceException(Status status, Throwable cause, Request request, Response response) {
         super((status == null) ? null : status.toString(), cause);
         this.status = status;
-        this.resource = resource;
+        this.request = request;
+        this.response = response;
     }
 
     /**
-     * Constructor that set the status to {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL} including the
+     * Constructor that set the status to
+     * {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL} including the
      * related error or exception.
-     * 
+     *
      * @param cause
      *            The wrapped cause error or exception.
      */
@@ -264,34 +281,25 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Returns the request associated to this exception.
-     * 
+     *
      * @return The request associated to this exception.
      */
     public Request getRequest() {
-        return (this.resource != null) ? this.resource.getRequest() : null;
-    }
-
-    /**
-     * Returns the resource associated to this exception.
-     * 
-     * @return The resource associated to this exception.
-     */
-    public Resource getResource() {
-        return this.resource;
+        return this.request;
     }
 
     /**
      * Returns the response associated to this exception.
-     * 
+     *
      * @return The response associated to this exception.
      */
     public Response getResponse() {
-        return (this.resource != null) ? this.resource.getResponse() : null;
+        return this.response;
     }
 
     /**
      * Returns the status associated to this exception.
-     * 
+     *
      * @return The status associated to this exception.
      */
     public Status getStatus() {
