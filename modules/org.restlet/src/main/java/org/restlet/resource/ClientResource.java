@@ -612,13 +612,42 @@ public class ClientResource extends Resource {
 
     /**
      * By default, it throws a new resource exception.
-     * 
+     * Call {@link #doError(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}.
+     *
+     * @param request
+     *            The associated request.
+     * @param response
+     *            The associated response.
+     */
+    public void doError(Request request, Response response) {
+        doError(response.getStatus(), request, response);
+    }
+
+    /**
+     * By default, it throws a new resource exception.
+     * Call {@link #doError(org.restlet.data.Status, org.restlet.Request, org.restlet.Response)}.
+     *
      * @param errorStatus
      *            The error status received.
      */
     @Override
     public void doError(Status errorStatus) {
-        throw new ResourceException(errorStatus, this);
+        doError(errorStatus, getRequest(), getResponse());
+    }
+
+    /**
+     * By default, it throws a new resource exception.
+     * This can be overridden to provide a different behavior.
+     *
+     * @param errorStatus
+     *            The error status received.
+     * @param request
+     *            The associated request.
+     * @param response
+     *            The associated response.
+     */
+    public void doError(Status errorStatus, Request request, Response response) {
+        throw new ResourceException(errorStatus, request, response);
     }
 
     /**
