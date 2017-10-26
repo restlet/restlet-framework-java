@@ -26,6 +26,7 @@ package org.restlet.test.engine;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,6 @@ import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.TokenReader;
-import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
@@ -100,11 +100,10 @@ public class HeaderTestCase extends RestletTestCase {
         ArrayList<Header> headers = new ArrayList<Header>();
         String md5hash = "aaaaaaaaaaaaaaaa";
         // encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
-        String encodedWithPadding = Base64.encode(md5hash.getBytes(), false);
+        String encodedWithPadding = Base64.getEncoder().encodeToString(md5hash.getBytes());
         String encodedNoPadding = encodedWithPadding.substring(0, 22);
 
-        Header header = new Header(HeaderConstants.HEADER_CONTENT_MD5,
-                encodedWithPadding);
+        Header header = new Header(HeaderConstants.HEADER_CONTENT_MD5, encodedWithPadding);
         headers.add(header);
 
         // extract Content-MD5 header with padded Base64 encoding, make sure it

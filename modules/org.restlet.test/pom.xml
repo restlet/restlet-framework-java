@@ -214,5 +214,11 @@
             <version>2.4-SNAPSHOT</version>
 
         </dependency>
+        <dependency>
+            <groupId>org.restlet.dev</groupId>
+            <artifactId>org.restlet.ext.nio</artifactId>
+            <version>2.4-SNAPSHOT</version>
+
+        </dependency>
     </dependencies>
 </project>

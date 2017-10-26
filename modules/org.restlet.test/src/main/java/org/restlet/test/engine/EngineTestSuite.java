@@ -31,9 +31,7 @@ import org.restlet.test.engine.application.CorsResponseFilterTestCase;
 import org.restlet.test.engine.connector.ConnectorsTestSuite;
 import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
-import org.restlet.test.engine.io.BufferTestCase;
 import org.restlet.test.engine.io.ReaderInputStreamTestCase;
-import org.restlet.test.engine.util.Base64TestCase;
 
 /**
  * Suite of unit tests for the Restlet Framework.
@@ -56,8 +54,6 @@ public class EngineTestSuite extends TestSuite {
         super("Engine package");
         addTestSuite(AlphaNumericComparatorTestCase.class);
         addTestSuite(AnnotationUtilsTestCase.class);
-        addTestSuite(Base64TestCase.class);
-        addTestSuite(BufferTestCase.class);
         addTestSuite(BioUtilsTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(ContentTypeTestCase.class);
