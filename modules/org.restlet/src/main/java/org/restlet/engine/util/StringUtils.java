@@ -104,7 +104,7 @@ public class StringUtils {
          */
         public CharacterEntitySolver() {
             toName = new String[10000];
-            toValue = new HashMap<>();
+            toValue = new HashMap<String, Integer>();
         }
 
         /**
@@ -160,12 +160,12 @@ public class StringUtils {
     private static List<CharacterEntity> xml10;
 
     static {
-        xml10 = new ArrayList<>();
+        xml10 = new ArrayList<CharacterEntity>();
         xml10.add(new CharacterEntity(34, "quot"));
         xml10.add(new CharacterEntity(38, "amp"));
         xml10.add(new CharacterEntity(62, "gt"));
         xml10.add(new CharacterEntity(60, "lt"));
-        htmlLat1 = new ArrayList<>();
+        htmlLat1 = new ArrayList<CharacterEntity>();
         htmlLat1.add(new CharacterEntity(160, "nbsp"));
         htmlLat1.add(new CharacterEntity(161, "iexcl"));
         htmlLat1.add(new CharacterEntity(162, "cent"));
@@ -262,7 +262,7 @@ public class StringUtils {
         htmlLat1.add(new CharacterEntity(253, "yacute"));
         htmlLat1.add(new CharacterEntity(254, "thorn"));
         htmlLat1.add(new CharacterEntity(255, "yuml"));
-        htmlSymbol = new ArrayList<>();
+        htmlSymbol = new ArrayList<CharacterEntity>();
         htmlSymbol.add(new CharacterEntity(402, "fnof"));
         htmlSymbol.add(new CharacterEntity(913, "Alpha"));
         htmlSymbol.add(new CharacterEntity(914, "Beta"));
@@ -386,7 +386,7 @@ public class StringUtils {
         htmlSymbol.add(new CharacterEntity(9827, "clubs"));
         htmlSymbol.add(new CharacterEntity(9829, "hearts"));
         htmlSymbol.add(new CharacterEntity(9830, "diams"));
-        htmlSpecial = new ArrayList<>();
+        htmlSpecial = new ArrayList<CharacterEntity>();
         htmlSpecial.add(new CharacterEntity(34, "quot"));
         htmlSpecial.add(new CharacterEntity(38, "amp"));
         htmlSpecial.add(new CharacterEntity(39, "apos"));

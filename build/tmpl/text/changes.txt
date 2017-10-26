@@ -4,10 +4,15 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+
+- 2.4 Milestone 1 (10/26/2017)
+
+    - Enhancements
+      - Upgraded JDK version 1.8.
+      - Mavenify the common source code
     - Misc
       - Removed deprecated extensions e4, JDBC, JSSLUtils, ROME, SDC, SIP, XDB, XStream.
       - Deprecated extensions Javamail, Lucene, Nio, Wadl.
       - Refreshed copyright headers.
-      - Upgraded JDK version 1.8.
       - Leveraged JDK's version of Base64.
       - Upgraded Jetty to version 9.3.21.v20170918. Leads to remove support of SPDY protocol.

@@ -2,7 +2,7 @@
 	<name>Simple XML</name>
 	<description>Simple XML.</description>
 	<version>2.7</version>
-	<release>1</release>
+	<release>3</release>
 	<homeUri>http://simple.sourceforge.net/</homeUri>
 	<downloadUri>http://simple.sourceforge.net/download.php</downloadUri>
 	<provider>Niall Gallagher</provider>
@@ -16,6 +16,7 @@
 	</package>
 	<distributions>
 		<distribution id="classic" />
+		<distribution id="maven" />
 	</distributions>
 	<javadocs>
 		<link href="http://simple.sourceforge.net/download/stream/doc/javadoc/" />
