@@ -703,6 +703,7 @@
 		<delete file="${temp}/definitions/libs/bndGlobalLibrary.tmpl" />
 
 		<!-- Generate ant manifest generation script -->
+		<!-- TODO seems useless!
 		<echo message="Generate ant manifest generation script" />
 		<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${lib}/extractmanifestLibrary.xml" dataroot="${build-dir}" expert="true">
 			<data expandproperties="true">
@@ -712,7 +713,7 @@
 			</data>
 		</fmpp>
 		<ant antfile="${lib}/extractmanifestLibrary.xml" dir="${lib}" inheritAll="true" />
-		<delete file="${lib}/extractmanifestLibrary.tmpl" />
+		<delete file="${lib}/extractmanifestLibrary.tmpl" /> -->
 	</target>
 
 	<target name="generate-modules-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the unique source code">
