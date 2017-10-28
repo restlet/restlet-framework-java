@@ -16,9 +16,20 @@
 	</package>
 	<distributions>
 		<distribution id="classic" />
-		<distribution id="maven" />
 	</distributions>
 	<javadocs>
 		<link href="http://simple.sourceforge.net/download/stream/doc/javadoc/" />
 	</javadocs>
+	<mavenDistributionManagement>
+		<repository>
+			<id>restlet-releases</id>
+			<name>Restlet Releases Repository</name>
+			<url>http://maven.restlet.com/</url>
+		</repository>
+		<snapshotRepository>
+			<id>restlet-snapshots</id>
+			<name>Restlet Snapshots Repository</name>
+			<url>http://maven.restlet.com/</url>
+		</snapshotRepository>
+	</mavenDistributionManagement>
 </library>
