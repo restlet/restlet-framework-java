@@ -3,9 +3,7 @@
 Changes log
 ===========
 
-@version-full@ (@release-date@)
-
-- 2.4 Milestone 1 (10/26/2017)
+- 2.4 Milestone 1 (10/28/2017)
 
     - Enhancements
       - Upgraded JDK version 1.8.
