@@ -11,8 +11,9 @@ Changes log
       - Upgraded JDK version 1.8.
       - Mavenify the common source code
     - Misc
-      - Removed deprecated extensions e4, JDBC, JSSLUtils, ROME, SDC, SIP, XDB, XStream.
       - Deprecated extensions Javamail, Lucene, Nio, Wadl.
       - Refreshed copyright headers.
       - Leveraged JDK's version of Base64.
       - Upgraded Jetty to version 9.3.21.v20170918. Leads to remove support of SPDY protocol.
+      - Renamed apispark extension to platform, and removed the support of API description.
+      - Removed deprecated extensions e4, JDBC, JSSLUtils, ROME, SDC, SIP, XDB, XStream.

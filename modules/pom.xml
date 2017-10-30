@@ -147,7 +147,7 @@
             <modules>
                 <module>org.restlet</module>
                 <module>org.restlet.example</module>
-                <module>org.restlet.ext.apispark</module>
+                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
                 <module>org.restlet.ext.emf</module>
@@ -190,7 +190,7 @@
             <id>test</id>
             <modules>
                 <module>org.restlet</module>
-                <module>org.restlet.ext.apispark</module>
+                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
                 <module>org.restlet.ext.emf</module>
@@ -237,7 +237,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${lib-junit-version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

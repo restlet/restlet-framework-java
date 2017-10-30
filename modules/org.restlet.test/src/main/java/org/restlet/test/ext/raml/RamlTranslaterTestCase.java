@@ -26,7 +26,7 @@ package org.restlet.test.ext.raml;
 
 import java.io.IOException;
 
-import org.restlet.ext.apispark.internal.conversion.TranslationException;
+import org.restlet.ext.platform.internal.conversion.TranslationException;
 import org.restlet.test.RestletTestCase;
 
 /**
