@@ -219,7 +219,7 @@ public class Introspector {
         }
         if (updateCell) {
             if (createNewCell || createNewVersion) {
-                failWithErrorMessage("In update mode, you can't use -c (--create-connector) or -N (--new-version). ");
+                failWithErrorMessage("In update mode, you can't use -c (--create-connector) or -n (--new-version). ");
             }
             if (cellId == null || cellVersion == null) {
                 failWithErrorMessage("In update mode, you should specify the cell id with -i (--id) and the cell version with -v (--version). ");
@@ -336,10 +336,10 @@ public class Introspector {
         cli.print12("-c, --create-connector", "Creates a new connector from introspection.");
         cli.print12(
                 "-n, --new-version",
-                "Creates a new version of the descriptor/connector identified by the -i (--id) option");
+                "Creates a new version of the connector identified by the -i (--id) option");
         cli.print12(
                 "-U, --update",
-                "Updates the cell descriptor/connector specified by the -i (--id) and -v (--version) options.",
+                "Updates the cell connector specified by the -i (--id) and -v (--version) options.",
                 "Use the default update strategy (update) except if -S (--update-strategy) option is specified.");
         cli.print();
         cli.print1("[options]");
@@ -354,8 +354,8 @@ public class Introspector {
                 "-s, --update-strategy strategy",
                 "Specifies the update strategy.",
                 "Available strategies:",
-                "- update: (default) new objects will be added to the Restlet Cloud's descriptor/connector, primitive fields of existing objects will be updated. Nothing will be deleted.",
-                "- replace: deletes all the information in the descriptor/connector on Restlet Cloud's and fills it again with introspected definition.");
+                "- update: (default) new objects will be added to the Restlet Cloud's connector, primitive fields of existing objects will be updated. Nothing will be deleted.",
+                "- replace: deletes all the information in the connector on Restlet Cloud's and fills it again with introspected definition.");
         cli.print12(
                 "--component componentClass",
                 "The optional full name of your Restlet Component class. This allows to collect some",
