@@ -7,6 +7,9 @@ Changes log
 
 - 2.4 Milestone 1 (10/28/2017)
 
+    - Bugs fixed
+      - Fixed parsing of Restlet Method annotations using JDK9. Issue #1285.
+        Reported by adolski.
     - Enhancements
       - Upgraded JDK version 1.8.
       - Mavenify the common source code
