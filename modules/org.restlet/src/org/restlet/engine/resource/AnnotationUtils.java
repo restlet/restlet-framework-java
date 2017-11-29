@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -145,26 +146,17 @@ public class AnnotationUtils {
                     methodAnnotation);
 
             if (restletMethod != null) {
-                String toString = annotation.toString();
-                int startIndex = annotation.annotationType().getCanonicalName()
-                        .length() + 8;
-                int endIndex = toString.length() - 1;
-                String value = null;
-
-                if (endIndex > startIndex) {
-                    value = toString.substring(startIndex, endIndex);
-
-                    if ("".equals(value)) {
-                        value = null;
-                    }
-                }
-
                 if (result == null) {
                     result = new CopyOnWriteArrayList<AnnotationInfo>();
                 }
+                try {
+                    java.lang.reflect.Method valueMethod = annotation.getClass().getDeclaredMethod("value");
+                    String value = (String) valueMethod.invoke(annotation);
 
-                result.add(new MethodAnnotationInfo(initialClass,
-                        restletMethod, javaMethod, value));
+                    result.add(new MethodAnnotationInfo(initialClass, restletMethod, javaMethod, value));
+                } catch (Exception exception) {
+                    Context.getCurrentLogger().info("Cannot get value of Restlet annotation: " + annotation + " due to " + exception.getMessage());
+                }
             }
         }
 

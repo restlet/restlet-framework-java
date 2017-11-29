@@ -4,6 +4,9 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Bugs fixed
+      - Fixed parsing of Restlet Method annotations using JDK9. Issue #1285.
+        Reported by adolski.
     - Misc
       - Refreshed copyright headers
 
