@@ -4,6 +4,9 @@ Changes log
 ===========
 
 @version-full@ (@release-date@)
+    - Enhancements
+      - Added automatic deserialization of annotated exceptions in GWT edition. Issue #1306.
+        Reported by Roland Beuker.
 
 - 2.4 Milestone 1 (10/28/2017)
 
