@@ -3,8 +3,6 @@
 Changes log
 ===========
 
-Upgraded fileupload dependency to 1.3.3 and commons.io to 2.6 in order to prevent security issues (CVE-2014-0050 and CVE-2016-3092). Issue #1310. Reported by Arjohn Kampman.
-
 @version-full@ (@release-date@)
     - Bugs fixed
       - Fixed parsing of Restlet Method annotations using JDK9. Issue #1285.
