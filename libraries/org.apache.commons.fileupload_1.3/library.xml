@@ -2,6 +2,7 @@
 	<name>Apache Commons FileUpload</name>
 	<description>Apache Commons FileUpload</description>
 	<version>1.3</version>
+	<release>3</release>
 	<homeUri>http://commons.apache.org/fileupload/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_fileupload.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>

@@ -4,11 +4,17 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Misc
+      - Upgraded fileupload dependency to 1.3.3 and commons.io to 2.6 in order to prevent
+        security issues (CVE-2014-0050 and CVE-2016-3092). Issue #1310.
+        Reported by Arjohn Kampman.
 
 - 2.4.0 (09/01/2018)
     - Enhancements
       - Added automatic deserialization of annotated exceptions in GWT edition. Issue #1306.
         Reported by Roland Beuker.
+    - Misc
+      - Refreshed copyright headers
 
 - 2.4 Milestone 1 (10/28/2017)
 
