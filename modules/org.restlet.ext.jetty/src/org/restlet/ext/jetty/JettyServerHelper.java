@@ -345,15 +345,16 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
         if (spdyVersion == 3) {
             HTTPSPDYServerConnectionFactory spdy3 = new HTTPSPDYServerConnectionFactory(3, configuration, pushStrategy);
-            NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(), spdy2.getProtocol(), http.getProtocol());
+            NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy3.getProtocol(), spdy2.getProtocol(),
+                    http.getProtocol());
             npn.setDefaultProtocol(http.getProtocol());
-            
+
             return new ConnectionFactory[] { npn, spdy3, spdy2, http };
         }
-        
+
         NPNServerConnectionFactory npn = new NPNServerConnectionFactory(spdy2.getProtocol(), http.getProtocol());
         npn.setDefaultProtocol(http.getProtocol());
-        
+
         return new ConnectionFactory[] { npn, spdy2, http };
     }
 
@@ -791,7 +792,14 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         getLogger().info(
                 "Starting the Jetty " + getProtocols() + " server on port "
                         + getHelped().getPort());
-        server.start();
+
+        try {
+            server.start();
+        } catch (Exception e) {
+            // Make sure that all resources are released, otherwise threadpool may still be running.
+            server.stop();
+            throw e;
+        }
 
         // We won't know the local port until after the server starts
         setEphemeralPort(connector.getLocalPort());
