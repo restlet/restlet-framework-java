@@ -704,7 +704,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         getLogger().info(
                 "Starting the Jetty " + getProtocols() + " server on port "
                         + getHelped().getPort());
-        server.start();
+        try {
+            server.start();
+        } catch (Exception e) {
+            // Make sure that all resources are released, otherwise threadpool may still be running.
+            server.stop();
+            throw e;
+        }
 
         // We won't know the local port until after the server starts
         setEphemeralPort(connector.getLocalPort());
