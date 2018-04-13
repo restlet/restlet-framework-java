@@ -10,6 +10,7 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.service.ConnectorService;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -34,6 +35,20 @@ public class ApplicationContextTestCase extends RestletTestCase {
         }
     }
 
+    public static class WebApiConnectorService extends ConnectorService {
+        private boolean called = false;
+
+        @Override
+        public void beforeSend(Representation entity) {
+            super.beforeSend(entity);
+            this.called = true;
+        }
+
+        public boolean wasCalled() {
+            return called;
+        }
+    }
+
     public static class WebApiApplication extends Application {
         @Override
         public Restlet createInboundRoot() {
@@ -54,6 +69,7 @@ public class ApplicationContextTestCase extends RestletTestCase {
     }
 
     private Component component;
+    private WebApiConnectorService connectorService;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,7 +77,10 @@ public class ApplicationContextTestCase extends RestletTestCase {
         this.component = new Component();
         this.component.getServers().add(Protocol.HTTP, TEST_PORT);
 
-        component.getDefaultHost().attach("/api", new WebApiApplication());
+        this.connectorService = new WebApiConnectorService();
+        WebApiApplication webApiApplication = new WebApiApplication();
+        webApiApplication.setConnectorService(this.connectorService);
+        component.getDefaultHost().attach("/api", webApiApplication);
         component.getInternalRouter().attach("/internal", new InternalApplication());
 
         component.start();
@@ -76,5 +95,11 @@ public class ApplicationContextTestCase extends RestletTestCase {
         ClientResource res = new ClientResource("http://localhost:" + TEST_PORT + "/api/test");
         Representation rep = res.get(MediaType.TEXT_PLAIN);
         assertEquals("WebApiApplication", rep.getText());
+    }
+
+    public void testCurrentApplicationNotClearedBeforeSend() throws Exception {
+        ClientResource res = new ClientResource("http://localhost:" + TEST_PORT + "/api/test");
+        Representation rep = res.get(MediaType.TEXT_PLAIN);
+        assertTrue(this.connectorService.wasCalled());
     }
 }
