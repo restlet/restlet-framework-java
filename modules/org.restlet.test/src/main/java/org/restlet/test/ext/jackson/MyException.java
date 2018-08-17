@@ -26,7 +26,7 @@ package org.restlet.test.ext.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({ "cause", "localizedMessage", "suppressed" })
+@JsonIgnoreProperties({ "cause", "localizedMessage", "suppressed", "message" })
 public class MyException extends Exception {
 
     private static final long serialVersionUID = 1L;

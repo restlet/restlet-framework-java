@@ -26,6 +26,7 @@ package org.restlet.ext.lucene;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 
 import org.apache.solr.common.params.CommonParams;
@@ -134,7 +135,7 @@ public class SolrClientHelper extends ClientHelper {
             if (handler == null
                     && coreContainer != null
                     && path != null
-                    && path.equals(coreContainer.getAdminPath())) {
+                    && path.equals(coreContainer.getManagementPath())) {
                 handler = coreContainer.getMultiCoreHandler();
             }
         }
@@ -183,8 +184,7 @@ public class SolrClientHelper extends ClientHelper {
                     if (!config.exists()) {
                         config = new File(new URI(configFile));
                     }
-                    coreContainer = CoreContainer.createAndLoad(directory,
-                            config);
+                    coreContainer = CoreContainer.createAndLoad(Paths.get(directory), config.toPath());
                 }
             }
 

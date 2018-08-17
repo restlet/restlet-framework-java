@@ -2,6 +2,7 @@
 	<name>Servlet API</name>
 	<description>Servlet API</description>
 	<version>3.1</version>
+	<release>0</release>
 	<homeUri>http://java.sun.com/products/servlet/index.jsp</homeUri>
 	<downloadUri>http://java.sun.com/products/servlet/download.html</downloadUri>
 	<provider>Oracle Inc.</provider>

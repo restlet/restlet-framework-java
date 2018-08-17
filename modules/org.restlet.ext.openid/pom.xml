@@ -16,25 +16,25 @@
         <dependency>
             <groupId>org.openid4java</groupId>
             <artifactId>openid4java</artifactId>
-            <version>1.0.0</version>
+            <version>${lib-openid4java-version}</version>
 
         </dependency>
         <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
-            <version>1.9.19</version>
+            <version>${lib-nekohtml-version}</version>
 
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.2</version>
+            <version>${lib-httpclient-version}</version>
 
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20160212</version>
+            <version>${lib-json-version}</version>
 
         </dependency>
         <dependency>

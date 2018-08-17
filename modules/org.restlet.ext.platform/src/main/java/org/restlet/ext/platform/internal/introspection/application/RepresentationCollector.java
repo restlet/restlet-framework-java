@@ -1,28 +1,47 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.platform.internal.introspection.application;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import org.restlet.engine.Engine;
+import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.platform.Introspector;
+import org.restlet.ext.platform.internal.conversion.ConversionUtils;
+import org.restlet.ext.platform.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.platform.internal.introspection.util.JacksonUtils;
+import org.restlet.ext.platform.internal.introspection.util.TypeInfo;
+import org.restlet.ext.platform.internal.introspection.util.Types;
+import org.restlet.ext.platform.internal.introspection.util.UnsupportedTypeException;
+import org.restlet.ext.platform.internal.model.Property;
+import org.restlet.ext.platform.internal.model.Representation;
+import org.restlet.ext.platform.internal.model.Section;
 
 import java.beans.BeanInfo;
 import java.beans.IndexedPropertyDescriptor;
@@ -31,27 +50,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.restlet.engine.Engine;
-import org.restlet.engine.util.BeanInfoUtils;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.platform.Introspector;
-import org.restlet.ext.platform.internal.conversion.ConversionUtils;
-import org.restlet.ext.platform.internal.introspection.IntrospectionHelper;
-import org.restlet.ext.platform.internal.introspection.util.TypeInfo;
-import org.restlet.ext.platform.internal.introspection.util.Types;
-import org.restlet.ext.platform.internal.introspection.util.UnsupportedTypeException;
-import org.restlet.ext.platform.internal.model.Property;
-import org.restlet.ext.platform.internal.model.Representation;
-import org.restlet.ext.platform.internal.model.Section;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 /**
  * @author Manuel Boillod
@@ -68,8 +66,8 @@ public class RepresentationCollector {
      *            The introspector helpers.
      */
     public static void addRepresentation(CollectInfo collectInfo,
-            TypeInfo typeInfo,
-            List<? extends IntrospectionHelper> introspectionHelper) {
+                                         TypeInfo typeInfo,
+                                         List<? extends IntrospectionHelper> introspectionHelper) {
         // Introspect the java class
         Representation representation = new Representation();
         representation.setDescription("");
@@ -121,7 +119,7 @@ public class RepresentationCollector {
                 BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
                         .getRepresentationClazz());
 
-                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass.construct(typeInfo.getRepresentationClazz(), new JacksonAnnotationIntrospector(), null).getAnnotation(JsonIgnoreProperties.class);
+                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = JacksonUtils.getJsonIgnoreProperties(typeInfo.getRepresentationClazz());
                 List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
 
                 for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
