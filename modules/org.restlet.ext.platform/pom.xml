@@ -16,37 +16,37 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0.1</version>
+            <version>${lib-guava-version}</version>
 
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0</version>
+            <version>${lib-jaxrs-api-version}</version>
 
         </dependency>
         <dependency>
             <groupId>org.raml</groupId>
             <artifactId>raml-parser</artifactId>
-            <version>0.8.19</version>
+            <version>${lib-raml-version}</version>
 
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.3-M1</version>
+            <version>${lib-swagger-version}</version>
 
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>1.5.3-M1</version>
+            <version>${lib-swagger-version}</version>
 
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>1.5.3-M1</version>
+            <version>${lib-swagger-version}</version>
 
         </dependency>
         <dependency>

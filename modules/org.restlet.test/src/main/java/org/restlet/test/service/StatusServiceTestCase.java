@@ -145,7 +145,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         // TODO cf issue #993
         // assertEquals("test message", e.getMessage());
         // assertEquals("test message", e.getLocalizedMessage());
-        assertEquals(0, ((Throwable[]) e.getSuppressed()).length);
+        assertEquals(0, e.getSuppressed().length);
         assertNotNull(e.getCause());
     }
 
@@ -208,6 +208,8 @@ public class StatusServiceTestCase extends RestletTestCase {
     }
 
     @org.restlet.resource.Status(value = 401, serialize = true)
+    // TODO cf issue #993
+    @JsonIgnoreProperties({ "localizedMessage", "message" })
     private static class Status401SerializableException extends Throwable {
 
         private static final long serialVersionUID = 1L;
@@ -215,10 +217,9 @@ public class StatusServiceTestCase extends RestletTestCase {
         private int value;
 
         public Status401SerializableException() {
-
         }
 
-        public Status401SerializableException(String message, int value) {
+       public Status401SerializableException(String message, int value) {
             super(message);
             this.value = value;
         }

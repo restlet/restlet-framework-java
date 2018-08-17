@@ -24,21 +24,36 @@
 
 package org.restlet.ext.platform.internal.introspection.jaxrs;
 
-import java.beans.BeanInfo;
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.util.BeanInfoUtils;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.ext.platform.internal.introspection.DocumentedApplication;
+import org.restlet.ext.platform.internal.introspection.IntrospectionHelper;
+import org.restlet.ext.platform.internal.introspection.util.JacksonUtils;
+import org.restlet.ext.platform.internal.introspection.util.TypeInfo;
+import org.restlet.ext.platform.internal.introspection.util.Types;
+import org.restlet.ext.platform.internal.introspection.util.UnsupportedTypeException;
+import org.restlet.ext.platform.internal.model.Contract;
+import org.restlet.ext.platform.internal.model.Definition;
+import org.restlet.ext.platform.internal.model.Endpoint;
+import org.restlet.ext.platform.internal.model.Header;
+import org.restlet.ext.platform.internal.model.Operation;
+import org.restlet.ext.platform.internal.model.PathVariable;
+import org.restlet.ext.platform.internal.model.PayLoad;
+import org.restlet.ext.platform.internal.model.Property;
+import org.restlet.ext.platform.internal.model.QueryParameter;
+import org.restlet.ext.platform.internal.model.Representation;
+import org.restlet.ext.platform.internal.model.Resource;
+import org.restlet.ext.platform.internal.model.Response;
+import org.restlet.ext.platform.internal.model.Section;
+import org.restlet.ext.platform.internal.reflect.ReflectUtils;
+import org.restlet.ext.platform.internal.utils.IntrospectionUtils;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
@@ -60,39 +75,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.engine.util.BeanInfoUtils;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.ext.platform.internal.introspection.DocumentedApplication;
-import org.restlet.ext.platform.internal.introspection.IntrospectionHelper;
-import org.restlet.ext.platform.internal.introspection.util.TypeInfo;
-import org.restlet.ext.platform.internal.introspection.util.Types;
-import org.restlet.ext.platform.internal.introspection.util.UnsupportedTypeException;
-import org.restlet.ext.platform.internal.model.Contract;
-import org.restlet.ext.platform.internal.model.Definition;
-import org.restlet.ext.platform.internal.model.Endpoint;
-import org.restlet.ext.platform.internal.model.Header;
-import org.restlet.ext.platform.internal.model.Operation;
-import org.restlet.ext.platform.internal.model.PathVariable;
-import org.restlet.ext.platform.internal.model.PayLoad;
-import org.restlet.ext.platform.internal.model.Property;
-import org.restlet.ext.platform.internal.model.QueryParameter;
-import org.restlet.ext.platform.internal.model.Representation;
-import org.restlet.ext.platform.internal.model.Resource;
-import org.restlet.ext.platform.internal.model.Response;
-import org.restlet.ext.platform.internal.model.Section;
-import org.restlet.ext.platform.internal.reflect.ReflectUtils;
-import org.restlet.ext.platform.internal.utils.IntrospectionUtils;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import java.beans.BeanInfo;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Publish the documentation of a Jaxrs-based Application to the Restlet Cloud
@@ -315,10 +312,10 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             collectInfo.addSection(new Section(packageName));
         }
         // Example: "Contact"
-        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(
-                JsonRootName.class);
-        String typeName = jsonType == null ? typeInfo.getRepresentationClazz()
-                .getSimpleName() : jsonType.value();
+        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
+        String typeName = jsonType == null
+                ? typeInfo.getRepresentationClazz().getSimpleName()
+                : jsonType.value();
         representation.setName(typeName);
         representation.setRaw(false);
 
@@ -334,13 +331,9 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
             if (typeInfo.isPojo()) {
                 // add properties definition
-                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo
-                        .getRepresentationClazz());
+                BeanInfo beanInfo = BeanInfoUtils.getBeanInfo(typeInfo.getRepresentationClazz());
 
-                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = AnnotatedClass
-                        .construct(typeInfo.getRepresentationClazz(),
-                                new JacksonAnnotationIntrospector(), null)
-                        .getAnnotation(JsonIgnoreProperties.class);
+                JsonIgnoreProperties jsonIgnorePropertiesAnnotation = JacksonUtils.getJsonIgnoreProperties(typeInfo.getRepresentationClazz());
                 List<String> jsonIgnoreProperties = jsonIgnorePropertiesAnnotation == null ? null
                         : Arrays.asList(jsonIgnorePropertiesAnnotation.value());
 

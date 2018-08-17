@@ -29,6 +29,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jaxb.JaxbConverter;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -43,17 +45,15 @@ import org.restlet.test.RestletTestCase;
 public class JaxbBasicConverterTestCase extends RestletTestCase {
 
     public void testObjectionToRepresentation() throws IOException {
-        ConverterService cs = new ConverterService();
-        Representation rep = cs.toRepresentation(new Sample(), new Variant(
+        Representation rep = new JaxbConverter().toRepresentation(new Sample(), new Variant(
                 MediaType.APPLICATION_XML), null);
         assertTrue(rep instanceof JaxbRepresentation<?>);
     }
 
-    public void testRepresentationToObject() throws IOException, JAXBException {
-        ConverterService cs = new ConverterService();
+    public void testRepresentationToObject() throws IOException {
         JaxbRepresentation<Sample> sampleRep = new JaxbRepresentation<Sample>(
                 MediaType.APPLICATION_XML, new Sample());
-        Object rep = cs.toObject(sampleRep, Sample.class, null);
+        Object rep = new JaxbConverter().toObject(sampleRep, Sample.class, null);
         assertTrue(rep instanceof Sample);
     }
 }

@@ -16,32 +16,32 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
-			<version>9.3.21.v20170918</version>
+			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
-			<version>9.3.21.v20170918</version>
+			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
-            <version>9.3.21.v20170918</version>
+            <version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-            <version>9.3.21.v20170918</version>
+            <version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-            <version>9.3.21.v20170918</version>
+            <version>${lib-jetty-version}</version>
         </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>${lib-servlet-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>

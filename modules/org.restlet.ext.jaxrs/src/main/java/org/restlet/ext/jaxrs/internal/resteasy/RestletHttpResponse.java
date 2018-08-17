@@ -128,6 +128,11 @@ public class RestletHttpResponse implements HttpResponse {
 
     }
 
+    @java.lang.Override
+    public void flushBuffer() throws IOException {
+
+    }
+
     @Override
     public void sendError(int arg0) throws IOException {
         // TODO Auto-generated method stub

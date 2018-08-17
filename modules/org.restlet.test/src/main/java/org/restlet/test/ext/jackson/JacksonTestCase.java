@@ -91,20 +91,15 @@ public class JacksonTestCase extends RestletTestCase {
         // Unless we are in debug mode, hide those properties
         me.setStackTrace(new StackTraceElement[0]);
 
-        JacksonRepresentation<MyException> rep = new JacksonRepresentation<MyException>(
-                MediaType.APPLICATION_JSON, me);
-        String text = rep.getText();
-        System.out.println(text);
+        JacksonRepresentation<MyException> rep = new JacksonRepresentation<MyException>(MediaType.APPLICATION_JSON, me);
 
-        rep = new JacksonRepresentation<MyException>(new StringRepresentation(
-                text, rep.getMediaType()), MyException.class);
+        rep = new JacksonRepresentation<>(new StringRepresentation(rep.getText(), rep.getMediaType()), MyException.class);
         verify(me, rep.getObject());
     }
 
     public void testJson() throws Exception {
         Customer customer = createCustomer();
-        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(
-                MediaType.APPLICATION_JSON, customer);
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(MediaType.APPLICATION_JSON, customer);
         String text = rep.getText();
         assertEquals(
                 "{\"firstName\":\"Foo\",\"lastName\":\"Bar\",\"invoices\":[{\"date\":1356533333882,\"amount\":12456,\"paid\":false},{\"date\":1356533333882,\"amount\":7890,\"paid\":true}]}",

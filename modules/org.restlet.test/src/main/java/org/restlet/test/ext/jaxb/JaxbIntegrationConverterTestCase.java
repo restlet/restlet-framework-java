@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.restlet.engine.Engine;
+import org.restlet.ext.jaxb.JaxbConverter;
 import org.restlet.test.RestletTestCase;
 
 import org.restlet.Application;
@@ -70,6 +72,8 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
+        // make sure the jaxb converter is registered
+        Engine.getInstance().getRegisteredConverters().add(new JaxbConverter());
         this.component = new Component();
         final Server server = this.component.getServers().add(Protocol.HTTP, 0);
         final Application application = createApplication(this.component);
@@ -108,12 +112,11 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
     public void testIntegration() throws Exception {
         Client client = new Client(new Context(), Arrays.asList(Protocol.HTTP));
         Request request = new Request(Method.POST, uri);
-        request.setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
+        request.setEntity(new JaxbRepresentation<>(new Sample(IN_STRING)));
 
         Response response = client.handle(request);
 
-        JaxbRepresentation<Sample> resultRepresentation = new JaxbRepresentation<Sample>(
-                response.getEntity(), Sample.class);
+        JaxbRepresentation<Sample> resultRepresentation = new JaxbRepresentation<Sample>(response.getEntity(), Sample.class);
         Sample sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
 

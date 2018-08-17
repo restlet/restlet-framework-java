@@ -35,10 +35,12 @@ import org.restlet.data.Digest;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.engine.Engine;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
+import org.restlet.ext.crypto.internal.HttpDigestHelper;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
@@ -113,6 +115,8 @@ public class AuthenticationTestCase extends RestletTestCase {
      * @throws IOException
      */
     public void testParsingDigest() throws IOException {
+        // make sure the Digest authentication scheme is registered
+        Engine.getInstance().getRegisteredAuthenticators().add(new HttpDigestHelper());
         ChallengeResponse cres1 = new ChallengeResponse(
                 ChallengeScheme.HTTP_DIGEST,
                 null,

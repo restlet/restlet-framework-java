@@ -40,11 +40,13 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.representation.InputRepresentation;
@@ -64,19 +66,27 @@ public class RestletHttpRequest extends BaseHttpRequest {
 
     private final ResteasyUriInfo uriInfo;
 
+    private final SynchronousDispatcher dispatcher;
+
+    private final HttpResponse httpResponse;
+
     /**
      * Constructor.
      * 
      * @param request
      *            The wrapped Restlet request.
+     * @param response
+     *            The wrapped Restlet response.
      * @throws URISyntaxException
      */
-    public RestletHttpRequest(SynchronousDispatcher dispatcher, Request request)
+    public RestletHttpRequest(SynchronousDispatcher dispatcher, Request request, Response response)
             throws URISyntaxException {
-        super(dispatcher);
+        super(createUriInfo(request.getResourceRef()));
+        this.dispatcher = dispatcher;
         this.request = request;
+        this.httpResponse = new RestletHttpResponse(response);
         this.httpHeaders = createHttpHeaders();
-        this.uriInfo = createUriInfo();
+        this.uriInfo = createUriInfo(request.getResourceRef());
     }
 
     /**
@@ -99,11 +109,9 @@ public class RestletHttpRequest extends BaseHttpRequest {
      * 
      * @return A RESTEasy URI info object.
      */
-    protected ResteasyUriInfo createUriInfo() {
+    public static ResteasyUriInfo createUriInfo(Reference reference) {
         try {
-            return new ResteasyUriInfo(getRequest().getResourceRef()
-                    .getBaseRef().toUri(), new URI(getRequest()
-                    .getResourceRef().getRelativeRef().toString()));
+            return new ResteasyUriInfo(reference.getBaseRef().toUri(), new URI(reference.getRelativeRef().toString()));
         } catch (URISyntaxException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to parse the URI.", e);
@@ -118,8 +126,7 @@ public class RestletHttpRequest extends BaseHttpRequest {
 
     @Override
     public ResteasyAsynchronousContext getAsyncContext() {
-        return new SynchronousExecutionContext(this.dispatcher, this,
-                httpResponse);
+        return new SynchronousExecutionContext(this.dispatcher, this, httpResponse);
     }
 
     @Override

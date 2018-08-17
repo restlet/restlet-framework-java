@@ -1,0 +1,22 @@
+<library id="resteasy" symbolicName="org.jboss.resteasy">
+    <name>JBoss RESTEasy</name>
+    <description>JAX-RS engine</description>
+    <version>3.6</version>
+    <release>0</release>
+    <homeUri>http://www.jboss.org/resteasy</homeUri>
+    <downloadUri>http://sourceforge.net/projects/resteasy/files/Resteasy%20JAX-RS/</downloadUri>
+    <provider>RedHat</provider>
+    <distributions>
+        <distribution id="classic"/>
+    </distributions>
+    <package name="org.jboss.resteasy">
+        <maven>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.6.0.Final</version>
+        </maven>
+    </package>
+    <javadocs>
+        <link href="http://docs.jboss.org/resteasy/docs/3.0.6.Final/javadocs/"/>
+    </javadocs>
+</library>
