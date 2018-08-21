@@ -8,11 +8,6 @@ Changes log
       - Make sure the Jetty server has released all resources when it fails to start. Issue #1311.
         Reported by primosK.
     - Misc
-
-
-
-solr-core-4.6.0.jar (org.apache.solr:solr-core:4.6.0, cpe:/a:apache:solr:4.6.0) : CVE-2015-8797, CVE-2018-1308, CVE-2015-8795, CVE-2015-8796, CVE-2014-3628, CVE-2017-3163
-
       - Upgraded Apache Solr dependency to 7.4.0 in order to prevent security issues
         (CVE-2015-8797, CVE-2018-1308, CVE-2015-8795, CVE-2015-8796, CVE-2014-3628, CVE-2017-3163).
         Issue #1331.
