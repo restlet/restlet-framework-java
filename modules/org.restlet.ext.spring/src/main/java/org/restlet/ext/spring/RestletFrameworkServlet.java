@@ -84,7 +84,7 @@ import org.springframework.web.servlet.FrameworkServlet;
  * 
  * @author Rhett Sutphin
  */
-public class RestletFrameworkServlet extends org.springframework.web.servlet.FrameworkServlet {
+public class RestletFrameworkServlet extends FrameworkServlet {
     /** The default bean name for the target Restlet. */
     private static final String DEFAULT_TARGET_RESTLET_BEAN_NAME = "root";
 

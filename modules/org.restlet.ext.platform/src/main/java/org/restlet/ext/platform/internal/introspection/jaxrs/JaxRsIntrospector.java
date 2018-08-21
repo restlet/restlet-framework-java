@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
@@ -89,12 +89,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
  * Publish the documentation of a Jaxrs-based Application to the Restlet Cloud
  * console.
- * 
+ *
  * @author Thierry Boileau
  */
 public class JaxRsIntrospector extends IntrospectionUtils {
@@ -275,7 +276,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     private static final String SUFFIX_SERVER_RESOURCE = "ServerResource";
 
     private static void addEndpoints(String applicationPath,
-            Definition definition) {
+                                     Definition definition) {
         if (applicationPath != null) {
             Endpoint endpoint = new Endpoint(applicationPath);
             definition.getEndpoints().add(endpoint);
@@ -283,8 +284,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void addRepresentation(CollectInfo collectInfo,
-            TypeInfo typeInfo,
-            List<? extends IntrospectionHelper> introspectionHelper) {
+                                          TypeInfo typeInfo,
+                                          List<? extends IntrospectionHelper> introspectionHelper) {
         // Introspect the java class
         Representation representation = new Representation();
         representation.setDescription("");
@@ -312,10 +313,9 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             collectInfo.addSection(new Section(packageName));
         }
         // Example: "Contact"
-        JsonRootName jsonType = typeInfo.getClazz().getAnnotation(JsonRootName.class);
-        String typeName = jsonType == null
-                ? typeInfo.getRepresentationClazz().getSimpleName()
-                : jsonType.value();
+        String typeName = Optional.ofNullable(typeInfo.getClazz().getAnnotation(JsonRootName.class))
+                .map(JsonRootName::value)
+                .orElse(typeInfo.getRepresentationClazz().getSimpleName());
         representation.setName(typeName);
         representation.setRaw(false);
 
@@ -403,7 +403,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     /**
      * Returns a clean path (especially variables are cleaned from routing
      * regexp).
-     * 
+     *
      * @param path
      *            The path to clean.
      * @return The cleand path.
@@ -468,7 +468,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     /**
      * Returns an instance of what must be a subclass of {@link Application}.
      * Returns null in case of errors.
-     * 
+     *
      * @param className
      *            The name of the application class.
      * @return An instance of what must be a subclass of {@link Application}.
@@ -479,12 +479,12 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
-     * 
+     *
      * @param application
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            Reference baseRef, boolean useSectionNamingPackageStrategy) {
+                                           Reference baseRef, boolean useSectionNamingPackageStrategy) {
         // method kept for retro compatibility
         return getDefinition(application, null, null, baseRef,
                 useSectionNamingPackageStrategy);
@@ -492,13 +492,13 @@ public class JaxRsIntrospector extends IntrospectionUtils {
 
     /**
      * Constructor.
-     * 
+     *
      * @param application
      *            An application to introspect.
      */
     public static Definition getDefinition(Application application,
-            String applicationName, List<Class> resources, Reference baseRef,
-            boolean useSectionNamingPackageStrategy) {
+                                           String applicationName, List<Class> resources, Reference baseRef,
+                                           boolean useSectionNamingPackageStrategy) {
 
         List<IntrospectionHelper> introspectionHelpers = IntrospectionUtils
                 .getIntrospectionHelpers();
@@ -555,7 +555,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     public static List<Class> getAllResources(Application application,
-            List<Class> resources) {
+                                              List<Class> resources) {
         List<Class> allResources = new ArrayList<>();
         if (application != null) {
             if (application.getClasses() != null) {
@@ -576,7 +576,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static Header getHeader(TypeInfo typeInfo, String defaultValue,
-            HeaderParam headerParam) {
+                                    HeaderParam headerParam) {
         Header header = new Header();
         header.setName(headerParam.value());
         header.setType(typeInfo.getRepresentationName());
@@ -597,7 +597,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static PathVariable getPathVariable(TypeInfo typeInfo,
-            PathParam pathParam) {
+                                                PathParam pathParam) {
         PathVariable pathVariable = new PathVariable();
         pathVariable.setName(pathParam.value());
         pathVariable.setType(typeInfo.getRepresentationName());
@@ -605,7 +605,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static QueryParameter getQueryParameter(TypeInfo typeInfo,
-            String defaultValue, QueryParam queryParam) {
+                                                    String defaultValue, QueryParam queryParam) {
         QueryParameter queryParameter = new QueryParameter();
         queryParameter.setName(queryParam.value());
         queryParameter.setType(typeInfo.getRepresentationName());
@@ -651,7 +651,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                 || method.getAnnotation(PUT.class) != null
                 || method.getAnnotation(POST.class) != null
                 || method.getAnnotation(DELETE.class) != null || method
-                    .getAnnotation(HttpMethod.class) != null);
+                .getAnnotation(HttpMethod.class) != null);
     }
 
     private static String joinPaths(String... nullablePaths) {
@@ -689,7 +689,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanClazz(CollectInfo collectInfo, Class<?> clazz,
-            List<? extends IntrospectionHelper> introspectionHelper) {
+                                  List<? extends IntrospectionHelper> introspectionHelper) {
         ClazzInfo clazzInfo = new ClazzInfo();
 
         // Introduced by Jax-rs 2.0
@@ -761,7 +761,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanConstructor(Constructor<?> constructor,
-            ClazzInfo clazzInfo) {
+                                        ClazzInfo clazzInfo) {
 
         // Scan parameters
         Annotation[][] parameterAnnotations = constructor
@@ -783,7 +783,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
                     + e.getMessage());
             return;
         } // Introduced by Jax-rs 2.0
-          // BeanParam beanparam = field.getAnnotation(BeanParam.class);
+        // BeanParam beanparam = field.getAnnotation(BeanParam.class);
 
         DefaultValue defaultvalue = field.getAnnotation(DefaultValue.class);
         String defaultValueString = defaultvalue != null ? defaultvalue.value()
@@ -818,8 +818,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanParameters(ClazzInfo clazzInfo,
-            Annotation[][] parameterAnnotations, Class<?>[] parameterTypes,
-            Type[] genericParameterTypes) {
+                                       Annotation[][] parameterAnnotations, Class<?>[] parameterTypes,
+                                       Type[] genericParameterTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
             Annotation[] annotations = parameterAnnotations[i];
             TypeInfo typeInfo;
@@ -829,7 +829,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             } catch (UnsupportedTypeException e) {
                 LOGGER.warning("Could not scan parameter "
                         + Types.toString(parameterTypes[i],
-                                genericParameterTypes[i]) + ". "
+                        genericParameterTypes[i]) + ". "
                         + e.getMessage());
                 continue;
             }
@@ -860,8 +860,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void scanResourceMethod(CollectInfo collectInfo,
-            ClazzInfo clazzInfo, Method method,
-            List<? extends IntrospectionHelper> introspectionHelper) {
+                                           ClazzInfo clazzInfo, Method method,
+                                           List<? extends IntrospectionHelper> introspectionHelper) {
         // "Path" decides on which resource to put this method
         Path path = method.getAnnotation(Path.class);
 
@@ -923,7 +923,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
             } catch (UnsupportedTypeException e) {
                 LOGGER.warning("Could not scan parameter "
                         + Types.toString(parameterTypes[i],
-                                genericParameterTypes[i]) + " of method "
+                        genericParameterTypes[i]) + " of method "
                         + method + ". " + e.getMessage());
                 continue;
             }
@@ -1064,8 +1064,8 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      * Returns a Restlet Cloud description of the current application. By default,
      * this method discovers all the resources attached to this application. It
      * can be overridden to add documentation, list of representations, etc.
-     * 
-     * 
+     *
+     *
      * @param collectInfo
      *            The collect info bean
      * @param resources
@@ -1074,15 +1074,15 @@ public class JaxRsIntrospector extends IntrospectionUtils {
      *            Optional list of introspection helpers
      */
     public static void scanResources(CollectInfo collectInfo,
-            List<Class> resources,
-            List<? extends IntrospectionHelper> introspectionHelper) {
+                                     List<Class> resources,
+                                     List<? extends IntrospectionHelper> introspectionHelper) {
         for (Class<?> clazz : resources) {
             scanClazz(collectInfo, clazz, introspectionHelper);
         }
     }
 
     private static void scanSimpleMethod(CollectInfo collectInfo,
-            Method method, ClazzInfo clazzInfo) {
+                                         Method method, ClazzInfo clazzInfo) {
 
         // Scan parameters
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -1094,7 +1094,7 @@ public class JaxRsIntrospector extends IntrospectionUtils {
     }
 
     private static void updateDefinitionContract(CollectInfo collectInfo,
-            Application application, Definition definition) {
+                                                 Application application, Definition definition) {
         // Contract
         Contract contract = new Contract();
         contract.setName(collectInfo.getApplicationName());
