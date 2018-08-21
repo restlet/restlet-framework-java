@@ -50,7 +50,7 @@ public class EmfRepresentationTestCase extends RestletTestCase {
         assertNotNull(emfObj);
     }
 
-    public void stestBomb() throws IOException {
+    public void testBomb() throws IOException {
         ClientResource cr = new ClientResource(
                 "clap://class/org/restlet/test/ext/emf/TestBomb.ecore");
         Representation emfFile = cr.get();

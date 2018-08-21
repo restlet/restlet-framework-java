@@ -1,33 +1,28 @@
 /**
  * Copyright 2005-2017 Restlet
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
- * 
+ *
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.lucene;
-
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Paths;
-import java.util.logging.Level;
 
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.core.CoreContainer;
@@ -47,30 +42,35 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.ext.lucene.internal.SolrRepresentation;
 import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
 
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+
 /**
  * Solr client connector.
- * 
+ *
  * There are two ways of initializing the helped core container. <br>
  * First one : <br>
- * 
+ *
  * <pre>
  * Client solrClient = component.getClients().add(SolrClientHelper.SOLR_PROTOCOL);
  * solrClient.getContext().getAttributes().put("CoreContainer", new CoreContainer(...));
  * </pre>
- * 
+ *
  * <br>
  * Second one : <br>
- * 
+ *
  * <pre>
  * Client solrClient = component.getClients().add(SolrClientHelper.SOLR_PROTOCOL);
  * solrClient.getContext().getParameters().add(&quot;directory&quot;, &quot;...&quot;);
  * solrClient.getContext().getParameters().add(&quot;configFile&quot;, &quot;...&quot;);
  * </pre>
- * 
+ *
  * <br>
  * The helper handles "solr://" requests. There is one additional parameter :
  * "DefaultCore" which gives default core for "solr:///..." requests.
- * 
+ *
  * @author Remi Dewitte <remi@gide.net>
  * @deprecated Will be removed in next major release.
  */
@@ -85,7 +85,7 @@ public class SolrClientHelper extends ClientHelper {
 
     /**
      * Constructor.
-     * 
+     *
      * @param client
      *            The client connector.
      */
@@ -180,11 +180,12 @@ public class SolrClientHelper extends ClientHelper {
                         .getFirstValue("configFile");
 
                 if (directory != null && configFile != null) {
-                    File config = new File(configFile);
-                    if (!config.exists()) {
-                        config = new File(new URI(configFile));
+                    Path configPath = Paths.get(configFile);
+                    if (configPath.toFile().exists()) {
+                        coreContainer = CoreContainer.createAndLoad(Paths.get(directory), configPath);
+                    } else {
+                        coreContainer = CoreContainer.createAndLoad(Paths.get(directory), Paths.get(new URI(configFile)));
                     }
-                    coreContainer = CoreContainer.createAndLoad(Paths.get(directory), config.toPath());
                 }
             }
 
