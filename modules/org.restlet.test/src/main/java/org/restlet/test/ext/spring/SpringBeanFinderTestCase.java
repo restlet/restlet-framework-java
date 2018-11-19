@@ -86,11 +86,10 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         registerBeanFactoryBean(beanName, resourceClass, null);
     }
 
-    @SuppressWarnings("deprecation")
     private void registerBeanFactoryBean(String beanName,
             Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
-                new RootBeanDefinition(resourceClass, values));
+                new RootBeanDefinition(resourceClass, null, values));
     }
 
     @Override
