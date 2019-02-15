@@ -541,7 +541,7 @@ public class MemoryRealm extends Realm {
     private void unmap(Object source, Role role) {
         RoleMapping mapping;
 
-        for (int i = getRoleMappings().size(); i >= 0; i--) {
+        for (int i = getRoleMappings().size() - 1; i >= 0; i--) {
             mapping = getRoleMappings().get(i);
 
             if (mapping.getSource().equals(source)
