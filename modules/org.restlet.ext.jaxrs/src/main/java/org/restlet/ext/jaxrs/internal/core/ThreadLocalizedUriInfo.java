@@ -41,7 +41,9 @@ import org.restlet.ext.jaxrs.ExtendedUriInfo;
  * @author Stephan Koops
  * @see UriInfo
  * @see ThreadLocalizedContext
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ThreadLocalizedUriInfo implements UriInfo {
 
     private final ThreadLocal<MatchedInfo> matchedInfos = new ThreadLocal<MatchedInfo>();

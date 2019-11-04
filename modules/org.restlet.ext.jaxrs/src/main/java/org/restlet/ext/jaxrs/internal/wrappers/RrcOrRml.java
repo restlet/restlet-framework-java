@@ -31,7 +31,9 @@ import org.restlet.ext.jaxrs.internal.util.PathRegExp;
  * {@link ResourceMethodOrLocator} for implementation reasons.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface RrcOrRml {
     /**
      * @return Returns the Regular Expression of the path.

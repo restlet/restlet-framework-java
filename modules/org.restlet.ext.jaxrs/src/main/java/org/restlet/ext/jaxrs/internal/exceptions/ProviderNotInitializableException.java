@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * logged or whatever.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ProviderNotInitializableException extends JaxRsException {
 
     private static final long serialVersionUID = 5567215105027326112L;

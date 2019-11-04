@@ -34,7 +34,9 @@ import javax.ws.rs.core.Response.Status;
  * 
  * @author Stephan Koops
  * @see MatrixParam
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertMatrixParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 6704339151884788476L;

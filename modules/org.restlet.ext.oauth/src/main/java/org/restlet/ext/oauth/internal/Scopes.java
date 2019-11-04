@@ -35,7 +35,9 @@ import org.restlet.security.Role;
  * Utility methods for converting between OAuth Scopes and Restlet Roles
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class Scopes {
 
     public static boolean isIdentical(String[] a, String[] b) {

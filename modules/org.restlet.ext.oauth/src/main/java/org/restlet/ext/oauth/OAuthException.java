@@ -37,7 +37,9 @@ import org.restlet.engine.util.StringUtils;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @see <a href="http://tools.ietf.org/html/rfc6749">The OAuth 2.0 Authorization Framework (RFC6749)</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OAuthException extends Exception {
 
     private static final long serialVersionUID = 1L;

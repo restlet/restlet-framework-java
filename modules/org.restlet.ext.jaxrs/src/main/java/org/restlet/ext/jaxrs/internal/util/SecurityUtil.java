@@ -34,7 +34,9 @@ import org.restlet.Request;
  * Security utilities.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class SecurityUtil {
 
     /** Key in the request attributes for the HTTPS client certificates. */

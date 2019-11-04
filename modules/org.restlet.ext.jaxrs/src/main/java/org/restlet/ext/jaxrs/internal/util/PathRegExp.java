@@ -45,7 +45,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
  * The regular expression has no '/' t the start.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class PathRegExp {
 
     /**

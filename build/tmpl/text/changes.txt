@@ -4,7 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - Misc
+      - Prepare next minor release (2.5.0) by deprecating few extensions that
+        will be removed. Issue #1347.
 - 2.4.1 (08/22/2018)
     - Bugs fixed
       - Make sure the Jetty server has released all resources when it fails to start. Issue #1311.

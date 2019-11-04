@@ -52,9 +52,11 @@ import org.restlet.ext.openid.internal.ProviderResult.OPR;
  * Describes the OpenID provider, also known as an OP.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
 public class Provider {
 
+@Deprecated
     public enum OpenIdMode {
         associate, check_authentication, checkid_immediate, checkid_setup, errorMode;
     }

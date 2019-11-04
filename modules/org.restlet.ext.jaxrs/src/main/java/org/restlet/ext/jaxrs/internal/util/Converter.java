@@ -56,7 +56,9 @@ import org.restlet.util.Series;
  * and vice versa.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class Converter {
 
     /**

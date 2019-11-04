@@ -63,10 +63,7 @@ import org.restlet.util.Series;
  * HTTP client connector call based on Apache HTTP Client's HttpMethod class.
  * 
  * @author Jerome Louvel
- * @deprecated Will be removed to favor lower-level network extensions allowing
- *             more control at the Restlet API level.
  */
-@Deprecated
 public class HttpMethodCall extends ClientCall {
 
     /** The associated HTTP client. */

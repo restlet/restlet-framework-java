@@ -46,7 +46,9 @@ import org.restlet.representation.OutputRepresentation;
  * @author Stephan Koops
  * @param <T>
  *            type of the object to serialize.
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
     private static final Logger LOGGER = Context.getCurrentLogger();

@@ -38,6 +38,7 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
  * Contains a List of wrapped {@link javax.ws.rs.ext.MessageBodyWriter}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class MessageBodyWriterSubSet {
 
@@ -61,6 +62,7 @@ public class MessageBodyWriterSubSet {
     private final List<MessageBodyWriter> mbws;
 
     /**
+@Deprecated
      * The class supported by the contained message body writers, given by the
      * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
      * {@code null}.

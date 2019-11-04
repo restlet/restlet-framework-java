@@ -38,7 +38,9 @@ import org.restlet.data.CookieSetting;
  * RESTEasy HTTP response wrapper for Restlet requests.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RestletHttpResponse implements HttpResponse {
 
     /**

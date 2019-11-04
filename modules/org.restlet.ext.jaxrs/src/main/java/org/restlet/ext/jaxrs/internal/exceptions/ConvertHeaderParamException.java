@@ -34,7 +34,9 @@ import javax.ws.rs.core.Response.Status;
  * 
  * @author Stephan Koops
  * @see HeaderParam
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertHeaderParamException extends WebApplicationException {
 
     private static final long serialVersionUID = -2880948194279374251L;

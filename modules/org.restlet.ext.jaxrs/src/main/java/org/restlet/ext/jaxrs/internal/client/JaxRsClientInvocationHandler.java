@@ -78,7 +78,9 @@ import org.restlet.util.Series;
  * 
  * @param <T>
  *            The annotated resource interface.
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> {
 
     private ClientResource clientResource;

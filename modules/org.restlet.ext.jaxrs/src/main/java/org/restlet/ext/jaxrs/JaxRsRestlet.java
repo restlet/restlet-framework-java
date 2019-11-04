@@ -118,6 +118,7 @@ import org.restlet.service.MetadataService;
  * should be especially careful when storing state in member variables.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class JaxRsRestlet extends Restlet {
     /**
@@ -1231,6 +1232,7 @@ public class JaxRsRestlet extends Restlet {
      * instantiation.
      * 
      * @param objectFactory
+@Deprecated
      *            the ObjectFactory for root resource class and provider
      *            instantiation.
      */

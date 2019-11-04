@@ -37,9 +37,11 @@ import org.restlet.ext.oauth.ResponseType;
  * 
  * @author Kristoffer Gronowski
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
 public interface Client {
 
+@Deprecated
     public static enum ClientType {
         CONFIDENTIAL, PUBLIC
     }

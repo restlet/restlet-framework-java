@@ -41,6 +41,7 @@ import org.restlet.data.MediaType;
  * 
  * @author Stephan Koops
  * @see javax.ws.rs.ext.MessageBodyWriter
+ * @deprecated Will be removed in next minor release.
  */
 public interface MessageBodyWriter {
 
@@ -89,6 +90,7 @@ public interface MessageBodyWriter {
      * @param mediaType
      *            The JAX-RS MediaType
      * @return true, if the wrapped writer could write an object of the given
+@Deprecated
      *         class with the given annotations and media type.
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])

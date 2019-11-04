@@ -33,7 +33,9 @@ import org.restlet.security.User;
  * Authenticated user with OpenID specific properties.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OpenIdUser extends User {
 
     public static void setValueFromAX(AttributeExchange attribute,

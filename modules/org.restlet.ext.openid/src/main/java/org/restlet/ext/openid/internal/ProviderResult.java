@@ -28,9 +28,11 @@ package org.restlet.ext.openid.internal;
  * Result returned by a {@link Provider}.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
 public class ProviderResult {
 
+@Deprecated
     public enum OPR {
         GET_USER, OK
     };

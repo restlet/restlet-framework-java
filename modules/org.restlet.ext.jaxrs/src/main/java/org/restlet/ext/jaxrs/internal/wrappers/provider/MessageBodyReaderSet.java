@@ -33,7 +33,9 @@ import org.restlet.data.MediaType;
  * Contains a List of wrapped {@link javax.ws.rs.ext.MessageBodyReader}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface MessageBodyReaderSet {
 
     /**

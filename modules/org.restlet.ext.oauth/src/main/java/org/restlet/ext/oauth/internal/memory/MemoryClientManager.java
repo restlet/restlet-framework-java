@@ -36,7 +36,9 @@ import org.restlet.ext.oauth.internal.Client.ClientType;
  * Memory implementation of ClientManager interface.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MemoryClientManager extends AbstractClientManager {
 
     private final Map<String, Client> clients = new ConcurrentHashMap<String, Client>();

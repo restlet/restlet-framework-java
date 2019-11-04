@@ -51,7 +51,9 @@ import org.restlet.util.Series;
  * </pre>
  * 
  * @author Thierry Templier
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class HttpOAuthMacHelper extends AuthenticatorHelper {
     /**
      * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH_MAC} challenge

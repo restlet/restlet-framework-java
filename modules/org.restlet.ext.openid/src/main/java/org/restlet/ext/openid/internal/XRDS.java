@@ -37,7 +37,9 @@ import org.w3c.dom.Element;
  * Describes an eXtensible Resource Descriptor Sequence (XRDS).
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class XRDS {
 
     private static final String Type = "Type";

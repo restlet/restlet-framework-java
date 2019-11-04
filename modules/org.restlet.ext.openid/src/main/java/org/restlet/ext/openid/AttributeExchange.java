@@ -34,7 +34,9 @@ import org.restlet.engine.util.SystemUtils;
  * Describes an attributes exchange, also known as an AX.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AttributeExchange extends Metadata implements
         Comparable<AttributeExchange> {
 

@@ -51,10 +51,12 @@ import org.restlet.representation.Representation;
  * {@link CharSequence}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
+@Deprecated
 public class StringProvider extends AbstractProvider<CharSequence> {
 
     /**

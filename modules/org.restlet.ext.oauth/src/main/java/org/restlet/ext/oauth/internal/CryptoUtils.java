@@ -37,6 +37,7 @@ import org.restlet.ext.crypto.DigestUtils;
  * 
  * @author Remi Dewitte <remi@gide.net>
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release.
  */
 public final class CryptoUtils {
 
@@ -170,6 +171,7 @@ public final class CryptoUtils {
     }
 
     /**
+@Deprecated
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */

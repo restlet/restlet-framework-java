@@ -51,7 +51,9 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
 
     /** The maximum number of characters per line. */

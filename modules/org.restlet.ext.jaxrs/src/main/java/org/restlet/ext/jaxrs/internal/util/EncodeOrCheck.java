@@ -30,7 +30,9 @@ import org.restlet.data.Reference;
  * Utility class to encode or check data.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class EncodeOrCheck {
 
     /**

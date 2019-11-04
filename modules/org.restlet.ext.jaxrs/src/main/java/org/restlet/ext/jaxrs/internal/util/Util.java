@@ -91,6 +91,7 @@ import org.restlet.util.Series;
  * This class contains utility methods.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class Util {
 
@@ -1640,6 +1641,7 @@ public class Util {
      * 
      * @param jaxRsClass
      *            the class to check
+@Deprecated
      * @return true, if the class is a JAX-RS root resource class, otherwise
      *         false.
      */

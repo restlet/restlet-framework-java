@@ -65,7 +65,9 @@ import org.restlet.routing.Router;
  * @author Cyprien Quilici
  * @link http://raml.org/
  * @link http://raml.org/spec.html
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RamlSpecificationRestlet extends Restlet {
 
     /** The root Restlet to describe. */

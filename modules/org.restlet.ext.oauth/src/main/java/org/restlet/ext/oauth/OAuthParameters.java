@@ -40,7 +40,9 @@ import org.restlet.resource.ResourceException;
  * Gathers OAuth credentials.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OAuthParameters implements OAuthResourceDefs {
     /** The list of parameters. */
     private Form form;

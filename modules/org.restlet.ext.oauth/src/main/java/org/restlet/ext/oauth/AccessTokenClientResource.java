@@ -45,9 +45,11 @@ import org.restlet.resource.ResourceException;
  * Use or override the {@link #requestToken(OAuthParameters)} method to retrieve the token.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
 public class AccessTokenClientResource extends ClientResource implements OAuthResourceDefs {
 
+@Deprecated
     private static class TokenResponse implements Token {
 
         public static TokenResponse parseResponse(JSONObject result) throws JSONException {

@@ -40,7 +40,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * 
  * @param <K>
  * @param <V>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
         MultivaluedMap<K, V> {
 

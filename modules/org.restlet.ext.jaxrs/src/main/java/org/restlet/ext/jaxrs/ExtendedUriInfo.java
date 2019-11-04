@@ -39,7 +39,9 @@ import javax.ws.rs.core.UriInfo;
  * 
  * @author Stephan Koops
  * @see UriInfo
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ExtendedUriInfo extends UriInfo {
 
     /**

@@ -35,10 +35,7 @@ import org.apache.http.client.HttpClient;
  * is equal to 0.
  * 
  * @author Sanjay Acharya
- * @deprecated Will be removed to favor lower-level network extensions allowing
- *             more control at the Restlet API level.
  */
-@Deprecated
 public class HttpIdleConnectionReaper {
 
     /**

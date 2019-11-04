@@ -41,7 +41,9 @@ import org.restlet.ext.oauth.internal.Token;
  * Memory implementation of TokenManager interface.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MemoryTokenManager extends AbstractTokenManager {
 
     private final Map<String, AuthSession> sessions = new ConcurrentHashMap<String, AuthSession>();

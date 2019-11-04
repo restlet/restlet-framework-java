@@ -63,6 +63,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  * 
  * @author Stephan Koops
  * @see IntoRrcInjector
+ * @deprecated Will be removed in next minor release.
  */
 public class ContextInjector {
 
@@ -364,6 +365,7 @@ public class ContextInjector {
     }
 
     /**
+@Deprecated
      * This {@link List} contains the fields in this class which are annotated
      * to inject ever the same object.
      * 

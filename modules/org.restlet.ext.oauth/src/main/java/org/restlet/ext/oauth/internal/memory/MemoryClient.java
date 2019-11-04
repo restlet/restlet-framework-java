@@ -35,7 +35,9 @@ import org.restlet.ext.oauth.internal.Client;
  * Memory implementation of Client interface.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MemoryClient implements Client {
 
     private String clientId;

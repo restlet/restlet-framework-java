@@ -30,7 +30,9 @@ import org.restlet.ext.oauth.internal.ServerToken;
  * Memory implementation of Token interface.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MemoryToken implements ServerToken {
 
     private String accessToken;

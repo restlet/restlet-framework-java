@@ -28,7 +28,9 @@ package org.restlet.ext.oauth;
  * Supported mechanisms to grant tokens.
  * 
  * @author Kristoffer Gronowski
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public enum GrantType {
 
     /**

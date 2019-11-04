@@ -40,7 +40,9 @@ import org.restlet.security.SecretVerifier;
  * Verify incoming requests with client credentials. Typically, use it with ChallengeAuthenticator.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ClientVerifier extends SecretVerifier {
     /**
      * Indicates whether the credentials may be found in the Web form payload in case the request has no

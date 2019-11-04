@@ -38,7 +38,9 @@ import javax.ws.rs.core.Variant;
  * @author Stephan Koops
  * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.7">RFC 2616,
  *      Section 10.4.7, "406 Not Acceptable"</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class NotAcceptableWebAppException extends WebApplicationException {
 
     private static final long serialVersionUID = 6895779829973209211L;

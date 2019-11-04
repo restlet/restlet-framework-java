@@ -47,7 +47,9 @@ import freemarker.template.Configuration;
  * pages, and Login pages should extend this class.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AuthorizationBaseServerResource extends OAuthServerResource {
 
     private static final String ClientCookieID = "_cid";

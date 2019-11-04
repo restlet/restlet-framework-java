@@ -45,8 +45,10 @@ import org.restlet.engine.io.IoUtils;
  * This Provider reads or writes {@link File}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
+@Deprecated
 public class FileProvider extends AbstractProvider<File> {
 
     /**

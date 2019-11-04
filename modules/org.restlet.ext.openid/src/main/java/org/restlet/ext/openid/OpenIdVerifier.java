@@ -70,7 +70,9 @@ import org.restlet.security.Verifier;
  * </ul>
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OpenIdVerifier implements Verifier {
 
     // Known OpenId Providers:

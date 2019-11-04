@@ -28,7 +28,9 @@ package org.restlet.ext.jaxrs.internal.todo;
  * Here are notices for the implementation.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class Notices {
 
     // TESTEN do not decode @FormParam, @MatrixParam, @QueryParam

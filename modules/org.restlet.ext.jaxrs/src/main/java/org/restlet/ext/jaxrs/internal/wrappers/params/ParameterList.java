@@ -97,6 +97,7 @@ import org.restlet.util.Series;
  * and sub resource locators.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class ParameterList {
 
@@ -945,6 +946,7 @@ public class ParameterList {
      *            it must be false)
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
+@Deprecated
      *             if the given class is not valid to be annotated with &#64;
      *             {@link Context}.
      * @throws IllegalPathParamTypeException

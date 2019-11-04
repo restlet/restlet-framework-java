@@ -51,10 +51,12 @@ import org.restlet.representation.Representation;
  * 
  * @author Stephan Koops
  * @see WwwFormFormProvider
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Consumes("application/x-www-form-urlencoded")
 @Produces("application/x-www-form-urlencoded")
+@Deprecated
 public class WwwFormMmapProvider extends
         AbstractProvider<MultivaluedMap<String, String>> {
 

@@ -45,10 +45,12 @@ import org.restlet.data.Preference;
  * @author Stephan Koops
  * @param <T>
  *            the Metadata type the instance contains.
+ * @deprecated Will be removed in next minor release.
  */
 public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     @SuppressWarnings("hiding")
+@Deprecated
     private class IteratorIterator<T extends Metadata> implements Iterator<T> {
         private Iterator<T> iter;
 

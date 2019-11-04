@@ -70,7 +70,9 @@ import org.restlet.security.User;
  * @author Kristoffer Gronowski
  * 
  * @see <a href="http://tools.ietf.org/html/rfc6749#section-3.2">OAuth 2.0 (3.2. Token Endpoint)</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AccessTokenServerResource extends OAuthServerResource {
 
     /**

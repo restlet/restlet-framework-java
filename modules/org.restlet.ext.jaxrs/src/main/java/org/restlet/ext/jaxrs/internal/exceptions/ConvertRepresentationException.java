@@ -28,7 +28,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * Thrown if the entity could not be deserialized.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertRepresentationException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 

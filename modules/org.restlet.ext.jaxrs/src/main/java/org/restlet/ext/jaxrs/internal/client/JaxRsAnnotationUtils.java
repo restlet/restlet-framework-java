@@ -33,7 +33,9 @@ import org.restlet.engine.resource.AnnotationUtils;
  * JAX-RS specific Utilities to manipulate Restlet annotations.
  * 
  * @author Shaun Elliott
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsAnnotationUtils extends AnnotationUtils {
     /** Current instance. */
     private static JaxRsAnnotationUtils instance = new JaxRsAnnotationUtils();

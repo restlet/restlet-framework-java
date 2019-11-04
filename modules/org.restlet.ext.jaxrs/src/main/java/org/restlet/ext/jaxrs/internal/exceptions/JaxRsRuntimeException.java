@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * implementation.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -7662465289573982489L;
 

@@ -56,7 +56,9 @@ import org.restlet.representation.StringRepresentation;
  * Describes a relaying party, also known as a RP.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RelayingParty {
 
     private static Representation getForm(AuthRequest authReq) {

@@ -27,7 +27,9 @@ package org.restlet.ext.oauth.internal;
 /**
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ServerToken extends Token {
 
     /**

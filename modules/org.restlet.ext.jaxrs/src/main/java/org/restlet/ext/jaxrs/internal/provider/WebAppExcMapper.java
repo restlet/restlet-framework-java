@@ -50,7 +50,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  * The exception mapper for {@link WebApplicationException}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class WebAppExcMapper implements
         ExceptionMapper<WebApplicationException> {
 

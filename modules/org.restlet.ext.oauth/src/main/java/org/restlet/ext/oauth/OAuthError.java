@@ -31,7 +31,9 @@ package org.restlet.ext.oauth;
  * @author Kristoffer Gronowski
  * @see <a href="http://tools.ietf.org/html/rfc6749"> The OAuth 2.0 Authorization Framework</a>
  * @see <a href="http://tools.ietf.org/html/rfc6750"> Bearer Token Usage</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public enum OAuthError {
 
     access_denied, // 4.1.2.1 & 4.2.2.1

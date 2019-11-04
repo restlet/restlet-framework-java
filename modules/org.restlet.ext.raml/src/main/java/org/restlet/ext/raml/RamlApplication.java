@@ -49,7 +49,9 @@ import org.restlet.routing.Router;
  * 
  * @author Cyprien Quilici
  * 
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RamlApplication extends Application {
 
     /**

@@ -66,6 +66,7 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
  * Contains the entity providers and has some methods to pick the wished out.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         MessageBodyReaderSet {
@@ -430,6 +431,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             }
 
             Class<?> superclass = causeClass.getSuperclass();
+@Deprecated
             if (superclass == null || superclass.equals(Object.class))
                 return null;
             causeClass = (Class<T>) superclass;

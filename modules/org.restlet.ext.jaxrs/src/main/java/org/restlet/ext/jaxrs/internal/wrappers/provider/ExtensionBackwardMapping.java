@@ -37,7 +37,9 @@ import org.restlet.service.MetadataService;
  * Allows a backward mapping for the extension mapping.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ExtensionBackwardMapping {
 
     private final MetadataService metadataService;

@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * in itself. An example is, if a default provider could not be loaded.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ImplementationException extends JaxRsRuntimeException {
 
     private static final long serialVersionUID = 5635188228961655076L;

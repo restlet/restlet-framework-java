@@ -33,9 +33,11 @@ import org.restlet.representation.Representation;
  * Client resource used to acquire an Facebook OAuth token.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
 public class FacebookAccessTokenClientResource extends AccessTokenClientResource {
 
+@Deprecated
     private static class FacebookTokenResponse implements Token {
 
         public static FacebookTokenResponse parseResponse(Form result) {

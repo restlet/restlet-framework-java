@@ -36,7 +36,9 @@ import org.restlet.engine.util.DateUtils;
  * {@link HeaderDelegate} for {@link MediaType}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class DateHeaderDelegate implements HeaderDelegate<Date> {
 
     // TODO DateHeaderDelegate

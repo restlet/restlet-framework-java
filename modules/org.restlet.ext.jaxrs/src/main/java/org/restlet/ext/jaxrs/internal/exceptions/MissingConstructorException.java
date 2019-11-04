@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * contructor
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MissingConstructorException extends JaxRsException {
 
     private static final long serialVersionUID = 8213720039895185212L;

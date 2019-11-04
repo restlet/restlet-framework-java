@@ -40,7 +40,9 @@ import org.restlet.resource.Resource;
  * Converter between the XML/XMI/ECore and representation classes based on EMF.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class EmfConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(

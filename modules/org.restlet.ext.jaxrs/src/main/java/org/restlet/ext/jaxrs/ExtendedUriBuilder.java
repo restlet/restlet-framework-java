@@ -48,7 +48,9 @@ import org.restlet.service.MetadataService;
  * {@link ExtendedUriInfo}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ExtendedUriBuilder extends AbstractUriBuilder {
 
     /**

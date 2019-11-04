@@ -35,7 +35,9 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
  * {@link HeaderDelegate} for {@link EntityTag}
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
 
     /**
