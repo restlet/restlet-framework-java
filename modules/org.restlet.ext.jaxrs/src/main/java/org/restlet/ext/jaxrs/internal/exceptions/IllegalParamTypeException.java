@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * field or bean setter is not valid.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class IllegalParamTypeException extends JaxRsException {
 
     private static final long serialVersionUID = 1L;

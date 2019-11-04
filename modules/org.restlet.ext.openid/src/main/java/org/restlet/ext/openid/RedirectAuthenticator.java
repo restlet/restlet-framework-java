@@ -63,7 +63,9 @@ import org.restlet.security.Verifier;
  * </pre>
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RedirectAuthenticator extends Authenticator {
 
     /** The default name of the cookie that contains the identifier. */

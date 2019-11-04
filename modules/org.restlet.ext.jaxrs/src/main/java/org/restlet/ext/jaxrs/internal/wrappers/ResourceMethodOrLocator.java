@@ -31,7 +31,9 @@ import org.restlet.ext.jaxrs.internal.util.PathRegExp;
  * resource locator. See section 1.5 and 3.3.1 of JAX-RS specification.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ResourceMethodOrLocator extends RrcOrRml {
 
     /**

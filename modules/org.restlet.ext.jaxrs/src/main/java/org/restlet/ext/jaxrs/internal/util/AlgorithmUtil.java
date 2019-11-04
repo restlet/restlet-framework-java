@@ -43,6 +43,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
  * This class contains helper methods for the algorithm in {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class AlgorithmUtil {
 
@@ -294,6 +295,7 @@ public class AlgorithmUtil {
      * 
      * @param rrcOrRmls
      *            Collection of Sub-ResourceMethods and SubResourceLocators or
+@Deprecated
      *            root resource class wrappers.
      * @return the resource method or sub resource locator or root resource
      *         class, or null, if the Map is null or empty.

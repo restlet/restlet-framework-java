@@ -55,6 +55,7 @@ import org.restlet.security.Authenticator;
  * should be especially careful when storing state in member variables.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class JaxRsApplication extends org.restlet.Application {
 
@@ -293,6 +294,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * instantiation.
      * 
      * @param objectFactory
+@Deprecated
      *            the ObjectFactory for root resource class and provider
      *            instantiation.
      */

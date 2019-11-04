@@ -50,8 +50,10 @@ import org.restlet.service.ConverterService;
  * This Provider is based on the pluggable Restlet's {@link ConverterService}.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
+@Deprecated
 public class ConverterProvider extends AbstractProvider<Object> {
 
     /** The Restlet converter service. */

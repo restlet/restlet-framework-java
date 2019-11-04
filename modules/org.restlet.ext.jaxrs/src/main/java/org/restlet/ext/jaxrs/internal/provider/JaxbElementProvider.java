@@ -54,10 +54,12 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  * @see MessageBodyReader
  * @see MessageBodyWriter
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Produces({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 @Consumes({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
+@Deprecated
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
     private final Logger logger = Context.getCurrentLogger();

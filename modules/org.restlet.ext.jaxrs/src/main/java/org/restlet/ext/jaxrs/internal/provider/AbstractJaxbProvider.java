@@ -43,7 +43,9 @@ import javax.xml.bind.Marshaller;
 
 /**
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     private ContextResolver<JAXBContext> contextResolver;

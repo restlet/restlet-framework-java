@@ -42,7 +42,9 @@ import org.restlet.data.MediaType;
  * 
  * @author Stephan Koops
  * @see javax.ws.rs.ext.MessageBodyReader
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface MessageBodyReader {
 
     /**

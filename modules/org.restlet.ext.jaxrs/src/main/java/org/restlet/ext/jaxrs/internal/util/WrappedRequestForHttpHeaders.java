@@ -45,7 +45,9 @@ import org.restlet.util.Series;
  * This class is not thread safe.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class WrappedRequestForHttpHeaders implements
         MultivaluedMap<String, Object> {
     /**

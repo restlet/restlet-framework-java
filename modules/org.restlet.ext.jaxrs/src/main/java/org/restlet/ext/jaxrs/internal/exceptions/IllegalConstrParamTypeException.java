@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * is illegal.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalConstrParamTypeException extends IllegalTypeException {
 
     private static final long serialVersionUID = 6423619202690501704L;

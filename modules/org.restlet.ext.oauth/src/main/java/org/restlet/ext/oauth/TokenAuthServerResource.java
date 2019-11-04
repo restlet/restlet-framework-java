@@ -40,7 +40,9 @@ import org.restlet.resource.ResourceException;
  * Supports the {@link OAuthResourceDefs#TOKEN_TYPE_BEARER} token type only.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class TokenAuthServerResource extends OAuthServerResource {
 
     public static final String LOCAL_ACCESS_ONLY = "localOnly";

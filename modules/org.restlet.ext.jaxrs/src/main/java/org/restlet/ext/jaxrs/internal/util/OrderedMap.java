@@ -40,6 +40,7 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
  * @author Stephan Koops
  * @param <K>
  * @param <V>
+ * @deprecated Will be removed in next minor release.
  */
 public class OrderedMap<K, V> implements Map<K, V> {
 
@@ -190,6 +191,7 @@ public class OrderedMap<K, V> implements Map<K, V> {
         }
     }
 
+@Deprecated
     private final class ValueSetIterator<KK, VV> extends
             KeyValueSetIterator<KK, VV> implements Iterator<VV> {
 

@@ -67,6 +67,10 @@ class MatchedInfo {
     /**
      * Returns an unmodifiable List of resource class objects.
      * 
+/**
+ * @deprecated Will be removed in next minor release.
+ */
+@Deprecated
      * @return an unmodifiable List of resource class objects.
      */
     List<Object> getResources() {

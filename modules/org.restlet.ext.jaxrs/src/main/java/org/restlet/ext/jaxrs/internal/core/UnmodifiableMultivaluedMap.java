@@ -42,7 +42,9 @@ import org.restlet.util.Series;
  * 
  * @param <K>
  * @param <V>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     /**

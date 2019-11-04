@@ -51,6 +51,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * A ResourceClasses creates and caches some of the wrapper objects.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class ResourceClasses {
 
@@ -308,6 +309,7 @@ public class ResourceClasses {
      * @throws IllegalArgumentException
      *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
+@Deprecated
      *             if the class is not annotated with &#64;Path.
      * @throws MissingConstructorException
      *             if no valid constructor could be found.

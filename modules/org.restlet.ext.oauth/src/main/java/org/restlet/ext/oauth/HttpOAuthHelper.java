@@ -101,7 +101,9 @@ import org.restlet.util.Series;
  * </table>
  * 
  * @author Kristoffer Gronowski
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class HttpOAuthHelper extends AuthenticatorHelper {
     /**
      * Returns the value of the "authPage" parameter.

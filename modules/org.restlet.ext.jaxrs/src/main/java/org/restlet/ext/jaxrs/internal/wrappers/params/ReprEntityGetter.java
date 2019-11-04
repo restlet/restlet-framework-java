@@ -41,6 +41,7 @@ import org.restlet.representation.Representation;
  * An {@link EntityGetter} for Restlet {@link Representation}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public abstract class ReprEntityGetter implements ParamGetter {
 
@@ -193,6 +194,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
             IllegalAccessException, InvocationTargetException;
 
     /**
+@Deprecated
      * @return the class of the {@link Representation}.
      */
     private Class<? extends Representation> getReprClass() {

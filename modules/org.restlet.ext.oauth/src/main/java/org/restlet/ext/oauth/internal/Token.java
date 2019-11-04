@@ -29,7 +29,9 @@ package org.restlet.ext.oauth.internal;
  * 
  * @author Kristoffer Gronowski
  * @author Shotaro Uchida
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface Token {
 
     /**

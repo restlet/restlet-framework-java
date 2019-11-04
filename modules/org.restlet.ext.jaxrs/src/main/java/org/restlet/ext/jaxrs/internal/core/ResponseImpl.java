@@ -31,7 +31,9 @@ import javax.ws.rs.core.Response;
  * Implementation of {@link Response}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResponseImpl extends Response {
 
     private Object entity;

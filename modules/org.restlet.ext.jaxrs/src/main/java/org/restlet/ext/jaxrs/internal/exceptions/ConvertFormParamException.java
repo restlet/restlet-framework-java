@@ -34,7 +34,9 @@ import javax.ws.rs.core.Response.Status;
  * 
  * @author Stephan Koops
  * @see QueryParam
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertFormParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 131640120766355816L;

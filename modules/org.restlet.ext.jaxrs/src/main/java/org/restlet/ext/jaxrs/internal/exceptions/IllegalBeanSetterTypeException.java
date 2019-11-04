@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * annotated with the given JAX-RS annotation
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalBeanSetterTypeException extends IllegalTypeException {
 
     private static final long serialVersionUID = 6423619202690501704L;

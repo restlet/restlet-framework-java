@@ -32,7 +32,9 @@ import java.lang.reflect.InvocationTargetException;
  * be used.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MethodInvokeException extends JaxRsException {
 
     private static final long serialVersionUID = 1766085431784085073L;

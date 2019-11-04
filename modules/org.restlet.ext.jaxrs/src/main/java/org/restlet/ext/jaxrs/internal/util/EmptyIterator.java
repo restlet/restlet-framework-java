@@ -32,7 +32,9 @@ import java.util.NoSuchElementException;
  * 
  * @author Stephan Koops
  * @param <T>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public final class EmptyIterator<T> implements Iterator<T> {
 
     /**

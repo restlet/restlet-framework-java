@@ -51,7 +51,9 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class OAuthServerResource extends ServerResource implements OAuthResourceDefs {
 
     public static final String PARAMETER_DEFAULT_SCOPE = "defaultScope";

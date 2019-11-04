@@ -50,6 +50,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector;
  * 
  * @author Stephan Koops
  * @see javax.ws.rs.ext.Provider
+ * @deprecated Will be removed in next minor release.
  */
 abstract class AbstractProviderWrapper implements ProviderWrapper {
     /**
@@ -105,6 +106,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     public abstract boolean equals(Object otherProvider);
 
     /**
+@Deprecated
      * @return the JAX-RS provider class name
      */
     public abstract String getClassName();

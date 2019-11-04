@@ -40,7 +40,9 @@ import java.util.UUID;
 /**
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractClientManager implements ClientManager {
 
     public static final Object[] DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL = new Object[] {

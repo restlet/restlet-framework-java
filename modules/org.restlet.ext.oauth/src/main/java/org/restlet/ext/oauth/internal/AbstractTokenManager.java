@@ -32,7 +32,9 @@ import org.restlet.ext.oauth.OAuthException;
 /**
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractTokenManager implements TokenManager {
 
     public static final int DEFAULT_TOKEN_EXPIRE_PERIOD = 3600;

@@ -31,7 +31,9 @@ import javax.ws.rs.Path;
  * method contains illegal charactres.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalPathOnMethodException extends IllegalPathException {
 
     private static final long serialVersionUID = -6655373875338074948L;

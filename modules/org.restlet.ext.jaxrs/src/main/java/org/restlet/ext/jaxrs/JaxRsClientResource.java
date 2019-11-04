@@ -40,6 +40,7 @@ import org.restlet.resource.ClientResource;
  * 
  * @see ClientResource
  * @author Shaun Elliott
+ * @deprecated Will be removed in next minor release.
  */
 public class JaxRsClientResource extends ClientResource {
 
@@ -117,6 +118,7 @@ public class JaxRsClientResource extends ClientResource {
      * 
      * @param <T>
      * @param resourceInterface
+@Deprecated
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
      */

@@ -20,10 +20,12 @@
  * http://restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
+ * @deprecated Will be removed in next minor release.
  */
 
 package org.restlet.ext.jaxrs.internal.wrappers.params;
 
+@Deprecated
 class ContextHolder implements ParameterList.ParamGetter {
 
     private final Object toInject;

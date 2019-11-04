@@ -45,7 +45,9 @@ import org.restlet.resource.ResourceException;
  * Client resource that is able to complete any request with credentials.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ProtectedClientResource extends ClientResource implements OAuthResourceDefs {
 
     private volatile Token token;

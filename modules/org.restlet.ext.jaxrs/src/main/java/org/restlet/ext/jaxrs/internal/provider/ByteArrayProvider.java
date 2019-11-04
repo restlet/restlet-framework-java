@@ -42,8 +42,10 @@ import org.restlet.engine.io.IoUtils;
  * {@link Provider} to read and write byte[].
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
+@Deprecated
 public class ByteArrayProvider extends AbstractProvider<byte[]> {
 
     /**

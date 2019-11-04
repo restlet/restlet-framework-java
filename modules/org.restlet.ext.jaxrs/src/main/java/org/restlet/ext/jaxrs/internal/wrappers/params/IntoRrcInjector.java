@@ -56,6 +56,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  * classes.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class IntoRrcInjector extends ContextInjector {
 
@@ -110,6 +111,7 @@ public class IntoRrcInjector extends ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param lcEnc
+@Deprecated
      *            leave class encoded
      * @throws IllegalPathParamTypeException
      */

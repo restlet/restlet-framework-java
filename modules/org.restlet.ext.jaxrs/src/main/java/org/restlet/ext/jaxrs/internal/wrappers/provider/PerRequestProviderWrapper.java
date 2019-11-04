@@ -61,6 +61,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
 
 /**
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 class PerRequestProviderWrapper extends AbstractProviderWrapper {
 
@@ -208,6 +209,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
         } catch (ConvertCookieParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
+@Deprecated
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
         }

@@ -31,7 +31,9 @@ import javax.ws.rs.PathParam;
  * bean setter is not valid.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalPathParamTypeException extends IllegalParamTypeException {
 
     private static final long serialVersionUID = 6438816194995561330L;

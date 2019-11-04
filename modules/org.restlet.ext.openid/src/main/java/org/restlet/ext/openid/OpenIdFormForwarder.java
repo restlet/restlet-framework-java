@@ -41,11 +41,13 @@ import org.w3c.dom.NodeList;
  * Utility class.
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
 public class OpenIdFormForwarder {
 
     /**
      * Helper class to programmatically handle the OpenID 2.0 HTML Form
+@Deprecated
      * redirection. The class can be added and if needed it will intercept and
      * perform the post on behalf of the end user. In normal operation a browser
      * would automatically post the form.

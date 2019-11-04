@@ -54,7 +54,9 @@ import javax.ws.rs.ext.Providers;
  * @see Providers
  * @see ContextResolver
  * @see CallContext
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ThreadLocalizedContext implements Request, HttpHeaders,
         SecurityContext {
 

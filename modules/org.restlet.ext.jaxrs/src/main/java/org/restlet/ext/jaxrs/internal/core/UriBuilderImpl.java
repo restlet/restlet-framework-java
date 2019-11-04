@@ -33,7 +33,9 @@ import org.restlet.ext.jaxrs.AbstractUriBuilder;
  * 
  * @author Stephan Koops
  * @see UriBuilder
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class UriBuilderImpl extends AbstractUriBuilder {
     /**
      * Create a copy of the UriBuilder preserving its state. This is a more

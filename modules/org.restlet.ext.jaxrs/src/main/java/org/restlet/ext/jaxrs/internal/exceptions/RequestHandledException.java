@@ -33,7 +33,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * This Exception only indicates this.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RequestHandledException extends Exception {
     private static final long serialVersionUID = 2765454873472711005L;
 }

@@ -33,7 +33,9 @@ import javax.ws.rs.core.Response.Status;
  * 
  * @author Stephan Koops
  * @see PathParam
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertPathParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 7259271064216490329L;

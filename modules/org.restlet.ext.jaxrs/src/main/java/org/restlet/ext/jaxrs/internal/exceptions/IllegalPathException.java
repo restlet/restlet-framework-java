@@ -31,7 +31,9 @@ import javax.ws.rs.Path;
  * contains illegal characters.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalPathException extends JaxRsException {
 
     private static final long serialVersionUID = 6796414811480666857L;

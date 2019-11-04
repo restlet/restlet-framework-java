@@ -52,7 +52,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * Implementation of the {@link ResponseBuilder}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResponseBuilderImpl extends ResponseBuilder {
 
     private MultivaluedMap<String, Object> metadata;

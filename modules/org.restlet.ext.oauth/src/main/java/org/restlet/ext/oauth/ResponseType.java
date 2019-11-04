@@ -28,7 +28,9 @@ package org.restlet.ext.oauth;
  * Defines the supported types of responses to a grant request.
  * 
  * @author Kristoffer Gronowski
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public enum ResponseType {
 
     /**

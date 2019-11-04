@@ -32,7 +32,9 @@ import javax.ws.rs.Path;
  * Wraps a result of a matching of a concrete path against a path pattern.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MatchingResult {
 
     private final RemainingPath finalCapturingGroup;

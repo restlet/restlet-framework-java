@@ -44,8 +44,10 @@ import org.restlet.engine.io.IoUtils;
  * Provider for {@link DataSource}s.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
+@Deprecated
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
     /**

@@ -52,7 +52,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * corresponding resource, see section 3.3.1. of the JAX-RS specification.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class SubResourceLocator extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {
     /**

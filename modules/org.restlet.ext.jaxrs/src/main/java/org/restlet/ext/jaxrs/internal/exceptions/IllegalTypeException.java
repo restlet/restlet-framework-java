@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * parameter has an illegal type.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalTypeException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 

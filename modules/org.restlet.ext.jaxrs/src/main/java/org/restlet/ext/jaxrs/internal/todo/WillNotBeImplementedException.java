@@ -30,7 +30,9 @@ package org.restlet.ext.jaxrs.internal.todo;
  * be removed, because than there is nothing not implemented.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class WillNotBeImplementedException extends
         UnsupportedOperationException {
     private static final long serialVersionUID = -746394839280273085L;

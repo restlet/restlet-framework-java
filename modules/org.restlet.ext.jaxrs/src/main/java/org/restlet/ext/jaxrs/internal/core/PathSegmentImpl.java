@@ -40,7 +40,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * The implementation of the JAX-RS interface {@link PathSegment}
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class PathSegmentImpl implements PathSegment {
 
     /**

@@ -55,12 +55,14 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * 
  * @author Stephan Koops
  * @see MultipartProvider
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Consumes("multipart/form-data")
 public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
     // NICE test FileUploadProvider
 
+@Deprecated
     private static final class RequestContext implements
             org.apache.commons.fileupload.RequestContext {
 

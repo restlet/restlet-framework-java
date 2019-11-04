@@ -53,10 +53,12 @@ import org.restlet.representation.Representation;
  * 
  * @author Stephan Koops
  * @see WwwFormMmapProvider
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)
+@Deprecated
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
     /**

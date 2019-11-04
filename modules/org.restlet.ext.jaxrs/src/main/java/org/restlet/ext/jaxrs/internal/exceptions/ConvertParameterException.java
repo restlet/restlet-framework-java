@@ -29,7 +29,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * resource method or a bean setter could not be instantiated.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertParameterException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 

@@ -31,7 +31,9 @@ import javax.ws.rs.core.Context;
  * field or bean setter annotated with {@link Context} or other annotations.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class InjectException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 

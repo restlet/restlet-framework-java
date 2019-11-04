@@ -56,7 +56,9 @@ import org.restlet.util.NamedValue;
  * RESTEasy HTTP request wrapper for Restlet requests.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RestletHttpRequest extends BaseHttpRequest {
 
     private final ResteasyHttpHeaders httpHeaders;

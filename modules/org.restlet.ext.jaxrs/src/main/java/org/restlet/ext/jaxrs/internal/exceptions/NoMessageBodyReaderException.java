@@ -35,7 +35,9 @@ import org.restlet.data.MediaType;
  * available. Normally this does not occurs.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class NoMessageBodyReaderException extends WebApplicationException {
 
     private static final long serialVersionUID = 9177449724300611418L;

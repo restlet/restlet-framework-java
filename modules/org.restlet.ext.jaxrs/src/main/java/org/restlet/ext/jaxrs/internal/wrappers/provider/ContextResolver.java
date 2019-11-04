@@ -30,7 +30,9 @@ import javax.ws.rs.core.MediaType;
  * Wrapper for an initialized JAX-RS {@link javax.ws.rs.ext.ContextResolver}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ContextResolver {
     /**
      * Returns the wrapped ContextResolver

@@ -55,10 +55,12 @@ import org.restlet.representation.Representation;
  * deserialize to {@link JSONObject}, {@link JSONArray} and {@link JSONString}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Deprecated
 public class JsonProvider extends AbstractProvider<Object> {
 
     // NICE better JSON support planned for later.

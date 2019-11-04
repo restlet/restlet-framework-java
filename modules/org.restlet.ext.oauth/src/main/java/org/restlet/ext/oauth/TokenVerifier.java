@@ -54,7 +54,9 @@ import org.restlet.security.Verifier;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-22"> Bearer Token Usage</a>
  * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-01"> MAC Access Authentication</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class TokenVerifier implements Verifier {
 
     private static final Logger logger = Logger.getLogger(TokenVerifier.class.getName());

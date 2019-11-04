@@ -38,7 +38,9 @@ import javax.ws.rs.core.Variant;
  * @author Stephan Koops
  * @see <a href="http://tools.ietf.org/html/rfc2616#sec10.4.16">RFC 2616,
  *      Section 10.4.16, "415 Unsupported Media Type"</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class UnsupportedMediaTypeWebAppException extends
         WebApplicationException {
 

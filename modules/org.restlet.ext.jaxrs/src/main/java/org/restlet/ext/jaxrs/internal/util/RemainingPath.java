@@ -31,7 +31,9 @@ import org.restlet.engine.util.SystemUtils;
  * matrix parameterand has no '/' t the start.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class RemainingPath implements Comparable<RemainingPath> {
 
     /**

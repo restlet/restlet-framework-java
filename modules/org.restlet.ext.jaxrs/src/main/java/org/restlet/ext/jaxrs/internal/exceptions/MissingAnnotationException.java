@@ -28,7 +28,9 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * This exception is thrown, if an required annotation is missing.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MissingAnnotationException extends JaxRsException {
 
     private static final long serialVersionUID = -1900088092745095670L;

@@ -33,7 +33,9 @@ import java.util.NoSuchElementException;
  * @author Stephan Koops
  * @param <T>
  *            The type of the contained object.
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OneElementIterator<T> implements Iterator<T> {
 
     private final T element;

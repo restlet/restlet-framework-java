@@ -45,6 +45,7 @@ import org.restlet.ext.jaxrs.internal.core.VariantListBuilderImpl;
  * {@link javax.ws.rs.ext.RuntimeDelegate}.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     /**
@@ -66,6 +67,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      * Cookie, CacheControl, EntityTag, NewCookie, MediaType, Date.
      * 
      * @param type
+@Deprecated
      *            the class of the header
      * @return an instance of HeaderDelegate for the supplied type
      * @see javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(Class)

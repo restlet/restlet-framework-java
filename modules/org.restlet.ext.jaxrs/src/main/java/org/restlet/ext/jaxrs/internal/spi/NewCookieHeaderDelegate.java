@@ -36,7 +36,9 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
  * {@link HeaderDelegate} for {@link NewCookie}
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class NewCookieHeaderDelegate implements HeaderDelegate<NewCookie> {
 
     /**

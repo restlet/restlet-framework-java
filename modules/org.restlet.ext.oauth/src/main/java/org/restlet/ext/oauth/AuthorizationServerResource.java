@@ -67,7 +67,9 @@ import org.restlet.security.User;
  * @author Martin Svensson
  * 
  * @see <a href="http://tools.ietf.org/html/rfc6749#section-3.1">OAuth 2.0</a>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AuthorizationServerResource extends AuthorizationBaseServerResource {
 
     /**

@@ -78,7 +78,9 @@ import java.util.logging.Level;
  * @author Kristoffer Gronowski
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @see org.restlet.ext.oauth.OAuthParameters
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
     private final static List<CacheDirective> no = new ArrayList<CacheDirective>();

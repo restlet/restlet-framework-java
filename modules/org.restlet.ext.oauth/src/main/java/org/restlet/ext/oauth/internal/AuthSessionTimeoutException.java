@@ -27,7 +27,9 @@ package org.restlet.ext.oauth.internal;
 /**
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AuthSessionTimeoutException extends Exception {
 
     private static final long serialVersionUID = 1L;

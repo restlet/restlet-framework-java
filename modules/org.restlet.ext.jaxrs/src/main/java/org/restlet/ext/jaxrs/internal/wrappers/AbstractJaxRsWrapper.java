@@ -31,7 +31,9 @@ import org.restlet.ext.jaxrs.internal.util.PathRegExp;
  * An abstract wrapper class. Contains some useful static methods.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractJaxRsWrapper {
 
     private final PathRegExp pathRegExp;

@@ -29,7 +29,9 @@ import java.lang.annotation.Annotation;
 /**
  * @author Stephan Koops
  * 
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalAnnotationException extends Exception {
 
     private static final long serialVersionUID = -6746568704260973210L;

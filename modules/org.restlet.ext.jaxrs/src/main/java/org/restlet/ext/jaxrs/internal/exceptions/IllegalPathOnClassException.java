@@ -32,7 +32,9 @@ import javax.ws.rs.Path;
  * 
  * @author Stephan Koops
  * 
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class IllegalPathOnClassException extends IllegalPathException {
 
     private static final long serialVersionUID = 6423619202690501704L;

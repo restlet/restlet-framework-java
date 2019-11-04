@@ -29,6 +29,10 @@ import java.util.Iterator;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.util.NamedValue;
 
+/**
+ * @deprecated Will be removed in next minor release.
+ */
+@Deprecated
 class NamedValuesIter implements Iterator<String> {
 
     private final Iterator<? extends NamedValue<String>> namedValuesIter;

@@ -27,7 +27,9 @@ package org.restlet.ext.oauth;
 /**
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface OAuthResourceDefs {
 
     public static final String ACCESS_TOKEN = "access_token";

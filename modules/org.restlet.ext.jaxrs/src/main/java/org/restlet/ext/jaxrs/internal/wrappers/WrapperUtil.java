@@ -54,6 +54,7 @@ import org.restlet.util.NamedValue;
  * Utility methods for the wrappers.
  * 
  * @author Stephan Koops
+ * @deprecated Will be removed in next minor release.
  */
 public class WrapperUtil {
 
@@ -305,6 +306,7 @@ public class WrapperUtil {
     }
 
     /**
+@Deprecated
      * Checks, if the method is volatile(the return type of a sub class differs
      * from the return type of the superclass, but is compatibel).
      * 

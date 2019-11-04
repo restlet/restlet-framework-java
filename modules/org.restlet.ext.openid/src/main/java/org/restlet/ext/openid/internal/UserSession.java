@@ -29,7 +29,9 @@ import org.openid4java.message.ParameterList;
 /**
  * 
  * @author Martin Svensson
+ * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class UserSession {
 
     private volatile ParameterList pl;
