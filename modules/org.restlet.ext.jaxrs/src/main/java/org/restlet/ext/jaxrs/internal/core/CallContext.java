@@ -93,6 +93,7 @@ import org.restlet.service.MetadataService;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         SecurityContext {
 
@@ -101,7 +102,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @author Stephan Koops
      */
-@Deprecated
     private static class MatrixParamEncIter implements Iterator<String> {
 
         /** Iterates over the matrix parameters of one path segment */

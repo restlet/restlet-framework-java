@@ -35,9 +35,9 @@ import org.restlet.representation.Representation;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class FacebookAccessTokenClientResource extends AccessTokenClientResource {
 
-@Deprecated
     private static class FacebookTokenResponse implements Token {
 
         public static FacebookTokenResponse parseResponse(Form result) {

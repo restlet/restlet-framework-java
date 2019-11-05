@@ -36,11 +36,11 @@ import javax.ws.rs.core.Response.Status;
  * @see CookieParam
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ConvertCookieParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 9098614715395362234L;
 
-@Deprecated
     // REQUESTED allow subclass of WebAppExc in algorithms for special handling?
 
     /**

@@ -53,6 +53,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResourceClasses {
 
     private final ExtensionBackwardMapping extensionBackwardMapping;
@@ -309,7 +310,6 @@ public class ResourceClasses {
      * @throws IllegalArgumentException
      *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-@Deprecated
      *             if the class is not annotated with &#64;Path.
      * @throws MissingConstructorException
      *             if no valid constructor could be found.

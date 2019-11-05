@@ -46,8 +46,8 @@ import org.restlet.engine.io.IoUtils;
  * @see MessageBodyWriter
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class InputStreamProvider extends AbstractProvider<InputStream> {
 
     /**

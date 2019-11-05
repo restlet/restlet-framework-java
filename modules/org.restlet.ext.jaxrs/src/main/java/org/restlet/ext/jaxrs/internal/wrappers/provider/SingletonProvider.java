@@ -54,6 +54,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * 
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class SingletonProvider extends AbstractProviderWrapper implements
         MessageBodyReader, MessageBodyWriter, ContextResolver {
 
@@ -349,7 +350,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param genericType
      * @param annotations
      * @return true, if the wrapped message writer reader supports writing for
-@Deprecated
      *         the given class with the given parameters.
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
      */

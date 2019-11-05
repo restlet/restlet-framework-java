@@ -45,6 +45,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AlgorithmUtil {
 
     private enum ConsOrProdMime {
@@ -295,7 +296,6 @@ public class AlgorithmUtil {
      * 
      * @param rrcOrRmls
      *            Collection of Sub-ResourceMethods and SubResourceLocators or
-@Deprecated
      *            root resource class wrappers.
      * @return the resource method or sub resource locator or root resource
      *         class, or null, if the Map is null or empty.

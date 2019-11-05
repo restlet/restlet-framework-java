@@ -30,9 +30,9 @@ package org.restlet.ext.openid.internal;
  * @author Martin Svensson
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ProviderResult {
 
-@Deprecated
     public enum OPR {
         GET_USER, OK
     };

@@ -31,6 +31,7 @@ package org.restlet.ext.jaxrs.internal.wrappers;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResourceObject {
 
     private final Object jaxRsResourceObject;
@@ -58,7 +59,6 @@ public class ResourceObject {
         }
         if (jaxRsResourceObject instanceof ResourceObject) {
             throw new IllegalArgumentException(
-@Deprecated
                     "The given resource class object should not be an instance of the wrapping class ResourceObject");
         }
         this.jaxRsResourceObject = jaxRsResourceObject;

@@ -66,6 +66,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResourceMethod extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {
     // NICE a subset of MessageBodyReaders could be cached here.
@@ -239,7 +240,6 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     /**
      * @return Returns an unmodifiable List of MediaTypes the given Resource
      *         Method. if the method is not annotated with {@link Produces},
-@Deprecated
      *         than the {@link Produces} of the Resource class is returned. If
      *         no {@link Produces} can be found, an empty (also unmodifiable)
      *         List will returned.<br>

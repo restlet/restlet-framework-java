@@ -56,6 +56,7 @@ import org.restlet.util.NamedValue;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class WrapperUtil {
 
     private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
@@ -306,7 +307,6 @@ public class WrapperUtil {
     }
 
     /**
-@Deprecated
      * Checks, if the method is volatile(the return type of a sub class differs
      * from the return type of the superclass, but is compatibel).
      * 

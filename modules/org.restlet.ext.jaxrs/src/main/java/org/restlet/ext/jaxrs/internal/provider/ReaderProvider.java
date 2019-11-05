@@ -53,8 +53,8 @@ import org.restlet.representation.Representation;
  * @see BufferedReaderProvider
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class ReaderProvider extends AbstractProvider<Reader> {
 
     /**

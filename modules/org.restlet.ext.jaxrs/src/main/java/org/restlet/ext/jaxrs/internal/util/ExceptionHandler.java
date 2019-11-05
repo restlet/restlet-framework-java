@@ -70,6 +70,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ExceptionHandler {
 
     private static final String HEADER_ALLOW = "Allow";
@@ -434,7 +435,6 @@ public class ExceptionHandler {
      * found.
      * 
      * @param noRootResClHandler
-@Deprecated
      *            the Restlet to call, if no root resource class could be found.
      * @see #getNoRootResClHandler(Restlet)
      * @see #setNoResourceClHandler()

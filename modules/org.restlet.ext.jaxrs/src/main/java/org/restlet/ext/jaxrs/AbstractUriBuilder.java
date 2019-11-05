@@ -61,6 +61,7 @@ import org.restlet.util.Resolver;
  * @see UriBuilder
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractUriBuilder extends UriBuilder {
 
     private class ArrayVariableResolver extends Resolver<String> {
@@ -536,7 +537,6 @@ public abstract class AbstractUriBuilder extends UriBuilder {
             resMethodPath = path;
         }
         if (resMethodPath == null) {
-@Deprecated
             throw new IllegalArgumentException("The class " + rootResource
                     + " has no method with the name " + methodName
                     + " annotated with @Path");

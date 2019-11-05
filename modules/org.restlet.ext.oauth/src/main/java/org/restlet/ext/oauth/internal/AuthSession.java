@@ -46,6 +46,7 @@ import org.restlet.ext.oauth.ResponseType;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AuthSession {
 
     private static final String CALLBACK = "callback";
@@ -290,7 +291,6 @@ public class AuthSession {
     }
 
     /**
-@Deprecated
      * Get the Map interface that suitable for the database.
      * 
      * @return

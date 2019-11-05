@@ -46,8 +46,8 @@ import org.restlet.engine.io.IoUtils;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
     /**

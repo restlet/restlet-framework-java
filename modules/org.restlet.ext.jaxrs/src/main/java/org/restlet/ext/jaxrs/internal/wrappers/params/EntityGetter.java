@@ -52,12 +52,12 @@ import org.restlet.representation.Representation;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class EntityGetter implements ParamGetter {
 
     private final Annotation[] annotations;
 
     /**
-@Deprecated
      * The class to convert to, directly as the type in the parameter list.
      */
     protected volatile Class<?> convToCl;

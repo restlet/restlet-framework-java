@@ -120,6 +120,7 @@ import org.restlet.service.MetadataService;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsRestlet extends Restlet {
     /**
      * Structure to return the obtained {@link ResourceObject} and the
@@ -1232,7 +1233,6 @@ public class JaxRsRestlet extends Restlet {
      * instantiation.
      * 
      * @param objectFactory
-@Deprecated
      *            the ObjectFactory for root resource class and provider
      *            instantiation.
      */

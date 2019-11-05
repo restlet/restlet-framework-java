@@ -53,10 +53,10 @@ import org.restlet.representation.Representation;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-@Deprecated
 public class StringProvider extends AbstractProvider<CharSequence> {
 
     /**

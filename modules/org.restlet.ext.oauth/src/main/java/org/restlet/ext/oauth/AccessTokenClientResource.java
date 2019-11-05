@@ -47,9 +47,9 @@ import org.restlet.resource.ResourceException;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class AccessTokenClientResource extends ClientResource implements OAuthResourceDefs {
 
-@Deprecated
     private static class TokenResponse implements Token {
 
         public static TokenResponse parseResponse(JSONObject result) throws JSONException {

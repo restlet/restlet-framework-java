@@ -54,9 +54,9 @@ import org.restlet.ext.openid.internal.ProviderResult.OPR;
  * @author Martin Svensson
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class Provider {
 
-@Deprecated
     public enum OpenIdMode {
         associate, check_authentication, checkid_immediate, checkid_setup, errorMode;
     }

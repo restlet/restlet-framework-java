@@ -24,11 +24,10 @@ import org.simpleframework.xml.core.Persister;
  * @see <a href="http://simple.sourceforge.net/">Simple XML</a>
  * @deprecated Will be removed in next minor release.
  */
-
+@Deprecated
 @Provider
 @Produces({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 @Consumes({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
-@Deprecated
 public class SimpleXmlProvider extends AbstractProvider<Object> {
 
     private final Serializer serializer = new Persister();

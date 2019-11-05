@@ -43,8 +43,8 @@ import javax.ws.rs.ext.Provider;
  * @see StreamingOutput
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class StreamingOutputProvider implements
         MessageBodyWriter<StreamingOutput> {
 

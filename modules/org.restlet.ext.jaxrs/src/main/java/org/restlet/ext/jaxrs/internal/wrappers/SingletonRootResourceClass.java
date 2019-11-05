@@ -47,6 +47,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class SingletonRootResourceClass extends RootResourceClass {
 
     private final ResourceObject rootResObject;
@@ -89,7 +90,6 @@ public class SingletonRootResourceClass extends RootResourceClass {
      * @param objectFactory
      *            object responsible for instantiating the root resource class.
      *            Optional, thus can be null.
-@Deprecated
      * @return the wrapped root resource class instance
      * @throws InvocationTargetException
      * @throws InstantiateException

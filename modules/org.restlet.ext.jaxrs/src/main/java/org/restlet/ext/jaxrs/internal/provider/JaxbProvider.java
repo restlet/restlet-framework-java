@@ -56,10 +56,10 @@ import org.xml.sax.XMLReader;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 @Provider
 @Produces({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 @Consumes({ "application/xml", MediaType.TEXT_XML, "application/*+xml" })
-@Deprecated
 public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
     /**

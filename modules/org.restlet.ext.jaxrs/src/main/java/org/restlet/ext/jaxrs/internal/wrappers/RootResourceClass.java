@@ -56,6 +56,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class RootResourceClass extends ResourceClass implements
         RrcOrRml {
 
@@ -117,7 +118,6 @@ public abstract class RootResourceClass extends ResourceClass implements
      * @throws IllegalArgumentException
      *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-@Deprecated
      *             if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException

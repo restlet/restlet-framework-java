@@ -40,6 +40,7 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class MessageBodyWriterSubSet {
 
     private static final MessageBodyWriterSubSet EMPTY = new MessageBodyWriterSubSet(
@@ -62,7 +63,6 @@ public class MessageBodyWriterSubSet {
     private final List<MessageBodyWriter> mbws;
 
     /**
-@Deprecated
      * The class supported by the contained message body writers, given by the
      * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could be
      * {@code null}.

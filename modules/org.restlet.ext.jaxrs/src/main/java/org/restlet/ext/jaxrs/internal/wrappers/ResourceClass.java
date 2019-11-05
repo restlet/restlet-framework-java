@@ -64,6 +64,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class ResourceClass extends AbstractJaxRsWrapper {
 
     /**
@@ -354,7 +355,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
-@Deprecated
      * @return Returns true if the wrapped resource class has sub resource
      *         methods or sub resource locators.
      */

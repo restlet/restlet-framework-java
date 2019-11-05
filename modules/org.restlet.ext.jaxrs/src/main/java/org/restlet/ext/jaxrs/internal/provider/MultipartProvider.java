@@ -52,11 +52,11 @@ import javax.ws.rs.ext.Provider;
  * @see FileUploadProvider
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 @Provider
 @Consumes("multipart/form-data")
 @Produces("multipart/form-data")
 @SuppressWarnings("all")
-@Deprecated
 public class MultipartProvider implements MessageBodyReader<Multipart>,
         MessageBodyWriter<Multipart> {
     // NICE test MultipartProvider

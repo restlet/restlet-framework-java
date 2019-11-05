@@ -54,8 +54,8 @@ import org.restlet.Context;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class SourceProvider extends AbstractProvider<Source> {
 
     private final Logger logger = Context.getCurrentLogger();

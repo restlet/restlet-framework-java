@@ -52,6 +52,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
@@ -135,7 +136,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
-@Deprecated
      * @return Returns the resource class of this method.
      */
     public ResourceClass getResourceClass() {

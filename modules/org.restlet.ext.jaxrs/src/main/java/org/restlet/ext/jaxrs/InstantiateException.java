@@ -33,11 +33,11 @@ import java.lang.reflect.Method;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class InstantiateException extends Exception {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-@Deprecated
      * Use this constructor, if a resource class could not be instantiated.
      * 
      * @param executeMethod

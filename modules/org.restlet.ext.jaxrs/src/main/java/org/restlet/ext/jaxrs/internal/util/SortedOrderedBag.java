@@ -39,9 +39,9 @@ import java.util.ListIterator;
  * @param <E>
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class SortedOrderedBag<E> implements Collection<E> {
 
-@Deprecated
     private static final class Compar<A extends Comparable<A>> implements
             Comparator<A> {
 

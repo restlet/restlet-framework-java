@@ -68,6 +68,7 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         MessageBodyReaderSet {
 
@@ -431,7 +432,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             }
 
             Class<?> superclass = causeClass.getSuperclass();
-@Deprecated
             if (superclass == null || superclass.equals(Object.class))
                 return null;
             causeClass = (Class<T>) superclass;

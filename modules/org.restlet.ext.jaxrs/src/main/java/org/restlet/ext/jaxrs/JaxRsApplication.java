@@ -57,6 +57,7 @@ import org.restlet.security.Authenticator;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class JaxRsApplication extends org.restlet.Application {
 
     /**
@@ -294,7 +295,6 @@ public class JaxRsApplication extends org.restlet.Application {
      * instantiation.
      * 
      * @param objectFactory
-@Deprecated
      *            the ObjectFactory for root resource class and provider
      *            instantiation.
      */

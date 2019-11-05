@@ -48,6 +48,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @see MessageBodyWriter
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
         MessageBodyReader<T> {
 
@@ -109,7 +110,6 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     /**
      * Returns the class object supported by this provider.
      * 
-@Deprecated
      * @return the class object supported by this provider.
      */
     protected Class<?> supportedClass() {

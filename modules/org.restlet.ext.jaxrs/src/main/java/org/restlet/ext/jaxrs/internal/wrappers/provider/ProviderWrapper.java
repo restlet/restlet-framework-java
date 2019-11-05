@@ -43,12 +43,12 @@ import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableExcepti
  * @see javax.ws.rs.ext.Provider
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ProviderWrapper {
 
     abstract boolean equals(Object otherProvider);
 
     /**
-@Deprecated
      * @return the JAX-RS provider class name
      */
     abstract String getClassName();

@@ -139,7 +139,6 @@ import freemarker.template.Configuration;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @deprecated Will be removed in next minor release.
  */
-
 @Deprecated
 public class AuthPageServerResource extends AuthorizationBaseServerResource {
 

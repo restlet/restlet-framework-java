@@ -31,6 +31,10 @@ import java.util.List;
 
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 
+/**
+ * @deprecated Will be removed in next minor release.
+ */
+@Deprecated
 class MatchedInfo {
 
     /**
@@ -67,10 +71,6 @@ class MatchedInfo {
     /**
      * Returns an unmodifiable List of resource class objects.
      * 
-/**
- * @deprecated Will be removed in next minor release.
- */
-@Deprecated
      * @return an unmodifiable List of resource class objects.
      */
     List<Object> getResources() {

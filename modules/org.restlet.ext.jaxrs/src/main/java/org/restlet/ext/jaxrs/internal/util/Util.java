@@ -93,6 +93,7 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public class Util {
 
     /**
@@ -1641,7 +1642,6 @@ public class Util {
      * 
      * @param jaxRsClass
      *            the class to check
-@Deprecated
      * @return true, if the class is a JAX-RS root resource class, otherwise
      *         false.
      */

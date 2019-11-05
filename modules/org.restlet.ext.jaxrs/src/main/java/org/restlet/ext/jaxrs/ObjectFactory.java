@@ -41,6 +41,7 @@ package org.restlet.ext.jaxrs;
  * @see JaxRsRestlet#setObjectFactory(ObjectFactory)
  * @deprecated Will be removed in next minor release.
  */
+@Deprecated
 public interface ObjectFactory {
     /**
      * Creates an instance of the given class.<br>
@@ -55,7 +56,6 @@ public interface ObjectFactory {
      * @throws InstantiateException
      */
     <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
-@Deprecated
     // LATER if a resource class is a singelton, it must be ensured, that it
     // has no @*Param on fields and perhaps bean setters.
 }

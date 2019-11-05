@@ -45,8 +45,8 @@ import org.restlet.engine.io.IoUtils;
  * @see ReaderProvider
  * @deprecated Will be removed in next minor release.
  */
-@Provider
 @Deprecated
+@Provider
 public class BufferedReaderProvider implements
         MessageBodyReader<BufferedReader> {
 
