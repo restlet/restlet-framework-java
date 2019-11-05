@@ -1,5 +1,5 @@
  /**
- * Copyright 2005-2019 Restlet
+ * Copyright 2005-2019 Talend
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
