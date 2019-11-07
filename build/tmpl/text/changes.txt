@@ -5,8 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Misc
-      - Prepare next minor release (2.5.0) by deprecating few extensions that
-        will be removed. Issue #1347.
+      - Prepare the next release (2.5.0). The Apache HTTP Client extension is
+      not deprecated anymore, while the EMF, JAX-RS, OAuth, OpenID and RAML
+      extensions are deprecated before their removal.
+      Issue #1347.
+      - Eclipse p2 update site won't be maintained anymore and will be stopped 
+      before the end of november 2019. There is no impact on the Maven 
+      repository.
 - 2.4.1 (08/22/2018)
     - Bugs fixed
       - Make sure the Jetty server has released all resources when it fails to start. Issue #1311.
