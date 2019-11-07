@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet S.A.S.
+ * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.example.book.restlet.ch02.sec5.sub4;
@@ -54,7 +54,7 @@ public class MailServerApplication extends Application {
     public MailServerApplication() {
         setName("RESTful Mail Server");
         setDescription("Example for 'Restlet in Action' book");
-        setOwner("Restlet S.A.S.");
+        setOwner("Talend S.A.");
         setAuthor("The Restlet Team");
     }
 

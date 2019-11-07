@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet S.A.S.
+ * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.example.book.restlet.ch06.sec2.server;
@@ -53,7 +53,7 @@ public class MailServerComponent extends Component {
         // Set basic properties
         setName("RESTful Mail Server component");
         setDescription("Example for 'Restlet in Action' book");
-        setOwner("Restlet S.A.S.");
+        setOwner("Talend S.A.");
         setAuthor("The Restlet Team");
 
         // Add a CLAP client connector

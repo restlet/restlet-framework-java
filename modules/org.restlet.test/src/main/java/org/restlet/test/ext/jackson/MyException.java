@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet S.A.S.
+ * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.jackson;
