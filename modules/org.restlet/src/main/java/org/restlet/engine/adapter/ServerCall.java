@@ -192,7 +192,9 @@ public abstract class ServerCall extends Call {
             if (connectionClosed) {
                 // We need to detect if there is really an entity or not as only
                 // the end of connection can let us know at this point
-                try (PushbackInputStream pbi = new PushbackInputStream(requestStream)) {
+                PushbackInputStream pbi = new PushbackInputStream(requestStream);
+
+                try {
                     int next = pbi.read();
 
                     if (next != -1) {
