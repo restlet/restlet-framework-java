@@ -8,21 +8,21 @@ It is available in editions for all major platforms (Java SE/EE, Google App Engi
 
 It is available under the terms of either the Apache Software License 2.0 or the Eclipse Public License 1.0.
 
-http://restlet.com
+http://restlet.talend.com
 
 ## Learn more
 
 To learn more about Restlet Framework, please have a look at the following resources:
 
-* [User Guide](http://restlet.com/technical-resources/restlet-framework/guide/2.3)
-* [Tutorials](http://restlet.com/technical-resources/restlet-framework/tutorials/2.3)
-* [JavaDocs](http://restlet.com/technical-resources/restlet-framework/javadocs/2.3)
-* [Change Log](http://restlet.com/technical-resources/restlet-framework/misc/2.3/changes)
-* [Download](http://restlet.com/downloads/current/)
+* [User Guide](http://restlet.talend.com/technical-resources/restlet-framework/guide/2.3)
+* [Tutorials](http://restlet.talend.com/technical-resources/restlet-framework/tutorials/2.3)
+* [JavaDocs](http://restlet.talend.com/technical-resources/restlet-framework/javadocs/2.3)
+* [Change Log](http://restlet.talend.com/technical-resources/restlet-framework/misc/2.3/changes)
+* [Download](http://restlet.talend.com/downloads/current/)
 * [Issue Tracker](https://github.com/restlet/restlet-framework-java/issues)
 * [Mailing List](https://groups.google.com/a/restlet.org/forum/#!forum/framework-discuss)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2015 Restlet
+Copyright 2019 Talend
 
 [![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java)
