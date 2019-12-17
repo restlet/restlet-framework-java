@@ -25,4 +25,4 @@ To learn more about Restlet Framework, please have a look at the following resou
 
 Copyright 2019 Talend
 
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.3)](https://travis-ci.org/restlet/restlet-framework-java)
+[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=master)](https://travis-ci.org/restlet/restlet-framework-java)
