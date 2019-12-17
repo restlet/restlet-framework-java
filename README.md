@@ -14,11 +14,11 @@ http://restlet.talend.com
 
 To learn more about Restlet Framework, please have a look at the following resources:
 
-* [User Guide](http://restlet.talend.com/technical-resources/restlet-framework/guide/2.3)
-* [Tutorials](http://restlet.talend.com/technical-resources/restlet-framework/tutorials/2.3)
-* [JavaDocs](http://restlet.talend.com/technical-resources/restlet-framework/javadocs/2.3)
-* [Change Log](http://restlet.talend.com/technical-resources/restlet-framework/misc/2.3/changes)
-* [Download](http://restlet.talend.com/downloads/current/)
+* [User Guide](https://restlet.talend.com/documentation/user-guide/2.3/)
+* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.3/)
+* [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.3/)
+* [Change Log](https://restlet.talend.com/documentation/2.3/changelog)
+* [Download](https://restlet.talend.com/downloads/current/)
 * [Issue Tracker](https://github.com/restlet/restlet-framework-java/issues)
 * [Mailing List](https://groups.google.com/a/restlet.org/forum/#!forum/framework-discuss)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
