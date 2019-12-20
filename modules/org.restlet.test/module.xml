@@ -6,18 +6,17 @@
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
-		<distribution id="p2" />
 	</distributions>
 
 	<dependencies>
 		<dependency type="library" id="junit" />
+		<dependency type="library" id="slf4j" />
 		<dependency type="library" id="hamcrest" />
 		<dependency type="library" id="swagger.core_1.5" />
 		<dependency type="library" id="swagger.models_1.5" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="crypto" />
-		<dependency type="module" id="emf" />
 		<dependency type="module" id="example" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="gson" />
@@ -27,23 +26,14 @@
 		<dependency type="module" id="httpclient" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxb" />
-		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="jetty" includes="jse" />
 		<dependency type="module" id="json" />
-		<dependency type="module" id="lucene" />
-		<dependency type="module" id="nio" />
-		<dependency type="module" id="oauth" includes="jse" />
 		<dependency type="module" id="odata" />
 		<dependency type="module" id="rdf" />
-		<dependency type="module" id="simple" includes="jse" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="thymeleaf" />
 		<dependency type="module" id="velocity" />
-		<dependency type="module" id="wadl" />
 		<dependency type="module" id="xml" />
-		<dependency type="module" id="platform" />
-		<dependency type="module" id="raml" />
-		<dependency type="module" id="swagger" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>
@@ -98,7 +88,6 @@
          <exclude name="src/main/java/org/restlet/test/engine/connector/SslBaseConnectorsTestCase.java" />
          <exclude name="src/main/java/org/restlet/test/engine/connector/SslClientContextGetTestCase.java" />
          <exclude name="src/main/java/org/restlet/test/engine/connector/SslGetTestCase.java" />
-         <exclude name="src/main/java/org/restlet/test/ext/jaxrs/QueryTestCase*" />
          <exclude name="src/main/java/org/restlet/test/resource/*" />
          <exclude name="src/main/java/org/restlet/test/service/StatusServiceTestCase.java" />
          <exclude name="src/main/java/org/restlet/test/ext/ssl/**" />

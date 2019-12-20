@@ -5,7 +5,6 @@
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
-		<distribution id="p2" />
 	</distributions>
 
 	<dependencies>
@@ -22,18 +21,13 @@
 		<dependency type="module" id="jaas" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxb" />
-		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="jetty" includes="jse,osgi" />
-		<dependency type="module" id="jibx" />
 		<dependency type="module" id="json" />
-		<dependency type="module" id="oauth" />
-		<dependency type="module" id="openid" />
 		<dependency type="module" id="osgi" includes="osgi" />
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="xml" />
-		<dependency type="module" id="wadl" />
 	</dependencies>
 
 	<source edition="jee">

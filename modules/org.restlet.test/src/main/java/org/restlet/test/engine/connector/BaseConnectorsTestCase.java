@@ -51,15 +51,9 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientJetty = false;
 
-    private final boolean enabledClientNio = false;
-
     private final boolean enabledServerInternal = true;
 
     private final boolean enabledServerJetty = true;
-
-    private final boolean enabledServerNio = false;
-
-    private final boolean enabledServerSimple = true;
 
     protected abstract void call(String uri) throws Exception;
 
@@ -136,13 +130,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
-    public void testInternalAndNio() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientNio) {
-            runTest(new org.restlet.engine.connector.HttpServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
     public void testJettyAndApache() throws Exception {
         if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
@@ -161,69 +148,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         if (this.enabledServerJetty && this.enabledClientJetty) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testJettyAndNio() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientNio) {
-            runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
-    public void testNioAndApache() throws Exception {
-        if (this.enabledServerNio && this.enabledClientApache) {
-            runTest(new org.restlet.ext.nio.HttpServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testNioAndInternal() throws Exception {
-        if (this.enabledServerNio && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.nio.HttpServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
-        }
-    }
-
-    public void testNioAndJetty() throws Exception {
-        if (this.enabledServerNio && this.enabledClientJetty) {
-            runTest(new org.restlet.ext.nio.HttpServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testNioAndNio() throws Exception {
-        if (this.enabledServerNio && this.enabledClientNio) {
-            runTest(new org.restlet.ext.nio.HttpServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
-    public void testSimpleAndApache() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientApache) {
-            runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testSimpleAndInternal() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
-        }
-    }
-
-    public void testSimpleAndJetty() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientJetty) {
-            runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testSimpleAndNio() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientNio) {
-            runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
         }
     }
 }
