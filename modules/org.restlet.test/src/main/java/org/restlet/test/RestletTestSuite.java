@@ -46,12 +46,10 @@ import org.restlet.test.data.RecipientInfoTestCase;
 import org.restlet.test.data.ReferenceTestCase;
 import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
-import org.restlet.test.ext.platform.RestletCloudTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.crypto.CryptoTestSuite;
 import org.restlet.test.ext.crypto.DigestVerifierTestCase;
 import org.restlet.test.ext.crypto.HttpDigestTestCase;
-import org.restlet.test.ext.emf.EmfTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.guice.GuiceSelfInjectingServerResourceModuleTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
@@ -63,7 +61,6 @@ import org.restlet.test.ext.json.JsonTestSuite;
 import org.restlet.test.ext.odata.ODataTestSuite;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
-import org.restlet.test.ext.wadl.WadlTestSuite;
 import org.restlet.test.ext.xml.XmlTestSuite;
 import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
@@ -132,15 +129,10 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTest(RegressionTestSuite.suite());
         addTest(CryptoTestSuite.suite());
-        addTest(RestletCloudTestSuite.suite());
-        addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
         addTestSuite(MethodTestCase.class);
 
-        // TODO: temporarily removed jaxrs test suite, cf issue #811
-        // addTest(JaxRsTestSuite.suite());
         addTest(ODataTestSuite.suite());
-        addTest(WadlTestSuite.suite());
         addTest(XmlTestSuite.suite());
         addTest(JsonTestSuite.suite());
 

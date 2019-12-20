@@ -5,7 +5,7 @@
 
     <groupId>org.restlet.dev</groupId>
     <artifactId>org.restlet.parent</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Restlet project</name>
@@ -47,17 +47,13 @@
         <lib-cglib-version>2.2</lib-cglib-version>
         <lib-codec-version>1.5</lib-codec-version>
         <lib-commons-collections-version>3.2.2</lib-commons-collections-version>
-        <lib-dbcp-version>1.3</lib-dbcp-version>
         <lib-e4-version>0.12.RC1</lib-e4-version>
-        <lib-emf-version>2.6.0.v20100614-1136</lib-emf-version>
-        <lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
         <lib-fileupload-version>1.3.3</lib-fileupload-version>
         <lib-freemarker-version>2.3.20</lib-freemarker-version>
         <lib-gappengine-version>1.9.57</lib-gappengine-version>
         <lib-gcollections-version>1.0</lib-gcollections-version>
         <lib-gdata-version>1.0</lib-gdata-version>
         <lib-gson-version>2.3.1</lib-gson-version>
-        <lib-guava-version>26.0-jre</lib-guava-version>
         <lib-guice-version>3.0</lib-guice-version>
         <lib-gwt-server-version>2.3.0</lib-gwt-server-version>
         <lib-httpclient-version>4.5.6</lib-httpclient-version>
@@ -65,17 +61,11 @@
         <lib-httpmime-version>4.5.6</lib-httpmime-version>
         <lib-io-version>2.0.1</lib-io-version>
         <lib-jackson-version>2.9.6</lib-jackson-version>
-        <lib-javamail-version>1.4.2</lib-javamail-version>
-        <lib-javassist-version>3.18.1-GA</lib-javassist-version>
         <lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
         <lib-jaxrs-api-version>2.0</lib-jaxrs-api-version>
-        <lib-jsr311-version>1.1.1</lib-jsr311-version>
         <lib-javax-inject-version>1</lib-javax-inject-version>
         <lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
-        <lib-jdom-version>1.1</lib-jdom-version>
-        <lib-jettison-version>1.3.5</lib-jettison-version>
         <lib-jetty-version>9.4.11.v20180605</lib-jetty-version>
-        <lib-jibx-version>1.2.5</lib-jibx-version>
         <lib-joda-time-version>2.3</lib-joda-time-version>
         <lib-json4s-version>3.2.4</lib-json4s-version>
         <lib-json-version>20160212</lib-json-version>
@@ -84,32 +74,22 @@
         <lib-lang-version>3.6</lib-lang-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>
         <lib-logging-version>1.1.3</lib-logging-version>
-        <lib-lucene-version>4.6.0</lib-lucene-version>
         <lib-mime4j-version>0.7.2</lib-mime4j-version>
         <lib-mongodb-version>2.11.3</lib-mongodb-version>
-        <lib-nekohtml-version>1.9.19</lib-nekohtml-version>
-        <lib-oauth-version>20100527</lib-oauth-version>
-        <lib-openid4java-version>0.9.6</lib-openid4java-version>
         <lib-osgi-version>4.0.0</lib-osgi-version>
         <lib-pool-version>1.5.6</lib-pool-version>
         <lib-protobuf-version>2.2.0</lib-protobuf-version>
         <lib-raml-version>0.8.19</lib-raml-version>
-        <lib-resteasy-version>3.6.0.Final</lib-resteasy-version>
-        <lib-rome-version>1.0</lib-rome-version>
         <lib-scala-version>2.9.1</lib-scala-version>
         <lib-sdc-version>1.3.rc2</lib-sdc-version>
         <lib-servlet-version>3.1.0</lib-servlet-version>
-        <lib-simple-version>5.1.6</lib-simple-version>
-        <lib-simple-xml-version>2.7.1</lib-simple-xml-version>
         <lib-slf4j-version>1.7.2</lib-slf4j-version>
         <lib-snakeyaml-version>1.18</lib-snakeyaml-version>
-        <lib-solr-version>7.4.0</lib-solr-version>
         <lib-spring-version>3.2.8.RELEASE</lib-spring-version>
         <lib-stax2-version>3.1.4</lib-stax2-version>
         <lib-swagger-version>1.5.3-M1</lib-swagger-version>
         <lib-testng-version>6.8.7</lib-testng-version>
         <lib-thymeleaf-version>2.1.2.RELEASE</lib-thymeleaf-version>
-        <lib-tika-version>1.18</lib-tika-version>
         <lib-velocity-version>2.0</lib-velocity-version>
         <lib-woodstock-core-version>4.3.0</lib-woodstock-core-version>
     </properties>
@@ -123,10 +103,8 @@
             <modules>
                 <module>org.restlet</module>
                 <module>org.restlet.example</module>
-                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
-                <module>org.restlet.ext.emf</module>
                 <module>org.restlet.ext.fileupload</module>
                 <module>org.restlet.ext.freemarker</module>
                 <module>org.restlet.ext.gae</module>
@@ -137,28 +115,18 @@
                 <module>org.restlet.ext.httpclient</module>
                 <module>org.restlet.ext.jaas</module>
                 <module>org.restlet.ext.jackson</module>
-                <module>org.restlet.ext.javamail</module>
                 <module>org.restlet.ext.jaxb</module>
-                <module>org.restlet.ext.jaxrs</module>
                 <module>org.restlet.ext.jetty</module>
-                <module>org.restlet.ext.jibx</module>
                 <module>org.restlet.ext.json</module>
-                <module>org.restlet.ext.lucene</module>
-                <module>org.restlet.ext.nio</module>
-                <module>org.restlet.ext.oauth</module>
                 <module>org.restlet.ext.odata</module>
-                <module>org.restlet.ext.openid</module>
                 <module>org.restlet.ext.osgi</module>
-                <module>org.restlet.ext.raml</module>
                 <module>org.restlet.ext.rdf</module>
                 <module>org.restlet.ext.servlet</module>
-                <module>org.restlet.ext.simple</module>
                 <module>org.restlet.ext.slf4j</module>
                 <module>org.restlet.ext.spring</module>
                 <module>org.restlet.ext.swagger</module>
                 <module>org.restlet.ext.thymeleaf</module>
                 <module>org.restlet.ext.velocity</module>
-                <module>org.restlet.ext.wadl</module>
                 <module>org.restlet.ext.xml</module>
             </modules>
         </profile>
@@ -166,10 +134,9 @@
             <id>test</id>
             <modules>
                 <module>org.restlet</module>
-                <module>org.restlet.ext.platform</module>
+                <module>org.restlet.example</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
-                <module>org.restlet.ext.emf</module>
                 <module>org.restlet.ext.fileupload</module>
                 <module>org.restlet.ext.freemarker</module>
                 <module>org.restlet.ext.gae</module>
@@ -180,28 +147,18 @@
                 <module>org.restlet.ext.httpclient</module>
                 <module>org.restlet.ext.jaas</module>
                 <module>org.restlet.ext.jackson</module>
-                <module>org.restlet.ext.javamail</module>
                 <module>org.restlet.ext.jaxb</module>
-                <module>org.restlet.ext.jaxrs</module>
                 <module>org.restlet.ext.jetty</module>
-                <module>org.restlet.ext.jibx</module>
                 <module>org.restlet.ext.json</module>
-                <module>org.restlet.ext.lucene</module>
-                <module>org.restlet.ext.nio</module>
-                <module>org.restlet.ext.oauth</module>
                 <module>org.restlet.ext.odata</module>
-                <module>org.restlet.ext.openid</module>
                 <module>org.restlet.ext.osgi</module>
-                <module>org.restlet.ext.raml</module>
                 <module>org.restlet.ext.rdf</module>
                 <module>org.restlet.ext.servlet</module>
-                <module>org.restlet.ext.simple</module>
                 <module>org.restlet.ext.slf4j</module>
                 <module>org.restlet.ext.spring</module>
                 <module>org.restlet.ext.swagger</module>
                 <module>org.restlet.ext.thymeleaf</module>
                 <module>org.restlet.ext.velocity</module>
-                <module>org.restlet.ext.wadl</module>
                 <module>org.restlet.ext.xml</module>
                 <module>org.restlet.test</module>
             </modules>

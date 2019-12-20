@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.restlet.dev</groupId>
 		<artifactId>org.restlet.parent</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.gson</artifactId>
@@ -17,19 +17,16 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>${lib-gson-version}</version>
-				
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>${lib-joda-time-version}</version>
-				
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
-			<version>2.4-SNAPSHOT</version>
-			
+			<version>2.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

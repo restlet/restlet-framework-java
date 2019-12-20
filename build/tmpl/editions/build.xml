@@ -116,6 +116,7 @@
 			<or>
 				<contains string="${ant.version}" substring="version 1.8" />
 				<contains string="${ant.version}" substring="version 1.9" />
+				<contains string="${ant.version}" substring="version 1.10" />
 			</or>
 		</not>
 	</condition>
@@ -138,14 +139,6 @@
 		<and>
 			<istrue value="${checkstyle}" />
 			<istrue value="${verify}" />
-		</and>
-	</condition>
-
-	<!-- Set the property that will enable the Nsis target -->
-	<condition property="do-nsis">
-		<and>
-			<istrue value="${nsis}" />
-			<istrue value="${package}" />
 		</and>
 	</condition>
 
@@ -288,13 +281,6 @@
 	<taskdef resource="checkstyletask.properties">
 		<classpath>
 			<pathelement location="${tools}/checkstyle/checkstyle-all-4.2.jar" />
-		</classpath>
-	</taskdef>
-
-	<!-- NSIS 1.3 -->
-	<taskdef name="nsis" classname="net.sf.nsisant.Task">
-		<classpath>
-			<pathelement location="${tools}/nsis/nsisant-1.3.custom.jar" />
 		</classpath>
 	</taskdef>
 
@@ -657,11 +643,6 @@
 			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
 		</copy>
 
-		<!-- Generate the NSIS files -->
-		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
-		<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
 	</target>
 
 	<target name="generate-libraries-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the libraries">
@@ -997,7 +978,7 @@
 		</move>
 	</target>
 
-	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
+	<target name="package-classic" if="do-package" depends="package-classic-zip" description="Generate the classic distributions.">
 		<move todir="${final-dist-classic}">
 			<fileset dir="${dist-classic}" />
 		</move>
@@ -1019,13 +1000,6 @@
 	<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
 		<delete file="${dist-base}/restlet-${edition}-${version-compact}.zip" />
 		<zip destfile="${dist-base}/restlet-${edition}-${version-compact}.zip" basedir="${dist-base}/classic" includes="${dist-path}/**/*" />
-	</target>
-
-	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
-	<target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
-		<nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
-			<fileset dir="${dist-classic}" includes="**/*" />
-		</nsis>
 	</target>
 
 </project>

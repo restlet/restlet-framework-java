@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 
 import org.restlet.test.engine.application.CorsResponseFilterTestCase;
 import org.restlet.test.engine.connector.ConnectorsTestSuite;
-import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
 import org.restlet.test.engine.io.ReaderInputStreamTestCase;
 
@@ -59,7 +58,6 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(ContentTypeTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
-        addTestSuite(HttpInboundRequestTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(UnclosableInputStreamTestCase.class);
         addTestSuite(UnclosableOutputStreamTestCase.class);
