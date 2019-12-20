@@ -64,15 +64,9 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientJetty = false;
 
-    private final boolean enabledClientNio = false;
-
     private final boolean enabledServerInternal = true;
 
     private final boolean enabledServerJetty = false;
-
-    private final boolean enabledServerNio = false;
-
-    private final boolean enabledServerSimple = false;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");
@@ -197,13 +191,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
-    public void testSslInternalAndNio() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientNio) {
-            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
     public void testSslJettyAndApache() throws Exception {
         if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
@@ -222,69 +209,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         if (this.enabledServerJetty && this.enabledClientJetty) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
                     new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslJettyAndNio() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientNio) {
-            runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNioAndApache() throws Exception {
-        if (this.enabledServerNio && this.enabledClientApache) {
-            runTest(new org.restlet.ext.nio.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNioAndInternal() throws Exception {
-        if (this.enabledServerNio && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.nio.HttpsServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNioAndJetty() throws Exception {
-        if (this.enabledServerNio && this.enabledClientJetty) {
-            runTest(new org.restlet.ext.nio.HttpsServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNioAndNio() throws Exception {
-        if (this.enabledServerNio && this.enabledClientNio) {
-            runTest(new org.restlet.ext.nio.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslSimpleAndApache() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientApache) {
-            runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslSimpleAndInternal() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslSimpleAndJetty() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientJetty) {
-            runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslSimpleAndNio() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientNio) {
-            runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpClientHelper(null));
         }
     }
 }
