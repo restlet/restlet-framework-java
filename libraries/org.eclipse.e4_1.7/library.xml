@@ -1,0 +1,24 @@
+<library id="e4" symbolicName="org.eclipse.e4">
+	<name>Eclipse - e4 core</name>
+	<description>Eclipse - e4 core.</description>
+	<version>1.7</version>
+	<release>500</release>
+	<homeUri>http://eclipse.org/</homeUri>
+	<downloadUri>http://download.eclipse.org/e4/downloads/</downloadUri>
+	<provider>Eclipse</provider>
+
+	<package id="e4-di" name="org.eclipse.e4.core.di">
+		<maven>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.e4.core.di</artifactId>
+			<version>1.7.500</version>
+		</maven>
+	</package>
+	<package id="e4-contexts" name="org.eclipse.e4.core.contexts">
+		<maven>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.e4.core.contexts</artifactId>
+			<version>1.8.300</version>
+		</maven>
+	</package>
+</library>

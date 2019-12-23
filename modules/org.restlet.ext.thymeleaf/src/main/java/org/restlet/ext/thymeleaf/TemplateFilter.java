@@ -1,41 +1,39 @@
 /**
  * Copyright 2005-2019 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.ext.thymeleaf;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
 
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Encoding;
-import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 import org.restlet.util.Resolver;
+
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Filters response's entity and wraps it with a Thymeleaf's template
@@ -47,7 +45,7 @@ import org.restlet.util.Resolver;
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
- * 
+ *
  * @author Grzegorz Godlewski
  */
 public abstract class TemplateFilter extends Filter {
@@ -70,7 +68,7 @@ public abstract class TemplateFilter extends Filter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The context.
      */
@@ -80,7 +78,7 @@ public abstract class TemplateFilter extends Filter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The context.
      * @param next
@@ -94,7 +92,7 @@ public abstract class TemplateFilter extends Filter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The context.
      * @param next
@@ -103,7 +101,7 @@ public abstract class TemplateFilter extends Filter {
      *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next,
-            Map<String, Object> dataModel) {
+                          Map<String, Object> dataModel) {
         super(context, next);
         this.mapDataModel = dataModel;
         this.resolverDataModel = null;
@@ -111,7 +109,7 @@ public abstract class TemplateFilter extends Filter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The context.
      * @param next
@@ -120,7 +118,7 @@ public abstract class TemplateFilter extends Filter {
      *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next,
-            Resolver<Object> dataModel) {
+                          Resolver<Object> dataModel) {
         super(context, next);
         this.mapDataModel = null;
         this.resolverDataModel = dataModel;
@@ -130,32 +128,28 @@ public abstract class TemplateFilter extends Filter {
     protected void afterHandle(Request request, Response response) {
         if (response.isEntityAvailable()
                 && response.getEntity().getEncodings().contains(THYMELEAF)) {
-            try {
-                final TemplateRepresentation representation = new TemplateRepresentation(
-                        (TemplateRepresentation) response.getEntity(),
-                        getLocale(), response.getEntity().getMediaType());
+            final TemplateRepresentation representation = new TemplateRepresentation(
+                    (TemplateRepresentation) response.getEntity(),
+                    getLocale(), response.getEntity().getMediaType());
 
-                if ((this.mapDataModel == null)
-                        && (this.resolverDataModel == null)) {
-                    representation.setDataModel(request, response);
+            if ((this.mapDataModel == null)
+                    && (this.resolverDataModel == null)) {
+                representation.setDataModel(request, response);
+            } else {
+                if (this.mapDataModel == null) {
+                    representation.setDataModel(this.resolverDataModel);
                 } else {
-                    if (this.mapDataModel == null) {
-                        representation.setDataModel(this.resolverDataModel);
-                    } else {
-                        representation.setDataModel(this.mapDataModel);
-                    }
+                    representation.setDataModel(this.mapDataModel);
                 }
-
-                response.setEntity(representation);
-            } catch (IOException e) {
-                response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             }
+
+            response.setEntity(representation);
         }
     }
 
     /**
      * Overrides with {@link Locale} detection.
-     * 
+     *
      * @return The default {@link Locale}.
      */
     public Locale getLocale() {

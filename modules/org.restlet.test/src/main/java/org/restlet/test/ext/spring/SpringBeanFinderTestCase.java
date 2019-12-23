@@ -31,6 +31,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
@@ -90,7 +91,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     private void registerBeanFactoryBean(String beanName,
             Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
-                new RootBeanDefinition(resourceClass, values));
+                new RootBeanDefinition(resourceClass, new ConstructorArgumentValues(), values));
     }
 
     @Override
