@@ -77,7 +77,9 @@ public class ApplicationHelper extends CompositeHelper<Application> {
             super.handle(request, response);
         } finally {
             // restaure the current application
-            Application.setCurrent(current);
+            if (current != null) {
+                Application.setCurrent(current);
+            }
         }
     }
 
