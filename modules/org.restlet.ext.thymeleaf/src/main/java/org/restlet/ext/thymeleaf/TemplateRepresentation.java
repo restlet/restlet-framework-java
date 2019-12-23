@@ -26,8 +26,10 @@ package org.restlet.ext.thymeleaf;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -40,10 +42,8 @@ import org.restlet.util.Resolver;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -89,26 +89,26 @@ public class TemplateRepresentation extends WriterRepresentation {
             return locale;
         }
 
-        @SuppressWarnings("serial")
-        public VariablesMap<String, Object> getVariables() {
-            return new VariablesMap<String, Object>() {
-                @Override
-                public boolean containsKey(Object key) {
-                    return resolver.resolve(key.toString()) != null;
-                }
+        @Override
+        public boolean containsVariable(final String key) {
+            return resolver.resolve(key) != null;
+        }
 
-                @Override
-                public Object get(Object key) {
-                    return resolver.resolve(key.toString());
-                }
-            };
+        @Override
+        public Set<String> getVariableNames() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Object getVariable(final String key) {
+            return resolver.resolve(key);
         }
 
     }
 
     /**
      * Returns a new instance of {@link TemplateEngine} based by default on a
-     * {@link TemplateResolver} returned by calling
+     * {@link ITemplateResolver} returned by calling
      * {@link #createTemplateResolver()}.
      * 
      * @return A new instance of {@link TemplateEngine}
@@ -119,7 +119,7 @@ public class TemplateRepresentation extends WriterRepresentation {
 
     /**
      * Returns a new instance of {@link TemplateEngine} based by default on a
-     * {@link TemplateResolver} returned by calling
+     * {@link ITemplateResolver} returned by calling
      * {@link #createTemplateResolver()}.
      * 
      * @return A new instance of {@link TemplateEngine}
@@ -249,13 +249,10 @@ public class TemplateRepresentation extends WriterRepresentation {
      *            The locale of the template.
      * @param mediaType
      *            The representation's media type.
-     * @throws IOException
-     * @throws ParseErrorException
-     * @throws ResourceNotFoundException
      */
     public TemplateRepresentation(
             TemplateRepresentation templateRepresentation, Locale locale,
-            MediaType mediaType) throws IOException {
+            MediaType mediaType) {
         this(templateRepresentation, createTemplateEngine(), locale, mediaType);
     }
 
@@ -270,14 +267,10 @@ public class TemplateRepresentation extends WriterRepresentation {
      *            The locale of the template.
      * @param mediaType
      *            The representation's media type.
-     * @throws IOException
-     * @throws ParseErrorException
-     * @throws ResourceNotFoundException
      */
     public TemplateRepresentation(
             TemplateRepresentation templateRepresentation,
-            TemplateEngine engine, Locale locale, MediaType mediaType)
-            throws IOException {
+            TemplateEngine engine, Locale locale, MediaType mediaType) {
         super(mediaType);
         this.locale = locale;
         this.engine = engine;
@@ -339,7 +332,7 @@ public class TemplateRepresentation extends WriterRepresentation {
     public void setDataModel(Request request, Response response) {
         Form form = new Form(request.getEntity());
         Context ctx = new Context(locale);
-        ctx.setVariables(form.getValuesMap());
+        ctx.setVariables(Collections.unmodifiableMap(form.getValuesMap()));
         setContext(ctx);
     }
 

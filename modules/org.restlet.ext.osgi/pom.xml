@@ -26,15 +26,15 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.restlet.osgi</groupId>
-            <artifactId>org.restlet.lib.org.eclipse.e4.core.contexts</artifactId>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.e4.core.di</artifactId>
             <version>${lib-e4-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.restlet.osgi</groupId>
-            <artifactId>org.restlet.lib.org.eclipse.e4.core.di</artifactId>
-            <version>${lib-e4-version}</version>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.e4.core.contexts</artifactId>
+            <version>1.8.300</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -32,7 +32,6 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.thymeleaf.TemplateRepresentation;
 import org.restlet.test.RestletTestCase;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
  * Unit test for the Thymeleaf extension.
@@ -42,7 +41,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 public class ThymeleafTestCase extends RestletTestCase {
 
     public void testTemplate() throws Exception {
-        TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("org/restlet/test/ext/thymeleaf/");
         templateResolver.setSuffix(".html");
         templateResolver.setCacheTTLMs(3600000L);

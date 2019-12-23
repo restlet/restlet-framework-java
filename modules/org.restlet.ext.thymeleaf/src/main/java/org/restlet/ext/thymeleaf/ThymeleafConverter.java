@@ -35,7 +35,7 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
-import org.thymeleaf.Template;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 /**
  * Converter between the Thymeleaf Template objects and Representations. The
@@ -61,7 +61,7 @@ public class ThymeleafConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Template.class.isAssignableFrom(source)) {
+        if (ITemplateResource.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_ALL);
         }
 
@@ -70,7 +70,7 @@ public class ThymeleafConverter extends ConverterHelper {
 
     @Override
     public float score(Object source, Variant target, Resource resource) {
-        if (source instanceof Template) {
+        if (source instanceof ITemplateResource) {
             return 1.0f;
         }
 
@@ -93,11 +93,11 @@ public class ThymeleafConverter extends ConverterHelper {
     public Representation toRepresentation(Object source, Variant target,
             Resource resource) throws IOException {
 
-        if (source instanceof Template) {
+        if (source instanceof ITemplateResource) {
             Locale locale = getLocale(resource);
 
             TemplateRepresentation tr = new TemplateRepresentation(
-                    ((Template) source).getTemplateName(), locale,
+                    ((ITemplateResource) source).getBaseName(), locale,
                     target.getMediaType());
             tr.setDataModel(resource.getRequest(), resource.getResponse());
             return tr;
@@ -109,7 +109,7 @@ public class ThymeleafConverter extends ConverterHelper {
     @Override
     public <T> void updatePreferences(List<Preference<MediaType>> preferences,
             Class<T> entity) {
-        if (Template.class.isAssignableFrom(entity)) {
+        if (ITemplateResource.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.ALL, 1.0F);
         }
     }
