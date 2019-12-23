@@ -10,3 +10,4 @@ Changes log
       - Removed generation of Eclipse p2 artifacts from the build since the 
         Eclipse p2 site is no more maintained.
       - Refresh copyright headers. Issue #1351.
+      - UPgraded to JDK 11. Issue #1351.
