@@ -7,7 +7,8 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="jaxb-ri"  primary="true"/>
+		<dependency type="library" id="jaxb-ri" primary="true"/>
+		<dependency type="library" id="javax.activation" />
 		<dependency type="module" id="core" />
 	</dependencies>
 </module>

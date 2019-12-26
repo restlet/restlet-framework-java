@@ -62,6 +62,7 @@
         <lib-httpmime-version>4.5.6</lib-httpmime-version>
         <lib-io-version>2.0.1</lib-io-version>
         <lib-jackson-version>2.10.1</lib-jackson-version>
+        <lib-activation-version>1.1.1</lib-activation-version>
         <lib-jaxb-ri-version>2.4.0-b180830.0438</lib-jaxb-ri-version>
         <lib-jaxb-api-version>2.4.0-b180830.0359</lib-jaxb-api-version>
         <lib-jaxrs-api-version>2.0</lib-jaxrs-api-version>
