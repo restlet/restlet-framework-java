@@ -24,17 +24,17 @@
 
 package org.restlet.security;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.engine.security.RoleMapping;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Security realm based on a memory model. The model is composed of root groups,
@@ -533,7 +533,7 @@ public class MemoryRealm extends Realm {
      * Unmaps an element (user, group or organization) defined in a component
      * from a role defined in the application.
      * 
-     * @param group
+     * @param source
      *            The source group.
      * @param role
      *            The target role.
@@ -541,7 +541,7 @@ public class MemoryRealm extends Realm {
     private void unmap(Object source, Role role) {
         RoleMapping mapping;
 
-        for (int i = getRoleMappings().size(); i >= 0; i--) {
+        for (int i = getRoleMappings().size() - 1; i >= 0; i--) {
             mapping = getRoleMappings().get(i);
 
             if (mapping.getSource().equals(source)
