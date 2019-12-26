@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk9
+  - oraclejdk11
 script:
  - "cd build"
  - "ant rebuild -lib ./tools/junit/"
