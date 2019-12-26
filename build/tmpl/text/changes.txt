@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - Allow parsing of double values like "2.0" or "4.0" being received in
+        the Retry-After header. Issue #1355.
+        Reported by Brett Cooper.
     - Misc
       - Removed deprecated extensions emf, javamail, jaxrs, jibx, lucene, nio, 
         oauth, openid, platform, raml, simple, wadl. Issue #1351.

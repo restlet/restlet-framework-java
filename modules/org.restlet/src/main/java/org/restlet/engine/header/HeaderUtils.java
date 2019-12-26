@@ -768,7 +768,7 @@ public class HeaderUtils {
                     if (retryAfter == null) {
                         // The date might be expressed as a number of seconds
                         try {
-                            int retryAfterSecs = Integer.parseInt(header.getValue());
+                            int retryAfterSecs = (int) Double.parseDouble(header.getValue());
                             java.util.Calendar calendar = java.util.Calendar.getInstance();
                             calendar.add(java.util.Calendar.SECOND, retryAfterSecs);
                             retryAfter = calendar.getTime();
