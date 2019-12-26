@@ -342,6 +342,7 @@
 					<path refid="mod-@{name}-path">
 					</path>
 					<pathelement path="${mod}/${mod-@{name}-id}/src" />
+					<fileset dir="${tools}/gwt" includes="*.jar" />
 				</classpath>
 				<arg value="-validateOnly" />
 				<arg value="-strict" />

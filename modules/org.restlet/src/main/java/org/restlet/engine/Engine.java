@@ -24,7 +24,6 @@
 
 package org.restlet.engine;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -986,9 +985,9 @@ public class Engine {
     public void registerHelpers(ClassLoader classLoader,
             java.net.URL configUrl, List<?> helpers, Class<?> constructorClass) {
         try {
-            BufferedReader reader = null;
+            java.io.BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(
+                reader = new java.io.BufferedReader(new InputStreamReader(
                         configUrl.openStream(), "utf-8"), IoUtils.BUFFER_SIZE);
                 String line = reader.readLine();
 

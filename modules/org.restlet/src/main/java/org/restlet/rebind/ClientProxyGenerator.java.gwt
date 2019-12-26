@@ -704,7 +704,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             this.sto = getStob().build(getLogger());
 
             if (los != null) {
-                getContext().commitResource(getLogger(), los).setPrivate(true);
+                getContext().commitResource(getLogger(), los).setVisibility(com.google.gwt.core.ext.linker.EmittedArtifact.Visibility.Private);
             }
 
             TypeSerializerCreator tsc = null;

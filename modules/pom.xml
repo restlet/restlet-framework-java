@@ -56,7 +56,7 @@
         <lib-gson-version>2.8.6</lib-gson-version>
         <lib-guava-version>28.1-jre</lib-guava-version>
         <lib-guice-version>4.2.2</lib-guice-version>
-        <lib-gwt-server-version>2.3.0</lib-gwt-server-version>
+        <lib-gwt-server-version>2.8.2</lib-gwt-server-version>
         <lib-httpclient-version>4.5.6</lib-httpclient-version>
         <lib-httpcore-version>4.4.10</lib-httpcore-version>
         <lib-httpmime-version>4.5.6</lib-httpmime-version>
