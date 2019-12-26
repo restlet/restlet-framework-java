@@ -8,6 +8,8 @@ Changes log
       - Allow parsing of double values like "2.0" or "4.0" being received in
         the Retry-After header. Issue #1355.
         Reported by Brett Cooper.
+      - MemoryRealm.unmap method leads to ArrayOutOfBound exception. Issue #1358.
+        Reported by j-perrin.
 
 - 2.4.2 (11/13/2019)
     - Misc
