@@ -28,3 +28,4 @@ Changes log
       - Upgraded Jackson library to version 2.10.1. Issue #1353.
       - Upgraded Snakeyaml library to version 1.24. Issue #1353.
       - Upgraded Jetty library to version 9.4.24.v20191120. Issue #1353.
+      - Upgraded GWT library to version 2.8.2. Issue #1363.

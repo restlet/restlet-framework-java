@@ -453,11 +453,15 @@ public class IoUtils {
      */
     public static Reader getReader(InputStream stream, CharacterSet characterSet)
             throws UnsupportedEncodingException {
+        // [ifndef gwt]
         if (characterSet != null) {
             return new InputStreamReader(stream, characterSet.getName());
         }
 
         return new InputStreamReader(stream);
+        // [enddef]
+        // [ifdef gwt] instruction uncomment
+        // return new java.io.StringReader(toString(stream, characterSet));
     }
 
     // [ifndef gwt] method
@@ -836,7 +840,7 @@ public class IoUtils {
 
     /**
      * Converts an input stream to a string.<br>
-     * As this method uses the InputstreamReader class, the default character
+     * As this method uses the InputStreamReader class, the default character
      * set is used for decoding the input stream.
      * 
      * @see InputStreamReader
@@ -886,10 +890,9 @@ public class IoUtils {
             // } else {
             // try {
             // if (characterSet != null) {
-            // result = toString(new InputStreamReader(inputStream,
-            // characterSet.getName()));
+            // result = copyBytesToByteArrayOutputStream(inputStream).toString(characterSet.getName());
             // } else {
-            // result = toString(new InputStreamReader(inputStream));
+            // result = copyBytesToByteArrayOutputStream(inputStream).toString();
             // }
             // } catch (Exception e) {
             // // Returns an empty string
@@ -935,6 +938,20 @@ public class IoUtils {
 
         return result;
     }
+
+
+    // [ifdef gwt] method uncomment
+    // private static java.io.ByteArrayOutputStream copyBytesToByteArrayOutputStream(InputStream inputStream) throws IOException {
+    //     java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+    //     byte[] buffer = new byte[2048];
+    //     int bytesRead = inputStream.read(buffer);
+    //     while (bytesRead != -1) {
+    //         bos.write(buffer, 0, bytesRead);
+    //         bytesRead = inputStream.read(buffer);
+    //     }
+    //     return bos;
+    // }
+
 
     /**
      * Private constructor to ensure that the class acts as a true utility class

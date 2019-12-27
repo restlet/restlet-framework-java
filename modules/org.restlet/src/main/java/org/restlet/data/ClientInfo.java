@@ -24,7 +24,6 @@
 
 package org.restlet.data;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -182,9 +181,9 @@ public final class ClientInfo {
                     java.net.URL userAgentPropertiesUrl = Engine
                             .getResource("org/restlet/data/agent.properties");
                     if (userAgentPropertiesUrl != null) {
-                        BufferedReader reader;
+                        java.io.BufferedReader reader;
                         try {
-                            reader = new BufferedReader(new InputStreamReader(
+                            reader = new java.io.BufferedReader(new InputStreamReader(
                                     userAgentPropertiesUrl.openStream(),
                                     CharacterSet.UTF_8.getName()),
                                     IoUtils.BUFFER_SIZE);
