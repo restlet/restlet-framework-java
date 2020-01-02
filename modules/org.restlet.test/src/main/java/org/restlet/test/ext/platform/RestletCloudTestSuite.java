@@ -17,7 +17,7 @@
  *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * https://restlet.talend.com/
  *
  * Restlet is a registered trademark of Talend S.A.
  */
