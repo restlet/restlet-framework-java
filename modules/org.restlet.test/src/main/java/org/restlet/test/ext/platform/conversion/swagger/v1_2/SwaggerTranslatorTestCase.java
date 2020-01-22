@@ -1,36 +1,33 @@
 /**
  * Copyright 2005-2019 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.platform.conversion.swagger.v1_2;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.restlet.data.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.platform.internal.conversion.TranslationException;
 import org.restlet.ext.platform.internal.conversion.swagger.v1_2.SwaggerReader;
 import org.restlet.ext.platform.internal.conversion.swagger.v1_2.model.ApiDeclaration;
@@ -46,30 +43,27 @@ import org.restlet.ext.platform.internal.model.QueryParameter;
 import org.restlet.ext.platform.internal.model.Representation;
 import org.restlet.ext.platform.internal.model.Resource;
 import org.restlet.ext.platform.internal.model.Response;
-import org.restlet.ext.jackson.JacksonConverter;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
+import org.restlet.test.ext.platform.conversion.swagger.v2_0.LoaderUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit test for the
  * {@link org.restlet.ext.platform.internal.conversion.swagger.v1_2.SwaggerReader} and
  * {@link org.restlet.ext.platform.internal.conversion.swagger.v1_2.SwaggerWriter}
  * classes.
- * 
+ *
  * @author Cyprien Quilici
  */
 public class SwaggerTranslatorTestCase extends RestletTestCase {
 
     private void comparePetstoreDefinition(Definition translatedDefinition)
             throws IOException {
-        Definition savedDefinition = new JacksonRepresentation<>(
-                new FileRepresentation(getClass()
-                        .getResource("Petstore.rwadef").getFile(),
-                        MediaType.APPLICATION_JSON), Definition.class)
-                .getObject();
+        Definition savedDefinition = LoaderUtils.parseDefinition(getClass()
+                .getResource("Petstore.rwadef"));
 
         // Api Info
         assertEquals(savedDefinition.getContact().getEmail(), translatedDefinition.getContact().getEmail());

@@ -77,12 +77,12 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
     }
 
     public void testGetSwagger2() throws IOException {
-        Definition savedDefinition = parseDefinition(getClass().getResource("refImpl.composite.rwadef"));
+        Definition savedDefinition = LoaderUtils.parseDefinition(getClass().getResource("refImpl.composite.rwadef"));
 
         Swagger translatedSwagger = Swagger2Writer.getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.composite.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
+        Swagger savedSwagger = LoaderUtils.readJson(refImpl);
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }

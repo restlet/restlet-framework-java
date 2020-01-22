@@ -782,10 +782,4 @@ public class Swagger2TestCase extends RestletTestCase {
         return false;
     }
 
-    protected Definition parseDefinition(URL url) throws IOException {
-        return new JacksonRepresentation<>(
-                new InputRepresentation(url.openStream(), MediaType.APPLICATION_JSON), Definition.class)
-                .getObject();
-    }
-
 }

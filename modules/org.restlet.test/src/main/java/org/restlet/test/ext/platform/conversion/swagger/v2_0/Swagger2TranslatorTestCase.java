@@ -39,8 +39,6 @@ import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Reader;
 import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.platform.internal.model.Contract;
@@ -55,7 +53,6 @@ import org.restlet.ext.platform.internal.model.QueryParameter;
 import org.restlet.ext.platform.internal.model.Representation;
 import org.restlet.ext.platform.internal.model.Resource;
 import org.restlet.ext.platform.internal.model.Response;
-import org.restlet.representation.FileRepresentation;
 
 import java.io.IOException;
 import java.net.URL;
@@ -344,26 +341,23 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
     }
 
     public void testGetSwagger2() throws IOException {
-        Definition savedDefinition = new JacksonRepresentation<>(
-                new FileRepresentation(getClass().getResource("refImpl.rwadef")
-                        .getFile(), MediaType.APPLICATION_JSON),
-                Definition.class).getObject();
+        Definition savedDefinition = LoaderUtils.parseDefinition(getClass().getResource("refImpl.rwadef"));
 
         Swagger translatedSwagger = Swagger2Writer.getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
+        Swagger savedSwagger = LoaderUtils.readJson(refImpl);
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }
 
     public void testGetDefinition() throws IOException {
         URL refImpl = getClass().getResource("refImpl.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
+        Swagger savedSwagger = LoaderUtils.readJson(refImpl);
 
         Definition translatedDefinition = Swagger2Reader.translate(savedSwagger);
 
-        Definition savedDefinition = parseDefinition(getClass().getResource("refImpl.rwadef"));
+        Definition savedDefinition = LoaderUtils.parseDefinition(getClass().getResource("refImpl.rwadef"));
 
         compareDefinitions(savedDefinition, translatedDefinition);
     }

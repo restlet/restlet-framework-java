@@ -26,14 +26,24 @@ package org.restlet.test.ext.platform.conversion.swagger.v2_0;
 
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.util.Json;
+import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.ext.platform.internal.model.Definition;
+import org.restlet.representation.InputRepresentation;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class SwaggerLoader {
+public class LoaderUtils {
 
     public static Swagger readJson(URL url) throws IOException {
         return Json.mapper().readValue(url.openStream(), Swagger.class);
+    }
+
+    public static Definition parseDefinition(URL url) throws IOException {
+        return new JacksonRepresentation<>(
+                new InputRepresentation(url.openStream(), MediaType.APPLICATION_JSON), Definition.class)
+                .getObject();
     }
 
 }
