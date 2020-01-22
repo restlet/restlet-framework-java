@@ -24,21 +24,17 @@
 
 package org.restlet.test.ext.platform.conversion.swagger.v2_0;
 
-import java.io.IOException;
-import java.net.URL;
-
-import org.restlet.data.MediaType;
+import com.wordnik.swagger.models.Model;
+import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.properties.RefProperty;
 import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Writer;
 import org.restlet.ext.platform.internal.introspection.util.Types;
 import org.restlet.ext.platform.internal.model.Definition;
 import org.restlet.ext.platform.internal.model.Property;
 import org.restlet.ext.platform.internal.model.Representation;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.representation.FileRepresentation;
 
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.properties.RefProperty;
+import java.io.IOException;
+import java.net.URL;
 
 public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
 
@@ -81,15 +77,12 @@ public class Swagger2CompositeTranslatorTestCase extends Swagger2TestCase {
     }
 
     public void testGetSwagger2() throws IOException {
-        Definition savedDefinition = new JacksonRepresentation<>(
-                new FileRepresentation(getClass().getResource("refImpl.composite.rwadef").getFile(),
-                        MediaType.APPLICATION_JSON), Definition.class)
-                .getObject();
+        Definition savedDefinition = parseDefinition(getClass().getResource("refImpl.composite.rwadef"));
 
         Swagger translatedSwagger = Swagger2Writer.getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.composite.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }

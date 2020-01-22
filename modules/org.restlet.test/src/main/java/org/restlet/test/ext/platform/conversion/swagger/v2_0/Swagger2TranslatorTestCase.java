@@ -1,53 +1,28 @@
 /**
  * Copyright 2005-2019 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.platform.conversion.swagger.v2_0;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Reader;
-import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Writer;
-import org.restlet.ext.platform.internal.model.Contract;
-import org.restlet.ext.platform.internal.model.Definition;
-import org.restlet.ext.platform.internal.model.Endpoint;
-import org.restlet.ext.platform.internal.model.License;
-import org.restlet.ext.platform.internal.model.Operation;
-import org.restlet.ext.platform.internal.model.PathVariable;
-import org.restlet.ext.platform.internal.model.PayLoad;
-import org.restlet.ext.platform.internal.model.Property;
-import org.restlet.ext.platform.internal.model.QueryParameter;
-import org.restlet.ext.platform.internal.model.Representation;
-import org.restlet.ext.platform.internal.model.Resource;
-import org.restlet.ext.platform.internal.model.Response;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.representation.FileRepresentation;
 
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
@@ -63,6 +38,30 @@ import com.wordnik.swagger.models.properties.ArrayProperty;
 import com.wordnik.swagger.models.properties.IntegerProperty;
 import com.wordnik.swagger.models.properties.RefProperty;
 import com.wordnik.swagger.models.properties.StringProperty;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Reader;
+import org.restlet.ext.platform.internal.conversion.swagger.v2_0.Swagger2Writer;
+import org.restlet.ext.platform.internal.model.Contract;
+import org.restlet.ext.platform.internal.model.Definition;
+import org.restlet.ext.platform.internal.model.Endpoint;
+import org.restlet.ext.platform.internal.model.License;
+import org.restlet.ext.platform.internal.model.Operation;
+import org.restlet.ext.platform.internal.model.PathVariable;
+import org.restlet.ext.platform.internal.model.PayLoad;
+import org.restlet.ext.platform.internal.model.Property;
+import org.restlet.ext.platform.internal.model.QueryParameter;
+import org.restlet.ext.platform.internal.model.Representation;
+import org.restlet.ext.platform.internal.model.Resource;
+import org.restlet.ext.platform.internal.model.Response;
+import org.restlet.representation.FileRepresentation;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Swagger2TranslatorTestCase extends Swagger2TestCase {
 
@@ -353,21 +352,18 @@ public class Swagger2TranslatorTestCase extends Swagger2TestCase {
         Swagger translatedSwagger = Swagger2Writer.getSwagger(savedDefinition);
 
         URL refImpl = getClass().getResource("refImpl.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
 
         compareSwaggerBeans(savedSwagger, translatedSwagger);
     }
 
     public void testGetDefinition() throws IOException {
         URL refImpl = getClass().getResource("refImpl.swagger");
-        Swagger savedSwagger = SwaggerLoader.readJson(refImpl.getFile());
-        
+        Swagger savedSwagger = SwaggerLoader.readJson(refImpl);
+
         Definition translatedDefinition = Swagger2Reader.translate(savedSwagger);
-        
-        Definition savedDefinition = new JacksonRepresentation<>(
-                new FileRepresentation(getClass().getResource("refImpl.rwadef")
-                        .getFile(), MediaType.APPLICATION_JSON),
-                Definition.class).getObject();
+
+        Definition savedDefinition = parseDefinition(getClass().getResource("refImpl.rwadef"));
 
         compareDefinitions(savedDefinition, translatedDefinition);
     }

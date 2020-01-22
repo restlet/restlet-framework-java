@@ -24,12 +24,17 @@
 
 package org.restlet.test.ext.platform.conversion.swagger.v2_0;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.junit.Assert;
+import com.google.common.collect.ImmutableMap;
+import com.wordnik.swagger.models.Contact;
+import com.wordnik.swagger.models.Info;
+import com.wordnik.swagger.models.Model;
+import com.wordnik.swagger.models.Path;
+import com.wordnik.swagger.models.Swagger;
+import com.wordnik.swagger.models.Tag;
+import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
+import com.wordnik.swagger.models.parameters.Parameter;
+import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.platform.internal.model.Contract;
 import org.restlet.ext.platform.internal.model.Definition;
 import org.restlet.ext.platform.internal.model.Endpoint;
@@ -44,19 +49,15 @@ import org.restlet.ext.platform.internal.model.Representation;
 import org.restlet.ext.platform.internal.model.Resource;
 import org.restlet.ext.platform.internal.model.Response;
 import org.restlet.ext.platform.internal.model.Section;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.test.RestletTestCase;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.wordnik.swagger.models.Contact;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.Model;
-import com.wordnik.swagger.models.Path;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.models.Tag;
-import com.wordnik.swagger.models.auth.SecuritySchemeDefinition;
-import com.wordnik.swagger.models.parameters.Parameter;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import static com.google.common.collect.Maps.uniqueIndex;
 
@@ -779,6 +780,12 @@ public class Swagger2TestCase extends RestletTestCase {
             return true;
         }
         return false;
+    }
+
+    protected Definition parseDefinition(URL url) throws IOException {
+        return new JacksonRepresentation<>(
+                new InputRepresentation(url.openStream(), MediaType.APPLICATION_JSON), Definition.class)
+                .getObject();
     }
 
 }

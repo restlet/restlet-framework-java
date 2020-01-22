@@ -24,10 +24,6 @@
 
 package org.restlet.test.ext.platform;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -43,6 +39,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.DefaultConverter;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.platform.RestletCloudService;
 import org.restlet.ext.platform.internal.agent.AgentConfigurationException;
 import org.restlet.ext.platform.internal.agent.bean.CallLogs;
@@ -64,7 +61,6 @@ import org.restlet.ext.platform.internal.agent.resource.AuthenticationAuthentica
 import org.restlet.ext.platform.internal.agent.resource.AuthorizationOperationsResource;
 import org.restlet.ext.platform.internal.agent.resource.FirewallSettingsResource;
 import org.restlet.ext.platform.internal.agent.resource.ModulesSettingsResource;
-import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -72,6 +68,10 @@ import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * @author Manuel Boillod
@@ -94,7 +94,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * Mock user Web API with two resources on paths "/test" and "/admin/test".
      *
      * @author Manuel Boillod
-     *
      */
     public static class UserApiApplication extends Application {
         @Override
@@ -121,7 +120,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * ResourceException with status code 500.
      *
      * @author Cyprien Quilici
-     *
      */
     public static class MockAnalyticsServerResource extends ServerResource
             implements AnalyticsResource {
@@ -154,7 +152,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * to the service.
      *
      * @author Manuel Boillod
-     *
      */
     public static class MockAuthenticationAuthenticateServerResource extends
             ServerResource implements AuthenticationAuthenticateResource {
@@ -191,7 +188,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * service.
      *
      * @author Manuel Boillod
-     *
      */
     public static class MockAuthorizationOperationsServerResource extends
             ServerResource implements AuthorizationOperationsResource {
@@ -216,7 +212,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * service.
      *
      * @author Manuel Boillod
-     *
      */
     public static class MockFirewallSettingsServerResource extends
             ServerResource implements FirewallSettingsResource {
@@ -239,7 +234,6 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
      * service.
      *
      * @author Manuel Boillod
-     *
      */
     public static class MockModulesSettingsServerResource extends
             ServerResource implements ModulesSettingsResource {
@@ -944,13 +938,9 @@ public class RestletCloudServiceTestCase extends RestletTestCase {
     }
 
     public void testLoadConfiguration() throws Exception {
-        System.setProperty(
-                RestletCloudService.CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY,
-                getClass().getResource("agent-configuration.properties")
-                        .getPath());
         RestletCloudService RestletCloudService = new RestletCloudService();
         RestletCloudService.setAgentEnabled(true);
-        RestletCloudService.loadConfiguration();
+        RestletCloudService.loadConfiguration(getClass().getResource("agent-configuration.properties").openStream());
 
         assertEquals(VALID_USERNAME, RestletCloudService.getAgentLogin());
         assertEquals(VALID_PASSWORD, RestletCloudService.getAgentPassword());
