@@ -80,5 +80,5 @@ Scalability
  - Supports non-blocking NIO modes to decouple the number of connections from the number of threads.
  - Supports asynchronous request processing, decoupled from IO operations. Unlike the Servlet API, the Restlet applications don't have a direct control on the outputstream, they only provide output representation to be written by the server connector.
 
-Copyright 2005-2019 Talend
+Copyright 2005-2020 Talend
 Restlet is a registered trademark of Talend S.A.
