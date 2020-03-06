@@ -1124,8 +1124,8 @@ public final class MediaType extends Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>TEXT_ALL.includes(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.includes(TEXT_ALL) -> false</li>
+     * <li>TEXT_ALL.includes(TEXT_PLAIN) returns true</li>
+     * <li>TEXT_PLAIN.includes(TEXT_ALL) returns false</li>
      * </ul>
      * 
      * @param included

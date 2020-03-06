@@ -1039,6 +1039,9 @@ public final class Status {
      * 
      * @param status
      *            The status to copy.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The description to associate.
      */

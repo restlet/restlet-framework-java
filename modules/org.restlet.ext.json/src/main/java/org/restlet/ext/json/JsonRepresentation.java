@@ -133,8 +133,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * @param jsonRepresentation
      *            A source JSON representation to parse.
      */
-    public JsonRepresentation(Representation jsonRepresentation)
-            throws IOException {
+    public JsonRepresentation(Representation jsonRepresentation) {
         super((jsonRepresentation == null) ? null : jsonRepresentation
                 .getMediaType());
         this.jsonRepresentation = jsonRepresentation;

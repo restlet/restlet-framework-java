@@ -204,6 +204,7 @@ public class Context {
      * with "org.restlet" are reserved. Currently the following attributes are
      * used:
      * <table>
+     * <caption>list of currently used attributes</caption>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -215,8 +216,7 @@ public class Context {
      * <td>The parent application providing this context, if any.</td>
      * </tr>
      * </table>
-     * </td>
-     * 
+     *
      * @return The modifiable attributes map.
      */
     public ConcurrentMap<String, Object> getAttributes() {

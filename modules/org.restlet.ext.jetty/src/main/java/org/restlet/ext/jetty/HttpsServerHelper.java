@@ -41,6 +41,7 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * are supported. They should be set in the Server's context before it is
  * started:
  * <table>
+ * <caption>list of supported parameters</caption>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>

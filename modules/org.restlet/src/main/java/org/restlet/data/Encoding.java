@@ -151,8 +151,8 @@ public final class Encoding extends Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>ALL.includes(COMPRESS) -> true</li>
-     * <li>COMPRESS.includes(ALL) -> false</li>
+     * <li>ALL.includes(COMPRESS) returns true</li>
+     * <li>COMPRESS.includes(ALL) returns false</li>
      * </ul>
      * 
      * @param included

@@ -456,10 +456,11 @@ public abstract class Restlet implements Uniform {
     /**
      * Starts the Restlet. By default its only sets "started" internal property
      * to true.
-     * 
+     *
      * WARNING: this method must be called at the end of the starting process by
      * subclasses otherwise concurrent threads could enter into the call
      * handling logic too early.
+     * @throws Exception
      */
     public synchronized void start() throws Exception {
         this.started = true;
@@ -472,6 +473,7 @@ public abstract class Restlet implements Uniform {
      * WARNING: this method must be called at the beginning of the stopping
      * process by subclasses otherwise concurrent threads could continue to
      * (improperly) handle calls.
+     * @throws Exception
      */
     public synchronized void stop() throws Exception {
         this.started = false;

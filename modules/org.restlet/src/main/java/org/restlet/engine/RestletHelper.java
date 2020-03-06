@@ -191,6 +191,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
     /**
      * Update callback with less impact than a {@link #stop()} followed by a
      * {@link #start()}.
+     * @throws Exception
      */
     public abstract void update() throws Exception;
 }

@@ -81,6 +81,7 @@ public class ClientResource extends Resource {
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
      * 
      * @param <T>
+     *            The proxified interface.
      * @param context
      *            The context.
      * @param reference
@@ -96,12 +97,16 @@ public class ClientResource extends Resource {
     }
 
     // [ifndef gwt] method
+
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls. It basically creates a new instance of
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
-     * 
+     *
      * @param <T>
+     *            The proxified interface.
+     * @param reference
+     *            The target reference.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
@@ -116,8 +121,9 @@ public class ClientResource extends Resource {
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls. It basically creates a new instance of
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
-     * 
+     *
      * @param <T>
+     *            The proxified interface.
      * @param uri
      *            The target URI.
      * @param resourceInterface
@@ -787,8 +793,9 @@ public class ClientResource extends Resource {
      * interface into Restlet method calls. The child resource is defined in the
      * sense of hierarchical URIs. If the resource URI is not hierarchical, then
      * an exception is thrown.
-     * 
+     *
      * @param <T>
+     *            The proxified interface.
      * @param relativeRef
      *            The URI reference of the child resource relatively to the
      *            current resource seen as the parent resource.
@@ -830,8 +837,9 @@ public class ClientResource extends Resource {
      * interface into Restlet method calls. The child resource is defined in the
      * sense of hierarchical URIs. If the resource URI is not hierarchical, then
      * an exception is thrown.
-     * 
+     *
      * @param <T>
+     *            The proxified interface.
      * @param relativeUri
      *            The URI of the child resource relatively to the current
      *            resource seen as the parent resource.
@@ -927,6 +935,7 @@ public class ClientResource extends Resource {
      * then an exception is thrown.
      * 
      * @param <T>
+     *            The proxified interface.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
@@ -1028,7 +1037,9 @@ public class ClientResource extends Resource {
     /**
      * Handles an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     * 
+     *
+     * @param <T>
+     *            The expected type for the response entity.
      * @param method
      *            The request method to use.
      * @param entity
@@ -1433,7 +1444,9 @@ public class ClientResource extends Resource {
      * Patches a resource with the given object as delta state. Automatically
      * serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     * 
+     *
+     * @param <T>
+     *            The expected type for the response entity.
      * @param entity
      *            The object entity containing the patch.
      * @param resultClass
@@ -1507,7 +1520,9 @@ public class ClientResource extends Resource {
     /**
      * Posts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     * 
+     *
+     * @param <T>
+     *            The expected type for the response entity.
      * @param entity
      *            The object entity to post.
      * @param resultClass
@@ -1586,7 +1601,9 @@ public class ClientResource extends Resource {
     /**
      * Puts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     * 
+     *
+     * @param <T>
+     *            The expected type for the response entity.
      * @param entity
      *            The object entity to put.
      * @param resultClass

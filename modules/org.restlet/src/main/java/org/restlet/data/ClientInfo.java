@@ -80,6 +80,7 @@ import org.restlet.engine.io.IoUtils;
  * 
  * At this time, six predefined variables are used:<br>
  * <table>
+ * <caption>list of predefined variables</caption>
  * <tr>
  * <th>Name</th>
  * <th>Description</th>

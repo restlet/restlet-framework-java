@@ -77,6 +77,7 @@ public class JacksonConverter extends ConverterHelper {
      * Creates the marshaling {@link JacksonRepresentation}.
      * 
      * @param <T>
+     *            The expected class of the representation Java object.
      * @param mediaType
      *            The target media type.
      * @param source
@@ -91,6 +92,7 @@ public class JacksonConverter extends ConverterHelper {
      * Creates the unmarshaling {@link JacksonRepresentation}.
      * 
      * @param <T>
+     *            The expected class of the representation Java object.
      * @param source
      *            The source representation to unmarshal.
      * @param objectClass

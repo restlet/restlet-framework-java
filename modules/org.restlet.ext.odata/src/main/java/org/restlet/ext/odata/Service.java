@@ -878,7 +878,7 @@ public class Service {
      * @throws ResourceException
      *             Thrown when the service call is not successfull.
      * @throws Exception
-     *             Thrown when the value cannot be parsed.
+     *
      * @see <a
      *      href="http://msdn.microsoft.com/en-us/library/cc668788.aspx">Service
      *      Operations</a>

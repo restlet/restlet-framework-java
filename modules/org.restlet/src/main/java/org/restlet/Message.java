@@ -145,6 +145,7 @@ public abstract class Message {
      * in the API. For this purpose, all attribute names starting with
      * "org.restlet" are reserved. Currently the following attributes are used:
      * <table>
+     * <caption>list of currently used attributes</caption>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -159,7 +160,7 @@ public abstract class Message {
      * </tr>
      * <tr>
      * <td>org.restlet.https.clientCertificates</td>
-     * <td>List<java.security.cert.Certificate></td>
+     * <td>List&lt;java.security.cert.Certificate&gt;</td>
      * <td>For requests received via a secure connector, indicates the ordered list of client certificates, if they are
      * available and accessible.</td>
      * </tr>

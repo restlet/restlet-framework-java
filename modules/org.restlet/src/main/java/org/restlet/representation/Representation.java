@@ -232,6 +232,7 @@ public abstract class Representation extends RepresentationInfo {
      * and closes the retrieved stream in the end.
      * 
      * @return The number of bytes consumed or -1 if unknown.
+     * @throws IOException
      */
     public long exhaust() throws IOException {
         long result = -1L;
@@ -384,6 +385,7 @@ public abstract class Representation extends RepresentationInfo {
      * memory can result in OutOfMemoryErrors being thrown.
      * 
      * @return The representation as a string value.
+     * @throws IOException
      */
     public String getText() throws IOException {
         String result = null;
@@ -452,12 +454,11 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
-     * {@link org.restlet.ext.nio.internal.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
+     * {@link #getRegistration()}
      * method can be called to be notified when new content is ready for
      * reading.
      * 
      * @return True if the representation content supports NIO selection.
-     * @see org.restlet.ext.nio.internal.ConnectionController
      */
     public boolean isSelectable() {
         try {

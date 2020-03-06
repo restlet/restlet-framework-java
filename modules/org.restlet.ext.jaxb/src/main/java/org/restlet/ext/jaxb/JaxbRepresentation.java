@@ -366,6 +366,7 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      * Returns a JAXB SAX source.
      * 
      * @return A JAXB SAX source.
+     * @throws IOException
      */
     public JAXBSource getJaxbSource() throws IOException {
         try {

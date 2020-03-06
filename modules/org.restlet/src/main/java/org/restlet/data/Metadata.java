@@ -114,8 +114,8 @@ public abstract class Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>TEXT_ALL.includes(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.includes(TEXT_ALL) -> false</li>
+     * <li>TEXT_ALL.includes(TEXT_PLAIN) returns true</li>
+     * <li>TEXT_PLAIN.includes(TEXT_ALL) returns false</li>
      * </ul>
      * 
      * @param included
@@ -130,9 +130,9 @@ public abstract class Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) -> false</li>
+     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) returns true</li>
+     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) returns true</li>
+     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) returns false</li>
      * </ul>
      * 
      * @param otherMetadata

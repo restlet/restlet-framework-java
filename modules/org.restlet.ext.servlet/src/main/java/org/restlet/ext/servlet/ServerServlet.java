@@ -67,6 +67,7 @@ import org.restlet.routing.VirtualHost;
  * Please note that you can also combine the two first of them whereas the last
  * one is a full alternative. They are described below by order of priority:
  * <table>
+ * <caption>list of supported deployment modes</caption>
  * <tr>
  * <th>Mode</th>
  * <th>Description</th>

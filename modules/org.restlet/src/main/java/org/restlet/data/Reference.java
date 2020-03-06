@@ -1233,12 +1233,13 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded last segment.
+     * Returns the optionally decoded last segment.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @param excludeMatrix
-     * @return The optionnally decoded last segment.
+     *            True if the matrix parameters are dropped from the segments.
+     * @return The optionally decoded last segment.
      * @see #getLastSegment()
      */
     public String getLastSegment(boolean decode, boolean excludeMatrix) {

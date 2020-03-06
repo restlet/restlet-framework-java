@@ -310,8 +310,8 @@ public final class CharacterSet extends Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>ALL.includes(UTF_16) -> true</li>
-     * <li>UTF_16.includes(ALL) -> false</li>
+     * <li>ALL.includes(UTF_16) returns true</li>
+     * <li>UTF_16.includes(ALL) returns false</li>
      * </ul>
      * 
      * @param included
