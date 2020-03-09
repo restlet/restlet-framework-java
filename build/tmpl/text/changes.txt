@@ -3,7 +3,8 @@
 Changes log
 ===========
 
-- @version-full@ (@release-date@)
+
+- 2.5 Milestone 1 (03/09/2020)
     - Bugs fixed
       - Allow parsing of double values like "2.0" or "4.0" being received in
         the Retry-After header. Issue #1355.
