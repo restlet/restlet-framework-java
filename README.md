@@ -23,6 +23,6 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Mailing List](https://groups.google.com/a/restlet.org/forum/#!forum/framework-discuss)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2019 Talend
+Copyright 2020 Talend
 
 [![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.4)](https://travis-ci.org/restlet/restlet-framework-java)
