@@ -1,6 +1,6 @@
 # Restlet Framework
 
-## The leading RESTful Web API framework for Java
+## The leading REST API framework for Java
 
 Thanks to Restlet Framework's powerful routing and filtering capabilities, unified client and server Java API, developers can build secure and scalable RESTful web APIs.
 
