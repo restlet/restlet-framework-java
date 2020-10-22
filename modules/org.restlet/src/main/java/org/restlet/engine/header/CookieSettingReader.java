@@ -34,6 +34,7 @@ import java.util.Date;
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
+import org.restlet.data.CookieSetting.SameSite;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
 
@@ -65,6 +66,8 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
     private static final String NAME_SET_SECURE = "secure";
 
     private static final String NAME_SET_VERSION = "version";
+    
+    private static final String NAME_SET_SAME_SITE ="samesite";
 
     /**
      * Parses the given String to a CookieSetting
@@ -243,6 +246,16 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
                 }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION)) {
                 result.setVersion(Integer.valueOf(pair.getValue()));
+            } else if(pair.getName().equalsIgnoreCase(NAME_SET_SAME_SITE) && !"".equals(pair.getValue())) {
+            	SameSite sameSite = null;
+            	try {
+            		sameSite = SameSite.valueOf(pair.getValue().toUpperCase());            		
+            	} catch(IllegalArgumentException illigalArgumentException) {
+            		Context.getCurrentLogger()
+            				.warning("Unable to parse cookie setting same-site value \"" + pair.getValue()
+            							+ "\". Not setting same-site attribute.");
+            	}
+            	result.setSameSite(sameSite);
             } else {
                 // Unexpected special attribute
                 // Silently ignore it as it may have been introduced by new specifications
