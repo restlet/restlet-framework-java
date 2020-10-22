@@ -12,7 +12,7 @@
     <name>Restlet Unit Tests</name>
     <description>All Restlet unit tests.</description>
     <build>
-        <testSourceDirectory>${basedir}/src</testSourceDirectory>
+        <testSourceDirectory>${basedir}/src/main/java</testSourceDirectory>
     </build>
 
     <dependencies>
