@@ -1,5 +1,5 @@
 # Restlet Framework
-
+[![Gitter](https://badges.gitter.im/restlet-framework/community.svg)](https://gitter.im/restlet-framework/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ## The leading REST API framework for Java
 
 Thanks to Restlet Framework's powerful routing and filtering capabilities, unified client and server Java API, developers can build secure and scalable RESTful web APIs.
