@@ -4,3 +4,7 @@ jdk:
 script:
  - "cd build"
  - "ant rebuild -lib ./tools/junit/"
+
+cache:
+  directories:
+  - $HOME/.m2
