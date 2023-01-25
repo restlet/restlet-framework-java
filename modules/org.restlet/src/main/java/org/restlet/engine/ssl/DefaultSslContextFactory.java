@@ -29,6 +29,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.net.ssl.SSLContext;
@@ -503,25 +504,15 @@ public class DefaultSslContextFactory extends SslContextFactory {
      *            The initial cipher suites to restrict.
      * @return The selected cipher suites.
      */
-    public String[] getSelectedCipherSuites(String[] supportedCipherSuites) {
-        Set<String> resultSet = new HashSet<String>();
-
-        if (supportedCipherSuites != null) {
-            for (String supportedCipherSuite : supportedCipherSuites) {
-                if (((getEnabledCipherSuites() == null) || Arrays.asList(
-                        getEnabledCipherSuites())
-                        .contains(supportedCipherSuite))
-                        && ((getDisabledCipherSuites() == null) || !Arrays
-                                .asList(getDisabledCipherSuites()).contains(
-                                        supportedCipherSuite))) {
-                    resultSet.add(supportedCipherSuite);
-                }
-            }
-        }
-
-        String[] result = new String[resultSet.size()];
-        return resultSet.toArray(result);
-    }
+	public String[] getSelectedCipherSuites(String[] supportedCipherSuites) {
+		if (supportedCipherSuites != null) {
+			String[] enabledSuites = getEnabledCipherSuites();
+			String[] disabledSuites = getDisabledCipherSuites();
+			return selectStrings(new HashSet<>(Arrays.asList(supportedCipherSuites)), enabledSuites, disabledSuites);
+		} else {
+			return new String[0];
+		}
+	}
 
     /**
      * Returns the selected SSL protocols. The selection is the subset of
@@ -533,22 +524,34 @@ public class DefaultSslContextFactory extends SslContextFactory {
      * @return The selected SSL protocols.
      */
     public String[] getSelectedSslProtocols(String[] supportedProtocols) {
-        Set<String> resultSet = new HashSet<String>();
+		if (supportedProtocols != null) {
+			String[] enabledProtocols = getEnabledProtocols();
+			String[] disabledProtocols = getDisabledProtocols();
+			return selectStrings(new HashSet<>(Arrays.asList(supportedProtocols)), enabledProtocols, disabledProtocols);
+		} else {
+			return new String[0];
+		}
+    }
+    
+    private String[] selectStrings(Set<String> supportedStrings, String[] whitelist, String[] blacklist) {
+		Set<String> selectedStrings = new LinkedHashSet<String>();
 
-        if (supportedProtocols != null) {
-            for (String supportedProtocol : supportedProtocols) {
-                if (((getEnabledProtocols() == null) || Arrays.asList(
-                        getEnabledProtocols()).contains(supportedProtocol))
-                        && ((getDisabledProtocols() == null) || !Arrays.asList(
-                                getDisabledProtocols()).contains(
-                                supportedProtocol))) {
-                    resultSet.add(supportedProtocol);
-                }
-            }
-        }
+		if (whitelist != null) {
+			for (String whitelistedString : whitelist) {
+				if (supportedStrings.contains(whitelistedString)) {
+					selectedStrings.add(whitelistedString);
+				}
+			}
+		} else {
+			// no whitelist was set => select all supported suites
+			selectedStrings.addAll(supportedStrings);
+		}
 
-        String[] result = new String[resultSet.size()];
-        return resultSet.toArray(result);
+		if (blacklist != null) {
+			selectedStrings.removeAll(Arrays.asList(blacklist));
+		}
+
+		return selectedStrings.toArray(new String[selectedStrings.size()]);
     }
 
     /**
@@ -607,84 +610,34 @@ public class DefaultSslContextFactory extends SslContextFactory {
      */
     @Override
     public void init(Series<Parameter> helperParameters) {
-        // Parses and set the disabled cipher suites
-        String[] disabledCipherSuitesArray = helperParameters
-                .getValuesArray("disabledCipherSuites");
-        Set<String> disabledCipherSuites = new HashSet<String>();
-
-        for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
-            for (String disabledCipherSuite : disabledCipherSuiteSeries
-                    .split(" ")) {
-                disabledCipherSuites.add(disabledCipherSuite);
-            }
-        }
-
-        if (disabledCipherSuites.size() > 0) {
-            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
-            disabledCipherSuites.toArray(disabledCipherSuitesArray);
-            setDisabledCipherSuites(disabledCipherSuitesArray);
+        String[] disabledCipherSuites = splitAndRemoveDuplicates(helperParameters.getValuesArray("disabledCipherSuites"), " ");
+        if (disabledCipherSuites.length > 0) {
+            setDisabledCipherSuites(disabledCipherSuites);
         } else {
             setDisabledCipherSuites(null);
         }
 
-        // Parses and set the disabled protocols
-        String[] disabledProtocolsArray = helperParameters
-                .getValuesArray("disabledProtocols");
-        Set<String> disabledProtocols = new HashSet<String>();
-
-        for (String disabledProtocolsSeries : disabledProtocolsArray) {
-            for (String disabledProtocol : disabledProtocolsSeries.split(" ")) {
-                disabledProtocols.add(disabledProtocol);
-            }
-        }
-
-        if (disabledProtocols.size() > 0) {
-            disabledProtocolsArray = new String[disabledProtocols.size()];
-            disabledProtocols.toArray(disabledProtocolsArray);
-            setDisabledProtocols(disabledProtocolsArray);
+        String[] disabledProtocols = splitAndRemoveDuplicates(helperParameters.getValuesArray("disabledProtocols"), " ");
+        if (disabledProtocols.length > 0) {
+        	setDisabledProtocols(disabledProtocols);
         } else {
-            setDisabledProtocols(null);
+        	setDisabledProtocols(null);
         }
 
-        // Parses and set the enabled cipher suites
-        String[] enabledCipherSuitesArray = helperParameters
-                .getValuesArray("enabledCipherSuites");
-        Set<String> enabledCipherSuites = new HashSet<String>();
-
-        for (String enabledCipherSuiteSeries : enabledCipherSuitesArray) {
-            for (String enabledCipherSuite : enabledCipherSuiteSeries
-                    .split(" ")) {
-                enabledCipherSuites.add(enabledCipherSuite);
-            }
-        }
-
-        if (enabledCipherSuites.size() > 0) {
-            enabledCipherSuitesArray = new String[enabledCipherSuites.size()];
-            enabledCipherSuites.toArray(enabledCipherSuitesArray);
-            setEnabledCipherSuites(enabledCipherSuitesArray);
+        String[] enabledCipherSuites = splitAndRemoveDuplicates(helperParameters.getValuesArray("enabledCipherSuites"), " ");
+        if (enabledCipherSuites.length > 0) {
+        	setEnabledCipherSuites(enabledCipherSuites);
         } else {
-            setEnabledCipherSuites(null);
+        	setEnabledCipherSuites(null);
         }
-
-        // Parses and set the enabled protocols
-        String[] enabledProtocolsArray = helperParameters
-                .getValuesArray("enabledProtocols");
-        Set<String> enabledProtocols = new HashSet<String>();
-
-        for (String enabledProtocolSeries : enabledProtocolsArray) {
-            for (String enabledProtocol : enabledProtocolSeries.split(" ")) {
-                enabledProtocols.add(enabledProtocol);
-            }
-        }
-
-        if (enabledProtocols.size() > 0) {
-            enabledProtocolsArray = new String[enabledProtocols.size()];
-            enabledProtocols.toArray(enabledProtocolsArray);
-            setEnabledProtocols(enabledProtocolsArray);
+        
+        String[] enabledProtocols = splitAndRemoveDuplicates(helperParameters.getValuesArray("enabledProtocols"), " ");
+        if (enabledCipherSuites.length > 0) {
+        	setEnabledProtocols(enabledProtocols);
         } else {
-            setEnabledProtocols(null);
+        	setEnabledProtocols(null);
         }
-
+        
         setKeyManagerAlgorithm(helperParameters.getFirstValue(
                 "keyManagerAlgorithm", true, System.getProperty(
                         "ssl.KeyManagerFactory.algorithm", "SunX509")));
@@ -720,6 +673,17 @@ public class DefaultSslContextFactory extends SslContextFactory {
                 .getFirstValue("wantClientAuthentication", true, "false")));
     }
 
+    private String[] splitAndRemoveDuplicates(String[] strings, String delimiter) {
+	    Set<String> set = new LinkedHashSet<String>();
+	    for (String string : strings) {
+	        for (String token : string.split(delimiter)) {
+	        	set.add(token);
+	        }
+	    }
+	    return set.toArray(String[]::new);
+    }
+    
+    
     /**
      * Indicates if we require client certificate authentication.
      * 
