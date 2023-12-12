@@ -20,9 +20,9 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Change Log](https://restlet.talend.com/documentation/2.4/changelog)
 * [Download](https://restlet.talend.com/downloads/current/)
 * [Issue Tracker](https://github.com/restlet/restlet-framework-java/issues)
-* [Mailing List](https://groups.google.com/a/restlet.org/forum/#!forum/framework-discuss)
+* [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2020 Talend
+Copyright 2023 Talend
 
 [![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.4)](https://travis-ci.org/restlet/restlet-framework-java)
