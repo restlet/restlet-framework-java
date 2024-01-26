@@ -1,7 +1,7 @@
 <library id="snakeyaml" symbolicName="org.yaml.snakeyaml">
 	<name>Snake yaml</name>
 	<description>Snake yaml</description>
-	<version>1.18</version>
+	<version>2.2</version>
 	<homeUri>http://www.snakeyaml.org</homeUri>
 	<downloadUri>http://code.google.com/p/snakeyaml/downloads/list</downloadUri>
 	<provider>Google code.</provider>

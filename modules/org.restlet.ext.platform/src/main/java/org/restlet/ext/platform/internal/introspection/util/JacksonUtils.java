@@ -34,7 +34,10 @@ public class JacksonUtils {
                 null, StdDateFormat.instance, null,
                 Locale.getDefault(),
                 null, // to indicate "use Jackson default TimeZone" (UTC since Jackson 2.7)
-                Base64Variants.getDefaultVariant() // 2.1
+                Base64Variants.getDefaultVariant(), // 2.1
+                null,
+        null,
+             null
         );
         BaseSettings base = DEFAULT_BASE.withClassIntrospector(new BasicClassIntrospector());
         return new SerializationConfig(base, new StdSubtypeResolver(), mixins, new RootNameLookup(), new ConfigOverrides());
