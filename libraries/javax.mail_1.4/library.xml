@@ -2,7 +2,7 @@
 	<name>JavaMail API and RI</name>
 	<description>JavaMail API and RI</description>
 	<version>1.4</version>
-	<release>2</release>
+	<release>7</release>
 	<homeUri>http://www.oracle.com/technetwork/java/index-jsp-139225.html</homeUri>
 	<downloadUri>http://www.oracle.com/technetwork/java/index-138643.html</downloadUri>
 	<provider>Oracle Inc.</provider>

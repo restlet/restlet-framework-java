@@ -1,7 +1,8 @@
 <library id="joda-time" symbolicName="org.joda.time">
 	<name>Joda-Time</name>
 	<description>Joda-Time.</description>
-	<version>2.3</version>
+	<version>2.12</version>
+	<release>6</release>
 	<homeUri>joda-time.sourceforge.net/</homeUri>
 	<downloadUri>http://sourceforge.net/projects/joda-time/files/joda-time/
 	</downloadUri>
