@@ -80,7 +80,7 @@
         <lib-json4s-version>3.2.4</lib-json4s-version>
         <lib-json-version>20160212</lib-json-version>
         <lib-jsslutils-version>1.0.5</lib-jsslutils-version>
-        <lib-junit-version>4.11</lib-junit-version>
+        <lib-junit-version>4.13.1</lib-junit-version>
         <lib-lang-version>3.6</lib-lang-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>
         <lib-logging-version>1.1.3</lib-logging-version>
