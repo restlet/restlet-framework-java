@@ -2,7 +2,7 @@
 	<name>Raml parser</name>
 	<description>Java implementation of the raml parser</description>
 	<version>0.8</version>
-	<release>7</release>
+	<release>40</release>
 	<homeUri>http://raml.org</homeUri>
 	<downloadUri>http://raml.org</downloadUri>
 	<provider>Mule Soft</provider>
