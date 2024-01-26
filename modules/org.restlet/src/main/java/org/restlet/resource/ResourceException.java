@@ -30,7 +30,12 @@ import org.restlet.data.Status;
 
 /**
  * Encapsulates a response status and the optional cause as a checked exception.
- * 
+ * <p>
+ * Note that this class must implement java.io.Serializable, because it extends
+ * RuntimeException. To avoid warnings, it provides a serialVersionUID and has
+ * its non-serializable fields marked transient. The default serialization thus
+ * obtained is minimal, and may not be what the user expects.
+ *
  * @author Jerome Louvel
  */
 public class ResourceException extends RuntimeException {
@@ -38,13 +43,13 @@ public class ResourceException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /** The status associated to this exception. */
-    private final Status status;
+    private final transient Status status;
 
     /** The request associated to this exception. Could be null. */
-    private final Request request;
+    private final transient Request request;
 
     /** The response associated to this exception. Could be null.  */
-    private final Response response;
+    private final transient Response response;
 
     /**
      * Constructor.
