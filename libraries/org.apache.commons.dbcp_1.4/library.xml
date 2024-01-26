@@ -1,7 +1,7 @@
 <library id="dbcp" symbolicName="org.apache.commons.dbcp">
 	<name>Apache Commons DBCP</name>
 	<description>Apache Commons DBCP</description>
-	<version>1.3</version>
+	<version>1.4</version>
 	<homeUri>http://commons.apache.org/dbcp/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_dbcp.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>

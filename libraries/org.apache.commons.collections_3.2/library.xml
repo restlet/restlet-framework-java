@@ -2,7 +2,7 @@
 	<name>Apache Commons Collections</name>
 	<description>Apache Commons Collections</description>
 	<version>3.2</version>
-	<release>1</release>
+	<release>2</release>
 	<homeUri>http://commons.apache.org/collections/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_collections.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>
