@@ -1,8 +1,8 @@
 <library id="resteasy" symbolicName="org.jboss.resteasy">
     <name>JBoss RESTEasy</name>
     <description>JAX-RS engine</description>
-    <version>3.6</version>
-    <release>0</release>
+    <version>3.15</version>
+    <release>6</release>
     <homeUri>http://www.jboss.org/resteasy</homeUri>
     <downloadUri>http://sourceforge.net/projects/resteasy/files/Resteasy%20JAX-RS/</downloadUri>
     <provider>RedHat</provider>
@@ -13,7 +13,7 @@
         <maven>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.6.0.Final</version>
+            <version>3.15.6.Final</version>
         </maven>
     </package>
     <javadocs>
