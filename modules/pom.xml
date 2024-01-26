@@ -78,7 +78,7 @@
         <lib-jibx-version>1.2.5</lib-jibx-version>
         <lib-joda-time-version>2.3</lib-joda-time-version>
         <lib-json4s-version>3.2.4</lib-json4s-version>
-        <lib-json-version>20160212</lib-json-version>
+        <lib-json-version>20231013</lib-json-version>
         <lib-jsslutils-version>1.0.5</lib-jsslutils-version>
         <lib-junit-version>4.13.1</lib-junit-version>
         <lib-lang-version>3.6</lib-lang-version>

@@ -11,7 +11,7 @@
 		<maven>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20160212</version>
+			<version>20231013</version>
 		</maven>
 	</package>
 	<distributions>
