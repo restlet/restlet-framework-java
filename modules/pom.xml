@@ -56,7 +56,7 @@
         <lib-gappengine-version>1.9.57</lib-gappengine-version>
         <lib-gcollections-version>1.0</lib-gcollections-version>
         <lib-gdata-version>1.0</lib-gdata-version>
-        <lib-gson-version>2.3.1</lib-gson-version>
+        <lib-gson-version>2.10.1</lib-gson-version>
         <lib-guava-version>26.0-jre</lib-guava-version>
         <lib-guice-version>3.0</lib-guice-version>
         <lib-gwt-server-version>2.3.0</lib-gwt-server-version>

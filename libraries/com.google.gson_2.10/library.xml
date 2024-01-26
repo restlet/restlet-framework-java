@@ -1,7 +1,7 @@
 <library id="gson" symbolicName="com.google.gson">
 	<name>Google GSon</name>
 	<description>Google GSon.</description>
-	<version>2.3</version>
+	<version>2.10</version>
     <release>1</release>
 	<homeUri>http://code.google.com/p/google-gson/</homeUri>
 	<downloadUri>http://code.google.com/p/google-gson/downloads/list</downloadUri>
