@@ -2,7 +2,7 @@
 	<name>Thymeleaf</name>
 	<description></description>
 	<version>2.1</version>
-	<release>2</release>
+	<release>6.RELEASE</release>
 	<homeUri>http://www.thymeleaf.org/</homeUri>
 	<downloadUri>http://www.thymeleaf.org/download.html</downloadUri>
 	<provider>The THYMELEAF team</provider>

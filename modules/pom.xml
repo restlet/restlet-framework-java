@@ -107,8 +107,8 @@
         <lib-spring-version>3.2.8.RELEASE</lib-spring-version>
         <lib-stax2-version>3.1.4</lib-stax2-version>
         <lib-swagger-version>1.5.3-M1</lib-swagger-version>
-        <lib-testng-version>6.8.7</lib-testng-version>
-        <lib-thymeleaf-version>2.1.2.RELEASE</lib-thymeleaf-version>
+        <lib-testng-version>7.5.0</lib-testng-version>
+        <lib-thymeleaf-version>2.1.6.RELEASE</lib-thymeleaf-version>
         <lib-tika-version>1.18</lib-tika-version>
         <lib-velocity-version>2.0</lib-velocity-version>
         <lib-woodstock-core-version>4.3.0</lib-woodstock-core-version>
