@@ -2,7 +2,7 @@
 	<name>Apache HTTP Components MIME</name>
 	<description>Apache HTTP Components MIME</description>
 	<version>4.5</version>
-	<release>6</release>
+	<release>14</release>
 	<homeUri>http://hc.apache.org/httpcomponents-client/httpmime/</homeUri>
 	<downloadUri>http://hc.apache.org/httpcomponents-client/download.html</downloadUri>
 	<provider>Apache Software Foundation</provider>
