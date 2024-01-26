@@ -2,7 +2,7 @@
 	<name>Jetty HTTP server</name>
 	<description>Jetty HTTP server</description>
 	<version>9.4</version>
-	<release>11.v20180605</release>
+	<release>53.v20231009</release>
 	<homeUri>http://www.eclipse.org/jetty/</homeUri>
 	<downloadUri>http://download.eclipse.org/jetty/</downloadUri>
 	<provider>The Eclipse Foundation</provider>
