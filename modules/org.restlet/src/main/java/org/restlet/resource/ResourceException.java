@@ -35,6 +35,7 @@ import org.restlet.data.Status;
  * RuntimeException. To avoid warnings, it provides a serialVersionUID and has
  * its non-serializable fields marked transient. The default serialization thus
  * obtained is minimal, and may not be what the user expects.
+ * </p>
  *
  * @author Jerome Louvel
  */
