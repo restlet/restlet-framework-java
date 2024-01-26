@@ -49,8 +49,8 @@
         <lib-commons-collections-version>3.2.2</lib-commons-collections-version>
         <lib-dbcp-version>1.3</lib-dbcp-version>
         <lib-e4-version>0.12.RC1</lib-e4-version>
-        <lib-emf-version>2.6.0.v20100614-1136</lib-emf-version>
-        <lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
+        <lib-emf-version>2.29.0</lib-emf-version>
+        <lib-emf-ecore-xmi-version>2.35.0</lib-emf-ecore-xmi-version>
         <lib-fileupload-version>1.3.3</lib-fileupload-version>
         <lib-freemarker-version>2.3.20</lib-freemarker-version>
         <lib-gappengine-version>1.9.57</lib-gappengine-version>
