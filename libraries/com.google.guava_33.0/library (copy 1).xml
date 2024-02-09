@@ -1,7 +1,8 @@
 <library id="guava" symbolicName="com.google.guava">
 	<name>Google Guava</name>
 	<description>Google Guava.</description>
-	<version>26.0</version>
+	<version>33.0</version>
+	<release>0-jre</release>
 	<homeUri>http://code.google.com/p/guava/</homeUri>
 	<provider>Google Inc.</provider>
 
@@ -9,7 +10,7 @@
 		<maven>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>26.0-jre</version>
+			<version>33.0.0-jre</version>
 		</maven>
 	</package>
 	<distributions>
