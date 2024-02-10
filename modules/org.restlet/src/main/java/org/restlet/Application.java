@@ -47,6 +47,10 @@ import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.ServiceList;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.MetricSet;
+
 /**
  * Restlet managing a coherent set of resources and services. Applications are
  * guaranteed to receive calls with their base reference set relatively to the
@@ -123,7 +127,7 @@ public class Application extends Restlet {
 
     /** The list of services. */
     private final ServiceList services;
-
+        
     /**
      * Constructor. Note this constructor is convenient because you don't have
      * to provide a context like for {@link #Application(Context)}. Therefore
@@ -174,7 +178,7 @@ public class Application extends Restlet {
 
         // [ifndef gae]
         this.services.add(new org.restlet.service.TaskService(false));
-        // [enddef]
+        // [enddef]        
     }
 
     /**
@@ -271,7 +275,10 @@ public class Application extends Restlet {
         if (this.inboundRoot == null) {
             synchronized (this) {
                 if (this.inboundRoot == null) {
-                    this.inboundRoot = createInboundRoot();
+                    Restlet tempInboundRoot = createInboundRoot();
+                    RequestCounterFilter requestCounterFilter = createRequestCounterFilter();
+                    requestCounterFilter.setNext(tempInboundRoot);
+                    this.inboundRoot = requestCounterFilter;
                 }
             }
         }
@@ -279,6 +286,11 @@ public class Application extends Restlet {
         return this.inboundRoot;
     }
 
+    private RequestCounterFilter createRequestCounterFilter() {
+    	RequestCounterFilter requestCounterFilter = new RequestCounterFilter(getName());
+    	return requestCounterFilter;
+    }
+    
     /**
      * Returns the metadata service. The service is enabled by default.
      * 
@@ -483,7 +495,9 @@ public class Application extends Restlet {
      *            The inbound root Restlet.
      */
     public synchronized void setInboundRoot(Restlet inboundRoot) {
-        this.inboundRoot = inboundRoot;
+    	RequestCounterFilter requestCounterFilter = createRequestCounterFilter();
+    	requestCounterFilter.setNext(inboundRoot);
+        this.inboundRoot = requestCounterFilter;
 
         if ((inboundRoot != null) && (inboundRoot.getContext() == null)) {
             inboundRoot.setContext(getContext());
