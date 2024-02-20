@@ -1,32 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.json;
 
-import static org.restlet.data.Status.SUCCESS_OK;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -40,13 +38,18 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.restlet.data.Status.SUCCESS_OK;
+
 /**
  * Test case for the {@link JsonpFilter} class.
- * 
+ *
  * @author Cyril Lakech
  */
 public class JsonpFilterTestCase extends RestletTestCase {
 
+    @Test
     public void testAfterHandle() {
 
         JsonpFilter filter = new JsonpFilter(null);
@@ -65,12 +68,12 @@ public class JsonpFilterTestCase extends RestletTestCase {
         Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
                 new JsonRepresentation(jsonString));
 
-        Assert.assertTrue(actual instanceof JsonpRepresentation);
-        Assert.assertEquals(expected, actual);
-        Assert.assertEquals(SUCCESS_OK,
-                ((JsonpRepresentation) actual).getStatus());
+        assertInstanceOf(JsonpRepresentation.class, actual);
+        assertEquals(expected, actual);
+        assertEquals(SUCCESS_OK, ((JsonpRepresentation) actual).getStatus());
     }
 
+    @Test
     public void testAfterHandleText() {
 
         JsonpFilter filter = new JsonpFilter(null);
@@ -89,12 +92,12 @@ public class JsonpFilterTestCase extends RestletTestCase {
         Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
                 new StringRepresentation(jsonString, MediaType.TEXT_HTML));
 
-        Assert.assertTrue(actual instanceof JsonpRepresentation);
-        Assert.assertEquals(expected, actual);
-        Assert.assertEquals(SUCCESS_OK,
-                ((JsonpRepresentation) actual).getStatus());
+        assertInstanceOf(JsonpRepresentation.class, actual);
+        assertEquals(expected, actual);
+        assertEquals(SUCCESS_OK, ((JsonpRepresentation) actual).getStatus());
     }
 
+    @Test
     public void testAfterHandle_without_callback_should_return_entity_unchanged() {
 
         JsonpFilter filter = new JsonpFilter(null);
@@ -110,9 +113,10 @@ public class JsonpFilterTestCase extends RestletTestCase {
 
         Representation actual = response.getEntity();
 
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
+    @Test
     public void testAfterHandle_with_other_mediatype_should_return_entity_unchanged()
             throws Exception {
 
@@ -131,6 +135,6 @@ public class JsonpFilterTestCase extends RestletTestCase {
 
         Representation actual = response.getEntity();
 
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

@@ -24,6 +24,7 @@
 
 package org.restlet.test.connector;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -36,6 +37,9 @@ import org.restlet.resource.ClientResource;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * Unit test case for the RIAP Internal routing protocol.
  */
@@ -44,6 +48,7 @@ public class RiapConnectorsTestCase extends RestletTestCase {
     /**
      * Test the RIAP client and server connectors.
      */
+    @Test
     public void testRiapConnectors() {
         Component component = new Component();
         component.getServers().add(Protocol.RIAP);
@@ -88,7 +93,6 @@ public class RiapConnectorsTestCase extends RestletTestCase {
             Representation rep = res.get();
             assertEquals("hello, world", rep.getText());
 
-            rep = null;
             res = new ClientResource("riap://component/app/testB");
             rep = res.get();
             assertEquals("hello, world", rep.getText());

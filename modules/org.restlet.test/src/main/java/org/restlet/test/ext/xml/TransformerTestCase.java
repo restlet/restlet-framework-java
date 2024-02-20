@@ -26,6 +26,7 @@ package org.restlet.test.ext.xml;
 
 import java.io.ByteArrayOutputStream;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.TransformRepresentation;
@@ -33,6 +34,9 @@ import org.restlet.ext.xml.Transformer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test case for the Transformer class.
@@ -64,15 +68,6 @@ public class TransformerTestCase extends RestletTestCase {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            new TransformerTestCase().testTransform();
-            new TransformerTestCase().parallelTestTransform();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     final String output = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><buyer>cust123</buyer>23.45";
 
     // Create a source XML document
@@ -94,10 +89,9 @@ public class TransformerTestCase extends RestletTestCase {
     /**
      * This was removed from the automatically tested method because it is too
      * consuming.
-     * 
-     * @throws Exception
      */
-    public void parallelTestTransform() throws Exception {
+    @Test
+    public void parallelTestTransform() {
         Component comp = new Component();
         final TransformRepresentation tr = new TransformRepresentation(
                 comp.getContext(), this.source, this.xslt);
@@ -133,6 +127,7 @@ public class TransformerTestCase extends RestletTestCase {
         tracker.report();
     }
 
+    @Test
     public void testTransform() throws Exception {
         final Transformer transformer = new Transformer(
                 Transformer.MODE_REQUEST, this.xslt);

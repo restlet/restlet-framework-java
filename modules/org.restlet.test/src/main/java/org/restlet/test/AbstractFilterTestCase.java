@@ -24,10 +24,15 @@
 
 package org.restlet.test;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.routing.Filter;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests where every Filter should run through.
@@ -66,15 +71,9 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
     protected abstract Restlet getRestlet();
 
     /**
-     * Returns a restlet class.
-     * 
-     * @return Restlet class.
-     */
-    protected abstract Class<?> getRestletClass();
-
-    /**
      * Test Restlet instance attaching/detaching.
      */
+    @Test
     public void testAttachDetachInstance() throws Exception {
         final Filter filter = getFilter();
         assertFalse(filter.hasNext());
@@ -93,7 +92,8 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
     /**
      * Test not started Filter.
      */
-    public void testIllegalStartedState() throws Exception {
+    @Test
+    public void testIllegalStartedState() {
         final Filter filter = getFilter();
         filter.setNext(getRestlet());
         assertTrue(filter.hasNext());
@@ -115,6 +115,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
     /**
      * Test with null target.
      */
+    @Test
     public void testIllegalTarget() throws Exception {
         final Filter filter = getFilter();
         filter.start();

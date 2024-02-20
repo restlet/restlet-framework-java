@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 /**
  * Test that a simple get with query parameters works for all the connectors.
  * 

@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.restlet.dev</groupId>
+        <groupId>org.restlet</groupId>
         <artifactId>org.restlet.parent</artifactId>
         <version>2.5-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>org.restlet.example</artifactId>
@@ -24,79 +25,73 @@
             <version>7.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.atom</artifactId>
-            <version>2.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.crypto</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.fileupload</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.freemarker</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.guice</artifactId>
+            <groupId>org.restlet</groupId>
+            <artifactId>org.restlet.ext.inject</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.jaas</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.jackson</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.jaxb</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.jetty</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.json</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.rdf</artifactId>
-            <version>2.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.spring</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.velocity</artifactId>
             <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
             <version>2.5-SNAPSHOT</version>
-       </dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

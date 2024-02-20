@@ -26,8 +26,11 @@ package org.restlet.test.engine;
 
 import java.util.Date;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link DateUtils}
@@ -36,28 +39,29 @@ import org.restlet.test.RestletTestCase;
  */
 public class DateTestCase extends RestletTestCase {
 
-    private String DATE_RFC3339_1 = "1985-04-12T23:20:50.52Z";
+    private final String DATE_RFC3339_1 = "1985-04-12T23:20:50.52Z";
 
-    private String DATE_RFC3339_2 = "1996-12-19T16:39:57-08:00";
+    private final String DATE_RFC3339_2 = "1996-12-19T16:39:57-08:00";
 
-    private String DATE_RFC3339_3 = "1990-12-31T23:59:60Z";
+    private final String DATE_RFC3339_3 = "1990-12-31T23:59:60Z";
 
-    private String DATE_RFC3339_4 = "1990-12-31T15:59:60-08:00";
+    private final String DATE_RFC3339_4 = "1990-12-31T15:59:60-08:00";
 
-    private String DATE_RFC3339_5 = "1937-01-01T12:00:27.87+00:20";
+    private final String DATE_RFC3339_5 = "1937-01-01T12:00:27.87+00:20";
 
-    private String DATE_ASC_1 = "Fri Apr 12 23:20:50 1985";
+    private final String DATE_ASC_1 = "Fri Apr 12 23:20:50 1985";
 
-    private String DATE_RFC1036_1 = "Friday, 12-Apr-85 23:20:50 GMT";
+    private final String DATE_RFC1036_1 = "Friday, 12-Apr-85 23:20:50 GMT";
 
-    private String DATE_RFC1123_1 = "Fri, 12 Apr 1985 23:20:50 GMT";
+    private final String DATE_RFC1123_1 = "Fri, 12 Apr 1985 23:20:50 GMT";
 
-    private String DATE_RFC822_1 = "Fri, 12 Apr 85 23:20:50 GMT";
+    private final String DATE_RFC822_1 = "Fri, 12 Apr 85 23:20:50 GMT";
 
     /**
      * Tests for dates in the RFC 822 format.
      */
-    public void testRfc822() throws Exception {
+    @Test
+    public void testRfc822() {
         Date date1 = DateUtils.parse(DATE_RFC822_1, DateUtils.FORMAT_RFC_822);
 
         String dateFormat1 = DateUtils.format(date1,
@@ -69,7 +73,8 @@ public class DateTestCase extends RestletTestCase {
     /**
      * Tests for dates in the RFC 1123 format.
      */
-    public void testRfc1123() throws Exception {
+    @Test
+    public void testRfc1123() {
         Date date1 = DateUtils.parse(DATE_RFC1123_1, DateUtils.FORMAT_RFC_1123);
 
         String dateFormat1 = DateUtils.format(date1,
@@ -81,7 +86,8 @@ public class DateTestCase extends RestletTestCase {
     /**
      * Tests for dates in the RFC 1036 format.
      */
-    public void testRfc1036() throws Exception {
+    @Test
+    public void testRfc1036() {
         Date date1 = DateUtils.parse(DATE_RFC1036_1, DateUtils.FORMAT_RFC_1036);
 
         String dateFormat1 = DateUtils.format(date1,
@@ -93,7 +99,8 @@ public class DateTestCase extends RestletTestCase {
     /**
      * Tests for dates in the RFC 3339 format.
      */
-    public void testAsc() throws Exception {
+    @Test
+    public void testAsc() {
         Date date1 = DateUtils.parse(DATE_ASC_1, DateUtils.FORMAT_ASC_TIME);
 
         String dateFormat1 = DateUtils.format(date1,
@@ -105,7 +112,8 @@ public class DateTestCase extends RestletTestCase {
     /**
      * Tests for dates in the RFC 3339 format.
      */
-    public void testRfc3339() throws Exception {
+    @Test
+    public void testRfc3339() {
         Date date1 = DateUtils.parse(DATE_RFC3339_1, DateUtils.FORMAT_RFC_3339);
         Date date2 = DateUtils.parse(DATE_RFC3339_2, DateUtils.FORMAT_RFC_3339);
         Date date3 = DateUtils.parse(DATE_RFC3339_3, DateUtils.FORMAT_RFC_3339);

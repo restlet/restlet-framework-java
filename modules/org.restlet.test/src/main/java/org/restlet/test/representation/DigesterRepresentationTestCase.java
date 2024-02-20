@@ -24,10 +24,7 @@
 
 package org.restlet.test.representation;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -41,6 +38,10 @@ import org.restlet.representation.DigesterRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test {@link org.restlet.engine.util.DateUtils}.
@@ -111,12 +112,10 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
 
     /**
      * Tests partial Get requests.
-     * 
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
+     *
      */
     @Test
-    public void testGet() throws IOException, NoSuchAlgorithmException {
+    public void testGet() {
         Client client = new Client(Protocol.HTTP);
 
         // Test partial Get.

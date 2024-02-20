@@ -1,32 +1,39 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.restlet.data.MediaType;
+import org.restlet.engine.util.DefaultSaxHandler;
+import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -36,16 +43,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.junit.Before;
-import org.restlet.data.MediaType;
-import org.restlet.engine.util.DefaultSaxHandler;
-import org.restlet.ext.xml.DomRepresentation;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.test.RestletTestCase;
-import org.xml.sax.SAXException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
 
 /**
  * Basic JUnit test case for parsing and validating two well-formed restlet.xml
@@ -92,7 +96,7 @@ public class RestletXmlTestCase extends RestletTestCase {
     }
 
     @Override
-    @Before
+    @BeforeEach
     protected void setUp() throws Exception {
         super.setUp();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -126,6 +130,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testParserBadXML() {
         System.out.println("-- testParserBadXML");
         try {
@@ -138,6 +143,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testParserWithoutXMLNS() {
         System.out.println("-- testParserWithoutXMLNS");
         try {
@@ -150,6 +156,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testParserWithXMLNS() {
         System.out.println("-- testParserWithXMLNS");
         try {
@@ -162,6 +169,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testValidateMethod() {
         System.out.println("-- testValidateMethod");
         InputStream is = getClass().getResourceAsStream(
@@ -182,6 +190,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testValidatorBadXML() {
         System.out.println("-- testValidatorBadXML");
         try {
@@ -189,17 +198,22 @@ public class RestletXmlTestCase extends RestletTestCase {
             fail("MUST NOT be able to validate bad restlet.xml");
         } catch (SAXException x) {
             // the error must be a "cvc-complex-type.2.4.a"
-            assertTrue("MUST detect schema violation", x.getLocalizedMessage()
-                    .startsWith("cvc-complex-type.2.4.a"));
+            assertTrue(
+                    x.getLocalizedMessage().startsWith("cvc-complex-type.2.4.a"),
+                    "MUST detect schema violation"
+            );
             // ...and it has to refer to 'bad-element'
-            assertTrue("MUST detect schema violation related to 'bad-element'",
-                    x.getLocalizedMessage().indexOf("bad-element") > 0);
+            assertTrue(
+                    x.getLocalizedMessage().indexOf("bad-element") > 0,
+                    "MUST detect schema violation related to 'bad-element'"
+            );
 
         } catch (IOException x) {
             fail("MUST throw a SAXException only");
         }
     }
 
+    @Test
     public void testValidatorWithoutXMLNS() {
         System.out.println("-- testValidatorWithoutXMLNS");
         try {
@@ -212,6 +226,7 @@ public class RestletXmlTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testValidatorWithXMLNS() {
         System.out.println("-- testValidatorWithXMLNS");
         try {

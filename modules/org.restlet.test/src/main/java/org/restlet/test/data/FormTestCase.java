@@ -26,10 +26,14 @@ package org.restlet.test.data;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.engine.util.FormReader;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the {@link Form} class.
@@ -38,6 +42,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class FormTestCase extends RestletTestCase {
 
+    @Test
     public void testParsing() throws IOException {
         Form form = new Form();
         form.add("name", "John D. Mitchell");
@@ -51,7 +56,8 @@ public class FormTestCase extends RestletTestCase {
         assertEquals(query, newQuery);
     }
 
-    public void testEmptyParameter() throws IOException {
+    @Test
+    public void testEmptyParameter() {
         // Manual construction of form
         Form form = new Form();
         form.add("normalParam", "abcd");

@@ -3,9 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.restlet.dev</groupId>
+		<groupId>org.restlet</groupId>
 		<artifactId>org.restlet.parent</artifactId>
 		<version>2.5-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>org.restlet.ext.thymeleaf</artifactId>
@@ -19,7 +20,7 @@
 			<version>${lib-thymeleaf-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet.dev</groupId>
+			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.5-SNAPSHOT</version>
 		</dependency>

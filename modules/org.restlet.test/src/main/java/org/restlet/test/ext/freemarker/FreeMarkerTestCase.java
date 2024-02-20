@@ -29,12 +29,15 @@ import java.io.FileWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.test.RestletTestCase;
 
 import freemarker.template.Configuration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for the FreeMarker extension.
@@ -43,6 +46,7 @@ import freemarker.template.Configuration;
  */
 public class FreeMarkerTestCase extends RestletTestCase {
 
+    @Test
     public void testTemplate() throws Exception {
         // Create a temporary directory for the tests
         final File testDir = new File(System.getProperty("java.io.tmpdir"),

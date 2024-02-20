@@ -26,6 +26,8 @@ package org.restlet.test.resource;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.getProperty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.restlet.data.Language.FRENCH;
 import static org.restlet.data.Language.SPANISH;
 import static org.restlet.data.LocalReference.createFileReference;
@@ -47,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -124,10 +127,6 @@ public class DirectoryTestCase extends RestletTestCase {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        new DirectoryTestCase().testDirectory();
-    }
-
     String webSiteURL = "http://myapplication/";
 
     String baseFileUrl = this.webSiteURL.concat("fichier.txt");
@@ -156,6 +155,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
     File testDir;
 
+    @Test
     public void testDirectory() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();
@@ -283,7 +283,6 @@ public class DirectoryTestCase extends RestletTestCase {
     /**
      * Helper
      * 
-     * @param application
      * @param directory
      * @throws IOException
      */

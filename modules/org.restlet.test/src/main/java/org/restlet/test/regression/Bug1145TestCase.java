@@ -1,8 +1,6 @@
 package org.restlet.test.regression;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -15,15 +13,20 @@ import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class Bug1145TestCase extends RestletTestCase {
     public static class Bug1145TestCaseRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
             try {
-                response.setAccessControlExposeHeaders(new HashSet<>(Arrays.asList("Modified")));
+                response.setAccessControlExposeHeaders(new HashSet<>(List.of("Modified")));
                 response.setEntity(new StringRepresentation("NO-NPE", MediaType.TEXT_PLAIN));
-            }
-            catch(NullPointerException e) {
+            } catch (NullPointerException e) {
                 response.setEntity(new StringRepresentation("NPE", MediaType.TEXT_PLAIN));
             }
         }
@@ -32,7 +35,6 @@ public class Bug1145TestCase extends RestletTestCase {
     private Client client;
 
     private Component component;
-
 
     @Override
     public void setUp() throws Exception {
@@ -58,6 +60,7 @@ public class Bug1145TestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void test0() throws Exception {
         Request request = new Request(Method.GET, "http://localhost:" + TEST_PORT);
         Response result = client.handle(request);

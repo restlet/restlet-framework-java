@@ -1,8 +1,0 @@
-<#list edition.modules as module>
-<@pp.nestOutputFile name="${module.rootDirectory}/build.properties">
-source.. = src/
-output.. = bin/
-bin.includes = META-INF/,\
-               .
-</@pp.nestOutputFile>
-</#list>

@@ -27,6 +27,7 @@ package org.restlet.test.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -35,6 +36,10 @@ import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 /**
  * Unit tests for the content negotiation service.
  * 
@@ -42,14 +47,15 @@ import org.restlet.test.RestletTestCase;
  */
 public class ConnegServiceTestCase extends RestletTestCase {
 
+    @Test
     public void testStrict() {
-        List<Variant> variants = new ArrayList<Variant>();
+        List<Variant> variants = new ArrayList<>();
         Variant variant = new Variant(MediaType.APPLICATION_XML);
         variants.add(variant);
 
         Request request = new Request();
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
+                .add(new Preference<>(MediaType.APPLICATION_JSON));
 
         MetadataService metadataService = new MetadataService();
         ConnegService connegService = new ConnegService();

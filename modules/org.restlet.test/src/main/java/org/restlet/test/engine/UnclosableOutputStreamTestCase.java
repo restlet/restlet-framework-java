@@ -28,8 +28,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.io.UnclosableOutputStream;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the HTTP KeepAlive.
@@ -52,6 +57,7 @@ public class UnclosableOutputStreamTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testClose() throws IOException {
         final MockOutputStream stream = new MockOutputStream();
         final OutputStream out = new UnclosableOutputStream(stream);
@@ -62,18 +68,19 @@ public class UnclosableOutputStreamTestCase extends RestletTestCase {
         assertTrue(stream.closed);
     }
 
+    @Test
     public void testWrite() throws IOException {
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
         final OutputStream out = new UnclosableOutputStream(stream);
 
         out.write('a');
-        assertEquals("a", new String(stream.toByteArray()));
+        assertEquals("a", stream.toString());
 
         out.write(new byte[] { 'b', 'c' });
-        assertEquals("abc", new String(stream.toByteArray()));
+        assertEquals("abc", stream.toString());
 
         out.write(new byte[] { 'd', 'e', 'f', 'g' }, 0, 2);
-        assertEquals("abcde", new String(stream.toByteArray()));
+        assertEquals("abcde", stream.toString());
 
         out.close();
     }
