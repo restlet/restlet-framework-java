@@ -1,31 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.spring;
 
-import java.util.Arrays;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
@@ -35,6 +34,13 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * @author Rhett Sutphin
@@ -73,12 +79,11 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     private SpringBeanFinder finder;
 
     private MutablePropertyValues createServerResourcePropertyValues() {
-        return new MutablePropertyValues(Arrays.asList(new PropertyValue("src",
+        return new MutablePropertyValues(List.of(new PropertyValue("src",
                 "spring")));
     }
 
-    private void registerApplicationContextBean(String beanName,
-            Class<SomeResource> resourceClass) {
+    private void registerApplicationContextBean(String beanName, Class<SomeResource> resourceClass) {
         this.applicationContext.registerPrototype(beanName, resourceClass);
         this.applicationContext.refresh();
     }
@@ -87,9 +92,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         registerBeanFactoryBean(beanName, resourceClass, null);
     }
 
-    @SuppressWarnings("deprecation")
-    private void registerBeanFactoryBean(String beanName,
-            Class<?> resourceClass, MutablePropertyValues values) {
+    private void registerBeanFactoryBean(String beanName, Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
                 new RootBeanDefinition(resourceClass, new ConstructorArgumentValues(), values));
     }
@@ -111,8 +114,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory()
-            throws Exception {
+    @Test
+    public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory() {
         try {
             this.finder.create();
             fail("Exception not thrown");
@@ -123,8 +126,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory()
-            throws Exception {
+    @Test
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory() {
         try {
             this.finder.setBeanFactory(beanFactory);
             this.finder.create();
@@ -135,8 +138,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext()
-            throws Exception {
+    @Test
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext() {
         try {
             this.finder.setApplicationContext(applicationContext);
             this.finder.create();
@@ -147,7 +150,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testExceptionWhenResourceBeanIsWrongType() throws Exception {
+    @Test
+    public void testExceptionWhenResourceBeanIsWrongType() {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
         this.finder.setBeanFactory(beanFactory);
@@ -162,8 +166,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testExceptionWhenServerResourceBeanIsWrongType()
-            throws Exception {
+    @Test
+    public void testExceptionWhenServerResourceBeanIsWrongType() {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
         this.finder.setBeanFactory(beanFactory);
@@ -178,8 +182,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testPrefersApplicationContextOverBeanFactoryIfTheBeanIsInBoth()
-            throws Exception {
+    @Test
+    public void testPrefersApplicationContextOverBeanFactoryIfTheBeanIsInBoth() {
         registerApplicationContextBean(BEAN_NAME, SomeResource.class);
         registerBeanFactoryBean(BEAN_NAME, AnotherResource.class);
 
@@ -192,7 +196,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 + actual.getClass().getName(), actual instanceof SomeResource);
     }
 
-    public void testReturnsResourceBeanWhenExists() throws Exception {
+    @Test
+    public void testReturnsResourceBeanWhenExists() {
         registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
 
         this.finder.setBeanFactory(beanFactory);
@@ -204,8 +209,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 actual instanceof SomeResource);
     }
 
-    public void testReturnsServerResourceBeanForLongFormOfCreate()
-            throws Exception {
+    @Test
+    public void testReturnsServerResourceBeanForLongFormOfCreate() {
         registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
                 createServerResourcePropertyValues());
 
@@ -221,7 +226,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 ((SomeServerResource) actual).getSrc());
     }
 
-    public void testReturnsServerResourceBeanWhenExists() throws Exception {
+    @Test
+    public void testReturnsServerResourceBeanWhenExists() {
         registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class,
                 createServerResourcePropertyValues());
 
@@ -234,7 +240,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 actual instanceof SomeServerResource);
     }
 
-    public void testUsesApplicationContextIfPresent() throws Exception {
+    @Test
+    public void testUsesApplicationContextIfPresent() {
         registerApplicationContextBean(BEAN_NAME, SomeResource.class);
 
         this.finder.setApplicationContext(applicationContext);

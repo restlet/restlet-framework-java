@@ -9,32 +9,31 @@
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>org.restlet.ext.jaxb</artifactId>
-	<name>Restlet Extension - JAXB</name>
-	<description>Integration with Java XML Binding.</description>
+	<artifactId>org.restlet.ext.inject</artifactId>
+	<name>Restlet Extension - Guice</name>
+	<description>Integration with Google Guice.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>${lib-activation-version}</version>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${lib-guice-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>${lib-jaxb-ri-version}</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${lib-guava-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>${lib-jaxb-api-version}</version>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${lib-javax-inject-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.istack</groupId>
-			<artifactId>istack-commons-runtime</artifactId>
-			<version>${lib-sun-istack-version}</version>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>${lib-aopalliance-version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>

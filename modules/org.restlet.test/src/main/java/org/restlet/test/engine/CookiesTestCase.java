@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.header.CookieReader;
@@ -37,6 +38,9 @@ import org.restlet.engine.header.CookieSettingWriter;
 import org.restlet.engine.header.CookieWriter;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the Cookie related classes.
@@ -53,7 +57,7 @@ public class CookiesTestCase extends RestletTestCase {
      */
     private void testCookie(String headerValue) throws IOException {
         CookieReader cr = new CookieReader(headerValue);
-        List<Cookie> cookies = new ArrayList<Cookie>();
+        List<Cookie> cookies = new ArrayList<>();
         Cookie cookie = cr.readValue();
 
         while (cookie != null) {
@@ -77,7 +81,7 @@ public class CookiesTestCase extends RestletTestCase {
      */
     private void testCookieValues(String headerValue) throws IOException {
         CookieReader cr = new CookieReader(headerValue);
-        List<Cookie> cookies = new ArrayList<Cookie>();
+        List<Cookie> cookies = new ArrayList<>();
         Cookie cookie = cr.readValue();
         while (cookie != null) {
             cookies.add(cookie);
@@ -88,7 +92,7 @@ public class CookiesTestCase extends RestletTestCase {
         String newHeaderValue = CookieWriter.write(cookies);
 
         // Reparse
-        List<Cookie> cookies2 = new ArrayList<Cookie>();
+        List<Cookie> cookies2 = new ArrayList<>();
         cr = new CookieReader(newHeaderValue);
         cookie = cr.readValue();
         while (cookie != null) {
@@ -107,7 +111,7 @@ public class CookiesTestCase extends RestletTestCase {
     /**
      * Test a cookie date value.
      * 
-     * @param headerValue
+     * @param dateValue
      *            The cookie date value.
      */
     private void testCookieDate(String dateValue) {
@@ -150,8 +154,9 @@ public class CookiesTestCase extends RestletTestCase {
     /**
      * Tests the parsing of cookies.
      */
+    @Test
     public void testParsing() throws IOException {
-        // Netscape speficiation
+        // Netscape specification
         testCookie("CUSTOMER=WILE_E_COYOTE");
         testCookie("CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001");
         testCookie("CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001; SHIPPING=FEDEX");
@@ -192,6 +197,7 @@ public class CookiesTestCase extends RestletTestCase {
         testCookieValues("Cookie 1=One; Cookie 2=Two; Cookie 3=Three; Cookie 4=Four; Cookie 5=\"Five\"; Cookie 6=\"Six\"");
     }
 
+    @Test
     public void testParsingTooLongMaxAgeShouldBeCapedToIntegerMAX_VALUE() throws IOException {
         CookieSettingReader cr = new CookieSettingReader(
                 "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; max-age=31536000000; path=/; domain=.admeta.com");

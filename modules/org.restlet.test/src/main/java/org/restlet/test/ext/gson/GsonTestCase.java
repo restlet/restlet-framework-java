@@ -24,10 +24,6 @@
 
 package org.restlet.test.ext.gson;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -35,9 +31,9 @@ import java.io.StringReader;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.gson.GsonConverter;
 import org.restlet.ext.gson.GsonRepresentation;
@@ -48,6 +44,11 @@ import org.restlet.representation.Variant;
 
 import com.google.gson.annotations.Since;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Unit test for the Gson extension.
  * 
@@ -55,19 +56,19 @@ import com.google.gson.annotations.Since;
  */
 public class GsonTestCase {
 
-    private class User {
-        private boolean active;
+    private static class User {
+        private final boolean active;
 
-        private Date createAt;
+        private final Date createAt;
 
         @Since(2.0)
         private Date lastLogin;
 
-        private String loginId;
+        private final String loginId;
 
-        private String password;
+        private final String password;
 
-        private int rate;
+        private final int rate;
 
         public User(String loginId, String password, int rate, boolean active,
                 Date createAt, Date lastLogin) {
@@ -105,7 +106,7 @@ public class GsonTestCase {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() throws Exception {
     }
 
@@ -113,7 +114,7 @@ public class GsonTestCase {
 
     private User user;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         user = new User("hello", "secret", 1, true, new Date(), new Date());
         c = new GsonConverter();
@@ -132,8 +133,8 @@ public class GsonTestCase {
         Representation rep = new GsonRepresentation<User>(user);
         Representation rep1 = new GsonRepresentation<User>(rep, User.class);
 
-        assertEquals(rep1.getMediaType(), rep1.getMediaType());
-        assertEquals(rep1.getClass(), rep1.getClass());
+        assertEquals(rep.getMediaType(), rep1.getMediaType());
+        assertEquals(rep.getClass(), rep1.getClass());
     }
 
     @Test
@@ -143,7 +144,7 @@ public class GsonTestCase {
         Representation source = new ReaderRepresentation(reader);
         source.setMediaType(MediaType.APPLICATION_JSON);
 
-        GsonRepresentation<User> gsonRep = new GsonRepresentation<User>(source,
+        GsonRepresentation<User> gsonRep = new GsonRepresentation<>(source,
                 User.class);
         User u = gsonRep.getObject();
 
@@ -159,7 +160,7 @@ public class GsonTestCase {
                 "{\"loginId\":\"hello\",\"password\":\"secret\",\"rate\":1,\"active\":true,\"createAt\":\"2012-05-20T15:41:01.489+08:00\",\"lastLogin\":\"2012-05-20T15:41:01.489+08:00\"}");
         Representation source1 = new ReaderRepresentation(reader1);
 
-        GsonRepresentation<User> gsonRep1 = new GsonRepresentation<GsonTestCase.User>(
+        GsonRepresentation<User> gsonRep1 = new GsonRepresentation<>(
                 source1, User.class);
 
         gsonRep1.getBuilder().setVersion(1.0);
@@ -169,7 +170,7 @@ public class GsonTestCase {
 
     @Test
     public final void testGsonRepresentationWrite() throws IOException {
-        GsonRepresentation<User> source = new GsonRepresentation<User>(user);
+        GsonRepresentation<User> source = new GsonRepresentation<>(user);
 
         assertEquals(User.class, source.getObjectClass());
         assertEquals(user, source.getObject());
@@ -181,7 +182,7 @@ public class GsonTestCase {
         System.out.println();
 
         String text = "What's going on?";
-        GsonRepresentation<String> source1 = new GsonRepresentation<String>(
+        GsonRepresentation<String> source1 = new GsonRepresentation<>(
                 text);
 
         assertEquals(String.class, source1.getObjectClass());
@@ -194,13 +195,13 @@ public class GsonTestCase {
     @Test
     public final void testScoreObjectVariantResource() {
         Variant v = new Variant(MediaType.APPLICATION_JSON);
-        Representation source = new GsonRepresentation<User>(user);
+        Representation source = new GsonRepresentation<>(user);
 
         float score = c.score(user, v, null);
-        assertTrue(score == 0.8F);
+        assertEquals(0.8F, score);
 
         float score1 = c.score(source, v, null);
-        assertTrue(score1 == 1.0F);
+        assertEquals(1.0F , score1);
     }
 
     @Test
@@ -208,24 +209,24 @@ public class GsonTestCase {
         Representation source = new GsonRepresentation<User>(user);
 
         float score = c.score(source, User.class, null);
-        assertTrue(score == 1.0F);
+        assertEquals(1.0F, score);
 
         Representation source1 = new EmptyRepresentation();
 
         float score1 = c.score(source1, User.class, null);
-        assertTrue(score1 == 0.8F);
+        assertEquals(0.8F, score1);
     }
 
     @Test()
     public final void testToObjectRepresentationClassOfTResource()
             throws IOException {
-        Representation source = new GsonRepresentation<User>(user);
+        Representation source = new GsonRepresentation<>(user);
 
         User u = c.toObject(source, User.class, null);
         assertNotNull(u);
         assertEquals(user, u);
 
-        Representation source1 = new GsonRepresentation<User>(user);
+        Representation source1 = new GsonRepresentation<>(user);
         User u1 = c.toObject(source1, User.class, null);
         assertNotNull(u1);
         assertEquals(user, u1);

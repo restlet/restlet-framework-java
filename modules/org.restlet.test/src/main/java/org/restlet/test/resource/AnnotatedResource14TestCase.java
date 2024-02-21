@@ -26,12 +26,16 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -57,6 +61,7 @@ public class AnnotatedResource14TestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testQuery() throws IOException {
         Representation rep = null;
 

@@ -1,33 +1,32 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.crypto;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
@@ -36,12 +35,14 @@ import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Unit test for {@link AwsUtils}. Test cases are taken from the examples
  * provided from <a href=
  * "http://docs.amazonwebservices.com/AmazonS3/latest/index.html?RESTAuthentication.html"
  * >Authenticating REST Requests</a>
- * 
+ *
  * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
  */
 public class HttpAwsS3SigningTestCase extends RestletTestCase {
@@ -53,7 +54,7 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
 
     private Request uploadRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         getRequest = new Request();
         Series<Header> headers = new Series<Header>(Header.class);
@@ -98,7 +99,7 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
         headers.add("X-Amz-Meta-ChecksumAlgorithm", "crc32");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         getRequest = null;
         putRequest = null;
@@ -112,7 +113,7 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
                 .get(HeaderConstants.ATTRIBUTE_HEADERS);
         String expected = "";
         String actual = AwsUtils.getCanonicalizedAmzHeaders(headers);
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
         headers = (Series<Header>) uploadRequest.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
@@ -121,28 +122,28 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
                 + "x-amz-meta-filechecksum:0x02661779\n"
                 + "x-amz-meta-reviewedby:joe@johnsmith.net,jane@johnsmith.net\n";
         actual = AwsUtils.getCanonicalizedAmzHeaders(headers);
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testGetCanonicalizedResourceName() {
         String result = AwsUtils.getCanonicalizedResourceName(getRequest
                 .getResourceRef());
-        Assert.assertEquals("/johnsmith/photos/puppy.jpg", result);
+        assertEquals("/johnsmith/photos/puppy.jpg", result);
     }
 
     @Test
     public void testGetSignature() {
         String result = AwsUtils.getS3Signature(getRequest,
                 ACCESS_KEY.toCharArray());
-        Assert.assertEquals("xXjDGYUmKxnwqr5KXNPGldn5LbA=", result);
+        assertEquals("xXjDGYUmKxnwqr5KXNPGldn5LbA=", result);
 
         result = AwsUtils.getS3Signature(putRequest, ACCESS_KEY.toCharArray());
-        Assert.assertEquals("hcicpDDvL9SsO6AkvxqmIWkmOuQ=", result);
+        assertEquals("hcicpDDvL9SsO6AkvxqmIWkmOuQ=", result);
 
         result = AwsUtils.getS3Signature(uploadRequest,
                 ACCESS_KEY.toCharArray());
-        Assert.assertEquals("C0FlOtU8Ylb9KDTpZqYkZPX91iI=", result);
+        assertEquals("C0FlOtU8Ylb9KDTpZqYkZPX91iI=", result);
     }
 
     @Test
@@ -151,13 +152,13 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
                 + "Tue, 27 Mar 2007 19:36:42 +0000\n"
                 + "/johnsmith/photos/puppy.jpg";
         String actual = AwsUtils.getS3StringToSign(getRequest);
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
         expected = "PUT\n" + "\n" + "image/jpeg\n"
                 + "Tue, 27 Mar 2007 21:15:45 +0000\n"
                 + "/johnsmith/photos/puppy.jpg";
         actual = AwsUtils.getS3StringToSign(putRequest);
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
         expected = "PUT\n" + "4gJE4saaMU4BqNR0kLY+lw==\n"
                 + "application/x-download\n"
@@ -169,6 +170,6 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
                 + "joe@johnsmith.net,jane@johnsmith.net\n"
                 + "/static.johnsmith.net/db-backup.dat.gz";
         actual = AwsUtils.getS3StringToSign(uploadRequest);
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

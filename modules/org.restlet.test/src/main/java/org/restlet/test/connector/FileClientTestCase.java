@@ -27,6 +27,7 @@ package org.restlet.test.connector;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Status;
@@ -35,6 +36,9 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Unit test case for the File client connector.
  * 
@@ -42,6 +46,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class FileClientTestCase extends RestletTestCase {
 
+    @Test
     public void testFileClient() throws IOException {
         String text = "Test content\r\nLine 2\r\nLine2";
         LocalReference fr = LocalReference

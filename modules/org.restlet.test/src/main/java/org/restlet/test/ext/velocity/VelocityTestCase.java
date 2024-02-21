@@ -29,6 +29,7 @@ import java.io.FileWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -38,6 +39,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Test case for the Velocity extension.
  * 
@@ -45,6 +48,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class VelocityTestCase extends RestletTestCase {
 
+    @Test
     public void testRepresentationTemplate() throws Exception {
         // Create a temporary directory for the tests
         File testDir = new File(System.getProperty("java.io.tmpdir"),
@@ -57,7 +61,7 @@ public class VelocityTestCase extends RestletTestCase {
         fw.write("Value=$value");
         fw.close();
 
-        Map<String, Object> map = new TreeMap<String, Object>();
+        Map<String, Object> map = new TreeMap<>();
         map.put("value", "myValue");
 
         // Representation approach
@@ -74,6 +78,7 @@ public class VelocityTestCase extends RestletTestCase {
         IoUtils.delete(testDir, true);
     }
 
+    @Test
     public void testStandardTemplate() throws Exception {
         // Create a temporary directory for the tests
         final File testDir = new File(System.getProperty("java.io.tmpdir"),
@@ -86,7 +91,7 @@ public class VelocityTestCase extends RestletTestCase {
         fw.write("Value=$value");
         fw.close();
 
-        final Map<String, Object> map = new TreeMap<String, Object>();
+        final Map<String, Object> map = new TreeMap<>();
         map.put("value", "myValue");
 
         // Standard approach

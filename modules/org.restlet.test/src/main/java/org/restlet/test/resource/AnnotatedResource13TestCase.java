@@ -24,9 +24,13 @@
 
 package org.restlet.test.resource;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -56,12 +60,13 @@ public class AnnotatedResource13TestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testQuery() {
         Contact contact = myResource.retrieve();
         assertNotNull(contact);
 
         LightContact lightContact = myResource.retrieveLight();
-        assertFalse(lightContact.getClass().equals(Contact.class));
+        assertNotEquals(lightContact.getClass(), Contact.class);
         assertNotNull(lightContact);
 
         FullContact fullContact = myResource.retrieveFull();

@@ -24,6 +24,7 @@
 
 package org.restlet.test.ext.crypto;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -39,6 +40,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
+
 /**
  * Unit test for the {@link CookieAuthenticator} class.
  * 
@@ -46,7 +51,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class CookieAuthenticatorTestCase extends RestletTestCase {
 
-    public class CookieGuardedApplication extends Application {
+    public static class CookieGuardedApplication extends Application {
 
         @Override
         public Restlet createInboundRoot() {
@@ -71,6 +76,7 @@ public class CookieAuthenticatorTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testCookieAuth1() {
         CookieGuardedApplication cga = new CookieGuardedApplication();
         Component c = new Component();

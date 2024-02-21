@@ -27,6 +27,7 @@ package org.restlet.test.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Form;
 import org.restlet.data.Header;
 import org.restlet.data.Protocol;
@@ -35,6 +36,11 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link org.restlet.data.Reference}.
@@ -74,6 +80,7 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test addition methods.
      */
+    @Test
     public void testAdditions() throws Exception {
         final Reference ref = new Reference("http://restlet.org");
         ref.addQueryParameter("abc", "123");
@@ -86,6 +93,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://restlet.org/root/dir?abc=123&def", ref.toString());
     }
 
+    @Test
     public void testEmptyRef() {
         Reference reference = new Reference();
         reference.setAuthority("testAuthority"); // must not produce NPE
@@ -99,7 +107,7 @@ public class ReferenceTestCase extends RestletTestCase {
         reference = new Reference();
         reference.setHostDomain("localhost"); // must not produce NPE
         assertEquals("localhost", reference.getAuthority());
-        reference.setHostPort(new Integer(4711)); // must not produce NPE
+        reference.setHostPort(Integer.valueOf(4711)); // must not produce NPE
         assertEquals("localhost:4711", reference.getAuthority());
         reference.setUserInfo("sdgj:skdfj"); // must not produce NPE
         assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
@@ -136,13 +144,15 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Equality tests.
      */
-    public void testEquals() throws Exception {
+    @Test
+    public void testEquals() {
         final Reference ref1 = getDefaultReference();
         final Reference ref2 = getDefaultReference();
         assertEquals(ref1, ref2);
         assertTrue(ref1.equals(ref2));
     }
 
+    @Test
     public void testGetLastSegment() {
         Reference reference = new Reference("http://hostname");
         assertNull(reference.getLastSegment());
@@ -161,7 +171,8 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test hostname getting/setting.
      */
-    public void testHostName() throws Exception {
+    @Test
+    public void testHostName() {
         final Reference ref = getReference();
         String host = "restlet.org";
         ref.setHostDomain(host);
@@ -173,6 +184,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("[::1]", ref2.getHostDomain());
     }
 
+    @Test
     public void testMatrix() {
         final Reference ref1 = new Reference(
                 "http://domain.tld/whatever/a=1;b=2;c=4?x=a&y=b");
@@ -203,7 +215,8 @@ public class ReferenceTestCase extends RestletTestCase {
         newForm.add("c", "4");
         assertEquals("a=1;b=2;c=4", newForm.getMatrixString());
     }
-    
+
+    @Test
     public void testOriginalRef() {
         Reference ref = new Reference("http://localhost/test");
         Series<Header> headers = new Series<>(Header.class);
@@ -219,6 +232,7 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test the computation of parent references, for absolute and relative
      * URIs.
      */
+    @Test
     public void testParentRef() {
         Reference baseRef = new Reference("http://test.com/foo/bar");
         Reference parentRef = baseRef.getParentRef();
@@ -232,6 +246,7 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Tests the URI parsing.
      */
+    @Test
     public void testParsing() {
         final String base = "http://a/b/c/d;p?q";
 
@@ -470,7 +485,8 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test port getting/setting.
      */
-    public void testPort() throws Exception {
+    @Test
+    public void testPort() {
         Reference ref = getDefaultReference();
         int port = 8080;
         ref.setHostPort(port);
@@ -482,6 +498,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals(8182, ref.getHostPort());
     }
 
+    @Test
     public void testProtocolConstructors() {
         assertEquals("http://restlet.org", new Reference(Protocol.HTTP,
                 "restlet.org").toString());
@@ -493,6 +510,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://restlet.org?abc=123", ref.toString());
     }
 
+    @Test
     public void testQuery() {
 
         Reference ref1 = new Reference(
@@ -514,6 +532,7 @@ public class ReferenceTestCase extends RestletTestCase {
                 ref.toString());
     }
 
+    @Test
     public void testQueryWithUri() {
         Reference ref = new Reference(new Reference("http://localhost:8111/"),
                 "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
@@ -587,11 +606,6 @@ public class ReferenceTestCase extends RestletTestCase {
 
     /**
      * Test the behaviour of several getters upon a Reference object.
-     * 
-     * @param reference
-     * @param query
-     * @param fragment
-     * @param toString
      */
     private void testRef4(Reference reference, String scheme, String authority,
             String path, String remainingPart, String toString,
@@ -606,7 +620,8 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals(reference.getRelativePart(), relativePart);
     }
 
-    public void testRiap() throws Exception {
+    @Test
+    public void testRiap() {
         Reference baseRef = new Reference("riap://component/exist/db/");
         Reference ref = new Reference(baseRef, "something.xq");
         assertEquals("riap://component/exist/db/something.xq", ref
@@ -616,7 +631,8 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test scheme getting/setting.
      */
-    public void testScheme() throws Exception {
+    @Test
+    public void testScheme() {
         final Reference ref = getDefaultReference();
         assertEquals(DEFAULT_SCHEME, ref.getScheme());
         final String scheme = "https";
@@ -629,7 +645,8 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test scheme specific part getting/setting.
      */
-    public void testSchemeSpecificPart() throws Exception {
+    @Test
+    public void testSchemeSpecificPart() {
         final Reference ref = getDefaultReference();
         String part = "//restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
@@ -641,6 +658,7 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test setting of the last segment.
      */
+    @Test
     public void testSetLastSegment() {
         Reference ref = new Reference("http://localhost:1234");
         ref.addSegment("test");
@@ -660,6 +678,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://localhost:1234/test/last", ref.toString());
     }
 
+    @Test
     public void testTargetRef() {
         Reference ref = new Reference(
                 "http://twitter.com?status=RT @gamasutra:  Devil May Cry : Born Again http://www.gamasutra.com/view/feature/177267/");
@@ -675,6 +694,7 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Test references that are unequal.
      */
+    @Test
     public void testUnEquals() throws Exception {
         final String uri1 = "http://restlet.org/";
         final String uri2 = "http://restlet.net/";
@@ -684,6 +704,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertFalse(ref1.equals(null));
     }
 
+    @Test
     public void testUserinfo() {
         final Reference reference = new Reference("http://localhost:81");
         // This format is depre. however we may prevent failures.
@@ -720,6 +741,7 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("login", reference.getUserInfo());
     }
 
+    @Test
     public void testValidity() {
         String uri = "http ://domain.tld/whatever/";
         Reference ref = new Reference(uri);

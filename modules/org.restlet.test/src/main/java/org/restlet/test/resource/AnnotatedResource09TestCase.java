@@ -26,6 +26,7 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -36,6 +37,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test annotated resources with extra annotations and methods.
@@ -73,6 +77,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
      * @throws IOException
      * @throws ResourceException
      */
+    @Test
     public void testSI() throws IOException, ResourceException {
         Method method = AnnotatedResource09TestCase.SI;
 
@@ -87,14 +92,14 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         releaseResponse(response);
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         releaseResponse(response);
@@ -102,7 +107,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("si-html+txt", response.getEntity().getText());
@@ -110,7 +115,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("si-string+form", response.getEntity().getText());
@@ -118,7 +123,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("si-string+text", response.getEntity().getText());
@@ -136,6 +141,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
      * @throws IOException
      * @throws ResourceException
      */
+    @Test
     public void testSNI() throws IOException, ResourceException {
         Method method = AnnotatedResource09TestCase.SNI;
 
@@ -150,14 +156,14 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         releaseResponse(response);
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         releaseResponse(response);
@@ -165,7 +171,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("sni-html+txt", response.getEntity().getText());
@@ -173,7 +179,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("sni-html+form", response.getEntity().getText());
@@ -181,7 +187,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("sni-string+text", response.getEntity().getText());
@@ -193,6 +199,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
      * @throws IOException
      * @throws ResourceException
      */
+    @Test
     public void testUSI() throws IOException, ResourceException {
         Method method = AnnotatedResource09TestCase.USI;
 
@@ -207,14 +214,14 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         releaseResponse(response);
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         releaseResponse(response);
@@ -222,7 +229,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+text", response.getEntity().getText());
@@ -230,7 +237,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
@@ -238,7 +245,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+text", response.getEntity().getText());
@@ -246,7 +253,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
@@ -254,7 +261,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
@@ -267,6 +274,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
      * @throws IOException
      * @throws ResourceException
      */
+    @Test
     public void testUSNI() throws IOException, ResourceException {
         Method method = AnnotatedResource09TestCase.USNI;
 
@@ -281,14 +289,14 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         releaseResponse(response);
 
         request = createRequest(method);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         releaseResponse(response);
@@ -296,7 +304,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("usni-html+txt", response.getEntity().getText());
@@ -304,7 +312,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(form.getWebRepresentation());
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
         response = handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("usni-html+form", response.getEntity().getText());
@@ -312,7 +320,7 @@ public class AnnotatedResource09TestCase extends InternalConnectorTestCase {
         request = createRequest(method);
         request.setEntity(text, MediaType.TEXT_PLAIN);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
+                .add(new Preference<>(MediaType.TEXT_PLAIN));
         response = handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usni-string+text", response.getEntity().getText());

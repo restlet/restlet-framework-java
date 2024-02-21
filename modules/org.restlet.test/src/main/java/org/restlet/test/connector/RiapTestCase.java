@@ -1,31 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.connector;
 
-import java.io.Serializable;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -40,9 +39,16 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
+import java.io.Serializable;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * Unit test case for the RIAP Internal routing protocol.
- * 
+ *
  * @author Marc Portier (mpo@outerthought.org)
  */
 public class RiapTestCase extends RestletTestCase {
@@ -63,6 +69,7 @@ public class RiapTestCase extends RestletTestCase {
                 + "\n";
     }
 
+    @Test
     public void testRiap() throws Exception {
         final Component comp = new Component();
         final Application localOnly = new Application() {
@@ -82,10 +89,10 @@ public class RiapTestCase extends RestletTestCase {
                             result = new StringRepresentation(
                                     remainder.substring(6));
                         } else if (remainder.equals("/object")) {
-                            result = new ObjectRepresentation<Serializable>(
+                            result = new ObjectRepresentation<>(
                                     JUST_SOME_OBJ);
                         } else if (remainder.equals("/null")) {
-                            result = new ObjectRepresentation<Serializable>(
+                            result = new ObjectRepresentation<>(
                                     (Serializable) null);
                         } else if (remainder.equals("/self-aggregated")) {
                             final String echoMessage = ECHO_TEST_MSG;
@@ -125,14 +132,15 @@ public class RiapTestCase extends RestletTestCase {
         final String objURI = localBase + "/object";
         final Representation objRep = dispatcher.handle(
                 new Request(Method.GET, objURI)).getEntity();
-        assertSame("expected specific test-object", JUST_SOME_OBJ,
-                ((ObjectRepresentation<?>) objRep).getObject());
+        assertSame(
+                JUST_SOME_OBJ, ((ObjectRepresentation<?>) objRep).getObject(),
+                "expected specific test-object"
+        );
 
         final String nullURI = localBase + "/null";
         final Representation nullRep = dispatcher.handle(
                 new Request(Method.GET, nullURI)).getEntity();
-        assertNull("expected null",
-                ((ObjectRepresentation<?>) nullRep).getObject());
+        assertNull(((ObjectRepresentation<?>) nullRep).getObject(), "expected null");
 
         final String anyURI = localBase + "/whatever";
         final Representation anyRep = dispatcher.handle(

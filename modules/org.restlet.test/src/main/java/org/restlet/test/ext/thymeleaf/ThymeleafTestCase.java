@@ -28,10 +28,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.thymeleaf.TemplateRepresentation;
 import org.restlet.test.RestletTestCase;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for the Thymeleaf extension.
@@ -40,6 +43,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
  */
 public class ThymeleafTestCase extends RestletTestCase {
 
+    @Test
     public void testTemplate() throws Exception {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("org/restlet/test/ext/thymeleaf/");

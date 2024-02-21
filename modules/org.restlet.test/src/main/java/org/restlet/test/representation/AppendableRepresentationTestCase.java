@@ -24,8 +24,11 @@
 
 package org.restlet.test.representation;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.representation.AppendableRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the {@link AppendableRepresentation} class.
@@ -34,6 +37,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class AppendableRepresentationTestCase extends RestletTestCase {
 
+    @Test
     public void testAppendable() throws Exception {
         AppendableRepresentation ar = new AppendableRepresentation();
         ar.append("abcd");

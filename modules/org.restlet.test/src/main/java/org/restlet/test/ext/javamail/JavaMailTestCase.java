@@ -27,6 +27,7 @@ package org.restlet.test.ext.javamail;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -41,6 +42,8 @@ import org.restlet.test.RestletTestCase;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for the JavaMail connector.
@@ -123,6 +126,7 @@ public class JavaMailTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testPop() throws Exception {
         final Client client = new Client(Protocol.POP);
         client.getContext().getParameters().add("debug", DEBUG);
@@ -163,6 +167,7 @@ public class JavaMailTestCase extends RestletTestCase {
         client.stop();
     }
 
+    @Test
     public void testPops() throws Exception {
         final Client client = new Client(Protocol.POPS);
         client.getContext().getParameters().add("debug", DEBUG);
@@ -188,6 +193,7 @@ public class JavaMailTestCase extends RestletTestCase {
         client.stop();
     }
 
+    @Test
     public void testSmtp() throws Exception {
         final Request request = new Request(Method.POST, YAHOO_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
@@ -195,6 +201,7 @@ public class JavaMailTestCase extends RestletTestCase {
         sendMail(Protocol.SMTP, request, false);
     }
 
+    @Test
     public void testSmtps() throws Exception {
         final Request request = new Request(Method.POST, GMAIL_SMTPS);
         request.setChallengeResponse(new ChallengeResponse(
@@ -202,6 +209,7 @@ public class JavaMailTestCase extends RestletTestCase {
         sendMail(Protocol.SMTPS, request, false);
     }
 
+    @Test
     public void testSmtpStartTls() throws Exception {
         final Request request = new Request(Method.POST, MAIL_SMTP);
         request.setChallengeResponse(new ChallengeResponse(

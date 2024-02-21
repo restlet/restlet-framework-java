@@ -1,33 +1,32 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.security;
 
-import java.util.Arrays;
-
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -45,11 +44,15 @@ import org.restlet.security.MapVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
 
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Restlet unit tests for HTTP Basic authentication client/server. By default,
- * runs server on localhost on port {@value #DEFAULT_PORT}, which can be
- * overridden by setting system property {@value #RESTLET_TEST_PORT}
- * 
+ * runs server on localhost on port {@value RestletTestCase#DEFAULT_TEST_PORT}, which can be
+ * overridden by setting system property {@value RestletTestCase#PROPERTY_TEST_PORT}
+ *
  * @author Stian Soiland
  * @author Jerome Louvel
  */
@@ -98,10 +101,6 @@ public class HttpBasicTestCase extends RestletTestCase {
 
     public static final String WRONG_USERNAME = "wrongUser";
 
-    public static void main(String[] args) {
-        new HttpBasicTestCase().testHttpBasic();
-    }
-
     private ChallengeAuthenticator authenticator;
 
     private Component component;
@@ -110,43 +109,50 @@ public class HttpBasicTestCase extends RestletTestCase {
 
     private MapVerifier verifier;
 
+    @Test
     public void guardLong() {
-        assertEquals("Didn't authenticate short user/pwd",
-                Verifier.RESULT_INVALID, this.verifier.verify(LONG_USERNAME,
-                        LONG_PASSWORD.toCharArray()));
+        assertEquals(
+                Verifier.RESULT_INVALID,
+                this.verifier.verify(LONG_USERNAME, LONG_PASSWORD.toCharArray()),
+                "Didn't authenticate short user/pwd"
+        );
     }
 
+    @Test
     public void guardLongWrong() {
         assertEquals(
-                "Authenticated long username with wrong password",
                 Verifier.RESULT_INVALID,
-                this.verifier.verify(LONG_USERNAME,
-                        SHORT_PASSWORD.toCharArray()));
+                this.verifier.verify(LONG_USERNAME, SHORT_PASSWORD.toCharArray()),
+                "Authenticated long username with wrong password"
+        );
     }
 
     // Test our guard.checkSecret() stand-alone
+    @Test
     public void guardShort() {
         assertEquals(
-                "Didn't authenticate short user/pwd",
                 Verifier.RESULT_VALID,
-                this.verifier.verify(SHORT_USERNAME,
-                        SHORT_PASSWORD.toCharArray()));
+                this.verifier.verify(SHORT_USERNAME, SHORT_PASSWORD.toCharArray()),
+                "Didn't authenticate short user/pwd"
+        );
     }
 
+    @Test
     public void guardShortWrong() {
         assertEquals(
-                "Authenticated short username with wrong password",
                 Verifier.RESULT_INVALID,
-                this.verifier.verify(SHORT_USERNAME,
-                        LONG_PASSWORD.toCharArray()));
+                this.verifier.verify(SHORT_USERNAME, LONG_PASSWORD.toCharArray()),
+                "Authenticated short username with wrong password"
+        );
     }
 
+    @Test
     public void guardWrongUser() {
         assertEquals(
-                "Authenticated wrong username",
                 Verifier.RESULT_INVALID,
-                this.verifier.verify(WRONG_USERNAME,
-                        SHORT_PASSWORD.toCharArray()));
+                this.verifier.verify(WRONG_USERNAME, SHORT_PASSWORD.toCharArray()),
+                "Authenticated wrong username"
+        );
     }
 
     public void HttpBasicLong() throws Exception {
@@ -158,8 +164,10 @@ public class HttpBasicTestCase extends RestletTestCase {
         request.setChallengeResponse(authentication);
 
         final Response response = client.handle(request);
-        assertEquals("Long username did not return 200 OK", Status.SUCCESS_OK,
-                response.getStatus());
+        assertEquals(
+                Status.SUCCESS_OK, response.getStatus(),
+                "Long username did not return 200 OK"
+        );
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
 
         client.stop();
@@ -175,8 +183,10 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         final Response response = client.handle(request);
 
-        assertEquals("Long username w/wrong pw did not throw 403",
-                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        assertEquals(
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus(),
+                "Long username w/wrong pw did not throw 403"
+        );
 
         client.stop();
     }
@@ -186,8 +196,10 @@ public class HttpBasicTestCase extends RestletTestCase {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
-        assertEquals("No user did not throw 401",
-                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        assertEquals(
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus(),
+                "No user did not throw 401"
+        );
         client.stop();
     }
 
@@ -200,8 +212,10 @@ public class HttpBasicTestCase extends RestletTestCase {
         request.setChallengeResponse(authentication);
 
         final Response response = client.handle(request);
-        assertEquals("Short username did not return 200 OK", Status.SUCCESS_OK,
-                response.getStatus());
+        assertEquals(
+                Status.SUCCESS_OK, response.getStatus(),
+                "Short username did not return 200 OK"
+        );
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
 
         client.stop();
@@ -217,8 +231,10 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         final Response response = client.handle(request);
 
-        assertEquals("Short username did not throw 401",
-                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        assertEquals(
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus(),
+                "Short username did not throw 401"
+        );
 
         client.stop();
     }
@@ -233,13 +249,15 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         final Response response = client.handle(request);
 
-        assertEquals("Wrong username did not throw 401",
-                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        assertEquals(
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus(),
+                "Wrong username did not throw 401"
+        );
 
         client.stop();
     }
 
-    @Before
+    @BeforeEach
     public void makeServer() throws Exception {
         int port = TEST_PORT;
         this.component = new Component();
@@ -265,7 +283,7 @@ public class HttpBasicTestCase extends RestletTestCase {
         this.component.start();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
@@ -273,19 +291,14 @@ public class HttpBasicTestCase extends RestletTestCase {
         this.component = null;
     }
 
-    public void testHttpBasic() {
-        try {
-            makeServer();
-            HttpBasicWrongUser();
-            HttpBasicShort();
-            HttpBasicShortWrong();
-            HttpBasicNone();
-            HttpBasicLong();
-            HttpBasicLongWrong();
-            stopServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Test
+    public void testHttpBasic() throws Exception {
+        HttpBasicWrongUser();
+        HttpBasicShort();
+        HttpBasicShortWrong();
+        HttpBasicNone();
+        HttpBasicLong();
+        HttpBasicLongWrong();
     }
 
 }

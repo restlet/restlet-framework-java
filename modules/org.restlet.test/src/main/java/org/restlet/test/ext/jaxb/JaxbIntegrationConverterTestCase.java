@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jaxb.JaxbConverter;
 import org.restlet.test.RestletTestCase;
@@ -51,6 +52,10 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Simple Integration Tests that uses the JAXB Converter to perform POST, PUT
@@ -109,6 +114,7 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testIntegration() throws Exception {
         Client client = new Client(new Context(), Arrays.asList(Protocol.HTTP));
         Request request = new Request(Method.POST, uri);
@@ -116,22 +122,22 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
 
         Response response = client.handle(request);
 
-        JaxbRepresentation<Sample> resultRepresentation = new JaxbRepresentation<Sample>(response.getEntity(), Sample.class);
+        JaxbRepresentation<Sample> resultRepresentation = new JaxbRepresentation<>(response.getEntity(), Sample.class);
         Sample sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
 
         request = new Request(Method.PUT, uri);
-        request.setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
+        request.setEntity(new JaxbRepresentation<>(new Sample(IN_STRING)));
 
         response = client.handle(request);
-        resultRepresentation = new JaxbRepresentation<Sample>(
+        resultRepresentation = new JaxbRepresentation<>(
                 response.getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
 
         request = new Request(Method.GET, uri);
         response = client.handle(request);
-        resultRepresentation = new JaxbRepresentation<Sample>(
+        resultRepresentation = new JaxbRepresentation<>(
                 response.getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
         assertEquals(IN_STRING, sample.getVal());
@@ -141,13 +147,13 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
 
     /**
      * Test POST, PUT and GET using the ClientResource class
-     * 
-     * @throws Exception
+     *
      */
-    public void testWithClientResource() throws Exception {
+    @Test
+    public void testWithClientResource() {
         ClientResource sampleResource = new ClientResource(uri);
-        List<Preference<MediaType>> m = new ArrayList<Preference<MediaType>>();
-        m.add(new Preference<MediaType>(MediaType.APPLICATION_XML));
+        List<Preference<MediaType>> m = new ArrayList<>();
+        m.add(new Preference<>(MediaType.APPLICATION_XML));
         sampleResource.getClientInfo().setAcceptedMediaTypes(m);
 
         Sample sample = new Sample(IN_STRING);
@@ -179,7 +185,7 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
         @Put("xml:xml")
         public JaxbRepresentation<Sample> putSample(Sample sample) {
             assertNotNull(sample);
-            return new JaxbRepresentation<Sample>(new Sample(HELLO_OUT_STRING));
+            return new JaxbRepresentation<>(new Sample(HELLO_OUT_STRING));
         }
     }
 }

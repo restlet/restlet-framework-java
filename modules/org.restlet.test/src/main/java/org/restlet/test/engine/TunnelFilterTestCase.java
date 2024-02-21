@@ -1,34 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.engine;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -46,6 +42,15 @@ import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests cases for the tunnel filter.
@@ -93,9 +98,8 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertEqualSet(this.accEncodings, encodings);
     }
 
-    <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
-            @SuppressWarnings("unchecked")
-            A... expected) {
+    @SafeVarargs
+    final <A extends Metadata> void assertEqualSet(List<? extends Preference<A>> actual, A... expected) {
         if (actual.size() != expected.length) {
             System.out.println("Is:     " + actual);
             System.out.println("Should: " + Arrays.asList(expected));
@@ -115,7 +119,6 @@ public class TunnelFilterTestCase extends RestletTestCase {
                 fail(message);
             }
         }
-        return null;
     }
 
     void assertLanguages(Language... languages) {
@@ -149,14 +152,14 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     /**
-     * 
+     *
      * @param expectedSubPathCut
      *            if null, the same as subPathOrig
      * @param expectedExtension
      *            if null, then same as "" for this test
      */
     private void checkFromPath(String expectedSubPathCut,
-            String expectedExtension) {
+                               String expectedExtension) {
         if (expectedSubPathCut == null) {
             check(this.lastCreatedReference, expectedExtension);
         } else {
@@ -174,7 +177,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     /**
-     * 
+     *
      * @param subPathToCheck
      * @see #createGet(String)
      * @see #createRequest(Method, String)
@@ -184,7 +187,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     /**
-     * 
+     *
      */
     void createPost(String reference) {
         createRequest(Method.POST, reference);
@@ -194,7 +197,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
      * Creates a {@link Request} and put it into {@link #request}.<br>
      * To use the methods provided by the test case class use ever the provided
      * create methods to create a request.
-     * 
+     *
      * @param method
      * @param reference
      * @see #createPost(String)
@@ -250,12 +253,13 @@ public class TunnelFilterTestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testExtMappingOff1() {
         extensionTunnelOff();
         createGet(UNEFFECTED);
         this.accLanguages
-                .add(new Preference<Language>(Language.valueOf("ajh")));
-        this.accMediaTypes.add(new Preference<MediaType>(
+                .add(new Preference<>(Language.valueOf("ajh")));
+        this.accMediaTypes.add(new Preference<>(
                 MediaType.APPLICATION_STUFFIT));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
@@ -265,12 +269,13 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertEncodings();
     }
 
+    @Test
     public void testExtMappingOff2() {
         extensionTunnelOff();
         createGet(EFFECTED);
         this.accLanguages
-                .add(new Preference<Language>(Language.valueOf("ajh")));
-        this.accMediaTypes.add(new Preference<MediaType>(
+                .add(new Preference<>(Language.valueOf("ajh")));
+        this.accMediaTypes.add(new Preference<>(
                 MediaType.APPLICATION_STUFFIT));
         filter();
         assertEquals(EFFECTED, this.request.getResourceRef().toString());
@@ -280,6 +285,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertEncodings();
     }
 
+    @Test
     public void testExtMappingOn() {
         createGet(UNEFFECTED);
         filter();
@@ -365,10 +371,11 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertCharSets();
     }
 
+    @Test
     public void testMethodTunnelingViaHeader() {
         tunnelFilter.getTunnelService().setMethodTunnel(true);
-        Map<String, Object> attributesHeader = new HashMap<String, Object>();
-        Series<Header> headers = new Series<Header>(Header.class);
+        Map<String, Object> attributesHeader = new HashMap<>();
+        Series<Header> headers = new Series<>(Header.class);
         headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE,
                 Method.GET.getName());
         headers.add(HeaderConstants.HEADER_X_FORWARDED_FOR, "TEST");
@@ -400,6 +407,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
     }
 
+    @Test
     public void testWithMatrixParam() {
         createGet(EFFECTED + ";abcdef");
         filter();
@@ -410,6 +418,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
         assertCharSets();
     }
 
+    @Test
     public void testMethodTunnelingViaUserAgent() {
         tunnelFilter.getTunnelService().setExtensionsTunnel(false);
         tunnelFilter.getTunnelService().setHeadersTunnel(false);
@@ -419,7 +428,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
         tunnelFilter.getTunnelService().setUserAgentTunnel(true);
 
         createGet(UNEFFECTED);
-        this.accMediaTypes.add(new Preference<MediaType>(
+        this.accMediaTypes.add(new Preference<>(
                 MediaType.APPLICATION_ZIP));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
@@ -429,7 +438,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
         this.userAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)";
         createGet(UNEFFECTED);
-        this.accMediaTypes.add(new Preference<MediaType>(
+        this.accMediaTypes.add(new Preference<>(
                 MediaType.APPLICATION_ZIP));
         filter();
         assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
@@ -437,6 +446,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
                 MediaType.APPLICATION_XML, MediaType.ALL);
     }
 
+    @Test
     public void testMethodTunnelingViaQuery() {
         tunnelFilter.getTunnelService().setExtensionsTunnel(false);
         tunnelFilter.getTunnelService().setHeadersTunnel(false);

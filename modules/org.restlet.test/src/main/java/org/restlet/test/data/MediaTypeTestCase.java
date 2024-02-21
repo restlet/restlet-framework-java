@@ -24,11 +24,20 @@
 
 package org.restlet.test.data;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test {@link org.restlet.data.MediaType}.
@@ -66,6 +75,7 @@ public class MediaTypeTestCase extends RestletTestCase {
     /**
      * Makes sure concrete types are properly initialized.
      */
+    @Test
     public void testConcrete() {
         assertMediaType("application/xml", "application", "xml", true);
         assertMediaType("application/ xml ", "application", "xml", true);
@@ -78,6 +88,7 @@ public class MediaTypeTestCase extends RestletTestCase {
     /**
      * Makes sure concrete types are properly initialized.
      */
+    @Test
     public void testParameters() {
         MediaType mt = MediaType.valueOf("application/atom+xml;type=entry");
         assertEquals("entry", mt.getParameters().getFirstValue("type"));
@@ -91,10 +102,11 @@ public class MediaTypeTestCase extends RestletTestCase {
     /**
      * Equality tests.
      */
-    public void testEquals() throws Exception {
+    @Test
+    public void testEquals() {
         MediaType mt1 = new MediaType("application/xml");
         MediaType mt2 = MediaType.APPLICATION_XML;
-        assertTrue(mt1.equals(mt2));
+        assertEquals(mt1, mt2);
         assertEquals(mt1, mt2);
 
         final Series<Parameter> mediaParams1 = new Form();
@@ -109,7 +121,7 @@ public class MediaTypeTestCase extends RestletTestCase {
         mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
         final MediaType mt3 = new MediaType("application/xml", mediaParams3);
 
-        assertTrue(mt1Bis.equals(mt2Bis));
+        assertEquals(mt1Bis, mt2Bis);
         assertEquals(mt1, mt2);
         assertTrue(mt1Bis.equals(mt1, true));
         assertTrue(mt1Bis.equals(mt2, true));
@@ -117,14 +129,15 @@ public class MediaTypeTestCase extends RestletTestCase {
 
         mt1 = new MediaType("application/*");
         mt2 = MediaType.APPLICATION_ALL;
-        assertTrue(mt1.equals(mt2));
+        assertEquals(mt1, mt2);
         assertEquals(mt1, mt2);
     }
 
     /**
      * Test inclusion.
      */
-    public void testIncludes() throws Exception {
+    @Test
+    public void testIncludes() {
         MediaType mt1 = MediaType.APPLICATION_ALL;
         MediaType mt2 = MediaType.APPLICATION_XML;
         assertTrue(mt1.includes(mt1));
@@ -163,30 +176,30 @@ public class MediaTypeTestCase extends RestletTestCase {
 
         MediaType typeWithNoParams = new MediaType("application/sometype");
 
-        Series<Parameter> singleParam = new Series<Parameter>(Parameter.class);
+        Series<Parameter> singleParam = new Series<>(Parameter.class);
         singleParam.add(new Parameter("name1", "value1"));
         MediaType typeWithSingleParam = new MediaType("application/sometype",
                 singleParam);
 
-        Series<Parameter> singleMatchingParam = new Series<Parameter>(
+        Series<Parameter> singleMatchingParam = new Series<>(
                 Parameter.class);
         singleMatchingParam.add(new Parameter("name1", "value1"));
         MediaType typeWithSingleMatchingParam = new MediaType(
                 "application/sometype", singleMatchingParam);
 
-        Series<Parameter> singleNonMatchingParamValue = new Series<Parameter>(
+        Series<Parameter> singleNonMatchingParamValue = new Series<>(
                 Parameter.class);
         singleNonMatchingParamValue.add(new Parameter("name1", "value2"));
         MediaType typeWithSingleNonMatchingParamValue = new MediaType(
                 "application/sometype", singleNonMatchingParamValue);
 
-        Series<Parameter> singleNonMatchingParamName = new Series<Parameter>(
+        Series<Parameter> singleNonMatchingParamName = new Series<>(
                 Parameter.class);
         singleNonMatchingParamName.add(new Parameter("name2", "value2"));
         MediaType typeWithSingleNonMatchingParamName = new MediaType(
                 "application/sometype", singleNonMatchingParamName);
 
-        Series<Parameter> twoParamsOneMatches = new Series<Parameter>(
+        Series<Parameter> twoParamsOneMatches = new Series<>(
                 Parameter.class);
         twoParamsOneMatches.add(new Parameter("name1", "value1"));
         twoParamsOneMatches.add(new Parameter("name2", "value2"));
@@ -243,6 +256,7 @@ public class MediaTypeTestCase extends RestletTestCase {
                 false));
     }
 
+    @Test
     public void testMostSpecificMediaType() {
         assertEquals(MediaType.TEXT_ALL,
                 MediaType.getMostSpecific(MediaType.ALL, MediaType.TEXT_ALL));
@@ -266,6 +280,7 @@ public class MediaTypeTestCase extends RestletTestCase {
     /**
      * Makes sure that 'abstract' types are properly initialised.
      */
+    @Test
     public void testNotConcrete() {
         // */*
         assertMediaType("", "*", "*", false);
@@ -307,10 +322,11 @@ public class MediaTypeTestCase extends RestletTestCase {
     /**
      * Test references that are unequal.
      */
-    public void testUnEquals() throws Exception {
+    @Test
+    public void testUnEquals() {
         MediaType mt1 = new MediaType("application/xml");
         MediaType mt2 = new MediaType("application/xml2");
-        assertFalse(mt1.equals(mt2));
+        assertNotEquals(mt1, mt2);
 
         final Series<Parameter> mediaParams1 = new Form();
         mediaParams1.add(new Parameter("charset", "ISO-8859-1"));
@@ -320,18 +336,19 @@ public class MediaTypeTestCase extends RestletTestCase {
         mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
         final MediaType mt3 = new MediaType("application/xml", mediaParams3);
 
-        assertFalse(mt1Bis.equals(mt1));
-        assertFalse(mt1Bis.equals(mt3));
+        assertNotEquals(mt1Bis, mt1);
+        assertNotEquals(mt1Bis, mt3);
 
         mt1 = new MediaType("application/1");
         mt2 = MediaType.APPLICATION_ALL;
-        assertFalse(mt1.equals(mt2));
+        assertNotEquals(mt1, mt2);
     }
 
     /**
      * Testing {@link MediaType#valueOf(String)} and
      * {@link MediaType#register(String, String)}
      */
+    @Test
     public void testValueOf() {
         assertSame(MediaType.APPLICATION_XML,
                 MediaType.valueOf("application/xml"));
@@ -364,6 +381,7 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertEquals(MediaType.APPLICATION_ATOM, mediaType.getParent());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
     public void testUnmodifiable() {
         Form form = new Form();

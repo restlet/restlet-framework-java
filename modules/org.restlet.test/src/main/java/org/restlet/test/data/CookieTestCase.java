@@ -24,8 +24,12 @@
 
 package org.restlet.test.data;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Cookie;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Test {@link org.restlet.data.Cookie}.
@@ -37,33 +41,32 @@ public class CookieTestCase extends RestletTestCase {
     /**
      * Equality tests.
      */
-    public void testEquals() throws Exception {
+    @Test
+    public void testEquals() {
         Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
         Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
 
-        assertTrue(c1.equals(c2));
-        assertTrue(c1.hashCode() == c2.hashCode());
         assertEquals(c1, c2);
-
-        assertTrue(c1.equals(c1));
-        assertEquals(c1, c1);
+        assertEquals(c1.hashCode(), c2.hashCode());
+        assertEquals(c1, c2);
     }
 
     /**
      * Unequality tests.
      */
-    public void testUnEquals() throws Exception {
+    @Test
+    public void testUnEquals() {
         Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
         Cookie c2 = new Cookie(2, "name2", "value2", "path2", "domain2");
-        assertFalse(c1.equals(c2));
-        assertFalse(c1.hashCode() == c2.hashCode());
-        assertFalse(c1.equals(null));
-        assertFalse(c2.equals(null));
+        assertNotEquals(c1, c2);
+        assertNotEquals(c1.hashCode(), c2.hashCode());
+        assertNotEquals(null, c1);
+        assertNotEquals(null, c2);
 
         c1 = new Cookie(1, "name", "value", "path", "domain");
         c2 = new Cookie(2, "name", "value", "path", "domain");
-        assertFalse(c1.equals(c2));
-        assertFalse(c1.hashCode() == c2.hashCode());
+        assertNotEquals(c1, c2);
+        assertNotEquals(c1.hashCode(), c2.hashCode());
     }
 
 }

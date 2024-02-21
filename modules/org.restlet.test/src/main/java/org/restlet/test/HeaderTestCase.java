@@ -1,29 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -38,12 +39,16 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class HeaderTestCase extends RestletTestCase {
 
     /**
      * Restlet that returns as a new Representation the list of values of
      * "testHeader" header.
-     * 
      */
     public static class TestHeaderRestlet extends Restlet {
         @Override
@@ -70,9 +75,9 @@ public class HeaderTestCase extends RestletTestCase {
 
     /**
      * Returns the list of HTTP headers of a request as a Form.
-     * 
+     *
      * @param request
-     *            The request.
+     *         The request.
      * @return The list of headers as a Form object.
      */
     private static Series<Header> getHttpHeaders(Request request) {
@@ -81,7 +86,7 @@ public class HeaderTestCase extends RestletTestCase {
                 HeaderConstants.ATTRIBUTE_HEADERS);
 
         if (headers == null) {
-            headers = new Series<Header>(Header.class);
+            headers = new Series<>(Header.class);
             request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                     headers);
         }
@@ -96,24 +101,19 @@ public class HeaderTestCase extends RestletTestCase {
     /**
      * Handle a new request built according to the parameters and return the
      * response object.
-     * 
+     *
      * @param additionalHeaders
-     *            The list of header used to build the request.
+     *         The list of header used to build the request.
      * @return The response of the request.
-     * @throws Exception
      */
-    private Response getWithParams(Header... additionalHeaders)
-            throws Exception {
+    private Response getWithParams(Header... additionalHeaders) {
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT);
         Series<Header> headers = getHttpHeaders(request);
 
-        for (Header header : additionalHeaders) {
-            headers.add(header);
-        }
+        Collections.addAll(headers, additionalHeaders);
 
-        Response result = client.handle(request);
-        return result;
+        return client.handle(request);
     }
 
     @Override
@@ -142,13 +142,15 @@ public class HeaderTestCase extends RestletTestCase {
     }
 
     /** test with no test header */
+    @Test
     public void test0() throws Exception {
         Response response = getWithParams();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(null, response.getEntity().getText());
+        assertNull(response.getEntity().getText());
     }
 
     /** test with one test header */
+    @Test
     public void test1() throws Exception {
         Response response = getWithParams(new Header(TEST_HEADER, "a"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -156,6 +158,7 @@ public class HeaderTestCase extends RestletTestCase {
     }
 
     /** test with two test headers */
+    @Test
     public void test2() throws Exception {
         Response response = getWithParams(new Header(TEST_HEADER, "a"),
                 new Header(TEST_HEADER, "b"));

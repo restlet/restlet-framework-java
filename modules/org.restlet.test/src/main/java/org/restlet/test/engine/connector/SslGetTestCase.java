@@ -41,6 +41,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 /**
  * Test that a simple get using SSL works for all the connectors.
  * 

@@ -24,10 +24,13 @@
 
 package org.restlet.test.ext.spring;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.test.RestletTestCase;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the Spring extension.
@@ -36,6 +39,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class SpringTestCase extends RestletTestCase {
 
+    @Test
     public void testSpring() throws Exception {
         // Load the Spring container
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
@@ -49,6 +53,7 @@ public class SpringTestCase extends RestletTestCase {
         ctx.close();
     }
 
+    @Test
     public void testSpringServerProperties() {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
                 "org/restlet/test/ext/spring/SpringTestCase.xml");

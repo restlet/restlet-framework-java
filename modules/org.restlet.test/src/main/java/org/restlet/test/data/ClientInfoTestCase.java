@@ -27,6 +27,7 @@ package org.restlet.test.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Language;
@@ -36,6 +37,8 @@ import org.restlet.representation.Variant;
 import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link org.restlet.data.ClientInfo} for content negotiation.
@@ -61,18 +64,19 @@ public class ClientInfoTestCase extends RestletTestCase {
     /**
      * Conneg tests.
      */
-    public void testConneg() throws Exception {
+    @Test
+    public void testConneg() {
         ConnegService connegService = new ConnegService();
         Request request = new Request();
         ClientInfo ci = request.getClientInfo();
         ci.getAcceptedLanguages().add(
-                new Preference<Language>(Language.ENGLISH_US, 1.0F));
+                new Preference<>(Language.ENGLISH_US, 1.0F));
         ci.getAcceptedLanguages().add(
-                new Preference<Language>(Language.FRENCH_FRANCE, 0.9F));
+                new Preference<>(Language.FRENCH_FRANCE, 0.9F));
         ci.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_XML, 1.0F));
+                new Preference<>(MediaType.TEXT_XML, 1.0F));
 
-        List<Variant> variants = new ArrayList<Variant>();
+        List<Variant> variants = new ArrayList<>();
         variants.add(new Variant(MediaType.TEXT_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH_FRANCE));
         Variant pv = connegService.getPreferredVariant(variants, request, ms);
@@ -122,12 +126,13 @@ public class ClientInfoTestCase extends RestletTestCase {
     /**
      * Conneg tests for IE which accepts all media types.
      */
-    public void testConnegIO() throws Exception {
+    @Test
+    public void testConnegIO() {
         ClientInfo ci = new ClientInfo();
         ci.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.ALL, 1.0F));
+                new Preference<>(MediaType.ALL, 1.0F));
 
-        List<MediaType> types = new ArrayList<MediaType>();
+        List<MediaType> types = new ArrayList<>();
         types.add(MediaType.TEXT_XML);
         types.add(MediaType.APPLICATION_JSON);
         MediaType pmt = ci.getPreferredMediaType(types);

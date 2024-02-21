@@ -26,6 +26,7 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -34,6 +35,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test annotated resource that reimplements of one the annotated method from
@@ -60,6 +63,7 @@ public class AnnotatedResource11TestCase extends InternalConnectorTestCase {
      * @throws IOException
      * @throws ResourceException
      */
+    @Test
     public void test() throws IOException, ResourceException {
         Request request = createRequest(Method.GET);
         Response response = handle(request);

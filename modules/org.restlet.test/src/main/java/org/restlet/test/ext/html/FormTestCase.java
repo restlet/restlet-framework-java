@@ -26,6 +26,7 @@ package org.restlet.test.ext.html;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.html.FormData;
@@ -33,6 +34,9 @@ import org.restlet.ext.html.FormDataSet;
 import org.restlet.ext.html.internal.FormReader;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the Form class.
@@ -43,6 +47,7 @@ public class FormTestCase extends RestletTestCase {
     /**
      * Tests the cookies parsing.
      */
+    @Test
     public void testParsing() throws IOException {
         FormDataSet form = new FormDataSet();
         form.add("name", "John D. Mitchell");
@@ -63,7 +68,8 @@ public class FormTestCase extends RestletTestCase {
     /**
      * Tests the multipart content-type.
      */
-    public void testContentType() throws IOException {
+    @Test
+    public void testContentType() {
         FormDataSet form = null;
 
         form = new FormDataSet();

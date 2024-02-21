@@ -26,12 +26,16 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -57,14 +61,15 @@ public class AnnotatedResource17TestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testQuery() throws IOException {
         Representation rep = null;
         MyBean myBean = new MyBean("test", "description");
-        rep = clientResource.post(new JacksonRepresentation<MyBean>(myBean),
+        rep = clientResource.post(new JacksonRepresentation<>(myBean),
                 MediaType.APPLICATION_JSON);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
-        JacksonRepresentation<MyBean> jr = new JacksonRepresentation<MyBean>(
+        JacksonRepresentation<MyBean> jr = new JacksonRepresentation<>(
                 rep, MyBean.class);
         assertNotNull(jr.getObject());
         assertEquals("test", jr.getObject().getName());

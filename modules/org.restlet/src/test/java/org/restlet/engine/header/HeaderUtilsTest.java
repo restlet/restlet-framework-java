@@ -24,7 +24,7 @@
 
 package org.restlet.engine.header;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
@@ -32,8 +32,8 @@ import org.restlet.util.Series;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HeaderUtilsTest {
 

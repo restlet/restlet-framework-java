@@ -24,11 +24,12 @@
 
 package org.restlet.test.ext.json;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.restlet.data.Status.SUCCESS_OK;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.json.JsonpRepresentation;
@@ -49,7 +50,8 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
     public static final String JSONP_STATUS_BODY = "({\"status\":,\"body\":});";
 
-    public void testGetSizeJson() throws Exception {
+    @Test
+    public void testGetSizeJson() {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
                 CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
 
@@ -59,10 +61,11 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
                 + Integer.toString(SUCCESS_OK.getCode()).length()
                 + CALLBACK.length() + JSONP_STATUS_BODY.length();
 
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
-    public void testGetSize_with_text_is_UNKNOWN_SIZE() throws Exception {
+    @Test
+    public void testGetSize_with_text_is_UNKNOWN_SIZE() {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
                 CALLBACK, SUCCESS_OK, new StringRepresentation(JSON_SAMPLE,
                         MediaType.TEXT_HTML));
@@ -71,9 +74,10 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
         long expected = Representation.UNKNOWN_SIZE;
 
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
+    @Test
     public void testWrite() throws Exception {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
                 CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
@@ -84,11 +88,12 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
         String expected = "callback({\"status\":200,\"body\":{\"attribute\": value}});";
 
-        Assert.assertEquals(expected, out.toString());
+        assertEquals(expected, out.toString());
     }
 
     // with a text representation, apostrophe are escaped and text is embedded
     // between 2 apostrophe
+    @Test
     public void testWrite_with_text_then_apostrophe_are_escaped()
             throws Exception {
         JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
@@ -101,7 +106,7 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
 
         String expected = "callback({\"status\":200,\"body\":\"whatever\\\"with\\\"apostrophe\"});";
 
-        Assert.assertEquals(expected, out.toString());
+        assertEquals(expected, out.toString());
     }
 
 }

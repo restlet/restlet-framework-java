@@ -26,6 +26,7 @@ package org.restlet.test.ext.html;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.ext.html.FormData;
@@ -35,6 +36,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Test case for the {@link FormDataSet} class in multipart mode.
  * 
@@ -42,6 +45,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class MultiPartFormTestCase extends RestletTestCase {
 
+    @Test
     public void testWrite() throws IOException {
 
         // considered as a simple field entry

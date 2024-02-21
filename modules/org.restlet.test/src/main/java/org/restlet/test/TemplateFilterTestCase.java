@@ -27,6 +27,7 @@ package org.restlet.test;
 import java.io.File;
 import java.io.FileWriter;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -38,6 +39,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.resource.Directory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test case for template filters.
@@ -123,6 +127,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
     File testDir;
 
+    @Test
     public void testTemplateFilter() {
         try {
             // Create a temporary directory for the tests

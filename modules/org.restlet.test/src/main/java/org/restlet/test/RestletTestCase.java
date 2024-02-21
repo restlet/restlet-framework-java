@@ -1,45 +1,47 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.restlet.engine.Engine;
 import org.restlet.representation.ObjectRepresentation;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 
 /**
  * Marker class. All Restlet tests should be derived from this class.
- * 
+ *
  * @author Lars Heuer (heuer[at]semagia.com)
  * @author Jerome Louvel
  */
-public abstract class RestletTestCase extends TestCase {
+public abstract class RestletTestCase {
 
     public static final int DEFAULT_TEST_PORT = 1337;
 
-    private static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
+    protected static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
 
     public static int TEST_PORT = getTestPort();
 
@@ -51,11 +53,8 @@ public abstract class RestletTestCase extends TestCase {
         return DEFAULT_TEST_PORT;
     }
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
-        System.out.println("Setting up test " + getClass().getName() + "#"
-                + getName());
         setUpEngine();
     }
 
@@ -78,9 +77,8 @@ public abstract class RestletTestCase extends TestCase {
         ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
     }
 
-    @Override
+    @AfterEach
     protected void tearDown() throws Exception {
-        super.tearDown();
         tearDownEngine();
     }
 

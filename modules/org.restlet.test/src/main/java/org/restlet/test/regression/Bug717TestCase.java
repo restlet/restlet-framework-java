@@ -24,11 +24,7 @@
 
 package org.restlet.test.regression;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
@@ -36,10 +32,17 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.InputSource;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
+
 /**
  * Simple test case to illustrate defect #717 and validate the fix when applied.
  */
-public class Bug717TestCase extends TestCase {
+public class Bug717TestCase {
 
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
             + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
@@ -52,6 +55,7 @@ public class Bug717TestCase extends TestCase {
             + "<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.HelloWorldApplication\"/>\n"
             + "</host>\n" + "</component>\n";
 
+    @Test
     public void test() throws IOException {
         InputStream inStr = getClass().getResourceAsStream(
                 "/org/restlet/Component.xsd");

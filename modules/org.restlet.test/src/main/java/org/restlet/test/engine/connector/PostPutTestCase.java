@@ -35,6 +35,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * Unit tests for POST and PUT requests.
  * 
@@ -73,8 +76,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         return application;
     }
 
-    private void testCall(Client client, Method method, String uri)
-            throws Exception {
+    private void testCall(Client client, Method method, String uri) {
         Form inputForm = new Form();
         inputForm.add("a", "a");
         inputForm.add("b", "b");

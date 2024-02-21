@@ -24,8 +24,12 @@
 
 package org.restlet.test.engine;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.header.ContentType;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test {@link ContentType}
@@ -34,6 +38,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class ContentTypeTestCase extends RestletTestCase {
 
+    @Test
     public void testParsingInvalid() {
         String h1 = "application/docbook+xml; version='my version 1.0'";
 
@@ -45,6 +50,7 @@ public class ContentTypeTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testParsing() {
         String h1 = "application/docbook+xml; version=\"my version 1.0\"";
         String h2 = "application/docbook+xml; version='my%20version%201.0'";

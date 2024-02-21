@@ -24,9 +24,13 @@
 
 package org.restlet.test.data;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.AuthenticationInfo;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Test {@link org.restlet.data.Reference}.
@@ -37,25 +41,26 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Test parsing an Authorization-Info header string.
      */
-    public void testAuthenticationInfoHeaderParse() throws Exception {
+    @Test
+    public void testAuthenticationInfoHeaderParse() {
         AuthenticationInfo authInfo = new AuthenticationInfo("00000002", 1,
                 "MDAzMTAw1", "auth", null);
-        String authInfoHeader = new String(
-                "nc=00000001, qop=auth, cnonce=\"MDAzMTAw1\", nextnonce=00000002");
+        String authInfoHeader = "nc=00000001, qop=auth, cnonce=\"MDAzMTAw1\", nextnonce=00000002";
         AuthenticationInfo parsedAuthInfo = AuthenticatorUtils
                 .parseAuthenticationInfo(authInfoHeader);
-        assertTrue(authInfo.equals(parsedAuthInfo));
-        assertTrue(parsedAuthInfo.equals(authInfo));
+        assertEquals(authInfo, parsedAuthInfo);
+        assertEquals(parsedAuthInfo, authInfo);
     }
 
     /**
      * Test cnonce getting/setting.
      */
-    public void testCnonce() throws Exception {
+    @Test
+    public void testCnonce() {
         AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
                 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getClientNonce(), "testcnonce");
-        String newCnonce = new String("newcnonce");
+        String newCnonce = "newcnonce";
         authInfo.setClientNonce(newCnonce);
         assertEquals(authInfo.getClientNonce(), "newcnonce");
     }
@@ -63,23 +68,25 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Equality tests.
      */
-    public void testEquals() throws Exception {
+    @Test
+    public void testEquals() {
         final AuthenticationInfo authInfo1 = new AuthenticationInfo(
                 "testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         final AuthenticationInfo authInfo2 = new AuthenticationInfo(
                 "testnonce", 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo1, authInfo2);
-        assertTrue(authInfo1.equals(authInfo2));
+        assertEquals(authInfo1, authInfo2);
     }
 
     /**
      * Test nextnonce getting/setting.
      */
-    public void testNextNonce() throws Exception {
+    @Test
+    public void testNextNonce() {
         AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
                 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getNextServerNonce(), "testnonce");
-        String newNonce = new String("newnonce");
+        String newNonce = "newnonce";
         authInfo.setNextServerNonce(newNonce);
         assertEquals(authInfo.getNextServerNonce(), "newnonce");
     }
@@ -87,7 +94,8 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Test nonce-count getting/setting.
      */
-    public void testNonceCount() throws Exception {
+    @Test
+    public void testNonceCount() {
         AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
                 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getNonceCount(), 1111111);
@@ -99,11 +107,12 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Test message-qop getting/setting.
      */
-    public void testQop() throws Exception {
+    @Test
+    public void testQop() {
         AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
                 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getQuality(), "auth");
-        String newQop = new String("auth-int");
+        String newQop = "auth-int";
         authInfo.setQuality(newQop);
         assertEquals(authInfo.getQuality(), "auth-int");
     }
@@ -111,26 +120,26 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Test response-auth getting/setting.
      */
-    public void testResponseAuth() throws Exception {
+    @Test
+    public void testResponseAuth() {
         AuthenticationInfo authInfo = new AuthenticationInfo("testnonce",
                 1111111, "testcnonce", "auth", "FFFFFF");
         assertEquals(authInfo.getResponseDigest(), "FFFFFF");
-        String newResponseAuth = new String("000000");
+        String newResponseAuth = "000000";
         authInfo.setResponseDigest(newResponseAuth);
         assertEquals(authInfo.getResponseDigest(), "000000");
     }
 
-    public void testUnEquals() throws Exception {
+    @Test
+    public void testUnEquals() {
         final AuthenticationInfo authInfo1 = new AuthenticationInfo(
                 "testnonce1", 1111111, "testcnonce1", "auth", "FFFFFF");
         final AuthenticationInfo authInfo2 = new AuthenticationInfo(
                 "testnonce2", 1111111, "testcnonce2", "auth", "FFFFFF");
-        assertFalse(authInfo1.equals(authInfo2));
-        assertFalse(authInfo1.equals(null));
-        assertFalse(authInfo2.equals(null));
-        assertFalse(authInfo1.getNextServerNonce().equals(
-                authInfo2.getNextServerNonce()));
-        assertFalse(authInfo1.getClientNonce().equals(
-                authInfo2.getClientNonce()));
+        assertNotEquals(authInfo1, authInfo2);
+        assertNotEquals(null, authInfo1);
+        assertNotEquals(null, authInfo2);
+        assertNotEquals(authInfo1.getNextServerNonce(), authInfo2.getNextServerNonce());
+        assertNotEquals(authInfo1.getClientNonce(), authInfo2.getClientNonce());
     }
 }

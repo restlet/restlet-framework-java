@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -39,9 +39,12 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * This tests the ability of the connectors to handle chunked encoding.
- * 
+ *
  * The test uses each connector to PUT an entity that will be sent chunked and
  * also to receive a chunked response.
  */
@@ -67,20 +70,13 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     /**
      * Returns a StringRepresentation which size depends on the given argument.
-     * 
+     *
      * @param size
-     *            the size of the representation
+     *         the size of the representation
      * @return A DomRepresentation.
      */
     private static Representation createChunkedRepresentation(int size) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < size; i++) {
-            builder.append("a");
-        }
-
-        Representation rep = new StringRepresentation(builder.toString(),
-                MediaType.TEXT_PLAIN);
+        Representation rep = new StringRepresentation("a".repeat(Math.max(0, size)), MediaType.TEXT_PLAIN);
         rep.setSize(Representation.UNKNOWN_SIZE);
         return rep;
     }
@@ -124,8 +120,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             }
 
             assertNotNull(r.getEntity());
-            assertEquals(createChunkedRepresentation(size).getText(), r
-                    .getEntity().getText());
+            assertEquals(createChunkedRepresentation(size).getText(), r.getEntity().getText());
         } finally {
             r.release();
             c.stop();

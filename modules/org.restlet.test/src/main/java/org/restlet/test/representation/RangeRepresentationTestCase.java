@@ -24,10 +24,14 @@
 
 package org.restlet.test.representation;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Range;
 import org.restlet.engine.application.RangeRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit test case for the {@link RangeRepresentation} class.
@@ -36,6 +40,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class RangeRepresentationTestCase extends RestletTestCase {
 
+    @Test
     public void testAppendable() throws Exception {
         StringRepresentation sr = new StringRepresentation("1234567890");
         RangeRepresentation rr = new RangeRepresentation(sr);
@@ -47,6 +52,7 @@ public class RangeRepresentationTestCase extends RestletTestCase {
         assertEquals("34567", rr.getText());
     }
 
+    @Test
     public void testSize() throws Exception {
         StringRepresentation sr = new StringRepresentation("1234567890");
         RangeRepresentation rr = new RangeRepresentation(sr);

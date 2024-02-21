@@ -1,33 +1,28 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.engine.connector;
-
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -54,9 +49,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * This tests the ability of the connectors to handle chunked encoding.
- * 
+ *
  * The test uses each connector to PUT an entity that will be sent chunked and
  * also to receive a chunked response.
  */
@@ -122,7 +125,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
                 HeaderConstants.ATTRIBUTE_HEADERS);
         Header p = headers.getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING,
                 true);
-        assertFalse(p == null);
+        assertNotNull(p);
         assertEquals("chunked", p.getValue());
     }
 
@@ -187,8 +190,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         Client c = new Client(Protocol.HTTP);
         final Response r = c.handle(request);
         try {
-            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
-                    r.getStatus());
+            assertEquals(Status.SUCCESS_OK, r.getStatus(), r.getStatus().getDescription());
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
@@ -203,8 +205,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         try {
             checkForChunkedHeader(r);
-            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
-                    r.getStatus());
+            assertEquals(Status.SUCCESS_OK, r.getStatus(), r.getStatus().getDescription());
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();

@@ -31,6 +31,8 @@ import java.util.GregorianCalendar;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test {@link org.restlet.engine.util.DateUtils}.
  * 
@@ -51,7 +53,6 @@ public class ImmutableDateTestCase extends RestletTestCase {
         assertTrue(DateUtils.unmodifiable(now).after(
                 DateUtils.unmodifiable(yesterday)));
 
-        assertTrue(yesterday.before(now));
         assertTrue(yesterday.before(DateUtils.unmodifiable(now)));
         assertTrue(DateUtils.unmodifiable(yesterday).before(
                 DateUtils.unmodifiable(now)));

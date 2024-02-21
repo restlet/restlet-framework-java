@@ -28,10 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.Engine;
 import org.restlet.routing.Template;
 import org.restlet.routing.Variable;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * Test case for URI templates.
@@ -40,6 +44,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class TemplateTestCase extends RestletTestCase {
 
+    @Test
     public void testEncodedCharacters() {
         Template template = new Template(
                 "http://localhost/{token}/bookstore/{bookid}");
@@ -47,33 +52,34 @@ public class TemplateTestCase extends RestletTestCase {
         String targetUri = "http://localhost/" + encodedToken
                 + "/bookstore/1234";
 
-        Map<String, Object> variables1 = new HashMap<String, Object>();
+        Map<String, Object> variables1 = new HashMap<>();
         int parsed1 = template.parse(targetUri, variables1);
         assertTrue("parsing of " + targetUri
                 + " not successful, but it should be.", parsed1 >= 0);
         assertEquals(encodedToken, variables1.get("token"));
     }
 
+    @Test
     public void testPathMatching() {
         Template template = new Template("http://www.mydomain.com/abc/{v1}");
         template.setMatchingMode(Template.MODE_STARTS_WITH);
         template.getDefaultVariable().setType(Variable.TYPE_URI_PATH);
 
-        Map<String, Object> variables1 = new HashMap<String, Object>();
+        Map<String, Object> variables1 = new HashMap<>();
         String string1 = "http://www.mydomain.com/abc/123/456";
         int parsed1 = template.parse(string1, variables1);
         assertTrue("parsing of " + string1
                 + " not successful, but it should be.", parsed1 >= 0);
         assertEquals("123/456", variables1.get("v1"));
 
-        Map<String, Object> variables2 = new HashMap<String, Object>();
+        Map<String, Object> variables2 = new HashMap<>();
         String string2 = "http://www.mydomain.com/abc/123/456?s=tuv";
         int parsed2 = template.parse(string2, variables2);
         assertTrue("parsing of " + string2
                 + " not successful, but it should be.", parsed2 >= 0);
         assertEquals("123/456", variables2.get("v1"));
 
-        Map<String, Object> variables3 = new HashMap<String, Object>();
+        Map<String, Object> variables3 = new HashMap<>();
         String string3 = "http://www.mydomain.com/abc/123/456#tuv";
         int parsed3 = template.parse(string3, variables3);
         assertTrue("parsing of " + string3
@@ -81,7 +87,8 @@ public class TemplateTestCase extends RestletTestCase {
         assertEquals("123/456", variables3.get("v1"));
     }
 
-    public void testVariableNames() throws Exception {
+    @Test
+    public void testVariableNames() {
         Template tpl = new Template(
                 "http://{userId}.restlet.com/invoices/{invoiceId}");
         tpl.setLogger(Engine.getAnonymousLogger());
@@ -92,17 +99,18 @@ public class TemplateTestCase extends RestletTestCase {
         assertEquals("invoiceId", names.get(1));
     }
 
+    @Test
     public void testWithPercentChars() {
         Template template = new Template("abc/{v1}");
         template.getDefaultVariable().setType(Variable.TYPE_URI_ALL);
-        Map<String, Object> variables1 = new HashMap<String, Object>();
+        Map<String, Object> variables1 = new HashMap<>();
         String string1 = "abc/hff11kh";
         int parsed1 = template.parse(string1, variables1);
         assertTrue("parsing of " + string1
                 + " not successful, but it should be.", parsed1 >= 0);
         assertEquals("hff11kh", variables1.get("v1"));
 
-        Map<String, Object> variables2 = new HashMap<String, Object>();
+        Map<String, Object> variables2 = new HashMap<>();
         String string2 = "abc/hf%20kh";
         int parsed2 = template.parse(string2, variables2);
         assertTrue("parsing of " + string2
