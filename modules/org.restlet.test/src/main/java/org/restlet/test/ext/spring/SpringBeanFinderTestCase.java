@@ -90,7 +90,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     private void registerBeanFactoryBean(String beanName,
             Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
-                new RootBeanDefinition(resourceClass, values));
+                new RootBeanDefinition(resourceClass, null, values));
     }
 
     @Override

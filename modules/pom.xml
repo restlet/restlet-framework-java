@@ -45,7 +45,7 @@
         <lib-aopalliance-version>1.0</lib-aopalliance-version>
         <lib-bloat-version>1.0</lib-bloat-version>
         <lib-cglib-version>2.2</lib-cglib-version>
-        <lib-codec-version>1.16</lib-codec-version>
+        <lib-codec-version>1.16.1</lib-codec-version>
         <lib-commons-collections-version>3.2.2</lib-commons-collections-version>
         <lib-dbcp-version>1.4</lib-dbcp-version>
         <lib-e4-version>0.12.RC1</lib-e4-version>
@@ -104,7 +104,7 @@
         <lib-slf4j-version>2.0.11</lib-slf4j-version>
         <lib-snakeyaml-version>2.2</lib-snakeyaml-version>
         <lib-solr-version>8.11.2</lib-solr-version>
-        <lib-spring-version>3.2.8.RELEASE</lib-spring-version>
+        <lib-spring-version>5.3.33</lib-spring-version>
         <lib-stax2-version>4.2.2</lib-stax2-version>
         <lib-swagger-version>1.5.3-M1</lib-swagger-version>
         <lib-testng-version>7.5.0</lib-testng-version>
