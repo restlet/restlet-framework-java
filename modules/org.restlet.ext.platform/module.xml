@@ -9,6 +9,7 @@
 
    <dependencies>
       <dependency type="library" id="guava" />
+      <dependency type="library" id="failureaccess" />
       <dependency type="library" id="jaxrs" />
       <dependency type="library" id="raml" />
       <dependency type="library" id="swagger.annotations_1.5" />

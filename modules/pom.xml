@@ -41,6 +41,7 @@
         <lib-e4-version>0.12.RC1</lib-e4-version>
         <lib-emf-version>2.29.0</lib-emf-version>
         <lib-emf-ecore-xmi-version>2.35.0</lib-emf-ecore-xmi-version>
+        <lib-failureaccess-version>1.0.2</lib-failureaccess-version>
         <lib-fileupload-version>1.5</lib-fileupload-version>
         <lib-freemarker-version>2.3.32</lib-freemarker-version>
         <lib-gappengine-version>1.9.57</lib-gappengine-version>
@@ -620,6 +621,11 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
                 <version>${lib-hamcrest-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>failureaccess</artifactId>
+                <version>${lib-failureaccess-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

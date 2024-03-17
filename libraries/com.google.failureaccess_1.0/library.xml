@@ -1,0 +1,19 @@
+<library id="failureaccess" symbolicName="com.google.failureaccess">
+	<name>Google Guava failureaccess</name>
+	<description>Google Guava failureacces.</description>
+	<version>1.0</version>
+	<release>2</release>
+	<homeUri>http://code.google.com/p/guava/</homeUri>
+	<provider>Google Inc.</provider>
+
+	<package name="com.google.failureaccess">
+		<maven>
+			<groupId>com.google.guava</groupId>
+			<artifactId>failureaccess</artifactId>
+			<version>1.0.2</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>
