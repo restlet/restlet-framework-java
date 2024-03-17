@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -40,7 +40,7 @@ import org.restlet.security.Verifier;
 /**
  * Authenticator supporting the digest challenge authentication schemes. By
  * default, it only knows about the {@link ChallengeScheme#HTTP_DIGEST} scheme.
- * 
+ *
  * @see DigestVerifier
  * @see DigestAuthenticator
  * @author Jerome Louvel
@@ -63,7 +63,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      * Constructor. Sets the challenge scheme to
      * {@link ChallengeScheme#HTTP_DIGEST} and the nonce lifespan to 5 minutes
      * by default.
-     * 
+     *
      * @param context
      *            The context.
      * @param optional
@@ -88,7 +88,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Constructor. By default, it set the "optional" property to 'false' and
      * the "domainUris" property to a single '/' URI.
-     * 
+     *
      * @param context
      *            The context.
      * @param realm
@@ -111,7 +111,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Generates a server nonce.
-     * 
+     *
      * @return A new server nonce.
      */
     public String generateServerNonce() {
@@ -120,9 +120,9 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the base URI references that collectively define the protected
-     * domains for the digest authentication. By default it return a list with a
+     * domains for the digest authentication. By default, it returns a list with a
      * single "/" URI reference.
-     * 
+     *
      * @return The base URI references.
      */
     public List<Reference> getDomainRefs() {
@@ -144,7 +144,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      * Return the hashed secret. By default, it knows how to hash HTTP DIGEST
      * secrets, specified as A1 in section 3.2.2.2 of RFC2617, or null if the
      * identifier has no corresponding secret.
-     * 
+     *
      * @param identifier
      *            The user identifier to hash.
      * @param secret
@@ -161,7 +161,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the number of milliseconds between each mandatory nonce refresh.
-     * 
+     *
      * @return The server nonce lifespan.
      */
     public long getMaxServerNonceAge() {
@@ -170,7 +170,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the secret key known only by server.
-     * 
+     *
      * @return The server secret key.
      */
     public String getServerKey() {
@@ -186,7 +186,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Sets the URI references that define the protection domains for the digest
      * authentication.
-     * 
+     *
      * @param domainRefs
      *            The base URI references.
      */
@@ -196,7 +196,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the number of milliseconds between each mandatory nonce refresh.
-     * 
+     *
      * @param maxServerNonceAge
      *            The nonce lifespan in milliseconds.
      */
@@ -206,7 +206,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Sets the secret key known only by server.
-     * 
+     *
      * @param serverKey
      *            The server secret key.
      */
@@ -217,7 +217,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Set the internal verifier. In general you shouldn't replace it and
      * instead use the {@link #setWrappedVerifier(LocalVerifier)} method.
-     * 
+     *
      * @param verifier
      *            The internal verifier.
      */
@@ -244,7 +244,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      * Sets the digest algorithm of secrets returned by the wrapped verifier.
      * The secrets from the wrapped verifier are the ones used by the verifier
      * to compare those sent by clients when attempting to authenticate.
-     * 
+     *
      * @param wrappedAlgorithm
      *            The digest algorithm of secrets returned by the wrapped
      *            verifier.
@@ -257,7 +257,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Sets the secret verifier that will be wrapped by real verifier supporting
      * all the HTTP DIGEST verifications (nonce, domain URIs, etc.).
-     * 
+     *
      * @param localVerifier
      *            The local verifier to wrap.
      */

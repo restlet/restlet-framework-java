@@ -16,62 +16,43 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>${lib-fileupload-version}</version>
-
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>${lib-javamail-version}</version>
-
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>${lib-jaxb-ri-version}</version>
-
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
-            <version>${lib-jsr311-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${lib-json-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${lib-lang-version}</version>
-
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>${lib-servlet-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.simpleframework</groupId>
             <artifactId>simple-xml</artifactId>
-            <version>${lib-simple-xml-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>${lib-resteasy-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
             <version>2.4-SNAPSHOT</version>
-
         </dependency>
     </dependencies>
 </project>

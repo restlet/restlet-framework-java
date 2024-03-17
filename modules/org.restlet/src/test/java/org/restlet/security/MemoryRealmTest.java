@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class MemoryRealmTest {
 
     @Test
-    public void whenUmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
+    public void whenUnmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
         // given a Memory Realm, a Group and a Role
         MemoryRealm memoryRealm = new MemoryRealm();
         Group group = new Group();
@@ -52,7 +52,7 @@ public class MemoryRealmTest {
     }
 
     @Test
-    public void whenUmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
+    public void whenUnmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
         // given a Memory Realm, a Group and a Role
         MemoryRealm memoryRealm = new MemoryRealm();
         User user = new User();

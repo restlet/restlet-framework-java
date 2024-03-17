@@ -16,14 +16,11 @@
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
-			<version>${lib-gwt-server-version}</version>
-				
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.4-SNAPSHOT</version>
-			
 		</dependency>
 	</dependencies>
 </project>

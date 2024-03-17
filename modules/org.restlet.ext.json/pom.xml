@@ -16,14 +16,11 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>${lib-json-version}</version>
-				
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.4-SNAPSHOT</version>
-			
 		</dependency>
 	</dependencies>
 </project>

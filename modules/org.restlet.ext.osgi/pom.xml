@@ -16,32 +16,27 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${lib-osgi-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>${lib-osgi-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.restlet.osgi</groupId>
             <artifactId>org.restlet.lib.org.eclipse.e4.core.contexts</artifactId>
-            <version>${lib-e4-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.restlet.osgi</groupId>
             <artifactId>org.restlet.lib.org.eclipse.e4.core.di</artifactId>
-            <version>${lib-e4-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
             <version>2.4-SNAPSHOT</version>
-
         </dependency>
     </dependencies>
 </project>

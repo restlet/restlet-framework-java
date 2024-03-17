@@ -16,14 +16,11 @@
 		<dependency>
 			<groupId>org.jibx</groupId>
 			<artifactId>jibx-run</artifactId>
-			<version>${lib-jibx-version}</version>
-				
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.4-SNAPSHOT</version>
-			
 		</dependency>
 	</dependencies>
 </project>

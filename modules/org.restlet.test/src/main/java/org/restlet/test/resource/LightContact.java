@@ -24,7 +24,9 @@
 
 package org.restlet.test.resource;
 
-public class LightContact {
+import java.io.Serializable;
+
+public class LightContact implements Serializable {
 
     private String email1;
 

@@ -1,8 +1,8 @@
 <library id="testng" symbolicName="org.testng">
 	<name>TestNG Testing Framework</name>
 	<description>TestNG Testing Framework</description>
-	<version>7.5</version>
-	<release>1</release>
+	<version>6.14</version>
+	<release>3</release>
 	<homeUri>http://testng.org/</homeUri>
 	<downloadUri>
 		<![CDATA[http://testng.org/doc/download.html]]>

@@ -16,50 +16,36 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${lib-guava-version}</version>
-
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>${lib-jaxrs-api-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.raml</groupId>
             <artifactId>raml-parser</artifactId>
-            <version>${lib-raml-version}</version>
-
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${lib-swagger-version}</version>
-
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>${lib-swagger-version}</version>
-
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>${lib-swagger-version}</version>
-
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet</artifactId>
             <version>2.4-SNAPSHOT</version>
-
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>
             <artifactId>org.restlet.ext.jackson</artifactId>
             <version>2.4-SNAPSHOT</version>
-
         </dependency>
     </dependencies>
 </project>

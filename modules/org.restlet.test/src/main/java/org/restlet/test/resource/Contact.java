@@ -24,9 +24,10 @@
 
 package org.restlet.test.resource;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Contact extends LightContact {
+public class Contact extends LightContact implements Serializable {
 
     private Date birthDate;
 
