@@ -2,6 +2,7 @@
 	<name>cglib library</name>
 	<description>cglib library</description>
 	<version>2.2</version>
+	<release>2</release>
 	<homeUri>http://cglib.sourceforge.net/</homeUri>
 	<downloadUri>http://sourceforge.net/project/showfiles.php?group_id=56933</downloadUri>
 	<provider>cglib</provider>
@@ -10,7 +11,7 @@
 		<maven>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
-			<version>2.2</version>
+			<version>2.2.2</version>
 		</maven>
 	</package>
 	<distributions>

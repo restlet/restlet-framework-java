@@ -2,7 +2,7 @@
 	<name>Google App Engine API</name>
 	<description>Google App Engine API.</description>
 	<version>1.9</version>
-	<release>15</release>
+	<release>98</release>
 	<homeUri>http://code.google.com/appengine/</homeUri>
 	<downloadUri>http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Java</downloadUri>
 	<provider>Google Inc.</provider>

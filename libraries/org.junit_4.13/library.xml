@@ -2,7 +2,7 @@
 	<name>JUnit Testing Framework 4</name>
 	<description>JUnit Testing Framework 4</description>
 	<version>4.13</version>
-	<release>1</release>
+	<release>2</release>
 	<homeUri>http://www.junit.org/</homeUri>
 	<downloadUri>
 		<![CDATA[http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472]]>

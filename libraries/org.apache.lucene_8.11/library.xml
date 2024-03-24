@@ -2,7 +2,7 @@
 	<name>Apache Lucene</name>
 	<description>Apache Lucene</description>
 	<version>8.11</version>
-	<release>2</release>
+	<release>3</release>
 	<homeUri>http://lucene.apache.org/</homeUri>
 	<downloadUri>http://www.apache.org/dyn/closer.cgi/lucene/java/</downloadUri>
 	<provider>Apache Software Foundation</provider>

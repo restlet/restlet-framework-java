@@ -2,7 +2,7 @@
 	<name>Joda-Time</name>
 	<description>Joda-Time.</description>
 	<version>2.12</version>
-	<release>6</release>
+	<release>7</release>
 	<homeUri>joda-time.sourceforge.net/</homeUri>
 	<downloadUri>http://sourceforge.net/projects/joda-time/files/joda-time/
 	</downloadUri>
