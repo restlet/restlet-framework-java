@@ -467,7 +467,7 @@ public abstract class ServerResource extends Resource {
      * @return The response entity.
      * @throws ResourceException
      */
-    private Representation doHandle(MethodAnnotationInfo annotationInfo,
+    protected Representation doHandle(MethodAnnotationInfo annotationInfo,
             Variant variant) throws ResourceException {
         Representation result = null;
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
@@ -737,7 +737,7 @@ public abstract class ServerResource extends Resource {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    private MethodAnnotationInfo getAnnotation(Method method)
+    protected MethodAnnotationInfo getAnnotation(Method method)
             throws IOException {
         return getAnnotation(method, getQuery(), null);
     }
@@ -754,7 +754,7 @@ public abstract class ServerResource extends Resource {
      * @return The annotation descriptor.
      * @throws IOException
      */
-    private MethodAnnotationInfo getAnnotation(Method method, Form query,
+    protected MethodAnnotationInfo getAnnotation(Method method, Form query,
             Representation entity) throws IOException {
         if (isAnnotated()) {
             return AnnotationUtils.getInstance().getMethodAnnotation(
@@ -770,7 +770,7 @@ public abstract class ServerResource extends Resource {
      * 
      * @return The annotation descriptors.
      */
-    private List<AnnotationInfo> getAnnotations() {
+    protected List<AnnotationInfo> getAnnotations() {
         return isAnnotated() ? AnnotationUtils.getInstance().getAnnotations(
                 getClass()) : null;
     }
