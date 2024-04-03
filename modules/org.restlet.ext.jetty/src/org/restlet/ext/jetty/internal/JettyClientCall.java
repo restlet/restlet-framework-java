@@ -29,12 +29,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 import org.eclipse.jetty.client.HttpRequest;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpField;
@@ -70,9 +70,9 @@ public class JettyClientCall extends ClientCall {
     private final HttpRequest httpRequest;
 
     /**
-     * The wrapped HTTP response.
+     * The wrapped HTTP result.
      */
-    private volatile org.eclipse.jetty.client.api.Response httpResponse;
+    private volatile Result result;
 
     /**
      * The wrapped input stream response listener.
@@ -128,7 +128,7 @@ public class JettyClientCall extends ClientCall {
      * @return The HTTP response.
      */
     public org.eclipse.jetty.client.api.Response getHttpResponse() {
-        return this.httpResponse;
+        return (this.result != null) ? this.result.getResponse() : null;
     }
 
     /**
@@ -205,7 +205,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public Series<Header> getResponseHeaders() {
-        final Series<Header> result = super.getResponseHeaders();
+        final Series<Header> responseHeaders = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
@@ -213,14 +213,14 @@ public class JettyClientCall extends ClientCall {
                 final HttpFields headers = httpResponse.getHeaders();
                 if (headers != null) {
                     for (HttpField header : headers)
-                        result.add(header.getName(), header.getValue());
+                        responseHeaders.add(header.getName(), header.getValue());
                 }
             }
 
             this.responseHeadersAdded = true;
         }
 
-        return result;
+        return responseHeaders;
     }
 
     /**
@@ -255,7 +255,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public Status sendRequest(Request request) {
-        Status result = null;
+        Status status = null;
 
         try {
             final Representation entity = request.getEntity();
@@ -284,41 +284,34 @@ public class JettyClientCall extends ClientCall {
             // Ensure that the connection is active
             this.inputStreamResponseListener = new InputStreamResponseListener();
             this.httpRequest.send(this.inputStreamResponseListener);
-            this.httpResponse = this.inputStreamResponseListener.get(
+            this.result = this.inputStreamResponseListener.await(
                     clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
 
-            result = new Status(getStatusCode(), getReasonPhrase());
+            status = new Status(getStatusCode(), this.result.getFailure(), getReasonPhrase());
         } catch (IOException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "An error occurred while reading the request entity.", e);
-            result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
+            status = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
 
             // Release the connection
             getHttpRequest().abort(e);
         } catch (TimeoutException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "The HTTP request timed out.", e);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
+            status = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
 
             // Release the connection
             getHttpRequest().abort(e);
         } catch (InterruptedException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "The HTTP request thread was interrupted.", e);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
-
-            // Release the connection
-            getHttpRequest().abort(e);
-        } catch (ExecutionException e) {
-            this.clientHelper.getLogger().log(Level.WARNING,
-                    "An error occurred while processing the HTTP request.", e);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
+            status = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
 
             // Release the connection
             getHttpRequest().abort(e);
         }
 
-        return result;
+        return status;
     }
 
     @Override
