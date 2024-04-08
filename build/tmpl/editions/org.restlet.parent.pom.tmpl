@@ -18,30 +18,21 @@
 	</scm>
 
 	<repositories>
-		<repository>
-			<id>maven-central</id>
-			<name>Central Maven repository</name>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>maven2-java</id>
-			<name>Java.net repository</name>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
         <repository>
-            <id>maven1-java</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
+            <id>maven2-java</id>
+            <name>Java.net repository</name>
+            <url>https://download.java.net/maven/2</url>
         </repository>
-		<repository>
-			<id>maven-restlet</id>
-			<name>Restlet repository</name>
-			<url>http://maven.restlet.org</url>
-		</repository>
+        <repository>
+            <id>maven-restlet</id>
+            <name>Restlet repository</name>
+            <url>https://maven.restlet.org</url>
+        </repository>
 	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java-version>1.8</java-version>
 <#list edition.libraries as library>
    <#list library.packages?sort as package>
 		<lib-${package.id}-version><#if package.mavenVersion??>${package.mavenVersion}<#else>${library.minorVersion}<#if library.versionSuffix??>.${library.versionSuffix}</#if></#if></lib-${package.id}-version>
@@ -77,9 +68,8 @@
 			<url>http://www.opensource.org/licenses/eclipse-1.0</url>
 		</license>
 	</licenses>
-
-	<build>
 <#noparse>
+	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<resources>
 			<resource>
@@ -94,16 +84,17 @@
 				</excludes>
 			</resource>
 		</resources>
-</#noparse>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+</#noparse>
 </project>

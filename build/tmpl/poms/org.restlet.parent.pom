@@ -2,7 +2,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>${ant["parent-maven-groupId"]}</groupId>
+	<artifactId>${ant["parent-maven-artifactId"]}</artifactId>
+	<version>${ant["parent-maven-version"]}</version>
+	<packaging>pom</packaging>
+
+	<name>Restlet project</name>
+	<description>Lightweight REST framework</description>
+	<url>http://restlet.org</url>
+	<inceptionYear>2005</inceptionYear>
+
+	<scm>
+		<url>http://restlet.tigris.org/svn/restlet/modules/</url>
+	</scm>
+
+	<repositories>
+        <repository>
+            <id>maven2-java</id>
+            <name>Java.net repository</name>
+            <url>https://download.java.net/maven/2</url>
+        </repository>
+        <repository>
+            <id>maven-restlet</id>
+            <name>Restlet repository</name>
+            <url>https://maven.restlet.org</url>
+        </repository>
+	</repositories>
+
 	<properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <java-version>1.8</java-version>
 <#list lib?keys?sort as key>
 	<#if key?starts_with("lib-")>
 	    <#if key?ends_with("-maven-version")>
@@ -21,50 +51,6 @@
     </#if>
 </#list>
 	</properties>
-
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>${ant["parent-maven-groupId"]}</groupId>
-	<artifactId>${ant["parent-maven-artifactId"]}</artifactId>
-	<version>${ant["parent-maven-version"]}</version>
-	<packaging>pom</packaging>
-
-	<name>Restlet project</name>
-	<description>Lightweight REST framework</description>
-	<url>http://restlet.org</url>
-	<inceptionYear>2005</inceptionYear>
-
-	<scm>
-		<url>http://restlet.tigris.org/svn/restlet/modules/</url>
-	</scm>
-
-	<repositories>
-		<repository>
-			<id>maven-central</id>
-			<name>Central Maven repository</name>
-			<url>http://repo1.maven.org/maven2</url>
-		</repository>
-		<repository>
-			<id>maven2-java</id>
-			<name>Java.net repository (Maven 2)</name>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
-		<repository>
-			<id>maven1-java</id>
-			<name>Java.net repository (Maven 1)</name>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
-		<repository>
-			<id>maven2-jboss</id>
-			<name>JBoss repository</name>
-			<url>http://repository.jboss.com/maven2</url>
-		</repository>
-		<repository>
-			<id>maven-restlet</id>
-			<name>Restlet repository</name>
-			<url>http://maven.restlet.org</url>
-		</repository>
-	</repositories>
 
 	<modules>
 		<module>org.restlet</module>
@@ -127,8 +113,8 @@
 		</license>
 	</licenses>
 
-	<build>
 <#noparse>
+	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<resources>
 			<resource>
@@ -143,16 +129,17 @@
 				</excludes>
 			</resource>
 		</resources>
-</#noparse>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+</#noparse>
 </project>
