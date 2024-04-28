@@ -17,7 +17,7 @@ agreements. For questions, please contact the copyright holder:
     2 place de la Defense
     92053 Paris La Defense
     FRANCE
-	https://restlet.com/legal
+	https://restlet.talend.com/legal
     mailto:legal@restlet.com
 
 ________________________________________________________________________________

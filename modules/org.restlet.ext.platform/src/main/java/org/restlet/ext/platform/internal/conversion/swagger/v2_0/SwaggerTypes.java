@@ -17,7 +17,7 @@
  *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * https://restlet.com/open-source/
+ * https://restlet.talend.com
  *
  * Restlet is a registered trademark of QlikTech International AB.
  */
