@@ -17,12 +17,12 @@ agreements. For questions, please contact the copyright holder:
     2 place de la Defense
     92053 Paris La Defense
     FRANCE
-	http://restlet.com/legal
+	https://restlet.com/legal
     mailto:legal@restlet.com
 
 ________________________________________________________________________________
 
-Copyright 2005-2020 Talend
+Copyright 2005-2024 Qlik
 
 The contents of this file are subject to the terms of one of the following
 open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL

@@ -20,8 +20,8 @@
          </div>
       </div>
       <div id="footer">
-         <a href="http://restlet.com" title="Restlet site"><img src="${rootRef}/images/logos/logo100" alt="Logo Restlet" /></a>
-         <small>Copyright 2005-2019 <a href="http://restlet.com" title="Restlet site">Restlet</a></small>
-      </div>	
+         <a href="https://restlet.com" title="Restlet site"><img src="${rootRef}/images/logos/logo100" alt="Logo Restlet" /></a>
+         <small>Copyright 2005-2024 <a href="https://restlet.com" title="Restlet site">Restlet</a></small>
+      </div>
    </body>
 </html>

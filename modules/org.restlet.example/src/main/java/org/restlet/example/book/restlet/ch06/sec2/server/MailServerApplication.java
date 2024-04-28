@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.example.book.restlet.ch06.sec2.server;
@@ -39,7 +39,7 @@ public class MailServerApplication extends WadlApplication {
     public MailServerApplication() {
         setName("RESTful Mail Server application");
         setDescription("Example application for 'Restlet in Action' book");
-        setOwner("Talend S.A.");
+        setOwner("QlikTech International AB");
         setAuthor("The Restlet Team");
     }
 
