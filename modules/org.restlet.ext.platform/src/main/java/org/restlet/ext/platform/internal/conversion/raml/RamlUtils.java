@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -57,9 +57,11 @@ import com.fasterxml.jackson.module.jsonSchema.types.StringSchema;
 
 /**
  * Utility class for RAML java beans.
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class RamlUtils {
     /**
      * The list of java types that correspond to RAML's integer type.
@@ -76,7 +78,7 @@ public class RamlUtils {
     /**
      * Generates the JsonSchema of a Representation's Property of primitive
      * type.
-     * 
+     *
      * @param property
      *            The Property from which the JsonSchema is generated.
      * @return The JsonSchema of the given Property.
@@ -122,7 +124,7 @@ public class RamlUtils {
 
     /**
      * Generates the JsonSchema of a Representation.
-     * 
+     *
      * @param representation
      *            The representation.
      * @param schemas
@@ -215,7 +217,7 @@ public class RamlUtils {
     /**
      * Returns the RAML {@link org.raml.model.ActionType} given an HTTP method
      * name.
-     * 
+     *
      * @param method
      *            The HTTP method name as String.
      * @return The corresponding {@link org.raml.model.ActionType}.
@@ -244,7 +246,7 @@ public class RamlUtils {
 
     /**
      * Returns the RAML parameter type given a java primitive type.
-     * 
+     *
      * @param type
      *            The Java type.
      * @return The RAML parameter type.
@@ -272,7 +274,7 @@ public class RamlUtils {
     /**
      * Gets the parent resource of a Resource given its path and the list of
      * paths available on the API.
-     * 
+     *
      * @param paths
      *            The list of paths available on the API.
      * @param resourcePath
@@ -299,7 +301,7 @@ public class RamlUtils {
 
     /**
      * Returns a RAML Resource given its complete path.
-     * 
+     *
      * @param raml
      *            The RAML in which the Resource is searched for.
      * @param path
@@ -318,7 +320,7 @@ public class RamlUtils {
 
     /**
      * Indicates if the given type is a primitive type.
-     * 
+     *
      * @param type
      *            The type to check.
      * @return True if the given type is primitive, false otherwise.
@@ -332,7 +334,7 @@ public class RamlUtils {
 
     /**
      * Returns the primitive type as RAML expects them.
-     * 
+     *
      * @param type
      *            The Java primitive type.
      * @return The primitive type expected by RAML.
@@ -352,7 +354,7 @@ public class RamlUtils {
     /**
      * Indicates if the given RAML definition is valid according to RAML
      * specifications.
-     * 
+     *
      * @param location
      *            The RAML definition.
      * @throws TranslationException

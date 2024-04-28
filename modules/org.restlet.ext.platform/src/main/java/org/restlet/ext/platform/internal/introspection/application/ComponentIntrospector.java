@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -41,9 +41,11 @@ import org.restlet.routing.VirtualHost;
 /**
  * Publish the documentation of a Restlet-based Application to the Restlet Cloud
  * console.
- * 
+ *
  * @author Thierry Boileau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class ComponentIntrospector extends IntrospectionUtils {
 
     /** Internal logger. */
@@ -54,7 +56,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
     /**
      * Returns an instance of what must be a subclass of
      * {@link org.restlet.Component}. Returns null in case of errors.
-     * 
+     *
      * @param className
      *            The name of the component class.
      * @return An instance of what must be a subclass of
@@ -66,7 +68,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
 
     /**
      * Returns the endpoint to which the application is attached.
-     * 
+     *
      * @param virtualHost
      *            The virtual host to which this application may be attached.
      * @param application
@@ -129,7 +131,7 @@ public class ComponentIntrospector extends IntrospectionUtils {
 
     /**
      * Returns the next application available.
-     * 
+     *
      * @param current
      *            The current Restlet to inspect.
      * @return The first application available.

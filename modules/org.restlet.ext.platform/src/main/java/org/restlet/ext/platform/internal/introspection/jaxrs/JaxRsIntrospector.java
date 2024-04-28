@@ -97,7 +97,9 @@ import java.util.logging.Logger;
  * console.
  *
  * @author Thierry Boileau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class JaxRsIntrospector extends IntrospectionUtils {
 
     private static class ClazzInfo {

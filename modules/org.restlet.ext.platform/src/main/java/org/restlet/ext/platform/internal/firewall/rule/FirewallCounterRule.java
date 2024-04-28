@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -45,9 +45,11 @@ import org.restlet.routing.Filter;
  * <li>and a {@link ThresholdHandler} that defines a limit and a custom action
  * when the limit is reached.</li>/
  * <ul>
- * 
+ *
  * @author Guillaume Blondeau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public abstract class FirewallCounterRule extends FirewallRule {
     /**
      * Indicates if an unknown counted value should be blocked by default.
@@ -64,7 +66,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
     /**
      * Creates a {@link FirewallCounterRule} with a specified
      * {@link CountingPolicy}.
-     * 
+     *
      * @param countingPolicy
      *            The {@link CountingPolicy} to attach to the
      *            {@link FirewallCounterRule}.
@@ -76,7 +78,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Attaches a {@link ThresholdHandler} to the {@link FirewallCounterRule}.
-     * 
+     *
      * @param handler
      *            The {@link ThresholdHandler} to attach.
      */
@@ -96,7 +98,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
      * Determines the countedValue (value returned by the attached
      * {@link CountingPolicy}), increments the related {@link Counter} and calls
      * the attached {@link ThresholdHandler}.
-     * 
+     *
      * @param request
      *            The request to handle.
      * @param response
@@ -134,7 +136,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
      * Method called after processing. Determines the countedValue (value
      * returned by the attached {@link CountingPolicy}), decrements the related
      * {@link Counter} and calls the attached {@link ThresholdHandler}.
-     * 
+     *
      * @param request
      *            The request to handle.
      */
@@ -147,7 +149,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Method which decreases the counter related to the given countedValue
-     * 
+     *
      * @param countedValue
      *            Value returned by the attached {@link CountingPolicy}
      */
@@ -155,7 +157,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Method which increases the counter related to the given countedValue
-     * 
+     *
      * @param countedValue
      *            Value returned by the attached {@link CountingPolicy}
      * @return The state of the counter related to the given countedValue
@@ -164,7 +166,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Indicates if an unknown counted value should be blocked by default.
-     * 
+     *
      * @return True if an unknown counted value should be blocked by default.
      */
     public boolean isBlockingUnknownCountedValue() {
@@ -173,7 +175,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Indicates if an unknown counted value should be blocked by default.
-     * 
+     *
      * @param blockingUnknownCountedValue
      *            True if an unknown counted value should be blocked by default.
      */
@@ -184,7 +186,7 @@ public abstract class FirewallCounterRule extends FirewallRule {
 
     /**
      * Sets the counting policy.
-     * 
+     *
      * @param countingPolicy
      *            the counting policy.
      */

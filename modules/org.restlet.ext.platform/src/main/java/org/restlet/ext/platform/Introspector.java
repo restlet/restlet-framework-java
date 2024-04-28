@@ -55,7 +55,9 @@ import static org.restlet.ext.platform.internal.introspection.application.Applic
  * and imports it into the Restlet Cloud console.
  *
  * @author Thierry Boileau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class Introspector {
 
     /** Internal logger. */

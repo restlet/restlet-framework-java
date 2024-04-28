@@ -45,7 +45,9 @@ import com.wordnik.swagger.models.properties.RefProperty;
 
 /**
  * Translator : RWADef <- Swagger 2.0.
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class Swagger2Reader {
 
     /** Internal logger. */
@@ -105,7 +107,7 @@ public class Swagger2Reader {
 
     private static void fillOutputPayload(Response swaggerResponse,
             org.restlet.ext.platform.internal.model.Response response,
-            Operation swaggerOperation, Contract contract, 
+            Operation swaggerOperation, Contract contract,
             Map<String, Object> parameters) {
         Property property = swaggerResponse.getSchema();
         if (property == null) {
@@ -113,7 +115,7 @@ public class Swagger2Reader {
         }
 
         PayLoad payload = null;
-        
+
         if (property instanceof RefProperty) {
             RefProperty refProperty = (RefProperty) property;
             Object declaredPayload = parameters.get(refProperty.get$ref());
@@ -462,7 +464,7 @@ public class Swagger2Reader {
 
     /**
      * Fills the given RWADef query parameter information from the given Swagger query parameter.
-     * 
+     *
      * @param queryParameter
      *            The RWADef query parameter.
      * @param swaggerQueryParameter
@@ -537,10 +539,10 @@ public class Swagger2Reader {
 
     /**
      * Translates a Swagger definition to a Restlet Web API Definition
-     * 
+     *
      * @param Swagger
      *            The translated Swagger 2.0 definition
-     * 
+     *
      * @return The Restlet Web API definition
      */
     public static Definition translate(Swagger swagger) {

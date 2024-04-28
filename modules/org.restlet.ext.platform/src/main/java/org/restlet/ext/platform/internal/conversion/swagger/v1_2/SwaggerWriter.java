@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -69,9 +69,11 @@ import org.restlet.ext.platform.internal.reflect.ReflectUtils;
 /**
  * Tool library for converting Restlet Web API Definition to Swagger
  * documentation.
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public abstract class SwaggerWriter {
 
     /** Internal logger. */
@@ -91,7 +93,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger ResourceOperationDeclaration's type from Restlet Web API
      * definition's Operation
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param rod
@@ -143,7 +145,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger API declaration main attributes from Restlet Web API
      * definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param apiDeclaration
@@ -185,7 +187,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger ResourceDeclaration's ResourceOperationDeclaration from
      * Restlet Web API definition's Resource
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource
      * @param contract
@@ -228,7 +230,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger ResourceOperationDeclaration's returned type from Restlet
      * Web API definition's Operation
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param rod
@@ -270,7 +272,7 @@ public abstract class SwaggerWriter {
      * Fills Swagger ResourceOperationDeclaration's
      * ResourceOperationParameterDeclaration from Restlet Web API definition's
      * Resource
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource
      * @param rod
@@ -299,7 +301,7 @@ public abstract class SwaggerWriter {
      * Fills Swagger ResourceOperationDeclaration's
      * ResourceOperationParameterDeclaration from Restlet Web API definition's
      * Operation
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param rod
@@ -330,7 +332,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger ApiDeclaration's ModelDeclarations from Restlet Web API
      * definition
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's {@link Contract}
      * @param apiDeclaration
@@ -359,7 +361,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills a Swagger ApiDeclaration's {@link ResourceDeclaration}s from Restlet Web API
      * definition. Only includes the given resources in the given section.
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's {@link Contract}
      * @param apiDeclaration
@@ -399,7 +401,7 @@ public abstract class SwaggerWriter {
      * Fills a Swagger ApiDeclaration's {@link ResourceDeclaration}s from Restlet Web API
      * definition.
      * If <code>sectionName</code> parameter is defined, only resources from the given section will be included.
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's {@link Contract}
      * @param apiDeclaration
@@ -433,7 +435,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger ResourceOperationDeclaration's error responses from Restlet
      * Web API definition's Operation
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param usedModels
@@ -524,7 +526,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger resource listing main attributes from Restlet Web API
      * definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param listing
@@ -579,7 +581,7 @@ public abstract class SwaggerWriter {
     /**
      * Fills Swagger resource listing main attributes from Restlet Web API
      * definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param listing
@@ -671,7 +673,7 @@ public abstract class SwaggerWriter {
 
     /**
      * Translates a Restlet Web API Definition to a Swagger resource listing.
-     * 
+     *
      * @param definition
      *            The Restlet Web API Definition.
      * @return The corresponding resource listing

@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -58,9 +58,11 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 /**
  * Authentication module for the agent. This class extends {@link ChallengeAuthenticator} and is responsible to fill
  * {@link org.restlet.data.ClientInfo} on the request.
- * 
+ *
  * @author Manuel Boillod
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class AuthenticationModule extends ChallengeAuthenticator {
 
     private class AgentVerifier implements Verifier {
@@ -140,7 +142,7 @@ public class AuthenticationModule extends ChallengeAuthenticator {
     /**
      * This class is used as Cache Key. The {@link #secret} is not used in the
      * key, but the {@link CacheLoader} need it.
-     * 
+     *
      * Warning: The {@link #hashCode()} and {@link #equals(Object)} methods only
      * use the {@link #identifier} attribute. The secret should be compared
      * separately.
@@ -223,7 +225,7 @@ public class AuthenticationModule extends ChallengeAuthenticator {
 
     /**
      * Create a new Authentication module with the specified settings.
-     * 
+     *
      * @param restletCloudConfig
      *            The agent configuration.
      * @param modulesSettings
@@ -236,7 +238,7 @@ public class AuthenticationModule extends ChallengeAuthenticator {
 
     /**
      * Create a new Authentication module with the specified settings.
-     * 
+     *
      * @param restletCloudConfig
      *            The agent configuration.
      * @param modulesSettings

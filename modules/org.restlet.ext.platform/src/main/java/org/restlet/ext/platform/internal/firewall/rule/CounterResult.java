@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -30,9 +30,11 @@ import org.restlet.ext.platform.internal.firewall.rule.counter.PeriodicCounter;
 
 /**
  * Gives the state of a {@link Counter}.
- * 
+ *
  * @author Guillaume Blondeau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class CounterResult {
 
     /** The number of requests done by the associated counter. */
@@ -57,7 +59,7 @@ public class CounterResult {
 
     /**
      * Returns the number of requests done by the associated {@link Counter}.
-     * 
+     *
      * @return The number of requests done by the associated {@link Counter}.
      */
     public int getConsumed() {
@@ -66,7 +68,7 @@ public class CounterResult {
 
     /**
      * Returns the identifier of the counter.
-     * 
+     *
      * @return The identifier of the counter.
      */
     public String getCountedValue() {
@@ -77,7 +79,7 @@ public class CounterResult {
      * Returns the time elapsed by the counter. Only available for the
      * {@link PeriodicCounter}. Will be set to 0 by the
      * {@link ConcurrentCounter}.
-     * 
+     *
      * @return Time elapsed by the counter. Only available for the
      *         {@link PeriodicCounter}. Will be set to 0 by the
      *         {@link ConcurrentCounter}.
@@ -90,7 +92,7 @@ public class CounterResult {
      * Returns the time when the counter will be reset. Only available for the
      * {@link PeriodicCounter}. Will be set to 0 by the
      * {@link ConcurrentCounter}.
-     * 
+     *
      * @return Time when the counter will be reset. Only available for the
      *         {@link PeriodicCounter}. Will be set to 0 by the
      *         {@link ConcurrentCounter}.
@@ -101,7 +103,7 @@ public class CounterResult {
 
     /**
      * Sets the number of requests done by the associated {@link Counter}.
-     * 
+     *
      * @param consumed
      */
     public void setConsumed(int consumed) {
@@ -110,7 +112,7 @@ public class CounterResult {
 
     /**
      * Sets the value which identifies the counter.
-     * 
+     *
      * @param countedValue
      */
     public void setCountedValue(String countedValue) {
@@ -121,7 +123,7 @@ public class CounterResult {
      * Sets the time elapsed by the counter. Only available for the
      * {@link PeriodicCounter}. Will be set to 0 by the
      * {@link ConcurrentCounter}.
-     * 
+     *
      * @param elapsed
      */
     public void setElapsed(long elapsed) {
@@ -132,7 +134,7 @@ public class CounterResult {
      * Sets the time when the counter will be reset. Only available for the
      * {@link PeriodicCounter}. Will be set to 0 by the
      * {@link ConcurrentCounter}.
-     * 
+     *
      * @param reset
      */
     public void setReset(long reset) {

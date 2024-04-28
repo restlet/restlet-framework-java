@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -51,13 +51,15 @@ import java.util.logging.Logger;
 /**
  * Configures a proxy for your own application and provides some services hosted
  * by the Restlet Cloud platform such as analytics, security.
- * 
+ *
  * The service could be configured by a property file with the
  * {@link #loadConfiguration()} method.
- * 
+ *
  * @author Cyprien Quilici
  * @author Manuel Boillod
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class RestletCloudService extends Service {
 
     /** Internal logger. */
@@ -153,7 +155,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Constructor using the default Restlet Cloud service url.
-     * 
+     *
      * @param agentLogin
      *            The login used to connect to the Restlet Cloud platform.
      * @param agentPassword
@@ -178,7 +180,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Constructor.
-     * 
+     *
      * @param agentServiceUrl
      *            The url of the Restlet Cloud service.
      * @param agentLogin
@@ -249,7 +251,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the agent Analytics module buffer size.
-     * 
+     *
      * @return The agent Analytics module buffer size.
      */
     public int getAgentAnalyticsBufferSize() {
@@ -258,7 +260,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the agent Analytics module post period.
-     * 
+     *
      * @return The agent Analytics module post period.
      */
     public long getAgentAnalyticsPostPeriodInSecond() {
@@ -267,7 +269,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the password used to connect to the Restlet Cloud platform.
-     * 
+     *
      * @return The password used to connect to the Restlet Cloud platform.
      */
     public String getAgentPassword() {
@@ -276,7 +278,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the url of the Restlet Cloud service.
-     * 
+     *
      * @return The url of the Restlet Cloud service.
      */
     public String getAgentServiceUrl() {
@@ -285,7 +287,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the agent refresh period in seconds
-     * 
+     *
      * @return The agent refresh period in seconds
      */
     public long getAgentRefreshPeriodInSecond() {
@@ -294,7 +296,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Returns the login used to connect to the Restlet Cloud platform.
-     * 
+     *
      * @return The login used to connect to the Restlet Cloud platform.
      */
     public String getAgentLogin() {
@@ -304,7 +306,7 @@ public class RestletCloudService extends Service {
     /**
      * Returns the identifier of the cell configured on the Restlet Cloud platform
      * for your application.
-     * 
+     *
      * @return The identifier of the cell configured on the Restlet Cloud platform
      *         for your application.
      */
@@ -315,7 +317,7 @@ public class RestletCloudService extends Service {
     /**
      * Returns the identifier of the cell version configured on the Restlet Cloud
      * platform for your application.
-     * 
+     *
      * @return The identifier of the cell version configured on the Restlet Cloud
      *         platform for your application.
      */
@@ -330,7 +332,7 @@ public class RestletCloudService extends Service {
     /**
      * Returns the redirection URL. Used if {@link #isReverseProxyEnabled()}
      * returns true.
-     * 
+     *
      * @return The redirection URL.
      */
     public String getReverseProxyTargetUrl() {
@@ -339,7 +341,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Indicates if the Restlet Cloud agent is enabled.
-     * 
+     *
      * @return True if the Restlet Cloud agent is enabled.
      */
     public boolean isAgentEnabled() {
@@ -349,7 +351,7 @@ public class RestletCloudService extends Service {
     /**
      * Indicates if the firewall is enabled. Add firewall rules with
      * {@link #firewallConfig}.
-     * 
+     *
      * @return True if the firewall is enabled.
      */
     public boolean isFirewallEnabled() {
@@ -359,7 +361,7 @@ public class RestletCloudService extends Service {
     /**
      * Indicates if the request redirection is enabled. If true, the redirection
      * URL should be set with {@link #setReverseProxyTargetUrl(String)}.
-     * 
+     *
      * @return True if the request redirection is enabled.
      */
     public boolean isReverseProxyEnabled() {
@@ -369,7 +371,7 @@ public class RestletCloudService extends Service {
     /**
      * Load the agent configuration from the file set by the system property
      * 'apiSparkServiceConfig'.
-     * 
+     *
      * @see #CONFIGURATION_FILE_SYSTEM_PROPERTY_KEY
      */
     public void loadConfiguration() {
@@ -388,7 +390,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Load the agent configuration from the file.
-     * 
+     *
      * @param configurationFile
      *            The configuration file.
      */
@@ -413,7 +415,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Load the agent configuration from the input stream.
-     * 
+     *
      * @param inputStream
      *            The input stream of the configuration file.
      */
@@ -466,7 +468,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the agent Analytics module buffer size.
-     * 
+     *
      * @param agentAnalyticsBufferSize
      *            The agent Analytics module buffer size.
      */
@@ -476,7 +478,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the agent Analytics module post period.
-     * 
+     *
      * @param agentAnalyticsPostPeriodInSecond
      *            The agent Analytics module post period.
      */
@@ -486,7 +488,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the password used to connect to the Restlet Cloud platform.
-     * 
+     *
      * @param agentPassword
      *            The password used to connect to the Restlet Cloud platform.
      */
@@ -497,7 +499,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the url of the Restlet Cloud agent service.
-     * 
+     *
      * @param agentServiceUrl
      *            The url of the Restlet Cloud agent service.
      */
@@ -507,10 +509,10 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the agent refresh period
-     * 
+     *
      * @param agentRefreshPeriodInSecond
      *            The agent refresh period in seconds
-     * 
+     *
      */
     public void setAgentRefreshPeriodInSecond(long agentRefreshPeriodInSecond) {
         this.agentRefreshPeriodInSecond = agentRefreshPeriodInSecond;
@@ -518,7 +520,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Sets the login used to connect to the Restlet Cloud platform.
-     * 
+     *
      * @param agentLogin
      *            The login used to connect to the Restlet Cloud platform.
      */
@@ -529,7 +531,7 @@ public class RestletCloudService extends Service {
     /**
      * Sets the identifier of the cell configured on the Restlet Cloud platform for
      * your application.
-     * 
+     *
      * @param agentCellId
      *            The identifier of the cell configured on the Restlet Cloud platform
      *            for your application.
@@ -541,7 +543,7 @@ public class RestletCloudService extends Service {
     /**
      * Sets the identifier of the cell version configured on the Restlet Cloud
      * platform for your application.
-     * 
+     *
      * @param agentCellVersion
      *            The version of the cell configured on the Restlet Cloud platform
      *            for your application.
@@ -552,7 +554,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Indicates if the Restlet Cloud agent is enabled.
-     * 
+     *
      * @param agentEnabled
      *            True if the Restlet Cloud agent is enabled.
      */
@@ -562,7 +564,7 @@ public class RestletCloudService extends Service {
 
     /**
      * Indicates if the firewall is enabled.
-     * 
+     *
      * @param firewallEnabled
      *            True if the firewall is enabled.
      */
@@ -573,7 +575,7 @@ public class RestletCloudService extends Service {
     /**
      * Indicates if the reverse proxy is enabled. If true, the target URL should
      * be set with {@link #setReverseProxyTargetUrl(String)}.
-     * 
+     *
      * @param reverseProxyEnabled
      *            True if the reverse proxy is enabled.
      */
@@ -584,7 +586,7 @@ public class RestletCloudService extends Service {
     /**
      * Set the target URL of the reverse proxy. Used if
      * {@link #isReverseProxyEnabled()} is true.
-     * 
+     *
      * @param reverseProxyTargetUrl
      *            The target URL.
      */

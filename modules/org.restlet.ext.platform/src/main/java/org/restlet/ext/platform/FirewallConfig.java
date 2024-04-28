@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -44,9 +44,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration methods for the Firewall.
- * 
+ *
  * @author Guillaume Blondeau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class FirewallConfig {
 
     /** The list of associated {@link FirewallRule}. */
@@ -64,7 +66,7 @@ public class FirewallConfig {
 
     /**
      * Adds a rule to the firewall.
-     * 
+     *
      * @param rule
      *            The rule to add.
      */
@@ -75,7 +77,7 @@ public class FirewallConfig {
     /**
      * Adds a rule that limits the number of concurrent requests by request's
      * host domain.
-     * 
+     *
      * @param limit
      *            The maximum number of requests allowed by host domain at the
      *            same time.
@@ -90,7 +92,7 @@ public class FirewallConfig {
     /**
      * Adds a rule that limits the number of requests for a given period of time
      * by request's host domain.
-     * 
+     *
      * @param period
      *            The period of time.
      * @param periodUnit
@@ -108,7 +110,7 @@ public class FirewallConfig {
 
     /**
      * Adds a rule that forbids access to the given set of IP addresses.
-     * 
+     *
      * @param blackList
      *            The list of rejected IP addresses.
      */
@@ -119,7 +121,7 @@ public class FirewallConfig {
     /**
      * Adds a rule that restricts access according to the IP address of the
      * request's client. A unique limit is applied for all IP addresses.
-     * 
+     *
      * @param limit
      *            The maximum number of accepted concurrent requests.
      */
@@ -134,7 +136,7 @@ public class FirewallConfig {
      * Adds a rule that restricts access by period of time according to the IP
      * address of the request's client. A unique limit is applied for all IP
      * addresses.
-     * 
+     *
      * @param period
      *            The period of time.
      * @param periodUnit
@@ -152,7 +154,7 @@ public class FirewallConfig {
 
     /**
      * Adds a rule that restricts access to the given set of IP addresses.
-     * 
+     *
      * @param whiteList
      *            The list of accepted IP addresses.
      */
@@ -164,7 +166,7 @@ public class FirewallConfig {
      * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case the access is forbidden.
-     * 
+     *
      * @param limitsPerRole
      *            The limit assigned per role's name.
      */
@@ -176,7 +178,7 @@ public class FirewallConfig {
      * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
-     * 
+     *
      * @param limitsPerRole
      *            The limit assigned per role's name.
      * @param defaultLimit
@@ -196,7 +198,7 @@ public class FirewallConfig {
      * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of requests by period of time, in any other case the access is forbidden.
-     * 
+     *
      * @param period
      *            The period of time.
      * @param periodUnit
@@ -213,7 +215,7 @@ public class FirewallConfig {
      * Adds a rule that restricts access according to the {@link Role} of the
      * current authenticated {@link User}. Each role is defined a limit in terms
      * of concurrent requests, in any other case a default limit is applied.
-     * 
+     *
      * @param period
      *            The period of time.
      * @param periodUnit

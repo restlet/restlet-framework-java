@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -37,9 +37,11 @@ import org.restlet.ext.platform.internal.introspection.util.UnsupportedTypeExcep
 
 /**
  * Handles Java reflection operations.
- * 
+ *
  * @author Thierry Boileau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class ReflectUtils {
 
     @SuppressWarnings("rawtypes")
@@ -62,7 +64,7 @@ public class ReflectUtils {
     /**
      * Extracts the first segment of a path. Will retrieve "/pet" from
      * "/pet/{petId}" for example.
-     * 
+     *
      * @param path
      *            The path of which the segment will be extracted.
      * @return The first segment of the given path.
@@ -111,7 +113,7 @@ public class ReflectUtils {
 
     /**
      * TODO: need Javadocs
-     * 
+     *
      * @param clazz
      * @return
      */
@@ -130,7 +132,7 @@ public class ReflectUtils {
 
     /**
      * TODO: need Javadocs
-     * 
+     *
      * @param type
      * @return
      */
@@ -141,7 +143,7 @@ public class ReflectUtils {
     /**
      * Returns a new instance of classname and check that it's assignable from
      * expected class
-     * 
+     *
      * @param className
      *            The class Name
      * @param instanceClazz
@@ -176,7 +178,7 @@ public class ReflectUtils {
 
     /**
      * Generates the name of the given parameter's type.
-     * 
+     *
      * @param parameterType
      *            the Java parameter's type.
      * @param genericParameterType
@@ -204,7 +206,7 @@ public class ReflectUtils {
 
     /**
      * Generates the name of the given type into the given StringBuilder.
-     * 
+     *
      * @param type
      *            The type.
      * @param sb

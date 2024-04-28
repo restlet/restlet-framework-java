@@ -5,6 +5,10 @@ import java.util.logging.Logger;
 
 import org.restlet.ext.platform.internal.RestletCloudFilter;
 
+/**
+ * @deprecated Will be removed in 2.5 release.
+ */
+@Deprecated
 public class AgentConfigurationTimerTask extends TimerTask {
 
     /** Internal logger. */

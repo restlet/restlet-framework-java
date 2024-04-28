@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -30,9 +30,11 @@ import java.util.regex.Pattern;
 /**
  * Represents a Web API endpoint. Declares the authentication protocol
  * associated
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class Endpoint {
 
     /** Authentication protocol used for this endpoint */
@@ -40,7 +42,7 @@ public class Endpoint {
 
     /**
      * Base path for this endpoint.
-     * 
+     *
      * Ex: http://example.com:8555/v1/admin => basePath = /v1/admin
      */
     private String basePath;
@@ -74,7 +76,7 @@ public class Endpoint {
     }
 
     /**
-     * 
+     *
      * @param domain
      *            Domain of the endpoint
      * @param port

@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -37,9 +37,11 @@ import org.restlet.security.Role;
  * Defines a limit to authenticated users based on their {@link Role}. Use this
  * policy in conjunction with an {@link Enroler} (cf {@link Authenticator}) in
  * order to associate roles to users.
- * 
+ *
  * @author Guillaume Blondeau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class RoleLimitPolicy extends LimitPolicy {
 
     /**
@@ -62,7 +64,7 @@ public class RoleLimitPolicy extends LimitPolicy {
     /**
      * Constructor.<br>
      * Defines only the {@link RoleLimitPolicy#defaultLimit}.
-     * 
+     *
      * @param defaultLimit
      *            The default limit.
      */
@@ -73,7 +75,7 @@ public class RoleLimitPolicy extends LimitPolicy {
     /**
      * Constructor.<br>
      * Set the {@link RoleLimitPolicy#defaultLimit} to 0.
-     * 
+     *
      * @param limitsPerRole
      *            Maps role's name to a limit.
      */
@@ -83,7 +85,7 @@ public class RoleLimitPolicy extends LimitPolicy {
 
     /**
      * Constructor.
-     * 
+     *
      * @param limitsPerRole
      *            Maps role's name to a limit.
      * @param defaultLimit
@@ -97,7 +99,7 @@ public class RoleLimitPolicy extends LimitPolicy {
 
     /**
      * Specifies a limit for a role.
-     * 
+     *
      * @param role
      *            The name of the role.
      * @param limit
@@ -109,7 +111,7 @@ public class RoleLimitPolicy extends LimitPolicy {
 
     /**
      * Returns the policy's default limit.
-     * 
+     *
      * @return Policy's default limit.
      */
     public int getDefaultLimit() {
@@ -142,7 +144,7 @@ public class RoleLimitPolicy extends LimitPolicy {
     /**
      * Returns the {@link Map} defining limits corresponding to different
      * {@link Role}
-     * 
+     *
      * @return Limits corresponding to different {@link Role}
      */
     public Map<String, Integer> getLimitsPerRole() {
@@ -151,7 +153,7 @@ public class RoleLimitPolicy extends LimitPolicy {
 
     /**
      * Set the policy's default limit.
-     * 
+     *
      * @param defaultLimit
      *            Policy's default limit.
      */
@@ -162,7 +164,7 @@ public class RoleLimitPolicy extends LimitPolicy {
     /**
      * Set the {@link Map} defining limits corresponding to different
      * {@link Role}
-     * 
+     *
      * @param limitsPerRole
      *            {@link Map} defining limits corresponding to different
      *            {@link Role}

@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -64,9 +64,11 @@ import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
 /**
  * Tools library for converting Restlet Web API Definition to and from RAML
  * documentation.
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public abstract class RamlTranslator {
 
     /** Internal logger. */
@@ -76,7 +78,7 @@ public abstract class RamlTranslator {
     /**
      * Returns the {@link org.restlet.ext.platform.internal.model.PathVariable}
      * as described by the given {@link org.raml.model.parameter.UriParameter}.
-     * 
+     *
      * @param paramName
      *            The name of the path variable.
      * @param uriParameter
@@ -98,7 +100,7 @@ public abstract class RamlTranslator {
      * Returns the list of
      * {@link org.restlet.ext.platform.internal.model.PathVariable} as defined
      * by the given {@link org.raml.model.Resource}.
-     * 
+     *
      * @param resource
      *            The given resource.
      * @return The list of
@@ -122,7 +124,7 @@ public abstract class RamlTranslator {
 
     /**
      * Builds a sample map for each Representation of the Contract
-     * 
+     *
      * @param contract
      *            The Restlet Web API Contract
      * @return A map of representations' names and sample maps
@@ -139,7 +141,7 @@ public abstract class RamlTranslator {
     /**
      * Retrieves the RAML API declaration corresponding to a category of the
      * given Restlet Web API Definition.
-     * 
+     *
      * @param definition
      *            The Restlet Web API Definition.
      * @return The RAML API definition of the given category.
@@ -436,7 +438,7 @@ public abstract class RamlTranslator {
 
     /**
      * Returns the list of Resources nested under a given Resource.
-     * 
+     *
      * @param resourceName
      *            The name of the generated resource, extracted from its path.
      * @param resource
@@ -483,7 +485,7 @@ public abstract class RamlTranslator {
 
     /**
      * Translates a RAML documentation to a Restlet definition.
-     * 
+     *
      * @param raml
      *            The RAML resource listing.
      * @return The Restlet definition.
@@ -541,7 +543,7 @@ public abstract class RamlTranslator {
     /**
      * Returns an example in provided media Type of the entity in the given
      * PayLoad.
-     * 
+     *
      * @param payLoad
      *            The PayLoad.
      * @param representationSamples

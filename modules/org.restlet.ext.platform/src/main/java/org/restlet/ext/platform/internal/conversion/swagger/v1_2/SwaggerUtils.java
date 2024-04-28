@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -42,9 +42,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tools library for Swagger 1.2.
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public abstract class SwaggerUtils {
 
     /** Internal logger. */
@@ -59,7 +61,7 @@ public abstract class SwaggerUtils {
 
     /**
      * Returns the {@link Definition} by reading the Swagger definition URL.
-     * 
+     *
      * @param swaggerUrl
      *            The URl of the Swagger definition service.
      * @param userName
@@ -114,7 +116,7 @@ public abstract class SwaggerUtils {
 
     /**
      * Computes a section name from the Resource Listing api's path
-     * 
+     *
      * @param apiDeclarationPath
      *            The path
      */

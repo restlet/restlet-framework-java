@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -48,6 +48,10 @@ import org.restlet.ext.platform.internal.agent.resource.AnalyticsResource;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+/**
+ * @deprecated Will be removed in 2.5 release.
+ */
+@Deprecated
 public class AnalyticsHandler {
 
     /** Internal logger. */
@@ -70,7 +74,7 @@ public class AnalyticsHandler {
     /**
      * Initial time to wait between to attempts to reach the Restlet Cloud analytics
      * service in milliseconds.
-     * 
+     *
      * This number is multiplied at each attempt. See
      * {@link AsyncCallLogsPostTask#getRetryTime(int)} for more details.
      */
@@ -102,7 +106,7 @@ public class AnalyticsHandler {
 
     /**
      * Create a new analytics handler with the specified settings.
-     * 
+     *
      * @param restletCloudConfig
      *            The agent configuration.
      * @param modulesSettings
@@ -139,7 +143,7 @@ public class AnalyticsHandler {
 
     /**
      * Generates a CallLog for the request and adds it to the buffer.
-     * 
+     *
      * @param request
      *            The Request object associated with the request.
      * @param response
@@ -196,10 +200,10 @@ public class AnalyticsHandler {
     /**
      * Adds a task to the executor service to post call logs to the Restlet Cloud
      * analytics service.
-     * 
+     *
      * If the executor service cannot satisfy the request, the call logs are
      * lost and an error message is logged with the reason of the failure.
-     * 
+     *
      * @param logsToPost
      *            The call logs to post to the Restlet Cloud analytics service.
      */
@@ -216,7 +220,7 @@ public class AnalyticsHandler {
 
     /**
      * Called on permanent errors. Override to add your own behavior.
-     * 
+     *
      * @param logsToPost
      *            The list of logs that were not posted.
      */
@@ -227,9 +231,9 @@ public class AnalyticsHandler {
     /**
      * Asynchronous task posting the call logs to Restlet Cloud and implementing
      * fall-back methods if attempts are not successful.
-     * 
+     *
      * @author Cyprien Quilici
-     * 
+     *
      */
     private class AsyncCallLogsPostTask implements Runnable {
 
@@ -272,10 +276,10 @@ public class AnalyticsHandler {
         /**
          * Returns the time to wait between two attempts to reach the Restlet Cloud
          * analytics service.
-         * 
+         *
          * It is multiplied by 2 each attempt with a maximum limit of
          * {@link AnalyticsHandler#MAX_TIME}.
-         * 
+         *
          * @param attemptNumber
          *            The number of the attempt.
          * @return The time to wait between two attempts to reach the Restlet Cloud

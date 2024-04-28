@@ -16,6 +16,10 @@ import org.restlet.resource.ClientResource;
 
 import com.wordnik.swagger.util.Json;
 
+/**
+ * @deprecated Will be removed in 2.5 release.
+ */
+@Deprecated
 public class ImportUtils {
 
     /** Internal logger. */
@@ -56,7 +60,7 @@ public class ImportUtils {
     /**
      * Downloads the content served at the given URL and de-serializes it in the given Java class.
      * Forces the representation's media type to JSON to avoid de-serialization errors.
-     * 
+     *
      * @param url
      *            The URL on which the content is served
      * @param userName

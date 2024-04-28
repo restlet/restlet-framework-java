@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -46,6 +46,10 @@ import org.restlet.ext.platform.internal.utils.RestletChain;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Redirector;
 
+/**
+ * @deprecated Will be removed in 2.5 release.
+ */
+@Deprecated
 public class RestletCloudFilter extends Filter {
 
     /** Internal logger. */
@@ -81,7 +85,7 @@ public class RestletCloudFilter extends Filter {
 
     /**
      * Create a new RestletCloudFilter with the specified configuration.
-     * 
+     *
      * @param context
      *            The current context.
      * @param restletCloudConfig
@@ -214,7 +218,7 @@ public class RestletCloudFilter extends Filter {
 
     /**
      * Terminates the agent if the service's configuration is not correctly set.
-     * 
+     *
      * @param config
      *            The service's configuration
      */
@@ -242,7 +246,7 @@ public class RestletCloudFilter extends Filter {
 
     /**
      * Validates the redirection URL
-     * 
+     *
      * @param config
      *            The service's configuration
      */

@@ -56,7 +56,9 @@ import org.restlet.resource.ResourceException;
  * Tools library.
  *
  * @author Thierry Boileau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class IntrospectionUtils {
 
     public static List<String> STRATEGIES = Arrays.asList("update", "replace");

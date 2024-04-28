@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -31,9 +31,11 @@ import org.restlet.Request;
 
 /**
  * Defines a limit to sets of counted values.
- * 
+ *
  * @author Guillaume Blondeau
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class PerGroupLimitPolicy extends LimitPolicy {
 
     /**
@@ -59,7 +61,7 @@ public class PerGroupLimitPolicy extends LimitPolicy {
     /**
      * Constructor.<br>
      * Defines only the {@link PerGroupLimitPolicy#defaultLimit}.
-     * 
+     *
      * @param defaultLimit
      *            The default limit.
      */
@@ -70,7 +72,7 @@ public class PerGroupLimitPolicy extends LimitPolicy {
 
     /**
      * Constructor.<br>
-     * 
+     *
      * @param limitsPerGroup
      *            The sets of limits per group.
      * @param groups
@@ -87,7 +89,7 @@ public class PerGroupLimitPolicy extends LimitPolicy {
 
     /**
      * Associates a counted value with a group.
-     * 
+     *
      * @param countedValue
      *            The counted value.
      * @param group
@@ -99,7 +101,7 @@ public class PerGroupLimitPolicy extends LimitPolicy {
 
     /**
      * Specifies a limit for a group.
-     * 
+     *
      * @param group
      *            The name of the group.
      * @param limit

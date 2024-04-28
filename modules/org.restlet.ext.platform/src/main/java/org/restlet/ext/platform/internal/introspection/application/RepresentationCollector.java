@@ -53,7 +53,9 @@ import java.util.logging.Logger;
 
 /**
  * @author Manuel Boillod
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class RepresentationCollector {
     private static Logger LOGGER = Engine.getLogger(Introspector.class);
 

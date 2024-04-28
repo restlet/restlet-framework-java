@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -30,13 +30,15 @@ import com.wordnik.swagger.models.properties.RefProperty;
 
 /**
  * @author Manuel Boillod
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class SwaggerTypes {
 
     /**
      * Converts Swagger primitive types to Java types. To be used only for query parameters,
      * headers and path variables.
-     * 
+     *
      * @param dataType
      *            The Swagger type
      * @return The corresponding Java type
@@ -71,10 +73,10 @@ public class SwaggerTypes {
             return dataType.getType();
         }
     }
-    
+
     /**
      * Returns the RWADef type corresponding to the given Swagger Property.
-     * 
+     *
      * @param property
      *            The Swagger property.
      * @return
@@ -88,7 +90,7 @@ public class SwaggerTypes {
             ArrayProperty arrayProperty = (ArrayProperty) property;
             return toDefinitionType(arrayProperty.getItems());
         }
-        
+
         SwaggerTypeFormat swaggerTypeFormat = new SwaggerTypeFormat(property.getType(),
                 property.getFormat());
         return SwaggerTypes.toDefinitionPrimitiveType(swaggerTypeFormat);
@@ -96,7 +98,7 @@ public class SwaggerTypes {
 
     /**
      * Converts Java types to Swagger types
-     * 
+     *
      * @param dataType
      *            The Java type
      * @return The corresponding Swagger type

@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -34,15 +34,17 @@ import org.restlet.util.Series;
 
 /**
  * Tool class for the agent service.
- * 
+ *
  * @author Manuel Boillod
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public abstract class AgentUtils {
 
     /**
      * Returns a client resource configured to communicate with the Restlet Cloud
      * connector cell.
-     * 
+     *
      * @param restletCloudConfig
      *            The agent configuration.
      * @param modulesSettings
@@ -51,7 +53,7 @@ public abstract class AgentUtils {
      *            The resource class.
      * @param resourcePath
      *            The resource path.
-     * 
+     *
      * @return A client resource configured to communicate with the platform
      *         connector cell.
      */
@@ -85,7 +87,7 @@ public abstract class AgentUtils {
     /**
      * Builds the path of the client resource to communicate with the Restlet Cloud
      * connector cell.
-     * 
+     *
      * @param restletCloudConfig
      *            The agent configuration.
      * @param resourcePath

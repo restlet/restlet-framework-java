@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -64,9 +64,11 @@ import org.restlet.ext.platform.internal.model.Section;
 /**
  * Tool library for converting Restlet Web API Definition from Swagger
  * documentation.
- * 
+ *
  * @author Cyprien Quilici
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class SwaggerReader {
 
     /** Internal logger. */
@@ -82,7 +84,7 @@ public class SwaggerReader {
 
     /**
      * Fills Restlet Web API definition's Contract from Swagger 1.2 {@link ApiDeclaration}.
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param apiDeclaration
@@ -124,7 +126,7 @@ public class SwaggerReader {
 
     /**
      * Fills Restlet Web API definition's Contract from Swagger 1.2 definition
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param listing
@@ -153,7 +155,7 @@ public class SwaggerReader {
     /**
      * Fills Restlet Web API definition's main attributes from Swagger 1.2
      * definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param listing
@@ -208,7 +210,7 @@ public class SwaggerReader {
 
     /**
      * Fills Restlet Web API definition's Operations from Swagger ApiDeclaration
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource
      * @param apiDeclaration
@@ -287,7 +289,7 @@ public class SwaggerReader {
     /**
      * Fills Restlet Web API definition's operation output payload from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param success
      *            The Restlet Web API definition's operation success Response
      * @param swaggerOperation
@@ -325,7 +327,7 @@ public class SwaggerReader {
     /**
      * Fills Restlet Web API definition's operation parameter from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param resource
      *            The Restlet Web API definition's Resource to which the
      *            operation is attached
@@ -363,7 +365,7 @@ public class SwaggerReader {
     /**
      * Fills Restlet Web API definition's Representations from Swagger
      * ApiDeclaration
-     * 
+     *
      * @param contract
      *            The Restlet Web API definition's Contract
      * @param section
@@ -404,7 +406,7 @@ public class SwaggerReader {
     /**
      * Fills Restlet Web API definition's operation Responses from Swagger
      * ResourceOperationDeclaration
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param swaggerOperation
@@ -430,7 +432,7 @@ public class SwaggerReader {
 
     /**
      * Fills Restlet Web API definition's variants from Swagger 1.2 definition
-     * 
+     *
      * @param operation
      *            The Restlet Web API definition's Operation
      * @param swaggerOperation
@@ -455,7 +457,7 @@ public class SwaggerReader {
     /**
      * Converts a Swagger parameter to an instance of
      * {@link org.restlet.ext.platform.internal.model.PayLoad}.
-     * 
+     *
      * @param parameter
      *            The Swagger parameter.
      * @return An instance of
@@ -482,7 +484,7 @@ public class SwaggerReader {
     /**
      * Converts a Swagger parameter to an instance of
      * {@link org.restlet.ext.platform.internal.model.PathVariable}.
-     * 
+     *
      * @param parameter
      *            The Swagger parameter.
      * @return An instance of
@@ -501,7 +503,7 @@ public class SwaggerReader {
     /**
      * Converts a Swagger parameter to an instance of
      * {@link org.restlet.ext.platform.internal.model.QueryParameter}.
-     * 
+     *
      * @param parameter
      *            The Swagger parameter.
      * @return An instance of
@@ -527,7 +529,7 @@ public class SwaggerReader {
     /**
      * Converts a Swagger model to an instance of
      * {@link org.restlet.ext.platform.internal.model.Representation}.
-     * 
+     *
      * @param model
      *            The Swagger model.
      * @param name
@@ -578,7 +580,7 @@ public class SwaggerReader {
 
     /**
      * Translates a Swagger API declaration to a Restlet Web API definition.
-     * 
+     *
      * @param apiDeclaration
      *            The Swagger API declaration
      * @param sectionName
@@ -615,7 +617,7 @@ public class SwaggerReader {
 
     /**
      * Translates a Swagger documentation to a Restlet definition.
-     * 
+     *
      * @param listing
      *            The Swagger resource listing.
      * @param apiDeclarations
@@ -660,10 +662,10 @@ public class SwaggerReader {
                     e);
         }
     }
-    
+
     /**
      * Translates a Swagger Resource Listing to a Restlet definition.
-     * 
+     *
      * @param listing
      *            The Swagger resource listing.
      * @return The Restlet definition.
@@ -680,7 +682,7 @@ public class SwaggerReader {
                 "Main attributes successfully retrieved from Swagger resource listing.");
         return definition;
     }
-            
+
 
     private static void fillSections(Contract contract, ResourceListing listing) {
         for (ResourceListingApi api : listing.getApis()) {
@@ -696,7 +698,7 @@ public class SwaggerReader {
     /**
      * Indicates if the given resource listing and list of API declarations
      * match.
-     * 
+     *
      * @param resourceListing
      *            The Swagger resource listing.
      * @param apiDeclarations

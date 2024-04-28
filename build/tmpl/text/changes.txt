@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Misc
+      - Deprecated extension "org.restlet.ext.platform" which is planned to be dropped in 
+        future version 2.5
 
 - 2.4.3 (01/28/2020)
     - Bugs fixed

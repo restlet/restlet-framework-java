@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import java.util.Locale;
 
+@Deprecated
 public class JacksonUtils {
 
     public static JsonIgnoreProperties getJsonIgnoreProperties(Class<?> clazz) {

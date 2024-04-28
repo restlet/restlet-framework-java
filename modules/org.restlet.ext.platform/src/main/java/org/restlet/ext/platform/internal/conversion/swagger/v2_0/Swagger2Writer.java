@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.com/open-source/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -78,7 +78,9 @@ import com.wordnik.swagger.models.properties.StringProperty;
 
 /**
  * Translator : RWADef -> Swagger 2.0.
+ * @deprecated Will be removed in 2.5 release.
  */
+@Deprecated
 public class Swagger2Writer {
 
     // TODO wait for Swagger class
@@ -105,7 +107,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "Definitions" objects from RWADef definition
-     * 
+     *
      * @param definition
      *            RWADef definition
      * @param swagger
@@ -137,7 +139,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "Model" objects from RWADef.
-     * 
+     *
      * @param name
      *            The name of the Swagger model.
      * @param description
@@ -367,7 +369,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "Paths.Operations" objects from RWADef definition
-     * 
+     *
      * @param definition
      *            RWADef definition
      * @param resource
@@ -413,7 +415,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "Paths" objects from RWADef definition
-     * 
+     *
      * @param definition
      *            RWADef definition
      * @param swagger
@@ -433,7 +435,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "SecuritySchemeDefinition" objects from RWADef definition
-     * 
+     *
      * @param definition
      *            RWADef definition
      * @param swagger
@@ -456,7 +458,7 @@ public class Swagger2Writer {
 
     /**
      * Fill Swagger "Info" object from RWADef definition
-     * 
+     *
      * @param definition
      *            RWADef definition
      * @param swagger
@@ -496,7 +498,7 @@ public class Swagger2Writer {
 
     /**
      * Fills Swagger main attributes from Restlet Web API definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @param swagger
@@ -534,7 +536,7 @@ public class Swagger2Writer {
 
     /**
      * Translates a Restlet Web API Definition to a Swagger definition
-     * 
+     *
      * @param definition
      *            The Restlet Web API definition
      * @return Swagger The translated Swagger 2.0 definition
@@ -570,7 +572,7 @@ public class Swagger2Writer {
 
     /**
      * Get new property for Swagger 2.0 for the primitive type of Rwadef.
-     * 
+     *
      * @param type
      *            Type Rwadef
      * @return Type Swagger
