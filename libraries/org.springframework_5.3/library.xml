@@ -2,7 +2,7 @@
 	<name>Spring Framework</name>
 	<description>Spring Framework</description>
 	<version>5.3</version>
-	<release>33</release>
+	<release>34</release>
 	<homeUri>http://www.springframework.org/</homeUri>
 	<downloadUri>http://www.springframework.org/download</downloadUri>
 	<provider>SpringSource community</provider>

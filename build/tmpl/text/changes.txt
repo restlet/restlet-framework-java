@@ -7,6 +7,44 @@ Changes log
     - Misc
       - Deprecated extension "org.restlet.ext.platform" which is planned to be dropped in 
         future version 2.5
+      - Upgraded library cglib to "3.3.0". Issue #1358.
+      - Upgraded library jackson to "2.16.1". Issue #1358.
+      - Upgraded library gson to "2.10.1". Issue #1358.
+      - Upgraded guava gson to "33.1.0-jre". Issue #1358.
+      - Upgraded library guice to "6.0.0". Issue #1358.
+      - Upgraded library commons-codec to "1.17.0". Issue #1358.
+      - Upgraded library commons-collections to "3.2.2". Issue #1358.
+      - Upgraded library commons-dbcp to "1.4". Issue #1358.
+      - Upgraded library commons-fileupload to "1.5". Issue #1358.
+      - Upgraded library commons-io to "2.16.1". Issue #1358.
+      - Upgraded library commons-logging to "1.3.1". Issue #1358.
+      - Upgraded library commons-pool to "1.6". Issue #1358.
+      - Upgraded library jaxb-impl to "2.3.9". Issue #1358.
+      - Upgraded library javax.mail to "1.4.7". Issue #1358.
+      - Upgraded library joda-time to "2.12.6". Issue #1358.
+      - Upgraded library nekohtml to "1.9.22". Issue #1358.
+      - Upgraded library commons-lang3 to "3.14.0". Issue #1358.
+      - Upgraded library httpclient to "4.5.14". Issue #1358.
+      - Upgraded library httpcore to "4.4.16". Issue #1358.
+      - Upgraded library httpmime to "4.5.14". Issue #1358.
+      - Upgraded library apache-mime4j-core to "0.8.9". Issue #1358.
+      - Upgraded library lucene to "9.9.1". Issue #1358.
+      - Upgraded library solr to "8.11.2". Issue #1358.
+      - Upgraded library tika to "1.28.5". Issue #1358.
+      - Upgraded library velocity to "2.3". Issue #1358.
+      - Upgraded library woodstox to "4.2.2". Issue #1358.
+      - Upgraded library woodstox to "4.4.1". Issue #1358.
+      - Upgraded library emf.core to "2.35.0". Issue #1358.
+      - Upgraded library jetty to "9.4.54.v20240208". Issue #1358.
+      - Upgraded library freemarker to "2.3.32". Issue #1358.
+      - Upgraded library resteasy to "3.15.6.Final". Issue #1358.
+      - Upgraded library org.json to "20231013". Issue #1358.
+      - Upgraded library raml-parser to "0.8.40". Issue #1358.
+      - Upgraded library scala to "2.13.13". Issue #1358.
+      - Upgraded library slf4j to "2.0.13". Issue #1358.
+      - Upgraded library springframework to "5.3.34". Issue #1358.
+      - Upgraded library thymeleaf to "2.1.6.RELEASE". Issue #1358.
+      - Upgraded library snakeyaml to "2.2". Issue #1358.
 
 - 2.4.3 (01/28/2020)
     - Bugs fixed

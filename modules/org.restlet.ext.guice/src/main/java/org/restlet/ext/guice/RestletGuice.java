@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
@@ -47,7 +47,7 @@ import com.google.inject.Stage;
 
 /**
  * Guice dependency injection for Restlet.
- * 
+ *
  * @author Tim Peierls
  */
 public class RestletGuice {
@@ -89,7 +89,7 @@ public class RestletGuice {
 
                 // If the key type is a subtype of ServerResource, return it.
                 Class<ServerResource> src = ServerResource.class;
-                if (src != null && targetClass != null
+                if (targetClass != null
                         && src.isAssignableFrom(targetClass)) {
                     @SuppressWarnings("unchecked")
                     Class<? extends ServerResource> result = (Class<? extends ServerResource>) targetClass;
@@ -206,7 +206,7 @@ public class RestletGuice {
         /**
          * Creates a {@link Provider}r for the current {@link Application}.
          * Override to use a custom Application provider.
-         * 
+         *
          * @return A {@link Provider} for the current {@link Application}.
          */
         protected Provider<Application> newApplicationProvider() {
@@ -220,7 +220,7 @@ public class RestletGuice {
         /**
          * Creates a {@link Provider} for the current {@link Context}. Override
          * to use a custom Context provider.
-         * 
+         *
          * @return A {@link Provider} for the current {@link Context}.
          */
         protected Provider<Context> newContextProvider() {
@@ -234,7 +234,7 @@ public class RestletGuice {
         /**
          * Creates a {@link Provider} for the current {@link Request}. Override
          * to use a custom Request provider.
-         * 
+         *
          * @return A {@link Provider} for the current {@link Request}.
          */
         protected Provider<Request> newRequestProvider() {
@@ -248,7 +248,7 @@ public class RestletGuice {
         /**
          * Creates a {@link Provider} for the current {@link Response}. Override
          * to use a custom Response provider.
-         * 
+         *
          * @return A {@link Provider} for the current {@link Response}.
          */
         protected Provider<Response> newResponseProvider() {
@@ -264,7 +264,7 @@ public class RestletGuice {
      * Creates an instance of {@link Injector} from the given modules with
      * {@link FinderFactory} bound to an implementation that uses the injector's
      * bindings to create Finder instances.
-     * 
+     *
      * @param modules
      *            The list of modules.
      * @return The injector for the list of modules.
@@ -277,7 +277,7 @@ public class RestletGuice {
      * Creates an instance of {@link Injector} from the given modules with
      * {@link FinderFactory} bound to an implementation that uses the injector's
      * bindings to create Finder instances.
-     * 
+     *
      * @param modules
      *            The collection of modules.
      * @return The injector for the list of modules.
@@ -291,7 +291,7 @@ public class RestletGuice {
      * Creates an instance of {@link Injector} in the given {@link Stage} from
      * the given modules with {@link FinderFactory} bound to an implementation
      * that uses the injector's bindings to create {@link Finder} instances.
-     * 
+     *
      * @param stage
      *            The {@link Stage}.
      * @param modules
@@ -307,7 +307,7 @@ public class RestletGuice {
      * Creates an instance of {@link Injector} in the given {@link Stage} from
      * the given modules with {@link FinderFactory} bound to an implementation
      * that uses the injector's bindings to create {@link Finder} instances.
-     * 
+     *
      * @param stage
      *            The {@link Stage}.
      * @param modules

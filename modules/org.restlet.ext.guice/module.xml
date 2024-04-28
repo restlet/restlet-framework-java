@@ -8,6 +8,7 @@
 
 	<dependencies>
 		<dependency type="library" id="guice" primary="true" />
+		<dependency type="library" id="jakarta.inject" />
 		<dependency type="library" id="javax.inject" />
 		<dependency type="library" id="aopalliance" />
 		<dependency type="module" id="core" />
