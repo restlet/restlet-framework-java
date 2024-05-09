@@ -27,6 +27,7 @@ package org.restlet.test;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
@@ -34,6 +35,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.Call;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link org.restlet.engine.adapter.Call}.
@@ -96,7 +99,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests context's base reference getting/setting.
      */
-    public void testBaseRef() throws Exception {
+    @Test
+    public void testBaseRef() {
         final Request request = getRequest();
         final String resourceRefURI = "http://restlet.org/path/to/resource";
         final Reference resourceRef = getReference(resourceRefURI);
@@ -117,7 +121,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests client address getting/setting.
      */
-    public void testClientAddress() throws Exception {
+    @Test
+    public void testClientAddress() {
         final ClientInfo client = getRequest().getClientInfo();
         String address = "127.0.0.1";
         client.setAddress(address);
@@ -128,7 +133,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests client agent getting/setting.
      */
-    public void testClientAgent() throws Exception {
+    @Test
+    public void testClientAgent() {
         final ClientInfo client = getRequest().getClientInfo();
         String name = "Restlet";
         client.setAgent(name);
@@ -141,7 +147,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests client addresses getting/setting.
      */
-    public void testClientForwardedAddresses() throws Exception {
+    @Test
+    public void testClientForwardedAddresses() {
         final ClientInfo client = getRequest().getClientInfo();
         String firstAddress = "127.0.0.1";
         final String secondAddress = "192.168.99.10";
@@ -157,7 +164,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests method getting/setting.
      */
-    public void testMethod() throws Exception {
+    @Test
+    public void testMethod() {
         final Request request = getRequest();
         request.setMethod(Method.GET);
         assertEquals(Method.GET, request.getMethod());
@@ -168,7 +176,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests redirection reference getting/setting.
      */
-    public void testRedirectionRef() throws Exception {
+    @Test
+    public void testRedirectionRef() {
         final Request request = getRequest();
         final Response response = getResponse(request);
         String uri = "http://restlet.org/";
@@ -184,7 +193,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests referrer reference getting/setting.
      */
-    public void testReferrerRef() throws Exception {
+    @Test
+    public void testReferrerRef() {
         final Request request = getRequest();
         String uri = "http://restlet.org/";
         Reference reference = getReference(uri);
@@ -199,7 +209,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests resource reference getting/setting.
      */
-    public void testResourceRef() throws Exception {
+    @Test
+    public void testResourceRef() {
         final Request request = getRequest();
         String uri = "http://restlet.org/";
         Reference reference = getReference(uri);
@@ -214,7 +225,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests server address getting/setting.
      */
-    public void testServerAddress() throws Exception {
+    @Test
+    public void testServerAddress() {
         final Request request = getRequest();
         final Response response = getResponse(request);
         String address = "127.0.0.1";
@@ -228,7 +240,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests server agent getting/setting.
      */
-    public void testServerAgent() throws Exception {
+    @Test
+    public void testServerAgent() {
         final Request request = getRequest();
         final Response response = getResponse(request);
         String name = "Restlet";
@@ -242,7 +255,8 @@ public class CallTestCase extends RestletTestCase {
     /**
      * Tests status getting/setting.
      */
-    public void testStatus() throws Exception {
+    @Test
+    public void testStatus() {
         final Request request = getRequest();
         final Response response = getResponse(request);
         response.setStatus(Status.SUCCESS_OK);

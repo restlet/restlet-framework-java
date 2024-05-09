@@ -24,23 +24,26 @@
 
 package org.restlet.example.book.restlet.ch03.sec3.client;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.example.book.restlet.ch03.sec3.server.MailServerComponent;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Mail client JUnit test case.
  */
-public class MailClientTestCase extends TestCase {
+public class MailClientTestCase {
 
     /**
      * Unit test for virtual hosts.
      * 
      * @throws Exception
      */
+    @Test
     public void testVirtualHost() throws Exception {
 
         // Instantiate our Restlet component

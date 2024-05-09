@@ -27,6 +27,7 @@ package org.restlet.test.service;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -40,6 +41,9 @@ import org.restlet.service.StatusService;
 import org.restlet.test.RestletTestCase;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the status service.
@@ -66,6 +70,7 @@ public class StatusServiceTestCase extends RestletTestCase {
                 .add(0, new JacksonConverter());
     }
 
+    @Test
     public void testAnnotation() {
         StatusService ss = new StatusService();
         Status status = ss.toStatus(new Status400Exception("test message", 50),
@@ -73,6 +78,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(400, status.getCode());
     }
 
+    @Test
     public void testStatusSerialization() throws IOException {
         StatusService ss = new StatusService();
 
@@ -96,6 +102,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(expectedStatus.getUri(), map.get("uri"));
     }
 
+    @Test
     public void testSerializedException() throws IOException {
         Throwable exception = new Status401SerializableException(
                 "test message", 50);
@@ -121,6 +128,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(0, ((Throwable[]) e.getSuppressed()).length);
     }
 
+    @Test
     public void testSerializedExceptionWithCause() throws IOException {
 
         Throwable rootCause = new IOException(
@@ -149,6 +157,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertNotNull(e.getCause());
     }
 
+    @Test
     public void testSerializedBusinessException() throws IOException {
         Throwable exception = new Status402SerializableBusinessException(
                 "test message", 50);
@@ -168,6 +177,7 @@ public class StatusServiceTestCase extends RestletTestCase {
         assertEquals(50, e.getValue());
     }
 
+    @Test
     public void testSerializedBusinessExceptionWithCause() throws IOException {
 
         Throwable rootCause = new IOException(
@@ -195,7 +205,7 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         private static final long serialVersionUID = 1L;
 
-        private int value;
+        private final int value;
 
         public Status400Exception(String message, int value) {
             super(message);

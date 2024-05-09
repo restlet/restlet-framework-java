@@ -27,6 +27,7 @@ package org.restlet.test.resource;
 import java.io.IOException;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
@@ -37,6 +38,10 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -74,6 +79,7 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testGet() throws IOException, ResourceException {
         try {
             myResource.represent();
@@ -96,6 +102,7 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testGetAndSerializeException() throws IOException,
             ResourceException {
         try {

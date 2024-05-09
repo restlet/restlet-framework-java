@@ -1,32 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.ext.jackson;
 
-import java.io.IOException;
-import java.util.Date;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
@@ -34,9 +32,14 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Unit test for the Jackson extension.
- * 
+ *
  * @author Jerome Louvel
  */
 public class JacksonTestCase extends RestletTestCase {
@@ -72,17 +75,19 @@ public class JacksonTestCase extends RestletTestCase {
         return invoice;
     }
 
+    @Test
     public void testCsv() throws Exception {
         Invoice invoice = createInvoice();
-        JacksonRepresentation<Invoice> rep = new JacksonRepresentation<Invoice>(
+        JacksonRepresentation<Invoice> rep = new JacksonRepresentation<>(
                 MediaType.TEXT_CSV, invoice);
         String text = rep.getText();
         assertEquals("12456,1356533333882,false\n", text);
-        rep = new JacksonRepresentation<Invoice>(new StringRepresentation(text,
+        rep = new JacksonRepresentation<>(new StringRepresentation(text,
                 rep.getMediaType()), Invoice.class);
         verify(invoice, rep.getObject());
     }
 
+    @Test
     public void testException() throws Exception {
         Customer customer = createCustomer();
 
@@ -91,54 +96,58 @@ public class JacksonTestCase extends RestletTestCase {
         // Unless we are in debug mode, hide those properties
         me.setStackTrace(new StackTraceElement[0]);
 
-        JacksonRepresentation<MyException> rep = new JacksonRepresentation<MyException>(MediaType.APPLICATION_JSON, me);
+        JacksonRepresentation<MyException> rep = new JacksonRepresentation<>(MediaType.APPLICATION_JSON, me);
 
         rep = new JacksonRepresentation<>(new StringRepresentation(rep.getText(), rep.getMediaType()), MyException.class);
         verify(me, rep.getObject());
     }
 
+    @Test
     public void testJson() throws Exception {
         Customer customer = createCustomer();
-        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(MediaType.APPLICATION_JSON, customer);
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<>(MediaType.APPLICATION_JSON, customer);
         String text = rep.getText();
         assertEquals(
                 "{\"firstName\":\"Foo\",\"lastName\":\"Bar\",\"invoices\":[{\"date\":1356533333882,\"amount\":12456,\"paid\":false},{\"date\":1356533333882,\"amount\":7890,\"paid\":true}]}",
                 text);
 
-        rep = new JacksonRepresentation<Customer>(new StringRepresentation(
+        rep = new JacksonRepresentation<>(new StringRepresentation(
                 text, rep.getMediaType()), Customer.class);
         verify(customer, rep.getObject());
     }
 
+    @Test
     public void testSmile() throws Exception {
         Customer customer = createCustomer();
-        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<>(
                 MediaType.APPLICATION_JSON_SMILE, customer);
-        rep = new JacksonRepresentation<Customer>(rep, Customer.class);
+        rep = new JacksonRepresentation<>(rep, Customer.class);
         verify(customer, rep.getObject());
     }
 
+    @Test
     public void testXml() throws Exception {
         Customer customer = createCustomer();
-        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<>(
                 MediaType.APPLICATION_XML, customer);
         String text = rep.getText();
         assertEquals(
                 "<Customer><firstName>Foo</firstName><lastName>Bar</lastName><invoices><invoices><date>1356533333882</date><amount>12456</amount><paid>false</paid></invoices><invoices><date>1356533333882</date><amount>7890</amount><paid>true</paid></invoices></invoices></Customer>",
                 text);
-        rep = new JacksonRepresentation<Customer>(new StringRepresentation(
+        rep = new JacksonRepresentation<>(new StringRepresentation(
                 text, rep.getMediaType()), Customer.class);
         verify(customer, rep.getObject());
     }
 
-    public void testXmlBomb() throws IOException {
+    @Test
+    public void testXmlBomb() {
         ClientResource cr = new ClientResource(
                 "clap://class/org/restlet/test/ext/jackson/jacksonBomb.xml");
         Representation xmlRep = cr.get();
         xmlRep.setMediaType(MediaType.APPLICATION_XML);
         boolean error = false;
         try {
-            new JacksonRepresentation<Customer>(xmlRep, Customer.class)
+            new JacksonRepresentation<>(xmlRep, Customer.class)
                     .getObject();
         } catch (Exception e) {
             error = true;
@@ -146,9 +155,10 @@ public class JacksonTestCase extends RestletTestCase {
         assertTrue(error);
     }
 
+    @Test
     public void testYaml() throws Exception {
         Customer customer = createCustomer();
-        JacksonRepresentation<Customer> rep = new JacksonRepresentation<Customer>(
+        JacksonRepresentation<Customer> rep = new JacksonRepresentation<>(
                 MediaType.APPLICATION_YAML, customer);
         String text = rep.getText();
         assertEquals("---\n" + "firstName: \"Foo\"\n" + "lastName: \"Bar\"\n"
@@ -156,7 +166,7 @@ public class JacksonTestCase extends RestletTestCase {
                 + "  amount: 12456\n" + "  paid: false\n"
                 + "- date: 1356533333882\n" + "  amount: 7890\n"
                 + "  paid: true\n", text);
-        rep = new JacksonRepresentation<Customer>(new StringRepresentation(
+        rep = new JacksonRepresentation<>(new StringRepresentation(
                 text, rep.getMediaType()), Customer.class);
         verify(customer, rep.getObject());
     }

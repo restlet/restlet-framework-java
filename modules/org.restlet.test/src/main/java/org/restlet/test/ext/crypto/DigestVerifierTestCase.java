@@ -24,11 +24,14 @@
 
 package org.restlet.test.ext.crypto;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Digest;
 import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.MapVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Restlet unit tests for the DigestVerifierTestCase class.
@@ -37,11 +40,12 @@ import org.restlet.test.RestletTestCase;
  */
 public class DigestVerifierTestCase extends RestletTestCase {
 
+    @Test
     public void test1() {
         MapVerifier mv = new MapVerifier();
         mv.getLocalSecrets().put("scott", "tiger".toCharArray());
 
-        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<>(
                 Digest.ALGORITHM_SHA_1, mv, null);
 
         assertEquals(
@@ -50,12 +54,13 @@ public class DigestVerifierTestCase extends RestletTestCase {
                         "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray()));
     }
 
+    @Test
     public void test2() {
         MapVerifier mv = new MapVerifier();
         mv.getLocalSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<>(
                 Digest.ALGORITHM_SHA_1, mv, Digest.ALGORITHM_SHA_1);
 
         assertEquals(
@@ -70,12 +75,13 @@ public class DigestVerifierTestCase extends RestletTestCase {
                 sdv.verify("tom", "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray()));
     }
 
+    @Test
     public void test3() {
         MapVerifier mv = new MapVerifier();
         mv.getLocalSecrets().put("scott",
                 "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray());
 
-        DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(null,
+        DigestVerifier<MapVerifier> sdv = new DigestVerifier<>(null,
                 mv, Digest.ALGORITHM_SHA_1);
 
         assertEquals(Verifier.RESULT_VALID,

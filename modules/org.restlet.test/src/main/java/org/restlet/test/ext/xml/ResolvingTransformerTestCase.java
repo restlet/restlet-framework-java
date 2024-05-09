@@ -38,6 +38,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -52,6 +53,10 @@ import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * ResolvingTransformerTestCase tests the resolving aspects of the
@@ -81,8 +86,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
 
             Source resolvedSource = this.resolver
                     .resolve(testUri, this.baseUri);
-            assertNotNull("resolved source for " + testUri
-                    + " should not be null", resolvedSource);
+            assertNotNull(resolvedSource, "resolved source for " + testUri                    + " should not be null");
             StringBuilder data = new StringBuilder();
 
             if (resolvedSource instanceof StreamSource) {
@@ -91,11 +95,11 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
 
                 if (dataReader == null) {
                     InputStream in = (streamSource.getInputStream());
-                    assertNotNull("no reader or inputstream available", in);
+                    assertNotNull(in, "no reader or inputstream available");
                     dataReader = new InputStreamReader(in);
                 }
 
-                assertNotNull("no reader to data in source.", dataReader);
+                assertNotNull(dataReader, "no reader to data in source.");
                 char[] buf = new char[1024];
                 int len = 0;
 
@@ -114,7 +118,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
     }
 
     class SimpleUriMapApplication extends Application {
-        private final Map<String, Representation> uriMap = new HashMap<String, Representation>();
+        private final Map<String, Representation> uriMap = new HashMap<>();
 
         public SimpleUriMapApplication() {
             // Turn off the useless extension tunnel.
@@ -159,6 +163,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
 
     // testing purely the resolver, no active transforming context (ie xslt
     // engine) in this test
+    @Test
     public void testResolving() throws Exception {
         Component comp = new Component();
 
@@ -190,7 +195,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
         String testBase = "riap://component/testApp";
 
         URIResolver uriResolver = transRep.getUriResolver();
-        assertNotNull("no resolver present!", uriResolver);
+        assertNotNull(uriResolver, "no resolver present!");
         String baseUri = testBase + "/dummy";
 
         AssertResolvingHelper test = new AssertResolvingHelper(baseUri,
@@ -213,6 +218,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
     }
 
     // functional test in the actual xslt engine context
+    @Test
     public void testTransform() throws Exception {
 
         Component comp = new Component();

@@ -29,12 +29,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test case for the ByteUtils class.
@@ -43,15 +47,17 @@ import org.restlet.test.RestletTestCase;
  */
 public class BioUtilsTestCase extends RestletTestCase {
 
+    @Test
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
         OutputStream out = IoUtils.getStream(writer, CharacterSet.UTF_8);
-        out.write("testé".getBytes("UTF-8"));
+        out.write("testé".getBytes(StandardCharsets.UTF_8));
         out.flush();
         out.close();
         assertEquals("testé", writer.toString());
     }
 
+    @Test
     public void testPipe() throws IOException {
         final byte[] content = new byte[] { 1, 2, 3, -1, -2, -3, 4, 5, 6 };
         ByteArrayInputStream bais = new ByteArrayInputStream(content);

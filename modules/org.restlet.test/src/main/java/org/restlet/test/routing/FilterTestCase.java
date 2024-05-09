@@ -59,9 +59,4 @@ public class FilterTestCase extends AbstractFilterTestCase {
         return new MockRestlet(null);
     }
 
-    @Override
-    protected Class<?> getRestletClass() {
-        return MockRestlet.class;
-    }
-
 }

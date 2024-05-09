@@ -24,9 +24,7 @@
 
 package org.restlet.test.engine;
 
-import java.io.IOException;
-import java.util.List;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -44,6 +42,10 @@ import org.restlet.ext.crypto.internal.HttpDigestHelper;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Unit tests for the SecurityData related classes.
  * 
@@ -60,6 +62,7 @@ public class AuthenticationTestCase extends RestletTestCase {
     /**
      * Test Amazon S3 authentication.
      */
+    @Test
     public void testAwsS3() {
         HttpAwsS3Helper helper = new HttpAwsS3Helper();
 
@@ -70,7 +73,7 @@ public class AuthenticationTestCase extends RestletTestCase {
                 "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
         Request request = new Request(Method.GET,
                 "http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
-        Series<Header> httpHeaders = new Series<Header>(Header.class);
+        Series<Header> httpHeaders = new Series<>(Header.class);
         httpHeaders.add(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 19:36:42 +0000");
 
@@ -92,10 +95,10 @@ public class AuthenticationTestCase extends RestletTestCase {
 
     /**
      * Tests the authentication parsing for HTTP BASIC.
-     * 
-     * @throws IOException
+     *
      */
-    public void testParsingBasic() throws IOException {
+    @Test
+    public void testParsingBasic() {
         String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
@@ -111,10 +114,10 @@ public class AuthenticationTestCase extends RestletTestCase {
 
     /**
      * Tests the authentication parsing for HTTP DIGEST.
-     * 
-     * @throws IOException
+     *
      */
-    public void testParsingDigest() throws IOException {
+    @Test
+    public void testParsingDigest() {
         // make sure the Digest authentication scheme is registered
         Engine.getInstance().getRegisteredAuthenticators().add(new HttpDigestHelper());
         ChallengeResponse cres1 = new ChallengeResponse(
@@ -153,10 +156,9 @@ public class AuthenticationTestCase extends RestletTestCase {
 
     /**
      * Tests the authentication parsing for HTTP DIGEST.
-     * 
-     * @throws IOException
      */
-    public void testParsingMultiValuedAuthenticate() throws IOException {
+    @Test
+    public void testParsingMultiValuedAuthenticate() {
         String authenticate0 = "Basic realm=\"Restlet tutorial\"";
         String authenticate1 = "Digest realm=realm, domain=\"/protected/ /alsoProtected/\", qop=auth, algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
         String authenticate = authenticate0 + "," + authenticate1;

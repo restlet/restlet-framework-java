@@ -24,15 +24,19 @@
 
 package org.restlet.test.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Product;
 import org.restlet.engine.header.ProductReader;
 import org.restlet.engine.header.ProductWriter;
 import org.restlet.test.RestletTestCase;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test {@link org.restlet.data.Product}.
@@ -41,6 +45,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class ProductTokenTestCase extends RestletTestCase {
 
+    @Test
     public void testMainProduct() {
 
         final String userAgent1 = "Mozilla/4.0 (compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)";
@@ -133,7 +138,8 @@ public class ProductTokenTestCase extends RestletTestCase {
     /**
      * Tests.
      */
-    public void testProductTokens() throws Exception {
+    @Test
+    public void testProductTokens() {
         final String userAgent1 = "Mozilla/4.0 (compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)";
         final String userAgent2 = "Advanced Browser (http://www.avantbrowser.com)";
         final String userAgent3 = "Mozilla/5.0";
@@ -200,7 +206,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals("2.2-SNAPSHOT", list.get(0).getVersion());
         assertNull(list.get(0).getComment());
 
-        final List<Product> products = new ArrayList<Product>();
+        final List<Product> products = new ArrayList<>();
         products.add(new Product("Product", "1.2", null));
         products.add(new Product("Nre", "1.1m4", "This is a comment"));
 

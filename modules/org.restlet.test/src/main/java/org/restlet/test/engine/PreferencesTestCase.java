@@ -24,15 +24,17 @@
 
 package org.restlet.test.engine;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.PreferenceWriter;
 import org.restlet.test.RestletTestCase;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for the Preference related classes.
@@ -46,20 +48,19 @@ public class PreferencesTestCase extends RestletTestCase {
      * @param headerValue
      *            The preference header.
      */
-    private void testMediaType(String headerValue, boolean testEquals)
-            throws IOException {
-        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+    private void testMediaType(String headerValue, boolean testEquals) {
+        PreferenceReader<MediaType> pr = new PreferenceReader<>(
                 PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
+        List<Preference<MediaType>> prefs = new ArrayList<>();
         pr.addValues(prefs);
 
         // Rewrite the header
         String newHeaderValue = PreferenceWriter.write(prefs);
 
         // Reread and rewrite the header (prevent formatting issues)
-        pr = new PreferenceReader<MediaType>(PreferenceReader.TYPE_MEDIA_TYPE,
+        pr = new PreferenceReader<>(PreferenceReader.TYPE_MEDIA_TYPE,
                 headerValue);
-        prefs = new ArrayList<Preference<MediaType>>();
+        prefs = new ArrayList<>();
         pr.addValues(prefs);
         String newHeaderValue2 = PreferenceWriter.write(prefs);
 
@@ -72,7 +73,8 @@ public class PreferencesTestCase extends RestletTestCase {
     /**
      * Tests the preferences parsing.
      */
-    public void testParsing() throws IOException {
+    @Test
+    public void testParsing() {
         testMediaType(
                 "text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;LEVEL=2;q=0.4;ext1, */*;q=0.5",
                 true);

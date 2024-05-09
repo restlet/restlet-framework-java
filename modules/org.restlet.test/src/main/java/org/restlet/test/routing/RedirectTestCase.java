@@ -24,6 +24,7 @@
 
 package org.restlet.test.routing;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -35,6 +36,8 @@ import org.restlet.data.Protocol;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Redirector;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the RedirectRestlet.
@@ -54,6 +57,7 @@ public class RedirectTestCase extends RestletTestCase {
     /**
      * Tests the cookies parsing.
      */
+    @Test
     public void testRedirect() throws Exception {
         // Create components
         final Component clientComponent = new Component();

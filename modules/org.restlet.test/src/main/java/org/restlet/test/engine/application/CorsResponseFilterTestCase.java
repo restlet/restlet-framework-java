@@ -24,6 +24,7 @@
 
 package org.restlet.test.engine.application;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
@@ -35,11 +36,15 @@ import org.restlet.test.RestletTestCase;
 
 import java.util.Collection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
+ /**
  * @author Manuel Boillod
  */
 public class CorsResponseFilterTestCase extends RestletTestCase {
@@ -62,6 +67,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
 
     // INVALID CORS REQUESTS
 
+    @Test
     public void testGet_withoutOrigin() {
         Request request = new Request();
         request.setMethod(Method.GET);
@@ -69,6 +75,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertNoCorsHeaders(response);
     }
 
+    @Test
     public void testOption_withoutOrigin() {
         Request request = new Request();
         request.setMethod(Method.OPTIONS);
@@ -76,6 +83,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertNoCorsHeaders(response);
     }
 
+    @Test
     public void testOption_withoutRequestMethod() {
         Request request = new Request();
         request.setMethod(Method.OPTIONS);
@@ -86,6 +94,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
 
     // VALID CORS REQUESTS
 
+    @Test
     public void testGet() {
         Request request = new Request();
         request.setMethod(Method.GET);
@@ -98,6 +107,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
+    @Test
     public void testGet_withAuthenticationAllowed() {
         corsFilter.setAllowedCredentials(true);
 
@@ -112,6 +122,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
+    @Test
     public void testOption_requestGet() {
         Request request = new Request();
         request.setMethod(Method.OPTIONS);
@@ -125,6 +136,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
+    @Test
     public void testOption_requestGet_skippingResource() {
         corsFilter.setSkippingResourceForCorsOptions(true);
 
@@ -140,6 +152,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
+    @Test
     public void testOption_requestPost_skippingResource() {
         corsFilter.setSkippingResourceForCorsOptions(true);
 
@@ -155,6 +168,7 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         assertIsEmpty(response.getAccessControlExposeHeaders());
     }
 
+    @Test
     public void testOption_requestGet_withAuthenticationAllowed() {
         corsFilter.setAllowedCredentials(true);
 

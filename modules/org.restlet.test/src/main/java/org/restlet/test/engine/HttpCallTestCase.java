@@ -30,10 +30,14 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Disposition;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.DispositionWriter;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the HTTP calls.
@@ -42,6 +46,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class HttpCallTestCase extends RestletTestCase {
 
+    @Test
     public void testFormatContentDisposition() {
         Disposition disposition = new Disposition();
         assertEquals("", DispositionWriter.write(disposition));
@@ -79,6 +84,7 @@ public class HttpCallTestCase extends RestletTestCase {
 
     }
 
+    @Test
     public void testParseContentDisposition() throws IOException {
         Disposition disposition = new DispositionReader(
                 "attachment; fileName=\"file.txt\"").readValue();

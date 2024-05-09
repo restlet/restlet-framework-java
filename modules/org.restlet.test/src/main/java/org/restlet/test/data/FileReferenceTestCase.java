@@ -26,8 +26,11 @@ package org.restlet.test.data;
 
 import java.io.File;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the File Reference parsing.
@@ -36,6 +39,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class FileReferenceTestCase extends RestletTestCase {
 
+    @Test
     public void testCreation() {
         String path = "D:\\Restlet\\build.xml";
         LocalReference fr = LocalReference.createFileReference(path);

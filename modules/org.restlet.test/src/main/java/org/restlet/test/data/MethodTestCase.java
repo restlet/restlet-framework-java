@@ -24,9 +24,10 @@
 
 package org.restlet.test.data;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Method;
+
+import static org.testng.AssertJUnit.assertSame;
 
 /**
  * Test {@link org.restlet.data.Method}.
@@ -37,15 +38,15 @@ import org.restlet.data.Method;
  * 
  * @author Andreas Wundsam
  */
-public class MethodTestCase extends TestCase {
+public class MethodTestCase {
 
     /**
      * validate that Method caching works, i.e., the value returned by
      * Method.valueOf("GET") is the cached constant Method.GET
      */
+    @Test
     public void testCaching() {
-        assertTrue("Method.valueOf('GET') should return cached constant Method.GET ",
-                Method.GET == Method.valueOf("GET"));
+        assertSame("Method.valueOf('GET') should return cached constant Method.GET ", Method.GET, Method.valueOf("GET"));
     }
 
 }

@@ -1,29 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.engine;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -34,6 +35,8 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests cases for the tunneling of preferences based on user agent.
@@ -47,7 +50,7 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
 
     /**
      * Creates a new Request object.
-     * 
+     *
      * @return A new Request object.
      */
     private Request createRequest() {
@@ -56,9 +59,9 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
         request.getClientInfo().setAgent("msie/1.1");
         request.setResourceRef(URL);
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_XML));
+                .add(new Preference<>(MediaType.TEXT_XML));
         request.getClientInfo().getAcceptedMediaTypes()
-                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
+                .add(new Preference<>(MediaType.TEXT_HTML));
 
         return request;
     }
@@ -75,6 +78,7 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
         };
     }
 
+    @Test
     public void testTunnelOff() {
         this.application.getTunnelService().setUserAgentTunnel(false);
         Request request = createRequest();
@@ -84,6 +88,7 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
         assertEquals(MediaType.TEXT_XML, response.getEntity().getMediaType());
     }
 
+    @Test
     public void testTunnelOn() {
         this.application.getTunnelService().setUserAgentTunnel(true);
         Request request = createRequest();

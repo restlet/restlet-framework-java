@@ -24,8 +24,13 @@
 
 package org.restlet.test.data;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.data.Status;
 import org.restlet.test.RestletTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link org.restlet.data.Status}.
@@ -34,6 +39,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class StatusTestCase extends RestletTestCase {
 
+    @Test
     public void testCustomDescription() {
         final String customDescription = "My custom description";
         final Status s = new Status(Status.CLIENT_ERROR_NOT_FOUND, customDescription);
@@ -43,21 +49,20 @@ public class StatusTestCase extends RestletTestCase {
     /**
      * Equality tests.
      */
-    public void testEquals() throws Exception {
+    @Test
+    public void testEquals() {
         final Status s1 = new Status(201);
         final Status s2 = Status.SUCCESS_CREATED;
 
-        assertTrue(s1.equals(s2));
-        assertTrue(s1.getCode() == s2.getCode());
         assertEquals(s1, s2);
-
-        assertTrue(s1.equals(s1));
-        assertEquals(s1, s1);
+        assertEquals(s1.getCode(), s2.getCode());
+        assertEquals(s1, s2);
     }
 
     /**
      * Tests for status classes.
      */
+    @Test
     public void testStatusClasses() {
         final Status s1 = new Status(287);
         assertTrue(s1.isSuccess());
@@ -70,14 +75,15 @@ public class StatusTestCase extends RestletTestCase {
     /**
      * Unequality tests.
      */
-    public void testUnEquals() throws Exception {
+    @Test
+    public void testUnEquals() {
         final Status s1 = new Status(200);
         final Status s2 = Status.SUCCESS_CREATED;
 
-        assertFalse(s1.equals(s2));
-        assertFalse(s1.getCode() == s2.getCode());
-        assertFalse(s1.equals(null));
-        assertFalse(s2.equals(null));
+        assertNotEquals(s1, s2);
+        assertNotEquals(s1.getCode(), s2.getCode());
+        assertNotEquals(null, s1);
+        assertNotEquals(null, s2);
     }
 
 }

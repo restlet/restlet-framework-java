@@ -1,35 +1,30 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.test.engine;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-
+import org.junit.jupiter.api.Test;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Header;
@@ -44,41 +39,54 @@ import org.restlet.engine.util.DateUtils;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * Unit tests for the header.
- * 
+ *
  * @author Jerome Louvel
  */
 public class HeaderTestCase extends RestletTestCase {
     /**
      * Test the {@link HeaderReader#addValues(java.util.Collection)} method.
      */
+    @Test
     public void testAddValues() {
-        List<Encoding> list = new ArrayList<Encoding>();
+        List<Encoding> list = new ArrayList<>();
         new EncodingReader("gzip,deflate").addValues(list);
         assertEquals(list.size(), 2);
         assertEquals(list.get(0), Encoding.GZIP);
         assertEquals(list.get(1), Encoding.DEFLATE);
 
-        list = new ArrayList<Encoding>();
+        list = new ArrayList<>();
         new EncodingReader("gzip,identity, deflate").addValues(list);
         assertEquals(list.size(), 2);
         assertEquals(list.get(0), Encoding.GZIP);
         assertEquals(list.get(1), Encoding.DEFLATE);
 
-        list = new ArrayList<Encoding>();
+        list = new ArrayList<>();
         new EncodingReader("identity").addValues(list);
         assertTrue(list.isEmpty());
 
-        list = new ArrayList<Encoding>();
+        list = new ArrayList<>();
         new EncodingReader("identity,").addValues(list);
         assertTrue(list.isEmpty());
 
-        list = new ArrayList<Encoding>();
+        list = new ArrayList<>();
         new EncodingReader("").addValues(list);
         assertTrue(list.isEmpty());
 
-        list = new ArrayList<Encoding>();
+        list = new ArrayList<>();
         new EncodingReader(null).addValues(list);
         assertTrue(list.isEmpty());
 
@@ -96,8 +104,9 @@ public class HeaderTestCase extends RestletTestCase {
         assertEquals(l.size(), 1);
     }
 
+    @Test
     public void testExtracting() {
-        ArrayList<Header> headers = new ArrayList<Header>();
+        ArrayList<Header> headers = new ArrayList<>();
         String md5hash = "aaaaaaaaaaaaaaaa";
         // encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
         String encodedWithPadding = Base64.getEncoder().encodeToString(md5hash.getBytes());
@@ -122,6 +131,7 @@ public class HeaderTestCase extends RestletTestCase {
         assertEquals(new String(rep.getDigest().getValue()), md5hash);
     }
 
+    @Test
     public void testInvalidDate() {
         final String headerValue = "-1";
         final Date date = DateUtils.parse(headerValue,
@@ -135,13 +145,14 @@ public class HeaderTestCase extends RestletTestCase {
     /**
      * Tests the parsing.
      */
+    @Test
     public void testParsing() {
         String header1 = "Accept-Encoding,User-Agent";
         String header2 = "Accept-Encoding , User-Agent";
         final String header3 = "Accept-Encoding,\r\tUser-Agent";
         final String header4 = "Accept-Encoding,\r User-Agent";
         final String header5 = "Accept-Encoding, \r \t User-Agent";
-        String[] values = new String[] { "Accept-Encoding", "User-Agent" };
+        String[] values = new String[]{"Accept-Encoding", "User-Agent"};
         testValues(header1, values);
         testValues(header2, values);
         testValues(header3, values);
@@ -150,7 +161,7 @@ public class HeaderTestCase extends RestletTestCase {
 
         header1 = "Accept-Encoding, Accept-Language, Accept";
         header2 = "Accept-Encoding,Accept-Language,Accept";
-        values = new String[] { "Accept-Encoding", "Accept-Language", "Accept" };
+        values = new String[]{"Accept-Encoding", "Accept-Language", "Accept"};
         testValues(header1, values);
         testValues(header2, values);
 
@@ -209,14 +220,14 @@ public class HeaderTestCase extends RestletTestCase {
 
     /**
      * Test that the parsing of a header returns the given array of values.
-     * 
+     *
      * @param header
-     *            The header value to parse.
+     *         The header value to parse.
      * @param values
-     *            The parsed values.
+     *         The parsed values.
      */
     public void testValues(String header, String[] values) {
-        HeaderReader<Object> hr = new HeaderReader<Object>(header);
+        HeaderReader<Object> hr = new HeaderReader<>(header);
         String value = hr.readRawValue();
         int index = 0;
 
@@ -227,17 +238,18 @@ public class HeaderTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testEmptyValue() throws IOException {
         Header result = HeaderReader.readHeader("My-Header: ");
         assertNotNull(result);
         assertEquals("My-Header", result.getName());
         assertNull(result.getValue());
         try {
-            result = HeaderReader.readHeader("My-Header");
+            HeaderReader.readHeader("My-Header");
             fail("Not allowed");
-        } catch (IOException e) {           
+        } catch (IOException e) {
         }
-        
+
         result = HeaderReader.readHeader("My-Header:");
         assertNotNull(result);
         assertEquals("My-Header", result.getName());
