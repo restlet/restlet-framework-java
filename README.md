@@ -1,6 +1,6 @@
 # Restlet Framework
 
-## The leading REST API framework for Java
+## The first REST API framework for Java
 
 Thanks to Restlet Framework's powerful routing and filtering capabilities, unified client and server Java API, developers can build secure and scalable RESTful web APIs.
 
@@ -23,6 +23,6 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2023 Talend
+Copyright 2024 Qlik
 
 [![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.4)](https://travis-ci.org/restlet/restlet-framework-java)
