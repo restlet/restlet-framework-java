@@ -37,7 +37,6 @@ import org.restlet.engine.connector.ClientHelper;
  * Base HTTP client connector. Here is the list of parameters that are
  * supported. They should be set in the Client's context before it is started:
  * <table>
- * <caption>list of supported parameters</caption>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -87,15 +86,11 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public ClientAdapter getAdapter() throws Exception {
         if (this.adapter == null) {
-            // [ifndef gwt]
             String adapterClass = getHelpedParameters().getFirstValue(
                     "adapter", "org.restlet.engine.adapter.ClientAdapter");
             this.adapter = (ClientAdapter) Class.forName(adapterClass)
                     .getConstructor(Context.class).newInstance(getContext());
-            // [enddef]
 
-            // [ifdef gwt] instruction uncomment
-            // this.adapter = new ClientAdapter(getContext());
         }
 
         return this.adapter;

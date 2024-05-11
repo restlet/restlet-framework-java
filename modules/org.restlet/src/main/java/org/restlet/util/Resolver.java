@@ -38,7 +38,6 @@ import org.restlet.engine.util.MapResolver;
  * into a compact data model, with the following variables:
  * 
  * <table>
- * <caption>list of supported variables</caption>
  * <tr>
  * <th>Model property</th>
  * <th>Variable name</th>
@@ -222,7 +221,6 @@ import org.restlet.engine.util.MapResolver;
  * <br>
  * 
  * <table>
- * <caption>list of name sub-parts, for Reference variables, that can replace the asterix in the variable names above</caption>
  * <tr>
  * <th>Reference property</th>
  * <th>Sub-part name</th>

@@ -41,7 +41,6 @@ import org.restlet.engine.RestletHelper;
 public abstract class ConnectorHelper<T extends Connector> extends
         RestletHelper<T> {
 
-    // [ifndef gwt] method
     /**
      * Returns the connector service associated to a request.
      * 

@@ -109,7 +109,6 @@ public class SslUtils {
         return keySize;
     }
 
-    // [ifndef gae] method
     /**
      * Returns the SSL context factory. It first look for a "sslContextFactory"
      * attribute (instance), then for a "sslContextFactory" parameter (class

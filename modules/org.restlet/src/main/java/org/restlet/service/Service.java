@@ -65,7 +65,6 @@ public abstract class Service {
         this.enabled = enabled;
     }
 
-    // [ifndef gwt] method
     /**
      * Create the filter that should be invoked for incoming calls.
      * 
@@ -78,7 +77,6 @@ public abstract class Service {
         return null;
     }
 
-    // [ifndef gwt] method
     /**
      * Create the filter that should be invoked for outgoing calls.
      * 

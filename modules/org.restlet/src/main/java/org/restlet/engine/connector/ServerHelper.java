@@ -77,7 +77,6 @@ public class ServerHelper extends ConnectorHelper<Server> {
         }
     }
 
-    // [ifndef gae] method
     /**
      * Sets the ephemeral port in the attributes map if necessary.
      * 

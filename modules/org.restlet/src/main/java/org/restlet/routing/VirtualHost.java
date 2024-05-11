@@ -63,7 +63,7 @@ import org.restlet.resource.ServerResource;
  * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
  *      Virtual Hosting</a>
- * @see <a href="https://httpd.apache.org/docs/current/vhosts/">Apache - Virtual
+ * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
  *      Hosting</a>
  * @author Jerome Louvel
  */

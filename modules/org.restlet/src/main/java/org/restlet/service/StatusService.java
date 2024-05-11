@@ -65,25 +65,24 @@ import org.restlet.resource.ResourceException;
  * not generate an error representation. You can turn off this default behavior
  * by calling the {@link #setOverwriting(boolean)} method.
  * 
+ * @see <a href="http://wiki.restlet.org/docs_2.2/202-restlet.html">User
+ *      Guide</a>
  * @author Jerome Louvel
  */
 public class StatusService extends Service {
 
-    // [ifndef gwt] member
     /** The service used to select the preferred variant. */
     private volatile ConnegService connegService;
 
     /** The email address to contact in case of error. */
     private volatile String contactEmail;
 
-    // [ifndef gwt] member
     /** The service used to convert between status/throwable and representation. */
     private volatile ConverterService converterService;
 
     /** The home URI to propose in case of error. */
     private volatile Reference homeRef;
 
-    // [ifndef gwt] member
     /** The service used to select the preferred variant. */
     private volatile MetadataService metadataService;
 
@@ -105,15 +104,11 @@ public class StatusService extends Service {
      * 
      */
     public StatusService(boolean enabled) {
-        // [ifndef gwt] instruction
         this(enabled, new ConverterService(), new MetadataService(),
                 new ConnegService());
-        // [ifdef gwt] instruction uncomment
-        // super(enabled);
         // this.homeRef = new Reference("/");
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -138,13 +133,11 @@ public class StatusService extends Service {
         this.overwriting = false;
     }
 
-    // [ifndef gwt] method
     @Override
     public org.restlet.routing.Filter createInboundFilter(Context context) {
         return new org.restlet.engine.application.StatusFilter(context, this);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the service used to select the preferred variant.
      * 
@@ -164,7 +157,6 @@ public class StatusService extends Service {
         return this.contactEmail;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the service used to convert between status/throwable and
      * representation.
@@ -185,7 +177,6 @@ public class StatusService extends Service {
         return this.homeRef;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the service used to select the preferred variant.
      * 
@@ -215,7 +206,6 @@ public class StatusService extends Service {
             Response response) {
         Representation result = null;
 
-        // [ifndef gwt]
         // Do content negotiation for status
         if (converterService != null && connegService != null
                 && metadataService != null) {
@@ -273,7 +263,6 @@ public class StatusService extends Service {
                         e);
             }
         }
-        // [enddef]
         return result;
     }
 
@@ -312,7 +301,6 @@ public class StatusService extends Service {
             }
         }
 
-        // [ifndef gwt]
         // look for Status annotation
         org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
                 .getInstance().getThrowableAnnotationInfo(t.getClass());
@@ -322,9 +310,6 @@ public class StatusService extends Service {
         } else {
             result = new Status(defaultStatus, t);
         }
-        // [enddef]
-        // [ifdef gwt] instruction uncomment
-        // result = new Status(defaultStatus, t);
 
         return result;
     }
@@ -358,7 +343,6 @@ public class StatusService extends Service {
         return this.overwriting;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the service used to select the preferred variant.
      * 
@@ -380,7 +364,6 @@ public class StatusService extends Service {
         this.contactEmail = contactEmail;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the service used to convert between status/throwable and
      * representation.
@@ -403,7 +386,6 @@ public class StatusService extends Service {
         this.homeRef = homeRef;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the service used to select the preferred variant.
      * 

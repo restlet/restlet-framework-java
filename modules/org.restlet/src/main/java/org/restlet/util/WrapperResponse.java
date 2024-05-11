@@ -104,7 +104,6 @@ public class WrapperResponse extends Response {
      * in the API. For this purpose, all attribute names starting with
      * "org.restlet" are reserved. Currently the following attributes are used:
      * <table>
-     * <caption>list of supported attributes</caption>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>

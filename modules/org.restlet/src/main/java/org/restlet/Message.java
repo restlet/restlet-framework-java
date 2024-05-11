@@ -63,7 +63,6 @@ public abstract class Message {
     /** The payload of the message. */
     private volatile Representation entity;
 
-    // [ifndef gwt] member
     /** The optional cached text. */
     private volatile String entityText;
 
@@ -97,14 +96,12 @@ public abstract class Message {
         this.cacheDirectives = null;
         this.date = null;
         this.entity = entity;
-        // [ifndef gwt] instruction
         this.entityText = null;
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
     }
 
-    // [ifndef gwt] method
     /**
      * If the entity is transient or its size unknown in advance but available,
      * then the entity is wrapped with a {@link org.restlet.representation.BufferingRepresentation}.<br>
@@ -145,7 +142,6 @@ public abstract class Message {
      * in the API. For this purpose, all attribute names starting with
      * "org.restlet" are reserved. Currently the following attributes are used:
      * <table>
-     * <caption>list of currently used attributes</caption>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -160,7 +156,7 @@ public abstract class Message {
      * </tr>
      * <tr>
      * <td>org.restlet.https.clientCertificates</td>
-     * <td>List&lt;java.security.cert.Certificate&gt;</td>
+     * <td>List<java.security.cert.Certificate></td>
      * <td>For requests received via a secure connector, indicates the ordered list of client certificates, if they are
      * available and accessible.</td>
      * </tr>
@@ -230,7 +226,6 @@ public abstract class Message {
         return this.entity;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the entity as text. This method can be called several times and
      * will always return the same text. Note that if the entity is large this
@@ -263,10 +258,7 @@ public abstract class Message {
     public Series<Header> getHeaders() {
         Series<Header> headers = (Series<Header>) getAttributes().get(ATTRIBUTE_HEADERS);
         if (headers == null) {
-            // [ifndef gwt] instruction
             headers = new Series<Header>(Header.class);
-            // [ifdef gwt] instruction uncomment
-            // headers = new org.restlet.engine.util.HeaderSeries();
             getAttributes().put(ATTRIBUTE_HEADERS, headers);
         }
         return headers;

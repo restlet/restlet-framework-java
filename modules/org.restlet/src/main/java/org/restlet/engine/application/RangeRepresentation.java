@@ -80,7 +80,6 @@ public class RangeRepresentation extends WrapperRepresentation {
         return IoUtils.getAvailableSize(this);
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
         return IoUtils.getChannel(getStream());
@@ -124,7 +123,6 @@ public class RangeRepresentation extends WrapperRepresentation {
         this.range = range;
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
         OutputStream os = IoUtils.getStream(writer, getCharacterSet());

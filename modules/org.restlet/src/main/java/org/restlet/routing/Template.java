@@ -54,7 +54,7 @@ import org.restlet.util.Resolver;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="https://en.wikipedia.org/wiki/URI_Template">URI Template
+ * @see <a href="http://code.google.com/p/uri-templates/">URI Template
  *      specification</a>
  * @author Jerome Louvel
  */

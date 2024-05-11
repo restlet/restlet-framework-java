@@ -53,11 +53,9 @@ public class HttpExchangeCall extends ServerCall {
 
     /**
      * Constructor.
-     *
+     * 
      * @param server
-     *            The parent server.
      * @param exchange
-     *            The wrapped {@link HttpExchange} instance.
      */
     public HttpExchangeCall(Server server, HttpExchange exchange) {
         this(server, exchange, false);
@@ -65,14 +63,10 @@ public class HttpExchangeCall extends ServerCall {
 
     /**
      * Constructor.
-     *
+     * 
      * @param server
-     *            The parent server.
      * @param exchange
-     *            The wrapped {@link HttpExchange} instance.
      * @param confidential
-     *            True if the confidentiality of the call is ensured (ex: via
-     *            SSL)
      */
     public HttpExchangeCall(Server server, HttpExchange exchange,
             boolean confidential) {

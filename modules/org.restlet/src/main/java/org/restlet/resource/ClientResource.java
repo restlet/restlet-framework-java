@@ -74,14 +74,12 @@ import org.restlet.util.Series;
  */
 public class ClientResource extends Resource {
 
-    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls. It basically creates a new instance of
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
      * 
      * @param <T>
-     *            The proxified interface.
      * @param context
      *            The context.
      * @param reference
@@ -96,17 +94,12 @@ public class ClientResource extends Resource {
         return clientResource.wrap(resourceInterface);
     }
 
-    // [ifndef gwt] method
-
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls. It basically creates a new instance of
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
-     *
+     * 
      * @param <T>
-     *            The proxified interface.
-     * @param reference
-     *            The target reference.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
@@ -116,14 +109,12 @@ public class ClientResource extends Resource {
         return create(null, reference, resourceInterface);
     }
 
-    // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
      * into Restlet method calls. It basically creates a new instance of
      * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
-     *
+     * 
      * @param <T>
-     *            The proxified interface.
      * @param uri
      *            The target URI.
      * @param resourceInterface
@@ -134,7 +125,6 @@ public class ClientResource extends Resource {
         return create(null, new Reference(uri), resourceInterface);
     }
 
-    // [ifndef gwt] member
     /** Indicates if redirections should be automatically followed. */
     private volatile boolean followingRedirects;
 
@@ -150,14 +140,12 @@ public class ClientResource extends Resource {
     /** Indicates if the next Restlet has been created. */
     private volatile boolean nextCreated;
 
-    // [ifndef gwt] member
     /**
      * Indicates if transient or unknown size request entities should be
      * buffered before being sent.
      */
     private volatile boolean requestEntityBuffering;
 
-    // [ifndef gwt] member
     /**
      * Indicates if transient or unknown size response entities should be
      * buffered after being received.
@@ -194,16 +182,13 @@ public class ClientResource extends Resource {
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
 
-        // [ifndef gwt]
         this.followingRedirects = resource.isFollowingRedirects();
         this.requestEntityBuffering = resource.isRequestEntityBuffering();
         this.responseEntityBuffering = resource.isResponseEntityBuffering();
         setApplication(resource.getApplication());
-        // [enddef]
         init(resource.getContext(), request, response);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -216,7 +201,6 @@ public class ClientResource extends Resource {
         this(context, Method.GET, uri);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -306,11 +290,9 @@ public class ClientResource extends Resource {
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
-        // [ifndef gwt]
         this.followingRedirects = true;
         this.requestEntityBuffering = false;
         this.responseEntityBuffering = false;
-        // [enddef]
         init(context, request, response);
     }
 
@@ -326,7 +308,6 @@ public class ClientResource extends Resource {
         this(context, Method.GET, uri);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -337,7 +318,6 @@ public class ClientResource extends Resource {
         this(Context.getCurrent(), null, uri);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -506,10 +486,8 @@ public class ClientResource extends Resource {
     protected Uniform createNext() {
         Uniform result = null;
 
-        // [ifndef gwt]
         // Prefer the outbound root
         result = getApplication().getOutboundRoot();
-        // [enddef]
 
         if ((result == null) && (getContext() != null)) {
             // Try using directly the client dispatcher
@@ -518,13 +496,6 @@ public class ClientResource extends Resource {
 
         if (result == null) {
             // As a final option, try creating a client connector
-            // [ifdef gwt] uncomment
-            // if (getReference().isRelative()) {
-            // getReference().setBaseRef(
-            // com.google.gwt.core.client.GWT.getHostPageBaseURL());
-            // setReference(getReference().getTargetRef());
-            // }
-            // [enddef]
 
             Protocol rProtocol = getProtocol();
             Reference rReference = getReference();
@@ -533,15 +504,10 @@ public class ClientResource extends Resource {
                             : null;
 
             if (protocol != null) {
-                // [ifndef gwt]
                 org.restlet.engine.util.TemplateDispatcher dispatcher = new org.restlet.engine.util.TemplateDispatcher();
                 dispatcher.setContext(getContext());
                 dispatcher.setNext(new Client(protocol));
                 result = dispatcher;
-                // [enddef]
-                // [ifdef gwt] uncomment
-                // result = new Client(protocol);
-                // [enddef]
             }
         }
 
@@ -582,7 +548,6 @@ public class ClientResource extends Resource {
         return handle(Method.DELETE);
     }
 
-    // [ifndef gwt] method
     /**
      * Deletes the target resource and all its representations. If a success
      * status is not returned, then a resource exception is thrown.
@@ -703,7 +668,6 @@ public class ClientResource extends Resource {
         return handle(Method.GET);
     }
 
-    // [ifndef gwt] method
     /**
      * Represents the resource in the given object class. Note that the client
      * preferences will be automatically adjusted, but only for this request. If
@@ -787,15 +751,13 @@ public class ClientResource extends Resource {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Wraps the child client resource to proxy calls to the given Java
      * interface into Restlet method calls. The child resource is defined in the
      * sense of hierarchical URIs. If the resource URI is not hierarchical, then
      * an exception is thrown.
-     *
+     * 
      * @param <T>
-     *            The proxified interface.
      * @param relativeRef
      *            The URI reference of the child resource relatively to the
      *            current resource seen as the parent resource.
@@ -831,15 +793,13 @@ public class ClientResource extends Resource {
         return getChild(new Reference(relativeUri));
     }
 
-    // [ifndef gwt] method
     /**
      * Wraps the child client resource to proxy calls to the given Java
      * interface into Restlet method calls. The child resource is defined in the
      * sense of hierarchical URIs. If the resource URI is not hierarchical, then
      * an exception is thrown.
-     *
+     * 
      * @param <T>
-     *            The proxified interface.
      * @param relativeUri
      *            The URI of the child resource relatively to the current
      *            resource seen as the parent resource.
@@ -927,7 +887,6 @@ public class ClientResource extends Resource {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Wraps the parent client resource to proxy calls to the given Java
      * interface into Restlet method calls. The parent resource is defined in
@@ -935,7 +894,6 @@ public class ClientResource extends Resource {
      * then an exception is thrown.
      * 
      * @param <T>
-     *            The proxified interface.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
@@ -1000,7 +958,6 @@ public class ClientResource extends Resource {
         return handle(method, (Representation) null);
     }
 
-    // [ifndef gwt] method
     /**
      * Handles the call by cloning the prototype request, setting the method and
      * entity.
@@ -1033,13 +990,10 @@ public class ClientResource extends Resource {
         return handle(method, (Representation) null, mediaType);
     }
 
-    // [ifndef gwt] method
     /**
      * Handles an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     *
-     * @param <T>
-     *            The expected type for the response entity.
+     * 
      * @param method
      *            The request method to use.
      * @param entity
@@ -1159,12 +1113,10 @@ public class ClientResource extends Resource {
     protected void handle(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
-            // [ifndef gwt]
             // Check if request entity buffering must be done
             if (isRequestEntityBuffering()) {
                 request.bufferEntity();
             }
-            // [enddef]
 
             // Actually handle the call
             next.handle(request, response);
@@ -1177,7 +1129,6 @@ public class ClientResource extends Resource {
                             .isAvailable())) {
                 retry(request, response, references, retryAttempt, next);
             }
-            // [ifndef gwt]
             else if (isFollowingRedirects()
                     && response.getStatus().isRedirection()
                     && (response.getLocationRef() != null)) {
@@ -1211,7 +1162,6 @@ public class ClientResource extends Resource {
             if (isResponseEntityBuffering()) {
                 response.bufferEntity();
             }
-            // [enddef]
         } else {
             getLogger().log(Level.WARNING,
                     "Request ignored as no next Restlet is available");
@@ -1322,7 +1272,6 @@ public class ClientResource extends Resource {
         return handle(Method.HEAD, mediaType);
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
@@ -1332,7 +1281,6 @@ public class ClientResource extends Resource {
         return followingRedirects;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if transient or unknown size response entities should be
      * buffered after being received. This is useful to increase the chance of
@@ -1346,7 +1294,6 @@ public class ClientResource extends Resource {
         return requestEntityBuffering;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if transient or unknown size response entities should be
      * buffered after being received. This is useful to be able to
@@ -1385,7 +1332,6 @@ public class ClientResource extends Resource {
         return handle(Method.OPTIONS);
     }
 
-    // [ifndef gwt] method
     /**
      * Describes the resource using a given media type. If a success status is
      * not returned, then a resource exception is thrown.
@@ -1439,14 +1385,11 @@ public class ClientResource extends Resource {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Patches a resource with the given object as delta state. Automatically
      * serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     *
-     * @param <T>
-     *            The expected type for the response entity.
+     * 
      * @param entity
      *            The object entity containing the patch.
      * @param resultClass
@@ -1516,13 +1459,10 @@ public class ClientResource extends Resource {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Posts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     *
-     * @param <T>
-     *            The expected type for the response entity.
+     * 
      * @param entity
      *            The object entity to post.
      * @param resultClass
@@ -1597,13 +1537,10 @@ public class ClientResource extends Resource {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Puts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
-     *
-     * @param <T>
-     *            The expected type for the response entity.
+     * 
      * @param entity
      *            The object entity to put.
      * @param resultClass
@@ -1733,7 +1670,6 @@ public class ClientResource extends Resource {
 
         // Wait before attempting again
         if (getRetryDelay() > 0) {
-            // [ifndef gwt]
             try {
                 Thread.sleep(getRetryDelay());
             } catch (InterruptedException e) {
@@ -1742,14 +1678,6 @@ public class ClientResource extends Resource {
                 // MITRE, CWE-391 - Unchecked Error Condition
                 Thread.currentThread().interrupt();
             }
-            // [enddef]
-            // [ifdef gwt] uncomment
-            // com.google.gwt.user.client.Timer timer = new
-            // com.google.gwt.user.client.Timer() {
-            // public void run() {}
-            // };
-            // timer.schedule((int) getRetryDelay());
-            // [enddef]
         }
 
         // Retry the call
@@ -1829,7 +1757,6 @@ public class ClientResource extends Resource {
         getRequest().setCookies(cookies);
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if transient entities should be buffered after being received
      * or before being sent.
@@ -1844,7 +1771,6 @@ public class ClientResource extends Resource {
         setResponseEntityBuffering(entityBuffering);
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
@@ -1976,7 +1902,6 @@ public class ClientResource extends Resource {
         getRequest().setProtocol(protocol);
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the proxy authentication response sent by a client to an origin
      * server.
@@ -1990,7 +1915,6 @@ public class ClientResource extends Resource {
         getRequest().setProxyChallengeResponse(challengeResponse);
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the proxy authentication response sent by a client to an origin
      * server given a scheme, identifier and secret.
@@ -2067,7 +1991,6 @@ public class ClientResource extends Resource {
         getRequest().setReferrerRef(referrerUri);
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if transient or unknown size response entities should be
      * buffered after being received. This is useful to increase the chance of
@@ -2082,7 +2005,6 @@ public class ClientResource extends Resource {
         this.requestEntityBuffering = requestEntityBuffering;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if transient or unknown size response entities should be
      * buffered after being received. This is useful to be able to
@@ -2128,7 +2050,6 @@ public class ClientResource extends Resource {
         this.retryOnError = retryOnError;
     }
 
-    // [ifndef gwt] method
     /**
      * Wraps the client resource to proxy calls to the given Java interface into
      * Restlet method calls. Use the {@link org.restlet.engine.Engine}
@@ -2144,7 +2065,6 @@ public class ClientResource extends Resource {
                 .getClassLoader());
     }
 
-    // [ifndef gwt] method
     /**
      * Wraps the client resource to proxy calls to the given Java interface into
      * Restlet method calls.

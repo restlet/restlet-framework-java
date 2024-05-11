@@ -50,20 +50,17 @@ public abstract class CharacterRepresentation extends Representation {
         setCharacterSet(CharacterSet.UTF_8);
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
         return IoUtils.getChannel(getStream());
     }
 
-    // [ifndef gwt] method
     @Override
     public InputStream getStream() throws IOException {
         return IoUtils.getStream(getReader(), getCharacterSet());
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
         Writer writer = IoUtils.getWriter(outputStream, getCharacterSet());
@@ -71,7 +68,6 @@ public abstract class CharacterRepresentation extends Representation {
         writer.flush();
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {

@@ -232,7 +232,6 @@ public class HeaderUtils {
                 addHeader(HEADER_CONTENT_LOCATION, entity.getLocationRef().getTargetRef().toString(), headers);
             }
 
-            // [ifndef gwt]
             if (entity.getDigest() != null
                     && ALGORITHM_MD5.equals(entity.getDigest().getAlgorithm())) {
                 addHeader(
@@ -240,7 +239,6 @@ public class HeaderUtils {
                         new String(java.util.Base64.getEncoder().encode(entity
                                 .getDigest().getValue())), headers);
             }
-            // [enddef]
 
             if (entity.getRange() != null) {
                 Range range = entity.getRange();
@@ -424,13 +422,11 @@ public class HeaderUtils {
                     headers);
         }
 
-        // [ifndef gwt]
         if (!clientInfo.getExpectations().isEmpty()) {
             addHeader(HEADER_EXPECT,
                     ExpectationWriter.write(clientInfo.getExpectations()),
                     headers);
         }
-        // [enddef]
 
         if (clientInfo.getFrom() != null) {
             addHeader(HEADER_FROM, request.getClientInfo().getFrom(), headers);
@@ -490,19 +486,15 @@ public class HeaderUtils {
 
         if (request.getClientInfo().getAgent() != null) {
             addHeader(HEADER_USER_AGENT, request.getClientInfo().getAgent(), headers);
-            // [ifndef gwt]
         } else {
             addHeader(HEADER_USER_AGENT, Engine.VERSION_HEADER, headers);
-            // [enddef]
         }
 
-        // [ifndef gwt]
         if (clientInfo.getExpectations().size() > 0) {
             addHeader(HEADER_ACCEPT_ENCODING,
                     PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
                     headers);
         }
-        // [enddef]
 
         // CORS headers
 
@@ -537,7 +529,6 @@ public class HeaderUtils {
         // 5) Add authorization headers at the end
         // ---------------------------------------
 
-        // [ifndef gwt]
         // Add the security headers. NOTE: This must stay at the end because
         // the AWS challenge scheme requires access to all HTTP headers
         ChallengeResponse challengeResponse = request.getChallengeResponse();
@@ -561,10 +552,8 @@ public class HeaderUtils {
                 addHeader(HEADER_PROXY_AUTHORIZATION, authHeader, headers);
             }
         }
-        // [enddef]
     }
 
-    // [ifndef gwt] method
     /**
      * Adds the headers based on the {@link Response} to the given {@link Series}.
      * 
@@ -700,10 +689,7 @@ public class HeaderUtils {
      */
     public static void keepExtensionHeadersOnly(Message message) {
         Series<Header> headers = message.getHeaders();
-        // [ifndef gwt] instruction
         Series<Header> extensionHeaders = new Series<Header>(Header.class);
-        // [ifdef gwt] instruction uncomment
-        // Series<Header> extensionHeaders = new org.restlet.engine.util.HeaderSeries();
         for (Header header : headers) {
             if (!STANDARD_HEADERS.contains(header.getName())) {
                 extensionHeaders.add(header);
@@ -762,7 +748,6 @@ public class HeaderUtils {
 
                     response.setDate(date);
                 } else if (HEADER_RETRY_AFTER.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     Date retryAfter = DateUtils.parse(header.getValue());
 
                     if (retryAfter == null) {
@@ -781,7 +766,6 @@ public class HeaderUtils {
                     }
 
                     response.setRetryAfter(retryAfter);
-                    // [enddef]
                 } else if (HEADER_SET_COOKIE.equalsIgnoreCase(header.getName())
                         || HEADER_SET_COOKIE2.equalsIgnoreCase(header.getName())) {
                     try {
@@ -794,23 +778,17 @@ public class HeaderUtils {
                                         + header.getValue(), e);
                     }
                 } else if (HEADER_WWW_AUTHENTICATE.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
                     response.getChallengeRequests().addAll(crs);
-                    // [enddef]
                 } else if (HEADER_PROXY_AUTHENTICATE.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     List<ChallengeRequest> crs = org.restlet.engine.security.AuthenticatorUtils
                             .parseRequest(response, header.getValue(), headers);
                     response.getProxyChallengeRequests().addAll(crs);
-                    // [enddef]
                 } else if (HEADER_AUTHENTICATION_INFO.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     AuthenticationInfo authenticationInfo = org.restlet.engine.security.AuthenticatorUtils
                             .parseAuthenticationInfo(header.getValue());
                     response.setAuthenticationInfo(authenticationInfo);
-                    // [enddef]
                 } else if (HEADER_SERVER.equalsIgnoreCase(header.getName())) {
                     response.getServerInfo().setAgent(header.getValue());
                 } else if (HEADER_ALLOW.equalsIgnoreCase(header.getName())) {
@@ -900,12 +878,9 @@ public class HeaderUtils {
                                         + header.getValue(), ioe);
                     }
                 } else if (HEADER_CONTENT_RANGE.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     org.restlet.engine.header.RangeReader.update(header.getValue(), result);
                     entityHeaderFound = true;
-                    // [enddef]
                 } else if (HEADER_CONTENT_MD5.equalsIgnoreCase(header.getName())) {
-                    // [ifndef gwt]
                     // Since an MD5 hash is 128 bits long, its base64 encoding
                     // is 22 bytes if unpadded, or 24 bytes if padded. If the
                     // header value is unpadded, append two base64 padding
@@ -920,7 +895,6 @@ public class HeaderUtils {
                             org.restlet.data.Digest.ALGORITHM_MD5,
                             java.util.Base64.getDecoder().decode(base64hash)));
                     entityHeaderFound = true;
-                    // [enddef]
                 }
             }
         }
@@ -1278,7 +1252,6 @@ public class HeaderUtils {
         return (character >= 'A') && (character <= 'Z');
     }
 
-    // [ifndef gwt] method
     /**
      * Writes a new line.
      * 
@@ -1291,7 +1264,6 @@ public class HeaderUtils {
         os.write(10); // LF
     }
 
-    // [ifndef gwt] method
     /**
      * Writes a header line.
      * 

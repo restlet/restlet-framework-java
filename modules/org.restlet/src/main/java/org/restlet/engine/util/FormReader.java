@@ -143,11 +143,7 @@ public class FormReader {
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator, boolean decode) {
         this.decode = decode;
-        // [ifndef gwt] instruction
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
-        // [ifdef gwt] instruction uncomment
-        // this.stream = new
-        // org.restlet.engine.io.StringInputStream(parametersString);
 
         this.characterSet = characterSet;
         this.separator = separator;

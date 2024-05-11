@@ -1,6 +1,8 @@
 language: java
+
 jdk:
-  - oraclejdk11
-script:
- - "cd build"
- - "ant rebuild -lib ./tools/junit/"
+  - openjdk8
+
+sudo: false # faster builds
+
+script: "mvn clean install"

@@ -45,7 +45,6 @@ import org.restlet.util.Series;
  * client or server connector. Here is the list of SSL related parameters that
  * are also supported:
  * <table>
- * <caption>list of supported parameters</caption>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -173,7 +172,7 @@ import org.restlet.util.Series;
  * </p>
  * <p>
  * There is more information in the <a href=
- * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html"
+ * "http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
  * >JSSE Reference Guide</a>.
  * </p>
  * 
@@ -181,7 +180,7 @@ import org.restlet.util.Series;
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
  * @see <a
- *      href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#AppA">JSSE
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#AppA">JSSE
  *      Reference - Standard names</a>
  */
 public class DefaultSslContextFactory extends SslContextFactory {

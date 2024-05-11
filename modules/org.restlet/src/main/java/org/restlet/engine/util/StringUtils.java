@@ -464,7 +464,6 @@ public class StringUtils {
         return string;
     }
 
-    // [ifndef gwt] method
 
     /**
      * Encodes the given String into a sequence of bytes using the Ascii
@@ -487,7 +486,6 @@ public class StringUtils {
         return null;
     }
 
-    // [ifndef gwt] method
 
     /**
      * Encodes the given String into a sequence of bytes using the Latin1
@@ -663,7 +661,6 @@ public class StringUtils {
         return (string == null) ? "" : string;
     }
 
-    // [ifndef gwt] method
 
     /**
      * Returns an list of trimmed token splitted with the split character ",".
@@ -676,7 +673,6 @@ public class StringUtils {
         return splitAndTrim(stringToSplit, ",");
     }
 
-    // [ifndef gwt] method
 
     /**
      * Returns an list of trimmed token splitted with the split character.

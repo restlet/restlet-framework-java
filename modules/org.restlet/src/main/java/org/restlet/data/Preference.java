@@ -108,11 +108,7 @@ public final class Preference<T extends Metadata> {
             synchronized (this) {
                 p = this.parameters;
                 if (p == null) {
-                    // [ifndef gwt] instruction
                     this.parameters = p = new Series<Parameter>(Parameter.class);
-                    // [ifdef gwt] instruction uncomment
-                    // this.parameters = p = new
-                    // org.restlet.engine.util.ParameterSeries();
                 }
             }
         }

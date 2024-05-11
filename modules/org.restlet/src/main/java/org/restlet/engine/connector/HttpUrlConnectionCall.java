@@ -97,7 +97,6 @@ public class HttpUrlConnectionCall extends ClientCall {
                 this.connection.setReadTimeout(getHelper().getReadTimeout());
             }
 
-            // [ifndef gae] instruction
             this.connection.setAllowUserInteraction(getHelper()
                     .isAllowUserInteraction());
             this.connection.setDoOutput(hasEntity);
@@ -106,7 +105,6 @@ public class HttpUrlConnectionCall extends ClientCall {
             this.connection.setUseCaches(getHelper().isUseCaches());
             this.responseHeadersAdded = false;
 
-            // [ifndef gae]
             if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
                 setConfidential(true);
                 javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
@@ -131,7 +129,6 @@ public class HttpUrlConnectionCall extends ClientCall {
                     https.setHostnameVerifier(verifier);
                 }
             }
-            // [enddef]
         } else {
             throw new IllegalArgumentException(
                     "Only HTTP or HTTPS resource URIs are allowed here");

@@ -102,10 +102,8 @@ public class ClientAdapter extends Adapter {
                     System.err
                             .println("HTTP client calls must have a callback in the GWT edition");
                 } else {
-                    // [ifndef gwt]
                     updateResponse(response, httpCall.sendRequest(request),
                             httpCall);
-                    // [enddef]
                 }
             }
         }

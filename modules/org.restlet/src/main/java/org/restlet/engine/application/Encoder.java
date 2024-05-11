@@ -50,7 +50,8 @@ import org.restlet.service.EncoderService;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Lars Heuer
+ * @author Lars Heuer (heuer[at]semagia.com) <a
+ *         href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel
  */
 public class Encoder extends Filter {

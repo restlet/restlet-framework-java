@@ -148,8 +148,6 @@ public class CorsFilter extends Filter {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The continuation status. Either {@link #CONTINUE} or
-     *         {@link #SKIP} or {@link #STOP}.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
@@ -329,7 +327,6 @@ public class CorsFilter extends Filter {
      * @param defaultAllowedMethods
      *            The list of methods allowed by default, used when {@link #skippingResourceForCorsOptions} is turned
      *            on.
-     * @return Itself for chaining methods calls.
      */
     public CorsFilter setDefaultAllowedMethods(Set<Method> defaultAllowedMethods) {
         this.defaultAllowedMethods = defaultAllowedMethods;

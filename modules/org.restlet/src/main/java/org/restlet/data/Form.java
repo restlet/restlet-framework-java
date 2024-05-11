@@ -35,6 +35,8 @@ import org.restlet.util.Series;
 /**
  * Form which is a specialized modifiable list of parameters.
  * 
+ * @see <a href="http://wiki.restlet.org/docs_2.2/58-restlet.html">User Guide -
+ *      Getting parameter values</a>
  * @author Jerome Louvel
  */
 public class Form extends Series<Parameter> {
@@ -70,6 +72,7 @@ public class Form extends Series<Parameter> {
      * 
      * @param webForm
      *            The URL encoded Web form.
+     * @throws IOException
      */
     public Form(Representation webForm) {
         this(webForm, true);
@@ -80,6 +83,7 @@ public class Form extends Series<Parameter> {
      * 
      * @param webForm
      *            The URL encoded Web form.
+     * @throws IOException
      */
     public Form(Representation webForm, boolean decode) {
         this();
@@ -92,6 +96,7 @@ public class Form extends Series<Parameter> {
      * 
      * @param queryString
      *            The Web form parameters as a string.
+     * @throws IOException
      */
     public Form(String queryString) {
         this(queryString, true);
@@ -106,6 +111,7 @@ public class Form extends Series<Parameter> {
      * @param decode
      *            Indicates if the names and values should be automatically
      *            decoded.
+     * @throws IOException
      */
     public Form(String queryString, boolean decode) {
         this(queryString, CharacterSet.UTF_8, decode);
@@ -119,6 +125,7 @@ public class Form extends Series<Parameter> {
      *            The parameters string to parse.
      * @param separator
      *            The separator character to append between parameters.
+     * @throws IOException
      */
     public Form(String parametersString, char separator) {
         this(parametersString, separator, true);
@@ -135,6 +142,7 @@ public class Form extends Series<Parameter> {
      * @param decode
      *            Indicates if the names and values should be automatically
      *            decoded.
+     * @throws IOException
      */
     public Form(String parametersString, char separator, boolean decode) {
         this(parametersString, CharacterSet.UTF_8, separator, decode);
@@ -147,6 +155,7 @@ public class Form extends Series<Parameter> {
      *            The Web form parameters as a string.
      * @param characterSet
      *            The supported character encoding.
+     * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet) {
         this(queryString, characterSet, true);
@@ -162,6 +171,7 @@ public class Form extends Series<Parameter> {
      * @param decode
      *            Indicates if the names and values should be automatically
      *            decoded.
+     * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet, boolean decode) {
         this(queryString, characterSet, '&', decode);
@@ -176,6 +186,7 @@ public class Form extends Series<Parameter> {
      *            The supported character encoding.
      * @param separator
      *            The separator character to append between parameters.
+     * @throws IOException
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
@@ -194,6 +205,7 @@ public class Form extends Series<Parameter> {
      * @param decode
      *            Indicates if the names and values should be automatically
      *            decoded.
+     * @throws IOException
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator, boolean decode) {
@@ -207,12 +219,6 @@ public class Form extends Series<Parameter> {
         return new Parameter(name, value);
     }
 
-    // [ifdef gwt] method uncomment
-    // @Override
-    // public Series<Parameter> createSeries(List<Parameter> delegate) {
-    // return new Form(delegate);
-    // }
-
     /**
      * Encodes the form using the standard URI encoding mechanism and the UTF-8
      * character set.
@@ -225,7 +231,7 @@ public class Form extends Series<Parameter> {
     }
 
     /**
-     * URL encodes the form. The '&amp;' character is used as a separator.
+     * URL encodes the form. The '&' character is used as a separator.
      * 
      * @param characterSet
      *            The supported character encoding.

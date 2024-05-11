@@ -158,7 +158,6 @@ public final class CharacterSet extends Metadata {
     public static final CharacterSet WINDOWS_1252 = new CharacterSet(
             "windows-1252", "Windows 1232 character set");
 
-    // [ifndef gwt] member
     /**
      * The default character set of the JVM.
      * 
@@ -167,9 +166,6 @@ public final class CharacterSet extends Metadata {
     public static final CharacterSet DEFAULT = new CharacterSet(
             java.nio.charset.Charset.defaultCharset());
 
-    // [ifdef gwt] member uncomment
-    // public static final CharacterSet DEFAULT = new CharacterSet("ISO-8859-1",
-    // "ISO/IEC 8859-1 or Latin 1 character set");
 
     /**
      * Handles mapping between Java character set names and IANA preferred name.
@@ -249,7 +245,6 @@ public final class CharacterSet extends Metadata {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor.
      * 
@@ -310,8 +305,8 @@ public final class CharacterSet extends Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>ALL.includes(UTF_16) returns true</li>
-     * <li>UTF_16.includes(ALL) returns false</li>
+     * <li>ALL.includes(UTF_16) -> true</li>
+     * <li>UTF_16.includes(ALL) -> false</li>
      * </ul>
      * 
      * @param included
@@ -323,7 +318,6 @@ public final class CharacterSet extends Metadata {
         return equals(ALL) || (included == null) || equals(included);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the NIO charset matching the character set name.
      * 

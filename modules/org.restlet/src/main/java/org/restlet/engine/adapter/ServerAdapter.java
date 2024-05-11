@@ -190,13 +190,11 @@ public class ServerAdapter extends Adapter {
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
         } catch (Throwable t) {
-            // [ifndef gae]
             if (response.getHttpCall().isConnectionBroken(t)) {
                 // output a single log line for this common case to avoid filling servers logs
                 getLogger().log(Level.INFO,
                         "The connection was broken. It was probably closed by the client. Reason: " + t.getMessage());
             } else
-            // [enddef]
             {
                 getLogger().log(Level.SEVERE,
                         "An exception occurred writing the response entity", t);

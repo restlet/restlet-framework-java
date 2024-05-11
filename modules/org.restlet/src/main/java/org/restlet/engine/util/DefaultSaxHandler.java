@@ -43,9 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Jerome Louvel
  */
 public class DefaultSaxHandler extends DefaultHandler
-// [ifndef android]
         implements org.w3c.dom.ls.LSResourceResolver
-// [enddef]
 {
 
     /**
@@ -122,7 +120,6 @@ public class DefaultSaxHandler extends DefaultHandler
         return super.resolveEntity(publicId, systemId);
     }
 
-    // [ifndef android] method
     /**
      * Allow the application to resolve external resources.
      * <p>

@@ -71,7 +71,6 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getAvailableSize();
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
@@ -83,7 +82,6 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getCharacterSet();
     }
 
-    // [ifndef gwt] method
     @Override
     public org.restlet.data.Digest getDigest() {
         return getWrappedRepresentation().getDigest();
@@ -124,7 +122,6 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().getModificationDate();
     }
 
-    // [ifndef gwt] method
     @Override
     public org.restlet.data.Range getRange() {
         return getWrappedRepresentation().getRange();
@@ -169,7 +166,6 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isAvailable();
     }
 
-    // [ifndef gae,gwt] method
     @Override
     public boolean isSelectable() {
         return getWrappedRepresentation().isSelectable();
@@ -180,7 +176,6 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isTransient();
     }
 
-    // [ifndef gae,gwt] method
     @Override
     public org.restlet.util.SelectionRegistration getRegistration()
             throws IOException {
@@ -202,7 +197,6 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setCharacterSet(characterSet);
     }
 
-    // [ifndef gwt] method
     @Override
     public void setDigest(org.restlet.data.Digest digest) {
         getWrappedRepresentation().setDigest(digest);
@@ -248,7 +242,6 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setModificationDate(modificationDate);
     }
 
-    // [ifndef gwt] method
     @Override
     public void setRange(org.restlet.data.Range range) {
         getWrappedRepresentation().setRange(range);
@@ -269,19 +262,16 @@ public class WrapperRepresentation extends Representation {
         getWrappedRepresentation().setTransient(isTransient);
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.io.OutputStream outputStream) throws IOException {
         getWrappedRepresentation().write(outputStream);
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
         getWrappedRepresentation().write(writer);
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {

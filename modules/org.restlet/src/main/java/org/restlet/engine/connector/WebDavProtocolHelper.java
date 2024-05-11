@@ -30,6 +30,7 @@ import org.restlet.data.Method;
  * Protocol helper for the WEBDAV protocol.
  * 
  * @author Thierry Boileau
+ * 
  */
 public class WebDavProtocolHelper extends ProtocolHelper {
 

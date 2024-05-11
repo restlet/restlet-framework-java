@@ -86,7 +86,6 @@ public class WrapperRequest extends Request {
      * in the API. For this purpose, all attribute names starting with
      * "org.restlet" are reserved. Currently the following attributes are used:
      * <table>
-     * <caption>list of supported attributes</caption>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -212,7 +211,6 @@ public class WrapperRequest extends Request {
         return getWrappedRequest().getProtocol();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the authentication response sent by a client to a proxy.
      * 
@@ -429,7 +427,6 @@ public class WrapperRequest extends Request {
         wrappedRequest.setProtocol(protocol);
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the authentication response sent by a client to a proxy.
      * 

@@ -41,6 +41,7 @@ import org.restlet.util.NamedValue;
  * header.
  * 
  * @see Request#getCookies()
+ * @see <a href="http://wiki.restlet.org/docs_2.2/58-restlet.html">User Guide - Getting parameter values</a>
  * @author Jerome Louvel
  */
 public class Cookie implements NamedValue<String> {

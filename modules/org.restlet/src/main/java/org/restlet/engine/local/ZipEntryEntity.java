@@ -37,7 +37,7 @@ import org.restlet.service.MetadataService;
 /**
  * Local entity based on an entry in a Zip archive.
  * 
- * @author Remi Dewitte remi@gide.net
+ * @author Remi Dewitte <remi@gide.net>
  */
 public class ZipEntryEntity extends Entity {
 

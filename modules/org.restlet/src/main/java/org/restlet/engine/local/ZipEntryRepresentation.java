@@ -42,7 +42,7 @@ import org.restlet.representation.StreamRepresentation;
  * It is very important {@link #release()} is called to close the underlying Zip
  * file.
  * 
- * @author Remi Dewitte remi@gide.net
+ * @author Remi Dewitte <remi@gide.net>
  */
 public class ZipEntryRepresentation extends StreamRepresentation {
 

@@ -331,11 +331,7 @@ public class WrapperList<E> implements List<E>, Iterable<E> {
      * @return The sub-list.
      */
     public List<E> subList(int fromIndex, int toIndex) {
-        // [ifndef gwt] instruction
         return new WrapperList<E>(getDelegate().subList(fromIndex, toIndex));
-        // [ifdef gwt] instruction uncomment
-        // return org.restlet.engine.util.ListUtils.copySubList(this, fromIndex,
-        // toIndex);
     }
 
     /**

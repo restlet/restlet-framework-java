@@ -33,15 +33,16 @@ import org.restlet.engine.Engine;
  * @author Jerome Louvel
  */
 public final class Status {
-    private static final String BASE_ADDED_HTTP = "http://tools.ietf.org/html/rfc6585";
+    private static final String BASE_ADDED_HTTP = "https://datatracker.ietf.org/doc/html/rfc6585";
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "https://javadocs.restlet.talend.com/"
+    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
             + Engine.MAJOR_NUMBER
             + '.'
             + Engine.MINOR_NUMBER
-            + "/api/";
+            + "/"
+            + Edition.CURRENT.getShortName().toLowerCase() + "/api/";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
@@ -236,7 +237,7 @@ public final class Status {
      * The server refuses to accept the request because the user has sent too
      * many requests in a given amount of time.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">HTTP RFC -
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6585#section-4">HTTP RFC -
      *      10.4.12 429 Too Many Requests</a>
      */
     public static final Status CLIENT_ERROR_TOO_MANY_REQUESTS = new Status(429);
@@ -1038,9 +1039,6 @@ public final class Status {
      * 
      * @param status
      *            The status to copy.
-     * @param reasonPhrase
-     *            The short reason phrase displayed next to the status code in a
-     *            HTTP response.
      * @param description
      *            The description to associate.
      */

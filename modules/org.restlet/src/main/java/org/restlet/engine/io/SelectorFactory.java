@@ -48,7 +48,6 @@ public class SelectorFactory {
     /** The timeout before we exit. */
     public static final long TIMEOUT = 5000;
 
-    // [ifndef gae]
     /** Creates the <code>Selector</code>. */
     static {
         try {
@@ -60,7 +59,6 @@ public class SelectorFactory {
         }
     }
 
-    // [enddef]
 
     /**
      * Get an exclusive <code>Selector</code>.

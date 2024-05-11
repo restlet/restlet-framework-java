@@ -46,7 +46,6 @@ public class InternalRouter extends Router {
      * Constructor.
      * 
      * @param context
-     *            The current context.
      */
     public InternalRouter(Context context) {
         super(context);

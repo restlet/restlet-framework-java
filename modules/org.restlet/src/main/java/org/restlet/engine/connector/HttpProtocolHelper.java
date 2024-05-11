@@ -30,6 +30,7 @@ import org.restlet.data.Method;
  * Protocol helper for the HTTP protocol.
  * 
  * @author Thierry Boileau
+ * 
  */
 public class HttpProtocolHelper extends ProtocolHelper {
 

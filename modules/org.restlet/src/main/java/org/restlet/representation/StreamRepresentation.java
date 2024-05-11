@@ -48,7 +48,6 @@ public abstract class StreamRepresentation extends Representation {
         super(mediaType);
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
@@ -60,7 +59,6 @@ public abstract class StreamRepresentation extends Representation {
         return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
@@ -69,7 +67,6 @@ public abstract class StreamRepresentation extends Representation {
         os.flush();
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
         OutputStream os = IoUtils.getStream(writer, getCharacterSet());

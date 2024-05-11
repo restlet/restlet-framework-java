@@ -56,15 +56,7 @@ public class FileEntity extends Entity {
 
     @Override
     public boolean exists() {
-        // [ifndef gae] instruction
         return getFile().exists();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().exists();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
     }
 
     @Override
@@ -74,16 +66,9 @@ public class FileEntity extends Entity {
         if (isDirectory()) {
             result = new ArrayList<Entity>();
 
-            // [ifdef gae] uncomment
-            // try {
-            // [enddef]
             for (File f : getFile().listFiles()) {
                 result.add(new FileEntity(f, getMetadataService()));
             }
-            // [ifdef gae] uncomment
-            // } catch (java.security.AccessControlException ace) {
-            // }
-            // [enddef]
         }
 
         return result;
@@ -118,28 +103,12 @@ public class FileEntity extends Entity {
 
     @Override
     public boolean isDirectory() {
-        // [ifndef gae] instruction
         return getFile().isDirectory();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().isDirectory();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
 
     }
 
     @Override
     public boolean isNormal() {
-        // [ifndef gae] instruction
         return getFile().isFile();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().isFile();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
     }
 }

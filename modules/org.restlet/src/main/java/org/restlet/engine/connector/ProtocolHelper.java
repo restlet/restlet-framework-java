@@ -30,6 +30,7 @@ import org.restlet.engine.Helper;
  * Protocol helper.
  * 
  * @author Thierry Boileau
+ * 
  */
 public abstract class ProtocolHelper extends Helper {
 

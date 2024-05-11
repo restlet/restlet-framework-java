@@ -190,7 +190,6 @@ public class ObjectRepresentation<T extends Serializable> extends
             }
 
             ois.close();
-            // [ifndef android]
         } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                 .equals(serializedRepresentation.getMediaType())) {
             if (!variantObjectXmlSupported) {
@@ -218,7 +217,6 @@ public class ObjectRepresentation<T extends Serializable> extends
             }
 
             decoder.close();
-            // [enddef]
         } else {
             throw new IllegalArgumentException(
                     "The serialized representation must have this media type: "
@@ -292,14 +290,12 @@ public class ObjectRepresentation<T extends Serializable> extends
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(getObject());
             oos.flush();
-            // [ifndef android]
         } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
                 .isCompatible(getMediaType())) {
             java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
                     outputStream);
             encoder.writeObject(getObject());
             encoder.close();
-            // [enddef]
         }
     }
 

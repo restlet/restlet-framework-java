@@ -31,7 +31,6 @@ package org.restlet.engine.util;
  */
 public class SystemUtils {
 
-    // [ifndef gwt] method
     /**
      * Parses the "java.version" system property and returns the first digit of
      * the version number of the Java Runtime Environment (e.g. "1" for
@@ -54,7 +53,6 @@ public class SystemUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Parses the "java.version" system property and returns the second digit of
      * the version number of the Java Runtime Environment (e.g. "3" for
@@ -76,7 +74,6 @@ public class SystemUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Parses the "java.version" system property and returns the update release
      * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
@@ -120,7 +117,6 @@ public class SystemUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if the current operating system is in the Windows family.
      * 

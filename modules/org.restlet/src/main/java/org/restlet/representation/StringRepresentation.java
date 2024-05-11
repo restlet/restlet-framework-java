@@ -148,15 +148,10 @@ public class StringRepresentation extends CharacterRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
-        // [ifndef gwt]
         CharacterSet charset = getCharacterSet() == null ? CharacterSet.ISO_8859_1
                 : getCharacterSet();
         ByteArrayInputStream result = new ByteArrayInputStream(getText()
                 .getBytes(charset.getName()));
-        // [enddef]
-        // [ifdef gwt] instruction uncomment
-        // InputStream result = new
-        // org.restlet.engine.io.StringInputStream(getText());
         return result;
     }
 
@@ -211,7 +206,6 @@ public class StringRepresentation extends CharacterRepresentation {
      */
     protected void updateSize() {
         if (getText() != null) {
-            // [ifndef gwt]
             try {
                 if (getCharacterSet() != null) {
                     setSize(getText().getBytes(getCharacterSet().getName()).length);
@@ -223,15 +217,11 @@ public class StringRepresentation extends CharacterRepresentation {
                         "Unable to update size", e);
                 setSize(UNKNOWN_SIZE);
             }
-            // [enddef]
-            // [ifdef gwt] instruction uncomment
-            // setSize(getText().length());
         } else {
             setSize(UNKNOWN_SIZE);
         }
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(Writer writer) throws IOException {
         if (getText() != null) {

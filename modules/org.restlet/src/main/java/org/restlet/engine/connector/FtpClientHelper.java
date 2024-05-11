@@ -46,7 +46,6 @@ import org.restlet.representation.InputRepresentation;
  * parameters that are supported. They should be set in the Client's context
  * before it is started:
  * <table>
- * <caption>list of supported parameters</caption>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -76,7 +75,7 @@ import org.restlet.representation.InputRepresentation;
  * </table>
  * 
  * @see <a
- *      href="https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
  */
