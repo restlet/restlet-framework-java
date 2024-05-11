@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component xmlns="http://restlet.org/schemas/2.0/Component"
 	name="RESTful Mail Server component" description="Example for 'Restlet in Action' book"
-	owner="Talend S.A." author="The Restlet Team">
+	owner="QlikTech International AB" author="The Restlet Team">
 
 	<client protocol="CLAP" />
 

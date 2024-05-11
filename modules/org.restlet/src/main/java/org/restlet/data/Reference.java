@@ -100,7 +100,7 @@ import org.restlet.engine.Edition;
  * members.
  * 
  * @author Jerome Louvel
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc3986">RFC 3986</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>
  */
 public class Reference {
 

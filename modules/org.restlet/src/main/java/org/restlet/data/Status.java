@@ -33,7 +33,7 @@ import org.restlet.engine.Engine;
  * @author Jerome Louvel
  */
 public final class Status {
-    private static final String BASE_ADDED_HTTP = "https://datatracker.ietf.org/doc/html/rfc6585";
+    private static final String BASE_ADDED_HTTP = "http://tools.ietf.org/html/rfc6585";
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
@@ -237,7 +237,7 @@ public final class Status {
      * The server refuses to accept the request because the user has sent too
      * many requests in a given amount of time.
      * 
-     * @see <a href="https://datatracker.ietf.org/doc/html/rfc6585#section-4">HTTP RFC -
+     * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">HTTP RFC -
      *      10.4.12 429 Too Many Requests</a>
      */
     public static final Status CLIENT_ERROR_TOO_MANY_REQUESTS = new Status(429);

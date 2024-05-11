@@ -55,7 +55,7 @@ public class MailServerComponent extends Component {
         // Set basic properties
         setName("RESTful Mail Server component");
         setDescription("Example for 'Restlet in Action' book");
-        setOwner("Talend S.A.");
+        setOwner("QlikTech International AB");
         setAuthor("The Restlet Team");
 
         // Add a CLAP client connector
