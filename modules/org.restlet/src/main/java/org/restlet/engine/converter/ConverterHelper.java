@@ -95,6 +95,8 @@ public abstract class ConverterHelper extends Helper {
      *            The expected representation metadata.
      * @param variants
      *            The variants list to update.
+     * @return
+     *            The list of variants that can be converted from a given object class.
      * @throws IOException
      */
     public List<VariantInfo> addVariants(Class<?> sourceClass,
@@ -178,7 +180,9 @@ public abstract class ConverterHelper extends Helper {
 
     /**
      * Scores the affinity of this helper with the source class.
-     * 
+     *
+     * @param <T>
+     *            The expected class of the Java object.
      * @param source
      *            The source representation to convert.
      * @param target

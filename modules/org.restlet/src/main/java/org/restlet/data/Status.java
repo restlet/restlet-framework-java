@@ -37,12 +37,11 @@ public final class Status {
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
+    private static final String BASE_RESTLET = "https://javadocs.restlet.talend.com/"
             + Engine.MAJOR_NUMBER
             + '.'
             + Engine.MINOR_NUMBER
-            + "/"
-            + Edition.CURRENT.getShortName().toLowerCase() + "/api/";
+            + "/api/";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
@@ -1039,6 +1038,9 @@ public final class Status {
      * 
      * @param status
      *            The status to copy.
+     * @param reasonPhrase
+     *            The short reason phrase displayed next to the status code in a
+     *            HTTP response.
      * @param description
      *            The description to associate.
      */

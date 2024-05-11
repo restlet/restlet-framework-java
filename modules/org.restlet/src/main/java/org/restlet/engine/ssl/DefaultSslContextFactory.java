@@ -45,6 +45,7 @@ import org.restlet.util.Series;
  * client or server connector. Here is the list of SSL related parameters that
  * are also supported:
  * <table>
+ * <caption>list of supported parameters</caption>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>

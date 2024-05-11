@@ -36,9 +36,6 @@ import org.restlet.engine.Edition;
  * 
  * @author Piyush Purang (ppurang@gmail.com)
  * @see java.util.Date
- * @see <a
- *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
- *      >Immutable Date</a>
  */
 public final class ImmutableDate extends Date {
 

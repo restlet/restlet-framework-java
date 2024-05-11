@@ -33,7 +33,7 @@ import org.restlet.engine.util.SystemUtils;
  * Note that when used with HTTP connectors, this class maps to the
  * "Authentication-Info" header.
  * 
- * @see <a href="http://tools.ietf.org/html/rfc2617#section-3.2.3">HTTP
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc2617#section-3.2.3">HTTP
  *      Authentication - The Authentication-Info Header</a>
  * 
  * @author Kelly McLaughlin

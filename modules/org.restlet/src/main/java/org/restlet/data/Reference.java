@@ -100,7 +100,7 @@ import org.restlet.engine.Edition;
  * members.
  * 
  * @author Jerome Louvel
- * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc3986">RFC 3986</a>
  */
 public class Reference {
 
@@ -1206,12 +1206,13 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded last segment.
+     * Returns the optionally decoded last segment.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @param excludeMatrix
-     * @return The optionnally decoded last segment.
+     *            True if the matrix parameters are dropped from the segments.
+     * @return The optionally decoded last segment.
      * @see #getLastSegment()
      */
     public String getLastSegment(boolean decode, boolean excludeMatrix) {

@@ -39,7 +39,7 @@ import org.restlet.routing.Filter;
  * <br>
  * Here is the list of the default parameter names supported:
  * <table>
- * <p>
+ * <caption>list of the default parameter names supported</caption>
  * <tr>
  * <th>Property</th>
  * <th>Default name</th>

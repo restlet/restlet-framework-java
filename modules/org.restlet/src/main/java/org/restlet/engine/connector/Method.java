@@ -53,6 +53,7 @@ public @interface Method {
 
     /**
      * Method name identified by the underlying annotation.
+     * @return the method name identified by the underlying annotation.
      */
     String value();
 

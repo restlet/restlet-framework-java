@@ -203,8 +203,8 @@ public final class Language extends Metadata {
      * <p>
      * Examples:
      * <ul>
-     * <li>ENGLISH.includes(ENGLISH_US) -> true</li>
-     * <li>ENGLISH_US.includes(ENGLISH) -> false</li>
+     * <li>ENGLISH.includes(ENGLISH_US) returns true</li>
+     * <li>ENGLISH_US.includes(ENGLISH) returns false</li>
      * </ul>
      * 
      * @param included

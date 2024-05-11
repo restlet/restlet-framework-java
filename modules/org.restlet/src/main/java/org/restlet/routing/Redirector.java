@@ -64,8 +64,6 @@ import org.restlet.util.Resolver;
  * should be especially careful when storing state in member variables.
  * 
  * @see org.restlet.routing.Template
- * @see <a href="http://wiki.restlet.org/docs_2.2/375-restlet.html">User Guide -
- *      URI rewriting and redirection</a>
  * @author Jerome Louvel
  */
 public class Redirector extends Restlet {

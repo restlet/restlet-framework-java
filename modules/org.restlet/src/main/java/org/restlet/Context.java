@@ -194,8 +194,7 @@ public class Context {
      * <td>The parent application providing this context, if any.</td>
      * </tr>
      * </table>
-     * </td>
-     * 
+     *
      * @return The modifiable attributes map.
      */
     public ConcurrentMap<String, Object> getAttributes() {

@@ -67,8 +67,7 @@ public class StatusFilter extends Filter {
      *            Indicates whether an existing representation should be
      *            overwritten.
      */
-    public StatusFilter(Context context, boolean overwriting, String email,
-            Reference homeRef) {
+    public StatusFilter(Context context, boolean overwriting) {
         super(context);
         this.overwriting = overwriting;
         this.statusService = null;
@@ -83,8 +82,7 @@ public class StatusFilter extends Filter {
      *            The helped status service.
      */
     public StatusFilter(Context context, StatusService statusService) {
-        this(context, statusService.isOverwriting(), statusService
-                .getContactEmail(), statusService.getHomeRef());
+        this(context, statusService.isOverwriting());
         this.statusService = statusService;
     }
 

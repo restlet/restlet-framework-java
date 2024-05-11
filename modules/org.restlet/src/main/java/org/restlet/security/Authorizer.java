@@ -36,8 +36,6 @@ import org.restlet.routing.Filter;
  * Filter authorizing inbound request. It can be attached to protect a set of
  * downstream {@link Restlet} and {@link ServerResource} objects.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.2/113-restlet.html">User Guide -
- *      Authorization</a>
  * @author Jerome Louvel
  */
 public abstract class Authorizer extends Filter {

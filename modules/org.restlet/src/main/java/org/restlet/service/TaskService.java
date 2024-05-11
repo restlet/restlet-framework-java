@@ -550,7 +550,7 @@ public class TaskService extends Service implements ScheduledExecutorService {
      * @param unit
      *            The time unit of the delay parameter.
      * @return a Future representing pending completion of the task, and whose
-     *         <tt>get()</tt> method will return <tt>null</tt> upon completion.
+     *         get() method will return null upon completion.
      * @throws RejectedExecutionException
      *             if task cannot be scheduled for execution.
      * @throws NullPointerException
@@ -565,8 +565,8 @@ public class TaskService extends Service implements ScheduledExecutorService {
     /**
      * Creates and executes a periodic action that becomes enabled first after
      * the given initial delay, and subsequently with the given period; that is
-     * executions will commence after <tt>initialDelay</tt> then
-     * <tt>initialDelay+period</tt>, then <tt>initialDelay + 2 * period</tt>,
+     * executions will commence after initialDelay then
+     * initialDelay+period, then initialDelay + 2 * period,
      * and so on. If any execution of the task encounters an exception,
      * subsequent executions are suppressed. Otherwise, the task will only
      * terminate via cancellation or termination of the executor.
@@ -580,7 +580,7 @@ public class TaskService extends Service implements ScheduledExecutorService {
      * @param unit
      *            The time unit of the initialDelay and period parameters
      * @return a Future representing pending completion of the task, and whose
-     *         <tt>get()</tt> method will throw an exception upon cancellation.
+     *         get() method will throw an exception upon cancellation.
      * @throws RejectedExecutionException
      *             if task cannot be scheduled for execution.
      * @throws NullPointerException

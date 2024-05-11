@@ -63,8 +63,6 @@ import org.restlet.util.RouteList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.2/376-restlet.html">User Guide -
- *      Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
 public class Router extends Restlet {

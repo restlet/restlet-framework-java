@@ -54,7 +54,7 @@ import org.restlet.util.WrapperRepresentation;
  * which may require specific attention for transient representations.
  *
  * @author Jerome Louvel
- * @see Representation#isTransient().
+ * @see Representation#isTransient() .
  */
 public class DigesterRepresentation extends WrapperRepresentation {
     /** The digest algorithm. */

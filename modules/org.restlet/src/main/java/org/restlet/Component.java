@@ -67,8 +67,7 @@ import org.restlet.util.ServiceList;
  * a descriptor document (at this time only WADL description are supported, see
  * the WADL Restlet extension for details).<br>
  * <br>
- * The XML Schema of the configuration files is available both <a
- * href="http://restlet.org/schemas/2.0/Component">online</a> and inside the API
+ * The XML Schema of the configuration files is available inside the API
  * JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
  * configuration:
  * 
@@ -114,7 +113,7 @@ public class Component extends Restlet {
      * Used as bootstrap for configuring and running a component in command
      * line. Just provide as first and unique parameter the URI to the XML file.
      * Note that relative paths are accepted.
-     * 
+     *
      * @param args
      *            The list of in-line parameters.
      * @deprecated Use XML support in the Spring extension instead.
@@ -759,7 +758,8 @@ public class Component extends Restlet {
      * Updates the component to take into account changes to the virtual hosts.
      * This method doesn't stop the connectors or the applications or Restlets
      * attached to the virtual hosts. It just updates the internal routes
-     * between the virtual hosts and the attached Restlets or applications.<br>
+     * between the virtual hosts and the attached Restlets or applications.
+     * @throws Exception
      */
     public synchronized void updateHosts() throws Exception {
         getHelper().update();

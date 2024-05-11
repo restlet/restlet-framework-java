@@ -148,6 +148,8 @@ public class CorsFilter extends Filter {
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @return The continuation status. Either {@link #CONTINUE} or
+     *         {@link #SKIP} or {@link #STOP}.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {

@@ -344,6 +344,8 @@ public class Request extends Message {
      * associated to this request, making it ready to be sent back to the
      * client. Note that all server connectors don't necessarily support this
      * feature.
+     * @param response The response to commit.
+     *
      */
     public void commit(Response response) {
     }

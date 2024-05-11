@@ -66,7 +66,7 @@ import org.restlet.routing.Template;
  * <li>Referrer reference</li>
  * </ol>
  * <br>
- * If you use <a href="http://www.analog.cx">Analog</a> to generate your log
+ * If you use <a href="https://github.com/fabianbuechler/analog">Analog</a> to generate your log
  * reports, and if you use the default log format, then you can simply specify
  * this string as a value of the LOGFORMAT command:
  * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br>
@@ -74,10 +74,8 @@ import org.restlet.routing.Template;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.routing.Template}. <br>
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.2/201-restlet.html">User Guide -
- *      Access logging</a>
  * @see <a
- *      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
+ *      href="https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel
  */
 public class LogService extends Service {

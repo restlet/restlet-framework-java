@@ -37,7 +37,7 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html#sec19.5.1"
  *      >Content-Disposition header</a>
- * @see <a href="http://tools.ietf.org/html/rfc2183" >The Content-Disposition
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc2183" >The Content-Disposition
  *      Header Field</a>
  * 
  * @author Thierry Boileau

@@ -55,7 +55,7 @@ import org.restlet.service.MetadataService;
  * Handles GET, HEAD and PUT request on resources referenced as :
  * zip:file://<file path>
  *
- * @author Remi Dewitte <remi@gide.net>
+ * @author Remi Dewitte remi@gide.net
  */
 public class ZipClientHelper extends LocalClientHelper {
 

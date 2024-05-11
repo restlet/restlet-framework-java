@@ -58,7 +58,7 @@ public final class ChallengeScheme {
      * Microsoft Azure Shared Key scheme.
      * 
      * @see <a
-     *      href="http://msdn.microsoft.com/en-us/library/dd179428.aspx#Subheading2">MSDN
+     *      href="https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-requests-to-azure-storage?redirectedfrom=MSDN#Subheading2">MSDN
      *      page</a>
      */
     public static final ChallengeScheme HTTP_AZURE_SHAREDKEY = new ChallengeScheme(

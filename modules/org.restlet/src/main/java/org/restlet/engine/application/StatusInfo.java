@@ -29,7 +29,6 @@ import org.restlet.data.Status;
 import java.io.Serializable;
 
 /**
- * 
  * Representation of a {@link Status}.
  * 
  * @author Manuel Boillod
@@ -85,6 +84,8 @@ public class StatusInfo implements Serializable {
      *            The longer description.
      * @param reasonPhrase
      *            The short reason phrase.
+     * @param uri
+     *            The URI of the specification describing the method.
      * @param contactEmail
      *            The email address of the administrator to contact in case of
      *            error.
