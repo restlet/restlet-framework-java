@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.ext.freemarker;
@@ -45,7 +45,7 @@ import freemarker.template.TemplateException;
  * FreeMarker template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://freemarker.org/">FreeMarker home page</a>
+ * @see <a href="https://freemarker.apache.org/">FreeMarker home page</a>
  * @author Jerome Louvel
  */
 public class TemplateRepresentation extends WriterRepresentation {

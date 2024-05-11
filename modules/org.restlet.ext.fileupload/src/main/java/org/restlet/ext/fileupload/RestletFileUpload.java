@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.ext.fileupload;
@@ -45,7 +45,7 @@ import org.restlet.representation.Representation;
  * to create them; a given part may be in memory, on disk, or somewhere else.<br>
  * <br>
  * In addition, it is possible to use <a
- * href="http://commons.apache.org/fileupload/streaming.html> FileUpload's
+ * href="https://commons.apache.org/proper/commons-fileupload/streaming.html> FileUpload's
  * streaming API</a> to prevent the intermediary storage step. For this, use the
  * {@link #getItemIterator(org.apache.commons.fileupload.RequestContext)}
  * method.

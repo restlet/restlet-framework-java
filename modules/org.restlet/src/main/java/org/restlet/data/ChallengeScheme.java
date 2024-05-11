@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.data;
@@ -58,7 +58,7 @@ public final class ChallengeScheme {
      * Microsoft Azure Shared Key scheme.
      * 
      * @see <a
-     *      href="http://msdn.microsoft.com/en-us/library/dd179428.aspx#Subheading2">MSDN
+     *      href="https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-requests-to-azure-storage?redirectedfrom=MSDN#Subheading2">MSDN
      *      page</a>
      */
     public static final ChallengeScheme HTTP_AZURE_SHAREDKEY = new ChallengeScheme(

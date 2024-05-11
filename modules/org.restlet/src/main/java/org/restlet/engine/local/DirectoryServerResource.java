@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.engine.local;
@@ -54,7 +54,7 @@ import org.restlet.resource.ServerResource;
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
  * 
- * @see <a href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache mod_negotiation module</a>
+ * @see <a href="https://httpd.apache.org/docs/current/content-negotiation.html">Apache mod_negotiation module</a>
  * @author Jerome Louvel
  * @author Thierry Boileau
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.service;
@@ -65,8 +65,6 @@ import org.restlet.resource.ResourceException;
  * not generate an error representation. You can turn off this default behavior
  * by calling the {@link #setOverwriting(boolean)} method.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.2/202-restlet.html">User
- *      Guide</a>
  * @author Jerome Louvel
  */
 public class StatusService extends Service {

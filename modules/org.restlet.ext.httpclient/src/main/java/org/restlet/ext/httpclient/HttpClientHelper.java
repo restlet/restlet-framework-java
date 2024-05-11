@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.ext.httpclient;
@@ -180,10 +180,10 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * For the default SSL parameters see the Javadocs of the
  * {@link DefaultSslContextFactory} class.
  * 
- * @see <a href= "http://hc.apache.org/httpcomponents-client/tutorial/html/"
+ * @see <a href= "https://hc.apache.org/httpcomponents-client-4.5.x/current/tutorial/html/index.html"
  *      >Apache HTTP Client tutorial</a>
  * @see <a
- *      href="http://download.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
+ *      href="https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
  */

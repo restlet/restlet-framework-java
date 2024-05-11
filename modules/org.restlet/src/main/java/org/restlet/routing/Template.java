@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.routing;
@@ -54,7 +54,7 @@ import org.restlet.util.Resolver;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="http://code.google.com/p/uri-templates/">URI Template
+ * @see <a href="https://en.wikipedia.org/wiki/URI_Template">URI Template
  *      specification</a>
  * @author Jerome Louvel
  */

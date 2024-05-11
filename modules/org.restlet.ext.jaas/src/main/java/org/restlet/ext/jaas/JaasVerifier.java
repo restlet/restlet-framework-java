@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.ext.jaas;
@@ -42,9 +42,9 @@ import org.restlet.security.Verifier;
  * Verifier that leverages the JAAS pluggable authentication mechanism.
  * 
  * @author Jerome Louvel
- * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
+ * @see <a href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
  *      Tutorials</a>
- * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS Reference
+ * @see <a href="https://docs.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS Reference
  *      Guide</a>
  */
 public class JaasVerifier implements Verifier {

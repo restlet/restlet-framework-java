@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.security;
@@ -36,8 +36,6 @@ import org.restlet.routing.Filter;
  * Filter authorizing inbound request. It can be attached to protect a set of
  * downstream {@link Restlet} and {@link ServerResource} objects.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.2/113-restlet.html">User Guide -
- *      Authorization</a>
  * @author Jerome Louvel
  */
 public abstract class Authorizer extends Filter {

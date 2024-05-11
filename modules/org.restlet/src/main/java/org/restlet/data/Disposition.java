@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.data;
@@ -37,7 +37,7 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html#sec19.5.1"
  *      >Content-Disposition header</a>
- * @see <a href="http://tools.ietf.org/html/rfc2183" >The Content-Disposition
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc2183" >The Content-Disposition
  *      Header Field</a>
  * 
  * @author Thierry Boileau

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet;
@@ -67,8 +67,7 @@ import org.restlet.util.ServiceList;
  * a descriptor document (at this time only WADL description are supported, see
  * the WADL Restlet extension for details).<br>
  * <br>
- * The XML Schema of the configuration files is available both <a
- * href="http://restlet.org/schemas/2.0/Component">online</a> and inside the API
+ * The XML Schema of the configuration files is available inside the API
  * JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
  * configuration:
  * 

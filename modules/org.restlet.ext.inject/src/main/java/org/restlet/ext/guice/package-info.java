@@ -1,5 +1,5 @@
 /**
- * Integration with Google Guice @minor-version@.
+ * Integration with Google Guice 4.2.
  * 
  * <p>
  * Tools for dependency injection (DI) of Restlet
@@ -183,8 +183,8 @@
  * </pre>
  * 
  * @since Restlet 2.2
- * @see <a href="@home-uri@">Google Guice project</a>
- * @see <a href="http://restlet.org/learn/guide/2.3/extensions/guice">User Guide
+ * @see <a href="https://github.com/google/guice">Google Guice project</a>
+ * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/guice">User Guide
  *      - Guice extension</a>
  */
 package org.restlet.ext.guice;

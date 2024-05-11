@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.engine.ssl;
@@ -173,7 +173,7 @@ import org.restlet.util.Series;
  * </p>
  * <p>
  * There is more information in the <a href=
- * "http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
+ * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html"
  * >JSSE Reference Guide</a>.
  * </p>
  * 
@@ -181,7 +181,7 @@ import org.restlet.util.Series;
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
  * @see <a
- *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#AppA">JSSE
+ *      href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#AppA">JSSE
  *      Reference - Standard names</a>
  */
 public class DefaultSslContextFactory extends SslContextFactory {

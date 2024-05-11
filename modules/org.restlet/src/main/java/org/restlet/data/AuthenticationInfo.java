@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.data;
@@ -33,7 +33,7 @@ import org.restlet.engine.util.SystemUtils;
  * Note that when used with HTTP connectors, this class maps to the
  * "Authentication-Info" header.
  * 
- * @see <a href="http://tools.ietf.org/html/rfc2617#section-3.2.3">HTTP
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc2617#section-3.2.3">HTTP
  *      Authentication - The Authentication-Info Header</a>
  * 
  * @author Kelly McLaughlin

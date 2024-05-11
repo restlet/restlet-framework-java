@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.data;
@@ -37,12 +37,11 @@ public final class Status {
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
+    private static final String BASE_RESTLET = "https://javadocs.restlet.talend.com/"
             + Engine.MAJOR_NUMBER
             + '.'
             + Engine.MINOR_NUMBER
-            + "/"
-            + Edition.CURRENT.getShortName().toLowerCase() + "/api/";
+            + "/api/";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 

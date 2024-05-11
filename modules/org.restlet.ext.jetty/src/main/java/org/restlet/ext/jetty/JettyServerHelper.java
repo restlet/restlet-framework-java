@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2020 Talend
+ * Copyright 2005-2024 Qlik
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
@@ -19,7 +19,7 @@
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
  * 
- * Restlet is a registered trademark of Talend S.A.
+ * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.ext.jetty;
@@ -195,9 +195,7 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * </tr>
  * </table>
  * 
- * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
- * @see <a href="https://wiki.eclipse.org/Jetty/Feature/SPDY">Jetty SPDY page</a>
- * @see <a href="https://wiki.eclipse.org/Jetty/Feature/NPN">Jetty NPN configuration page</a>
+ * @see <a href="https://eclipse.dev/jetty/documentation/jetty-9/index.html">Jetty SPDY and NPN page</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
