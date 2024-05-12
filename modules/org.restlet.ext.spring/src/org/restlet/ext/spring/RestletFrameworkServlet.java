@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.ext.servlet.ServletAdapter;
@@ -90,11 +92,58 @@ public class RestletFrameworkServlet extends FrameworkServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /** The Component. */
+    private volatile Component component;
+
     /** The adapter of Servlet calls into Restlet equivalents. */
     private volatile ServletAdapter adapter;
 
     /** The bean name of the target Restlet. */
     private volatile String targetRestletBeanName;
+
+    /** The bean name of the Component. */
+    private volatile String componentBeanName;
+
+    /** List of supported client protocols. */
+    private volatile String clientProtocolsString;
+
+    /**
+     * Creates an {@link Component} for the {@link Application}
+     * by trying to look one up from the web application context
+     * using the configured <code>componentBeanName</code>.
+     * If no component bean name is configured then a default Component is created.
+     * <p>
+     * Additionally, if any client protocols are configured via <code>clientProtocols</code>
+     * then these are also added to the component.
+     * 
+     * @return A new instance of {@link Component}
+     */
+    protected Component createComponent() {
+        Component component;
+        if(componentBeanName != null) {
+	        component = (Component) getWebApplicationContext().getBean(
+	                componentBeanName);
+        } else {
+	    	component = new Component();
+        }
+        if (clientProtocolsString != null) {
+            final String[] clientProtocols = clientProtocolsString
+                    .split(" ");
+            Client client;
+
+            for (final String clientProtocol : clientProtocols) {
+                client = new Client(clientProtocol);
+
+                if (client.isAvailable()) {
+                    component.getClients().add(client);
+                } else {
+                    log("[Restlet] Couldn't find a client connector for protocol "
+                            + clientProtocol);
+                }
+            }
+        }
+    	return component;
+    }
 
     /**
      * Creates the Restlet {@link Context} to use if the target application does
@@ -106,7 +155,9 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * @return A new instance of {@link Context}
      */
     protected Context createContext() {
-        return new Context();
+    	this.component = createComponent();
+    	Context parentContext = this.component.getContext();
+    	return parentContext.createChildContext();
     }
 
     @Override
@@ -124,6 +175,15 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      */
     protected ServletAdapter getAdapter() {
         return this.adapter;
+    }
+    /**
+     * Provides access to the {@link Component} used.
+     * Exposed so that subclasses may do additional configuration.
+     * 
+     * @return The {@link Component}.
+     */
+    protected Component getComponent() {
+        return this.component;
     }
 
     /**
@@ -176,5 +236,25 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      */
     public void setTargetRestletBeanName(String targetRestletBeanName) {
         this.targetRestletBeanName = targetRestletBeanName;
+    }
+
+    /**
+     * Sets the bean name of the Component.
+     * 
+     * @param componentBeanName
+     *            The bean name.
+     */
+    public void setComponentBeanName(String componentBeanName) {
+        this.componentBeanName = componentBeanName;
+    }
+
+    /**
+     * Sets the client protocols.
+     * 
+     * @param clientProtocols
+     *              Space-separated list of protocols (e.g. FILE CLAP).
+     */
+    public void setClientProtocols(String clientProtocolsString) {
+        this.clientProtocolsString = clientProtocolsString;
     }
 }
