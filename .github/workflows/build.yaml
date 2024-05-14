@@ -24,7 +24,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'maven'
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: ./mvnw -B package --file pom.xml
       - name: Run tests
         continue-on-error: true
-        run: mvn -B test -P default,test
+        run: ./mvnw -B test -P default,test
