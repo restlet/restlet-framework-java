@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "2.5"
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group:
+    ${{ github.repository }}-${{ github.workflow }}-${{ github.event.number || github.head_ref || github.run_id || github.sha }}
+  cancel-in-progress: true
+env:
+  JAVA_VERSION: 11
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'maven'
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Run tests
+        continue-on-error: true
+        run: mvn -B test -P default,test
