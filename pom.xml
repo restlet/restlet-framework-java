@@ -93,33 +93,58 @@
         <lib-woodstock-core-version>4.3.0</lib-woodstock-core-version>
     </properties>
 
-    <modules>
-        <module>modules/org.restlet</module>
-        <module>modules/org.restlet.example</module>
-        <module>modules/org.restlet.ext.crypto</module>
-        <module>modules/org.restlet.ext.fileupload</module>
-        <module>modules/org.restlet.ext.freemarker</module>
-        <module>modules/org.restlet.ext.gson</module>
-        <module>modules/org.restlet.ext.inject</module>
-        <module>modules/org.restlet.ext.html</module>
-        <module>modules/org.restlet.ext.httpclient</module>
-        <module>modules/org.restlet.ext.jaas</module>
-        <module>modules/org.restlet.ext.jackson</module>
-        <module>modules/org.restlet.ext.jaxb</module>
-        <module>modules/org.restlet.ext.jetty</module>
-        <module>modules/org.restlet.ext.json</module>
-        <module>modules/org.restlet.ext.servlet</module>
-        <module>modules/org.restlet.ext.slf4j</module>
-        <module>modules/org.restlet.ext.spring</module>
-        <module>modules/org.restlet.ext.thymeleaf</module>
-        <module>modules/org.restlet.ext.velocity</module>
-        <module>modules/org.restlet.ext.xml</module>
-    </modules>
-
     <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>modules/org.restlet</module>
+                <module>modules/org.restlet.example</module>
+                <module>modules/org.restlet.ext.crypto</module>
+                <module>modules/org.restlet.ext.fileupload</module>
+                <module>modules/org.restlet.ext.freemarker</module>
+                <module>modules/org.restlet.ext.gson</module>
+                <module>modules/org.restlet.ext.inject</module>
+                <module>modules/org.restlet.ext.html</module>
+                <module>modules/org.restlet.ext.httpclient</module>
+                <module>modules/org.restlet.ext.jaas</module>
+                <module>modules/org.restlet.ext.jackson</module>
+                <module>modules/org.restlet.ext.jaxb</module>
+                <module>modules/org.restlet.ext.jetty</module>
+                <module>modules/org.restlet.ext.json</module>
+                <module>modules/org.restlet.ext.servlet</module>
+                <module>modules/org.restlet.ext.slf4j</module>
+                <module>modules/org.restlet.ext.spring</module>
+                <module>modules/org.restlet.ext.thymeleaf</module>
+                <module>modules/org.restlet.ext.velocity</module>
+                <module>modules/org.restlet.ext.xml</module>
+            </modules>
+        </profile>
         <profile>
             <id>test</id>
             <modules>
+                <module>modules/org.restlet</module>
+                <module>modules/org.restlet.example</module>
+                <module>modules/org.restlet.ext.crypto</module>
+                <module>modules/org.restlet.ext.fileupload</module>
+                <module>modules/org.restlet.ext.freemarker</module>
+                <module>modules/org.restlet.ext.gson</module>
+                <module>modules/org.restlet.ext.inject</module>
+                <module>modules/org.restlet.ext.html</module>
+                <module>modules/org.restlet.ext.httpclient</module>
+                <module>modules/org.restlet.ext.jaas</module>
+                <module>modules/org.restlet.ext.jackson</module>
+                <module>modules/org.restlet.ext.jaxb</module>
+                <module>modules/org.restlet.ext.jetty</module>
+                <module>modules/org.restlet.ext.json</module>
+                <module>modules/org.restlet.ext.servlet</module>
+                <module>modules/org.restlet.ext.slf4j</module>
+                <module>modules/org.restlet.ext.spring</module>
+                <module>modules/org.restlet.ext.thymeleaf</module>
+                <module>modules/org.restlet.ext.velocity</module>
+                <module>modules/org.restlet.ext.xml</module>
                 <module>modules/org.restlet.test</module>
             </modules>
         </profile>
@@ -165,7 +190,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.4</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -232,7 +257,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.4</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -288,7 +313,7 @@
                             <dependency>
                                 <groupId>org.kordamp.maven</groupId>
                                 <artifactId>pomchecker-enforcer-rules</artifactId>
-                                <version>1.9.0</version>
+                                <version>1.11.0</version>
                             </dependency>
                         </dependencies>
                     </plugin>
@@ -302,7 +327,8 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.10.2</version>
+                <version>${lib-junit-version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -396,7 +422,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>3.13.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <release>${java.version}</release>
@@ -405,7 +431,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.3</version>
                     <configuration>
                         <additionalJOptions>
                             <additionalJOption>${javadoc.opts}</additionalJOption>
@@ -420,27 +446,27 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -450,7 +476,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.1.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
