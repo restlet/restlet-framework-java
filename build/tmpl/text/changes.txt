@@ -3,6 +3,8 @@
 Changes log
 ===========
 
+@version-full@ (@release-date@)
+
 - 2.4.4 (05/20/2024)
     - Bugs fixed
       - Prevent clearing of current application set as thread variable. Issue #1317.
