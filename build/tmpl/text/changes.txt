@@ -4,9 +4,12 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+      - Prevent clearing of current application set as thread variable. Issue #1317.
+        Reported by rmbrad and contributed by Thomas Taylor.
     - Misc
       - Deprecated extension "org.restlet.ext.platform" which is planned to be dropped in 
-        future version 2.5
+        future version 2.5.
       - Upgraded library cglib to "3.3.0". Issue #1358.
       - Upgraded library jackson to "2.16.1". Issue #1358.
       - Upgraded library gson to "2.10.1". Issue #1358.
