@@ -425,7 +425,6 @@
                     <version>3.13.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
-                        <release>${java.version}</release>
                     </configuration>
                 </plugin>
                 <plugin>
