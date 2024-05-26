@@ -34,7 +34,7 @@
 
     <properties>
         <release>false</release>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -160,7 +160,7 @@
                 <repository>
                     <id>github</id>
                     <name>GitHub Packages</name>
-                    <url>https://maven.pkg.github.com/xSAVIKx/restlet-framework-java</url>
+                    <url>https://maven.pkg.github.com/restlet/restlet-framework-java</url>
                 </repository>
             </distributionManagement>
             <build>
