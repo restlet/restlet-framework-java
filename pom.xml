@@ -19,19 +19,6 @@
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>maven-central</id>
-            <name>Central Maven repository</name>
-            <url>https://repo.maven.apache.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>maven-restlet</id>
-            <name>Restlet repository</name>
-            <url>https://maven.restlet.talend.com</url>
-        </repository>
-    </repositories>
-
     <properties>
         <release>false</release>
         <java.version>1.8</java.version>
