@@ -101,7 +101,7 @@
         <lib-spring-version>5.3.34</lib-spring-version>
         <lib-stax2-version>4.2.2</lib-stax2-version>
         <lib-swagger-version>1.5.3-M1</lib-swagger-version>
-        <lib-testng-version>7.10.2</lib-testng-version>
+        <lib-testng-version>7.5.1</lib-testng-version>
         <lib-thymeleaf-version>2.1.6.RELEASE</lib-thymeleaf-version>
         <lib-tika-version>1.28.5</lib-tika-version>
         <lib-velocity-version>2.3</lib-velocity-version>
