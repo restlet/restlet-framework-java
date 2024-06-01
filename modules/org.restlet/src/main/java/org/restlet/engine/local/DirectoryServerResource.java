@@ -130,7 +130,7 @@ public class DirectoryServerResource extends ServerResource {
         if (this.directoryTarget && !this.indexTarget) {
             // let the client handle the directory's deletion
             contextRequest.setResourceRef(this.targetUri);
-            getClientDispatcher().handle(contextRequest, contextResponse);
+            letClientDispatcherHandleRequest(contextRequest, contextResponse);
 
             setStatus(contextResponse.getStatus());
             return null;
@@ -144,7 +144,7 @@ public class DirectoryServerResource extends ServerResource {
         } else if (this.uniqueReference != null) {
             // only one representation
             contextRequest.setResourceRef(this.uniqueReference);
-            getClientDispatcher().handle(contextRequest, contextResponse);
+            letClientDispatcherHandleRequest(contextRequest, contextResponse);
             setStatus(contextResponse.getStatus());
         } else {
             // several variants found, but not the right one
@@ -468,8 +468,7 @@ public class DirectoryServerResource extends ServerResource {
      * @return A response with the representation if success.
      */
     private Response getRepresentation(String resourceUri) {
-        return getClientDispatcher().handle(
-                new Request(Method.GET, resourceUri));
+        return letClientDispatcherHandleRequest(new Request(Method.GET, resourceUri));
     }
 
     /**
@@ -489,7 +488,7 @@ public class DirectoryServerResource extends ServerResource {
             request.getClientInfo().accept(acceptedMediaType);
         }
 
-        return getClientDispatcher().handle(request);
+        return letClientDispatcherHandleRequest(request);
     }
 
     /**
@@ -757,6 +756,40 @@ public class DirectoryServerResource extends ServerResource {
         return this.fileTarget;
     }
 
+    /**
+     * Transmit the given request to the clientDispatcher.<br>
+     * It completes the request's attributes map with the current Directory ("org.restlet.directory" key).
+     *
+     * @param request
+     *         The request to send.
+     * @return The response
+     */
+    private Response letClientDispatcherHandleRequest(final Request request) {
+        final Response response = new Response(request);
+        letClientDispatcherHandleRequest(request, response);
+
+        if (response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN)) {
+            throw new ResourceException(response.getStatus());
+        }
+
+        return response;
+    }
+
+    /**
+     * Transmit the given request to the clientDispatcher.<br>
+     * It completes the request's attributes map with the current Directory ("org.restlet.directory" key).
+     *
+     * @param request
+     *         The request to send.
+     * @param response
+     *         The related response.
+     */
+    private void letClientDispatcherHandleRequest(final Request request, final Response response) {
+        request.getAttributes().put("org.restlet.directory", this.directory);
+
+        getClientDispatcher().handle(request, response);
+    }
+
     @Override
     public Representation put(Representation entity) throws ResourceException {
         if (!this.directory.isModifiable()) {
@@ -772,7 +805,7 @@ public class DirectoryServerResource extends ServerResource {
         contextRequest.setEntity(entity);
         Response contextResponse = new Response(contextRequest);
         contextRequest.setResourceRef(this.targetUri);
-        getClientDispatcher().handle(contextRequest, contextResponse);
+        letClientDispatcherHandleRequest(contextRequest, contextResponse);
         setStatus(contextResponse.getStatus());
 
         return null;
