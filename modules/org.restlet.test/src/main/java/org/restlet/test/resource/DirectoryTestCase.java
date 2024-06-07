@@ -62,6 +62,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.ReferenceUtils;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
 import org.restlet.test.RestletTestCase;
@@ -410,6 +411,34 @@ public class DirectoryTestCase extends RestletTestCase {
                 .baseRef(this.webSiteURL)
                 .handle(GET);
         assertEquals(CLIENT_ERROR_FORBIDDEN, response.getStatus());
+
+        response = new TestRequest(this.webSiteURL, "%2e%2e%2fprivate.txt")
+                .baseRef(this.webSiteURL)
+                .handle(DELETE);
+        assertEquals(CLIENT_ERROR_FORBIDDEN, response.getStatus());
+
+        if (SystemUtils.isWindows()) {
+            // Try with Windows "\" separator in the URL
+            response = new TestRequest(this.webSiteURL, "..%5cchild%20dir%5cfile.txt")
+                    .baseRef(this.webSiteURL)
+                    .handle(GET);
+            // assert no content as the file is empty
+            assertEquals(SUCCESS_NO_CONTENT, response.getStatus());
+
+            response = new TestRequest(this.webSiteURL, "..%5c..%5c..%5cWindows%5cnotepad.exe")
+                    .baseRef(this.webSiteURL)
+                    .handle(GET);
+            assertEquals(CLIENT_ERROR_FORBIDDEN, response.getStatus());
+        }
+
+        directory.setModifiable(true);
+        response = new TestRequest(this.webSiteURL, "../child%20dir/file.txt")
+                .baseRef(this.webSiteURL)
+                .handle(DELETE);
+
+        // assert file is deleted
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+
     }
 
     /**
