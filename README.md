@@ -1,5 +1,13 @@
 # Restlet Framework
 
+
+[![Build Status](https://github.com/restlet/restlet-framework-java/actions/workflows/build.yaml/badge.svg)](https://github.com/restlet/restlet-framework-java/actions/workflows/ci.yaml)
+
+[![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+[![Eclipse EPL License](https://img.shields.io/badge/License-EPL_1.0-red.svg)](https://opensource.org/licenses/EPL-1.0)
+
+
 ## The first REST API framework for Java
 
 Thanks to Restlet Framework's powerful routing and filtering capabilities, unified client and server Java API, developers can build secure and scalable RESTful web APIs.
@@ -24,5 +32,3 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
 Copyright 2024 Qlik
-
-[![Build Status](https://travis-ci.org/restlet/restlet-framework-java.svg?branch=2.5)](https://travis-ci.org/restlet/restlet-framework-java)
