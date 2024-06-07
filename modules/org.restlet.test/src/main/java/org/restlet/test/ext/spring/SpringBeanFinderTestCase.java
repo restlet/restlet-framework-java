@@ -35,7 +35,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
 
-import java.util.List;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -79,7 +79,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     private SpringBeanFinder finder;
 
     private MutablePropertyValues createServerResourcePropertyValues() {
-        return new MutablePropertyValues(List.of(new PropertyValue("src",
+        return new MutablePropertyValues(Arrays.asList(new PropertyValue("src",
                 "spring")));
     }
 

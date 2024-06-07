@@ -663,6 +663,28 @@ public class StringUtils {
         return (string == null) ? "" : string;
     }
 
+
+	/**
+	 * Returns the given string repeated the number of times requested.
+	 * 
+	 * @param string      String to be repeated.
+	 * @param occurrences Number of times to repeat the string.
+	 * @return
+	 */
+	public static String repeat(String string, int occurrences) {
+		if (string == null) {
+			return null;
+		}
+
+		final StringBuilder sb = new StringBuilder(string.length() * occurrences);
+
+		for (int i = 0; i < occurrences; i++) {
+			sb.append(string);
+		}
+
+		return sb.toString();
+	}
+    
     // [ifndef gwt] method
 
     /**

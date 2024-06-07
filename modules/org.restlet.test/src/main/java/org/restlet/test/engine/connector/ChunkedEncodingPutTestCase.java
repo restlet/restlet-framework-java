@@ -33,6 +33,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -76,7 +77,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      * @return A DomRepresentation.
      */
     private static Representation createChunkedRepresentation(int size) {
-        Representation rep = new StringRepresentation("a".repeat(Math.max(0, size)), MediaType.TEXT_PLAIN);
+        Representation rep = new StringRepresentation(StringUtils.repeat("a", Math.max(0, size)), MediaType.TEXT_PLAIN);
         rep.setSize(Representation.UNKNOWN_SIZE);
         return rep;
     }

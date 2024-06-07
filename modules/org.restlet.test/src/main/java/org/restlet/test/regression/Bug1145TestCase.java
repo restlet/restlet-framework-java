@@ -15,7 +15,6 @@ import org.restlet.test.RestletTestCase;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,7 +23,7 @@ public class Bug1145TestCase extends RestletTestCase {
         @Override
         public void handle(Request request, Response response) {
             try {
-                response.setAccessControlExposeHeaders(new HashSet<>(List.of("Modified")));
+                response.setAccessControlExposeHeaders(new HashSet<>(Arrays.asList("Modified")));
                 response.setEntity(new StringRepresentation("NO-NPE", MediaType.TEXT_PLAIN));
             } catch (NullPointerException e) {
                 response.setEntity(new StringRepresentation("NPE", MediaType.TEXT_PLAIN));
