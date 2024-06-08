@@ -10,12 +10,12 @@
 
 	<name>Restlet Incubator</name>
 	<description>Incubator for the Restlet framework</description>
-	<url>http://www.restlet.org</url>
+	<url>https://restlet.talend.com</url>
 	<inceptionYear>2005</inceptionYear>
 
-	<scm>
-		<url>http://restlet.tigris.org/svn/restlet/modules/</url>
-	</scm>
+    <scm>
+        <url>https://github.com/restlet/restlet-framework-java</url>
+    </scm>
 
 	<repositories>
 		<repository>

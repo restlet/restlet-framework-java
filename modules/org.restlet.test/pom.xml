@@ -31,12 +31,10 @@
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>${lib-swagger-version}</version>
         </dependency>
         <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>${lib-swagger-version}</version>
         </dependency>
         <dependency>
             <groupId>org.restlet.dev</groupId>

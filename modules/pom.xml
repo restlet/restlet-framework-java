@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <name>Restlet Framework</name>
-    <description>Lightweight RESTful web API framework</description>
+    <description>The first REST API framework for Java</description>
     <url>https://restlet.talend.com</url>
     <inceptionYear>2005</inceptionYear>
 
@@ -143,6 +143,7 @@
                 <module>org.restlet.ext.odata</module>
                 <module>org.restlet.ext.openid</module>
                 <module>org.restlet.ext.osgi</module>
+                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.raml</module>
                 <module>org.restlet.ext.rdf</module>
                 <module>org.restlet.ext.servlet</module>
@@ -153,14 +154,15 @@
                 <module>org.restlet.ext.thymeleaf</module>
                 <module>org.restlet.ext.velocity</module>
                 <module>org.restlet.ext.wadl</module>
+                <module>org.restlet.ext.webdav</module>
                 <module>org.restlet.ext.xml</module>
+                <module>org.restlet.incubator</module>
             </modules>
         </profile>
         <profile>
             <id>test</id>
             <modules>
                 <module>org.restlet</module>
-                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
                 <module>org.restlet.ext.emf</module>
@@ -186,6 +188,7 @@
                 <module>org.restlet.ext.odata</module>
                 <module>org.restlet.ext.openid</module>
                 <module>org.restlet.ext.osgi</module>
+                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.raml</module>
                 <module>org.restlet.ext.rdf</module>
                 <module>org.restlet.ext.servlet</module>
@@ -196,7 +199,9 @@
                 <module>org.restlet.ext.thymeleaf</module>
                 <module>org.restlet.ext.velocity</module>
                 <module>org.restlet.ext.wadl</module>
+                <module>org.restlet.ext.webdav</module>
                 <module>org.restlet.ext.xml</module>
+                <module>org.restlet.incubator</module>
                 <module>org.restlet.test</module>
             </modules>
         </profile>
