@@ -117,7 +117,6 @@
             <modules>
                 <module>org.restlet</module>
                 <module>org.restlet.example</module>
-                <module>org.restlet.ext.platform</module>
                 <module>org.restlet.ext.atom</module>
                 <module>org.restlet.ext.crypto</module>
                 <module>org.restlet.ext.emf</module>
