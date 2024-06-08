@@ -5,7 +5,7 @@
 
 	<groupId>org.restlet.dev</groupId>
 	<artifactId>org.restlet.incubator</artifactId>
-	<version>2.2-SNAPSHOT</version>
+	<version>2.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Restlet Incubator</name>

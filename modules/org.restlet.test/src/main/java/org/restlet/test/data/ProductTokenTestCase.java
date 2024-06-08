@@ -53,7 +53,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         final String userAgent8 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/521.25 (KHTML, like Gecko) Safari/521.24";
         final String userAgent9 = "Opera/9.00 (Macintosh; PPC Mac OS X; U; en)";
         final String userAgent10 = "Wget/1.9";
-        final String userAgent11 = "Restlet-Framework/2.2-SNAPSHOT";
+        final String userAgent11 = "Restlet-Framework/2.4-SNAPSHOT";
 
         ClientInfo clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent1);
@@ -120,7 +120,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         clientInfo.setAgent(userAgent11);
         product = clientInfo.getMainAgentProduct();
         assertEquals("Restlet-Framework", product.getName());
-        assertEquals("2.2-SNAPSHOT", product.getVersion());
+        assertEquals("2.4-SNAPSHOT", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent7);
@@ -140,7 +140,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         final String userAgent4 = "Mozilla";
         final String userAgent5 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-US; rv:1.8) Gecko/20051107 Camino/1.0b1";
         final String userAgent6 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1) Gecko/20061024 Iceweasel/2.0 (Debian-2.0+dfsg-1)";
-        final String userAgent7 = "Restlet-Framework/2.2-SNAPSHOT";
+        final String userAgent7 = "Restlet-Framework/2.4-SNAPSHOT";
 
         List<Product> list = ProductReader.read(userAgent1);
         assertEquals(1, list.size());
@@ -197,7 +197,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         list = ProductReader.read(userAgent7);
         assertEquals(1, list.size());
         assertEquals("Restlet-Framework", list.get(0).getName());
-        assertEquals("2.2-SNAPSHOT", list.get(0).getVersion());
+        assertEquals("2.4-SNAPSHOT", list.get(0).getVersion());
         assertNull(list.get(0).getComment());
 
         final List<Product> products = new ArrayList<Product>();
