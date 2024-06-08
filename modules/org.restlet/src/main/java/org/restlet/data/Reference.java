@@ -1094,11 +1094,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded host domain name component.
+     * Returns the optionally decoded host domain name component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded host domain name component.
+     * @return The optionally decoded host domain name component.
      * @see #getHostDomain()
      */
     public String getHostDomain(boolean decode) {

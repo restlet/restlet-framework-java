@@ -345,6 +345,10 @@ public class ReferenceTestCase extends RestletTestCase {
                 "/path", null, "frag/ment");
         testRef0("http://localhost/path?qu/ery", "http", "localhost", "/path",
                 "qu/ery", null);
+        testRef0("file:///path/to/file", "file", "", "/path/to/file",
+                null, null);
+        testRef0("file:///c:/path/to/file", "file", "", "/c:/path/to/file",
+                null, null);
 
         // Test the resolution of relative references
         testRef1(base, uri01, uri101);

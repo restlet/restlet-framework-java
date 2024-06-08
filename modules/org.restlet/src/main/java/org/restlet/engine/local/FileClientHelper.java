@@ -216,7 +216,7 @@ public class FileClientHelper extends EntityClientHelper {
         final Directory directory = (Directory) request.getAttributes().get("org.restlet.directory");
         final File fileWithLocalizedPath = getFileWithLocalizedPath(decodedPath);
 
-        if (!fileIsUnderRootDirectory(directory, fileWithLocalizedPath)) {
+        if (!isFileInDirectory(directory, fileWithLocalizedPath)) {
             response.setStatus(CLIENT_ERROR_FORBIDDEN);
         } else if (GET.equals(request.getMethod())
                 || HEAD.equals(request.getMethod())) {
@@ -243,13 +243,22 @@ public class FileClientHelper extends EntityClientHelper {
      *         The file.
      * @return True if the path is located under the root directory, false otherwise.
      */
-    private static boolean fileIsUnderRootDirectory(final Directory directory, final File file) {
+    private static boolean isFileInDirectory(final Directory directory, final File file) {
         boolean result = true;
 
         if (directory != null) {
-            final Path rootDirectoryPath = Paths.get(directory.getRootRef().getPath(true)).normalize();
-            final Path filePath = file.toPath().normalize();
-            result = !rootDirectoryPath.relativize(filePath).toString().startsWith("..");
+        	final String fileAbsolute = directory.getRootRef().getPath(true);
+        	final String filePath;
+        	
+        	if(fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
+        		filePath = fileAbsolute.substring(1);
+        	}else {
+        		filePath = fileAbsolute;
+        	}
+        	
+            final Path rootDirectoryPath = Paths.get(filePath).normalize();
+            final Path actualFilePath = file.toPath().normalize();
+            result = !rootDirectoryPath.relativize(actualFilePath).toString().startsWith("..");
         }
 
         return result;

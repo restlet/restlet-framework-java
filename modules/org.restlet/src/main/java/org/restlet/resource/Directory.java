@@ -353,6 +353,11 @@ public class Directory extends Finder {
         this.rootRef = rootRef;
     }
 
+    @Override
+    public String toString() {    
+    	return getRootRef() == null ? super.toString() : super.toString() + ": " + getRootRef();
+    }
+
     /**
      * Sets the reference comparator based on classic alphabetical order.
      * 

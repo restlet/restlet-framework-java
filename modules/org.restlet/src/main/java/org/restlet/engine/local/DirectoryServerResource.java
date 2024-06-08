@@ -130,7 +130,7 @@ public class DirectoryServerResource extends ServerResource {
         if (this.directoryTarget && !this.indexTarget) {
             // let the client handle the directory's deletion
             contextRequest.setResourceRef(this.targetUri);
-            letClientDispatcherHandleRequest(contextRequest, contextResponse);
+            dispatchRequest(contextRequest, contextResponse);
 
             setStatus(contextResponse.getStatus());
             return null;
@@ -144,7 +144,7 @@ public class DirectoryServerResource extends ServerResource {
         } else if (this.uniqueReference != null) {
             // only one representation
             contextRequest.setResourceRef(this.uniqueReference);
-            letClientDispatcherHandleRequest(contextRequest, contextResponse);
+            dispatchRequest(contextRequest, contextResponse);
             setStatus(contextResponse.getStatus());
         } else {
             // several variants found, but not the right one
@@ -365,18 +365,6 @@ public class DirectoryServerResource extends ServerResource {
         }
     }
 
-    /**
-     * Prevent the client from accessing resources in upper directories
-     */
-    public void preventUpperDirectoryAccess() {
-        String targetUriPath = new Reference(Reference.decode(targetUri))
-                .normalize()
-                .toString();
-        if (!targetUriPath.startsWith(directory.getRootRef().toString())) {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
-    }
-
     @Override
     protected Representation get() throws ResourceException {
         // Content negotiation has been disabled
@@ -468,7 +456,7 @@ public class DirectoryServerResource extends ServerResource {
      * @return A response with the representation if success.
      */
     private Response getRepresentation(String resourceUri) {
-        return letClientDispatcherHandleRequest(new Request(Method.GET, resourceUri));
+        return dispatchRequest(new Request(Method.GET, resourceUri));
     }
 
     /**
@@ -488,7 +476,7 @@ public class DirectoryServerResource extends ServerResource {
             request.getClientInfo().accept(acceptedMediaType);
         }
 
-        return letClientDispatcherHandleRequest(request);
+        return dispatchRequest(request);
     }
 
     /**
@@ -764,9 +752,9 @@ public class DirectoryServerResource extends ServerResource {
      *         The request to send.
      * @return The response
      */
-    private Response letClientDispatcherHandleRequest(final Request request) {
+    private Response dispatchRequest(final Request request) {
         final Response response = new Response(request);
-        letClientDispatcherHandleRequest(request, response);
+        dispatchRequest(request, response);
 
         if (response.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN)) {
             throw new ResourceException(response.getStatus());
@@ -784,10 +772,20 @@ public class DirectoryServerResource extends ServerResource {
      * @param response
      *         The related response.
      */
-    private void letClientDispatcherHandleRequest(final Request request, final Response response) {
+    private void dispatchRequest(final Request request, final Response response) {
         request.getAttributes().put("org.restlet.directory", this.directory);
-
         getClientDispatcher().handle(request, response);
+    }
+
+    /**
+     * Prevent the client from accessing resources in upper directories
+     */
+    public void preventUpperDirectoryAccess() {
+		String targetUriPath = Reference.decode(targetUri);
+
+		if (!targetUriPath.startsWith(Reference.decode(directory.getRootRef().toString()))) {
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+		}
     }
 
     @Override
@@ -805,7 +803,7 @@ public class DirectoryServerResource extends ServerResource {
         contextRequest.setEntity(entity);
         Response contextResponse = new Response(contextRequest);
         contextRequest.setResourceRef(this.targetUri);
-        letClientDispatcherHandleRequest(contextRequest, contextResponse);
+        dispatchRequest(contextRequest, contextResponse);
         setStatus(contextResponse.getStatus());
 
         return null;
