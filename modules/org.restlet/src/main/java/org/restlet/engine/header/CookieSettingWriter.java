@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.restlet.data.CookieSetting;
+import org.restlet.data.CookieSetting.SameSite;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -141,6 +142,13 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
         // Append the secure flag
         if (cookieSetting.isAccessRestricted()) {
             append("; HttpOnly");
+        }
+        
+        // Append the same site attribute if it is set.
+        SameSite sameSite = cookieSetting.getSameSite();
+        if(sameSite != null) {
+        	append("; SameSite=");
+        	appendValue(sameSite.toString(), version);
         }
 
         // Append the comment
