@@ -9,6 +9,7 @@ Changes log
     - Bugs fixed
       - Prevent clearing of current application set as thread variable. Issue #1317.
         Reported by rmbrad and contributed by Thomas Taylor.
+      - Enforce directory path transversal issue. Issue #1332
     - Misc
       - Deprecated extension "org.restlet.ext.platform" which is planned to be dropped in 
         future version 2.5.
