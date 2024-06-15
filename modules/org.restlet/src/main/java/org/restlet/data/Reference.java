@@ -897,11 +897,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded authority component.
+     * Returns the optionally decoded authority component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded authority component.
+     * @return The optionally decoded authority component.
      * @see #getAuthority()
      */
     public String getAuthority(boolean decode) {
@@ -984,11 +984,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded fragment identifier.
+     * Returns the optionally decoded fragment identifier.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded fragment identifier.
+     * @return The optionally decoded fragment identifier.
      * @see #getFragment()
      */
     public String getFragment(boolean decode) {
@@ -1037,11 +1037,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded hierarchical part.
+     * Returns the optionally decoded hierarchical part.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded hierarchical part.
+     * @return The optionally decoded hierarchical part.
      * @see #getHierarchicalPart()
      */
     public String getHierarchicalPart(boolean decode) {
@@ -1094,11 +1094,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded host domain name component.
+     * Returns the optionally decoded host domain name component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded host domain name component.
+     * @return The optionally decoded host domain name component.
      * @see #getHostDomain()
      */
     public String getHostDomain(boolean decode) {
@@ -1119,11 +1119,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded host identifier.
+     * Returns the optionally decoded host identifier.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded host identifier.
+     * @return The optionally decoded host identifier.
      * @see #getHostIdentifier()
      */
     public String getHostIdentifier(boolean decode) {
@@ -1182,11 +1182,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded absolute resource identifier.
+     * Returns the optionally decoded absolute resource identifier.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded absolute resource identifier.
+     * @return The optionally decoded absolute resource identifier.
      * @see #getIdentifier()
      */
     public String getIdentifier(boolean decode) {
@@ -1221,11 +1221,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded last segment.
+     * Returns the optionally decoded last segment.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded last segment.
+     * @return The optionally decoded last segment.
      * @see #getLastSegment()
      */
     public String getLastSegment(boolean decode) {
@@ -1281,11 +1281,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded matrix.
+     * Returns the optionally decoded matrix.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded matrix.
+     * @return The optionally decoded matrix.
      * @see #getMatrix()
      */
     public String getMatrix(boolean decode) {
@@ -1396,12 +1396,12 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded path component. If not path is available
+     * Returns the optionally decoded path component. If not path is available
      * it returns null.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded path component.
+     * @return The optionally decoded path component.
      * @see #getPath()
      */
     public String getPath(boolean decode) {
@@ -1436,11 +1436,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded query component.
+     * Returns the optionally decoded query component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded query component.
+     * @return The optionally decoded query component.
      * @see #getQuery()
      */
     public String getQuery(boolean decode) {
@@ -1491,11 +1491,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded relative part.
+     * Returns the optionally decoded relative part.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded relative part.
+     * @return The optionally decoded relative part.
      * @see #getRelativePart()
      */
     public String getRelativePart(boolean decode) {
@@ -1769,11 +1769,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded scheme component.
+     * Returns the optionally decoded scheme component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded scheme component.
+     * @return The optionally decoded scheme component.
      * @see #getScheme()
      */
     public String getScheme(boolean decode) {
@@ -1814,11 +1814,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded scheme specific part.
+     * Returns the optionally decoded scheme specific part.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded scheme specific part.
+     * @return The optionally decoded scheme specific part.
      * @see #getSchemeSpecificPart()
      */
     public String getSchemeSpecificPart(boolean decode) {
@@ -1873,11 +1873,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded list of segments.
+     * Returns the optionally decoded list of segments.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded list of segments.
+     * @return The optionally decoded list of segments.
      * @see #getSegments()
      */
     public List<String> getSegments(boolean decode) {
@@ -2016,11 +2016,11 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded user info component.
+     * Returns the optionally decoded user info component.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the {@link #decode(String)} method.
-     * @return The optionnally decoded user info component.
+     * @return The optionally decoded user info component.
      * @see #getUserInfo()
      */
     public String getUserInfo(boolean decode) {

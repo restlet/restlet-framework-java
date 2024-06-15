@@ -44,10 +44,11 @@ import static org.restlet.data.Status.SUCCESS_OK;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -67,6 +68,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
 
 /**
  * Connector to the file resources accessible. Here is the list of parameters
@@ -171,10 +173,21 @@ public class FileClientHelper extends EntityClientHelper {
 
     @Override
     public Entity getEntity(String decodedPath) {
-        // Take care of the file separator.
         return new FileEntity(
-                new File(LocalReference.localizePath(decodedPath)),
+                getFileWithLocalizedPath(decodedPath),
                 getMetadataService());
+    }
+
+    /**
+     * Returns a new {@link File} instance for the given path name.<br>
+     * It ensures to translate the "/" to the local supported file separator (mainly useful for Windows OS).
+     *
+     * @param path
+     *         The Path of the file
+     * @return a new {@link File} instance for the given path name.
+     */
+    private static File getFileWithLocalizedPath(final String path) {
+        return new File(LocalReference.localizePath(path));
     }
 
     /**
@@ -201,13 +214,18 @@ public class FileClientHelper extends EntityClientHelper {
     }
 
     protected void handleFile(Request request, Response response, String decodedPath) {
-        if (GET.equals(request.getMethod())
+        final Directory directory = (Directory) request.getAttributes().get("org.restlet.directory");
+        final File fileWithLocalizedPath = getFileWithLocalizedPath(decodedPath);
+
+        if (!isFileInDirectory(directory, fileWithLocalizedPath)) {
+            response.setStatus(CLIENT_ERROR_FORBIDDEN);
+        } else if (GET.equals(request.getMethod())
                 || HEAD.equals(request.getMethod())) {
             handleEntityGet(request, response, getEntity(decodedPath));
         } else if (PUT.equals(request.getMethod())) {
-            handleFilePut(request, response, decodedPath, new File(decodedPath));
+            handleFilePut(request, response, decodedPath, fileWithLocalizedPath);
         } else if (DELETE.equals(request.getMethod())) {
-            handleFileDelete(response, new File(decodedPath));
+            handleFileDelete(response, fileWithLocalizedPath);
         } else {
             response.setStatus(CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(GET);
@@ -215,6 +233,36 @@ public class FileClientHelper extends EntityClientHelper {
             response.getAllowedMethods().add(PUT);
             response.getAllowedMethods().add(DELETE);
         }
+    }
+
+    /**
+     * Indicates whether the given file is located inside the root directory.
+     *
+     * @param directory
+     *         The root directory
+     * @param file
+     *         The file.
+     * @return True if the path is located under the root directory, false otherwise.
+     */
+    private static boolean isFileInDirectory(final Directory directory, final File file) {
+        boolean result = true;
+
+        if (directory != null) {
+        	final String fileAbsolute = directory.getRootRef().getPath(true);
+        	final String filePath;
+        	
+        	if(fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
+        		filePath = fileAbsolute.substring(1);
+        	}else {
+        		filePath = fileAbsolute;
+        	}
+        	
+            final Path rootDirectoryPath = Paths.get(filePath).normalize();
+            final Path actualFilePath = file.toPath().normalize();
+            result = !rootDirectoryPath.relativize(actualFilePath).toString().startsWith("..");
+        }
+
+        return result;
     }
 
     /**
@@ -227,7 +275,8 @@ public class FileClientHelper extends EntityClientHelper {
      */
     protected void handleFileDelete(Response response, File file) {
         if (file.isDirectory()) {
-            if (file.listFiles().length == 0) {
+            final File[] files = file.listFiles();
+            if (files == null || files.length == 0) {
                 if (IoUtils.delete(file)) {
                     response.setStatus(SUCCESS_NO_CONTENT);
                 } else {
@@ -436,7 +485,9 @@ public class FileClientHelper extends EntityClientHelper {
             return replaceFileByTemporaryFile(request, file, tmp);
         } catch (IOException ioe) {
             getLogger().log(WARNING, "Unable to create the temporary file", ioe);
-            cleanTemporaryFileIfUploadNotResumed(tmp);
+            if (tmp != null) {
+                cleanTemporaryFileIfUploadNotResumed(tmp);
+            }
             return new Status(SERVER_ERROR_INTERNAL, "Unable to create a temporary file");
         }
     }
@@ -508,9 +559,6 @@ public class FileClientHelper extends EntityClientHelper {
                 return SUCCESS_CREATED;
             }
             return SUCCESS_NO_CONTENT;
-        } catch (FileNotFoundException fnfe) {
-            getLogger().log(WARNING, "Unable to create the new file", fnfe);
-            return new Status(SERVER_ERROR_INTERNAL, fnfe);
         } catch (IOException ioe) {
             getLogger().log(WARNING, "Unable to create the new file", ioe);
             return new Status(SERVER_ERROR_INTERNAL, ioe);
@@ -536,7 +584,7 @@ public class FileClientHelper extends EntityClientHelper {
         getLogger().warning(message);
         return new Status(SERVER_ERROR_INTERNAL, message);
     }
-    
+
     private void cleanTemporaryFileIfUploadNotResumed(File tmp) {
         if (tmp.exists() && !isResumeUpload()) {
             IoUtils.delete(tmp);
@@ -591,7 +639,7 @@ public class FileClientHelper extends EntityClientHelper {
             String extension = getMetadataService().getExtension(metadata);
 
             if (extension != null) {
-                fileName.append("." + extension);
+                fileName.append(".").append(extension);
             } else {
                 if (metadata.getParent() != null) {
                     updateFileExtension(fileName, metadata.getParent());

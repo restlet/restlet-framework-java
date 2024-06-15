@@ -68,16 +68,17 @@ public class ApplicationHelper extends CompositeHelper<Application> {
      */
     @Override
     public void handle(Request request, Response response) {
-        Application current = Application.getCurrent();
         // Save the current application
-        Application.setCurrent(getHelped());
+        // Plan to move current application as attribute of the Response in incoming 2.5 release
+        final Application currentApplication = getHelped() != null ? getHelped() : Application.getCurrent();
+        Application.setCurrent(currentApplication);
 
         // Actually handle call
         try {
             super.handle(request, response);
         } finally {
-            // restaure the current application
-            Application.setCurrent(current);
+            // restore the current application
+            Application.setCurrent(currentApplication);
         }
     }
 

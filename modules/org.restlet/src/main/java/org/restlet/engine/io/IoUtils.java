@@ -453,15 +453,11 @@ public class IoUtils {
      */
     public static Reader getReader(InputStream stream, CharacterSet characterSet)
             throws UnsupportedEncodingException {
-        // [ifndef gwt]
         if (characterSet != null) {
             return new InputStreamReader(stream, characterSet.getName());
         }
 
         return new InputStreamReader(stream);
-        // [enddef]
-        // [ifdef gwt] instruction uncomment
-        // return new java.io.StringReader(toString(stream, characterSet));
     }
 
     // [ifndef gwt] method

@@ -120,7 +120,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     /**
      * Returns the base URI references that collectively define the protected
-     * domains for the digest authentication. By default it return a list with a
+     * domains for the digest authentication. By default, it returns a list with a
      * single "/" URI reference.
      * 
      * @return The base URI references.

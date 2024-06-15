@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet.parent</artifactId>
+        <version>2.5-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+	<groupId>org.restlet.gwt</groupId>
+	<artifactId>org.restlet</artifactId>
+	<name>Restlet Core - API and Engine</name>
+	<description>RESTful web framework for Java (API and Engine).</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.gwtproject</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${lib-gwt-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gwtproject</groupId>
+			<artifactId>gwt-dev</artifactId>
+			<version>${lib-gwt-version}</version>
+		</dependency>
+	</dependencies>
+</project>
