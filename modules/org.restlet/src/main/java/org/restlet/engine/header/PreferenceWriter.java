@@ -105,12 +105,10 @@ public class PreferenceWriter extends HeaderWriter<Preference<?>> {
                     "Invalid quality value detected. Value must be between 0 and 1.");
         }
 
-        // [ifndef gwt]
         java.text.NumberFormat formatter = java.text.NumberFormat
                 .getNumberInstance(java.util.Locale.US);
         formatter.setMaximumFractionDigits(2);
         append(formatter.format(quality));
-        // [enddef]
 
         return this;
     }

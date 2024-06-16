@@ -45,8 +45,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
-// [excludes gwt]
-
 /**
  * Descriptor for method annotations.
  *
@@ -198,8 +196,6 @@ public class MethodAnnotationInfo extends AnnotationInfo {
         return query;
     }
 
-    // [ifndef gwt] method
-
     /**
      * Returns a list of request variants based on the annotation value.
      *
@@ -229,8 +225,6 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 
         return result;
     }
-
-    // [ifndef gwt] method
 
     /**
      * Returns a list of response variants based on the annotation value.
@@ -269,8 +263,6 @@ public class MethodAnnotationInfo extends AnnotationInfo {
     public Method getRestletMethod() {
         return restletMethod;
     }
-
-    // [ifndef gwt] method
 
     /**
      * Returns the list of representation variants associated to a given

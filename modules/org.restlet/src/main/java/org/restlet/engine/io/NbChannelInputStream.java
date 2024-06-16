@@ -37,7 +37,6 @@ import org.restlet.Context;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
-// [excludes gwt]
 /**
  * Input stream connected to a non-blocking readable channel.
  * 

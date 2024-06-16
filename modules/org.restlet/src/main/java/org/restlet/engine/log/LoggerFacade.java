@@ -44,10 +44,7 @@ public class LoggerFacade {
      * @return The logger.
      */
     public Logger getAnonymousLogger() {
-        // [ifndef gwt] instruction
         return Logger.getAnonymousLogger();
-        // [ifdef gwt] instruction uncomment
-        // return Logger.getLogger("");
     }
 
     /**
@@ -77,10 +74,7 @@ public class LoggerFacade {
         String loggerName = null;
 
         if (clazz != null) {
-            // [ifndef gwt] instruction
             loggerName = clazz.getCanonicalName();
-            // [ifdef gwt] instruction uncomment
-            // loggerName = clazz.getName();
         }
 
         if (loggerName == null) {

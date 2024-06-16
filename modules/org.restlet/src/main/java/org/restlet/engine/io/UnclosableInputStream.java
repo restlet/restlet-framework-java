@@ -28,7 +28,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-// [excludes gwt]
 /**
  * InputStream decorator to trap {@code close()} calls so that the underlying
  * stream is not closed.

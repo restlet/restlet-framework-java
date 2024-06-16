@@ -29,7 +29,6 @@ import java.util.Objects;
 import org.restlet.data.Status;
 import org.restlet.engine.util.SystemUtils;
 
-// [excludes gwt]
 /**
  * Descriptor for status annotations.
  * 

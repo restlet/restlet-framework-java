@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2024 Qlik
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
@@ -36,25 +36,25 @@ import org.restlet.client.engine.Edition;
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
  * java.net.URI class, this interface represents mutable references. It strictly
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br>
- * 
+ *
  * <pre>
  * URI reference        = absolute-reference | relative-reference
- * 
+ *
  * absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
  * scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
  * hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
  * authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- * 
+ *
  * relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
  * relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- * 
+ *
  * path-abempty         = begins with &quot;/&quot; or is empty
  * path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
  * path-noscheme        = begins with a non-colon segment
  * path-rootless        = begins with a segment
  * path-empty           = zero characters
  * </pre>
- * 
+ *
  * <p>
  * Note that this class doesn't encode or decode the reserved characters. It assumes that the URIs or the URI parts
  * passed in are properly encoded using the standard URI encoding mechanism. You can use the static "encode()" and
@@ -98,7 +98,7 @@ import org.restlet.client.engine.Edition;
  * </p>
  * Note that the name and value properties are thread safe, stored in volatile
  * members.
- * 
+ *
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>
  */
@@ -119,9 +119,9 @@ public class Reference {
     /**
      * Decodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
-     * 
+     *
      * @param toDecode
-     *            The string to decode.
+     *         The string to decode.
      * @return The decoded string.
      */
     public static String decode(String toDecode) {
@@ -134,31 +134,30 @@ public class Reference {
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
      * used. Not doing so may introduce incompatibilities.</em>
-     * 
+     *
      * @param toDecode
-     *            The string to decode.
+     *         The string to decode.
      * @param characterSet
-     *            The name of a supported character encoding.
+     *         The name of a supported character encoding.
      * @return The decoded string or null if the named character encoding is not
-     *         supported.
+     * supported.
      */
     public static String decode(String toDecode, CharacterSet characterSet) {
-        if (Edition.CURRENT == Edition.GWT) {
-            if (!CharacterSet.UTF_8.equals(characterSet)) {
-                throw new IllegalArgumentException(
-                        "Only UTF-8 URL encoding is supported under GWT");
-            }
+        if (!CharacterSet.UTF_8.equals(characterSet)) {
+            throw new IllegalArgumentException(
+                    "Only UTF-8 URL encoding is supported under GWT");
         }
+
         String result = null;
 
-         try {
-         result = (characterSet == null) ? toDecode :
-         com.google.gwt.http.client.URL.decodeComponent(toDecode);
-         } catch (NullPointerException npe) {
-         System.err
-         .println("Unable to decode the string with the UTF-8 character set.");
-         }
-
+        try {
+            result = (characterSet == null)
+                    ? toDecode
+                    : com.google.gwt.http.client.URL.decodeComponent(toDecode);
+        } catch (NullPointerException npe) {
+            System.err
+                    .println("Unable to decode the string with the UTF-8 character set.");
+        }
 
         return result;
     }
@@ -166,9 +165,9 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
-     * 
+     *
      * @param toEncode
-     *            The string to encode.
+     *         The string to encode.
      * @return The encoded string.
      */
     public static String encode(String toEncode) {
@@ -180,12 +179,12 @@ public class Reference {
      * UTF-8 character set. Useful to prevent the usage of '+' to encode spaces
      * (%20 instead). The '*' characters are encoded as %2A and %7E are replaced
      * by '~'.
-     * 
+     *
      * @param toEncode
-     *            The string to encode.
+     *         The string to encode.
      * @param queryString
-     *            True if the string to encode is part of a query string instead
-     *            of a HTML form post.
+     *         True if the string to encode is part of a query string instead
+     *         of a HTML form post.
      * @return The encoded string.
      */
     public static String encode(String toEncode, boolean queryString) {
@@ -197,35 +196,32 @@ public class Reference {
      * UTF-8 character set. Useful to prevent the usage of '+' to encode spaces
      * (%20 instead). The '*' characters are encoded as %2A and %7E are replaced
      * by '~'.
-     * 
+     *
      * @param toEncode
-     *            The string to encode.
+     *         The string to encode.
      * @param queryString
-     *            True if the string to encode is part of a query string instead
-     *            of a HTML form post.
+     *         True if the string to encode is part of a query string instead
+     *         of a HTML form post.
      * @param characterSet
-     *            The supported character encoding.
+     *         The supported character encoding.
      * @return The encoded string.
      */
     public static String encode(String toEncode, boolean queryString,
-            CharacterSet characterSet) {
-        if (Edition.CURRENT == Edition.GWT) {
-            if (!CharacterSet.UTF_8.equals(characterSet)) {
-                throw new IllegalArgumentException(
-                        "Only UTF-8 URL encoding is supported under GWT");
-            }
+                                CharacterSet characterSet) {
+        if (!CharacterSet.UTF_8.equals(characterSet)) {
+            throw new IllegalArgumentException(
+                    "Only UTF-8 URL encoding is supported under GWT");
         }
 
         String result = null;
 
-
-         try {
-         result = (characterSet == null) ? toEncode :
-         com.google.gwt.http.client.URL.encodeComponent(toEncode);
-         } catch (NullPointerException npe) {
-         System.err
-         .println("Unable to encode the string with the UTF-8 character set.");
-         }
+        try {
+            result = (characterSet == null) ? toEncode :
+                    com.google.gwt.http.client.URL.encodeComponent(toEncode);
+        } catch (NullPointerException npe) {
+            System.err
+                    .println("Unable to encode the string with the UTF-8 character set.");
+        }
 
         if (result != null && queryString) {
             result = result.replace("+", "%20").replace("*", "%2A")
@@ -238,18 +234,18 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism. If the
      * provided character set is null, the string is returned but not encoded.
-     * 
+     *
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
      * used. Not doing so may introduce incompatibilities.</em>
-     * 
+     *
      * @param toEncode
-     *            The string to encode.
+     *         The string to encode.
      * @param characterSet
-     *            The supported character encoding.
+     *         The supported character encoding.
      * @return The encoded string or null if the named character encoding is not
-     *         supported.
+     * supported.
      */
     public static String encode(String toEncode, CharacterSet characterSet) {
         return encode(toEncode, true, characterSet);
@@ -257,9 +253,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is alphabetical (a-z or A-Z).
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is alphabetical (a-z or A-Z).
      */
     private static boolean isAlpha(int character) {
@@ -268,9 +264,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is a digit (0-9).
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is a digit (0-9).
      */
     private static boolean isDigit(int character) {
@@ -280,11 +276,11 @@ public class Reference {
     /**
      * Indicates if the given character is a generic URI component delimiter
      * character.
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is a generic URI component delimiter
-     *         character.
+     * character.
      */
     public static boolean isGenericDelimiter(int character) {
         return (character == ':') || (character == '/') || (character == '?')
@@ -294,9 +290,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is lower case (a-z).
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is lower case (a-z).
      */
     private static boolean isLowerCase(int character) {
@@ -305,9 +301,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is a reserved URI character.
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is a reserved URI character.
      */
     public static boolean isReserved(int character) {
@@ -317,11 +313,11 @@ public class Reference {
     /**
      * Indicates if the given character is an URI subcomponent delimiter
      * character.
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is an URI subcomponent delimiter
-     *         character.
+     * character.
      */
     public static boolean isSubDelimiter(int character) {
         return (character == '!') || (character == '$') || (character == '&')
@@ -333,9 +329,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is an unreserved URI character.
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is an unreserved URI character.
      */
     public static boolean isUnreserved(int character) {
@@ -346,9 +342,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is upper case (A-Z).
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is upper case (A-Z).
      */
     private static boolean isUpperCase(int character) {
@@ -357,9 +353,9 @@ public class Reference {
 
     /**
      * Indicates if the given character is a valid URI character.
-     * 
+     *
      * @param character
-     *            The character to test.
+     *         The character to test.
      * @return True if the given character is a valid URI character.
      */
     public static boolean isValid(int character) {
@@ -368,23 +364,23 @@ public class Reference {
 
     /**
      * Creates a reference string from its parts.
-     * 
+     *
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *         The scheme ("http", "https" or "ftp").
      * @param hostName
-     *            The host name or IP address.
+     *         The host name or IP address.
      * @param hostPort
-     *            The host port (default ports are correctly ignored).
+     *         The host port (default ports are correctly ignored).
      * @param path
-     *            The path component for hierarchical identifiers.
+     *         The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *         The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *         The optional fragment identifier.
      * @return The reference as String.
      */
     public static String toString(String scheme, String hostName,
-            Integer hostPort, String path, String query, String fragment) {
+                                  Integer hostPort, String path, String query, String fragment) {
         String host = hostName;
 
         // Appends the host port number
@@ -400,17 +396,17 @@ public class Reference {
 
     /**
      * Creates a relative reference string from its parts.
-     * 
+     *
      * @param relativePart
-     *            The relative part component.
+     *         The relative part component.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *         The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *         The optional fragment identifier.
      * @return The relative reference as a String.
      */
     public static String toString(String relativePart, String query,
-            String fragment) {
+                                  String fragment) {
         final StringBuilder sb = new StringBuilder();
 
         // Append the path
@@ -434,21 +430,21 @@ public class Reference {
 
     /**
      * Creates a reference string from its parts.
-     * 
+     *
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *         The scheme ("http", "https" or "ftp").
      * @param host
-     *            The host name or IP address plus the optional port number.
+     *         The host name or IP address plus the optional port number.
      * @param path
-     *            The path component for hierarchical identifiers.
+     *         The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *         The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *         The optional fragment identifier.
      * @return The reference a String.
      */
     public static String toString(String scheme, String host, String path,
-            String query, String fragment) {
+                                  String query, String fragment) {
         final StringBuilder sb = new StringBuilder();
 
         if (scheme != null) {
@@ -497,17 +493,14 @@ public class Reference {
         this((Reference) null, (String) null);
     }
 
-
-
-
     /**
      * Constructor for a protocol and host name. Uses the default port for the
      * given protocol.
-     * 
+     *
      * @param protocol
-     *            Protocol/scheme to use
+     *         Protocol/scheme to use
      * @param hostName
-     *            The host name or IP address.
+     *         The host name or IP address.
      */
     public Reference(Protocol protocol, String hostName) {
         this(protocol, hostName, protocol.getDefaultPort());
@@ -515,13 +508,13 @@ public class Reference {
 
     /**
      * Constructor for a protocol, host name and host port
-     * 
+     *
      * @param protocol
-     *            Protocol/scheme to use
+     *         Protocol/scheme to use
      * @param hostName
-     *            The host name or IP address.
+     *         The host name or IP address.
      * @param hostPort
-     *            The host port (default ports are correctly ignored).
+     *         The host port (default ports are correctly ignored).
      */
     public Reference(Protocol protocol, String hostName, int hostPort) {
         this(protocol.getSchemeName(), hostName, hostPort, null, null, null);
@@ -529,9 +522,9 @@ public class Reference {
 
     /**
      * Clone constructor.
-     * 
+     *
      * @param ref
-     *            The reference to clone.
+     *         The reference to clone.
      */
     public Reference(Reference ref) {
         this(ref.baseRef, ref.internalRef);
@@ -539,11 +532,11 @@ public class Reference {
 
     /**
      * Constructor from an URI reference (most likely relative).
-     * 
+     *
      * @param baseRef
-     *            The base reference.
+     *         The base reference.
      * @param uriReference
-     *            The URI reference, either absolute or relative.
+     *         The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, Reference uriReference) {
         this(baseRef, uriReference.toString());
@@ -551,11 +544,11 @@ public class Reference {
 
     /**
      * Constructor from an URI reference (most likely relative).
-     * 
+     *
      * @param baseRef
-     *            The base reference.
+     *         The base reference.
      * @param uriRef
-     *            The URI reference, either absolute or relative.
+     *         The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, String uriRef) {
         uriRef = encodeInvalidCharacters(uriRef);
@@ -566,27 +559,27 @@ public class Reference {
 
     /**
      * Constructor of relative reference from its parts.
-     * 
+     *
      * @param baseRef
-     *            The base reference.
+     *         The base reference.
      * @param relativePart
-     *            The relative part component (most of the time it is the path
-     *            component).
+     *         The relative part component (most of the time it is the path
+     *         component).
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *         The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *         The optional fragment identifier.
      */
     public Reference(Reference baseRef, String relativePart, String query,
-            String fragment) {
+                     String fragment) {
         this(baseRef, toString(relativePart, query, fragment));
     }
 
     /**
      * Constructor from an URI reference.
-     * 
+     *
      * @param uriReference
-     *            The URI reference, either absolute or relative.
+     *         The URI reference, either absolute or relative.
      */
     public Reference(String uriReference) {
         this((Reference) null, uriReference);
@@ -594,11 +587,11 @@ public class Reference {
 
     /**
      * Constructor from an identifier and a fragment.
-     * 
+     *
      * @param identifier
-     *            The resource identifier.
+     *         The resource identifier.
      * @param fragment
-     *            The fragment identifier.
+     *         The fragment identifier.
      */
     public Reference(String identifier, String fragment) {
         this((fragment == null) ? identifier : identifier + '#' + fragment);
@@ -606,31 +599,31 @@ public class Reference {
 
     /**
      * Constructor of absolute reference from its parts.
-     * 
+     *
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *         The scheme ("http", "https" or "ftp").
      * @param hostName
-     *            The host name or IP address.
+     *         The host name or IP address.
      * @param hostPort
-     *            The host port (default ports are correctly ignored).
+     *         The host port (default ports are correctly ignored).
      * @param path
-     *            The path component for hierarchical identifiers.
+     *         The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *         The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *         The optional fragment identifier.
      */
     public Reference(String scheme, String hostName, int hostPort, String path,
-            String query, String fragment) {
+                     String query, String fragment) {
         this(toString(scheme, hostName, hostPort, path, query, fragment));
     }
 
     /**
      * Adds a parameter to the query component. The name and value are
      * automatically URL encoded if necessary.
-     * 
+     *
      * @param parameter
-     *            The parameter to add.
+     *         The parameter to add.
      * @return The updated reference.
      */
     public Reference addQueryParameter(Parameter parameter) {
@@ -640,11 +633,11 @@ public class Reference {
     /**
      * Adds a parameter to the query component. The name and value are
      * automatically URL encoded if necessary.
-     * 
+     *
      * @param name
-     *            The parameter name.
+     *         The parameter name.
      * @param value
-     *            The optional parameter value.
+     *         The optional parameter value.
      * @return The updated reference.
      */
     public Reference addQueryParameter(String name, String value) {
@@ -670,9 +663,9 @@ public class Reference {
     /**
      * Adds several parameters to the query component. The name and value are
      * automatically URL encoded if necessary.
-     * 
+     *
      * @param parameters
-     *            The parameters to add.
+     *         The parameters to add.
      * @return The updated reference.
      */
     public Reference addQueryParameters(Iterable<Parameter> parameters) {
@@ -687,9 +680,9 @@ public class Reference {
      * Adds a segment at the end of the path. If the current path doesn't end
      * with a slash character, one is inserted before the new segment value. The
      * value is automatically encoded if necessary.
-     * 
+     *
      * @param value
-     *            The segment value to add.
+     *         The segment value to add.
      * @return The updated reference.
      */
     public Reference addSegment(String value) {
@@ -708,15 +701,14 @@ public class Reference {
         return this;
     }
 
-
     /**
      * Checks if all characters are valid and encodes invalid characters if
      * necessary.
-     * 
+     *
      * @param uriRef
-     *            The URI reference to check.
+     *         The URI reference to check.
      * @return The original reference, eventually with invalid URI characters
-     *         encoded.
+     * encoded.
      */
     private String encodeInvalidCharacters(String uriRef)
             throws IllegalArgumentException {
@@ -770,9 +762,9 @@ public class Reference {
 
     /**
      * Indicates whether some other object is "equal to" this one.
-     * 
+     *
      * @param object
-     *            The object to compare to.
+     *         The object to compare to.
      * @return True if this object is the same as the obj argument.
      */
     @Override
@@ -793,7 +785,7 @@ public class Reference {
      * Returns the authority component for hierarchical identifiers. Includes
      * the user info, host name and the host port number.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The authority component for hierarchical identifiers.
      */
     public String getAuthority() {
@@ -821,9 +813,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded authority component.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded authority component.
      * @see #getAuthority()
      */
@@ -833,7 +825,7 @@ public class Reference {
 
     /**
      * Returns the base reference for relative references.
-     * 
+     *
      * @return The base reference for relative references.
      */
     public Reference getBaseRef() {
@@ -847,7 +839,7 @@ public class Reference {
      * character (matrix start). It is a token similar to file extensions
      * separated by '.' characters. The value can be ommited.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The extensions or null.
      * @see #getExtensionsAsArray()
      * @see #setExtensions(String)
@@ -877,7 +869,7 @@ public class Reference {
 
     /**
      * Returns the extensions as an array or null if no extension is found.
-     * 
+     *
      * @return The extensions as an array or null if no extension is found.
      * @see #getExtensions()
      */
@@ -895,7 +887,7 @@ public class Reference {
     /**
      * Returns the fragment identifier.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The fragment identifier.
      */
     public String getFragment() {
@@ -908,9 +900,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded fragment identifier.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded fragment identifier.
      * @see #getFragment()
      */
@@ -922,7 +914,7 @@ public class Reference {
      * Returns the hierarchical part which is equivalent to the scheme specific
      * part less the query component.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The hierarchical part .
      */
     public String getHierarchicalPart() {
@@ -961,9 +953,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded hierarchical part.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded hierarchical part.
      * @see #getHierarchicalPart()
      */
@@ -976,9 +968,9 @@ public class Reference {
      * identifiers. It can also be replaced by an IP address when no domain name
      * was registered.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The host domain name component for server based hierarchical
-     *         identifiers.
+     * identifiers.
      */
     public String getHostDomain() {
         String result = null;
@@ -1018,9 +1010,9 @@ public class Reference {
 
     /**
      * Returns the optionally decoded host domain name component.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionally decoded host domain name component.
      * @see #getHostDomain()
      */
@@ -1032,7 +1024,7 @@ public class Reference {
      * Returns the host identifier. Includes the scheme, the host name and the
      * host port number.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The host identifier.
      */
     public String getHostIdentifier() {
@@ -1043,9 +1035,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded host identifier.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded host identifier.
      * @see #getHostIdentifier()
      */
@@ -1056,9 +1048,9 @@ public class Reference {
     /**
      * Returns the optional port number for server based hierarchical
      * identifiers.
-     * 
+     *
      * @return The optional port number for server based hierarchical
-     *         identifiers or -1 if the port number does not exist.
+     * identifiers or -1 if the port number does not exist.
      */
     public int getHostPort() {
         int result = -1;
@@ -1091,7 +1083,7 @@ public class Reference {
     /**
      * Returns the absolute resource identifier, without the fragment.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The absolute resource identifier, without the fragment.
      */
     public String getIdentifier() {
@@ -1106,9 +1098,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded absolute resource identifier.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded absolute resource identifier.
      * @see #getIdentifier()
      */
@@ -1121,7 +1113,7 @@ public class Reference {
      * For example the "/a/b/c" and "/a/b/c/" paths have the same segments: "a",
      * "b", "c.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The last segment of a hierarchical path.
      */
     public String getLastSegment() {
@@ -1145,9 +1137,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded last segment.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
      */
@@ -1157,9 +1149,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded last segment.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @param excludeMatrix
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
@@ -1184,7 +1176,7 @@ public class Reference {
      * sequence of 'name=value' parameters separated by ';' characters. The
      * value can be ommitted.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The matrix or null.
      */
     public String getMatrix() {
@@ -1204,9 +1196,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded matrix.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded matrix.
      * @see #getMatrix()
      */
@@ -1216,7 +1208,7 @@ public class Reference {
 
     /**
      * Returns the optional matrix as a form.
-     * 
+     *
      * @return The optional matrix component as a form.
      */
     public Form getMatrixAsForm() {
@@ -1225,9 +1217,9 @@ public class Reference {
 
     /**
      * Returns the optional matrix as a form submission.
-     * 
+     *
      * @param characterSet
-     *            The supported character encoding.
+     *         The supported character encoding.
      * @return The optional matrix as a form.
      */
     public Form getMatrixAsForm(CharacterSet characterSet) {
@@ -1237,7 +1229,7 @@ public class Reference {
     /**
      * Returns the parent reference of a hierarchical reference. The last slash
      * of the path will be considered as the end of the parent path.
-     * 
+     *
      * @return The parent reference of a hierarchical reference.
      */
     public Reference getParentRef() {
@@ -1272,7 +1264,7 @@ public class Reference {
      * Returns the path component for hierarchical identifiers. If not path is
      * available it returns null.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The path component for hierarchical identifiers.
      */
     public String getPath() {
@@ -1320,9 +1312,9 @@ public class Reference {
     /**
      * Returns the optionnally decoded path component. If not path is available
      * it returns null.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded path component.
      * @see #getPath()
      */
@@ -1333,7 +1325,7 @@ public class Reference {
     /**
      * Returns the optional query component for hierarchical identifiers.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The query component or null.
      */
     public String getQuery() {
@@ -1359,9 +1351,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded query component.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded query component.
      * @see #getQuery()
      */
@@ -1371,7 +1363,7 @@ public class Reference {
 
     /**
      * Returns the optional query component as a form.
-     * 
+     *
      * @return The optional query component as a form.
      */
     public Form getQueryAsForm() {
@@ -1380,10 +1372,10 @@ public class Reference {
 
     /**
      * Returns the optional query component as a form.
-     * 
+     *
      * @param decode
-     *            Indicates if the names and values should be automatically
-     *            decoded.
+     *         Indicates if the names and values should be automatically
+     *         decoded.
      * @return The optional query component as a form.
      */
     public Form getQueryAsForm(boolean decode) {
@@ -1392,9 +1384,9 @@ public class Reference {
 
     /**
      * Returns the optional query component as a form submission.
-     * 
+     *
      * @param characterSet
-     *            The supported character encoding.
+     *         The supported character encoding.
      * @return The optional query component as a form submission.
      */
     public Form getQueryAsForm(CharacterSet characterSet) {
@@ -1405,7 +1397,7 @@ public class Reference {
      * Returns the relative part of relative references, without the query and
      * fragment. If the reference is absolute, then null is returned.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The relative part.
      */
     public String getRelativePart() {
@@ -1414,9 +1406,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded relative part.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded relative part.
      * @see #getRelativePart()
      */
@@ -1428,9 +1420,9 @@ public class Reference {
      * Returns the current reference as a relative reference to the current base
      * reference. This method should only be invoked for absolute references,
      * otherwise an IllegalArgumentException will be raised.
-     * 
+     *
      * @return The current reference as a relative reference to the current base
-     *         reference.
+     * reference.
      * @see #getRelativeRef(Reference)
      */
     public Reference getRelativeRef() {
@@ -1441,13 +1433,13 @@ public class Reference {
      * Returns the current reference relatively to a base reference. This method
      * should only be invoked for absolute references, otherwise an
      * IllegalArgumentException will be raised.
-     * 
+     *
      * @param base
-     *            The base reference to use.
-     * @throws IllegalArgumentException
-     *             If the relative reference is computed although the reference
-     *             or the base reference are not absolute or not hierarchical.
+     *         The base reference to use.
      * @return The current reference relatively to a base reference.
+     * @throws IllegalArgumentException
+     *         If the relative reference is computed although the reference
+     *         or the base reference are not absolute or not hierarchical.
      */
     public Reference getRelativeRef(Reference base) {
         Reference result = null;
@@ -1625,9 +1617,9 @@ public class Reference {
      * </ul>
      * <br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The remaining resource part or null if the prerequisites are not
-     *         satisfied.
+     * satisfied.
      * @see #getRemainingPart(boolean)
      */
     public String getRemainingPart() {
@@ -1636,9 +1628,9 @@ public class Reference {
 
     /**
      * Returns the optionally decoded remaining part.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
@@ -1649,11 +1641,11 @@ public class Reference {
     /**
      * Returns the optionally decoded remaining part with or without the query
      * part of the reference.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @param query
-     *            True if the query part should be returned, false otherwise.
+     *         True if the query part should be returned, false otherwise.
      * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
@@ -1677,7 +1669,7 @@ public class Reference {
     /**
      * Returns the scheme component.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The scheme component.
      */
     public String getScheme() {
@@ -1692,9 +1684,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded scheme component.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded scheme component.
      * @see #getScheme()
      */
@@ -1704,7 +1696,7 @@ public class Reference {
 
     /**
      * Returns the protocol associated with the scheme component.
-     * 
+     *
      * @return The protocol associated with the scheme component.
      */
     public Protocol getSchemeProtocol() {
@@ -1714,7 +1706,7 @@ public class Reference {
     /**
      * Returns the scheme specific part.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The scheme specific part.
      */
     public String getSchemeSpecificPart() {
@@ -1737,9 +1729,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded scheme specific part.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded scheme specific part.
      * @see #getSchemeSpecificPart()
      */
@@ -1752,7 +1744,7 @@ public class Reference {
      * Returns the list of segments in a hierarchical path.<br>
      * A new list is created for each call.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The segments of a hierarchical path.
      */
     public List<String> getSegments() {
@@ -1796,9 +1788,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded list of segments.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded list of segments.
      * @see #getSegments()
      */
@@ -1817,14 +1809,13 @@ public class Reference {
     /**
      * Returns the target reference. This method resolves relative references
      * against the base reference then normalize them.
-     * 
-     * @throws IllegalArgumentException
-     *             If the base reference (after resolution) is not absolute.
-     * @throws IllegalArgumentException
-     *             If the reference is relative and not base reference has been
-     *             provided.
-     * 
+     *
      * @return The target reference.
+     * @throws IllegalArgumentException
+     *         If the base reference (after resolution) is not absolute.
+     * @throws IllegalArgumentException
+     *         If the reference is relative and not base reference has been
+     *         provided.
      */
     public Reference getTargetRef() {
         Reference result = null;
@@ -1918,9 +1909,9 @@ public class Reference {
      * Returns the user info component for server based hierarchical
      * identifiers.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @return The user info component for server based hierarchical
-     *         identifiers.
+     * identifiers.
      */
     public String getUserInfo() {
         String result = null;
@@ -1939,9 +1930,9 @@ public class Reference {
 
     /**
      * Returns the optionnally decoded user info component.
-     * 
+     *
      * @param decode
-     *            Indicates if the result should be decoded using the {@link #decode(String)} method.
+     *         Indicates if the result should be decoded using the {@link #decode(String)} method.
      * @return The optionnally decoded user info component.
      * @see #getUserInfo()
      */
@@ -1952,7 +1943,7 @@ public class Reference {
     /**
      * Indicates if this reference has file-like extensions on its last path
      * segment.
-     * 
+     *
      * @return True if there is are extensions.
      * @see #getExtensions()
      */
@@ -1977,7 +1968,7 @@ public class Reference {
 
     /**
      * Indicates if this reference has a fragment identifier.
-     * 
+     *
      * @return True if there is a fragment identifier.
      */
     public boolean hasFragment() {
@@ -1986,7 +1977,7 @@ public class Reference {
 
     /**
      * Returns a hash code value for the object.
-     * 
+     *
      * @return A hash code value for the object.
      */
     @Override
@@ -1996,7 +1987,7 @@ public class Reference {
 
     /**
      * Indicates if this reference has a matrix.
-     * 
+     *
      * @return True if there is a matrix.
      * @see #getMatrix()
      */
@@ -2006,7 +1997,7 @@ public class Reference {
 
     /**
      * Indicates if this reference has a query component.
-     * 
+     *
      * @return True if there is a query.
      */
     public boolean hasQuery() {
@@ -2015,7 +2006,7 @@ public class Reference {
 
     /**
      * Indicates if this reference has a scheme component.
-     * 
+     *
      * @return True if there is a scheme component.
      */
     public boolean hasScheme() {
@@ -2024,7 +2015,7 @@ public class Reference {
 
     /**
      * Indicates if the reference is absolute.
-     * 
+     *
      * @return True if the reference is absolute.
      */
     public boolean isAbsolute() {
@@ -2034,9 +2025,9 @@ public class Reference {
     /**
      * Returns true if both reference are equivalent, meaning that they resolve
      * to the same target reference.
-     * 
+     *
      * @param ref
-     *            The reference to compare.
+     *         The reference to compare.
      * @return True if both reference are equivalent.
      */
     public boolean isEquivalentTo(Reference ref) {
@@ -2045,7 +2036,7 @@ public class Reference {
 
     /**
      * Indicates if the identifier is hierarchical.
-     * 
+     *
      * @return True if the identifier is hierarchical, false if it is opaque.
      */
     public boolean isHierarchical() {
@@ -2054,7 +2045,7 @@ public class Reference {
 
     /**
      * Indicates if the identifier is opaque.
-     * 
+     *
      * @return True if the identifier is opaque, false if it is hierarchical.
      */
     public boolean isOpaque() {
@@ -2064,11 +2055,11 @@ public class Reference {
     /**
      * Indicates if the reference is a parent of the hierarchical child
      * reference.
-     * 
+     *
      * @param childRef
-     *            The hierarchical reference.
+     *         The hierarchical reference.
      * @return True if the reference is a parent of the hierarchical child
-     *         reference.
+     * reference.
      */
     public boolean isParent(Reference childRef) {
         boolean result = false;
@@ -2083,7 +2074,7 @@ public class Reference {
 
     /**
      * Indicates if the reference is relative.
-     * 
+     *
      * @return True if the reference is relative.
      */
     public boolean isRelative() {
@@ -2093,7 +2084,7 @@ public class Reference {
     /**
      * Normalizes the reference. Useful before comparison between references or
      * when building a target reference from a base and a relative references.
-     * 
+     *
      * @return The current reference.
      */
     public Reference normalize() {
@@ -2170,7 +2161,7 @@ public class Reference {
                     input.delete(0, max);
                 } else {
                     // End of input buffer reached
-                     output.append(input.toString());
+                    output.append(input.toString());
                     input.delete(0, input.length());
                 }
             }
@@ -2199,9 +2190,9 @@ public class Reference {
 
     /**
      * Removes the last segement from the output builder.
-     * 
+     *
      * @param output
-     *            The output builder to update.
+     *         The output builder to update.
      */
     private void removeLastSegment(StringBuilder output) {
         int min = -1;
@@ -2223,9 +2214,9 @@ public class Reference {
 
     /**
      * Sets the authority component for hierarchical identifiers.
-     * 
+     *
      * @param authority
-     *            The authority component for hierarchical identifiers.
+     *         The authority component for hierarchical identifiers.
      */
     public void setAuthority(String authority) {
         final String oldPart = isRelative() ? getRelativePart()
@@ -2261,9 +2252,9 @@ public class Reference {
 
     /**
      * Sets the base reference for relative references.
-     * 
+     *
      * @param baseRef
-     *            The base reference for relative references.
+     *         The base reference for relative references.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
@@ -2271,9 +2262,9 @@ public class Reference {
 
     /**
      * Sets the base reference for relative references.
-     * 
+     *
      * @param baseUri
-     *            The base URI for relative references.
+     *         The base URI for relative references.
      */
     public void setBaseRef(String baseUri) {
         setBaseRef(new Reference(baseUri));
@@ -2286,10 +2277,10 @@ public class Reference {
      * (matrix start). It is a token similar to file extensions separated by '.'
      * characters. The value can be ommited.<br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @param extensions
-     *            The extensions to set or null (without leading or trailing
-     *            dots).
+     *         The extensions to set or null (without leading or trailing
+     *         dots).
      * @see #getExtensions()
      * @see #getExtensionsAsArray()
      * @see #setExtensions(String[])
@@ -2341,9 +2332,9 @@ public class Reference {
 
     /**
      * Sets the extensions based on an array of extension tokens (without dots).
-     * 
+     *
      * @param extensions
-     *            The array of extensions.
+     *         The array of extensions.
      * @see #getExtensions()
      * @see #getExtensionsAsArray()
      * @see #setExtensions(String)
@@ -2370,12 +2361,12 @@ public class Reference {
 
     /**
      * Sets the fragment identifier.
-     * 
+     *
      * @param fragment
-     *            The fragment identifier.
+     *         The fragment identifier.
      * @throws IllegalArgumentException
-     *             if the fragment parameter contains the fragment delimiter
-     *             ('#').
+     *         if the fragment parameter contains the fragment delimiter
+     *         ('#').
      */
     public void setFragment(String fragment) {
         fragment = encodeInvalidCharacters(fragment);
@@ -2412,9 +2403,9 @@ public class Reference {
 
     /**
      * Sets the host domain component for server based hierarchical identifiers.
-     * 
+     *
      * @param domain
-     *            The host component for server based hierarchical identifiers.
+     *         The host component for server based hierarchical identifiers.
      */
     public void setHostDomain(String domain) {
         final String authority = getAuthority();
@@ -2462,12 +2453,12 @@ public class Reference {
 
     /**
      * Sets the optional port number for server based hierarchical identifiers.
-     * 
+     *
      * @param port
-     *            The optional port number for server based hierarchical
-     *            identifiers.
+     *         The optional port number for server based hierarchical
+     *         identifiers.
      * @throws IllegalArgumentException
-     *             If the autority has not been defined.
+     *         If the autority has not been defined.
      */
     public void setHostPort(Integer port) {
         final String authority = getAuthority();
@@ -2494,12 +2485,12 @@ public class Reference {
 
     /**
      * Sets the absolute resource identifier.
-     * 
+     *
      * @param identifier
-     *            The absolute resource identifier.
+     *         The absolute resource identifier.
      * @throws IllegalArgumentException
-     *             If the identifier parameter contains the fragment delimiter
-     *             ('#').
+     *         If the identifier parameter contains the fragment delimiter
+     *         ('#').
      */
     public void setIdentifier(String identifier) {
         identifier = encodeInvalidCharacters(identifier);
@@ -2529,9 +2520,9 @@ public class Reference {
      * Sets the last segment of the path. If no path is available, then it
      * creates one and adds a slash in front of the given last segmetn. <br>
      * Note that no URI decoding is done by this method.
-     * 
+     *
      * @param lastSegment
-     *            The last segment of a hierarchical path.
+     *         The last segment of a hierarchical path.
      */
     public void setLastSegment(String lastSegment) {
         String path = getPath();
@@ -2550,9 +2541,9 @@ public class Reference {
 
     /**
      * Sets the path component for hierarchical identifiers.
-     * 
+     *
      * @param path
-     *            The path component for hierarchical identifiers.
+     *         The path component for hierarchical identifiers.
      */
     public void setPath(String path) {
         final String oldPart = isRelative() ? getRelativePart()
@@ -2618,9 +2609,9 @@ public class Reference {
 
     /**
      * Sets the scheme component based on this protocol.
-     * 
+     *
      * @param protocol
-     *            The protocol of the scheme component.
+     *         The protocol of the scheme component.
      */
     public void setProtocol(Protocol protocol) {
         setScheme(protocol.getSchemeName());
@@ -2628,9 +2619,9 @@ public class Reference {
 
     /**
      * Sets the query component for hierarchical identifiers.
-     * 
+     *
      * @param query
-     *            The query component for hierarchical identifiers.
+     *         The query component for hierarchical identifiers.
      */
     public void setQuery(String query) {
         query = encodeInvalidCharacters(query);
@@ -2692,9 +2683,9 @@ public class Reference {
 
     /**
      * Sets the relative part for relative references only.
-     * 
+     *
      * @param relativePart
-     *            The relative part to set.
+     *         The relative part to set.
      */
     public void setRelativePart(String relativePart) {
         relativePart = encodeInvalidCharacters(relativePart);
@@ -2724,9 +2715,9 @@ public class Reference {
 
     /**
      * Sets the scheme component.
-     * 
+     *
      * @param scheme
-     *            The scheme component.
+     *         The scheme component.
      */
     public void setScheme(String scheme) {
         scheme = encodeInvalidCharacters(scheme);
@@ -2762,9 +2753,9 @@ public class Reference {
 
     /**
      * Sets the scheme specific part.
-     * 
+     *
      * @param schemeSpecificPart
-     *            The scheme specific part.
+     *         The scheme specific part.
      */
     public void setSchemeSpecificPart(String schemeSpecificPart) {
         schemeSpecificPart = encodeInvalidCharacters(schemeSpecificPart);
@@ -2804,9 +2795,9 @@ public class Reference {
     /**
      * Sets the segments of a hierarchical path.<br>
      * A new absolute path will replace any existing one.
-     * 
+     *
      * @param segments
-     *            The segments of the hierarchical path.
+     *         The segments of the hierarchical path.
      */
     public void setSegments(List<String> segments) {
         final StringBuilder sb = new StringBuilder();
@@ -2820,12 +2811,12 @@ public class Reference {
 
     /**
      * Sets the user info component for server based hierarchical identifiers.
-     * 
+     *
      * @param userInfo
-     *            The user info component for server based hierarchical
-     *            identifiers.
+     *         The user info component for server based hierarchical
+     *         identifiers.
      * @throws IllegalArgumentException
-     *             If the autority part has not been defined.
+     *         If the autority part has not been defined.
      */
     public void setUserInfo(String userInfo) {
         final String authority = getAuthority();
@@ -2847,7 +2838,7 @@ public class Reference {
 
     /**
      * Returns the reference as an URI string.
-     * 
+     *
      * @return The reference as an URI string.
      */
     @Override
@@ -2857,11 +2848,11 @@ public class Reference {
 
     /**
      * Returns the URI reference string.
-     * 
+     *
      * @param query
-     *            Indicates if the query should be included;
+     *         Indicates if the query should be included;
      * @param fragment
-     *            Indicates if the fragment should be included;
+     *         Indicates if the fragment should be included;
      * @return The URI reference string.
      */
     public String toString(boolean query, boolean fragment) {
@@ -2906,8 +2897,6 @@ public class Reference {
 
         return this.internalRef;
     }
-
-
 
     /**
      * Updates internal indexes.

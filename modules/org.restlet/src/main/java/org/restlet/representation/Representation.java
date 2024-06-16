@@ -74,7 +74,6 @@ public abstract class Representation extends RepresentationInfo {
     /** Indicates if the representation's content is potentially available. */
     private volatile boolean available;
 
-    // [ifndef gwt] member
     /**
      * The representation digest if any.
      */
@@ -123,10 +122,8 @@ public abstract class Representation extends RepresentationInfo {
         this.isTransient = false;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
-        // [ifndef gwt]
         this.digest = null;
         this.range = null;
-        // [enddef]
     }
 
     /**
@@ -237,13 +234,11 @@ public abstract class Representation extends RepresentationInfo {
     public long exhaust() throws IOException {
         long result = -1L;
 
-        // [ifndef gwt]
         if (isAvailable()) {
             InputStream is = getStream();
             result = IoUtils.exhaust(is);
             is.close();
         }
-        // [enddef]
 
         return result;
     }
@@ -259,7 +254,6 @@ public abstract class Representation extends RepresentationInfo {
         return IoUtils.getAvailableSize(this);
     }
 
-    // [ifndef gwt] member
     /**
      * Returns a channel with the representation's content.<br>
      * If it is supported by a file, a read-only instance of FileChannel is
@@ -273,7 +267,6 @@ public abstract class Representation extends RepresentationInfo {
     public abstract java.nio.channels.ReadableByteChannel getChannel()
             throws IOException;
 
-    // [ifndef gwt] method
     /**
      * Returns the representation digest if any.<br>
      * <br>
@@ -333,7 +326,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract Reader getReader() throws IOException;
 
-    // [ifndef gae,gwt] method
+    // [ifndef gae] method
     /**
      * Returns the NIO registration of the related channel with its selector.
      * You can modify this registration to be called back when some readable
@@ -378,7 +371,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract InputStream getStream() throws IOException;
 
-    // [ifndef gwt] method
     /**
      * Converts the representation to a string value. Be careful when using this
      * method as the conversion of large content to a string fully stored in
@@ -440,17 +432,7 @@ public abstract class Representation extends RepresentationInfo {
         return getSize() == 0;
     }
 
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Converts the representation to a string value. Be careful when using
-    // * this method as the conversion of large content to a string fully
-    // * stored in memory can result in OutOfMemoryErrors being thrown.
-    // *
-    // * @return The representation as a string value.
-    // */
-    // public abstract String getText() throws IOException;
-
-    // [ifndef gae,gwt] method
+    // [ifndef gae] method
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
@@ -520,7 +502,6 @@ public abstract class Representation extends RepresentationInfo {
         this.available = available;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the representation digest.<br>
      * <br>
@@ -558,7 +539,7 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
-    // [ifndef gae,gwt] method
+    // [ifndef gae] method
     /**
      * Sets a listener for NIO read events. If the listener is null, it clear
      * any existing listener.
@@ -621,7 +602,6 @@ public abstract class Representation extends RepresentationInfo {
         this.isTransient = isTransient;
     }
 
-    // [ifndef gwt] member
     /**
      * Writes the representation to a characters writer. This method is ensured
      * to write the full content for each invocation unless it is a transient
@@ -637,7 +617,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract void write(java.io.Writer writer) throws IOException;
 
-    // [ifndef gwt] member
     /**
      * Writes the representation to a byte channel. This method is ensured to
      * write the full content for each invocation unless it is a transient
@@ -651,7 +630,6 @@ public abstract class Representation extends RepresentationInfo {
             java.nio.channels.WritableByteChannel writableChannel)
             throws IOException;
 
-    // [ifndef gwt] member
     /**
      * Writes the representation to a byte stream. This method is ensured to
      * write the full content for each invocation unless it is a transient

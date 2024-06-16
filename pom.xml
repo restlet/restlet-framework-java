@@ -121,8 +121,6 @@
                 <module>modules/org.restlet.ext.velocity</module>
                 <module>modules/org.restlet.ext.xml</module>
                 <module>modules/org.restlet.gwt</module>
-                <module>modules/org.restlet.gwt.ext.json</module>
-                <module>modules/org.restlet.gwt.ext.xml</module>
             </modules>
         </profile>
         <profile>
@@ -155,8 +153,6 @@
                 <module>modules/org.restlet.ext.velocity</module>
                 <module>modules/org.restlet.ext.xml</module>
                 <module>modules/org.restlet.gwt</module>
-                <module>modules/org.restlet.gwt.ext.json</module>
-                <module>modules/org.restlet.gwt.ext.xml</module>
                 <module>modules/org.restlet.test</module>
             </modules>
         </profile>

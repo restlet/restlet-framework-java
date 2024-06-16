@@ -63,7 +63,6 @@ public abstract class Message {
     /** The payload of the message. */
     private volatile Representation entity;
 
-    // [ifndef gwt] member
     /** The optional cached text. */
     private volatile String entityText;
 
@@ -97,14 +96,12 @@ public abstract class Message {
         this.cacheDirectives = null;
         this.date = null;
         this.entity = entity;
-        // [ifndef gwt] instruction
         this.entityText = null;
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
     }
 
-    // [ifndef gwt] method
     /**
      * If the entity is transient or its size unknown in advance but available,
      * then the entity is wrapped with a {@link org.restlet.representation.BufferingRepresentation}.<br>
@@ -230,7 +227,6 @@ public abstract class Message {
         return this.entity;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the entity as text. This method can be called several times and
      * will always return the same text. Note that if the entity is large this
@@ -263,10 +259,7 @@ public abstract class Message {
     public Series<Header> getHeaders() {
         Series<Header> headers = (Series<Header>) getAttributes().get(ATTRIBUTE_HEADERS);
         if (headers == null) {
-            // [ifndef gwt] instruction
             headers = new Series<Header>(Header.class);
-            // [ifdef gwt] instruction uncomment
-            // headers = new org.restlet.engine.util.HeaderSeries();
             getAttributes().put(ATTRIBUTE_HEADERS, headers);
         }
         return headers;
@@ -352,10 +345,7 @@ public abstract class Message {
      * @return True if a content is available and can be sent.
      */
     public boolean isEntityAvailable() {
-        // The declaration of the "result" variable is a workaround for the GWT
-        // platform. Please keep it!
-        boolean result = (getEntity() != null) && getEntity().isAvailable();
-        return result;
+        return (getEntity() != null) && getEntity().isAvailable();
     }
 
     /**

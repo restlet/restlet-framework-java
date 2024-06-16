@@ -88,7 +88,6 @@ public class HeaderReader<V> {
      */
     private static <NV extends NamedValue<String>> NV createNamedValue(
             Class<NV> resultClass, String name, String value) {
-        // [ifndef gwt]
         try {
             return resultClass.getConstructor(String.class, String.class)
                     .newInstance(name, value);
@@ -97,24 +96,6 @@ public class HeaderReader<V> {
                     "Unable to create named value", e);
             return null;
         }
-        // [enddef]
-        // [ifdef gwt] uncomment
-        // if (org.restlet.data.Parameter.class.equals(resultClass)) {
-        // return (NV) new org.restlet.data.Parameter(name, value);
-        // } else if (org.restlet.data.Cookie.class.equals(resultClass)) {
-        // return (NV) new org.restlet.data.Cookie(name, value);
-        // } else if (org.restlet.data.CookieSetting.class.equals(resultClass))
-        // {
-        // return (NV) new org.restlet.data.CookieSetting(name, value);
-        // } else if (org.restlet.data.CacheDirective.class.equals(resultClass))
-        // {
-        // return (NV) new org.restlet.data.CacheDirective(name, value);
-        // } else if
-        // (org.restlet.data.Header.class.equals(resultClass)) {
-        // return (NV) new org.restlet.data.Header(name, value);
-        // }
-        // return null;
-        // [enddef]
     }
 
     /**

@@ -68,7 +68,6 @@ public class IoUtils {
     public static final int BUFFER_SIZE = getProperty(
             "org.restlet.engine.io.bufferSize", 8192);
 
-    // [ifndef gwt] member
     /** Support for byte to hexa conversions. */
     private static final char[] HEXDIGITS = "0123456789ABCDEF".toCharArray();
 
@@ -80,7 +79,6 @@ public class IoUtils {
     public final static int TIMEOUT_MS = getProperty(
             "org.restlet.engine.io.timeoutMs", 60000);
 
-    // [ifndef gwt] method
     /**
      * Copies an input stream to an output stream. When the reading is done, the
      * input stream is closed.
@@ -116,7 +114,6 @@ public class IoUtils {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Copies an input stream to a random access file. When the reading is done,
      * the input stream is closed.
@@ -139,7 +136,6 @@ public class IoUtils {
         inputStream.close();
     }
 
-    // [ifndef gwt] method
     /**
      * Writes a readable channel to a writable channel.
      * 
@@ -156,7 +152,6 @@ public class IoUtils {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Copies characters from a reader to a writer. When the reading is done,
      * the reader is closed.
@@ -180,7 +175,6 @@ public class IoUtils {
         reader.close();
     }
 
-    // [ifndef gwt] method
     /**
      * Deletes an individual file or an empty directory.
      * 
@@ -192,7 +186,6 @@ public class IoUtils {
         return IoUtils.delete(file, false);
     }
 
-    // [ifndef gwt] method
     /**
      * Deletes an individual file or a directory. A recursive deletion can be
      * forced as well. Under Windows operating systems, the garbage collector
@@ -212,7 +205,6 @@ public class IoUtils {
         return IoUtils.delete(file, recursive, osName.startsWith("windows"));
     }
 
-    // [ifndef gwt] method
     /**
      * Deletes an individual file or a directory. A recursive deletion can be
      * forced as well. The garbage collector can be run once before attempting
@@ -265,7 +257,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Exhaust the content of the representation by reading it and silently
      * discarding anything read.
@@ -301,7 +292,6 @@ public class IoUtils {
      * @return The available size.
      */
     public static long getAvailableSize(Representation representation) {
-        // [ifndef gwt]
         Range range = representation.getRange();
         if (range == null || !isBytesRange(range)) {
             return representation.getSize();
@@ -321,12 +311,8 @@ public class IoUtils {
         }
 
         return Representation.UNKNOWN_SIZE;
-        // [enddef]
-        // [ifdef gwt] line uncomment
-        // return representation.getSize();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a readable byte channel based on a given input stream. If it is
      * supported by a file a read-only instance of FileChannel is returned.
@@ -348,7 +334,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a writable byte channel based on a given output stream.
      * 
@@ -361,7 +346,6 @@ public class IoUtils {
                 : null;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a readable byte channel based on the given representation's
      * content and its write(WritableByteChannel) method. Internally, it uses a
@@ -429,13 +413,11 @@ public class IoUtils {
     private static int getProperty(String name, int defaultValue) {
         int result = defaultValue;
 
-        // [ifndef gwt]
         try {
             result = Integer.parseInt(System.getProperty(name));
         } catch (NumberFormatException nfe) {
             result = defaultValue;
         }
-        // [enddef]
 
         return result;
     }
@@ -460,7 +442,6 @@ public class IoUtils {
         return new InputStreamReader(stream);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a reader from a writer representation.Internally, it uses a
      * writer thread and a pipe stream.
@@ -514,7 +495,6 @@ public class IoUtils {
 
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an output stream based on a given writer.
      * 
@@ -529,7 +509,6 @@ public class IoUtils {
         return new WriterOutputStream(writer, characterSet);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an input stream based on a given readable byte channel.
      * 
@@ -549,7 +528,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an input stream based on a given character reader.
      * 
@@ -572,7 +550,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an input stream based on the given representation's content and
      * its write(OutputStream) method. Internally, it uses a writer thread and a
@@ -628,7 +605,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an output stream based on a given writable byte channel.
      * 
@@ -648,7 +624,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Converts the representation to a string value. Be careful when using this
      * method as the conversion of large content to a string fully stored in
@@ -676,7 +651,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a writer to the given output stream, using the given character
      * set for encoding to bytes.
@@ -703,7 +677,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if the channel is in blocking mode. It returns false when the
      * channel is selectable and configured to be non blocking.
@@ -723,7 +696,6 @@ public class IoUtils {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Release the selection key, working around for bug #6403933.
      * 
@@ -748,7 +720,6 @@ public class IoUtils {
 
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a char array into a byte array using the default character set.
      * 
@@ -761,7 +732,6 @@ public class IoUtils {
                 .defaultCharset().name());
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a char array into a byte array using the provided character set.
      * 
@@ -780,7 +750,6 @@ public class IoUtils {
         return r;
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a byte array into a character array using the default character
      * set.
@@ -794,7 +763,6 @@ public class IoUtils {
                 .defaultCharset().name());
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a byte array into a character array using the default character
      * set.
@@ -814,7 +782,6 @@ public class IoUtils {
         return r;
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a byte array into an hexadecimal string.
      * 
@@ -865,7 +832,6 @@ public class IoUtils {
         String result = null;
 
         if (inputStream != null) {
-            // [ifndef gwt]
             try {
                 if (characterSet != null) {
                     result = IoUtils.toString(new InputStreamReader(
@@ -879,22 +845,6 @@ public class IoUtils {
             } catch (Exception e) {
                 // Returns an empty string
             }
-            // [enddef]
-            // [ifdef gwt] uncomment
-            // if (inputStream instanceof StringInputStream) {
-            // return ((StringInputStream) inputStream).getText();
-            // } else {
-            // try {
-            // if (characterSet != null) {
-            // result = copyBytesToByteArrayOutputStream(inputStream).toString(characterSet.getName());
-            // } else {
-            // result = copyBytesToByteArrayOutputStream(inputStream).toString();
-            // }
-            // } catch (Exception e) {
-            // // Returns an empty string
-            // }
-            // }
-            // [enddef]
         }
 
         return result;
@@ -934,20 +884,6 @@ public class IoUtils {
 
         return result;
     }
-
-
-    // [ifdef gwt] method uncomment
-    // private static java.io.ByteArrayOutputStream copyBytesToByteArrayOutputStream(InputStream inputStream) throws IOException {
-    //     java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
-    //     byte[] buffer = new byte[2048];
-    //     int bytesRead = inputStream.read(buffer);
-    //     while (bytesRead != -1) {
-    //         bos.write(buffer, 0, bytesRead);
-    //         bytesRead = inputStream.read(buffer);
-    //     }
-    //     return bos;
-    // }
-
 
     /**
      * Private constructor to ensure that the class acts as a true utility class

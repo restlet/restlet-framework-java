@@ -46,7 +46,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Result;
 
-// [excludes gwt]
 /**
  * Reflection proxy invocation handler created for the {@link ClientResource#wrap(Class)} and related methods.
  * 

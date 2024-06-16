@@ -3,23 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.restlet</groupId>
-        <artifactId>org.restlet.parent</artifactId>
+        <groupId>org.restlet.gwt</groupId>
+        <artifactId>org.restlet.gwt.parent</artifactId>
         <version>2.5-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-	<groupId>org.restlet.gwt</groupId>
-	<artifactId>org.restlet.gwt.parent</artifactId>
-    <packaging>pom</packaging>
-    <name>Restlet project - GWT edition</name>
-    <description>Lightweight REST framework</description>
-
-	<modules>
-		<module>org.restlet.gwt</module>
-		<module>org.restlet.gwt.ext.json</module>
-		<module>org.restlet.gwt.ext.xml</module>
-	</modules>
+	<artifactId>org.restlet.gwt</artifactId>
+	<name>Restlet Core - API and Engine</name>
+	<description>RESTful web framework for Java (API and Engine).</description>
 
 	<dependencies>
 		<dependency>
@@ -33,5 +25,4 @@
 			<version>${lib-gwt-version}</version>
 		</dependency>
 	</dependencies>
-
 </project>

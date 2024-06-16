@@ -45,7 +45,6 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
-// [excludes gwt]
 /**
  * Representation that decodes a wrapped representation if its encoding is
  * supported. If at least one encoding of the wrapped representation is not

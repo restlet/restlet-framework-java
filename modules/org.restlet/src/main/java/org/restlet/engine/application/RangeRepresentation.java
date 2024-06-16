@@ -36,7 +36,6 @@ import org.restlet.engine.io.RangeInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
-// [excludes gwt]
 /**
  * Representation that exposes only a range of the content of a wrapped
  * representation.
@@ -80,7 +79,6 @@ public class RangeRepresentation extends WrapperRepresentation {
         return IoUtils.getAvailableSize(this);
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
         return IoUtils.getChannel(getStream());
@@ -124,7 +122,6 @@ public class RangeRepresentation extends WrapperRepresentation {
         this.range = range;
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
         OutputStream os = IoUtils.getStream(writer, getCharacterSet());

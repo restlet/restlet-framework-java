@@ -33,7 +33,6 @@ import java.nio.charset.Charset;
 
 import org.restlet.data.CharacterSet;
 
-// [excludes gwt]
 /**
  * Output stream wrapping a character writer.
  * 

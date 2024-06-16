@@ -30,7 +30,6 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Variant;
 
-// [excludes gwt]
 /**
  * Variant that is declared by an annotated Java method.
  * 

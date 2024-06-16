@@ -464,8 +464,6 @@ public class StringUtils {
         return string;
     }
 
-    // [ifndef gwt] method
-
     /**
      * Encodes the given String into a sequence of bytes using the Ascii
      * character set.
@@ -486,8 +484,6 @@ public class StringUtils {
         }
         return null;
     }
-
-    // [ifndef gwt] method
 
     /**
      * Encodes the given String into a sequence of bytes using the Latin1
@@ -685,8 +681,6 @@ public class StringUtils {
 		return sb.toString();
 	}
     
-    // [ifndef gwt] method
-
     /**
      * Returns an list of trimmed token splitted with the split character ",".
      *
@@ -697,8 +691,6 @@ public class StringUtils {
     public static List<String> splitAndTrim(String stringToSplit) {
         return splitAndTrim(stringToSplit, ",");
     }
-
-    // [ifndef gwt] method
 
     /**
      * Returns an list of trimmed token splitted with the split character.

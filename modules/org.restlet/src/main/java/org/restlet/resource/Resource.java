@@ -178,7 +178,6 @@ public abstract class Resource {
         return (value != null) ? Short.valueOf(value) : null;
     }
 
-    // [ifndef gwt] member
     /** The parent application. */
     private volatile org.restlet.Application application;
 
@@ -253,7 +252,6 @@ public abstract class Resource {
         return getResponse() == null ? null : getResponse().getAllowedMethods();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the parent application. If it wasn't set, it attempts to retrieve
      * the current one via {@link org.restlet.Application#getCurrent()} if it
@@ -333,7 +331,6 @@ public abstract class Resource {
         return getRequest() == null ? null : getRequest().getConditions();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the application's content negotiation service or create a new
      * one.
@@ -343,7 +340,6 @@ public abstract class Resource {
     public org.restlet.service.ConnegService getConnegService() {
         org.restlet.service.ConnegService result = null;
 
-        // [ifndef gwt] instruction
         result = getApplication().getConnegService();
 
         if (result == null) {
@@ -362,7 +358,6 @@ public abstract class Resource {
         return context;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the application's converter service or create a new one.
      * 
@@ -371,7 +366,6 @@ public abstract class Resource {
     public org.restlet.service.ConverterService getConverterService() {
         org.restlet.service.ConverterService result = null;
 
-        // [ifndef gwt] instruction
         result = getApplication().getConverterService();
 
         if (result == null) {
@@ -495,7 +489,6 @@ public abstract class Resource {
     public MetadataService getMetadataService() {
         MetadataService result = null;
 
-        // [ifndef gwt] instruction
         result = getApplication().getMetadataService();
 
         if (result == null) {
@@ -549,7 +542,6 @@ public abstract class Resource {
                 .getProxyChallengeRequests();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the proxy authentication response sent by a client to an origin
      * server.
@@ -730,7 +722,6 @@ public abstract class Resource {
         return getResponse() == null ? null : getResponse().getStatus();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the application's status service or create a new one.
      * 
@@ -739,7 +730,6 @@ public abstract class Resource {
     public org.restlet.service.StatusService getStatusService() {
         org.restlet.service.StatusService result = null;
 
-        // [ifndef gwt] instruction
         result = getApplication().getStatusService();
 
         if (result == null) {
@@ -811,7 +801,6 @@ public abstract class Resource {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the parent application.
      * 
@@ -877,7 +866,6 @@ public abstract class Resource {
         this.response = response;
     }
 
-    // [ifndef gwt] method
     /**
      * Converts a representation into a Java object. Leverages the
      * {@link org.restlet.service.ConverterService}.
@@ -953,26 +941,8 @@ public abstract class Resource {
         Representation result = null;
 
         if (source != null) {
-            // [ifndef gwt]
             org.restlet.service.ConverterService cs = getConverterService();
             result = cs.toRepresentation(source, target, this);
-            // [enddef]
-            // [ifdef gwt] uncomment
-            // if (source instanceof Representation) {
-            // result = (Representation) source;
-            // } else {
-            // getLogger()
-            // .log(Level.WARNING,
-            // "The entity has been omitted since the conversion of an instance of "
-            // + source.getClass().getName()
-            // + " to an instance of "
-            // + Representation.class.getName()
-            // + " is not supported."
-            // + " Either provide a regular representation"
-            // + " or use an annotated interface"
-            // + " or use the json or xml extensions.");
-            // }
-            // [enddef]
         }
 
         return result;
