@@ -2,6 +2,7 @@
 	<name>Apache Commons Lang</name>
 	<description>Apache Commons Lang</description>
 	<version>3.14</version>
+	<release>0</release>
 	<homeUri>http://commons.apache.org/lang/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_lang.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>
