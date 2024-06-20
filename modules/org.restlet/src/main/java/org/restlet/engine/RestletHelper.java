@@ -105,10 +105,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if ((getHelped() != null) && (getHelped().getContext() != null)) {
             result = getHelped().getContext().getParameters();
         } else {
-            // [ifndef gwt] instruction
             result = new Series<Parameter>(Parameter.class);
-            // [ifdef gwt] instruction uncomment
-            // result = new org.restlet.engine.util.ParameterSeries();
         }
 
         return result;
@@ -135,7 +132,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
     public MetadataService getMetadataService() {
         MetadataService result = null;
 
-        // [ifndef gwt]
         if (getHelped() != null) {
             org.restlet.Application application = getHelped().getApplication();
 
@@ -143,7 +139,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
                 result = application.getMetadataService();
             }
         }
-        // [enddef]
 
         if (result == null) {
             result = new MetadataService();
@@ -161,7 +156,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
-        // [ifndef gwt]
         // Associate the response to the current thread
         Response.setCurrent(response);
 
@@ -169,7 +163,6 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if (getContext() != null) {
             Context.setCurrent(getContext());
         }
-        // [enddef]
     }
 
     /**

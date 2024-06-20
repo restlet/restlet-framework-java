@@ -34,7 +34,6 @@ import java.nio.charset.CharsetEncoder;
 
 import org.restlet.data.CharacterSet;
 
-// [excludes gwt]
 /**
  * Input stream based on a reader. The implementation relies on the NIO
  * {@link CharsetEncoder} class.

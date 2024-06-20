@@ -42,7 +42,6 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-// [excludes gwt]
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
  * 

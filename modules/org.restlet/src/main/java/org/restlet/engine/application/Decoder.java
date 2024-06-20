@@ -33,7 +33,6 @@ import org.restlet.data.Encoding;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 
-// [excludes gwt]
 /**
  * Filter uncompressing entities.
  * 

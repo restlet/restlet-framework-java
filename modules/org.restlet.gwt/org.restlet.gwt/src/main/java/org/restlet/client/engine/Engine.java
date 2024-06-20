@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2024 Qlik
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
@@ -58,7 +58,7 @@ import org.restlet.client.engine.log.LoggerFacade;
  * this, just pass a system property named
  * "org.restlet.client.engine.loggerFacadeClass" with the qualified class name as a
  * value.
- * 
+ *
  * @author Jerome Louvel
  */
 public class Engine {
@@ -125,7 +125,7 @@ public class Engine {
 
     /**
      * Returns an anonymous logger. By default it calls {@link #getLogger(String)} with a "" name.
-     * 
+     *
      * @return The logger.
      */
     public static Logger getAnonymousLogger() {
@@ -134,7 +134,7 @@ public class Engine {
 
     /**
      * Returns the registered Restlet engine.
-     * 
+     *
      * @return The registered Restlet engine.
      */
     public static synchronized Engine getInstance() {
@@ -150,7 +150,7 @@ public class Engine {
 
     /**
      * Returns a logger based on the class name of the given object.
-     * 
+     *
      * @param clazz
      *            The parent class.
      * @return The logger.
@@ -161,7 +161,7 @@ public class Engine {
 
     /**
      * Returns a logger based on the class name of the given object.
-     * 
+     *
      * @param clazz
      *            The parent class.
      * @param defaultLoggerName
@@ -176,7 +176,7 @@ public class Engine {
 
     /**
      * Returns a logger based on the class name of the given object.
-     * 
+     *
      * @param object
      *            The parent object.
      * @param defaultLoggerName
@@ -191,7 +191,7 @@ public class Engine {
 
     /**
      * Returns a logger based on the given logger name.
-     * 
+     *
      * @param loggerName
      *            The logger name.
      * @return The logger.
@@ -206,7 +206,7 @@ public class Engine {
 
     /**
      * Registers a new Restlet Engine.
-     * 
+     *
      * @return The registered engine.
      */
     public static synchronized Engine register() {
@@ -215,7 +215,7 @@ public class Engine {
 
     /**
      * Registers a new Restlet Engine.
-     * 
+     *
      * @param discoverPlugins
      *            True if plug-ins should be automatically discovered.
      * @return The registered engine.
@@ -252,7 +252,7 @@ public class Engine {
 
     /**
      * Constructor.
-     * 
+     *
      * @param discoverHelpers
      *            True if helpers should be automatically discovered.
      */
@@ -261,14 +261,9 @@ public class Engine {
         instance = this;
 
         // Instantiate the logger facade
-        if (Edition.CURRENT == Edition.GWT) {
-            this.loggerFacade = new LoggerFacade();
-        } else {
-        }
-
+        this.loggerFacade = new LoggerFacade();
         this.registeredClients = new CopyOnWriteArrayList<org.restlet.client.engine.connector.ConnectorHelper<Client>>();
         this.registeredProtocols = new CopyOnWriteArrayList<org.restlet.client.engine.connector.ProtocolHelper>();
-
 
         if (discoverHelpers) {
             try {
@@ -287,7 +282,7 @@ public class Engine {
 
     /**
      * Creates a new helper for a given client connector.
-     * 
+     *
      * @param client
      *            The client to help.
      * @param helperClass
@@ -338,7 +333,7 @@ public class Engine {
     /**
      * Discovers the server and client connectors and register the default
      * connectors.
-     * 
+     *
      * @throws IOException
      */
     private void discoverConnectors() throws IOException {
@@ -348,7 +343,7 @@ public class Engine {
 
     /**
      * Discovers the protocol helpers and register the default helpers.
-     * 
+     *
      * @throws IOException
      */
     private void discoverProtocols() throws IOException {
@@ -360,7 +355,7 @@ public class Engine {
 
     /**
      * Returns the logger facade to use.
-     * 
+     *
      * @return The logger facade to use.
      */
     public LoggerFacade getLoggerFacade() {
@@ -371,7 +366,7 @@ public class Engine {
 
     /**
      * Returns the list of available client connectors.
-     * 
+     *
      * @return The list of available client connectors.
      */
     public List<org.restlet.client.engine.connector.ConnectorHelper<Client>> getRegisteredClients() {
@@ -381,7 +376,7 @@ public class Engine {
 
     /**
      * Returns the list of available protocol connectors.
-     * 
+     *
      * @return The list of available protocol connectors.
      */
     public List<org.restlet.client.engine.connector.ProtocolHelper> getRegisteredProtocols() {
@@ -420,7 +415,7 @@ public class Engine {
 
     /**
      * Sets the logger facade to use.
-     * 
+     *
      * @param loggerFacade
      *            The logger facade to use.
      */
@@ -431,7 +426,7 @@ public class Engine {
 
     /**
      * Sets the list of available client helpers.
-     * 
+     *
      * @param registeredClients
      *            The list of available client helpers.
      */
@@ -451,7 +446,7 @@ public class Engine {
 
     /**
      * Sets the list of available protocol helpers.
-     * 
+     *
      * @param registeredProtocols
      *            The list of available protocol helpers.
      */

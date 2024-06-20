@@ -68,13 +68,9 @@ public final class DateUtils {
             "EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
             "dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z");
 
-    // [ifndef gwt] member
     /** Remember the often used GMT time zone. */
     private static final java.util.TimeZone TIMEZONE_GMT = java.util.TimeZone.getTimeZone("GMT");
 
-    // [ifdef gwt] member uncomment
-    // private static final com.google.gwt.i18n.client.TimeZone TIMEZONE_GMT =
-    // com.google.gwt.i18n.client.TimeZone.createTimeZone(0);
     /**
      * Compares two date with a precision of one second.
      * 
@@ -173,7 +169,6 @@ public final class DateUtils {
             throw new IllegalArgumentException("Date is null");
         }
 
-        // [ifndef gwt]
         java.text.DateFormat formatter = null;
 
         if (FORMAT_RFC_3339.get(0).equals(format)) {
@@ -185,22 +180,6 @@ public final class DateUtils {
         }
 
         return formatter.format(date);
-        // [enddef]
-        // [ifdef gwt]
-        /*
-         * GWT difference: DateTimeFormat parser is not passed a Locale in the
-         * same way as SimpleDateFormat. It derives locale information from the
-         * GWT application's locale.
-         * 
-         * Default timezone is GMT unless specified via a GMT:hhmm, GMT:+hhmm,
-         * or GMT:-hhmm string.
-         */
-        // [enddef]
-        // [ifdef gwt] uncomment
-        // final com.google.gwt.i18n.client.DateTimeFormat formatter =
-        // com.google.gwt.i18n.client.DateTimeFormat.getFormat(format);
-        // return formatter.format(date, TIMEZONE_GMT);
-        // [enddef]
     }
 
     /**
@@ -236,7 +215,6 @@ public final class DateUtils {
 
         for (int i = 0; (result == null) && (i < formatsSize); i++) {
             format = formats.get(i);
-            // [ifndef gwt]
             java.text.DateFormat parser = null;
 
             if (FORMAT_RFC_3339.get(0).equals(format)) {
@@ -245,21 +223,6 @@ public final class DateUtils {
                 parser = new java.text.SimpleDateFormat(format, java.util.Locale.US);
                 parser.setTimeZone(TIMEZONE_GMT);
             }
-            // [enddef]
-            // [ifdef gwt]
-            /*
-             * GWT difference: DateTimeFormat parser is not passed a Locale in
-             * the same way as SimpleDateFormat. It derives locale information
-             * from the GWT application's locale.
-             * 
-             * Default timezone is GMT unless specified via a GMT:hhmm,
-             * GMT:+hhmm, or GMT:-hhmm string.
-             */
-            // [enddef]
-            // [ifdef gwt] uncomment
-            // final com.google.gwt.i18n.client.DateTimeFormat parser =
-            // com.google.gwt.i18n.client.DateTimeFormat.getFormat(format);
-            // [enddef]
             try {
                 result = parser.parse(date);
             } catch (Exception e) {

@@ -40,7 +40,6 @@ import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
 
-// [excludes gwt]
 /**
  * Application implementation.
  * 

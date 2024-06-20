@@ -34,7 +34,6 @@ import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 import org.restlet.service.StatusService;
 
-// [excludes gwt]
 /**
  * Filter associating a response entity based on the status. In order to
  * customize the default representation, just subclass this class and override

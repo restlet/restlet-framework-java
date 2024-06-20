@@ -75,7 +75,6 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     private volatile long timeIssued;
 
-    // [ifndef gwt] method
     /**
      * Constructor. It leverages the latest server response and challenge
      * request in order to compute the credentials.
@@ -96,7 +95,6 @@ public final class ChallengeResponse extends ChallengeMessage {
                 Digest.ALGORITHM_NONE);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor. It leverages the latest server response and challenge
      * request in order to compute the credentials.
@@ -123,7 +121,6 @@ public final class ChallengeResponse extends ChallengeMessage {
                 response.getRequest(), response);
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor. It leverages the latest server response and challenge
      * request in order to compute the credentials.
@@ -332,7 +329,6 @@ public final class ChallengeResponse extends ChallengeMessage {
         return this.identifier;
     }
 
-    // [ifndef gwt] method
     /**
      * Gets the principal associated to the identifier property.
      * 
@@ -385,7 +381,6 @@ public final class ChallengeResponse extends ChallengeMessage {
         return serverNounceCount;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the server nonce count as an hexadecimal string of eight
      * characters.

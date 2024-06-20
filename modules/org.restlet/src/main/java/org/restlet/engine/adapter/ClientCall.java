@@ -61,13 +61,13 @@ public abstract class ClientCall extends Call {
      * @return The local IP address or 127.0.0.1 if the resolution fails.
      */
     public static String getLocalAddress() {
-        // [ifndef gae,gwt]
+        // [ifndef gae]
         try {
             return java.net.InetAddress.getLocalHost().getHostAddress();
         } catch (java.net.UnknownHostException e) {
             // [enddef]
             return "127.0.0.1";
-            // [ifndef gae,gwt]
+            // [ifndef gae]
         }
         // [enddef]
     }
@@ -110,7 +110,6 @@ public abstract class ClientCall extends Call {
         return this.helper;
     }
 
-    // [ifndef gwt] member
     /**
      * Returns the request entity channel if it exists.
      * 
@@ -118,7 +117,6 @@ public abstract class ClientCall extends Call {
      */
     public abstract java.nio.channels.WritableByteChannel getRequestEntityChannel();
 
-    // [ifndef gwt] member
     /**
      * Returns the request entity stream if it exists.
      * 
@@ -126,15 +124,6 @@ public abstract class ClientCall extends Call {
      */
     public abstract OutputStream getRequestEntityStream();
 
-    // [ifdef gwt] member uncomment
-    // /**
-    // * Returns the request entity string if it exists.
-    // *
-    // * @return The request entity string if it exists.
-    // */
-    // public abstract String getRequestEntityString();
-
-    // [ifndef gwt] member
     /**
      * Returns the request head stream if it exists.
      * 
@@ -152,7 +141,6 @@ public abstract class ClientCall extends Call {
      */
     public Representation getResponseEntity(Response response) {
         Representation result = null;
-        // boolean available = false;
         long size = UNKNOWN_SIZE;
 
         // Compute the content length
@@ -174,10 +162,7 @@ public abstract class ClientCall extends Call {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
             InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-            // [ifndef gwt] line
             java.nio.channels.ReadableByteChannel channel = getResponseEntityChannel(size);
-            // [ifdef gwt] line uncomment
-            // InputStream channel = null;
 
             if (stream != null) {
                 result = getRepresentation(stream);
@@ -200,7 +185,6 @@ public abstract class ClientCall extends Call {
         return result;
     }
 
-    // [ifndef gwt] member
     /**
      * Returns the response channel if it exists.
      * 
@@ -235,7 +219,6 @@ public abstract class ClientCall extends Call {
             try {
                 if (inputStream.available() > 0) {
                     result = inputStream;
-                    // [ifndef gwt]
                 } else {
                     java.io.PushbackInputStream is = new java.io.PushbackInputStream(
                             inputStream);
@@ -245,7 +228,6 @@ public abstract class ClientCall extends Call {
                         is.unread(i);
                         result = is;
                     }
-                    // [enddef]
                 }
             } catch (IOException ioe) {
                 getLogger().log(Level.FINER, "End of response entity stream.",
@@ -267,7 +249,6 @@ public abstract class ClientCall extends Call {
         return !HeaderUtils.isConnectionClose(getResponseHeaders());
     }
 
-    // [ifndef gwt] method
     /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.

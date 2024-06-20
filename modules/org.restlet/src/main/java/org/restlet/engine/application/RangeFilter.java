@@ -34,7 +34,6 @@ import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 import org.restlet.service.RangeService;
 
-// [excludes gwt]
 /**
  * Filter that is in charge to check the responses to requests for partial
  * content.

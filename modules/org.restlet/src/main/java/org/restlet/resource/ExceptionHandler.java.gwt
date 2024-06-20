@@ -1,5 +1,0 @@
-package org.restlet.resource;
-
-public interface ExceptionHandler<E extends Throwable> {
-    void handle(E throwable);
-}

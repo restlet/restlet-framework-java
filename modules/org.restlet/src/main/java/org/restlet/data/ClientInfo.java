@@ -123,7 +123,6 @@ import org.restlet.engine.io.IoUtils;
  */
 public final class ClientInfo {
 
-    // [ifndef gwt] member
     /**
      * List of user-agent templates defined in "agent.properties" file.<br>
      * 
@@ -131,7 +130,6 @@ public final class ClientInfo {
      */
     private static volatile List<String> userAgentTemplates = null;
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred metadata taking into account both metadata
      * supported by the server and client preferences.
@@ -162,7 +160,6 @@ public final class ClientInfo {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the list of user-agent templates defined in "agent.properties"
      * file.
@@ -240,19 +237,15 @@ public final class ClientInfo {
     /** The agent name. */
     private volatile String agent;
 
-    // [ifndef gwt] member
     /** The attributes data taken from the agent name. */
     private volatile Map<String, String> agentAttributes;
 
-    // [ifndef gwt] member
     /** The main product data taken from the agent name. */
     private volatile Product agentMainProduct;
 
-    // [ifndef gwt] member
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
 
-    // [ifndef gwt] member
     /**
      * Indicates if the subject has been authenticated. The application is
      * responsible for updating this property, relying on
@@ -260,15 +253,12 @@ public final class ClientInfo {
      */
     private volatile boolean authenticated;
 
-    // [ifndef gwt] member
     /** List of client certificates. */
     private volatile List<java.security.cert.Certificate> certificates;
 
-    // [ifndef gwt] member
     /** The SSL Cipher Suite, if available and accessible. */
     private volatile String cipherSuite;
 
-    // [ifndef gwt] member
     /** List of expectations. */
     private volatile List<org.restlet.data.Expectation> expectations;
 
@@ -281,15 +271,12 @@ public final class ClientInfo {
     /** The port number. */
     private volatile int port;
 
-    // [ifndef gwt] member
     /** List of additional client principals. */
     private volatile List<java.security.Principal> principals;
 
-    // [ifndef gwt] member
     /** List of user roles. */
     private volatile List<org.restlet.security.Role> roles;
 
-    // [ifndef gwt] member
     /** Authenticated user. */
     private volatile org.restlet.security.User user;
 
@@ -307,16 +294,13 @@ public final class ClientInfo {
         this.acceptedPatches = null;
         this.forwardedAddresses = null;
         this.from = null;
-        // [ifndef gwt]
         this.agentProducts = null;
         this.principals = null;
         this.user = null;
         this.roles = null;
         this.expectations = null;
-        // [enddef]
     }
 
-    // [ifndef gwt] method
     /**
      * Constructor from a list of variants. Note that only media types are taken
      * into account.
@@ -523,7 +507,6 @@ public final class ClientInfo {
         return this.agent;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a list of attributes taken from the name of the user agent.
      * 
@@ -587,7 +570,6 @@ public final class ClientInfo {
         return this.agentAttributes;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the name of the user agent.
      * 
@@ -603,7 +585,6 @@ public final class ClientInfo {
         return null;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the list of product tokens from the user agent name.
      * 
@@ -618,7 +599,6 @@ public final class ClientInfo {
         return this.agentProducts;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the version of the user agent.
      * 
@@ -634,7 +614,6 @@ public final class ClientInfo {
 
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the client certificates. Those certificates are available when a
      * request is received via an HTTPS connection, corresponding to the SSL/TLS
@@ -657,7 +636,6 @@ public final class ClientInfo {
         return a;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the SSL Cipher Suite, if available and accessible.
      * 
@@ -668,7 +646,6 @@ public final class ClientInfo {
         return this.cipherSuite;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the client expectations.
      * 
@@ -734,7 +711,6 @@ public final class ClientInfo {
         return from;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a Product object based on the name of the user agent.
      * 
@@ -762,7 +738,6 @@ public final class ClientInfo {
         return this.port;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred character set among a list of supported ones, based
      * on the client preferences.
@@ -775,7 +750,6 @@ public final class ClientInfo {
         return getPreferredMetadata(supported, getAcceptedCharacterSets());
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred encoding among a list of supported ones, based on
      * the client preferences.
@@ -788,7 +762,6 @@ public final class ClientInfo {
         return getPreferredMetadata(supported, getAcceptedEncodings());
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred language among a list of supported ones, based on
      * the client preferences.
@@ -801,7 +774,6 @@ public final class ClientInfo {
         return getPreferredMetadata(supported, getAcceptedLanguages());
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred media type among a list of supported ones, based on
      * the client preferences.
@@ -814,7 +786,6 @@ public final class ClientInfo {
         return getPreferredMetadata(supported, getAcceptedMediaTypes());
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the preferred patch among a list of supported ones, based on the
      * client preferences.
@@ -827,7 +798,6 @@ public final class ClientInfo {
         return getPreferredMetadata(supported, getAcceptedPatches());
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the additional client principals. Note that {@link #getUser()}
      * and {@link #getRoles()} methods already return user and role principals.
@@ -848,7 +818,6 @@ public final class ClientInfo {
         return a;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the authenticated user roles.
      * 
@@ -868,7 +837,6 @@ public final class ClientInfo {
         return a;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the IP address of the upstream client component. In general this
      * will correspond the the user agent IP address. This is useful if there
@@ -895,7 +863,6 @@ public final class ClientInfo {
         return this.forwardedAddresses.get(0);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the authenticated user.
      * 
@@ -905,7 +872,6 @@ public final class ClientInfo {
         return user;
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
@@ -1017,7 +983,6 @@ public final class ClientInfo {
         this.agent = agent;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets a list of attributes taken from the name of the user agent.
      * 
@@ -1032,7 +997,6 @@ public final class ClientInfo {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the list of product tokens from the user agent name.
      * 
@@ -1047,7 +1011,6 @@ public final class ClientInfo {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
@@ -1060,7 +1023,6 @@ public final class ClientInfo {
         this.authenticated = authenticated;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the new client certificates.
      * 
@@ -1077,7 +1039,6 @@ public final class ClientInfo {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the SSL Cipher Suite, if available and accessible.
      * 
@@ -1088,7 +1049,6 @@ public final class ClientInfo {
         this.cipherSuite = cipherSuite;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the client expectations.
      * 
@@ -1139,7 +1099,6 @@ public final class ClientInfo {
         this.port = port;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the additional client principals.
      * 
@@ -1155,7 +1114,6 @@ public final class ClientInfo {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the authenticated user roles.
      * 
@@ -1170,7 +1128,6 @@ public final class ClientInfo {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the authenticated user.
      * 

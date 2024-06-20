@@ -24,17 +24,6 @@
 
 package org.restlet.resource;
 
-// [ifdef gwt] javadocs
-/**
- * Callback interface for asynchronous tasks. This is an equivalent to the
- * {@link com.google.gwt.user.client.rpc.AsyncCallback} interface used by the
- * GWT-RPC mechanism.
- * 
- * @param <T>
- *            The class of the result object returned in case of success.
- * @author Jerome Louvel
- */
-// [ifndef gwt] javadocs
 /**
  * Callback interface for asynchronous tasks.
  * 
@@ -44,16 +33,6 @@ package org.restlet.resource;
  */
 public interface Result<T> {
 
-    // [ifdef gwt] javadocs
-    /**
-     * Method called back by the associated
-     * {@link org.restlet.engine.resource.GwtClientProxy} object when a failure
-     * is detected.
-     * 
-     * @param caught
-     *            The exception or error caught.
-     */
-    // [ifndef gwt] javadocs
     /**
      * Method called back by the associated object when a failure is detected.
      * 
@@ -62,16 +41,6 @@ public interface Result<T> {
      */
     void onFailure(Throwable caught);
 
-    // [ifdef gwt] javadocs
-    /**
-     * Method called back by the associated
-     * {@link org.restlet.engine.resource.GwtClientProxy} object in case of
-     * success.
-     * 
-     * @param result
-     *            The result object.
-     */
-    // [ifndef gwt] javadocs
     /**
      * Method called back by the associated object in case of success.
      * 

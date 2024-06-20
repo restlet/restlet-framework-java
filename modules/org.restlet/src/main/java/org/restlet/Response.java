@@ -51,10 +51,8 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class Response extends Message {
-    // [ifndef gwt] member
     private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
 
-    // [ifndef gwt] method
     /**
      * Returns the response associated to the current thread.
      * 
@@ -72,7 +70,6 @@ public class Response extends Message {
         return CURRENT.get();
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the response associated with the current thread.
      * 
@@ -435,12 +432,8 @@ public class Response extends Message {
             synchronized (this) {
                 c = this.cookieSettings;
                 if (c == null) {
-                    // [ifndef gwt] instruction
                     this.cookieSettings = c = new Series<CookieSetting>(
                             CookieSetting.class);
-                    // [ifdef gwt] instruction uncomment
-                    // this.cookieSettings = c = new
-                    // org.restlet.engine.util.CookieSettingSeries();
                 }
             }
         }

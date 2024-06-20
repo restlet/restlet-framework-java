@@ -39,7 +39,6 @@ public final class Language extends Metadata {
     /** All languages acceptable. */
     public static final Language ALL = new Language("*", "All languages");
 
-    // [ifndef gwt] member
     /**
      * The default language of the JVM.
      * 
@@ -47,10 +46,6 @@ public final class Language extends Metadata {
      */
     public static final Language DEFAULT = new Language(java.util.Locale
             .getDefault().getLanguage());
-
-    // [ifdef gwt] member uncomment
-    // public static final Language DEFAULT = new Language("en",
-    // "English language");
 
     /** English language. */
     public static final Language ENGLISH = new Language("en",

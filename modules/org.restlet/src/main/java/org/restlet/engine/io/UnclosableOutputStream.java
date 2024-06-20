@@ -28,7 +28,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-// [excludes gwt]
 /**
  * OutputStream decorator to trap close() calls so that the decorated stream
  * does not get closed.

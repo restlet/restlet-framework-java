@@ -39,7 +39,6 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Status;
 import org.restlet.service.MetadataService;
 
-// [excludes gwt]
 /**
  * Utilities to manipulate Restlet annotations.
  *

@@ -50,7 +50,6 @@ import org.restlet.util.Series;
  */
 public class Context {
 
-    // [ifndef gwt] member
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
@@ -70,10 +69,7 @@ public class Context {
      * @return The current context.
      */
     public static Context getCurrent() {
-        // [ifndef gwt] line
         return CURRENT.get();
-        // [ifdef gwt] line uncomment
-        // return new Context();
     }
 
     /**
@@ -82,15 +78,10 @@ public class Context {
      * @return The current context's logger.
      */
     public static Logger getCurrentLogger() {
-        // [ifndef gwt] instruction
         return (Context.getCurrent() != null) ? Context.getCurrent()
                 .getLogger() : Engine.getLogger("org.restlet");
-
-        // [ifdef gwt] instruction uncomment
-        // return Engine.getLogger("org.restlet");
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the context to associated with the current thread.
      * 
@@ -104,7 +95,6 @@ public class Context {
     /** The client dispatcher. */
     private volatile Restlet clientDispatcher;
 
-    // [ifndef gwt] member
     /** The server dispatcher. */
     private volatile Restlet serverDispatcher;
 
@@ -117,21 +107,18 @@ public class Context {
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
-    // [ifndef gwt] member
     /**
      * The enroler that can add the user roles based on Restlet default
      * authorization model.
      */
     private volatile org.restlet.security.Enroler defaultEnroler;
 
-    // [ifndef gwt] member
     /**
      * The verifier that can check the validity of user/secret couples based on
      * Restlet default authorization model.
      */
     private volatile org.restlet.security.Verifier defaultVerifier;
 
-    // [ifndef gwt] member
     /** The executor service. */
     private volatile ScheduledExecutorService executorService;
 
@@ -151,19 +138,13 @@ public class Context {
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
-        // [ifndef gwt] instruction
         this.parameters = new Series<Parameter>(Parameter.class,
                 new CopyOnWriteArrayList<Parameter>());
-        // [ifdef gwt] instruction uncomment
-        // this.parameters = new org.restlet.engine.util.ParameterSeries(new
-        // CopyOnWriteArrayList<Parameter>());
         this.clientDispatcher = null;
 
-        // [ifndef gwt]
         this.defaultEnroler = null;
         this.serverDispatcher = null;
         this.defaultVerifier = null;
-        // [enddef]
     }
 
     /**
@@ -186,10 +167,7 @@ public class Context {
      * @return The child context.
      */
     public Context createChildContext() {
-        // [ifndef gwt] instruction
         return new org.restlet.engine.util.ChildContext(this);
-        // [ifdef gwt] instruction uncomment
-        // return new Context();
     }
 
     /**
@@ -236,7 +214,6 @@ public class Context {
         return this.clientDispatcher;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns an enroler that can add the user roles based on authenticated
      * user principals.
@@ -247,7 +224,6 @@ public class Context {
         return defaultEnroler;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a verifier that can check the validity of the credentials
      * associated to a request.
@@ -258,7 +234,6 @@ public class Context {
         return this.defaultVerifier;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the executor service.
      * 
@@ -289,7 +264,6 @@ public class Context {
         return this.parameters;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns a request dispatcher to component's virtual hosts. This is useful
      * for application that want to optimize calls to other applications hosted
@@ -338,7 +312,6 @@ public class Context {
         this.clientDispatcher = clientDispatcher;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets an enroler that can add the user roles based on authenticated user
      * principals.
@@ -350,7 +323,6 @@ public class Context {
         this.defaultEnroler = enroler;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets a local verifier that can check the validity of user/secret couples
      * based on Restlet default authorization model.
@@ -362,7 +334,6 @@ public class Context {
         this.defaultVerifier = verifier;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the executor service.
      * 
@@ -412,7 +383,6 @@ public class Context {
         }
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the server dispatcher.
      * 

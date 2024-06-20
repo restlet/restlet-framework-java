@@ -61,7 +61,6 @@ import org.restlet.util.Series;
  */
 public class Request extends Message {
 
-    // [ifndef gwt] method
     /**
      * Returns the request associated to the current thread. This is reusing the {@link Response#getCurrent()} method.<br>
      * <br>
@@ -123,7 +122,6 @@ public class Request extends Message {
     /** The protocol. */
     private volatile Protocol protocol;
 
-    // [ifndef gwt] member
     /** The authentication response sent by a client to a proxy. */
     private volatile ChallengeResponse proxyChallengeResponse;
 
@@ -182,7 +180,6 @@ public class Request extends Message {
         this.method = method;
         this.originalRef = null;
         this.onResponse = null;
-        // [ifndef gwt] instruction
         this.proxyChallengeResponse = null;
         this.protocol = null;
         this.ranges = null;
@@ -258,7 +255,6 @@ public class Request extends Message {
         clientInfo.setFrom(rci.getFrom());
         clientInfo.setPort(rci.getPort());
 
-        // [ifndef gwt]
         clientInfo.setAgentAttributes(rci.getAgentAttributes());
         clientInfo.setAgentProducts(rci.getAgentProducts());
         clientInfo.setAuthenticated(rci.isAuthenticated());
@@ -305,7 +301,6 @@ public class Request extends Message {
         this.originalRef = (request.getOriginalRef() == null) ? null
                 : new Reference(request.getOriginalRef());
         this.onResponse = request.getOnResponse();
-        // [ifndef gwt] instruction
         this.proxyChallengeResponse = request.getProxyChallengeResponse();
         this.protocol = request.getProtocol();
 
@@ -461,11 +456,7 @@ public class Request extends Message {
             synchronized (this) {
                 c = this.cookies;
                 if (c == null) {
-                    // [ifndef gwt] instruction
                     this.cookies = c = new Series<Cookie>(Cookie.class);
-                    // [ifdef gwt] instruction uncomment
-                    // this.cookies = c = new
-                    // org.restlet.engine.util.CookieSeries();
                 }
             }
         }
@@ -547,7 +538,6 @@ public class Request extends Message {
         return result;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the authentication response sent by a client to a proxy. Note
      * that when used with HTTP connectors, this property maps to the
@@ -658,11 +648,8 @@ public class Request extends Message {
      */
     @Override
     public boolean isEntityAvailable() {
-        // The declaration of the "result" variable is a workaround for the GWT
-        // platform.
-        boolean result = (Method.GET.equals(getMethod())
-                || Method.HEAD.equals(getMethod()));
-        if (result) {
+        if ((Method.GET.equals(getMethod())
+                || Method.HEAD.equals(getMethod()))) {
             return false;
         }
 
@@ -877,7 +864,6 @@ public class Request extends Message {
         this.protocol = protocol;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the authentication response sent by a client to a proxy. Note that
      * when used with HTTP connectors, this property maps to the

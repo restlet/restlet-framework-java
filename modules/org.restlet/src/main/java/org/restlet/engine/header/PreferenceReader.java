@@ -289,10 +289,7 @@ public class PreferenceReader<T extends Metadata> extends
         Parameter param = null;
 
         if (parameters != null) {
-            // [ifndef gwt] instruction
             result = new Series<Parameter>(Parameter.class);
-            // [ifdef gwt] instruction uncomment
-            // result = new org.restlet.engine.util.ParameterSeries();
 
             for (final Iterator<Parameter> iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
@@ -380,11 +377,7 @@ public class PreferenceReader<T extends Metadata> extends
                         readingMetadata = false;
                         readingParamName = true;
                         paramNameBuffer = new StringBuilder();
-                        // [ifndef gwt] instruction
                         parameters = new Series<Parameter>(Parameter.class);
-                        // [ifdef gwt] instruction uncomment
-                        // parameters = new
-                        // org.restlet.engine.util.ParameterSeries();
                     } else {
                         throw new IOException("Empty metadata name detected.");
                     }

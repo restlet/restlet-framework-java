@@ -33,7 +33,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 
-// [excludes gwt]
 /**
  * Output stream connected to a non-blocking writable channel.
  * 

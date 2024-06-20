@@ -207,12 +207,6 @@ public class Form extends Series<Parameter> {
         return new Parameter(name, value);
     }
 
-    // [ifdef gwt] method uncomment
-    // @Override
-    // public Series<Parameter> createSeries(List<Parameter> delegate) {
-    // return new Form(delegate);
-    // }
-
     /**
      * Encodes the form using the standard URI encoding mechanism and the UTF-8
      * character set.

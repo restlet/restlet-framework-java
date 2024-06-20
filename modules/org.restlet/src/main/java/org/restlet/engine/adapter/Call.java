@@ -118,7 +118,6 @@ public abstract class Call {
     /** The status code. */
     private volatile int statusCode;
 
-    // [ifndef gwt] member
     /** The user principal. */
     private volatile java.security.Principal userPrincipal;
 
@@ -137,19 +136,12 @@ public abstract class Call {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
-        // [ifndef gwt] instruction
         this.requestHeaders = new Series<Header>(Header.class);
-        // [ifdef gwt] instruction uncomment
-        // this.requestHeaders = new org.restlet.engine.util.HeaderSeries();
         this.requestUri = null;
-        // [ifndef gwt] instruction
         this.responseHeaders = new Series<Header>(Header.class);
-        // [ifdef gwt] instruction uncomment
-        // this.responseHeaders = new org.restlet.engine.util.HeaderSeries();
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
-        // [ifndef gwt] line
         this.userPrincipal = null;
         this.version = null;
     }
@@ -242,7 +234,6 @@ public abstract class Call {
         return new InputRepresentation(stream, null);
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the representation wrapping the given channel.
      * 
@@ -313,7 +304,6 @@ public abstract class Call {
         return this.statusCode;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the user principal.
      * 
@@ -348,7 +338,7 @@ public abstract class Call {
         return this.confidential;
     }
 
-    // [ifndef gae,gwt] method
+    // [ifndef gae] method
     /**
      * Returns true if the given exception is caused by a broken connection.
      * 
@@ -521,7 +511,6 @@ public abstract class Call {
         this.statusCode = code;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the user principal.
      * 

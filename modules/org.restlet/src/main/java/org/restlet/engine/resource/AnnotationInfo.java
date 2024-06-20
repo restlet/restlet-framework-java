@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.engine.util.SystemUtils;
 
-// [excludes gwt]
 /**
  * Descriptor for Restlet annotations.
  * 

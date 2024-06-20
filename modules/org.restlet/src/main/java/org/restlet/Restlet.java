@@ -46,7 +46,6 @@ public abstract class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
-    // [ifndef gwt] method
     /**
      * Indicates that a Restlet's context has changed.
      * 
@@ -81,7 +80,6 @@ public abstract class Restlet implements Uniform {
     /** The description. */
     private volatile String description;
 
-    // [ifndef gwt] member
     /** Finder class to instantiate. */
     private volatile Class<? extends org.restlet.resource.Finder> finderClass;
 
@@ -113,17 +111,13 @@ public abstract class Restlet implements Uniform {
      * 
      */
     public Restlet(Context context) {
-        // [ifndef gwt] instruction
         this.context = context;
-        // [ifdef gwt] instruction uncomment
-        // this.context = (context != null) ? context : new Context();
         this.started = false;
         this.name = toString();
         this.description = null;
         this.author = null;
         this.owner = null;
 
-        // [ifndef gwt]
         this.finderClass = null;
         if (Engine.getInstance() == null) {
             Context.getCurrentLogger()
@@ -133,10 +127,8 @@ public abstract class Restlet implements Uniform {
         }
 
         fireContextChanged(this, context);
-        // [enddef]
     }
 
-    // [ifndef gwt] method
     /**
      * Creates a new finder instance based on the "targetClass" property. If
      * none is define, the {@link Application#createFinder(Class)} method is
@@ -181,7 +173,6 @@ public abstract class Restlet implements Uniform {
         super.finalize();
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the parent application if it exists, or null.
      * 
@@ -218,7 +209,6 @@ public abstract class Restlet implements Uniform {
         return this.description;
     }
 
-    // [ifndef gwt] method
     /**
      * Returns the finder class used to instantiate resource classes. By
      * default, it returns the {@link org.restlet.resource.Finder} class. This
@@ -273,7 +263,6 @@ public abstract class Restlet implements Uniform {
         return this.owner;
     }
 
-    // [ifndef gwt] method
     /**
      * Handles a call. Creates an empty {@link Response} object and then invokes
      * {@link #handle(Request, Response)}.
@@ -304,7 +293,6 @@ public abstract class Restlet implements Uniform {
      *            The response to update.
      */
     public void handle(Request request, Response response) {
-        // [ifndef gwt]
         // Associate the response to the current thread
         Response.setCurrent(response);
 
@@ -312,7 +300,6 @@ public abstract class Restlet implements Uniform {
         if (getContext() != null) {
             Context.setCurrent(getContext());
         }
-        // [enddef]
 
         // Check if the Restlet was started
         if (isStopped()) {
@@ -405,7 +392,6 @@ public abstract class Restlet implements Uniform {
      */
     public void setContext(Context context) {
         this.context = context;
-        // [ifndef gwt] instruction
         fireContextChanged(this, context);
     }
 
@@ -419,7 +405,6 @@ public abstract class Restlet implements Uniform {
         this.description = description;
     }
 
-    // [ifndef gwt] method
     /**
      * Sets the finder class to instantiate. This property is leveraged by
      * {@link Application#setOutboundRoot(Class)} and

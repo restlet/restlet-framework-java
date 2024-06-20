@@ -47,7 +47,6 @@ public class EmptyRepresentation extends Representation {
         setSize(0);
     }
 
-    // [ifndef gwt] method
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
@@ -64,32 +63,22 @@ public class EmptyRepresentation extends Representation {
         return null;
     }
 
-    // [ifndef gwt] method
     @Override
     public String getText() throws IOException {
         return null;
     }
 
-    // [ifdef gwt] method uncomment
-    // @Override
-    // public String getText() throws IOException {
-    // return "";
-    // }
-
-    // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
         // Do nothing
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
         // Do nothing
     }
 
-    // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
         // Do nothing
