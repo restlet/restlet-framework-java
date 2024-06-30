@@ -50,7 +50,6 @@ import org.restlet.client.data.Reference;
 import org.restlet.client.data.Status;
 import org.restlet.client.representation.Representation;
 import org.restlet.client.representation.StringRepresentation;
-import org.restlet.client.representation.Variant;
 import org.restlet.client.util.Series;
 
 /**

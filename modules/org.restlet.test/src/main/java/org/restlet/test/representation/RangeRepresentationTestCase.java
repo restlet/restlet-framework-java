@@ -24,14 +24,14 @@
 
 package org.restlet.test.representation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Range;
 import org.restlet.engine.application.RangeRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit test case for the {@link RangeRepresentation} class.

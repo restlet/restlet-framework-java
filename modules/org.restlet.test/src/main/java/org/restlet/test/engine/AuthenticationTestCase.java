@@ -24,6 +24,10 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
@@ -41,10 +45,6 @@ import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
 import org.restlet.ext.crypto.internal.HttpDigestHelper;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for the SecurityData related classes.

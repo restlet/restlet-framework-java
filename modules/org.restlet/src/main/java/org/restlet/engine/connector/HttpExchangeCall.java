@@ -46,126 +46,119 @@ import com.sun.net.httpserver.HttpExchange;
 @SuppressWarnings("restriction")
 public class HttpExchangeCall extends ServerCall {
 
-    /** The wrapped HTTP exchange. */
-    private final HttpExchange exchange;
+	/** The wrapped HTTP exchange. */
+	private final HttpExchange exchange;
 
-    /** Indicates if the request headers were parsed and added. */
-    private volatile boolean requestHeadersAdded;
+	/** Indicates if the request headers were parsed and added. */
+	private volatile boolean requestHeadersAdded;
 
-    /**
-     * Constructor.
-     *
-     * @param server
-     *            The parent server.
-     * @param exchange
-     *            The wrapped {@link HttpExchange} instance.
-     */
-    public HttpExchangeCall(Server server, HttpExchange exchange) {
-        this(server, exchange, false);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param server   The parent server.
+	 * @param exchange The wrapped {@link HttpExchange} instance.
+	 */
+	public HttpExchangeCall(Server server, HttpExchange exchange) {
+		this(server, exchange, false);
+	}
 
-    /**
-     * Constructor.
-     *
-     * @param server
-     *            The parent server.
-     * @param exchange
-     *            The wrapped {@link HttpExchange} instance.
-     * @param confidential
-     *            True if the confidentiality of the call is ensured (ex: via
-     *            SSL)
-     */
-    public HttpExchangeCall(Server server, HttpExchange exchange,
-            boolean confidential) {
-        super(server);
-        this.exchange = exchange;
-        setConfidential(confidential);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param server       The parent server.
+	 * @param exchange     The wrapped {@link HttpExchange} instance.
+	 * @param confidential True if the confidentiality of the call is ensured (ex:
+	 *                     via SSL)
+	 */
+	public HttpExchangeCall(Server server, HttpExchange exchange, boolean confidential) {
+		super(server);
+		this.exchange = exchange;
+		setConfidential(confidential);
+	}
 
-    @Override
-    public boolean abort() {
-        this.exchange.close();
-        return true;
-    }
+	@Override
+	public boolean abort() {
+		this.exchange.close();
+		return true;
+	}
 
-    @Override
-    public void flushBuffers() throws IOException {
-        this.exchange.getResponseBody().flush();
-    }
+	@Override
+	public void flushBuffers() throws IOException {
+		this.exchange.getResponseBody().flush();
+	}
 
-    @Override
-    public String getClientAddress() {
-        return this.exchange.getRemoteAddress().getAddress().getHostAddress();
-    }
+	@Override
+	public String getClientAddress() {
+		return this.exchange.getRemoteAddress().getAddress().getHostAddress();
+	}
 
-    @Override
-    public int getClientPort() {
-        return this.exchange.getRemoteAddress().getPort();
-    }
+	@Override
+	public int getClientPort() {
+		return this.exchange.getRemoteAddress().getPort();
+	}
 
-    @Override
-    public String getMethod() {
-        return this.exchange.getRequestMethod();
-    }
+	@Override
+	public String getMethod() {
+		return this.exchange.getRequestMethod();
+	}
 
-    @Override
-    public Series<Header> getRequestHeaders() {
-        final Series<Header> result = super.getRequestHeaders();
+	@Override
+	public Series<Header> getRequestHeaders() {
+		final Series<Header> result = super.getRequestHeaders();
 
-        if (!this.requestHeadersAdded) {
-            final Headers headers = this.exchange.getRequestHeaders();
+		if (!this.requestHeadersAdded) {
+			final Headers headers = this.exchange.getRequestHeaders();
 
-            for (String name : headers.keySet()) {
-                for (String value : (List<String>) headers.get(name)) {
-                    result.add(name, value);
-                }
-            }
-            this.requestHeadersAdded = true;
-        }
+			for (String name : headers.keySet()) {
+				for (String value : (List<String>) headers.get(name)) {
+					result.add(name, value);
+				}
+			}
+			this.requestHeadersAdded = true;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public InputStream getRequestEntityStream(long size) {
-        return this.exchange.getRequestBody();
-    }
+	@Override
+	public InputStream getRequestEntityStream(long size) {
+		return this.exchange.getRequestBody();
+	}
 
-    @Override
-    public InputStream getRequestHeadStream() {
-        return null;
-    }
+	@Override
+	public InputStream getRequestHeadStream() {
+		return null;
+	}
 
-    @Override
-    public String getRequestUri() {
-        return this.exchange.getRequestURI().toString();
-    }
+	@Override
+	public String getRequestUri() {
+		return this.exchange.getRequestURI().toString();
+	}
 
-    @Override
-    public OutputStream getResponseEntityStream() {
-        return this.exchange.getResponseBody();
-    }
+	@Override
+	public OutputStream getResponseEntityStream() {
+		return this.exchange.getResponseBody();
+	}
 
-    @Override
-    public void writeResponseHead(org.restlet.Response restletResponse)
-            throws IOException {
-        final Headers headers = this.exchange.getResponseHeaders();
+	@Override
+	public void writeResponseHead(org.restlet.Response restletResponse) throws IOException {
+		final Headers headers = this.exchange.getResponseHeaders();
 
-        for (Header header : getResponseHeaders()) {
-            headers.add(header.getName(), header.getValue());
-        }
+		for (Header header : getResponseHeaders()) {
+			headers.add(header.getName(), header.getValue());
+		}
 
-        // Send the headers
-        Representation entity = restletResponse.getEntity();
-        long responseLength = 0;
+		// Send the headers
+		Representation entity = restletResponse.getEntity();
+		long responseLength = 0;
 
-        if (entity == null || !entity.isAvailable()) {
-            responseLength = -1;
-        } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
-            responseLength = entity.getAvailableSize();
-        }
+		if (entity == null || !entity.isAvailable()) {
+			responseLength = -1;
+		} else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
+			responseLength = entity.getAvailableSize();
+		}
 
-        this.exchange.sendResponseHeaders(getStatusCode(), responseLength);
-    }
+		this.exchange.sendResponseHeaders(getStatusCode(), responseLength);
+	}
 
 }

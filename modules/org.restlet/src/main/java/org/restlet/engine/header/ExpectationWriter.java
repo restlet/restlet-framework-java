@@ -36,32 +36,30 @@ import org.restlet.data.Parameter;
  */
 public class ExpectationWriter extends HeaderWriter<Expectation> {
 
-    /**
-     * Writes a list of expectations with a comma separator.
-     * 
-     * @param expectations
-     *            The list of expectations.
-     * @return The formatted list of expectations.
-     */
-    public static String write(List<Expectation> expectations) {
-        return new ExpectationWriter().append(expectations).toString();
-    }
+	/**
+	 * Writes a list of expectations with a comma separator.
+	 * 
+	 * @param expectations The list of expectations.
+	 * @return The formatted list of expectations.
+	 */
+	public static String write(List<Expectation> expectations) {
+		return new ExpectationWriter().append(expectations).toString();
+	}
 
-    @Override
-    public ExpectationWriter append(Expectation expectation) {
-        if ((expectation.getName() != null)
-                && (expectation.getName().length() > 0)) {
-            appendExtension(expectation);
+	@Override
+	public ExpectationWriter append(Expectation expectation) {
+		if ((expectation.getName() != null) && (expectation.getName().length() > 0)) {
+			appendExtension(expectation);
 
-            if (!expectation.getParameters().isEmpty()) {
-                for (Parameter param : expectation.getParameters()) {
-                    appendParameterSeparator();
-                    appendExtension(param);
-                }
-            }
-        }
+			if (!expectation.getParameters().isEmpty()) {
+				for (Parameter param : expectation.getParameters()) {
+					appendParameterSeparator();
+					appendExtension(param);
+				}
+			}
+		}
 
-        return this;
-    }
+		return this;
+	}
 
 }

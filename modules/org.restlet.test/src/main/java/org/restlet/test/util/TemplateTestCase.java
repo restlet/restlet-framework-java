@@ -24,6 +24,9 @@
 
 package org.restlet.test.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +36,6 @@ import org.restlet.engine.Engine;
 import org.restlet.routing.Template;
 import org.restlet.routing.Variable;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * Test case for URI templates.

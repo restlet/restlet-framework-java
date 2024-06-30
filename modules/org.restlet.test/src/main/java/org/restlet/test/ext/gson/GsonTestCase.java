@@ -25,6 +25,11 @@
 package org.restlet.test.ext.gson;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -43,11 +48,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 
 import com.google.gson.annotations.Since;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for the Gson extension.

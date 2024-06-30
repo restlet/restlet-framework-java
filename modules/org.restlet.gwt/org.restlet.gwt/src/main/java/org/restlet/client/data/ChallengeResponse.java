@@ -27,7 +27,6 @@ package org.restlet.client.data;
 import java.util.Objects;
 
 import org.restlet.client.Request;
-import org.restlet.client.Response;
 import org.restlet.client.engine.util.SystemUtils;
 import org.restlet.client.util.Series;
 

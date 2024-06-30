@@ -1,5 +1,10 @@
 package org.restlet.test.regression;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -12,11 +17,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import java.util.Arrays;
-import java.util.HashSet;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Bug1145TestCase extends RestletTestCase {
     public static class Bug1145TestCaseRestlet extends Restlet {

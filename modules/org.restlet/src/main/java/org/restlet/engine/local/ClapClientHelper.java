@@ -53,153 +53,136 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  */
 public class ClapClientHelper extends LocalClientHelper {
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public ClapClientHelper(Client client) {
-        super(client);
-        getProtocols().add(Protocol.CLAP);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public ClapClientHelper(Client client) {
+		super(client);
+		getProtocols().add(Protocol.CLAP);
+	}
 
-    /**
-     * Handles a call with a given class loader.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    protected void handleClassLoader(Request request, Response response,
-            ClassLoader classLoader) {
-        MetadataService metadataService = getMetadataService();
+	/**
+	 * Handles a call with a given class loader.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The response to update.
+	 */
+	protected void handleClassLoader(Request request, Response response, ClassLoader classLoader) {
+		MetadataService metadataService = getMetadataService();
 
-        if (!request.getMethod().equals(Method.GET)
-                && !request.getMethod().equals(Method.HEAD)) {
-            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            response.getAllowedMethods().add(Method.GET);
-            response.getAllowedMethods().add(Method.HEAD);
+		if (!request.getMethod().equals(Method.GET) && !request.getMethod().equals(Method.HEAD)) {
+			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			response.getAllowedMethods().add(Method.GET);
+			response.getAllowedMethods().add(Method.HEAD);
 
-            return;
-        }
+			return;
+		}
 
-        String path = request.getResourceRef().getPath();
-        URL url = null;
-        Date modificationDate = null;
+		String path = request.getResourceRef().getPath();
+		URL url = null;
+		Date modificationDate = null;
 
-        // Prepare a classloader URI, removing the leading slash
-        if ((path != null) && path.startsWith("/")) {
-            path = path.substring(1);
-        }
+		// Prepare a classloader URI, removing the leading slash
+		if ((path != null) && path.startsWith("/")) {
+			path = path.substring(1);
+		}
 
-        // Get the URL to the classloader 'resource'
-        if (classLoader != null) {
-            // As the path may be percent-encoded, it has to be
-            // percent-decoded.
-            url = classLoader.getResource(Reference.decode(path));
-        } else {
-            getLogger()
-                    .warning(
-                            "Unable to get the resource. The selected classloader is null.");
-        }
+		// Get the URL to the classloader 'resource'
+		if (classLoader != null) {
+			// As the path may be percent-encoded, it has to be
+			// percent-decoded.
+			url = classLoader.getResource(Reference.decode(path));
+		} else {
+			getLogger().warning("Unable to get the resource. The selected classloader is null.");
+		}
 
-        // The ClassLoader returns a directory listing in some cases.
-        // As this listing is partial, it is of little value in the context
-        // of the CLAP client, so we have to ignore them.
-        if (url != null) {
-            if (url.getProtocol().equals("file")) {
-                File file = new File(url.getFile());
-                modificationDate = new Date(file.lastModified());
+		// The ClassLoader returns a directory listing in some cases.
+		// As this listing is partial, it is of little value in the context
+		// of the CLAP client, so we have to ignore them.
+		if (url != null) {
+			if (url.getProtocol().equals("file")) {
+				File file = new File(url.getFile());
+				modificationDate = new Date(file.lastModified());
 
-                if (file.isDirectory()) {
-                    url = null;
-                }
-            }
-        }
+				if (file.isDirectory()) {
+					url = null;
+				}
+			}
+		}
 
-        if (url == null) {
-            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            return;
-        }
+		if (url == null) {
+			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			return;
+		}
 
-        try {
-            InputStream inputStream = url.openStream();
+		try {
+			InputStream inputStream = url.openStream();
 
-            // check for empty input stream on jar directories
-            if (url.getProtocol().equals("jar")) {
-                if (inputStream.available() == 0) {
-                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                    return;
-                }
-            }
+			// check for empty input stream on jar directories
+			if (url.getProtocol().equals("jar")) {
+				if (inputStream.available() == 0) {
+					response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+					return;
+				}
+			}
 
-            Representation output = new InputRepresentation(
-                    inputStream,
-                    metadataService.getDefaultMediaType());
-            output.setLocationRef(request.getResourceRef());
-            output.setModificationDate(modificationDate);
+			Representation output = new InputRepresentation(inputStream, metadataService.getDefaultMediaType());
+			output.setLocationRef(request.getResourceRef());
+			output.setModificationDate(modificationDate);
 
-            // Update the expiration date
-            long timeToLive = getTimeToLive();
+			// Update the expiration date
+			long timeToLive = getTimeToLive();
 
-            if (timeToLive == 0) {
-                output.setExpirationDate(null);
-            } else if (timeToLive > 0) {
-                output.setExpirationDate(new Date(System
-                        .currentTimeMillis() + (1000L * timeToLive)));
-            }
+			if (timeToLive == 0) {
+				output.setExpirationDate(null);
+			} else if (timeToLive > 0) {
+				output.setExpirationDate(new Date(System.currentTimeMillis() + (1000L * timeToLive)));
+			}
 
-            // Update the metadata based on file extensions
-            String name = path.substring(path.lastIndexOf('/') + 1);
-            Entity.updateMetadata(name, output, true,
-                    getMetadataService());
+			// Update the metadata based on file extensions
+			String name = path.substring(path.lastIndexOf('/') + 1);
+			Entity.updateMetadata(name, output, true, getMetadataService());
 
-            // Update the response
-            response.setEntity(output);
-            response.setStatus(Status.SUCCESS_OK);
-        } catch (IOException ioe) {
-            getLogger().log(Level.WARNING,
-                    "Unable to open the representation's input stream",
-                    ioe);
-            response.setStatus(Status.SERVER_ERROR_INTERNAL);
-        }
-    }
+			// Update the response
+			response.setEntity(output);
+			response.setStatus(Status.SUCCESS_OK);
+		} catch (IOException ioe) {
+			getLogger().log(Level.WARNING, "Unable to open the representation's input stream", ioe);
+			response.setStatus(Status.SERVER_ERROR_INTERNAL);
+		}
+	}
 
-    @Override
-    protected void handleLocal(Request request, Response response,
-            String decodedPath) {
-        String scheme = request.getResourceRef().getScheme();
+	@Override
+	protected void handleLocal(Request request, Response response, String decodedPath) {
+		String scheme = request.getResourceRef().getScheme();
 
-        if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
-            LocalReference cr = new LocalReference(request.getResourceRef());
-            ClassLoader classLoader = null;
+		if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
+			LocalReference cr = new LocalReference(request.getResourceRef());
+			ClassLoader classLoader = null;
 
-            if ((cr.getClapAuthorityType() == LocalReference.CLAP_CLASS)
-                    || (cr.getClapAuthorityType() == LocalReference.CLAP_DEFAULT)) {
-                // Sometimes, a specific class loader needs to be used,
-                // make sure that it can be provided as a request's attribute
-                Object classLoaderAttribute = request.getAttributes().get(
-                        "org.restlet.clap.classLoader");
+			if ((cr.getClapAuthorityType() == LocalReference.CLAP_CLASS)
+					|| (cr.getClapAuthorityType() == LocalReference.CLAP_DEFAULT)) {
+				// Sometimes, a specific class loader needs to be used,
+				// make sure that it can be provided as a request's attribute
+				Object classLoaderAttribute = request.getAttributes().get("org.restlet.clap.classLoader");
 
-                if (classLoaderAttribute != null) {
-                    classLoader = (ClassLoader) classLoaderAttribute;
-                } else {
-                    classLoader = getClass().getClassLoader();
-                }
-            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
-                classLoader = ClassLoader.getSystemClassLoader();
-            } else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD) {
-                classLoader = Thread.currentThread().getContextClassLoader();
-            }
+				if (classLoaderAttribute != null) {
+					classLoader = (ClassLoader) classLoaderAttribute;
+				} else {
+					classLoader = getClass().getClassLoader();
+				}
+			} else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
+				classLoader = ClassLoader.getSystemClassLoader();
+			} else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD) {
+				classLoader = Thread.currentThread().getContextClassLoader();
+			}
 
-            handleClassLoader(request, response, classLoader);
-        } else {
-            throw new IllegalArgumentException(
-                    "Protocol \""
-                            + scheme
-                            + "\" not supported by the connector. Only CLAP is supported.");
-        }
-    }
+			handleClassLoader(request, response, classLoader);
+		} else {
+			throw new IllegalArgumentException(
+					"Protocol \"" + scheme + "\" not supported by the connector. Only CLAP is supported.");
+		}
+	}
 }

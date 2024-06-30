@@ -24,6 +24,9 @@
 
 package org.restlet.ext.crypto.internal;
 
+import java.util.Base64;
+import java.util.Date;
+
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -38,9 +41,6 @@ import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.util.Series;
-
-import java.util.Base64;
-import java.util.Date;
 
 /**
  * Implements the Shared Key Lite authentication for Azure services. This

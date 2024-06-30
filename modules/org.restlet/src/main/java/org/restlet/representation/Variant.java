@@ -50,483 +50,451 @@ import org.restlet.util.WrapperList;
  */
 public class Variant {
 
-    /** The character set or null if not applicable. */
-    private volatile CharacterSet characterSet;
+	/** The character set or null if not applicable. */
+	private volatile CharacterSet characterSet;
 
-    /** The additional content codings applied to the entity-body. */
-    private volatile List<Encoding> encodings;
+	/** The additional content codings applied to the entity-body. */
+	private volatile List<Encoding> encodings;
 
-    /** The location reference. */
-    private volatile Reference locationRef;
+	/** The location reference. */
+	private volatile Reference locationRef;
 
-    /** The natural language(s) of the intended audience for this variant. */
-    private volatile List<Language> languages;
+	/** The natural language(s) of the intended audience for this variant. */
+	private volatile List<Language> languages;
 
-    /** The media type. */
-    private volatile MediaType mediaType;
+	/** The media type. */
+	private volatile MediaType mediaType;
 
-    /**
-     * Default constructor.
-     */
-    public Variant() {
-        this(null);
-    }
+	/**
+	 * Default constructor.
+	 */
+	public Variant() {
+		this(null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public Variant(MediaType mediaType) {
-        this(mediaType, null);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 */
+	public Variant(MediaType mediaType) {
+		this(mediaType, null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param language
-     *            The language.
-     */
-    public Variant(MediaType mediaType, Language language) {
-        this.characterSet = null;
-        this.encodings = null;
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 * @param language  The language.
+	 */
+	public Variant(MediaType mediaType, Language language) {
+		this.characterSet = null;
+		this.encodings = null;
 
-        if (language != null) {
-            getLanguages().add(language);
-        } else {
-            this.languages = null;
-        }
+		if (language != null) {
+			getLanguages().add(language);
+		} else {
+			this.languages = null;
+		}
 
-        this.mediaType = mediaType;
-        this.locationRef = null;
-    }
+		this.mediaType = mediaType;
+		this.locationRef = null;
+	}
 
-    /**
-     * Creates a {@link ClientInfo} instance with preferences matching exactly
-     * the current variant.
-     * 
-     * @return The new {@link ClientInfo} instance.
-     */
-    public ClientInfo createClientInfo() {
-        ClientInfo result = new ClientInfo();
+	/**
+	 * Creates a {@link ClientInfo} instance with preferences matching exactly the
+	 * current variant.
+	 * 
+	 * @return The new {@link ClientInfo} instance.
+	 */
+	public ClientInfo createClientInfo() {
+		ClientInfo result = new ClientInfo();
 
-        if (getCharacterSet() != null) {
-            result.getAcceptedCharacterSets().add(
-                    new Preference<CharacterSet>(getCharacterSet()));
-        }
+		if (getCharacterSet() != null) {
+			result.getAcceptedCharacterSets().add(new Preference<CharacterSet>(getCharacterSet()));
+		}
 
-        if (getEncodings() != null) {
-            for (Encoding encoding : getEncodings()) {
-                result.getAcceptedEncodings().add(
-                        new Preference<Encoding>(encoding));
-            }
-        }
+		if (getEncodings() != null) {
+			for (Encoding encoding : getEncodings()) {
+				result.getAcceptedEncodings().add(new Preference<Encoding>(encoding));
+			}
+		}
 
-        if (getLanguages() != null) {
-            for (Language language : getLanguages()) {
-                result.getAcceptedLanguages().add(
-                        new Preference<Language>(language));
-            }
-        }
+		if (getLanguages() != null) {
+			for (Language language : getLanguages()) {
+				result.getAcceptedLanguages().add(new Preference<Language>(language));
+			}
+		}
 
-        if (getMediaType() != null) {
-            result.getAcceptedMediaTypes().add(
-                    new Preference<MediaType>(getMediaType()));
-        }
+		if (getMediaType() != null) {
+			result.getAcceptedMediaTypes().add(new Preference<MediaType>(getMediaType()));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Indicates if the current variant is equal to the given variant.
-     * 
-     * @param other
-     *            The other variant.
-     * @return True if the current variant includes the other.
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof Variant)) {
-            return false;
-        }
+	/**
+	 * Indicates if the current variant is equal to the given variant.
+	 * 
+	 * @param other The other variant.
+	 * @return True if the current variant includes the other.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		if (!(other instanceof Variant)) {
+			return false;
+		}
 
-        Variant that = (Variant) other;
+		Variant that = (Variant) other;
 
-        return Objects.equals(getCharacterSet(), that.getCharacterSet())
-                && Objects.equals(getMediaType(), that.getMediaType())
-                && getLanguages().equals(that.getLanguages())
-                && getEncodings().equals(that.getEncodings())
-                && Objects.equals(getLocationRef(), that.getLocationRef());
-    }
+		return Objects.equals(getCharacterSet(), that.getCharacterSet())
+				&& Objects.equals(getMediaType(), that.getMediaType()) && getLanguages().equals(that.getLanguages())
+				&& getEncodings().equals(that.getEncodings())
+				&& Objects.equals(getLocationRef(), that.getLocationRef());
+	}
 
-    /**
-     * Returns the character set or null if not applicable. Note that when used
-     * with HTTP connectors, this property maps to the "Content-Type" header.
-     * 
-     * @return The character set or null if not applicable.
-     */
-    public CharacterSet getCharacterSet() {
-        return this.characterSet;
-    }
+	/**
+	 * Returns the character set or null if not applicable. Note that when used with
+	 * HTTP connectors, this property maps to the "Content-Type" header.
+	 * 
+	 * @return The character set or null if not applicable.
+	 */
+	public CharacterSet getCharacterSet() {
+		return this.characterSet;
+	}
 
-    /**
-     * Returns the modifiable list of encodings applied to the entity-body.
-     * Creates a new instance if no one has been set. An
-     * "IllegalArgumentException" exception is thrown when adding a null
-     * encoding to this list.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Encoding" header.
-     * 
-     * @return The list of encodings applied to the entity-body.
-     */
-    public List<Encoding> getEncodings() {
-        if (this.encodings == null) {
-            this.encodings = new WrapperList<Encoding>() {
+	/**
+	 * Returns the modifiable list of encodings applied to the entity-body. Creates
+	 * a new instance if no one has been set. An "IllegalArgumentException"
+	 * exception is thrown when adding a null encoding to this list.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Encoding" header.
+	 * 
+	 * @return The list of encodings applied to the entity-body.
+	 */
+	public List<Encoding> getEncodings() {
+		if (this.encodings == null) {
+			this.encodings = new WrapperList<Encoding>() {
 
-                @Override
-                public boolean add(Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    }
+				@Override
+				public boolean add(Encoding element) {
+					if (element == null) {
+						throw new IllegalArgumentException("Cannot add a null encoding.");
+					}
 
-                    return super.add(element);
-                }
+					return super.add(element);
+				}
 
-                @Override
-                public void add(int index, Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    }
+				@Override
+				public void add(int index, Encoding element) {
+					if (element == null) {
+						throw new IllegalArgumentException("Cannot add a null encoding.");
+					}
 
-                    super.add(index, element);
-                }
+					super.add(index, element);
+				}
 
-                @Override
-                public boolean addAll(Collection<? extends Encoding> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (final Iterator<? extends Encoding> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    }
+				@Override
+				public boolean addAll(Collection<? extends Encoding> elements) {
+					boolean addNull = (elements == null);
+					if (!addNull) {
+						for (final Iterator<? extends Encoding> iterator = elements.iterator(); !addNull
+								&& iterator.hasNext();) {
+							addNull = (iterator.next() == null);
+						}
+					}
+					if (addNull) {
+						throw new IllegalArgumentException("Cannot add a null encoding.");
+					}
 
-                    return super.addAll(elements);
-                }
+					return super.addAll(elements);
+				}
 
-                @Override
-                public boolean addAll(int index,
-                        Collection<? extends Encoding> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (final Iterator<? extends Encoding> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    }
+				@Override
+				public boolean addAll(int index, Collection<? extends Encoding> elements) {
+					boolean addNull = (elements == null);
+					if (!addNull) {
+						for (final Iterator<? extends Encoding> iterator = elements.iterator(); !addNull
+								&& iterator.hasNext();) {
+							addNull = (iterator.next() == null);
+						}
+					}
+					if (addNull) {
+						throw new IllegalArgumentException("Cannot add a null encoding.");
+					}
 
-                    return super.addAll(index, elements);
-                }
-            };
-        }
+					return super.addAll(index, elements);
+				}
+			};
+		}
 
-        return this.encodings;
-    }
+		return this.encodings;
+	}
 
-    /**
-     * Returns the modifiable list of languages. Creates a new instance if no
-     * one has been set. An "IllegalArgumentException" exception is thrown when
-     * adding a null language to this list.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Language" header.
-     * 
-     * @return The list of languages.
-     */
-    public List<Language> getLanguages() {
-        if (this.languages == null) {
-            this.languages = new WrapperList<Language>() {
+	/**
+	 * Returns the modifiable list of languages. Creates a new instance if no one
+	 * has been set. An "IllegalArgumentException" exception is thrown when adding a
+	 * null language to this list.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Language" header.
+	 * 
+	 * @return The list of languages.
+	 */
+	public List<Language> getLanguages() {
+		if (this.languages == null) {
+			this.languages = new WrapperList<Language>() {
 
-                @Override
-                public void add(int index, Language element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null language.");
-                    }
+				@Override
+				public void add(int index, Language element) {
+					if (element == null) {
+						throw new IllegalArgumentException("Cannot add a null language.");
+					}
 
-                    super.add(index, element);
-                }
+					super.add(index, element);
+				}
 
-                @Override
-                public boolean add(Language element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null language.");
-                    }
+				@Override
+				public boolean add(Language element) {
+					if (element == null) {
+						throw new IllegalArgumentException("Cannot add a null language.");
+					}
 
-                    return super.add(element);
-                }
+					return super.add(element);
+				}
 
-                @Override
-                public boolean addAll(Collection<? extends Language> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (final Iterator<? extends Language> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null language.");
-                    }
+				@Override
+				public boolean addAll(Collection<? extends Language> elements) {
+					boolean addNull = (elements == null);
+					if (!addNull) {
+						for (final Iterator<? extends Language> iterator = elements.iterator(); !addNull
+								&& iterator.hasNext();) {
+							addNull = (iterator.next() == null);
+						}
+					}
+					if (addNull) {
+						throw new IllegalArgumentException("Cannot add a null language.");
+					}
 
-                    return super.addAll(elements);
-                }
+					return super.addAll(elements);
+				}
 
-                @Override
-                public boolean addAll(int index,
-                        Collection<? extends Language> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (final Iterator<? extends Language> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null language.");
-                    }
+				@Override
+				public boolean addAll(int index, Collection<? extends Language> elements) {
+					boolean addNull = (elements == null);
+					if (!addNull) {
+						for (final Iterator<? extends Language> iterator = elements.iterator(); !addNull
+								&& iterator.hasNext();) {
+							addNull = (iterator.next() == null);
+						}
+					}
+					if (addNull) {
+						throw new IllegalArgumentException("Cannot add a null language.");
+					}
 
-                    return super.addAll(index, elements);
-                }
+					return super.addAll(index, elements);
+				}
 
-            };
-        }
-        return this.languages;
-    }
+			};
+		}
+		return this.languages;
+	}
 
-    /**
-     * Returns an optional location reference. This is useful when the
-     * representation is accessible from a location separate from the
-     * representation's resource URI, for example when content negotiation
-     * occurs.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @return The identifier.
-     */
-    public Reference getLocationRef() {
-        return this.locationRef;
-    }
+	/**
+	 * Returns an optional location reference. This is useful when the
+	 * representation is accessible from a location separate from the
+	 * representation's resource URI, for example when content negotiation
+	 * occurs.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Location" header.
+	 * 
+	 * @return The identifier.
+	 */
+	public Reference getLocationRef() {
+		return this.locationRef;
+	}
 
-    /**
-     * Returns the media type.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Type" header.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return this.mediaType;
-    }
-    
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(super.hashCode(), characterSet, encodings, locationRef, languages, mediaType);
-    }
+	/**
+	 * Returns the media type.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Type" header.
+	 * 
+	 * @return The media type.
+	 */
+	public MediaType getMediaType() {
+		return this.mediaType;
+	}
 
-    /**
-     * Indicates if the current variant includes the given variant.
-     * 
-     * @param other
-     *            The other variant.
-     * @return True if the current variant includes the other.
-     */
-    public boolean includes(Variant other) {
-        boolean result = other != null;
+	@Override
+	public int hashCode() {
+		return SystemUtils.hashCode(super.hashCode(), characterSet, encodings, locationRef, languages, mediaType);
+	}
 
-        // Compare the character set
-        if (result) {
-            result = (getCharacterSet() == null)
-                    || getCharacterSet().includes(other.getCharacterSet());
-        }
+	/**
+	 * Indicates if the current variant includes the given variant.
+	 * 
+	 * @param other The other variant.
+	 * @return True if the current variant includes the other.
+	 */
+	public boolean includes(Variant other) {
+		boolean result = other != null;
 
-        // Compare the media type
-        if (result) {
-            result = (getMediaType() == null)
-                    || getMediaType().includes(other.getMediaType());
-        }
+		// Compare the character set
+		if (result) {
+			result = (getCharacterSet() == null) || getCharacterSet().includes(other.getCharacterSet());
+		}
 
-        // Compare the languages
-        if (result) {
-            result = (getLanguages().isEmpty())
-                    || getLanguages().contains(Language.ALL)
-                    || getLanguages().containsAll(other.getLanguages());
-        }
+		// Compare the media type
+		if (result) {
+			result = (getMediaType() == null) || getMediaType().includes(other.getMediaType());
+		}
 
-        // Compare the encodings
-        if (result) {
-            result = (getEncodings().isEmpty())
-                    || getEncodings().contains(Encoding.ALL)
-                    || getEncodings().containsAll(other.getEncodings());
-        }
+		// Compare the languages
+		if (result) {
+			result = (getLanguages().isEmpty()) || getLanguages().contains(Language.ALL)
+					|| getLanguages().containsAll(other.getLanguages());
+		}
 
-        return result;
-    }
+		// Compare the encodings
+		if (result) {
+			result = (getEncodings().isEmpty()) || getEncodings().contains(Encoding.ALL)
+					|| getEncodings().containsAll(other.getEncodings());
+		}
 
-    /**
-     * Indicates if the current variant is compatible with the given variant.
-     * 
-     * @param other
-     *            The other variant.
-     * @return True if the current variant is compatible with the other.
-     */
-    public boolean isCompatible(Variant other) {
-        return (other != null) && (includes(other) || other.includes(this));
-    }
+		return result;
+	}
 
-    /**
-     * Sets the character set or null if not applicable.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Type" header.
-     * 
-     * @param characterSet
-     *            The character set or null if not applicable.
-     */
-    public void setCharacterSet(CharacterSet characterSet) {
-        this.characterSet = characterSet;
-    }
+	/**
+	 * Indicates if the current variant is compatible with the given variant.
+	 * 
+	 * @param other The other variant.
+	 * @return True if the current variant is compatible with the other.
+	 */
+	public boolean isCompatible(Variant other) {
+		return (other != null) && (includes(other) || other.includes(this));
+	}
 
-    /**
-     * Sets the list of encodings applied to the entity-body.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Encoding" header.
-     * 
-     * @param encodings
-     *            The list of encodings applied to the entity-body.
-     */
-    public void setEncodings(List<Encoding> encodings) {
-        this.encodings = encodings;
-    }
+	/**
+	 * Sets the character set or null if not applicable.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Type" header.
+	 * 
+	 * @param characterSet The character set or null if not applicable.
+	 */
+	public void setCharacterSet(CharacterSet characterSet) {
+		this.characterSet = characterSet;
+	}
 
-    /**
-     * Sets the list of languages.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Language" header.
-     * 
-     * @param languages
-     *            The list of languages.
-     */
-    public void setLanguages(List<Language> languages) {
-        this.languages = languages;
-    }
+	/**
+	 * Sets the list of encodings applied to the entity-body.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Encoding" header.
+	 * 
+	 * @param encodings The list of encodings applied to the entity-body.
+	 */
+	public void setEncodings(List<Encoding> encodings) {
+		this.encodings = encodings;
+	}
 
-    /**
-     * Sets the optional identifier. This is useful when the representation is
-     * accessible from a location separate from the representation's resource
-     * URI, for example when content negotiation occurs.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @param location
-     *            The location reference.
-     */
-    public void setLocationRef(Reference location) {
-        this.locationRef = location;
-    }
+	/**
+	 * Sets the list of languages.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Language" header.
+	 * 
+	 * @param languages The list of languages.
+	 */
+	public void setLanguages(List<Language> languages) {
+		this.languages = languages;
+	}
 
-    /**
-     * Sets the identifier from a URI string.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @param locationUri
-     *            The location URI to parse.
-     */
-    public void setLocationRef(String locationUri) {
-        setLocationRef(new Reference(locationUri));
-    }
+	/**
+	 * Sets the optional identifier. This is useful when the representation is
+	 * accessible from a location separate from the representation's resource URI,
+	 * for example when content negotiation occurs.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Location" header.
+	 * 
+	 * @param location The location reference.
+	 */
+	public void setLocationRef(Reference location) {
+		this.locationRef = location;
+	}
 
-    /**
-     * Sets the media type.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Type" header.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
-    }
+	/**
+	 * Sets the identifier from a URI string.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Location" header.
+	 * 
+	 * @param locationUri The location URI to parse.
+	 */
+	public void setLocationRef(String locationUri) {
+		setLocationRef(new Reference(locationUri));
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        boolean first = true;
+	/**
+	 * Sets the media type.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Type" header.
+	 * 
+	 * @param mediaType The media type.
+	 */
+	public void setMediaType(MediaType mediaType) {
+		this.mediaType = mediaType;
+	}
 
-        if (getMediaType() != null) {
-            first = false;
-            sb.append(getMediaType());
-        }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("[");
+		boolean first = true;
 
-        if (getCharacterSet() != null) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
+		if (getMediaType() != null) {
+			first = false;
+			sb.append(getMediaType());
+		}
 
-            sb.append(getCharacterSet());
-        }
+		if (getCharacterSet() != null) {
+			if (!first) {
+				sb.append(",");
+			} else {
+				first = false;
+			}
 
-        if (!getLanguages().isEmpty()) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
+			sb.append(getCharacterSet());
+		}
 
-            sb.append(getLanguages());
-        }
+		if (!getLanguages().isEmpty()) {
+			if (!first) {
+				sb.append(",");
+			} else {
+				first = false;
+			}
 
-        if (!getEncodings().isEmpty()) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
+			sb.append(getLanguages());
+		}
 
-            sb.append(getEncodings());
-        }
+		if (!getEncodings().isEmpty()) {
+			if (!first) {
+				sb.append(",");
+			} else {
+				first = false;
+			}
 
-        sb.append("]");
-        return sb.toString();
-    }
+			sb.append(getEncodings());
+		}
+
+		sb.append("]");
+		return sb.toString();
+	}
 }

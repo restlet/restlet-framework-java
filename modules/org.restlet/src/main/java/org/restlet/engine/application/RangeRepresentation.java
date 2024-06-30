@@ -44,101 +44,98 @@ import org.restlet.util.WrapperRepresentation;
  */
 public class RangeRepresentation extends WrapperRepresentation {
 
-    /** The range specific to this wrapper. */
-    private volatile Range range;
+	/** The range specific to this wrapper. */
+	private volatile Range range;
 
-    /**
-     * Constructor.
-     * 
-     * @param wrappedRepresentation
-     *            The wrapped representation with a complete content.
-     */
-    public RangeRepresentation(Representation wrappedRepresentation) {
-        this(wrappedRepresentation, null);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param wrappedRepresentation The wrapped representation with a complete
+	 *                              content.
+	 */
+	public RangeRepresentation(Representation wrappedRepresentation) {
+		this(wrappedRepresentation, null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param wrappedRepresentation
-     *            The wrapped representation with a complete content.
-     * @param range
-     *            The range to expose.
-     */
-    public RangeRepresentation(Representation wrappedRepresentation, Range range) {
-        super(wrappedRepresentation);
-        if (wrappedRepresentation.getRange() != null) {
-            throw new IllegalArgumentException(
-                    "The wrapped representation must not have a range set.");
-        }
-        setRange(range);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param wrappedRepresentation The wrapped representation with a complete
+	 *                              content.
+	 * @param range                 The range to expose.
+	 */
+	public RangeRepresentation(Representation wrappedRepresentation, Range range) {
+		super(wrappedRepresentation);
+		if (wrappedRepresentation.getRange() != null) {
+			throw new IllegalArgumentException("The wrapped representation must not have a range set.");
+		}
+		setRange(range);
+	}
 
-    @Override
-    public long getAvailableSize() {
-        return IoUtils.getAvailableSize(this);
-    }
+	@Override
+	public long getAvailableSize() {
+		return IoUtils.getAvailableSize(this);
+	}
 
-    @Override
-    public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
-        return IoUtils.getChannel(getStream());
-    }
+	@Override
+	public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
+		return IoUtils.getChannel(getStream());
+	}
 
-    /**
-     * Returns the range specific to this wrapper. The wrapped representation
-     * must not have a range set itself.
-     * 
-     * @return The range specific to this wrapper.
-     */
-    @Override
-    public Range getRange() {
-        return this.range;
-    }
+	/**
+	 * Returns the range specific to this wrapper. The wrapped representation must
+	 * not have a range set itself.
+	 * 
+	 * @return The range specific to this wrapper.
+	 */
+	@Override
+	public Range getRange() {
+		return this.range;
+	}
 
-    @Override
-    public Reader getReader() throws IOException {
-        return IoUtils.getReader(getStream(), getCharacterSet());
-    }
+	@Override
+	public Reader getReader() throws IOException {
+		return IoUtils.getReader(getStream(), getCharacterSet());
+	}
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return new RangeInputStream(super.getStream(), getSize(), getRange());
-    }
+	@Override
+	public InputStream getStream() throws IOException {
+		return new RangeInputStream(super.getStream(), getSize(), getRange());
+	}
 
-    @Override
-    public String getText() throws IOException {
-        return IoUtils.getText(this);
-    }
+	@Override
+	public String getText() throws IOException {
+		return IoUtils.getText(this);
+	}
 
-    /**
-     * Sets the range specific to this wrapper. This will not affect the wrapped
-     * representation.
-     * 
-     * @param range
-     *            The range specific to this wrapper.
-     */
-    @Override
-    public void setRange(Range range) {
-        this.range = range;
-    }
+	/**
+	 * Sets the range specific to this wrapper. This will not affect the wrapped
+	 * representation.
+	 * 
+	 * @param range The range specific to this wrapper.
+	 */
+	@Override
+	public void setRange(Range range) {
+		this.range = range;
+	}
 
-    @Override
-    public void write(java.io.Writer writer) throws IOException {
-        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
-        write(os);
-        os.flush();
-    }
+	@Override
+	public void write(java.io.Writer writer) throws IOException {
+		OutputStream os = IoUtils.getStream(writer, getCharacterSet());
+		write(os);
+		os.flush();
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        IoUtils.copy(getStream(), outputStream);
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		IoUtils.copy(getStream(), outputStream);
+	}
 
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        OutputStream os = IoUtils.getStream(writableChannel);
-        write(os);
-        os.flush();
-    }
+	@Override
+	public void write(WritableByteChannel writableChannel) throws IOException {
+		OutputStream os = IoUtils.getStream(writableChannel);
+		write(os);
+		os.flush();
+	}
 
 }

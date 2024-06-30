@@ -52,320 +52,298 @@ import org.restlet.service.MetadataService;
  */
 public class StrictConneg extends Conneg {
 
-    /**
-     * Constructor.
-     * 
-     * @param request
-     *            The request including client preferences.
-     * @param metadataService
-     *            The metadata service used to get default metadata values.
-     */
-    public StrictConneg(Request request, MetadataService metadataService) {
-        super(request, metadataService);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param request         The request including client preferences.
+	 * @param metadataService The metadata service used to get default metadata
+	 *                        values.
+	 */
+	public StrictConneg(Request request, MetadataService metadataService) {
+		super(request, metadataService);
+	}
 
-    /**
-     * Returns the enriched list of character set preferences.
-     * 
-     * @return The enriched list of character set preferences.
-     */
-    protected List<Preference<CharacterSet>> getCharacterSetPrefs() {
-        return getRequest().getClientInfo().getAcceptedCharacterSets();
-    }
+	/**
+	 * Returns the enriched list of character set preferences.
+	 * 
+	 * @return The enriched list of character set preferences.
+	 */
+	protected List<Preference<CharacterSet>> getCharacterSetPrefs() {
+		return getRequest().getClientInfo().getAcceptedCharacterSets();
+	}
 
-    /**
-     * Returns the enriched list of encoding preferences.
-     * 
-     * @return The enriched list of encoding preferences.
-     */
-    protected List<Preference<Encoding>> getEncodingPrefs() {
-        return getRequest().getClientInfo().getAcceptedEncodings();
-    }
+	/**
+	 * Returns the enriched list of encoding preferences.
+	 * 
+	 * @return The enriched list of encoding preferences.
+	 */
+	protected List<Preference<Encoding>> getEncodingPrefs() {
+		return getRequest().getClientInfo().getAcceptedEncodings();
+	}
 
-    /**
-     * Returns the enriched list of language preferences.
-     * 
-     * @return The enriched list of language preferences.
-     */
-    protected List<Preference<Language>> getLanguagePrefs() {
-        return getRequest().getClientInfo().getAcceptedLanguages();
-    }
+	/**
+	 * Returns the enriched list of language preferences.
+	 * 
+	 * @return The enriched list of language preferences.
+	 */
+	protected List<Preference<Language>> getLanguagePrefs() {
+		return getRequest().getClientInfo().getAcceptedLanguages();
+	}
 
-    /**
-     * Returns the enriched list of media type preferences.
-     * 
-     * @return The enriched list of media type preferences.
-     */
-    protected List<Preference<MediaType>> getMediaTypePrefs() {
-        return getRequest().getClientInfo().getAcceptedMediaTypes();
-    }
+	/**
+	 * Returns the enriched list of media type preferences.
+	 * 
+	 * @return The enriched list of media type preferences.
+	 */
+	protected List<Preference<MediaType>> getMediaTypePrefs() {
+		return getRequest().getClientInfo().getAcceptedMediaTypes();
+	}
 
-    /**
-     * Scores the annotation descriptor. By default, it assess the quality of
-     * the query parameters with the URI query constraint defined in the
-     * annotation value if any.
-     * 
-     * @param annotation
-     *            The annotation descriptor to score.
-     * @return The annotation descriptor score.
-     */
-    protected float scoreAnnotation(MethodAnnotationInfo annotation) {
-        if (annotation == null) {
-            return 0.0F;
-        }
-        
-        float score = doScoreAnnotation(annotation);
-        
-        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-            Context.getCurrentLogger()
-                    .fine("Score of annotation \"" + annotation + "\"= " + score);
-        }
-        return score;
-    }
+	/**
+	 * Scores the annotation descriptor. By default, it assess the quality of the
+	 * query parameters with the URI query constraint defined in the annotation
+	 * value if any.
+	 * 
+	 * @param annotation The annotation descriptor to score.
+	 * @return The annotation descriptor score.
+	 */
+	protected float scoreAnnotation(MethodAnnotationInfo annotation) {
+		if (annotation == null) {
+			return 0.0F;
+		}
 
-    private float doScoreAnnotation(MethodAnnotationInfo annotation) {
-        if (annotation.getQuery() == null) {
-            if ((getRequest().getResourceRef() == null)
-                    || (getRequest().getResourceRef().getQuery() == null)) {
-                // No query filter, but no query provided, average fit
-                return 0.5F;
-            }
+		float score = doScoreAnnotation(annotation);
 
-            // No query filter, but a query provided, lower fit
-            return 0.25F;
-        }
-        
-        if ((getRequest().getResourceRef() == null)
-                || (getRequest().getResourceRef().getQuery() == null)) {
-            // Query constraint defined, but no query provided, no fit
-            return -1.0F;
-        }
-        
-        // Query constraint defined and a query provided, see if fit
-        Form constraintParams = new Form(annotation.getQuery());
-        Form actualParams = getRequest().getResourceRef().getQueryAsForm();
-        Set<Parameter> matchedParams = new HashSet<Parameter>();
-        Parameter constraintParam;
-        Parameter actualParam;
+		if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+			Context.getCurrentLogger().fine("Score of annotation \"" + annotation + "\"= " + score);
+		}
+		return score;
+	}
 
-        boolean allConstraintsMatched = true;
-        boolean constraintMatched = false;
+	private float doScoreAnnotation(MethodAnnotationInfo annotation) {
+		if (annotation.getQuery() == null) {
+			if ((getRequest().getResourceRef() == null) || (getRequest().getResourceRef().getQuery() == null)) {
+				// No query filter, but no query provided, average fit
+				return 0.5F;
+			}
 
-        // Verify that each query constraint has been matched
-        for (int i = 0; allConstraintsMatched && (i < constraintParams.size()); i++) {
-            constraintParam = constraintParams.get(i);
-            constraintMatched = false;
+			// No query filter, but a query provided, lower fit
+			return 0.25F;
+		}
 
-            for (int j = 0; !constraintMatched && (j < actualParams.size()); j++) {
-                actualParam = actualParams.get(j);
+		if ((getRequest().getResourceRef() == null) || (getRequest().getResourceRef().getQuery() == null)) {
+			// Query constraint defined, but no query provided, no fit
+			return -1.0F;
+		}
 
-                if (constraintParam.getName().equals(actualParam.getName())) {
-                    // Potential match found based on name
-                    if ((constraintParam.getValue() == null)
-                            || constraintParam.getValue().equals(actualParam.getValue())) {
-                        // Actual match found!
-                        constraintMatched = true;
-                        matchedParams.add(actualParam);
-                    }
-                }
-            }
+		// Query constraint defined and a query provided, see if fit
+		Form constraintParams = new Form(annotation.getQuery());
+		Form actualParams = getRequest().getResourceRef().getQueryAsForm();
+		Set<Parameter> matchedParams = new HashSet<Parameter>();
+		Parameter constraintParam;
+		Parameter actualParam;
 
-            allConstraintsMatched = allConstraintsMatched && constraintMatched;
-        }
+		boolean allConstraintsMatched = true;
+		boolean constraintMatched = false;
 
-        if (allConstraintsMatched) {
-            // Test if all actual query parameters matched a constraint, so increase score
-            if (actualParams.size() == matchedParams.size()) {
-                // All filter parameters matched, no additional parameter found
-                return 1.0F;
-            }
-            // All filter parameters matched, but additional parameters found
-            return 0.75F;
-        }
+		// Verify that each query constraint has been matched
+		for (int i = 0; allConstraintsMatched && (i < constraintParams.size()); i++) {
+			constraintParam = constraintParams.get(i);
+			constraintMatched = false;
 
-        return -1.0F;
-    }
+			for (int j = 0; !constraintMatched && (j < actualParams.size()); j++) {
+				actualParam = actualParams.get(j);
 
-    /**
-     * Scores a character set relatively to enriched client preferences.
-     * 
-     * @param characterSet
-     *            The character set to score.
-     * @return The score.
-     */
-    public float scoreCharacterSet(CharacterSet characterSet) {
-        return scoreMetadata(characterSet, getCharacterSetPrefs());
-    }
+				if (constraintParam.getName().equals(actualParam.getName())) {
+					// Potential match found based on name
+					if ((constraintParam.getValue() == null)
+							|| constraintParam.getValue().equals(actualParam.getValue())) {
+						// Actual match found!
+						constraintMatched = true;
+						matchedParams.add(actualParam);
+					}
+				}
+			}
 
-    /**
-     * Scores encodings relatively to enriched client preferences.
-     * 
-     * @param encodings
-     *            The encodings to score.
-     * @return The score.
-     */
-    public float scoreEncodings(List<Encoding> encodings) {
-        return scoreMetadata(encodings, getEncodingPrefs());
-    }
+			allConstraintsMatched = allConstraintsMatched && constraintMatched;
+		}
 
-    /**
-     * Scores languages relatively to enriched client preferences.
-     * 
-     * @param languages
-     *            The languages to score.
-     * @return The score.
-     */
-    public float scoreLanguages(List<Language> languages) {
-        return scoreMetadata(languages, getLanguagePrefs());
-    }
+		if (allConstraintsMatched) {
+			// Test if all actual query parameters matched a constraint, so increase score
+			if (actualParams.size() == matchedParams.size()) {
+				// All filter parameters matched, no additional parameter found
+				return 1.0F;
+			}
+			// All filter parameters matched, but additional parameters found
+			return 0.75F;
+		}
 
-    /**
-     * Scores a media type relatively to enriched client preferences.
-     * 
-     * @param mediaType
-     *            The media type to score.
-     * @return The score.
-     */
-    public float scoreMediaType(MediaType mediaType) {
-        float result = -1.0F;
-        float current;
+		return -1.0F;
+	}
 
-        if (mediaType != null) {
-            for (Preference<MediaType> pref : getMediaTypePrefs()) {
-                if (pref.getMetadata().includes(mediaType, false)) {
-                    current = pref.getQuality();
-                } else {
-                    current = -1.0F;
-                }
+	/**
+	 * Scores a character set relatively to enriched client preferences.
+	 * 
+	 * @param characterSet The character set to score.
+	 * @return The score.
+	 */
+	public float scoreCharacterSet(CharacterSet characterSet) {
+		return scoreMetadata(characterSet, getCharacterSetPrefs());
+	}
 
-                if (current > result) {
-                    result = current;
-                }
-            }
-        } else {
-            result = 0.0F;
-        }
+	/**
+	 * Scores encodings relatively to enriched client preferences.
+	 * 
+	 * @param encodings The encodings to score.
+	 * @return The score.
+	 */
+	public float scoreEncodings(List<Encoding> encodings) {
+		return scoreMetadata(encodings, getEncodingPrefs());
+	}
 
-        return result;
-    }
+	/**
+	 * Scores languages relatively to enriched client preferences.
+	 * 
+	 * @param languages The languages to score.
+	 * @return The score.
+	 */
+	public float scoreLanguages(List<Language> languages) {
+		return scoreMetadata(languages, getLanguagePrefs());
+	}
 
-    /**
-     * Scores a list of metadata relatively to enriched client preferences.
-     * 
-     * @param metadataList
-     *            The list of metadata to score.
-     * @return The score.
-     */
-    protected <T extends Metadata> float scoreMetadata(List<T> metadataList,
-            List<Preference<T>> prefs) {
-        float result = -1.0F;
-        float current;
+	/**
+	 * Scores a media type relatively to enriched client preferences.
+	 * 
+	 * @param mediaType The media type to score.
+	 * @return The score.
+	 */
+	public float scoreMediaType(MediaType mediaType) {
+		float result = -1.0F;
+		float current;
 
-        if ((metadataList != null) && !metadataList.isEmpty()) {
-            for (Preference<T> pref : prefs) {
-                for (T metadata : metadataList) {
-                    if (pref.getMetadata().includes(metadata)) {
-                        current = pref.getQuality();
-                    } else {
-                        current = -1.0F;
-                    }
+		if (mediaType != null) {
+			for (Preference<MediaType> pref : getMediaTypePrefs()) {
+				if (pref.getMetadata().includes(mediaType, false)) {
+					current = pref.getQuality();
+				} else {
+					current = -1.0F;
+				}
 
-                    if (current > result) {
-                        result = current;
-                    }
-                }
-            }
-        } else {
-            result = 0.0F;
-        }
+				if (current > result) {
+					result = current;
+				}
+			}
+		} else {
+			result = 0.0F;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Scores a metadata relatively to enriched client preferences.
-     * 
-     * @param metadata
-     *            The metadata to score.
-     * @return The score.
-     */
-    protected <T extends Metadata> float scoreMetadata(T metadata,
-            List<Preference<T>> prefs) {
-        float result = -1.0F;
-        float current;
+	/**
+	 * Scores a list of metadata relatively to enriched client preferences.
+	 * 
+	 * @param metadataList The list of metadata to score.
+	 * @return The score.
+	 */
+	protected <T extends Metadata> float scoreMetadata(List<T> metadataList, List<Preference<T>> prefs) {
+		float result = -1.0F;
+		float current;
 
-        if (metadata != null) {
-            for (Preference<? extends Metadata> pref : prefs) {
-                if (pref.getMetadata().includes(metadata)) {
-                    current = pref.getQuality();
-                } else {
-                    current = -1.0F;
-                }
+		if ((metadataList != null) && !metadataList.isEmpty()) {
+			for (Preference<T> pref : prefs) {
+				for (T metadata : metadataList) {
+					if (pref.getMetadata().includes(metadata)) {
+						current = pref.getQuality();
+					} else {
+						current = -1.0F;
+					}
 
-                if (current > result) {
-                    result = current;
-                }
-            }
-        } else {
-            result = 0.0F;
-        }
+					if (current > result) {
+						result = current;
+					}
+				}
+			}
+		} else {
+			result = 0.0F;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Scores a variant relatively to enriched client preferences. The language
-     * has a weight of 4, the media type 3, the character set 2 and the encoding
-     * 1.
-     * 
-     * @param variant
-     *            The variant to score.
-     * @return The enriched client preferences.
-     */
-    public float scoreVariant(Variant variant) {
-        float result = -1.0F;
-        float languageScore = scoreLanguages(variant.getLanguages());
+	/**
+	 * Scores a metadata relatively to enriched client preferences.
+	 * 
+	 * @param metadata The metadata to score.
+	 * @return The score.
+	 */
+	protected <T extends Metadata> float scoreMetadata(T metadata, List<Preference<T>> prefs) {
+		float result = -1.0F;
+		float current;
 
-        if (languageScore != -1.0F) {
-            float mediaTypeScore = scoreMediaType(variant.getMediaType());
+		if (metadata != null) {
+			for (Preference<? extends Metadata> pref : prefs) {
+				if (pref.getMetadata().includes(metadata)) {
+					current = pref.getQuality();
+				} else {
+					current = -1.0F;
+				}
 
-            if (mediaTypeScore != -1.0F) {
-                float characterSetScore = scoreCharacterSet(variant
-                        .getCharacterSet());
+				if (current > result) {
+					result = current;
+				}
+			}
+		} else {
+			result = 0.0F;
+		}
 
-                if (characterSetScore != -1.0F) {
-                    float encodingScore = scoreEncodings(variant.getEncodings());
+		return result;
+	}
 
-                    if (encodingScore != -1.0F) {
-                        if (variant instanceof VariantInfo) {
-                            float annotationScore = scoreAnnotation(((VariantInfo) variant)
-                                    .getAnnotationInfo());
+	/**
+	 * Scores a variant relatively to enriched client preferences. The language has
+	 * a weight of 4, the media type 3, the character set 2 and the encoding 1.
+	 * 
+	 * @param variant The variant to score.
+	 * @return The enriched client preferences.
+	 */
+	public float scoreVariant(Variant variant) {
+		float result = -1.0F;
+		float languageScore = scoreLanguages(variant.getLanguages());
 
-                            // Return the weighted average score
-                            result = ((languageScore * 4.0F)
-                                    + (mediaTypeScore * 3.0F)
-                                    + (characterSetScore * 2.0F)
-                                    + (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
-                            // Take into account the affinity with the input
-                            // entity
-                            result = result
-                                    * ((VariantInfo) variant).getInputScore();
-                        } else {
-                            // Return the weighted average score
-                            result = ((languageScore * 4.0F)
-                                    + (mediaTypeScore * 3.0F)
-                                    + (characterSetScore * 2.0F) + (encodingScore * 1.0F)) / 10.0F;
-                        }
-                    }
-                }
-            }
-        }
+		if (languageScore != -1.0F) {
+			float mediaTypeScore = scoreMediaType(variant.getMediaType());
 
-        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-            Context.getCurrentLogger().fine(
-                    "Total score of variant \"" + variant + "\"= " + result);
-        }
+			if (mediaTypeScore != -1.0F) {
+				float characterSetScore = scoreCharacterSet(variant.getCharacterSet());
 
-        return result;
-    }
+				if (characterSetScore != -1.0F) {
+					float encodingScore = scoreEncodings(variant.getEncodings());
+
+					if (encodingScore != -1.0F) {
+						if (variant instanceof VariantInfo) {
+							float annotationScore = scoreAnnotation(((VariantInfo) variant).getAnnotationInfo());
+
+							// Return the weighted average score
+							result = ((languageScore * 4.0F) + (mediaTypeScore * 3.0F) + (characterSetScore * 2.0F)
+									+ (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
+							// Take into account the affinity with the input
+							// entity
+							result = result * ((VariantInfo) variant).getInputScore();
+						} else {
+							// Return the weighted average score
+							result = ((languageScore * 4.0F) + (mediaTypeScore * 3.0F) + (characterSetScore * 2.0F)
+									+ (encodingScore * 1.0F)) / 10.0F;
+						}
+					}
+				}
+			}
+		}
+
+		if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+			Context.getCurrentLogger().fine("Total score of variant \"" + variant + "\"= " + result);
+		}
+
+		return result;
+	}
 }

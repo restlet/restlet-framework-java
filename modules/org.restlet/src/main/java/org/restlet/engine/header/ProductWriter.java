@@ -36,42 +36,38 @@ import org.restlet.data.Product;
  */
 public class ProductWriter {
 
-    /**
-     * Formats the given List of Products to a String.
-     * 
-     * @param products
-     *            The list of products to format.
-     * @return the List of Products as String.
-     */
-    public static String write(List<Product> products) {
-        StringBuilder builder = new StringBuilder();
+	/**
+	 * Formats the given List of Products to a String.
+	 * 
+	 * @param products The list of products to format.
+	 * @return the List of Products as String.
+	 */
+	public static String write(List<Product> products) {
+		StringBuilder builder = new StringBuilder();
 
-        for (Iterator<Product> iterator = products.iterator(); iterator
-                .hasNext();) {
-            Product product = iterator.next();
+		for (Iterator<Product> iterator = products.iterator(); iterator.hasNext();) {
+			Product product = iterator.next();
 
-            if ((product.getName() == null)
-                    || (product.getName().length() == 0)) {
-                throw new IllegalArgumentException(
-                        "Product name cannot be null.");
-            }
+			if ((product.getName() == null) || (product.getName().length() == 0)) {
+				throw new IllegalArgumentException("Product name cannot be null.");
+			}
 
-            builder.append(product.getName());
+			builder.append(product.getName());
 
-            if (product.getVersion() != null) {
-                builder.append("/").append(product.getVersion());
-            }
+			if (product.getVersion() != null) {
+				builder.append("/").append(product.getVersion());
+			}
 
-            if (product.getComment() != null) {
-                builder.append(" (").append(product.getComment()).append(")");
-            }
+			if (product.getComment() != null) {
+				builder.append(" (").append(product.getComment()).append(")");
+			}
 
-            if (iterator.hasNext()) {
-                builder.append(" ");
-            }
-        }
+			if (iterator.hasNext()) {
+				builder.append(" ");
+			}
+		}
 
-        return builder.toString();
-    }
+		return builder.toString();
+	}
 
 }

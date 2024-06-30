@@ -24,6 +24,9 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -51,9 +54,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link org.restlet.data.Range}.

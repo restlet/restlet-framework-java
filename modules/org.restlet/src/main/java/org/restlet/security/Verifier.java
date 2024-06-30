@@ -34,34 +34,32 @@ import org.restlet.Response;
  */
 public interface Verifier {
 
-    /** Invalid credentials provided. */
-    public final static int RESULT_INVALID = -1;
+	/** Invalid credentials provided. */
+	public final static int RESULT_INVALID = -1;
 
-    /** No credentials provided. */
-    public final static int RESULT_MISSING = 0;
+	/** No credentials provided. */
+	public final static int RESULT_MISSING = 0;
 
-    /** Stale credentials provided. */
-    public final static int RESULT_STALE = 1;
+	/** Stale credentials provided. */
+	public final static int RESULT_STALE = 1;
 
-    /** Unsupported credentials. */
-    public final static int RESULT_UNSUPPORTED = 3;
+	/** Unsupported credentials. */
+	public final static int RESULT_UNSUPPORTED = 3;
 
-    /** Unknown user. */
-    public final static int RESULT_UNKNOWN = 5;
+	/** Unknown user. */
+	public final static int RESULT_UNKNOWN = 5;
 
-    /** Valid credentials provided. */
-    public final static int RESULT_VALID = 4;
+	/** Valid credentials provided. */
+	public final static int RESULT_VALID = 4;
 
-    /**
-     * Attempts to verify the credentials provided by the client user sending
-     * the request.
-     * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
-     * @return Result of the verification based on the RESULT_* constants.
-     */
-    int verify(Request request, Response response);
+	/**
+	 * Attempts to verify the credentials provided by the client user sending the
+	 * request.
+	 * 
+	 * @param request  The request sent.
+	 * @param response The response to update.
+	 * @return Result of the verification based on the RESULT_* constants.
+	 */
+	int verify(Request request, Response response);
 
 }

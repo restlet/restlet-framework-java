@@ -64,80 +64,70 @@ import org.restlet.engine.connector.ClientHelper;
  * @author Thierry Boileau
  */
 public abstract class LocalClientHelper extends ClientHelper {
-    /**
-     * Constructor. Note that the common list of metadata associations based on
-     * extensions is added, see the addCommonExtensions() method.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public LocalClientHelper(Client client) {
-        super(client);
-    }
+	/**
+	 * Constructor. Note that the common list of metadata associations based on
+	 * extensions is added, see the addCommonExtensions() method.
+	 * 
+	 * @param client The client to help.
+	 */
+	public LocalClientHelper(Client client) {
+		super(client);
+	}
 
-    /**
-     * Returns the default language. When no metadata service is available
-     * (simple client connector with no parent application), falls back on this
-     * default language.
-     * 
-     * @return The default language.
-     */
-    public String getDefaultLanguage() {
-        return getHelpedParameters().getFirstValue("defaultLanguage", "");
-    }
+	/**
+	 * Returns the default language. When no metadata service is available (simple
+	 * client connector with no parent application), falls back on this default
+	 * language.
+	 * 
+	 * @return The default language.
+	 */
+	public String getDefaultLanguage() {
+		return getHelpedParameters().getFirstValue("defaultLanguage", "");
+	}
 
-    /**
-     * Returns the time to live for a file representation before it expires (in
-     * seconds).
-     * 
-     * @return The time to live for a file representation before it expires (in
-     *         seconds).
-     */
-    public int getTimeToLive() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "timeToLive", "600"));
-    }
+	/**
+	 * Returns the time to live for a file representation before it expires (in
+	 * seconds).
+	 * 
+	 * @return The time to live for a file representation before it expires (in
+	 *         seconds).
+	 */
+	public int getTimeToLive() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("timeToLive", "600"));
+	}
 
-    /**
-     * Handles a call. Note that this implementation will systematically
-     * normalize and URI-decode the resource reference.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public final void handle(Request request, Response response) {
-        // Ensure that all ".." and "." are normalized into the path
-        // to prevent unauthorized access to user directories.
-        request.getResourceRef().normalize();
+	/**
+	 * Handles a call. Note that this implementation will systematically normalize
+	 * and URI-decode the resource reference.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The response to update.
+	 */
+	@Override
+	public final void handle(Request request, Response response) {
+		// Ensure that all ".." and "." are normalized into the path
+		// to prevent unauthorized access to user directories.
+		request.getResourceRef().normalize();
 
-        // As the path may be percent-encoded, it has to be percent-decoded.
-        // Then, all generated URIs must be encoded.
-        String path = request.getResourceRef().getPath();
-        String decodedPath = Reference.decode(path);
+		// As the path may be percent-encoded, it has to be percent-decoded.
+		// Then, all generated URIs must be encoded.
+		String path = request.getResourceRef().getPath();
+		String decodedPath = Reference.decode(path);
 
-        if (decodedPath != null) {
-            // Continue the local handling
-            handleLocal(request, response, decodedPath);
-        } else {
-            getLogger().warning(
-                    "Unable to get the path of this local URI: "
-                            + request.getResourceRef());
-        }
-    }
+		if (decodedPath != null) {
+			// Continue the local handling
+			handleLocal(request, response, decodedPath);
+		} else {
+			getLogger().warning("Unable to get the path of this local URI: " + request.getResourceRef());
+		}
+	}
 
-    /**
-     * Handles a local call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param decodedPath
-     *            The decoded local path.
-     */
-    protected abstract void handleLocal(Request request, Response response,
-            String decodedPath);
+	/**
+	 * Handles a local call.
+	 * 
+	 * @param request     The request to handle.
+	 * @param response    The response to update.
+	 * @param decodedPath The decoded local path.
+	 */
+	protected abstract void handleLocal(Request request, Response response, String decodedPath);
 }

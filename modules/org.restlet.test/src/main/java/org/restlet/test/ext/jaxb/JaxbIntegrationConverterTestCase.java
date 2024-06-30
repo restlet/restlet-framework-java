@@ -24,38 +24,37 @@
 
 package org.restlet.test.ext.jaxb;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.restlet.engine.Engine;
-import org.restlet.ext.jaxb.JaxbConverter;
-import org.restlet.test.RestletTestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jaxb.JaxbConverter;
 import org.restlet.ext.jaxb.JaxbRepresentation;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Simple Integration Tests that uses the JAXB Converter to perform POST, PUT

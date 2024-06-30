@@ -26,8 +26,6 @@ package org.restlet.client.engine.util;
 
 import java.util.Arrays;
 
-import org.restlet.client.engine.io.IoUtils;
-
 /**
  * Minimal but fast Base64 codec.
  * 

@@ -51,10 +51,11 @@ import org.restlet.resource.Put;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Method {
 
-    /**
-     * Method name identified by the underlying annotation.
-     * @return the method name identified by the underlying annotation.
-     */
-    String value();
+	/**
+	 * Method name identified by the underlying annotation.
+	 * 
+	 * @return the method name identified by the underlying annotation.
+	 */
+	String value();
 
 }

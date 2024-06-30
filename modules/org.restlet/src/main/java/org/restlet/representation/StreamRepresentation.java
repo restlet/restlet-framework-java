@@ -38,40 +38,37 @@ import org.restlet.engine.io.IoUtils;
  */
 public abstract class StreamRepresentation extends Representation {
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public StreamRepresentation(MediaType mediaType) {
-        super(mediaType);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 */
+	public StreamRepresentation(MediaType mediaType) {
+		super(mediaType);
+	}
 
-    @Override
-    public java.nio.channels.ReadableByteChannel getChannel()
-            throws IOException {
-        return IoUtils.getChannel(getStream());
-    }
+	@Override
+	public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
+		return IoUtils.getChannel(getStream());
+	}
 
-    @Override
-    public Reader getReader() throws IOException {
-        return IoUtils.getReader(getStream(), getCharacterSet());
-    }
+	@Override
+	public Reader getReader() throws IOException {
+		return IoUtils.getReader(getStream(), getCharacterSet());
+	}
 
-    @Override
-    public void write(java.nio.channels.WritableByteChannel writableChannel)
-            throws IOException {
-        OutputStream os = IoUtils.getStream(writableChannel);
-        write(os);
-        os.flush();
-    }
+	@Override
+	public void write(java.nio.channels.WritableByteChannel writableChannel) throws IOException {
+		OutputStream os = IoUtils.getStream(writableChannel);
+		write(os);
+		os.flush();
+	}
 
-    @Override
-    public void write(java.io.Writer writer) throws IOException {
-        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
-        write(os);
-        os.flush();
-    }
+	@Override
+	public void write(java.io.Writer writer) throws IOException {
+		OutputStream os = IoUtils.getStream(writer, getCharacterSet());
+		write(os);
+		os.flush();
+	}
 
 }

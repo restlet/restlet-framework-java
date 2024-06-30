@@ -222,7 +222,8 @@ import org.restlet.engine.util.MapResolver;
  * <br>
  * 
  * <table>
- * <caption>list of name sub-parts, for Reference variables, that can replace the asterix in the variable names above</caption>
+ * <caption>list of name sub-parts, for Reference variables, that can replace
+ * the asterix in the variable names above</caption>
  * <tr>
  * <th>Reference property</th>
  * <th>Sub-part name</th>
@@ -284,39 +285,35 @@ import org.restlet.engine.util.MapResolver;
  */
 public abstract class Resolver<T> {
 
-    /**
-     * Creates a resolver that is based on a given map.
-     * 
-     * @param map
-     *            Map between names and values.
-     * @return The map resolver.
-     */
-    public static Resolver<?> createResolver(Map<String, ?> map) {
-        return new MapResolver(map);
-    }
+	/**
+	 * Creates a resolver that is based on a given map.
+	 * 
+	 * @param map Map between names and values.
+	 * @return The map resolver.
+	 */
+	public static Resolver<?> createResolver(Map<String, ?> map) {
+		return new MapResolver(map);
+	}
 
-    /**
-     * Creates a resolver that is based on a call (request, response couple). It
-     * first looks up the response attributes, then the request attributes and
-     * finally the variables listed in this class Javadocs above.
-     * 
-     * @param request
-     *            The request.
-     * @param response
-     *            The response.
-     * @return The call resolver.
-     */
-    public static Resolver<?> createResolver(Request request, Response response) {
-        return new CallResolver(request, response);
-    }
+	/**
+	 * Creates a resolver that is based on a call (request, response couple). It
+	 * first looks up the response attributes, then the request attributes and
+	 * finally the variables listed in this class Javadocs above.
+	 * 
+	 * @param request  The request.
+	 * @param response The response.
+	 * @return The call resolver.
+	 */
+	public static Resolver<?> createResolver(Request request, Response response) {
+		return new CallResolver(request, response);
+	}
 
-    /**
-     * Resolves a name into a value.
-     * 
-     * @param name
-     *            The name to resolve.
-     * @return The resolved value.
-     */
-    public abstract T resolve(String name);
+	/**
+	 * Resolves a name into a value.
+	 * 
+	 * @param name The name to resolve.
+	 * @return The resolved value.
+	 */
+	public abstract T resolve(String name);
 
 }

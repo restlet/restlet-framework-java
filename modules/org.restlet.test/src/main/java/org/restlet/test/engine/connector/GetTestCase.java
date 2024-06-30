@@ -24,6 +24,8 @@
 
 package org.restlet.test.engine.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -36,8 +38,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test that a simple get works for all the connectors.

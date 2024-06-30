@@ -32,32 +32,31 @@ import java.util.HashSet;
  */
 public class CaseInsensitiveHashSet extends HashSet<String> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor initializing the set with the given collection.
-     * 
-     * @param source
-     *            The source collection to use for initialization.
-     */
-    public CaseInsensitiveHashSet(Collection<? extends String> source) {
-        super(source);
-    }
+	/**
+	 * Constructor initializing the set with the given collection.
+	 * 
+	 * @param source The source collection to use for initialization.
+	 */
+	public CaseInsensitiveHashSet(Collection<? extends String> source) {
+		super(source);
+	}
 
-    @Override
-    public boolean add(String element) {
-        return super.add(element.toLowerCase());
-    }
+	@Override
+	public boolean add(String element) {
+		return super.add(element.toLowerCase());
+	}
 
-    /**
-     * Verify containment by ignoring case.
-     */
-    public boolean contains(String element) {
-        return super.contains(element.toLowerCase());
-    }
+	/**
+	 * Verify containment by ignoring case.
+	 */
+	public boolean contains(String element) {
+		return super.contains(element.toLowerCase());
+	}
 
-    @Override
-    public boolean contains(Object o) {
-        return contains(o.toString());
-    }
+	@Override
+	public boolean contains(Object o) {
+		return contains(o.toString());
+	}
 }

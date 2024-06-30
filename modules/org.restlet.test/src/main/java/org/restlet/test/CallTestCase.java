@@ -24,6 +24,8 @@
 
 package org.restlet.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,8 +37,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.Call;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link org.restlet.engine.adapter.Call}.

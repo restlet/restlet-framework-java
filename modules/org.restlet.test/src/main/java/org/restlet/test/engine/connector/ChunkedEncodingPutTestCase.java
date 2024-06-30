@@ -24,6 +24,9 @@
 
 package org.restlet.test.engine.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -39,9 +42,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.

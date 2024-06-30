@@ -24,14 +24,14 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Digest;
 import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.MapVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Restlet unit tests for the DigestVerifierTestCase class.

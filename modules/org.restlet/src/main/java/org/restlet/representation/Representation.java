@@ -66,583 +66,544 @@ import org.restlet.engine.util.DateUtils;
  * @author Jerome Louvel
  */
 public abstract class Representation extends RepresentationInfo {
-    /**
-     * Indicates that the size of the representation can't be known in advance.
-     */
-    public static final long UNKNOWN_SIZE = -1L;
+	/**
+	 * Indicates that the size of the representation can't be known in advance.
+	 */
+	public static final long UNKNOWN_SIZE = -1L;
 
-    /** Indicates if the representation's content is potentially available. */
-    private volatile boolean available;
+	/** Indicates if the representation's content is potentially available. */
+	private volatile boolean available;
 
-    /**
-     * The representation digest if any.
-     */
-    private volatile org.restlet.data.Digest digest;
+	/**
+	 * The representation digest if any.
+	 */
+	private volatile org.restlet.data.Digest digest;
 
-    /** The disposition characteristics of the representation. */
-    private volatile Disposition disposition;
+	/** The disposition characteristics of the representation. */
+	private volatile Disposition disposition;
 
-    /** The expiration date. */
-    private volatile Date expirationDate;
+	/** The expiration date. */
+	private volatile Date expirationDate;
 
-    /** Indicates if the representation's content is transient. */
-    private volatile boolean isTransient;
+	/** Indicates if the representation's content is transient. */
+	private volatile boolean isTransient;
 
-    /**
-     * Indicates where in the full content the partial content available should
-     * be applied.
-     */
-    private volatile Range range;
+	/**
+	 * Indicates where in the full content the partial content available should be
+	 * applied.
+	 */
+	private volatile Range range;
 
-    /**
-     * The expected size. Dynamic representations can have any size, but
-     * sometimes we can know in advance the expected size. If this expected size
-     * is specified by the user, it has a higher priority than any size that can
-     * be guessed by the representation (like a file size).
-     */
-    private volatile long size;
+	/**
+	 * The expected size. Dynamic representations can have any size, but sometimes
+	 * we can know in advance the expected size. If this expected size is specified
+	 * by the user, it has a higher priority than any size that can be guessed by
+	 * the representation (like a file size).
+	 */
+	private volatile long size;
 
-    /**
-     * Default constructor.
-     */
-    public Representation() {
-        this(null);
-    }
+	/**
+	 * Default constructor.
+	 */
+	public Representation() {
+		this(null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public Representation(MediaType mediaType) {
-        super(mediaType);
-        this.available = true;
-        this.disposition = null;
-        this.isTransient = false;
-        this.size = UNKNOWN_SIZE;
-        this.expirationDate = null;
-        this.digest = null;
-        this.range = null;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 */
+	public Representation(MediaType mediaType) {
+		super(mediaType);
+		this.available = true;
+		this.disposition = null;
+		this.isTransient = false;
+		this.size = UNKNOWN_SIZE;
+		this.expirationDate = null;
+		this.digest = null;
+		this.range = null;
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param modificationDate
-     *            The modification date.
-     */
-    public Representation(MediaType mediaType, Date modificationDate) {
-        this(mediaType, modificationDate, null);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType        The media type.
+	 * @param modificationDate The modification date.
+	 */
+	public Representation(MediaType mediaType, Date modificationDate) {
+		this(mediaType, modificationDate, null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param modificationDate
-     *            The modification date.
-     * @param tag
-     *            The tag.
-     */
-    public Representation(MediaType mediaType, Date modificationDate, Tag tag) {
-        super(mediaType, modificationDate, tag);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType        The media type.
+	 * @param modificationDate The modification date.
+	 * @param tag              The tag.
+	 */
+	public Representation(MediaType mediaType, Date modificationDate, Tag tag) {
+		super(mediaType, modificationDate, tag);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param tag
-     *            The tag.
-     */
-    public Representation(MediaType mediaType, Tag tag) {
-        this(mediaType, null, tag);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 * @param tag       The tag.
+	 */
+	public Representation(MediaType mediaType, Tag tag) {
+		this(mediaType, null, tag);
+	}
 
-    /**
-     * Constructor from a variant.
-     * 
-     * @param variant
-     *            The variant to copy.
-     * @param modificationDate
-     *            The modification date.
-     */
-    public Representation(Variant variant, Date modificationDate) {
-        this(variant, modificationDate, null);
-    }
+	/**
+	 * Constructor from a variant.
+	 * 
+	 * @param variant          The variant to copy.
+	 * @param modificationDate The modification date.
+	 */
+	public Representation(Variant variant, Date modificationDate) {
+		this(variant, modificationDate, null);
+	}
 
-    /**
-     * Constructor from a variant.
-     * 
-     * @param variant
-     *            The variant to copy.
-     * @param modificationDate
-     *            The modification date.
-     * @param tag
-     *            The tag.
-     */
-    public Representation(Variant variant, Date modificationDate, Tag tag) {
-        setCharacterSet(variant.getCharacterSet());
-        setEncodings(variant.getEncodings());
-        setLocationRef(variant.getLocationRef());
-        setLanguages(variant.getLanguages());
-        setMediaType(variant.getMediaType());
-        setModificationDate(modificationDate);
-        setTag(tag);
-    }
+	/**
+	 * Constructor from a variant.
+	 * 
+	 * @param variant          The variant to copy.
+	 * @param modificationDate The modification date.
+	 * @param tag              The tag.
+	 */
+	public Representation(Variant variant, Date modificationDate, Tag tag) {
+		setCharacterSet(variant.getCharacterSet());
+		setEncodings(variant.getEncodings());
+		setLocationRef(variant.getLocationRef());
+		setLanguages(variant.getLanguages());
+		setMediaType(variant.getMediaType());
+		setModificationDate(modificationDate);
+		setTag(tag);
+	}
 
-    /**
-     * Constructor from a variant.
-     * 
-     * @param variant
-     *            The variant to copy.
-     * @param tag
-     *            The tag.
-     */
-    public Representation(Variant variant, Tag tag) {
-        this(variant, null, tag);
-    }
+	/**
+	 * Constructor from a variant.
+	 * 
+	 * @param variant The variant to copy.
+	 * @param tag     The tag.
+	 */
+	public Representation(Variant variant, Tag tag) {
+		this(variant, null, tag);
+	}
 
-    /**
-     * Appends the representation to an appendable sequence of characters. This
-     * method is ensured to write the full content for each invocation unless it
-     * is a transient representation, in which case an exception is thrown.<br>
-     * <br>
-     * Note that {@link #getText()} is used by the default implementation.
-     * 
-     * @param appendable
-     *            The appendable sequence of characters.
-     * @throws IOException
-     */
-    public void append(Appendable appendable) throws IOException {
-        appendable.append(getText());
-    }
+	/**
+	 * Appends the representation to an appendable sequence of characters. This
+	 * method is ensured to write the full content for each invocation unless it is
+	 * a transient representation, in which case an exception is thrown.<br>
+	 * <br>
+	 * Note that {@link #getText()} is used by the default implementation.
+	 * 
+	 * @param appendable The appendable sequence of characters.
+	 * @throws IOException
+	 */
+	public void append(Appendable appendable) throws IOException {
+		appendable.append(getText());
+	}
 
-    /**
-     * Exhaust the content of the representation by reading it and silently
-     * discarding anything read. By default, it relies on {@link #getStream()}
-     * and closes the retrieved stream in the end.
-     * 
-     * @return The number of bytes consumed or -1 if unknown.
-     * @throws IOException
-     */
-    public long exhaust() throws IOException {
-        long result = -1L;
+	/**
+	 * Exhaust the content of the representation by reading it and silently
+	 * discarding anything read. By default, it relies on {@link #getStream()} and
+	 * closes the retrieved stream in the end.
+	 * 
+	 * @return The number of bytes consumed or -1 if unknown.
+	 * @throws IOException
+	 */
+	public long exhaust() throws IOException {
+		long result = -1L;
 
-        if (isAvailable()) {
-            InputStream is = getStream();
-            result = IoUtils.exhaust(is);
-            is.close();
-        }
+		if (isAvailable()) {
+			InputStream is = getStream();
+			result = IoUtils.exhaust(is);
+			is.close();
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the size effectively available. This returns the same value as
-     * {@link #getSize()} if no range is defined, otherwise it returns the size
-     * of the range using {@link Range#getSize()}.
-     * 
-     * @return The available size.
-     */
-    public long getAvailableSize() {
-        return IoUtils.getAvailableSize(this);
-    }
+	/**
+	 * Returns the size effectively available. This returns the same value as
+	 * {@link #getSize()} if no range is defined, otherwise it returns the size of
+	 * the range using {@link Range#getSize()}.
+	 * 
+	 * @return The available size.
+	 */
+	public long getAvailableSize() {
+		return IoUtils.getAvailableSize(this);
+	}
 
-    /**
-     * Returns a channel with the representation's content.<br>
-     * If it is supported by a file, a read-only instance of FileChannel is
-     * returned.<br>
-     * This method is ensured to return a fresh channel for each invocation
-     * unless it is a transient representation, in which case null is returned.
-     * 
-     * @return A channel with the representation's content.
-     * @throws IOException
-     */
-    public abstract java.nio.channels.ReadableByteChannel getChannel()
-            throws IOException;
+	/**
+	 * Returns a channel with the representation's content.<br>
+	 * If it is supported by a file, a read-only instance of FileChannel is
+	 * returned.<br>
+	 * This method is ensured to return a fresh channel for each invocation unless
+	 * it is a transient representation, in which case null is returned.
+	 * 
+	 * @return A channel with the representation's content.
+	 * @throws IOException
+	 */
+	public abstract java.nio.channels.ReadableByteChannel getChannel() throws IOException;
 
-    /**
-     * Returns the representation digest if any.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-MD5" header.
-     * 
-     * @return The representation digest or null.
-     */
-    public org.restlet.data.Digest getDigest() {
-        return this.digest;
-    }
+	/**
+	 * Returns the representation digest if any.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-MD5" header.
+	 * 
+	 * @return The representation digest or null.
+	 */
+	public org.restlet.data.Digest getDigest() {
+		return this.digest;
+	}
 
-    /**
-     * Returns the disposition characteristics of the representation.
-     * 
-     * @return The disposition characteristics of the representation.
-     */
-    public Disposition getDisposition() {
-        return disposition;
-    }
+	/**
+	 * Returns the disposition characteristics of the representation.
+	 * 
+	 * @return The disposition characteristics of the representation.
+	 */
+	public Disposition getDisposition() {
+		return disposition;
+	}
 
-    /**
-     * Returns the future date when this representation expire. If this
-     * information is not known, returns null.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Expires" header.
-     * 
-     * @return The expiration date.
-     */
-    public Date getExpirationDate() {
-        return this.expirationDate;
-    }
+	/**
+	 * Returns the future date when this representation expire. If this information
+	 * is not known, returns null.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the "Expires"
+	 * header.
+	 * 
+	 * @return The expiration date.
+	 */
+	public Date getExpirationDate() {
+		return this.expirationDate;
+	}
 
-    /**
-     * Returns the range where in the full content the partial content available
-     * should be applied.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Range" header.
-     * 
-     * @return The content range or null if the full content is available.
-     */
-    public Range getRange() {
-        return this.range;
-    }
+	/**
+	 * Returns the range where in the full content the partial content available
+	 * should be applied.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Range" header.
+	 * 
+	 * @return The content range or null if the full content is available.
+	 */
+	public Range getRange() {
+		return this.range;
+	}
 
-    /**
-     * Returns a characters reader with the representation's content. This
-     * method is ensured to return a fresh reader for each invocation unless it
-     * is a transient representation, in which case null is returned. If the
-     * representation has no character set defined, the system's default one
-     * will be used.
-     * 
-     * @return A reader with the representation's content.
-     * @throws IOException
-     */
-    public abstract Reader getReader() throws IOException;
+	/**
+	 * Returns a characters reader with the representation's content. This method is
+	 * ensured to return a fresh reader for each invocation unless it is a transient
+	 * representation, in which case null is returned. If the representation has no
+	 * character set defined, the system's default one will be used.
+	 * 
+	 * @return A reader with the representation's content.
+	 * @throws IOException
+	 */
+	public abstract Reader getReader() throws IOException;
 
-    // [ifndef gae] method
-    /**
-     * Returns the NIO registration of the related channel with its selector.
-     * You can modify this registration to be called back when some readable
-     * content is available. Note that the listener will keep being called back
-     * until you suspend or cancel the registration returned by this method.
-     * 
-     * @return The NIO registration.
-     * @throws IOException
-     * @see #isSelectable()
-     */
-    public org.restlet.util.SelectionRegistration getRegistration()
-            throws IOException {
-        if (isSelectable()) {
-            return ((org.restlet.engine.io.SelectionChannel) getChannel())
-                    .getRegistration();
-        }
-        throw new IllegalStateException("The representation isn't selectable");
-    }
+	// [ifndef gae] method
+	/**
+	 * Returns the NIO registration of the related channel with its selector. You
+	 * can modify this registration to be called back when some readable content is
+	 * available. Note that the listener will keep being called back until you
+	 * suspend or cancel the registration returned by this method.
+	 * 
+	 * @return The NIO registration.
+	 * @throws IOException
+	 * @see #isSelectable()
+	 */
+	public org.restlet.util.SelectionRegistration getRegistration() throws IOException {
+		if (isSelectable()) {
+			return ((org.restlet.engine.io.SelectionChannel) getChannel()).getRegistration();
+		}
+		throw new IllegalStateException("The representation isn't selectable");
+	}
 
-    /**
-     * Returns the total size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     * When ranges are used, this might not be the actual size available. For
-     * this purpose, you can use the {@link #getAvailableSize()} method.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Length" header.
-     * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     * @see #isEmpty()
-     */
-    public long getSize() {
-        return this.size;
-    }
+	/**
+	 * Returns the total size in bytes if known, UNKNOWN_SIZE (-1) otherwise. When
+	 * ranges are used, this might not be the actual size available. For this
+	 * purpose, you can use the {@link #getAvailableSize()} method.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Length" header.
+	 * 
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 * @see #isEmpty()
+	 */
+	public long getSize() {
+		return this.size;
+	}
 
-    /**
-     * Returns a stream with the representation's content. This method is
-     * ensured to return a fresh stream for each invocation unless it is a
-     * transient representation, in which case null is returned.
-     * 
-     * @return A stream with the representation's content.
-     * @throws IOException
-     */
-    public abstract InputStream getStream() throws IOException;
+	/**
+	 * Returns a stream with the representation's content. This method is ensured to
+	 * return a fresh stream for each invocation unless it is a transient
+	 * representation, in which case null is returned.
+	 * 
+	 * @return A stream with the representation's content.
+	 * @throws IOException
+	 */
+	public abstract InputStream getStream() throws IOException;
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     * @throws IOException
-     */
-    public String getText() throws IOException {
-        String result = null;
+	/**
+	 * Converts the representation to a string value. Be careful when using this
+	 * method as the conversion of large content to a string fully stored in memory
+	 * can result in OutOfMemoryErrors being thrown.
+	 * 
+	 * @return The representation as a string value.
+	 * @throws IOException
+	 */
+	public String getText() throws IOException {
+		String result = null;
 
-        if (isEmpty()) {
-            result = "";
-        } else if (isAvailable()) {
-            java.io.StringWriter sw = new java.io.StringWriter();
-            write(sw);
-            sw.flush();
-            result = sw.toString();
-        }
+		if (isEmpty()) {
+			result = "";
+		} else if (isAvailable()) {
+			java.io.StringWriter sw = new java.io.StringWriter();
+			write(sw);
+			sw.flush();
+			result = sw.toString();
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Indicates if the size of representation is known. It basically means that
-     * its size 0 or superior.
-     * 
-     * @return True if the representation has content.
-     */
-    public boolean hasKnownSize() {
-        return getSize() >= 0;
-    }
+	/**
+	 * Indicates if the size of representation is known. It basically means that its
+	 * size 0 or superior.
+	 * 
+	 * @return True if the representation has content.
+	 */
+	public boolean hasKnownSize() {
+		return getSize() >= 0;
+	}
 
-    /**
-     * Indicates if some fresh content is potentially available, without having
-     * to actually call one of the content manipulation method like getStream()
-     * that would actually consume it. Note that when the size of a
-     * representation is 0 is a not considered available. However, sometimes the
-     * size isn't known until a read attempt is made, so availability doesn't
-     * guarantee a non empty content.<br>
-     * <br>
-     * This is especially useful for transient representation whose content can
-     * only be accessed once and also when the size of the representation is not
-     * known in advance.
-     * 
-     * @return True if some fresh content is available.
-     */
-    public boolean isAvailable() {
-        return this.available && (getSize() != 0);
-    }
+	/**
+	 * Indicates if some fresh content is potentially available, without having to
+	 * actually call one of the content manipulation method like getStream() that
+	 * would actually consume it. Note that when the size of a representation is 0
+	 * is a not considered available. However, sometimes the size isn't known until
+	 * a read attempt is made, so availability doesn't guarantee a non empty
+	 * content.<br>
+	 * <br>
+	 * This is especially useful for transient representation whose content can only
+	 * be accessed once and also when the size of the representation is not known in
+	 * advance.
+	 * 
+	 * @return True if some fresh content is available.
+	 */
+	public boolean isAvailable() {
+		return this.available && (getSize() != 0);
+	}
 
-    /**
-     * Indicates if the representation is empty. It basically means that its
-     * size is 0.
-     * 
-     * @return True if the representation has no content.
-     */
-    public boolean isEmpty() {
-        return getSize() == 0;
-    }
+	/**
+	 * Indicates if the representation is empty. It basically means that its size is
+	 * 0.
+	 * 
+	 * @return True if the representation has no content.
+	 */
+	public boolean isEmpty() {
+		return getSize() == 0;
+	}
 
-    // [ifndef gae] method
-    /**
-     * Indicates if the representation content supports NIO selection. In this
-     * case, the
-     * {@link #getRegistration()}
-     * method can be called to be notified when new content is ready for
-     * reading.
-     * 
-     * @return True if the representation content supports NIO selection.
-     */
-    public boolean isSelectable() {
-        try {
-            return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
-        } catch (IOException e) {
-            return false;
-        }
-    }
+	// [ifndef gae] method
+	/**
+	 * Indicates if the representation content supports NIO selection. In this case,
+	 * the {@link #getRegistration()} method can be called to be notified when new
+	 * content is ready for reading.
+	 * 
+	 * @return True if the representation content supports NIO selection.
+	 */
+	public boolean isSelectable() {
+		try {
+			return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
-    /**
-     * Indicates if the representation's content is transient, which means that
-     * it can be obtained only once. This is often the case with representations
-     * transmitted via network sockets for example. In such case, if you need to
-     * read the content several times, you need to cache it first, for example
-     * into memory or into a file.
-     * 
-     * @return True if the representation's content is transient.
-     */
-    public boolean isTransient() {
-        return this.isTransient;
-    }
+	/**
+	 * Indicates if the representation's content is transient, which means that it
+	 * can be obtained only once. This is often the case with representations
+	 * transmitted via network sockets for example. In such case, if you need to
+	 * read the content several times, you need to cache it first, for example into
+	 * memory or into a file.
+	 * 
+	 * @return True if the representation's content is transient.
+	 */
+	public boolean isTransient() {
+		return this.isTransient;
+	}
 
-    /**
-     * Releases the representation and all associated objects like streams,
-     * channels or files which are used to produce its content, transient or
-     * not. This method must be systematically called when the representation is
-     * no longer intended to be used. The framework automatically calls back
-     * this method via its connectors on the server-side when sending responses
-     * with an entity and on the client-side when sending a request with an
-     * entity. By default, it calls the {@link #setAvailable(boolean)} method
-     * with "false" as a value.<br>
-     * <br>
-     * Note that for transient socket-bound representations, calling this method
-     * after consuming the whole content shouldn't prevent the reuse of
-     * underlying socket via persistent connections for example. However, if the
-     * content hasn't been read, or has been partially read, the impact should
-     * be to discard the remaining content and to close the underlying
-     * connections.<br>
-     * <br>
-     * Therefore, if you are not interested in the content, or in the remaining
-     * content, you should first call the {@link #exhaust()} method or if this
-     * could be too costly, you should instead explicitly abort the parent
-     * request and the underlying connections using the {@link Request#abort()}
-     * method or a shortcut one like
-     * {@link org.restlet.resource.ServerResource#abort()} or
-     * {@link Response#abort()}.
-     */
-    public void release() {
-        setAvailable(false);
-    }
+	/**
+	 * Releases the representation and all associated objects like streams, channels
+	 * or files which are used to produce its content, transient or not. This method
+	 * must be systematically called when the representation is no longer intended
+	 * to be used. The framework automatically calls back this method via its
+	 * connectors on the server-side when sending responses with an entity and on
+	 * the client-side when sending a request with an entity. By default, it calls
+	 * the {@link #setAvailable(boolean)} method with "false" as a value.<br>
+	 * <br>
+	 * Note that for transient socket-bound representations, calling this method
+	 * after consuming the whole content shouldn't prevent the reuse of underlying
+	 * socket via persistent connections for example. However, if the content hasn't
+	 * been read, or has been partially read, the impact should be to discard the
+	 * remaining content and to close the underlying connections.<br>
+	 * <br>
+	 * Therefore, if you are not interested in the content, or in the remaining
+	 * content, you should first call the {@link #exhaust()} method or if this could
+	 * be too costly, you should instead explicitly abort the parent request and the
+	 * underlying connections using the {@link Request#abort()} method or a shortcut
+	 * one like {@link org.restlet.resource.ServerResource#abort()} or
+	 * {@link Response#abort()}.
+	 */
+	public void release() {
+		setAvailable(false);
+	}
 
-    /**
-     * Indicates if some fresh content is available.
-     * 
-     * @param available
-     *            True if some fresh content is available.
-     */
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+	/**
+	 * Indicates if some fresh content is available.
+	 * 
+	 * @param available True if some fresh content is available.
+	 */
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
 
-    /**
-     * Sets the representation digest.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-MD5" header.
-     * 
-     * @param digest
-     *            The representation digest.
-     */
-    public void setDigest(org.restlet.data.Digest digest) {
-        this.digest = digest;
-    }
+	/**
+	 * Sets the representation digest.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-MD5" header.
+	 * 
+	 * @param digest The representation digest.
+	 */
+	public void setDigest(org.restlet.data.Digest digest) {
+		this.digest = digest;
+	}
 
-    /**
-     * Sets the disposition characteristics of the representation.
-     * 
-     * @param disposition
-     *            The disposition characteristics of the representation.
-     */
-    public void setDisposition(Disposition disposition) {
-        this.disposition = disposition;
-    }
+	/**
+	 * Sets the disposition characteristics of the representation.
+	 * 
+	 * @param disposition The disposition characteristics of the representation.
+	 */
+	public void setDisposition(Disposition disposition) {
+		this.disposition = disposition;
+	}
 
-    /**
-     * Sets the future date when this representation expire. If this information
-     * is not known, pass null.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Expires" header.
-     * 
-     * @param expirationDate
-     *            The expiration date.
-     */
-    public void setExpirationDate(Date expirationDate) {
-        this.expirationDate = DateUtils.unmodifiable(expirationDate);
-    }
+	/**
+	 * Sets the future date when this representation expire. If this information is
+	 * not known, pass null.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the "Expires"
+	 * header.
+	 * 
+	 * @param expirationDate The expiration date.
+	 */
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = DateUtils.unmodifiable(expirationDate);
+	}
 
-    // [ifndef gae] method
-    /**
-     * Sets a listener for NIO read events. If the listener is null, it clear
-     * any existing listener.
-     * 
-     * @param readingListener
-     *            The listener for NIO read events.
-     */
-    public void setListener(org.restlet.util.ReadingListener readingListener) {
-        try {
-            org.restlet.util.SelectionRegistration sr = getRegistration();
+	// [ifndef gae] method
+	/**
+	 * Sets a listener for NIO read events. If the listener is null, it clear any
+	 * existing listener.
+	 * 
+	 * @param readingListener The listener for NIO read events.
+	 */
+	public void setListener(org.restlet.util.ReadingListener readingListener) {
+		try {
+			org.restlet.util.SelectionRegistration sr = getRegistration();
 
-            if ((readingListener == null)) {
-                sr.setNoInterest();
-            } else {
-                sr.setReadInterest();
-            }
+			if ((readingListener == null)) {
+				sr.setNoInterest();
+			} else {
+				sr.setReadInterest();
+			}
 
-            sr.setSelectionListener(readingListener);
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to register the reading listener", ioe);
-        }
-    }
+			sr.setSelectionListener(readingListener);
+		} catch (IOException ioe) {
+			Context.getCurrentLogger().log(Level.WARNING, "Unable to register the reading listener", ioe);
+		}
+	}
 
-    /**
-     * Sets the range where in the full content the partial content available
-     * should be applied.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Range" header.
-     * 
-     * @param range
-     *            The content range.
-     */
-    public void setRange(Range range) {
-        this.range = range;
-    }
+	/**
+	 * Sets the range where in the full content the partial content available should
+	 * be applied.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Range" header.
+	 * 
+	 * @param range The content range.
+	 */
+	public void setRange(Range range) {
+		this.range = range;
+	}
 
-    /**
-     * Sets the expected size in bytes if known, -1 otherwise. For this purpose,
-     * you can use the {@link #getAvailableSize()} method.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Length" header.
-     * 
-     * @param expectedSize
-     *            The expected size in bytes if known, -1 otherwise.
-     */
-    public void setSize(long expectedSize) {
-        this.size = expectedSize;
-    }
+	/**
+	 * Sets the expected size in bytes if known, -1 otherwise. For this purpose, you
+	 * can use the {@link #getAvailableSize()} method.<br>
+	 * <br>
+	 * Note that when used with HTTP connectors, this property maps to the
+	 * "Content-Length" header.
+	 * 
+	 * @param expectedSize The expected size in bytes if known, -1 otherwise.
+	 */
+	public void setSize(long expectedSize) {
+		this.size = expectedSize;
+	}
 
-    /**
-     * Indicates if the representation's content is transient.
-     * 
-     * @param isTransient
-     *            True if the representation's content is transient.
-     */
-    public void setTransient(boolean isTransient) {
-        this.isTransient = isTransient;
-    }
+	/**
+	 * Indicates if the representation's content is transient.
+	 * 
+	 * @param isTransient True if the representation's content is transient.
+	 */
+	public void setTransient(boolean isTransient) {
+		this.isTransient = isTransient;
+	}
 
-    /**
-     * Writes the representation to a characters writer. This method is ensured
-     * to write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.<br>
-     * <br>
-     * Note that the class implementing this method shouldn't flush or close the
-     * given {@link java.io.Writer} after writing to it as this will be handled
-     * by the Restlet connectors automatically.
-     * 
-     * @param writer
-     *            The characters writer.
-     * @throws IOException
-     */
-    public abstract void write(java.io.Writer writer) throws IOException;
+	/**
+	 * Writes the representation to a characters writer. This method is ensured to
+	 * write the full content for each invocation unless it is a transient
+	 * representation, in which case an exception is thrown.<br>
+	 * <br>
+	 * Note that the class implementing this method shouldn't flush or close the
+	 * given {@link java.io.Writer} after writing to it as this will be handled by
+	 * the Restlet connectors automatically.
+	 * 
+	 * @param writer The characters writer.
+	 * @throws IOException
+	 */
+	public abstract void write(java.io.Writer writer) throws IOException;
 
-    /**
-     * Writes the representation to a byte channel. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param writableChannel
-     *            A writable byte channel.
-     * @throws IOException
-     */
-    public abstract void write(
-            java.nio.channels.WritableByteChannel writableChannel)
-            throws IOException;
+	/**
+	 * Writes the representation to a byte channel. This method is ensured to write
+	 * the full content for each invocation unless it is a transient representation,
+	 * in which case an exception is thrown.
+	 * 
+	 * @param writableChannel A writable byte channel.
+	 * @throws IOException
+	 */
+	public abstract void write(java.nio.channels.WritableByteChannel writableChannel) throws IOException;
 
-    /**
-     * Writes the representation to a byte stream. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.<br>
-     * <br>
-     * Note that the class implementing this method shouldn't flush or close the
-     * given {@link OutputStream} after writing to it as this will be handled by
-     * the Restlet connectors automatically.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
-    public abstract void write(OutputStream outputStream) throws IOException;
+	/**
+	 * Writes the representation to a byte stream. This method is ensured to write
+	 * the full content for each invocation unless it is a transient representation,
+	 * in which case an exception is thrown.<br>
+	 * <br>
+	 * Note that the class implementing this method shouldn't flush or close the
+	 * given {@link OutputStream} after writing to it as this will be handled by the
+	 * Restlet connectors automatically.
+	 * 
+	 * @param outputStream The output stream.
+	 * @throws IOException
+	 */
+	public abstract void write(OutputStream outputStream) throws IOException;
 
 }

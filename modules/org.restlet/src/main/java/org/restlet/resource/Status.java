@@ -67,21 +67,21 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Status {
 
-    /**
-     * Specifies the HTTP status code associated to the annotated
-     * {@link Throwable}. Default is 500.
-     * 
-     * @return The result HTTP status code.
-     */
-    int value() default 500;
+	/**
+	 * Specifies the HTTP status code associated to the annotated {@link Throwable}.
+	 * Default is 500.
+	 * 
+	 * @return The result HTTP status code.
+	 */
+	int value() default 500;
 
-    /**
-     * Indicates if the annotated {@link Throwable} should be serialized in the
-     * HTTP response entity.
-     * 
-     * @return True if {@link Throwable} should be serialized in the HTTP
-     *         response entity.
-     */
-    boolean serialize() default true;
+	/**
+	 * Indicates if the annotated {@link Throwable} should be serialized in the HTTP
+	 * response entity.
+	 * 
+	 * @return True if {@link Throwable} should be serialized in the HTTP response
+	 *         entity.
+	 */
+	boolean serialize() default true;
 
 }

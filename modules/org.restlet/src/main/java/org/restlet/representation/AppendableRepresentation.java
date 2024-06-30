@@ -35,141 +35,125 @@ import org.restlet.data.MediaType;
  *
  * @author Jerome Louvel
  */
-public class AppendableRepresentation extends StringRepresentation implements
-        Appendable {
+public class AppendableRepresentation extends StringRepresentation implements Appendable {
 
-    /** The appendable text. */
-    private volatile StringBuilder appendableText;
+	/** The appendable text. */
+	private volatile StringBuilder appendableText;
 
-    /**
-     * Constructor. The following metadata are used by default: "text/plain"
-     * media type, no language and the ISO-8859-1 character set.
-     */
-    public AppendableRepresentation() {
-        this(null);
-    }
+	/**
+	 * Constructor. The following metadata are used by default: "text/plain" media
+	 * type, no language and the ISO-8859-1 character set.
+	 */
+	public AppendableRepresentation() {
+		this(null);
+	}
 
-    /**
-     * Constructor. The following metadata are used by default: "text/plain"
-     * media type, no language and the ISO-8859-1 character set.
-     *
-     * @param text
-     *         The string value.
-     */
-    public AppendableRepresentation(CharSequence text) {
-        super(text);
-    }
+	/**
+	 * Constructor. The following metadata are used by default: "text/plain" media
+	 * type, no language and the ISO-8859-1 character set.
+	 *
+	 * @param text The string value.
+	 */
+	public AppendableRepresentation(CharSequence text) {
+		super(text);
+	}
 
-    /**
-     * Constructor. The following metadata are used by default: "text/plain"
-     * media type, no language and the ISO-8859-1 character set.
-     *
-     * @param text
-     *         The string value.
-     * @param language
-     *         The language.
-     */
-    public AppendableRepresentation(CharSequence text, Language language) {
-        super(text, language);
-    }
+	/**
+	 * Constructor. The following metadata are used by default: "text/plain" media
+	 * type, no language and the ISO-8859-1 character set.
+	 *
+	 * @param text     The string value.
+	 * @param language The language.
+	 */
+	public AppendableRepresentation(CharSequence text, Language language) {
+		super(text, language);
+	}
 
-    /**
-     * Constructor. The following metadata are used by default: no language and
-     * the ISO-8859-1 character set.
-     *
-     * @param text
-     *         The string value.
-     * @param mediaType
-     *         The media type.
-     */
-    public AppendableRepresentation(CharSequence text, MediaType mediaType) {
-        super(text, mediaType);
-    }
+	/**
+	 * Constructor. The following metadata are used by default: no language and the
+	 * ISO-8859-1 character set.
+	 *
+	 * @param text      The string value.
+	 * @param mediaType The media type.
+	 */
+	public AppendableRepresentation(CharSequence text, MediaType mediaType) {
+		super(text, mediaType);
+	}
 
-    /**
-     * Constructor. The following metadata are used by default: ISO-8859-1
-     * character set.
-     *
-     * @param text
-     *         The string value.
-     * @param mediaType
-     *         The media type.
-     * @param language
-     *         The language.
-     */
-    public AppendableRepresentation(CharSequence text, MediaType mediaType,
-            Language language) {
-        super(text, mediaType, language);
-    }
+	/**
+	 * Constructor. The following metadata are used by default: ISO-8859-1 character
+	 * set.
+	 *
+	 * @param text      The string value.
+	 * @param mediaType The media type.
+	 * @param language  The language.
+	 */
+	public AppendableRepresentation(CharSequence text, MediaType mediaType, Language language) {
+		super(text, mediaType, language);
+	}
 
-    /**
-     * Constructor.
-     *
-     * @param text
-     *         The string value.
-     * @param mediaType
-     *         The media type.
-     * @param language
-     *         The language.
-     * @param characterSet
-     *         The character set.
-     */
-    public AppendableRepresentation(CharSequence text, MediaType mediaType,
-            Language language, CharacterSet characterSet) {
-        super(text, mediaType, language, characterSet);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param text         The string value.
+	 * @param mediaType    The media type.
+	 * @param language     The language.
+	 * @param characterSet The character set.
+	 */
+	public AppendableRepresentation(CharSequence text, MediaType mediaType, Language language,
+			CharacterSet characterSet) {
+		super(text, mediaType, language, characterSet);
+	}
 
-    @Override
-    public Appendable append(char c) throws IOException {
-        if (this.appendableText == null) {
-            this.appendableText = new StringBuilder().append(c);
-        } else {
-            this.appendableText.append(c);
-        }
+	@Override
+	public Appendable append(char c) throws IOException {
+		if (this.appendableText == null) {
+			this.appendableText = new StringBuilder().append(c);
+		} else {
+			this.appendableText.append(c);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    @Override
-    public Appendable append(CharSequence csq) throws IOException {
-        if (this.appendableText == null) {
-            this.appendableText = new StringBuilder(csq);
-        } else {
-            this.appendableText.append(csq);
-        }
+	@Override
+	public Appendable append(CharSequence csq) throws IOException {
+		if (this.appendableText == null) {
+			this.appendableText = new StringBuilder(csq);
+		} else {
+			this.appendableText.append(csq);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    @Override
-    public Appendable append(CharSequence csq, int start, int end)
-            throws IOException {
-        if (this.appendableText == null) {
-            this.appendableText = new StringBuilder();
-        }
+	@Override
+	public Appendable append(CharSequence csq, int start, int end) throws IOException {
+		if (this.appendableText == null) {
+			this.appendableText = new StringBuilder();
+		}
 
-        this.appendableText.append(csq, start, end);
+		this.appendableText.append(csq, start, end);
 
-        return this;
-    }
+		return this;
+	}
 
-    @Override
-    public String getText() {
-        return (this.appendableText == null) ? null : this.appendableText
-                .toString();
-    }
+	@Override
+	public String getText() {
+		return (this.appendableText == null) ? null : this.appendableText.toString();
+	}
 
-    @Override
-    public void setText(CharSequence text) {
-        if (text != null) {
-            if (this.appendableText == null) {
-                this.appendableText = new StringBuilder(text);
-            } else {
-                this.appendableText.delete(0, this.appendableText.length());
-                this.appendableText.append(text);
-            }
-        } else {
-            this.appendableText = null;
-        }
-    }
+	@Override
+	public void setText(CharSequence text) {
+		if (text != null) {
+			if (this.appendableText == null) {
+				this.appendableText = new StringBuilder(text);
+			} else {
+				this.appendableText.delete(0, this.appendableText.length());
+				this.appendableText.append(text);
+			}
+		} else {
+			this.appendableText = null;
+		}
+	}
 }

@@ -24,6 +24,9 @@
 
 package org.restlet.test.ext.html;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -34,9 +37,6 @@ import org.restlet.ext.html.FormDataSet;
 import org.restlet.ext.html.internal.FormReader;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the Form class.

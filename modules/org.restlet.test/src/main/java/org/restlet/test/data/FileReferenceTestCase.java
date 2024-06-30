@@ -24,13 +24,13 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the File Reference parsing.

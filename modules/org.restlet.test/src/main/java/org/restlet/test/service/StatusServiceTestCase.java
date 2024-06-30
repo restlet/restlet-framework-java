@@ -24,6 +24,9 @@
 
 package org.restlet.test.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -41,9 +44,6 @@ import org.restlet.service.StatusService;
 import org.restlet.test.RestletTestCase;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the status service.

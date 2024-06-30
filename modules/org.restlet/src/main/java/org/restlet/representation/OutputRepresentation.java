@@ -33,7 +33,8 @@ import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a BIO output stream. This class is a good basis to
- * write your own representations, especially for the dynamic and large ones.<br>
+ * write your own representations, especially for the dynamic and large
+ * ones.<br>
  * <br>
  * For this you just need to create a subclass and override the abstract
  * Representation.write(OutputStream) method. This method will later be called
@@ -42,43 +43,40 @@ import org.restlet.engine.io.IoUtils;
  * @author Jerome Louvel
  */
 public abstract class OutputRepresentation extends StreamRepresentation {
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's mediaType.
-     */
-    public OutputRepresentation(MediaType mediaType) {
-        super(mediaType);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The representation's mediaType.
+	 */
+	public OutputRepresentation(MediaType mediaType) {
+		super(mediaType);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's mediaType.
-     * @param expectedSize
-     *            The expected input stream size.
-     */
-    public OutputRepresentation(MediaType mediaType, long expectedSize) {
-        super(mediaType);
-        setSize(expectedSize);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType    The representation's mediaType.
+	 * @param expectedSize The expected input stream size.
+	 */
+	public OutputRepresentation(MediaType mediaType, long expectedSize) {
+		super(mediaType);
+		setSize(expectedSize);
+	}
 
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        return IoUtils.getChannel(this);
-    }
+	@Override
+	public ReadableByteChannel getChannel() throws IOException {
+		return IoUtils.getChannel(this);
+	}
 
-    /**
-     * Returns a stream with the representation's content. Internally, it uses a
-     * writer thread and a pipe stream.
-     * 
-     * @return A stream with the representation's content.
-     */
-    @Override
-    public InputStream getStream() throws IOException {
-        return IoUtils.getStream(this);
-    }
+	/**
+	 * Returns a stream with the representation's content. Internally, it uses a
+	 * writer thread and a pipe stream.
+	 * 
+	 * @return A stream with the representation's content.
+	 */
+	@Override
+	public InputStream getStream() throws IOException {
+		return IoUtils.getStream(this);
+	}
 
 }

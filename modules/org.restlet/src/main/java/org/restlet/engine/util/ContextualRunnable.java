@@ -31,34 +31,32 @@ package org.restlet.engine.util;
  * 
  */
 public abstract class ContextualRunnable implements Runnable {
-    /** The contextual class loader used at run time. */
-    private ClassLoader contextClassLoader;
+	/** The contextual class loader used at run time. */
+	private ClassLoader contextClassLoader;
 
-    /**
-     * Constructor.
-     */
-    public ContextualRunnable() {
-        this.contextClassLoader = Thread.currentThread()
-                .getContextClassLoader();
-    }
+	/**
+	 * Constructor.
+	 */
+	public ContextualRunnable() {
+		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
+	}
 
-    /**
-     * Returns the runnable's context class loader.
-     * 
-     * @return The runnable's context class loader.
-     */
-    public ClassLoader getContextClassLoader() {
-        return contextClassLoader;
-    }
+	/**
+	 * Returns the runnable's context class loader.
+	 * 
+	 * @return The runnable's context class loader.
+	 */
+	public ClassLoader getContextClassLoader() {
+		return contextClassLoader;
+	}
 
-    /**
-     * Sets the runnable's context class loader.
-     * 
-     * @param contextClassLoader
-     *            The runnable's context class loader.
-     */
-    public void setContextClassLoader(ClassLoader contextClassLoader) {
-        this.contextClassLoader = contextClassLoader;
-    }
+	/**
+	 * Sets the runnable's context class loader.
+	 * 
+	 * @param contextClassLoader The runnable's context class loader.
+	 */
+	public void setContextClassLoader(ClassLoader contextClassLoader) {
+		this.contextClassLoader = contextClassLoader;
+	}
 
 }

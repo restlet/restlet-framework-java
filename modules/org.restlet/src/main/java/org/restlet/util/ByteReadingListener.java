@@ -39,49 +39,43 @@ import org.restlet.representation.Representation;
  */
 public abstract class ByteReadingListener extends ReadingListener {
 
-    /**
-     * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
-     * length.
-     * 
-     * @param source
-     *            The source representation.
-     * @throws IOException
-     */
-    public ByteReadingListener(Representation source) throws IOException {
-        super(source);
-    }
+	/**
+	 * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
+	 * length.
+	 * 
+	 * @param source The source representation.
+	 * @throws IOException
+	 */
+	public ByteReadingListener(Representation source) throws IOException {
+		super(source);
+	}
 
-    /**
-     * Constructor. Uses a byte buffer of a given size.
-     * 
-     * @param source
-     *            The source byte channel.
-     * @param bufferSize
-     *            The byte buffer to use.
-     * @throws IOException
-     */
-    public ByteReadingListener(Representation source, int bufferSize)
-            throws IOException {
-        super(source, bufferSize);
-    }
+	/**
+	 * Constructor. Uses a byte buffer of a given size.
+	 * 
+	 * @param source     The source byte channel.
+	 * @param bufferSize The byte buffer to use.
+	 * @throws IOException
+	 */
+	public ByteReadingListener(Representation source, int bufferSize) throws IOException {
+		super(source, bufferSize);
+	}
 
-    /**
-     * Callback invoked when new content is available.
-     * 
-     * @param byteBuffer
-     *            The byte buffer filled with the new content (correctly flip).
-     */
-    protected final void onContent(ByteBuffer byteBuffer) {
-        onContent(new ByteArrayInputStream(byteBuffer.array(),
-                byteBuffer.arrayOffset(), byteBuffer.remaining()));
-    }
+	/**
+	 * Callback invoked when new content is available.
+	 * 
+	 * @param byteBuffer The byte buffer filled with the new content (correctly
+	 *                   flip).
+	 */
+	protected final void onContent(ByteBuffer byteBuffer) {
+		onContent(new ByteArrayInputStream(byteBuffer.array(), byteBuffer.arrayOffset(), byteBuffer.remaining()));
+	}
 
-    /**
-     * Callback invoked when new content is available.
-     * 
-     * @param inputStream
-     *            The input stream allowing to retrieve the new content.
-     */
-    protected abstract void onContent(InputStream inputStream);
+	/**
+	 * Callback invoked when new content is available.
+	 * 
+	 * @param inputStream The input stream allowing to retrieve the new content.
+	 */
+	protected abstract void onContent(InputStream inputStream);
 
 }

@@ -24,6 +24,8 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -35,8 +37,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests cases for the tunneling of preferences based on user agent.

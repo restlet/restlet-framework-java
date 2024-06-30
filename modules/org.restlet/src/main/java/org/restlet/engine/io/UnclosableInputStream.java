@@ -37,17 +37,16 @@ import java.io.InputStream;
  */
 public class UnclosableInputStream extends FilterInputStream {
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The source input stream.
-     */
-    public UnclosableInputStream(InputStream source) {
-        super(source);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param source The source input stream.
+	 */
+	public UnclosableInputStream(InputStream source) {
+		super(source);
+	}
 
-    @Override
-    public void close() throws IOException {
-    }
+	@Override
+	public void close() throws IOException {
+	}
 }

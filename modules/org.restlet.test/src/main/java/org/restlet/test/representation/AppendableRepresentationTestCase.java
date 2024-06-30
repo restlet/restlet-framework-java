@@ -24,11 +24,11 @@
 
 package org.restlet.test.representation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.representation.AppendableRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the {@link AppendableRepresentation} class.

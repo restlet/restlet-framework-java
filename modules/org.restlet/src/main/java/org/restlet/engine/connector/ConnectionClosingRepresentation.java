@@ -37,27 +37,24 @@ import org.restlet.util.WrapperRepresentation;
  */
 class ConnectionClosingRepresentation extends WrapperRepresentation {
 
-    /** The parent connection. */
-    private final HttpURLConnection connection;
+	/** The parent connection. */
+	private final HttpURLConnection connection;
 
-    /**
-     * Default constructor.
-     * 
-     * @param wrappedRepresentation
-     *            The wrapped representation.
-     * @param connection
-     *            The parent connection.
-     */
-    public ConnectionClosingRepresentation(
-            Representation wrappedRepresentation, HttpURLConnection connection) {
-        super(wrappedRepresentation);
-        this.connection = connection;
-    }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param wrappedRepresentation The wrapped representation.
+	 * @param connection            The parent connection.
+	 */
+	public ConnectionClosingRepresentation(Representation wrappedRepresentation, HttpURLConnection connection) {
+		super(wrappedRepresentation);
+		this.connection = connection;
+	}
 
-    @Override
-    public void release() {
-        this.connection.disconnect();
-        super.release();
-    }
+	@Override
+	public void release() {
+		this.connection.disconnect();
+		super.release();
+	}
 
 }

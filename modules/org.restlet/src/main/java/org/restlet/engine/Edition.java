@@ -31,52 +31,50 @@ package org.restlet.engine;
  */
 public enum Edition {
 
-    /**
-     * Android mobile OS, Google App Engine, JEE, JSE, OSGI.
-     */
-    ANDROID("Android", "Android", "Android"),
-    GAE("Google App Engine", "GAE", "GAE"),
-    JEE("Java Enterprise Edition", "Java EE", "JEE"),
-    JSE("Java Standard Edition", "Java SE", "JSE"),
-    OSGI("OSGi", "OSGi", "OSGi");
+	/**
+	 * Android mobile OS, Google App Engine, JEE, JSE, OSGI.
+	 */
+	ANDROID("Android", "Android", "Android"), GAE("Google App Engine", "GAE", "GAE"),
+	JEE("Java Enterprise Edition", "Java EE", "JEE"), JSE("Java Standard Edition", "Java SE", "JSE"),
+	OSGI("OSGi", "OSGi", "OSGi");
 
-    /** The current engine edition. */
-    public static final Edition CURRENT = Edition.JSE;
+	/** The current engine edition. */
+	public static final Edition CURRENT = Edition.JSE;
 
-    private final String fullName;
-    private final String mediumName;
-    private final String shortName;
+	private final String fullName;
+	private final String mediumName;
+	private final String shortName;
 
-    Edition(final String fullName, final String mediumName, final String shortName) {
-        this.fullName = fullName;
-        this.mediumName = mediumName;
-        this.shortName = shortName;
-    }
+	Edition(final String fullName, final String mediumName, final String shortName) {
+		this.fullName = fullName;
+		this.mediumName = mediumName;
+		this.shortName = shortName;
+	}
 
-    /**
-     * Returns the full size name of the edition.
-     *
-     * @return The full size of the edition.
-     */
-    public String getFullName() {
-        return fullName;
-    }
+	/**
+	 * Returns the full size name of the edition.
+	 *
+	 * @return The full size of the edition.
+	 */
+	public String getFullName() {
+		return fullName;
+	}
 
-    /**
-     * Returns the medium size name of the edition.
-     *
-     * @return The medium size name of the edition.
-     */
-    public String getMediumName() {
-        return mediumName;
-    }
+	/**
+	 * Returns the medium size name of the edition.
+	 *
+	 * @return The medium size name of the edition.
+	 */
+	public String getMediumName() {
+		return mediumName;
+	}
 
-    /**
-     * Returns the short size name of the edition.
-     *
-     * @return The short size name of the edition.
-     */
-    public String getShortName() {
-        return shortName;
-    }
+	/**
+	 * Returns the short size name of the edition.
+	 *
+	 * @return The short size name of the edition.
+	 */
+	public String getShortName() {
+		return shortName;
+	}
 }

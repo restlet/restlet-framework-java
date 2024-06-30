@@ -69,24 +69,24 @@ import org.restlet.service.MetadataService;
 @Method("PATCH")
 public @interface Patch {
 
-    /**
-     * Specifies the media type of the request and response entities as
-     * extensions. If only one extension is provided, the extension applies to
-     * both request and response entities. If two extensions are provided,
-     * separated by a colon, then the first one is for the request entity and
-     * the second one for the response entity.<br>
-     * <br>
-     * If several media types are supported, their extension can be specified
-     * separated by "|" characters. Note that this isn't the full MIME type
-     * value, just the extension name declared in {@link MetadataService}. For a
-     * list of all predefined extensions, please check
-     * {@link MetadataService#addCommonExtensions()}. New extension can be
-     * registered using
-     * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
-     * method.
-     * 
-     * @return The media types of request and/or response entities.
-     */
-    String value() default "";
+	/**
+	 * Specifies the media type of the request and response entities as extensions.
+	 * If only one extension is provided, the extension applies to both request and
+	 * response entities. If two extensions are provided, separated by a colon, then
+	 * the first one is for the request entity and the second one for the response
+	 * entity.<br>
+	 * <br>
+	 * If several media types are supported, their extension can be specified
+	 * separated by "|" characters. Note that this isn't the full MIME type value,
+	 * just the extension name declared in {@link MetadataService}. For a list of
+	 * all predefined extensions, please check
+	 * {@link MetadataService#addCommonExtensions()}. New extension can be
+	 * registered using
+	 * {@link MetadataService#addExtension(String, org.restlet.data.Metadata)}
+	 * method.
+	 * 
+	 * @return The media types of request and/or response entities.
+	 */
+	String value() default "";
 
 }

@@ -24,6 +24,11 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +41,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link org.restlet.data.Reference}.

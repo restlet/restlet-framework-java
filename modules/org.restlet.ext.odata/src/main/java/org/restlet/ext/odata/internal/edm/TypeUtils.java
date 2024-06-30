@@ -24,10 +24,6 @@
 
 package org.restlet.ext.odata.internal.edm;
 
-import org.restlet.Context;
-import org.restlet.engine.util.DateUtils;
-import org.restlet.ext.odata.internal.reflect.ReflectUtils;
-
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -36,6 +32,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import org.restlet.Context;
+import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
  * Handle type operations.

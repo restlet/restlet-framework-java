@@ -54,168 +54,149 @@ import org.restlet.service.EncoderService;
  */
 public class Encoder extends Filter {
 
-    /** Indicates if the request entity should be encoded. */
-    private final boolean encodingRequest;
+	/** Indicates if the request entity should be encoded. */
+	private final boolean encodingRequest;
 
-    /** Indicates if the response entity should be encoded. */
-    private final boolean encodingResponse;
+	/** Indicates if the response entity should be encoded. */
+	private final boolean encodingResponse;
 
-    /** The parent encoder service. */
-    private final EncoderService encoderService;
+	/** The parent encoder service. */
+	private final EncoderService encoderService;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param encodingRequest
-     *            Indicates if the request entities should be encoded.
-     * @param encodingResponse
-     *            Indicates if the response entities should be encoded.
-     * @param encoderService
-     *            The parent encoder service.
-     */
-    public Encoder(Context context, boolean encodingRequest,
-            boolean encodingResponse, EncoderService encoderService) {
-        super(context);
-        this.encodingRequest = encodingRequest;
-        this.encodingResponse = encodingResponse;
-        this.encoderService = encoderService;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context          The context.
+	 * @param encodingRequest  Indicates if the request entities should be encoded.
+	 * @param encodingResponse Indicates if the response entities should be encoded.
+	 * @param encoderService   The parent encoder service.
+	 */
+	public Encoder(Context context, boolean encodingRequest, boolean encodingResponse, EncoderService encoderService) {
+		super(context);
+		this.encodingRequest = encodingRequest;
+		this.encodingResponse = encodingResponse;
+		this.encoderService = encoderService;
+	}
 
-    /**
-     * Allows filtering after its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *            The request to filter.
-     * @param response
-     *            The response to filter.
-     */
-    @Override
-    public void afterHandle(Request request, Response response) {
-        // Check if encoding of the response entity is needed
-        if (isEncodingResponse()
-                && getEncoderService().canEncode(response.getEntity())) {
-            response.setEntity(encode(request.getClientInfo(),
-                    response.getEntity()));
-        }
-    }
+	/**
+	 * Allows filtering after its handling by the target Restlet. Does nothing by
+	 * default.
+	 * 
+	 * @param request  The request to filter.
+	 * @param response The response to filter.
+	 */
+	@Override
+	public void afterHandle(Request request, Response response) {
+		// Check if encoding of the response entity is needed
+		if (isEncodingResponse() && getEncoderService().canEncode(response.getEntity())) {
+			response.setEntity(encode(request.getClientInfo(), response.getEntity()));
+		}
+	}
 
-    /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *            The request to filter.
-     * @param response
-     *            The response to filter.
-     * @return The continuation status.
-     */
-    @Override
-    public int beforeHandle(Request request, Response response) {
-        // Check if encoding of the request entity is needed
-        if (isEncodingRequest()
-                && getEncoderService().canEncode(request.getEntity())) {
-            request.setEntity(encode(request.getClientInfo(),
-                    request.getEntity()));
-        }
+	/**
+	 * Allows filtering before its handling by the target Restlet. Does nothing by
+	 * default.
+	 * 
+	 * @param request  The request to filter.
+	 * @param response The response to filter.
+	 * @return The continuation status.
+	 */
+	@Override
+	public int beforeHandle(Request request, Response response) {
+		// Check if encoding of the request entity is needed
+		if (isEncodingRequest() && getEncoderService().canEncode(request.getEntity())) {
+			request.setEntity(encode(request.getClientInfo(), request.getEntity()));
+		}
 
-        return CONTINUE;
-    }
+		return CONTINUE;
+	}
 
-    /**
-     * Encodes a given representation if an encoding is supported by the client.
-     * 
-     * @param client
-     *            The client preferences to use.
-     * @param representation
-     *            The representation to encode.
-     * @return The encoded representation or the original one if no encoding
-     *         supported by the client.
-     */
-    public Representation encode(ClientInfo client,
-            Representation representation) {
-        Representation result = representation;
-        Encoding bestEncoding = getBestEncoding(client);
+	/**
+	 * Encodes a given representation if an encoding is supported by the client.
+	 * 
+	 * @param client         The client preferences to use.
+	 * @param representation The representation to encode.
+	 * @return The encoded representation or the original one if no encoding
+	 *         supported by the client.
+	 */
+	public Representation encode(ClientInfo client, Representation representation) {
+		Representation result = representation;
+		Encoding bestEncoding = getBestEncoding(client);
 
-        if (bestEncoding != null) {
-            result = new EncodeRepresentation(bestEncoding, representation);
-        }
+		if (bestEncoding != null) {
+			result = new EncodeRepresentation(bestEncoding, representation);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the best supported encoding for a given client.
-     * 
-     * @param client
-     *            The client preferences to use.
-     * @return The best supported encoding for the given call.
-     */
-    public Encoding getBestEncoding(ClientInfo client) {
-        Encoding bestEncoding = null;
-        Encoding currentEncoding = null;
-        Preference<Encoding> currentPref = null;
-        float bestScore = 0F;
+	/**
+	 * Returns the best supported encoding for a given client.
+	 * 
+	 * @param client The client preferences to use.
+	 * @return The best supported encoding for the given call.
+	 */
+	public Encoding getBestEncoding(ClientInfo client) {
+		Encoding bestEncoding = null;
+		Encoding currentEncoding = null;
+		Preference<Encoding> currentPref = null;
+		float bestScore = 0F;
 
-        for (Iterator<Encoding> iter = getSupportedEncodings().iterator(); iter
-                .hasNext();) {
-            currentEncoding = iter.next();
+		for (Iterator<Encoding> iter = getSupportedEncodings().iterator(); iter.hasNext();) {
+			currentEncoding = iter.next();
 
-            for (Iterator<Preference<Encoding>> iter2 = client
-                    .getAcceptedEncodings().iterator(); iter2.hasNext();) {
-                currentPref = iter2.next();
+			for (Iterator<Preference<Encoding>> iter2 = client.getAcceptedEncodings().iterator(); iter2.hasNext();) {
+				currentPref = iter2.next();
 
-                if (currentPref.getMetadata().equals(Encoding.ALL)
-                        || currentPref.getMetadata().equals(currentEncoding)) {
-                    // A match was found, compute its score
-                    if (currentPref.getQuality() > bestScore) {
-                        bestScore = currentPref.getQuality();
-                        bestEncoding = currentEncoding;
-                    }
-                }
-            }
-        }
+				if (currentPref.getMetadata().equals(Encoding.ALL)
+						|| currentPref.getMetadata().equals(currentEncoding)) {
+					// A match was found, compute its score
+					if (currentPref.getQuality() > bestScore) {
+						bestScore = currentPref.getQuality();
+						bestEncoding = currentEncoding;
+					}
+				}
+			}
+		}
 
-        return bestEncoding;
-    }
+		return bestEncoding;
+	}
 
-    /**
-     * Returns the parent encoder service.
-     * 
-     * @return The parent encoder service.
-     */
-    public EncoderService getEncoderService() {
-        return encoderService;
-    }
+	/**
+	 * Returns the parent encoder service.
+	 * 
+	 * @return The parent encoder service.
+	 */
+	public EncoderService getEncoderService() {
+		return encoderService;
+	}
 
-    /**
-     * Returns the list of supported encodings. By default it calls
-     * {@link EncodeRepresentation#getSupportedEncodings()} static method.
-     * 
-     * @return The list of supported encodings.
-     */
-    public List<Encoding> getSupportedEncodings() {
-        return EncodeRepresentation.getSupportedEncodings();
-    }
+	/**
+	 * Returns the list of supported encodings. By default it calls
+	 * {@link EncodeRepresentation#getSupportedEncodings()} static method.
+	 * 
+	 * @return The list of supported encodings.
+	 */
+	public List<Encoding> getSupportedEncodings() {
+		return EncodeRepresentation.getSupportedEncodings();
+	}
 
-    /**
-     * Indicates if the request entity should be encoded.
-     * 
-     * @return True if the request entity should be encoded.
-     */
-    public boolean isEncodingRequest() {
-        return this.encodingRequest;
-    }
+	/**
+	 * Indicates if the request entity should be encoded.
+	 * 
+	 * @return True if the request entity should be encoded.
+	 */
+	public boolean isEncodingRequest() {
+		return this.encodingRequest;
+	}
 
-    /**
-     * Indicates if the response entity should be encoded.
-     * 
-     * @return True if the response entity should be encoded.
-     */
-    public boolean isEncodingResponse() {
-        return this.encodingResponse;
-    }
+	/**
+	 * Indicates if the response entity should be encoded.
+	 * 
+	 * @return True if the response entity should be encoded.
+	 */
+	public boolean isEncodingResponse() {
+		return this.encodingResponse;
+	}
 
 }

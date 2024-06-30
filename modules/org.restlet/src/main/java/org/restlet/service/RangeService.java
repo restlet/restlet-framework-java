@@ -39,26 +39,25 @@ import org.restlet.routing.Filter;
  */
 public class RangeService extends Service {
 
-    /**
-     * Constructor.
-     */
-    public RangeService() {
-        super();
-    }
+	/**
+	 * Constructor.
+	 */
+	public RangeService() {
+		super();
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param enabled
-     *            True if the service has been enabled.
-     */
-    public RangeService(boolean enabled) {
-        super(enabled);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param enabled True if the service has been enabled.
+	 */
+	public RangeService(boolean enabled) {
+		super(enabled);
+	}
 
-    @Override
-    public Filter createInboundFilter(Context context) {
-        return new RangeFilter(context);
-    }
+	@Override
+	public Filter createInboundFilter(Context context) {
+		return new RangeFilter(context);
+	}
 
 }

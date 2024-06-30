@@ -24,6 +24,12 @@
 
 package org.restlet.test.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.io.File;
+import java.io.FileOutputStream;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -41,12 +47,6 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
-
-import java.io.File;
-import java.io.FileOutputStream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the FileRepresentation class.

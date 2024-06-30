@@ -24,6 +24,9 @@
 
 package org.restlet.test.engine.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -34,9 +37,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for POST and PUT requests.

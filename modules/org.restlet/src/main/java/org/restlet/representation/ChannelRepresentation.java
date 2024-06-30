@@ -40,37 +40,36 @@ import org.restlet.engine.io.IoUtils;
  * @author Jerome Louvel
  */
 public abstract class ChannelRepresentation extends Representation {
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     */
-    public ChannelRepresentation(MediaType mediaType) {
-        super(mediaType);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The media type.
+	 */
+	public ChannelRepresentation(MediaType mediaType) {
+		super(mediaType);
+	}
 
-    @Override
-    public Reader getReader() throws IOException {
-        return IoUtils.getReader(getStream(), getCharacterSet());
-    }
+	@Override
+	public Reader getReader() throws IOException {
+		return IoUtils.getReader(getStream(), getCharacterSet());
+	}
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return IoUtils.getStream(getChannel());
-    }
+	@Override
+	public InputStream getStream() throws IOException {
+		return IoUtils.getStream(getChannel());
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        WritableByteChannel wbc = IoUtils.getChannel(outputStream);
-        write(wbc);
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		WritableByteChannel wbc = IoUtils.getChannel(outputStream);
+		write(wbc);
+	}
 
-    @Override
-    public void write(Writer writer) throws IOException {
-        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
-        write(os);
-        os.flush();
-    }
+	@Override
+	public void write(Writer writer) throws IOException {
+		OutputStream os = IoUtils.getStream(writer, getCharacterSet());
+		write(os);
+		os.flush();
+	}
 
 }

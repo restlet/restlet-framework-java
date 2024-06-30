@@ -35,20 +35,19 @@ import org.restlet.data.Method;
  */
 public class MethodWriter extends HeaderWriter<Method> {
 
-    /**
-     * Writes a set of methods with a comma separator.
-     * 
-     * @param methods
-     *            The set of methods.
-     * @return The formatted set of methods.
-     */
-    public static String write(Set<Method> methods) {
-        return new MethodWriter().append(methods).toString();
-    }
+	/**
+	 * Writes a set of methods with a comma separator.
+	 * 
+	 * @param methods The set of methods.
+	 * @return The formatted set of methods.
+	 */
+	public static String write(Set<Method> methods) {
+		return new MethodWriter().append(methods).toString();
+	}
 
-    @Override
-    public MethodWriter append(Method method) {
-        return (MethodWriter) appendToken(method.getName());
-    }
+	@Override
+	public MethodWriter append(Method method) {
+		return (MethodWriter) appendToken(method.getName());
+	}
 
 }

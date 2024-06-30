@@ -24,6 +24,9 @@
 
 package org.restlet.test.ext.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayOutputStream;
 
 import org.junit.jupiter.api.Test;
@@ -34,9 +37,6 @@ import org.restlet.ext.xml.Transformer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test case for the Transformer class.

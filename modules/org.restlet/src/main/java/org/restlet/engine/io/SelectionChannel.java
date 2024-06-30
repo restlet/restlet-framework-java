@@ -35,11 +35,11 @@ import org.restlet.util.SelectionRegistration;
  */
 public interface SelectionChannel extends Channel, BlockableChannel {
 
-    /**
-     * Returns the NIO registration.
-     * 
-     * @return The NIO registration.
-     */
-    SelectionRegistration getRegistration();
+	/**
+	 * Returns the NIO registration.
+	 * 
+	 * @return The NIO registration.
+	 */
+	SelectionRegistration getRegistration();
 
 }

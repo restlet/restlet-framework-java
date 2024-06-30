@@ -39,48 +39,45 @@ import org.restlet.engine.util.TemplateDispatcher;
  */
 public class ComponentServerDispatcher extends TemplateDispatcher {
 
-    /** The component context. */
-    private ComponentContext componentContext;
+	/** The component context. */
+	private ComponentContext componentContext;
 
-    /**
-     * Constructor.
-     * 
-     * @param componentContext
-     *            The component context.
-     */
-    public ComponentServerDispatcher(ComponentContext componentContext) {
-        this.componentContext = componentContext;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param componentContext The component context.
+	 */
+	public ComponentServerDispatcher(ComponentContext componentContext) {
+		this.componentContext = componentContext;
+	}
 
-    @Override
-    public int beforeHandle(Request request, Response response) {
-        int result = super.beforeHandle(request, response);
+	@Override
+	public int beforeHandle(Request request, Response response) {
+		int result = super.beforeHandle(request, response);
 
-        // This causes the baseRef of the resource reference to be set
-        // as if it had actually arrived from a server connector.
-        request.getResourceRef().setBaseRef(
-                request.getResourceRef().getHostIdentifier());
+		// This causes the baseRef of the resource reference to be set
+		// as if it had actually arrived from a server connector.
+		request.getResourceRef().setBaseRef(request.getResourceRef().getHostIdentifier());
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    protected int doHandle(Request request, Response response) {
-        int result = CONTINUE;
-        // Ask the server router to actually handle the call
-        getComponentContext().getComponentHelper().getServerRouter()
-                .handle(request, response);
+	@Override
+	protected int doHandle(Request request, Response response) {
+		int result = CONTINUE;
+		// Ask the server router to actually handle the call
+		getComponentContext().getComponentHelper().getServerRouter().handle(request, response);
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the component context.
-     * 
-     * @return The component context.
-     */
-    private ComponentContext getComponentContext() {
-        return componentContext;
-    }
+	/**
+	 * Returns the component context.
+	 * 
+	 * @return The component context.
+	 */
+	private ComponentContext getComponentContext() {
+		return componentContext;
+	}
 
 }

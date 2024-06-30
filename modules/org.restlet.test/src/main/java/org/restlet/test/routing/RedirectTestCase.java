@@ -24,6 +24,8 @@
 
 package org.restlet.test.routing;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -36,8 +38,6 @@ import org.restlet.data.Protocol;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Redirector;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the RedirectRestlet.

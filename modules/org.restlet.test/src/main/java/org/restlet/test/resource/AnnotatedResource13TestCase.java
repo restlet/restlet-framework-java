@@ -24,13 +24,13 @@
 
 package org.restlet.test.resource;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the annotated resources, client and server sides.

@@ -24,17 +24,17 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.PreferenceWriter;
 import org.restlet.test.RestletTestCase;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for the Preference related classes.

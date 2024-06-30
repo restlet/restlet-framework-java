@@ -36,24 +36,23 @@ import org.restlet.data.Encoding;
  */
 public class EncodingReader extends HeaderReader<Encoding> {
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public EncodingReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public EncodingReader(String header) {
+		super(header);
+	}
 
-    @Override
-    protected boolean canAdd(Encoding value, Collection<Encoding> values) {
-        return value != null && !Encoding.IDENTITY.equals(value);
-    }
+	@Override
+	protected boolean canAdd(Encoding value, Collection<Encoding> values) {
+		return value != null && !Encoding.IDENTITY.equals(value);
+	}
 
-    @Override
-    public Encoding readValue() throws IOException {
-        return Encoding.valueOf(readToken());
-    }
+	@Override
+	public Encoding readValue() throws IOException {
+		return Encoding.valueOf(readToken());
+	}
 
 }

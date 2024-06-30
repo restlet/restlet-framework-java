@@ -33,19 +33,17 @@ package org.restlet.security;
  */
 public abstract class LocalVerifier extends SecretVerifier {
 
-    /**
-     * Returns the local secret associated to a given identifier.
-     * 
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
-     */
-    public abstract char[] getLocalSecret(String identifier);
+	/**
+	 * Returns the local secret associated to a given identifier.
+	 * 
+	 * @param identifier The identifier to lookup.
+	 * @return The secret associated to the identifier or null.
+	 */
+	public abstract char[] getLocalSecret(String identifier);
 
-    @Override
-    public int verify(String identifier, char[] secret) {
-        return compare(secret, getLocalSecret(identifier)) ? RESULT_VALID
-                : RESULT_INVALID;
-    }
+	@Override
+	public int verify(String identifier, char[] secret) {
+		return compare(secret, getLocalSecret(identifier)) ? RESULT_VALID : RESULT_INVALID;
+	}
 
 }

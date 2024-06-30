@@ -35,21 +35,20 @@ import org.restlet.data.CacheDirective;
  */
 public class CacheDirectiveWriter extends HeaderWriter<CacheDirective> {
 
-    /**
-     * Writes a list of cache directives with a comma separator.
-     * 
-     * @param directives
-     *            The list of cache directives.
-     * @return The formatted list of cache directives.
-     */
-    public static String write(List<CacheDirective> directives) {
-        return new CacheDirectiveWriter().append(directives).toString();
-    }
+	/**
+	 * Writes a list of cache directives with a comma separator.
+	 * 
+	 * @param directives The list of cache directives.
+	 * @return The formatted list of cache directives.
+	 */
+	public static String write(List<CacheDirective> directives) {
+		return new CacheDirectiveWriter().append(directives).toString();
+	}
 
-    @Override
-    public CacheDirectiveWriter append(CacheDirective directive) {
-        appendExtension(directive);
-        return this;
-    }
+	@Override
+	public CacheDirectiveWriter append(CacheDirective directive) {
+		appendExtension(directive);
+		return this;
+	}
 
 }

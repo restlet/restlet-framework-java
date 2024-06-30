@@ -38,102 +38,98 @@ import java.util.Date;
  */
 public class Warning {
 
-    /** The agent. Typically a caching agent. */
-    private volatile String agent;
+	/** The agent. Typically a caching agent. */
+	private volatile String agent;
 
-    /** The warning date. */
-    private volatile Date date;
+	/** The warning date. */
+	private volatile Date date;
 
-    /** The special status. */
-    private volatile Status status;
+	/** The special status. */
+	private volatile Status status;
 
-    /** The warning text. */
-    private volatile String text;
+	/** The warning text. */
+	private volatile String text;
 
-    /**
-     * Constructor.
-     */
-    public Warning() {
-        this.agent = null;
-        this.date = null;
-        this.status = null;
-        this.text = null;
-    }
+	/**
+	 * Constructor.
+	 */
+	public Warning() {
+		this.agent = null;
+		this.date = null;
+		this.status = null;
+		this.text = null;
+	}
 
-    /**
-     * Returns the agent. Typically a caching agent.
-     * 
-     * @return The agent. Typically a caching agent.
-     */
-    public String getAgent() {
-        return agent;
-    }
+	/**
+	 * Returns the agent. Typically a caching agent.
+	 * 
+	 * @return The agent. Typically a caching agent.
+	 */
+	public String getAgent() {
+		return agent;
+	}
 
-    /**
-     * Returns the warning date.
-     * 
-     * @return The warning date.
-     */
-    public Date getDate() {
-        return date;
-    }
+	/**
+	 * Returns the warning date.
+	 * 
+	 * @return The warning date.
+	 */
+	public Date getDate() {
+		return date;
+	}
 
-    /**
-     * Returns the special status.
-     * 
-     * @return The special status.
-     */
-    public Status getStatus() {
-        return status;
-    }
+	/**
+	 * Returns the special status.
+	 * 
+	 * @return The special status.
+	 */
+	public Status getStatus() {
+		return status;
+	}
 
-    /**
-     * Returns the warning text.
-     * 
-     * @return The warning text.
-     */
-    public String getText() {
-        return text;
-    }
+	/**
+	 * Returns the warning text.
+	 * 
+	 * @return The warning text.
+	 */
+	public String getText() {
+		return text;
+	}
 
-    /**
-     * Sets the agent. Typically a caching agent.
-     * 
-     * @param agent
-     *            The agent. Typically a caching agent.
-     */
-    public void setAgent(String agent) {
-        this.agent = agent;
-    }
+	/**
+	 * Sets the agent. Typically a caching agent.
+	 * 
+	 * @param agent The agent. Typically a caching agent.
+	 */
+	public void setAgent(String agent) {
+		this.agent = agent;
+	}
 
-    /**
-     * Sets the warning date.
-     * 
-     * @param date
-     *            The warning date.
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	/**
+	 * Sets the warning date.
+	 * 
+	 * @param date The warning date.
+	 */
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-    /**
-     * Sets the special status.
-     * 
-     * @param status
-     *            The special status.
-     */
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	/**
+	 * Sets the special status.
+	 * 
+	 * @param status The special status.
+	 */
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    /**
-     * Sets the warning text.
-     * 
-     * @param text
-     *            The warning text.
-     */
-    public void setText(String text) {
-        this.text = text;
-    }
+	/**
+	 * Sets the warning text.
+	 * 
+	 * @param text The warning text.
+	 */
+	public void setText(String text) {
+		this.text = text;
+	}
 
 }

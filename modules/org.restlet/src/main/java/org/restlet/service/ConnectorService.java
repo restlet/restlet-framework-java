@@ -47,103 +47,99 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class ConnectorService extends Service {
-    /** The list of required client protocols. */
-    private final List<Protocol> clientProtocols;
+	/** The list of required client protocols. */
+	private final List<Protocol> clientProtocols;
 
-    /** The list of required server protocols. */
-    private final List<Protocol> serverProtocols;
+	/** The list of required server protocols. */
+	private final List<Protocol> serverProtocols;
 
-    /**
-     * Constructor.
-     */
-    public ConnectorService() {
-        this.clientProtocols = new CopyOnWriteArrayList<Protocol>();
-        this.serverProtocols = new CopyOnWriteArrayList<Protocol>();
-    }
+	/**
+	 * Constructor.
+	 */
+	public ConnectorService() {
+		this.clientProtocols = new CopyOnWriteArrayList<Protocol>();
+		this.serverProtocols = new CopyOnWriteArrayList<Protocol>();
+	}
 
-    /**
-     * Call-back method invoked by the client or server connectors just after
-     * sending the response to the target component. The default implementation
-     * does nothing.
-     * 
-     * @param entity
-     *            The optional entity about to be committed.
-     */
-    public void afterSend(Representation entity) {
-        // Do nothing by default.
-    }
+	/**
+	 * Call-back method invoked by the client or server connectors just after
+	 * sending the response to the target component. The default implementation does
+	 * nothing.
+	 * 
+	 * @param entity The optional entity about to be committed.
+	 */
+	public void afterSend(Representation entity) {
+		// Do nothing by default.
+	}
 
-    /**
-     * Call-back method invoked by the client or server connectors just before
-     * sending the response to the target component. The default implementation
-     * does nothing.
-     * 
-     * @param entity
-     *            The optional entity about to be committed.
-     */
-    public void beforeSend(Representation entity) {
-        // Do nothing by default.
-    }
+	/**
+	 * Call-back method invoked by the client or server connectors just before
+	 * sending the response to the target component. The default implementation does
+	 * nothing.
+	 * 
+	 * @param entity The optional entity about to be committed.
+	 */
+	public void beforeSend(Representation entity) {
+		// Do nothing by default.
+	}
 
-    /**
-     * Returns the modifiable list of required client protocols. You need to
-     * update this list if you need the parent component to provide additional
-     * client connectors.
-     * 
-     * @return The list of required client protocols.
-     */
-    public List<Protocol> getClientProtocols() {
-        return this.clientProtocols;
-    }
+	/**
+	 * Returns the modifiable list of required client protocols. You need to update
+	 * this list if you need the parent component to provide additional client
+	 * connectors.
+	 * 
+	 * @return The list of required client protocols.
+	 */
+	public List<Protocol> getClientProtocols() {
+		return this.clientProtocols;
+	}
 
-    /**
-     * Returns the modifiable list of required server protocols. An empty list
-     * means that all protocols are potentially supported (default case). You
-     * should update this list to restrict the actual protocols supported by
-     * your application.
-     * 
-     * @return The list of required server protocols.
-     */
-    public List<Protocol> getServerProtocols() {
-        return this.serverProtocols;
-    }
+	/**
+	 * Returns the modifiable list of required server protocols. An empty list means
+	 * that all protocols are potentially supported (default case). You should
+	 * update this list to restrict the actual protocols supported by your
+	 * application.
+	 * 
+	 * @return The list of required server protocols.
+	 */
+	public List<Protocol> getServerProtocols() {
+		return this.serverProtocols;
+	}
 
-    /**
-     * Sets the modifiable list of required client protocols. This method clears
-     * the current list and adds all entries in the parameter list.
-     * 
-     * @param clientProtocols
-     *            A list of required client protocols.
-     */
-    public void setClientProtocols(List<Protocol> clientProtocols) {
-        synchronized (getClientProtocols()) {
-            if (clientProtocols != getClientProtocols()) {
-                getClientProtocols().clear();
+	/**
+	 * Sets the modifiable list of required client protocols. This method clears the
+	 * current list and adds all entries in the parameter list.
+	 * 
+	 * @param clientProtocols A list of required client protocols.
+	 */
+	public void setClientProtocols(List<Protocol> clientProtocols) {
+		synchronized (getClientProtocols()) {
+			if (clientProtocols != getClientProtocols()) {
+				getClientProtocols().clear();
 
-                if (clientProtocols != null) {
-                    getClientProtocols().addAll(clientProtocols);
-                }
-            }
-        }
-    }
+				if (clientProtocols != null) {
+					getClientProtocols().addAll(clientProtocols);
+				}
+			}
+		}
+	}
 
-    /**
-     * Sets the modifiable list of required server protocols. This method clears
-     * the current list and adds all entries in the parameter list.
-     * 
-     * @param serverProtocols
-     *            A list of required server protocols.
-     */
-    public void setServerProtocols(List<Protocol> serverProtocols) {
-        synchronized (getServerProtocols()) {
-            if (serverProtocols != getServerProtocols()) {
-                getServerProtocols().clear();
+	/**
+	 * Sets the modifiable list of required server protocols. This method clears the
+	 * current list and adds all entries in the parameter list.
+	 * 
+	 * @param serverProtocols A list of required server protocols.
+	 */
+	public void setServerProtocols(List<Protocol> serverProtocols) {
+		synchronized (getServerProtocols()) {
+			if (serverProtocols != getServerProtocols()) {
+				getServerProtocols().clear();
 
-                if (serverProtocols != null) {
-                    getServerProtocols().addAll(serverProtocols);
-                }
-            }
-        }
-    }
+				if (serverProtocols != null) {
+					getServerProtocols().addAll(serverProtocols);
+				}
+			}
+		}
+	}
 
 }

@@ -46,79 +46,75 @@ import org.restlet.data.Protocol;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
+ * @see <a href=
+ *      "http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
  *      dissertation</a>
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
+ * @see <a href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
  *      dissertation</a>
  * @author Jerome Louvel
  */
 public abstract class Connector extends Restlet {
-    /** The list of protocols simultaneously supported. */
-    private final List<Protocol> protocols;
+	/** The list of protocols simultaneously supported. */
+	private final List<Protocol> protocols;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public Connector(Context context) {
-        this(context, null);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context The context.
+	 */
+	public Connector(Context context) {
+		this(context, null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param protocols
-     *            The supported protocols.
-     */
-    public Connector(Context context, List<Protocol> protocols) {
-        super(context);
+	/**
+	 * Constructor.
+	 * 
+	 * @param context   The context.
+	 * @param protocols The supported protocols.
+	 */
+	public Connector(Context context, List<Protocol> protocols) {
+		super(context);
 
-        if (protocols == null) {
-            this.protocols = new CopyOnWriteArrayList<Protocol>();
-        } else {
-            this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
-        }
-    }
+		if (protocols == null) {
+			this.protocols = new CopyOnWriteArrayList<Protocol>();
+		} else {
+			this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
+		}
+	}
 
-    /**
-     * Returns the modifiable list of protocols simultaneously supported.
-     * 
-     * @return The protocols simultaneously supported.
-     */
-    public List<Protocol> getProtocols() {
-        return this.protocols;
-    }
+	/**
+	 * Returns the modifiable list of protocols simultaneously supported.
+	 * 
+	 * @return The protocols simultaneously supported.
+	 */
+	public List<Protocol> getProtocols() {
+		return this.protocols;
+	}
 
-    /**
-     * Indicates the underlying connector helper is available.
-     * 
-     * @return True if the underlying connector helper is available.
-     */
-    public abstract boolean isAvailable();
+	/**
+	 * Indicates the underlying connector helper is available.
+	 * 
+	 * @return True if the underlying connector helper is available.
+	 */
+	public abstract boolean isAvailable();
 
-    /**
-     * Sets the list of protocols simultaneously supported. This method clears
-     * the current list and adds all entries in the parameter list.
-     * 
-     * @param protocols
-     *            A list of protocols.
-     */
-    public void setProtocols(List<Protocol> protocols) {
-        synchronized (getProtocols()) {
-            if (protocols != getProtocols()) {
-                getProtocols().clear();
+	/**
+	 * Sets the list of protocols simultaneously supported. This method clears the
+	 * current list and adds all entries in the parameter list.
+	 * 
+	 * @param protocols A list of protocols.
+	 */
+	public void setProtocols(List<Protocol> protocols) {
+		synchronized (getProtocols()) {
+			if (protocols != getProtocols()) {
+				getProtocols().clear();
 
-                if (protocols != null) {
-                    getProtocols().addAll(protocols);
-                }
-            }
-        }
-    }
+				if (protocols != null) {
+					getProtocols().addAll(protocols);
+				}
+			}
+		}
+	}
 
 }

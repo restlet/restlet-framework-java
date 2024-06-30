@@ -35,14 +35,12 @@ import org.restlet.util.SelectionRegistration;
  */
 public interface WakeupListener {
 
-    /**
-     * Callback method invoked when the selection registration wants to wake up
-     * the NIO selector.
-     * 
-     * @param selectionRegistration
-     *            The selected registration.
-     */
-    void onWokeup(SelectionRegistration selectionRegistration)
-            throws IOException;
+	/**
+	 * Callback method invoked when the selection registration wants to wake up the
+	 * NIO selector.
+	 * 
+	 * @param selectionRegistration The selected registration.
+	 */
+	void onWokeup(SelectionRegistration selectionRegistration) throws IOException;
 
 }

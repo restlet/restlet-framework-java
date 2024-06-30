@@ -31,7 +31,6 @@ import java.nio.channels.ReadableByteChannel;
  * 
  * @author Jerome Louvel
  */
-public interface ReadableSelectionChannel extends SelectionChannel,
-        ReadableByteChannel {
+public interface ReadableSelectionChannel extends SelectionChannel, ReadableByteChannel {
 
 }

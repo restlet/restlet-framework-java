@@ -24,6 +24,8 @@
 
 package org.restlet.test.engine.io;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +39,6 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test case for the ByteUtils class.

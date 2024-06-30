@@ -35,40 +35,36 @@ import org.restlet.data.Expectation;
  * @author Jerome Louvel
  */
 public class ExpectationReader extends HeaderReader<Expectation> {
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param clientInfo
-     *            The client info to update.
-     */
-    public static void addValues(String header, ClientInfo clientInfo) {
-        if (header != null) {
-            new ExpectationReader(header).addValues(clientInfo
-                    .getExpectations());
-        }
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param clientInfo The client info to update.
+	 */
+	public static void addValues(String header, ClientInfo clientInfo) {
+		if (header != null) {
+			new ExpectationReader(header).addValues(clientInfo.getExpectations());
+		}
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public ExpectationReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public ExpectationReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Expectation readValue() throws IOException {
-        Expectation result = readNamedValue(Expectation.class);
+	@Override
+	public Expectation readValue() throws IOException {
+		Expectation result = readNamedValue(Expectation.class);
 
-        while (skipParameterSeparator()) {
-            result.getParameters().add(readParameter());
-        }
+		while (skipParameterSeparator()) {
+			result.getParameters().add(readParameter());
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

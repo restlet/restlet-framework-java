@@ -37,31 +37,30 @@ import org.restlet.routing.Filter;
  */
 public class DecoderService extends Service {
 
-    /**
-     * Constructor.
-     */
-    public DecoderService() {
-        super();
-    }
+	/**
+	 * Constructor.
+	 */
+	public DecoderService() {
+		super();
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param enabled
-     *            True if the service has been enabled.
-     */
-    public DecoderService(boolean enabled) {
-        super(enabled);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param enabled True if the service has been enabled.
+	 */
+	public DecoderService(boolean enabled) {
+		super(enabled);
+	}
 
-    @Override
-    public Filter createInboundFilter(Context context) {
-        return new Decoder(context, true, false);
-    }
+	@Override
+	public Filter createInboundFilter(Context context) {
+		return new Decoder(context, true, false);
+	}
 
-    @Override
-    public Filter createOutboundFilter(Context context) {
-        return new Decoder(context, false, true);
-    }
+	@Override
+	public Filter createOutboundFilter(Context context) {
+		return new Decoder(context, false, true);
+	}
 
 }

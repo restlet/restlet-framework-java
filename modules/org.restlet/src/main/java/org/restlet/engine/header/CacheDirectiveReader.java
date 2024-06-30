@@ -37,32 +37,28 @@ import org.restlet.data.Header;
  */
 public class CacheDirectiveReader extends HeaderReader<CacheDirective> {
 
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header,
-            Collection<CacheDirective> collection) {
-        new CacheDirectiveReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<CacheDirective> collection) {
+		new CacheDirectiveReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public CacheDirectiveReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public CacheDirectiveReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public CacheDirective readValue() throws IOException {
-        return readNamedValue(CacheDirective.class);
-    }
+	@Override
+	public CacheDirective readValue() throws IOException {
+		return readNamedValue(CacheDirective.class);
+	}
 
 }

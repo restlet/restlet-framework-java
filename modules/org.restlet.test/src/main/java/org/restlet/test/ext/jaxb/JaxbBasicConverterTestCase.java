@@ -24,6 +24,10 @@
 
 package org.restlet.test.ext.jaxb;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxb.JaxbConverter;
@@ -31,10 +35,6 @@ import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.test.RestletTestCase;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
  * Tests basic Conversion using the JaxbConverter

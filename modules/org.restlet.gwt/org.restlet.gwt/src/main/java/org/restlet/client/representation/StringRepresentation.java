@@ -24,16 +24,11 @@
 
 package org.restlet.client.representation;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.logging.Level;
 
-import org.restlet.client.Context;
 import org.restlet.client.data.CharacterSet;
 import org.restlet.client.data.Language;
 import org.restlet.client.data.MediaType;

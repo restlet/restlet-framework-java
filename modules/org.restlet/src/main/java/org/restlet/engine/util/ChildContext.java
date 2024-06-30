@@ -36,58 +36,53 @@ import org.restlet.engine.log.LogUtils;
  */
 public class ChildContext extends Context {
 
-    /** The child delegate, typically an application. */
-    private volatile Restlet child;
+	/** The child delegate, typically an application. */
+	private volatile Restlet child;
 
-    /** The parent context. */
-    private volatile Context parentContext;
+	/** The parent context. */
+	private volatile Context parentContext;
 
-    /**
-     * Constructor.
-     * 
-     * @param parentContext
-     *            The parent context.
-     */
-    public ChildContext(Context parentContext) {
-        this.child = null;
-        this.parentContext = parentContext;
-        setClientDispatcher(new ChildClientDispatcher(this));
-        setServerDispatcher((parentContext != null) ? getParentContext()
-                .getServerDispatcher() : null);
-        setExecutorService((parentContext != null) ? ((parentContext
-                .getExecutorService() != null) ? new WrapperScheduledExecutorService(
-                parentContext.getExecutorService()) : null)
-                : null);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param parentContext The parent context.
+	 */
+	public ChildContext(Context parentContext) {
+		this.child = null;
+		this.parentContext = parentContext;
+		setClientDispatcher(new ChildClientDispatcher(this));
+		setServerDispatcher((parentContext != null) ? getParentContext().getServerDispatcher() : null);
+		setExecutorService((parentContext != null) ? ((parentContext.getExecutorService() != null)
+				? new WrapperScheduledExecutorService(parentContext.getExecutorService())
+				: null) : null);
+	}
 
-    /**
-     * Returns the child.
-     * 
-     * @return the child.
-     */
-    public Restlet getChild() {
-        return this.child;
-    }
+	/**
+	 * Returns the child.
+	 * 
+	 * @return the child.
+	 */
+	public Restlet getChild() {
+		return this.child;
+	}
 
-    /**
-     * Returns the parent context.
-     * 
-     * @return The parent context.
-     */
-    protected Context getParentContext() {
-        return this.parentContext;
-    }
+	/**
+	 * Returns the parent context.
+	 * 
+	 * @return The parent context.
+	 */
+	protected Context getParentContext() {
+		return this.parentContext;
+	}
 
-    /**
-     * Sets the child.
-     * 
-     * @param child
-     *            The child.
-     */
-    public void setChild(Restlet child) {
-        this.child = child;
-        setLogger(LogUtils.getLoggerName(this.parentContext.getLogger()
-                .getName(), child));
-    }
+	/**
+	 * Sets the child.
+	 * 
+	 * @param child The child.
+	 */
+	public void setChild(Restlet child) {
+		this.child = child;
+		setLogger(LogUtils.getLoggerName(this.parentContext.getLogger().getName(), child));
+	}
 
 }

@@ -24,6 +24,8 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,8 +41,6 @@ import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link AwsVerifier}.

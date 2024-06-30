@@ -24,6 +24,8 @@
 
 package org.restlet.test.ext.html;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -35,8 +37,6 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test case for the {@link FormDataSet} class in multipart mode.

@@ -24,6 +24,8 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +39,6 @@ import org.restlet.representation.Variant;
 import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link org.restlet.data.ClientInfo} for content negotiation.

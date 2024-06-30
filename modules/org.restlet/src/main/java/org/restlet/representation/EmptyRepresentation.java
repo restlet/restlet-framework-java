@@ -38,49 +38,47 @@ import java.io.Reader;
  */
 public class EmptyRepresentation extends Representation {
 
-    /**
-     * Constructor.
-     */
-    public EmptyRepresentation() {
-        setAvailable(false);
-        setTransient(true);
-        setSize(0);
-    }
+	/**
+	 * Constructor.
+	 */
+	public EmptyRepresentation() {
+		setAvailable(false);
+		setTransient(true);
+		setSize(0);
+	}
 
-    @Override
-    public java.nio.channels.ReadableByteChannel getChannel()
-            throws IOException {
-        return null;
-    }
+	@Override
+	public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
+		return null;
+	}
 
-    @Override
-    public Reader getReader() throws IOException {
-        return null;
-    }
+	@Override
+	public Reader getReader() throws IOException {
+		return null;
+	}
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return null;
-    }
+	@Override
+	public InputStream getStream() throws IOException {
+		return null;
+	}
 
-    @Override
-    public String getText() throws IOException {
-        return null;
-    }
+	@Override
+	public String getText() throws IOException {
+		return null;
+	}
 
-    @Override
-    public void write(java.io.Writer writer) throws IOException {
-        // Do nothing
-    }
+	@Override
+	public void write(java.io.Writer writer) throws IOException {
+		// Do nothing
+	}
 
-    @Override
-    public void write(java.nio.channels.WritableByteChannel writableChannel)
-            throws IOException {
-        // Do nothing
-    }
+	@Override
+	public void write(java.nio.channels.WritableByteChannel writableChannel) throws IOException {
+		// Do nothing
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        // Do nothing
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		// Do nothing
+	}
 }

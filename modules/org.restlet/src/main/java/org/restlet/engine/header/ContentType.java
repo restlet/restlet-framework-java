@@ -37,137 +37,124 @@ import org.restlet.representation.Representation;
  */
 public class ContentType {
 
-    /**
-     * Parses the given content type header and returns the character set.
-     * 
-     * @param contentType
-     *            The content type header to parse.
-     * @return The character set.
-     */
-    public static CharacterSet readCharacterSet(String contentType) {
-        return new ContentType(contentType).getCharacterSet();
-    }
+	/**
+	 * Parses the given content type header and returns the character set.
+	 * 
+	 * @param contentType The content type header to parse.
+	 * @return The character set.
+	 */
+	public static CharacterSet readCharacterSet(String contentType) {
+		return new ContentType(contentType).getCharacterSet();
+	}
 
-    /**
-     * Parses the given content type header and returns the media type.
-     * 
-     * @param contentType
-     *            The content type header to parse.
-     * @return The media type.
-     */
-    public static MediaType readMediaType(String contentType) {
-        return new ContentType(contentType).getMediaType();
-    }
+	/**
+	 * Parses the given content type header and returns the media type.
+	 * 
+	 * @param contentType The content type header to parse.
+	 * @return The media type.
+	 */
+	public static MediaType readMediaType(String contentType) {
+		return new ContentType(contentType).getMediaType();
+	}
 
-    /**
-     * Writes the HTTP "Content-Type" header.
-     * 
-     * @param mediaType
-     *            The representation media type.
-     * @param characterSet
-     *            The representation character set.
-     * @return The HTTP "Content-Type" header.
-     */
-    public static String writeHeader(MediaType mediaType,
-            CharacterSet characterSet) {
-        String result = mediaType.toString();
+	/**
+	 * Writes the HTTP "Content-Type" header.
+	 * 
+	 * @param mediaType    The representation media type.
+	 * @param characterSet The representation character set.
+	 * @return The HTTP "Content-Type" header.
+	 */
+	public static String writeHeader(MediaType mediaType, CharacterSet characterSet) {
+		String result = mediaType.toString();
 
-        // Specify the character set parameter if required
-        if ((mediaType.getParameters().getFirstValue("charset") == null)
-                && (characterSet != null)) {
-            result = result + "; charset=" + characterSet.getName();
-        }
+		// Specify the character set parameter if required
+		if ((mediaType.getParameters().getFirstValue("charset") == null) && (characterSet != null)) {
+			result = result + "; charset=" + characterSet.getName();
+		}
 
-        return result;
+		return result;
 
-    }
+	}
 
-    /**
-     * Writes the HTTP "Content-Type" header.
-     * 
-     * @param representation
-     *            The related representation.
-     * @return The HTTP "Content-Type" header.
-     */
-    public static String writeHeader(Representation representation) {
-        return writeHeader(representation.getMediaType(),
-                representation.getCharacterSet());
-    }
+	/**
+	 * Writes the HTTP "Content-Type" header.
+	 * 
+	 * @param representation The related representation.
+	 * @return The HTTP "Content-Type" header.
+	 */
+	public static String writeHeader(Representation representation) {
+		return writeHeader(representation.getMediaType(), representation.getCharacterSet());
+	}
 
-    /**
-     * The content character set.
-     */
-    private volatile CharacterSet characterSet;
+	/**
+	 * The content character set.
+	 */
+	private volatile CharacterSet characterSet;
 
-    /**
-     * The content media type.
-     */
-    private volatile MediaType mediaType;
+	/**
+	 * The content media type.
+	 */
+	private volatile MediaType mediaType;
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param characterSet
-     *            The character set.
-     */
-    public ContentType(MediaType mediaType, CharacterSet characterSet) {
-        this.mediaType = mediaType;
-        this.characterSet = characterSet;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType    The media type.
+	 * @param characterSet The character set.
+	 */
+	public ContentType(MediaType mediaType, CharacterSet characterSet) {
+		this.mediaType = mediaType;
+		this.characterSet = characterSet;
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param representation
-     *            The representation.
-     */
-    public ContentType(Representation representation) {
-        this(representation.getMediaType(), representation.getCharacterSet());
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param representation The representation.
+	 */
+	public ContentType(Representation representation) {
+		this(representation.getMediaType(), representation.getCharacterSet());
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param headerValue
-     *            The "Content-type" header to parse.
-     */
-    public ContentType(String headerValue) {
-        try {
-            ContentTypeReader ctr = new ContentTypeReader(headerValue);
-            ContentType ct = ctr.readValue();
+	/**
+	 * Constructor.
+	 * 
+	 * @param headerValue The "Content-type" header to parse.
+	 */
+	public ContentType(String headerValue) {
+		try {
+			ContentTypeReader ctr = new ContentTypeReader(headerValue);
+			ContentType ct = ctr.readValue();
 
-            if (ct != null) {
-                this.mediaType = ct.getMediaType();
-                this.characterSet = ct.getCharacterSet();
-            }
-        } catch (IOException ioe) {
-            throw new IllegalArgumentException(
-                    "The Content Type could not be read.", ioe);
-        }
-    }
+			if (ct != null) {
+				this.mediaType = ct.getMediaType();
+				this.characterSet = ct.getCharacterSet();
+			}
+		} catch (IOException ioe) {
+			throw new IllegalArgumentException("The Content Type could not be read.", ioe);
+		}
+	}
 
-    /**
-     * Returns the character set.
-     * 
-     * @return The character set.
-     */
-    public CharacterSet getCharacterSet() {
-        return this.characterSet;
-    }
+	/**
+	 * Returns the character set.
+	 * 
+	 * @return The character set.
+	 */
+	public CharacterSet getCharacterSet() {
+		return this.characterSet;
+	}
 
-    /**
-     * Returns the media type.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return this.mediaType;
-    }
+	/**
+	 * Returns the media type.
+	 * 
+	 * @return The media type.
+	 */
+	public MediaType getMediaType() {
+		return this.mediaType;
+	}
 
-    @Override
-    public String toString() {
-        return writeHeader(getMediaType(), getCharacterSet());
-    }
+	@Override
+	public String toString() {
+		return writeHeader(getMediaType(), getCharacterSet());
+	}
 }

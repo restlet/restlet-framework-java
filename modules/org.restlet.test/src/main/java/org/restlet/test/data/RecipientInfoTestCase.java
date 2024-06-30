@@ -24,6 +24,9 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,9 +37,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.RecipientInfoWriter;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Test {@link org.restlet.data.RecipientInfo}.

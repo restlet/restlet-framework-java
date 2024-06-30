@@ -72,177 +72,167 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Maximum number of calls that can be queued if there aren't any worker
  * thread available to service them. If the value is '0', then no queue is used
  * and calls are rejected if no worker thread is immediately available. If the
- * value is '-1', then an unbounded queue is used and calls are never rejected.<br>
+ * value is '-1', then an unbounded queue is used and calls are never
+ * rejected.<br>
  * <br>
  * Note: make sure that this value is consistent with {@link #getMinThreads()}
- * and the behavior of the {@link ThreadPoolExecutor} configured internally.</td>
+ * and the behavior of the {@link ThreadPoolExecutor} configured
+ * internally.</td>
  * </tr>
  * <tr>
  * <td>maxThreadIdleTimeMs</td>
  * <td>int</td>
  * <td>300 000</td>
- * <td>Time for an idle thread to wait for an operation before being collected.</td>
+ * <td>Time for an idle thread to wait for an operation before being
+ * collected.</td>
  * </tr>
  * </table>
  * 
  * @author Jerome Louvel
  */
 public abstract class NetServerHelper extends HttpServerHelper {
-    /**
-     * Socket this server is listening to.
-     */
-    private volatile InetSocketAddress address;
+	/**
+	 * Socket this server is listening to.
+	 */
+	private volatile InetSocketAddress address;
 
-    /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
-     */
-    private volatile boolean confidential;
+	/**
+	 * Indicates if this service is acting in HTTP or HTTPS mode.
+	 */
+	private volatile boolean confidential;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public NetServerHelper(Server server) {
-        super(server);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server The server to help.
+	 */
+	public NetServerHelper(Server server) {
+		super(server);
+	}
 
-    /**
-     * Creates the handler service.
-     * 
-     * @return The handler service.
-     */
-    protected ThreadPoolExecutor createThreadPool() {
-        int maxThreads = getMaxThreads();
-        int minThreads = getMinThreads();
+	/**
+	 * Creates the handler service.
+	 * 
+	 * @return The handler service.
+	 */
+	protected ThreadPoolExecutor createThreadPool() {
+		int maxThreads = getMaxThreads();
+		int minThreads = getMinThreads();
 
-        BlockingQueue<Runnable> queue = null;
+		BlockingQueue<Runnable> queue = null;
 
-        if (getMaxQueued() == 0) {
-            queue = new SynchronousQueue<Runnable>();
-        } else if (getMaxQueued() < 0) {
-            queue = new LinkedBlockingQueue<Runnable>();
-        } else {
-            queue = new ArrayBlockingQueue<Runnable>(getMaxQueued());
-        }
+		if (getMaxQueued() == 0) {
+			queue = new SynchronousQueue<Runnable>();
+		} else if (getMaxQueued() < 0) {
+			queue = new LinkedBlockingQueue<Runnable>();
+		} else {
+			queue = new ArrayBlockingQueue<Runnable>(getMaxQueued());
+		}
 
-        ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
-                maxThreads, getMaxThreadIdleTimeMs(), TimeUnit.MILLISECONDS,
-                queue, new LoggingThreadFactory(getLogger(), true));
-        result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
-            public void rejectedExecution(Runnable r,
-                    ThreadPoolExecutor executor) {
-                getLogger().warning(
-                        "Unable to run the following server-side task: " + r);
-            }
-        });
+		ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads, maxThreads, getMaxThreadIdleTimeMs(),
+				TimeUnit.MILLISECONDS, queue, new LoggingThreadFactory(getLogger(), true));
+		result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+			public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+				getLogger().warning("Unable to run the following server-side task: " + r);
+			}
+		});
 
-        // Ensure that core threads act like a minimum number of threads
-        result.prestartAllCoreThreads();
-        return result;
-    }
+		// Ensure that core threads act like a minimum number of threads
+		result.prestartAllCoreThreads();
+		return result;
+	}
 
-    /**
-     * Returns the socket address this server is listening to.
-     * 
-     * @return The socket address this server is listening to.
-     */
-    protected InetSocketAddress getAddress() {
-        return this.address;
-    }
+	/**
+	 * Returns the socket address this server is listening to.
+	 * 
+	 * @return The socket address this server is listening to.
+	 */
+	protected InetSocketAddress getAddress() {
+		return this.address;
+	}
 
-    /**
-     * Returns the maximum number of calls that can be queued if there aren't
-     * any worker thread available to service them. If the value is '0', then no
-     * queue is used and calls are rejected if no worker thread is immediately
-     * available. If the value is '-1', then an unbounded queue is used and
-     * calls are never rejected.<br>
-     * <br>
-     * Note: make sure that this value is consistent with
-     * {@link #getMinThreads()} and the behavior of the
-     * {@link ThreadPoolExecutor} configured internally.
-     * 
-     * @return The maximum number of calls that can be queued.
-     */
-    public int getMaxQueued() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxQueued", "0"));
-    }
+	/**
+	 * Returns the maximum number of calls that can be queued if there aren't any
+	 * worker thread available to service them. If the value is '0', then no queue
+	 * is used and calls are rejected if no worker thread is immediately available.
+	 * If the value is '-1', then an unbounded queue is used and calls are never
+	 * rejected.<br>
+	 * <br>
+	 * Note: make sure that this value is consistent with {@link #getMinThreads()}
+	 * and the behavior of the {@link ThreadPoolExecutor} configured internally.
+	 * 
+	 * @return The maximum number of calls that can be queued.
+	 */
+	public int getMaxQueued() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("maxQueued", "0"));
+	}
 
-    /**
-     * Returns the time for an idle thread to wait for an operation before being
-     * collected.
-     * 
-     * @return The time for an idle thread to wait for an operation before being
-     *         collected.
-     */
-    public int getMaxThreadIdleTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreadIdleTimeMs", "300000"));
-    }
+	/**
+	 * Returns the time for an idle thread to wait for an operation before being
+	 * collected.
+	 * 
+	 * @return The time for an idle thread to wait for an operation before being
+	 *         collected.
+	 */
+	public int getMaxThreadIdleTimeMs() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("maxThreadIdleTimeMs", "300000"));
+	}
 
-    /**
-     * Returns the maximum threads that will service requests.
-     * 
-     * @return The maximum threads that will service requests.
-     */
-    public int getMaxThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreads", "10"));
-    }
+	/**
+	 * Returns the maximum threads that will service requests.
+	 * 
+	 * @return The maximum threads that will service requests.
+	 */
+	public int getMaxThreads() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("maxThreads", "10"));
+	}
 
-    /**
-     * Returns the minimum threads waiting to service requests. Technically
-     * speaking, this is a core number of threads that are pre-started.
-     * 
-     * @return The minimum threads waiting to service requests.
-     */
-    public int getMinThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "minThreads", "1"));
-    }
+	/**
+	 * Returns the minimum threads waiting to service requests. Technically
+	 * speaking, this is a core number of threads that are pre-started.
+	 * 
+	 * @return The minimum threads waiting to service requests.
+	 */
+	public int getMinThreads() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("minThreads", "1"));
+	}
 
-    /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
-     * 
-     * @return True if this service is acting in HTTP or HTTPS mode.
-     */
-    public boolean isConfidential() {
-        return this.confidential;
-    }
+	/**
+	 * Indicates if this service is acting in HTTP or HTTPS mode.
+	 * 
+	 * @return True if this service is acting in HTTP or HTTPS mode.
+	 */
+	public boolean isConfidential() {
+		return this.confidential;
+	}
 
-    /**
-     * Sets the socket address this server is listening to.
-     * 
-     * @param address
-     *            The socket address this server is listening to.
-     */
-    protected void setAddress(InetSocketAddress address) {
-        this.address = address;
-    }
+	/**
+	 * Sets the socket address this server is listening to.
+	 * 
+	 * @param address The socket address this server is listening to.
+	 */
+	protected void setAddress(InetSocketAddress address) {
+		this.address = address;
+	}
 
-    /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
-     * 
-     * @param confidential
-     *            True if this service is acting in HTTP or HTTPS mode.
-     */
-    protected void setConfidential(boolean confidential) {
-        this.confidential = confidential;
-    }
+	/**
+	 * Indicates if this service is acting in HTTP or HTTPS mode.
+	 * 
+	 * @param confidential True if this service is acting in HTTP or HTTPS mode.
+	 */
+	protected void setConfidential(boolean confidential) {
+		this.confidential = confidential;
+	}
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        getLogger().info(
-                "Starting the internal " + getProtocols() + " server on port "
-                        + getHelped().getPort());
-    }
+	@Override
+	public synchronized void start() throws Exception {
+		super.start();
+		getLogger().info("Starting the internal " + getProtocols() + " server on port " + getHelped().getPort());
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the internal server");
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		getLogger().info("Stopping the internal server");
+	}
 
 }

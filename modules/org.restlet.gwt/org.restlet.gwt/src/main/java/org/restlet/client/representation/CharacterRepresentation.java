@@ -24,14 +24,8 @@
 
 package org.restlet.client.representation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-
 import org.restlet.client.data.CharacterSet;
 import org.restlet.client.data.MediaType;
-import org.restlet.client.engine.io.IoUtils;
 
 /**
  * Representation based on a BIO character stream.

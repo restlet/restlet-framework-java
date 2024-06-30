@@ -24,10 +24,11 @@
 
 package org.restlet.test.ext.guice;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -43,10 +44,10 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
 
 public class GuiceWrappedFinderTestCase extends RestletTestCase {
 

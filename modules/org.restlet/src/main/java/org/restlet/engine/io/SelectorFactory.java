@@ -36,82 +36,81 @@ import java.util.Stack;
  * @author Jean-Francois Arcand
  */
 public class SelectorFactory {
-    /** The maximum number of <code>Selector</code> to create. */
-    public static final int MAX_SELECTORS = 20;
+	/** The maximum number of <code>Selector</code> to create. */
+	public static final int MAX_SELECTORS = 20;
 
-    /** The number of attempts to find an available selector. */
-    public static final int MAX_ATTEMPTS = 2;
+	/** The number of attempts to find an available selector. */
+	public static final int MAX_ATTEMPTS = 2;
 
-    /** Cache of <code>Selector</code>. */
-    private static final Stack<Selector> SELECTORS = new Stack<Selector>();
+	/** Cache of <code>Selector</code>. */
+	private static final Stack<Selector> SELECTORS = new Stack<Selector>();
 
-    /** The timeout before we exit. */
-    public static final long TIMEOUT = 5000;
+	/** The timeout before we exit. */
+	public static final long TIMEOUT = 5000;
 
-    // [ifndef gae]
-    /** Creates the <code>Selector</code>. */
-    static {
-        try {
-            for (int i = 0; i < MAX_SELECTORS; i++) {
-                SELECTORS.add(Selector.open());
-            }
-        } catch (IOException ex) {
-            // do nothing.
-        }
-    }
+	// [ifndef gae]
+	/** Creates the <code>Selector</code>. */
+	static {
+		try {
+			for (int i = 0; i < MAX_SELECTORS; i++) {
+				SELECTORS.add(Selector.open());
+			}
+		} catch (IOException ex) {
+			// do nothing.
+		}
+	}
 
-    // [enddef]
+	// [enddef]
 
-    /**
-     * Get an exclusive <code>Selector</code>.
-     * 
-     * @return An exclusive <code>Selector</code>.
-     */
-    public final static Selector getSelector() {
-        synchronized (SELECTORS) {
-            Selector selector = null;
+	/**
+	 * Get an exclusive <code>Selector</code>.
+	 * 
+	 * @return An exclusive <code>Selector</code>.
+	 */
+	public final static Selector getSelector() {
+		synchronized (SELECTORS) {
+			Selector selector = null;
 
-            try {
-                if (SELECTORS.size() != 0) {
-                    selector = SELECTORS.pop();
-                }
-            } catch (EmptyStackException ex) {
-            }
+			try {
+				if (SELECTORS.size() != 0) {
+					selector = SELECTORS.pop();
+				}
+			} catch (EmptyStackException ex) {
+			}
 
-            int attempts = 0;
-            try {
-                while ((selector == null) && (attempts < MAX_ATTEMPTS)) {
-                    SELECTORS.wait(TIMEOUT);
+			int attempts = 0;
+			try {
+				while ((selector == null) && (attempts < MAX_ATTEMPTS)) {
+					SELECTORS.wait(TIMEOUT);
 
-                    try {
-                        if (SELECTORS.size() != 0) {
-                            selector = SELECTORS.pop();
-                        }
-                    } catch (EmptyStackException ex) {
-                        break;
-                    }
+					try {
+						if (SELECTORS.size() != 0) {
+							selector = SELECTORS.pop();
+						}
+					} catch (EmptyStackException ex) {
+						break;
+					}
 
-                    attempts++;
-                }
-            } catch (InterruptedException ex) {
-            }
+					attempts++;
+				}
+			} catch (InterruptedException ex) {
+			}
 
-            return selector;
-        }
-    }
+			return selector;
+		}
+	}
 
-    /**
-     * Returns the <code>Selector</code> to the cache.
-     * 
-     * @param selector
-     *            The <code>Selector</code> to return.
-     */
-    public final static void returnSelector(Selector selector) {
-        synchronized (SELECTORS) {
-            SELECTORS.push(selector);
-            if (SELECTORS.size() == 1) {
-                SELECTORS.notify();
-            }
-        }
-    }
+	/**
+	 * Returns the <code>Selector</code> to the cache.
+	 * 
+	 * @param selector The <code>Selector</code> to return.
+	 */
+	public final static void returnSelector(Selector selector) {
+		synchronized (SELECTORS) {
+			SELECTORS.push(selector);
+			if (SELECTORS.size() == 1) {
+				SELECTORS.notify();
+			}
+		}
+	}
 }

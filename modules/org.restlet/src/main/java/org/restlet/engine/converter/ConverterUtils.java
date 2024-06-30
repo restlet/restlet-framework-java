@@ -42,114 +42,94 @@ import org.restlet.resource.Resource;
  */
 public class ConverterUtils {
 
-    /**
-     * Returns the best converter helper matching the given parameters.
-     * 
-     * @param source
-     *            The object to convert to a representation.
-     * @param target
-     *            The target representation variant.
-     * @param resource
-     *            The optional parent resource.
-     * @return The matched converter helper or null.
-     */
-    public static ConverterHelper getBestHelper(Object source, Variant target,
-            Resource resource) {
-        ConverterHelper result = null;
-        float bestScore = -1.0F;
-        float currentScore;
+	/**
+	 * Returns the best converter helper matching the given parameters.
+	 * 
+	 * @param source   The object to convert to a representation.
+	 * @param target   The target representation variant.
+	 * @param resource The optional parent resource.
+	 * @return The matched converter helper or null.
+	 */
+	public static ConverterHelper getBestHelper(Object source, Variant target, Resource resource) {
+		ConverterHelper result = null;
+		float bestScore = -1.0F;
+		float currentScore;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
-            if (ch != null) {
-                try {
-                    currentScore = ch.score(source, target, resource);
+		for (ConverterHelper ch : Engine.getInstance().getRegisteredConverters()) {
+			if (ch != null) {
+				try {
+					currentScore = ch.score(source, target, resource);
 
-                    if (currentScore > bestScore) {
-                        bestScore = currentScore;
-                        result = ch;
-                    }
-                } catch (Exception e) {
-                    Context.getCurrentLogger().log(
-                            Level.SEVERE,
-                            "Unable get the score of the " + ch
-                                    + " converter helper.", e);
-                }
-            }
-        }
+					if (currentScore > bestScore) {
+						bestScore = currentScore;
+						result = ch;
+					}
+				} catch (Exception e) {
+					Context.getCurrentLogger().log(Level.SEVERE,
+							"Unable get the score of the " + ch + " converter helper.", e);
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the best converter helper matching the given parameters.
-     * 
-     * @param <T>
-     *            The target class.
-     * @param source
-     *            The source representation variant.
-     * @param target
-     *            The target class.
-     * @param resource
-     *            The parent resource.
-     * @return The matched converter helper or null.
-     */
-    public static <T> ConverterHelper getBestHelper(Representation source,
-            Class<T> target, Resource resource) {
-        ConverterHelper result = null;
-        float bestScore = -1.0F;
-        float currentScore;
+	/**
+	 * Returns the best converter helper matching the given parameters.
+	 * 
+	 * @param <T>      The target class.
+	 * @param source   The source representation variant.
+	 * @param target   The target class.
+	 * @param resource The parent resource.
+	 * @return The matched converter helper or null.
+	 */
+	public static <T> ConverterHelper getBestHelper(Representation source, Class<T> target, Resource resource) {
+		ConverterHelper result = null;
+		float bestScore = -1.0F;
+		float currentScore;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
-            if (ch != null) {
-                currentScore = ch.score(source, target, resource);
+		for (ConverterHelper ch : Engine.getInstance().getRegisteredConverters()) {
+			if (ch != null) {
+				currentScore = ch.score(source, target, resource);
 
-                if (currentScore > bestScore) {
-                    bestScore = currentScore;
-                    result = ch;
-                }
-            }
-        }
+				if (currentScore > bestScore) {
+					bestScore = currentScore;
+					result = ch;
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the list of variants that can be converted from a given object
-     * class.
-     * 
-     * @param sourceClass
-     *            The source class.
-     * @param targetVariant
-     *            The expected representation metadata.
-     * @return The list of variants that can be converted.
-     */
-    public static List<VariantInfo> getVariants(Class<?> sourceClass,
-            Variant targetVariant) {
-        List<VariantInfo> result = null;
+	/**
+	 * Returns the list of variants that can be converted from a given object class.
+	 * 
+	 * @param sourceClass   The source class.
+	 * @param targetVariant The expected representation metadata.
+	 * @return The list of variants that can be converted.
+	 */
+	public static List<VariantInfo> getVariants(Class<?> sourceClass, Variant targetVariant) {
+		List<VariantInfo> result = null;
 
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
-            if (ch != null) {
-                try {
-                    result = ch.addVariants(sourceClass, targetVariant, result);
-                } catch (IOException e) {
-                    Context.getCurrentLogger().log(
-                            Level.FINE,
-                            "Unable get the variants of the " + ch
-                                    + " converter helper.", e);
-                }
-            }
-        }
+		for (ConverterHelper ch : Engine.getInstance().getRegisteredConverters()) {
+			if (ch != null) {
+				try {
+					result = ch.addVariants(sourceClass, targetVariant, result);
+				} catch (IOException e) {
+					Context.getCurrentLogger().log(Level.FINE,
+							"Unable get the variants of the " + ch + " converter helper.", e);
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private ConverterUtils() {
-    }
+	/**
+	 * Private constructor to ensure that the class acts as a true utility class
+	 * i.e. it isn't instantiable and extensible.
+	 */
+	private ConverterUtils() {
+	}
 }

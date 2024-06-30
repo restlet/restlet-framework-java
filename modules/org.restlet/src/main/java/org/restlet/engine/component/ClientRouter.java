@@ -44,67 +44,60 @@ import org.restlet.routing.Router;
  * @author Jerome Louvel
  */
 public class ClientRouter extends Router {
-    /** The parent component. */
-    private volatile Component component;
+	/** The parent component. */
+	private volatile Component component;
 
-    /**
-     * Constructor.
-     * 
-     * @param component
-     *            The parent component.
-     */
-    public ClientRouter(Component component) {
-        super((component == null) ? null : component.getContext()
-                .createChildContext());
-        this.component = component;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param component The parent component.
+	 */
+	public ClientRouter(Component component) {
+		super((component == null) ? null : component.getContext().createChildContext());
+		this.component = component;
+	}
 
-    @Override
-    protected void logRoute(org.restlet.routing.Route route) {
-        if (getLogger().isLoggable(Level.FINE)) {
-            if (route instanceof ClientRoute) {
-                Client client = ((ClientRoute) route).getClient();
+	@Override
+	protected void logRoute(org.restlet.routing.Route route) {
+		if (getLogger().isLoggable(Level.FINE)) {
+			if (route instanceof ClientRoute) {
+				Client client = ((ClientRoute) route).getClient();
 
-                getLogger().fine(
-                        "This client was selected: \"" + client.getProtocols()
-                                + "\"");
-            } else {
-                super.logRoute(route);
-            }
-        }
-    }
+				getLogger().fine("This client was selected: \"" + client.getProtocols() + "\"");
+			} else {
+				super.logRoute(route);
+			}
+		}
+	}
 
-    @Override
-    public Restlet getNext(Request request, Response response) {
-        Restlet result = super.getNext(request, response);
+	@Override
+	public Restlet getNext(Request request, Response response) {
+		Restlet result = super.getNext(request, response);
 
-        if (result == null) {
-            getLogger()
-                    .warning(
-                            "The protocol used by this request is not declared in the list of client connectors. ("
-                                    + request.getResourceRef()
-                                            .getSchemeProtocol()
-                                    + "). In case you are using an instance of the Component class, check its \"clients\" property.");
-        }
-        return result;
-    }
+		if (result == null) {
+			getLogger().warning("The protocol used by this request is not declared in the list of client connectors. ("
+					+ request.getResourceRef().getSchemeProtocol()
+					+ "). In case you are using an instance of the Component class, check its \"clients\" property.");
+		}
+		return result;
+	}
 
-    /**
-     * Returns the parent component.
-     * 
-     * @return The parent component.
-     */
-    private Component getComponent() {
-        return this.component;
-    }
+	/**
+	 * Returns the parent component.
+	 * 
+	 * @return The parent component.
+	 */
+	private Component getComponent() {
+		return this.component;
+	}
 
-    /** Starts the Restlet. */
-    @Override
-    public synchronized void start() throws Exception {
-        for (final Client client : getComponent().getClients()) {
-            getRoutes().add(new ClientRoute(this, client));
-        }
+	/** Starts the Restlet. */
+	@Override
+	public synchronized void start() throws Exception {
+		for (final Client client : getComponent().getClients()) {
+			getRoutes().add(new ClientRoute(this, client));
+		}
 
-        super.start();
-    }
+		super.start();
+	}
 }

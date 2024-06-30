@@ -24,8 +24,6 @@
 
 package org.restlet.client.engine.util;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

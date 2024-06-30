@@ -24,12 +24,12 @@
 
 package org.restlet.test.service;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.service.MetadataService;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the metadata service.

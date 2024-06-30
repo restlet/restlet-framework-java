@@ -34,143 +34,132 @@ import org.restlet.data.Parameter;
  */
 public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
 
-    /** Indicates if the first challenge parameter is written. */
-    private volatile boolean firstChallengeParameter;
+	/** Indicates if the first challenge parameter is written. */
+	private volatile boolean firstChallengeParameter;
 
-    /**
-     * Constructor.
-     */
-    public ChallengeWriter() {
-        this.firstChallengeParameter = true;
-    }
+	/**
+	 * Constructor.
+	 */
+	public ChallengeWriter() {
+		this.firstChallengeParameter = true;
+	}
 
-    @Override
-    public HeaderWriter<ChallengeRequest> append(ChallengeRequest value) {
-        return this;
-    }
+	@Override
+	public HeaderWriter<ChallengeRequest> append(ChallengeRequest value) {
+		return this;
+	}
 
-    /**
-     * Appends a new challenge parameter, prefixed with a comma. The value is
-     * separated from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
-     * @return This writer.
-     */
-    public ChallengeWriter appendChallengeParameter(Parameter parameter) {
-        return appendChallengeParameter(parameter.getName(),
-                parameter.getValue());
-    }
+	/**
+	 * Appends a new challenge parameter, prefixed with a comma. The value is
+	 * separated from the name by an '=' character.
+	 * 
+	 * @param parameter The parameter.
+	 * @return This writer.
+	 */
+	public ChallengeWriter appendChallengeParameter(Parameter parameter) {
+		return appendChallengeParameter(parameter.getName(), parameter.getValue());
+	}
 
-    /**
-     * Appends a new parameter, prefixed with a comma.
-     * 
-     * @param name
-     *            The parameter name.
-     * @return The current builder.
-     */
-    public ChallengeWriter appendChallengeParameter(String name) {
-        appendChallengeParameterSeparator();
-        appendToken(name);
-        return this;
-    }
+	/**
+	 * Appends a new parameter, prefixed with a comma.
+	 * 
+	 * @param name The parameter name.
+	 * @return The current builder.
+	 */
+	public ChallengeWriter appendChallengeParameter(String name) {
+		appendChallengeParameterSeparator();
+		appendToken(name);
+		return this;
+	}
 
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value.
-     * @return This writer.
-     */
-    public ChallengeWriter appendChallengeParameter(String name, String value) {
-        appendChallengeParameterSeparator();
+	/**
+	 * Appends a new parameter, prefixed with a comma. The value is separated from
+	 * the name by an '=' character.
+	 * 
+	 * @param name  The parameter name.
+	 * @param value The parameter value.
+	 * @return This writer.
+	 */
+	public ChallengeWriter appendChallengeParameter(String name, String value) {
+		appendChallengeParameterSeparator();
 
-        if (name != null) {
-            appendToken(name);
-        }
+		if (name != null) {
+			appendToken(name);
+		}
 
-        if (value != null) {
-            append('=');
-            appendToken(value);
-        }
+		if (value != null) {
+			append('=');
+			appendToken(value);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * Appends a comma as a separator if the first parameter has already been
-     * written.
-     * 
-     * @return This writer.
-     */
-    public ChallengeWriter appendChallengeParameterSeparator() {
-        if (isFirstChallengeParameter()) {
-            setFirstChallengeParameter(false);
-        } else {
-            append(", ");
-        }
+	/**
+	 * Appends a comma as a separator if the first parameter has already been
+	 * written.
+	 * 
+	 * @return This writer.
+	 */
+	public ChallengeWriter appendChallengeParameterSeparator() {
+		if (isFirstChallengeParameter()) {
+			setFirstChallengeParameter(false);
+		} else {
+			append(", ");
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is separated
-     * from the name by an '=' character.
-     * 
-     * @param parameter
-     *            The parameter.
-     * @return This writer.
-     */
-    public ChallengeWriter appendQuotedChallengeParameter(Parameter parameter) {
-        return appendQuotedChallengeParameter(parameter.getName(),
-                parameter.getValue());
-    }
+	/**
+	 * Appends a new parameter, prefixed with a comma. The value is separated from
+	 * the name by an '=' character.
+	 * 
+	 * @param parameter The parameter.
+	 * @return This writer.
+	 */
+	public ChallengeWriter appendQuotedChallengeParameter(Parameter parameter) {
+		return appendQuotedChallengeParameter(parameter.getName(), parameter.getValue());
+	}
 
-    /**
-     * Appends a new parameter, prefixed with a comma. The value is quoted and
-     * separated from the name by an '=' character.
-     * 
-     * @param name
-     *            The parameter name.
-     * @param value
-     *            The parameter value to quote.
-     * @return This writer.
-     */
-    public ChallengeWriter appendQuotedChallengeParameter(String name,
-            String value) {
-        appendChallengeParameterSeparator();
+	/**
+	 * Appends a new parameter, prefixed with a comma. The value is quoted and
+	 * separated from the name by an '=' character.
+	 * 
+	 * @param name  The parameter name.
+	 * @param value The parameter value to quote.
+	 * @return This writer.
+	 */
+	public ChallengeWriter appendQuotedChallengeParameter(String name, String value) {
+		appendChallengeParameterSeparator();
 
-        if (name != null) {
-            appendToken(name);
-        }
+		if (name != null) {
+			appendToken(name);
+		}
 
-        if (value != null) {
-            append('=');
-            appendQuotedString(value);
-        }
+		if (value != null) {
+			append('=');
+			appendQuotedString(value);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * Indicates if the first comma-separated value is written.
-     * 
-     * @return True if the first comma-separated value is written.
-     */
-    public boolean isFirstChallengeParameter() {
-        return firstChallengeParameter;
-    }
+	/**
+	 * Indicates if the first comma-separated value is written.
+	 * 
+	 * @return True if the first comma-separated value is written.
+	 */
+	public boolean isFirstChallengeParameter() {
+		return firstChallengeParameter;
+	}
 
-    /**
-     * Indicates if the first comma-separated value is written.
-     * 
-     * @param firstValue
-     *            True if the first comma-separated value is written.
-     */
-    public void setFirstChallengeParameter(boolean firstValue) {
-        this.firstChallengeParameter = firstValue;
-    }
+	/**
+	 * Indicates if the first comma-separated value is written.
+	 * 
+	 * @param firstValue True if the first comma-separated value is written.
+	 */
+	public void setFirstChallengeParameter(boolean firstValue) {
+		this.firstChallengeParameter = firstValue;
+	}
 }

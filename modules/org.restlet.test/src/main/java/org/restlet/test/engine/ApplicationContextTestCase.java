@@ -1,5 +1,7 @@
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -12,8 +14,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests that when issuing internal calls, the application context is kept intact in the caller server resource.

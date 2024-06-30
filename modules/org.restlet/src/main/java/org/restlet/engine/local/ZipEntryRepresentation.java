@@ -46,78 +46,68 @@ import org.restlet.representation.StreamRepresentation;
  */
 public class ZipEntryRepresentation extends StreamRepresentation {
 
-    /** The Zip entry. */
-    protected final ZipEntry entry;
+	/** The Zip entry. */
+	protected final ZipEntry entry;
 
-    /** The Zip file. */
-    protected final ZipFile zipFile;
+	/** The Zip file. */
+	protected final ZipFile zipFile;
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The entry media type.
-     * @param zipFile
-     *            The parent Zip archive file.
-     * @param entry
-     *            The Zip entry.
-     * @deprecated Use
-     *             {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)}
-     *             instead.
-     */
-    @Deprecated
-    public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
-            ZipEntry entry) {
-        this(mediaType, zipFile, entry, -1);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The entry media type.
+	 * @param zipFile   The parent Zip archive file.
+	 * @param entry     The Zip entry.
+	 * @deprecated Use
+	 *             {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)}
+	 *             instead.
+	 */
+	@Deprecated
+	public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile, ZipEntry entry) {
+		this(mediaType, zipFile, entry, -1);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The entry media type.
-     * @param zipFile
-     *            The parent Zip archive file.
-     * @param entry
-     *            The Zip entry.
-     * @param timeToLive
-     *            The time to live before it expires (in seconds).
-     */
-    public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
-            ZipEntry entry, int timeToLive) {
-        super(mediaType);
-        this.zipFile = zipFile;
-        this.entry = entry;
-        Disposition disposition = new Disposition();
-        disposition.setFilename(entry.getName());
-        this.setDisposition(disposition);
-        setSize(entry.getSize());
-        setModificationDate(new Date(entry.getTime()));
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType  The entry media type.
+	 * @param zipFile    The parent Zip archive file.
+	 * @param entry      The Zip entry.
+	 * @param timeToLive The time to live before it expires (in seconds).
+	 */
+	public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile, ZipEntry entry, int timeToLive) {
+		super(mediaType);
+		this.zipFile = zipFile;
+		this.entry = entry;
+		Disposition disposition = new Disposition();
+		disposition.setFilename(entry.getName());
+		this.setDisposition(disposition);
+		setSize(entry.getSize());
+		setModificationDate(new Date(entry.getTime()));
 
-        if (timeToLive == 0) {
-            setExpirationDate(null);
-        } else if (timeToLive > 0) {
-            setExpirationDate(new Date(System.currentTimeMillis()
-                    + (1000L * timeToLive)));
-        }
-    }
+		if (timeToLive == 0) {
+			setExpirationDate(null);
+		} else if (timeToLive > 0) {
+			setExpirationDate(new Date(System.currentTimeMillis() + (1000L * timeToLive)));
+		}
+	}
 
-    @Override
-    public InputStream getStream() throws IOException {
-        return zipFile.getInputStream(entry);
-    }
+	@Override
+	public InputStream getStream() throws IOException {
+		return zipFile.getInputStream(entry);
+	}
 
-    @Override
-    public void release() {
-        try {
-            zipFile.close();
-        } catch (IOException e) {
-        }
-    }
+	@Override
+	public void release() {
+		try {
+			zipFile.close();
+		} catch (IOException e) {
+		}
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        IoUtils.copy(getStream(), outputStream);
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		IoUtils.copy(getStream(), outputStream);
+	}
 
 }

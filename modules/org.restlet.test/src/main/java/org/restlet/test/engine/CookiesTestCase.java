@@ -24,6 +24,9 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,9 +41,6 @@ import org.restlet.engine.header.CookieSettingWriter;
 import org.restlet.engine.header.CookieWriter;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the Cookie related classes.

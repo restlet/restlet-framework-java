@@ -24,13 +24,13 @@
 
 package org.restlet.test.ext.spring;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.test.RestletTestCase;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test case for the Spring extension.

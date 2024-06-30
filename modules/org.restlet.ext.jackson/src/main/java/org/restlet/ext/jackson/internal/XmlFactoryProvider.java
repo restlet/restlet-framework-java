@@ -1,10 +1,10 @@
 package org.restlet.ext.jackson.internal;
 
-import org.codehaus.stax2.osgi.Stax2InputFactoryProvider;
-import org.codehaus.stax2.osgi.Stax2OutputFactoryProvider;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+
+import org.codehaus.stax2.osgi.Stax2InputFactoryProvider;
+import org.codehaus.stax2.osgi.Stax2OutputFactoryProvider;
 
 /**
  * Provides {@link javax.xml.stream.XMLInputFactory}

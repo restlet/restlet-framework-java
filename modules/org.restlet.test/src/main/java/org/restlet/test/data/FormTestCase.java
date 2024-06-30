@@ -24,6 +24,9 @@
 
 package org.restlet.test.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -31,9 +34,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.engine.util.FormReader;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the {@link Form} class.

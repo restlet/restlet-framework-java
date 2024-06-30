@@ -57,80 +57,75 @@ import org.restlet.engine.connector.ClientHelper;
  */
 public abstract class HttpClientHelper extends ClientHelper {
 
-    /** The adapter from uniform calls to HTTP calls. */
-    private volatile ClientAdapter adapter;
+	/** The adapter from uniform calls to HTTP calls. */
+	private volatile ClientAdapter adapter;
 
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public HttpClientHelper(Client client) {
-        super(client);
-        this.adapter = null;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public HttpClientHelper(Client client) {
+		super(client);
+		this.adapter = null;
+	}
 
-    /**
-     * Creates a low-level HTTP client call from a high-level request.
-     * 
-     * @param request
-     *            The high-level request.
-     * @return A low-level HTTP client call.
-     */
-    public abstract ClientCall create(Request request);
+	/**
+	 * Creates a low-level HTTP client call from a high-level request.
+	 * 
+	 * @param request The high-level request.
+	 * @return A low-level HTTP client call.
+	 */
+	public abstract ClientCall create(Request request);
 
-    /**
-     * Returns the adapter from uniform calls to HTTP calls.
-     * 
-     * @return the adapter from uniform calls to HTTP calls.
-     */
-    public ClientAdapter getAdapter() throws Exception {
-        if (this.adapter == null) {
-            String adapterClass = getHelpedParameters().getFirstValue(
-                    "adapter", "org.restlet.engine.adapter.ClientAdapter");
-            this.adapter = (ClientAdapter) Class.forName(adapterClass)
-                    .getConstructor(Context.class).newInstance(getContext());
-        }
+	/**
+	 * Returns the adapter from uniform calls to HTTP calls.
+	 * 
+	 * @return the adapter from uniform calls to HTTP calls.
+	 */
+	public ClientAdapter getAdapter() throws Exception {
+		if (this.adapter == null) {
+			String adapterClass = getHelpedParameters().getFirstValue("adapter",
+					"org.restlet.engine.adapter.ClientAdapter");
+			this.adapter = (ClientAdapter) Class.forName(adapterClass).getConstructor(Context.class)
+					.newInstance(getContext());
+		}
 
-        return this.adapter;
-    }
+		return this.adapter;
+	}
 
-    /**
-     * Returns the connection timeout. Defaults to 15000.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
+	/**
+	 * Returns the connection timeout. Defaults to 15000.
+	 * 
+	 * @return The connection timeout.
+	 */
+	public int getSocketConnectTimeoutMs() {
+		int result = 0;
 
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "15000"));
-        }
+		if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+			result = Integer.parseInt(getHelpedParameters().getFirstValue("socketConnectTimeoutMs", "15000"));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public void handle(Request request, Response response) {
-        try {
-            ClientCall clientCall = getAdapter().toSpecific(this, request);
-            getAdapter().commit(clientCall, request, response);
-        } catch (Exception e) {
-            getLogger().log(Level.INFO,
-                    "Error while handling an HTTP client call", e);
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
-        }
-    }
+	@Override
+	public void handle(Request request, Response response) {
+		try {
+			ClientCall clientCall = getAdapter().toSpecific(this, request);
+			getAdapter().commit(clientCall, request, response);
+		} catch (Exception e) {
+			getLogger().log(Level.INFO, "Error while handling an HTTP client call", e);
+			response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+		}
+	}
 
-    /**
-     * Sets the adapter from uniform calls to HTTP calls.
-     * 
-     * @param adapter
-     *            The adapter to set.
-     */
-    public void setAdapter(ClientAdapter adapter) {
-        this.adapter = adapter;
-    }
+	/**
+	 * Sets the adapter from uniform calls to HTTP calls.
+	 * 
+	 * @param adapter The adapter to set.
+	 */
+	public void setAdapter(ClientAdapter adapter) {
+		this.adapter = adapter;
+	}
 }

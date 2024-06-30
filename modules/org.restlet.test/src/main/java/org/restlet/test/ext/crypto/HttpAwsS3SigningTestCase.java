@@ -24,6 +24,8 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,8 +36,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for {@link AwsUtils}. Test cases are taken from the examples

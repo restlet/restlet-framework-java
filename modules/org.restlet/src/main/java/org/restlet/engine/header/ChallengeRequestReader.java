@@ -39,65 +39,63 @@ import org.restlet.data.Parameter;
  */
 public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public ChallengeRequestReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public ChallengeRequestReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public ChallengeRequest readValue() throws IOException {
-        ChallengeRequest result = null;
+	@Override
+	public ChallengeRequest readValue() throws IOException {
+		ChallengeRequest result = null;
 
-        // The challenge is that this header is a comma separated lst of
-        // challenges, and that each challenges is also a comma separated list,
-        // but of parameters.
-        skipSpaces();
-        if (peek() != -1) {
-            String scheme = readToken();
-            result = new ChallengeRequest(new ChallengeScheme("HTTP_" + scheme,
-                    scheme));
-            skipSpaces();
+		// The challenge is that this header is a comma separated lst of
+		// challenges, and that each challenges is also a comma separated list,
+		// but of parameters.
+		skipSpaces();
+		if (peek() != -1) {
+			String scheme = readToken();
+			result = new ChallengeRequest(new ChallengeScheme("HTTP_" + scheme, scheme));
+			skipSpaces();
 
-            // Header writer that will reconstruct the raw value of a challenge.
-            HeaderWriter<Parameter> w = new HeaderWriter<Parameter>() {
-                @Override
-                public HeaderWriter<Parameter> append(Parameter value) {
-                    appendExtension(value);
-                    return this;
-                }
-            };
+			// Header writer that will reconstruct the raw value of a challenge.
+			HeaderWriter<Parameter> w = new HeaderWriter<Parameter>() {
+				@Override
+				public HeaderWriter<Parameter> append(Parameter value) {
+					appendExtension(value);
+					return this;
+				}
+			};
 
-            boolean stop = false;
-            while (peek() != -1 && !stop) {
-                boolean sepSkipped = skipValueSeparator();
-                // Record the start of the segment
-                mark();
-                // Read a token and the next character.
-                readToken();
-                int nextChar = read();
-                reset();
-                if (isSpace(nextChar)) {
-                    // A new scheme has been discovered.
-                    stop = true;
-                } else {
-                    // The next segment is considered as a parameter
-                    if (sepSkipped) {
-                        // Add the skipped value separator.
-                        w.appendValueSeparator();
-                    }
-                    // Append the parameter
-                    w.append(readParameter());
-                }
-            }
-            result.setRawValue(w.toString());
-            w.close();
-        }
+			boolean stop = false;
+			while (peek() != -1 && !stop) {
+				boolean sepSkipped = skipValueSeparator();
+				// Record the start of the segment
+				mark();
+				// Read a token and the next character.
+				readToken();
+				int nextChar = read();
+				reset();
+				if (isSpace(nextChar)) {
+					// A new scheme has been discovered.
+					stop = true;
+				} else {
+					// The next segment is considered as a parameter
+					if (sepSkipped) {
+						// Add the skipped value separator.
+						w.appendValueSeparator();
+					}
+					// Append the parameter
+					w.append(readParameter());
+				}
+			}
+			result.setRawValue(w.toString());
+			w.close();
+		}
 
-        return result;
-    }
+		return result;
+	}
 }

@@ -33,15 +33,15 @@ import org.restlet.data.Method;
  */
 public class WebDavProtocolHelper extends ProtocolHelper {
 
-    @Override
-    public void registerMethods() {
-        Method.register(Method.COPY);
-        Method.register(Method.LOCK);
-        Method.register(Method.MKCOL);
-        Method.register(Method.MOVE);
-        Method.register(Method.PROPFIND);
-        Method.register(Method.PROPPATCH);
-        Method.register(Method.UNLOCK);
-    }
+	@Override
+	public void registerMethods() {
+		Method.register(Method.COPY);
+		Method.register(Method.LOCK);
+		Method.register(Method.MKCOL);
+		Method.register(Method.MOVE);
+		Method.register(Method.PROPFIND);
+		Method.register(Method.PROPPATCH);
+		Method.register(Method.UNLOCK);
+	}
 
 }

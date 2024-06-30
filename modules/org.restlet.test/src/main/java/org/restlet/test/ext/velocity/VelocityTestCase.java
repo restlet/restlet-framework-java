@@ -24,6 +24,8 @@
 
 package org.restlet.test.ext.velocity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
@@ -38,8 +40,6 @@ import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test case for the Velocity extension.

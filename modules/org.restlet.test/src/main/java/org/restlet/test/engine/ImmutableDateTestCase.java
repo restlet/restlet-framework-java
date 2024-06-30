@@ -24,14 +24,14 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link org.restlet.engine.util.DateUtils}.

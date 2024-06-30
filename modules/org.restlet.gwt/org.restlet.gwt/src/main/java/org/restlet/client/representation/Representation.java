@@ -26,12 +26,9 @@ package org.restlet.client.representation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
-import java.util.logging.Level;
 
-import org.restlet.client.Context;
 import org.restlet.client.Request;
 import org.restlet.client.Response;
 import org.restlet.client.data.Disposition;

@@ -35,58 +35,52 @@ import java.util.logging.Logger;
  */
 public class LoggingThreadFactory implements ThreadFactory {
 
-    /**
-     * Handle uncaught thread exceptions.
-     */
-    private class LoggingExceptionHandler implements
-            Thread.UncaughtExceptionHandler {
+	/**
+	 * Handle uncaught thread exceptions.
+	 */
+	private class LoggingExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-        public void uncaughtException(Thread t, Throwable ex) {
-            logger.log(Level.SEVERE, "Thread: " + t.getName()
-                    + " terminated with exception: " + ex.getMessage(), ex);
-        }
-    }
+		public void uncaughtException(Thread t, Throwable ex) {
+			logger.log(Level.SEVERE, "Thread: " + t.getName() + " terminated with exception: " + ex.getMessage(), ex);
+		}
+	}
 
-    /** The associated logger. */
-    private final Logger logger;
+	/** The associated logger. */
+	private final Logger logger;
 
-    /** Indicates if threads should be created as daemons. */
-    private final boolean daemon;
+	/** Indicates if threads should be created as daemons. */
+	private final boolean daemon;
 
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The associated logger.
-     */
-    public LoggingThreadFactory(Logger logger) {
-        this(logger, false);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param logger The associated logger.
+	 */
+	public LoggingThreadFactory(Logger logger) {
+		this(logger, false);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The associated logger.
-     * @param daemon
-     *            Indicates if threads should be created as daemons.
-     */
-    public LoggingThreadFactory(Logger logger, boolean daemon) {
-        this.logger = logger;
-        this.daemon = daemon;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param logger The associated logger.
+	 * @param daemon Indicates if threads should be created as daemons.
+	 */
+	public LoggingThreadFactory(Logger logger, boolean daemon) {
+		this.logger = logger;
+		this.daemon = daemon;
+	}
 
-    /**
-     * Creates a new thread.
-     * 
-     * @param r
-     *            The runnable task.
-     */
-    public Thread newThread(Runnable r) {
-        Thread result = new Thread(r);
-        result.setName("Restlet-" + result.hashCode());
-        result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
-        result.setDaemon(this.daemon);
-        return result;
-    }
+	/**
+	 * Creates a new thread.
+	 * 
+	 * @param r The runnable task.
+	 */
+	public Thread newThread(Runnable r) {
+		Thread result = new Thread(r);
+		result.setName("Restlet-" + result.hashCode());
+		result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
+		result.setDaemon(this.daemon);
+		return result;
+	}
 }

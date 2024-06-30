@@ -38,61 +38,53 @@ import org.restlet.engine.io.IoUtils;
  */
 public class ReadableRepresentation extends ChannelRepresentation {
 
-    /** The representation's input stream. */
-    private volatile ReadableByteChannel channel;
+	/** The representation's input stream. */
+	private volatile ReadableByteChannel channel;
 
-    /**
-     * Constructor.
-     * 
-     * @param readableChannel
-     *            The representation's channel.
-     * @param mediaType
-     *            The representation's media type.
-     */
-    public ReadableRepresentation(ReadableByteChannel readableChannel,
-            MediaType mediaType) {
-        this(readableChannel, mediaType, UNKNOWN_SIZE);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param readableChannel The representation's channel.
+	 * @param mediaType       The representation's media type.
+	 */
+	public ReadableRepresentation(ReadableByteChannel readableChannel, MediaType mediaType) {
+		this(readableChannel, mediaType, UNKNOWN_SIZE);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param channel
-     *            The representation's channel.
-     * @param mediaType
-     *            The representation's media type.
-     * @param expectedSize
-     *            The expected stream size.
-     */
-    public ReadableRepresentation(ReadableByteChannel channel,
-            MediaType mediaType, long expectedSize) {
-        super(mediaType);
-        setSize(expectedSize);
-        this.channel = channel;
-        setAvailable(channel != null);
-        setTransient(true);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param channel      The representation's channel.
+	 * @param mediaType    The representation's media type.
+	 * @param expectedSize The expected stream size.
+	 */
+	public ReadableRepresentation(ReadableByteChannel channel, MediaType mediaType, long expectedSize) {
+		super(mediaType);
+		setSize(expectedSize);
+		this.channel = channel;
+		setAvailable(channel != null);
+		setTransient(true);
+	}
 
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        ReadableByteChannel result = this.channel;
-        setAvailable(false);
-        return result;
-    }
+	@Override
+	public ReadableByteChannel getChannel() throws IOException {
+		ReadableByteChannel result = this.channel;
+		setAvailable(false);
+		return result;
+	}
 
-    /**
-     * Sets the readable channel.
-     * 
-     * @param channel
-     *            The readable channel.
-     */
-    public void setChannel(ReadableByteChannel channel) {
-        this.channel = channel;
-    }
+	/**
+	 * Sets the readable channel.
+	 * 
+	 * @param channel The readable channel.
+	 */
+	public void setChannel(ReadableByteChannel channel) {
+		this.channel = channel;
+	}
 
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        IoUtils.copy(getChannel(), writableChannel);
-    }
+	@Override
+	public void write(WritableByteChannel writableChannel) throws IOException {
+		IoUtils.copy(getChannel(), writableChannel);
+	}
 
 }

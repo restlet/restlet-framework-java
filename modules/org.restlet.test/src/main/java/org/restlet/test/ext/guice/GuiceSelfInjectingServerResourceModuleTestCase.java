@@ -24,9 +24,11 @@
 
 package org.restlet.test.ext.guice;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -41,10 +43,9 @@ import org.restlet.resource.Get;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Provides;
 
 public class GuiceSelfInjectingServerResourceModuleTestCase extends RestletTestCase {
 

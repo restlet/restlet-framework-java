@@ -33,19 +33,18 @@ import java.io.IOException;
  */
 public class TokenReader extends HeaderReader<String> {
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public TokenReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public TokenReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public String readValue() throws IOException {
-        return readToken();
-    }
+	@Override
+	public String readValue() throws IOException {
+		return readToken();
+	}
 
 }

@@ -24,6 +24,15 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -42,15 +51,6 @@ import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests cases for the tunnel filter.

@@ -24,6 +24,11 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Method;
 import org.restlet.engine.resource.AnnotationInfo;
@@ -32,11 +37,6 @@ import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.test.RestletTestCase;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test case for generic interfaces.

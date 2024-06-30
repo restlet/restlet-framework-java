@@ -24,15 +24,15 @@
 
 package org.restlet.example.book.restlet.ch04.sec1;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.AppendableRepresentation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.AppendableRepresentation;
 
 /**
  * Test the appendable representation.

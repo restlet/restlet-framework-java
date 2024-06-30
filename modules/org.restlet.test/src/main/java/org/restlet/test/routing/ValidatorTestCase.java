@@ -24,6 +24,8 @@
 
 package org.restlet.test.routing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -31,8 +33,6 @@ import org.restlet.data.Status;
 import org.restlet.routing.Validator;
 import org.restlet.test.RestletTestCase;
 import org.restlet.test.TraceRestlet;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link org.restlet.routing.Validator}.

@@ -24,18 +24,18 @@
 
 package org.restlet.test.engine;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.data.Reference;
-import org.restlet.engine.util.AlphaNumericComparator;
-import org.restlet.resource.Directory;
-import org.restlet.test.RestletTestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.restlet.data.Reference;
+import org.restlet.engine.util.AlphaNumericComparator;
+import org.restlet.resource.Directory;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the alphanum algorithm used by {@link Directory}.

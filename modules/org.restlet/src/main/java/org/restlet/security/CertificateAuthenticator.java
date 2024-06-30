@@ -50,91 +50,86 @@ import org.restlet.data.Status;
  */
 public class CertificateAuthenticator extends Authenticator {
 
-    /**
-     * 
-     * @param context
-     */
-    public CertificateAuthenticator(Context context) {
-        super(context);
-    }
+	/**
+	 * 
+	 * @param context
+	 */
+	public CertificateAuthenticator(Context context) {
+		super(context);
+	}
 
-    /**
-     * Extracts the Principal of the subject to use from a chain of certificate.
-     * By default, this is the X500Principal of the subject subject of the first
-     * certificate in the chain.
-     * 
-     * @see X509Certificate
-     * @see X500Principal
-     * @param certificateChain
-     *            chain of client certificates.
-     * @return Principal of the client certificate or null if the chain is
-     *         empty.
-     */
-    protected List<Principal> getPrincipals(List<Certificate> certificateChain) {
-        ArrayList<Principal> principals = null;
+	/**
+	 * Extracts the Principal of the subject to use from a chain of certificate. By
+	 * default, this is the X500Principal of the subject subject of the first
+	 * certificate in the chain.
+	 * 
+	 * @see X509Certificate
+	 * @see X500Principal
+	 * @param certificateChain chain of client certificates.
+	 * @return Principal of the client certificate or null if the chain is empty.
+	 */
+	protected List<Principal> getPrincipals(List<Certificate> certificateChain) {
+		ArrayList<Principal> principals = null;
 
-        if ((certificateChain != null) && (certificateChain.size() > 0)) {
-            Certificate userCert = certificateChain.get(0);
+		if ((certificateChain != null) && (certificateChain.size() > 0)) {
+			Certificate userCert = certificateChain.get(0);
 
-            if (userCert instanceof X509Certificate) {
-                principals = new ArrayList<Principal>();
-                principals.add(((X509Certificate) userCert)
-                        .getSubjectX500Principal());
-            }
+			if (userCert instanceof X509Certificate) {
+				principals = new ArrayList<Principal>();
+				principals.add(((X509Certificate) userCert).getSubjectX500Principal());
+			}
 
-            return principals;
-        } else {
-            return null;
-        }
-    }
+			return principals;
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * Creates a new User based on the subject's X500Principal. By default, the
-     * user name is the subject distinguished name, formatted accorded to RFC
-     * 2253. Some may choose to extract the Common Name only, for example.
-     * 
-     * @param principal
-     *            subject's Principal (most likely X500Principal).
-     * @return User instance corresponding to this principal or null.
-     */
-    protected User getUser(Principal principal) {
-        if (principal != null) {
-            return new User(principal.getName());
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Creates a new User based on the subject's X500Principal. By default, the user
+	 * name is the subject distinguished name, formatted accorded to RFC 2253. Some
+	 * may choose to extract the Common Name only, for example.
+	 * 
+	 * @param principal subject's Principal (most likely X500Principal).
+	 * @return User instance corresponding to this principal or null.
+	 */
+	protected User getUser(Principal principal) {
+		if (principal != null) {
+			return new User(principal.getName());
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * Authenticates the call using the X.509 client certificate. The
-     * verification of the credentials is normally done by the SSL layer, via
-     * the TrustManagers.
-     * 
-     * It uses the certificate chain in the request's
-     * "org.restlet.https.clientCertificates" attribute, adds the principal
-     * returned from this chain by {@link #getPrincipals(List)} to the request's
-     * ClientInfo and set the user to the result of {@link #getUser(Principal)}
-     * if that user is non-null.
-     * 
-     * If no client certificate is available, then a 401 status is set.
-     */
-    @Override
-    protected boolean authenticate(Request request, Response response) {
-        List<Certificate> certchain = request.getClientInfo().getCertificates();
-        List<Principal> principals = getPrincipals(certchain);
+	/**
+	 * Authenticates the call using the X.509 client certificate. The verification
+	 * of the credentials is normally done by the SSL layer, via the TrustManagers.
+	 * 
+	 * It uses the certificate chain in the request's
+	 * "org.restlet.https.clientCertificates" attribute, adds the principal returned
+	 * from this chain by {@link #getPrincipals(List)} to the request's ClientInfo
+	 * and set the user to the result of {@link #getUser(Principal)} if that user is
+	 * non-null.
+	 * 
+	 * If no client certificate is available, then a 401 status is set.
+	 */
+	@Override
+	protected boolean authenticate(Request request, Response response) {
+		List<Certificate> certchain = request.getClientInfo().getCertificates();
+		List<Principal> principals = getPrincipals(certchain);
 
-        if ((principals != null) && (principals.size() > 0)) {
-            request.getClientInfo().getPrincipals().addAll(principals);
-            User user = getUser(principals.get(0));
+		if ((principals != null) && (principals.size() > 0)) {
+			request.getClientInfo().getPrincipals().addAll(principals);
+			User user = getUser(principals.get(0));
 
-            if (user != null) {
-                request.getClientInfo().setUser(user);
-            }
-            return true;
-        } else {
-            response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            return false;
-        }
-    }
+			if (user != null) {
+				request.getClientInfo().setUser(user);
+			}
+			return true;
+		} else {
+			response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+			return false;
+		}
+	}
 
 }

@@ -24,6 +24,13 @@
 
 package org.restlet.test.regression;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.DomRepresentation;
@@ -31,13 +38,6 @@ import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.xml.sax.InputSource;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.testng.AssertJUnit.assertNotNull;
 
 /**
  * Simple test case to illustrate defect #717 and validate the fix when applied.

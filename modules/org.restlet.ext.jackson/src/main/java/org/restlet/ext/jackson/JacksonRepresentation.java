@@ -24,6 +24,14 @@
 
 package org.restlet.ext.jackson;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.internal.XmlFactoryProvider;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,13 +44,6 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.restlet.data.MediaType;
-import org.restlet.ext.jackson.internal.XmlFactoryProvider;
-import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize

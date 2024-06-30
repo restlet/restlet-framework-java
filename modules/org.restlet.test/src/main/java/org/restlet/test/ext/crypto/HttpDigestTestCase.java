@@ -24,6 +24,9 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -44,9 +47,6 @@ import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Restlet unit tests for HTTP DIGEST authentication client/server.

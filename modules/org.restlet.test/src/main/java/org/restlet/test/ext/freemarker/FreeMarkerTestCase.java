@@ -24,6 +24,8 @@
 
 package org.restlet.test.ext.freemarker;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
@@ -36,8 +38,6 @@ import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.test.RestletTestCase;
 
 import freemarker.template.Configuration;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for the FreeMarker extension.

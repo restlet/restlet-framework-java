@@ -24,15 +24,15 @@
 
 package org.restlet.test.engine;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.io.UnclosableInputStream;
-import org.restlet.test.RestletTestCase;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.io.UnclosableInputStream;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit tests for the HTTP KeepAlive.

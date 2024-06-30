@@ -33,34 +33,29 @@ import javax.net.ssl.SSLContext;
  */
 public class DefaultSslContext extends SSLContext {
 
-    /**
-     * Creates a SSL context SPI capable or setting additional properties on the
-     * created SSL engines and socket factories.
-     * 
-     * @param contextFactory
-     *            The parent SSL context factory.
-     * @param wrappedContext
-     *            The wrapped SSL context.
-     * @return The created SSL context SPI.
-     */
-    private static WrapperSslContextSpi createContextSpi(
-            DefaultSslContextFactory contextFactory, SSLContext wrappedContext) {
-        return new WrapperSslContextSpi(contextFactory, wrappedContext);
-    }
+	/**
+	 * Creates a SSL context SPI capable or setting additional properties on the
+	 * created SSL engines and socket factories.
+	 * 
+	 * @param contextFactory The parent SSL context factory.
+	 * @param wrappedContext The wrapped SSL context.
+	 * @return The created SSL context SPI.
+	 */
+	private static WrapperSslContextSpi createContextSpi(DefaultSslContextFactory contextFactory,
+			SSLContext wrappedContext) {
+		return new WrapperSslContextSpi(contextFactory, wrappedContext);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param contextFactory
-     *            The parent SSL context factory.
-     * @param wrappedContext
-     *            The wrapped SSL context.
-     * 
-     */
-    public DefaultSslContext(DefaultSslContextFactory contextFactory,
-            SSLContext wrappedContext) {
-        super(createContextSpi(contextFactory, wrappedContext), wrappedContext
-                .getProvider(), wrappedContext.getProtocol());
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param contextFactory The parent SSL context factory.
+	 * @param wrappedContext The wrapped SSL context.
+	 * 
+	 */
+	public DefaultSslContext(DefaultSslContextFactory contextFactory, SSLContext wrappedContext) {
+		super(createContextSpi(contextFactory, wrappedContext), wrappedContext.getProvider(),
+				wrappedContext.getProtocol());
+	}
 
 }

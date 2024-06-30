@@ -44,14 +44,13 @@ import org.restlet.Client;
  */
 public class ClientHelper extends ConnectorHelper<Client> {
 
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public ClientHelper(Client client) {
-        super(client);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public ClientHelper(Client client) {
+		super(client);
+	}
 
 }

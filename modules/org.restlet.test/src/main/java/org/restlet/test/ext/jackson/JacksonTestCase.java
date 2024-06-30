@@ -24,6 +24,11 @@
 
 package org.restlet.test.ext.jackson;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Date;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -31,11 +36,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
-
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for the Jackson extension.

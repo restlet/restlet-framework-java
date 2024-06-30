@@ -41,103 +41,102 @@ import org.restlet.Restlet;
  */
 public class WrapperRestlet extends Restlet {
 
-    /** The wrapped Restlet instance. */
-    private Restlet wrappedRestlet;
+	/** The wrapped Restlet instance. */
+	private Restlet wrappedRestlet;
 
-    /**
-     * Constructor.
-     * 
-     * @param wrappedRestlet
-     *            The wrapped Restlet instance.
-     */
-    public WrapperRestlet(Restlet wrappedRestlet) {
-        super();
-        this.wrappedRestlet = wrappedRestlet;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param wrappedRestlet The wrapped Restlet instance.
+	 */
+	public WrapperRestlet(Restlet wrappedRestlet) {
+		super();
+		this.wrappedRestlet = wrappedRestlet;
+	}
 
-    @Override
-    public org.restlet.Application getApplication() {
-        return wrappedRestlet.getApplication();
-    }
+	@Override
+	public org.restlet.Application getApplication() {
+		return wrappedRestlet.getApplication();
+	}
 
-    @Override
-    public String getAuthor() {
-        return wrappedRestlet.getAuthor();
-    }
+	@Override
+	public String getAuthor() {
+		return wrappedRestlet.getAuthor();
+	}
 
-    @Override
-    public Context getContext() {
-        return wrappedRestlet.getContext();
-    }
+	@Override
+	public Context getContext() {
+		return wrappedRestlet.getContext();
+	}
 
-    @Override
-    public String getDescription() {
-        return wrappedRestlet.getDescription();
-    }
+	@Override
+	public String getDescription() {
+		return wrappedRestlet.getDescription();
+	}
 
-    @Override
-    public Logger getLogger() {
-        return wrappedRestlet.getLogger();
-    }
+	@Override
+	public Logger getLogger() {
+		return wrappedRestlet.getLogger();
+	}
 
-    @Override
-    public String getName() {
-        return wrappedRestlet.getName();
-    }
+	@Override
+	public String getName() {
+		return wrappedRestlet.getName();
+	}
 
-    @Override
-    public String getOwner() {
-        return wrappedRestlet.getOwner();
-    }
+	@Override
+	public String getOwner() {
+		return wrappedRestlet.getOwner();
+	}
 
-    @Override
-    public void handle(Request request, Response response) {
-        wrappedRestlet.handle(request, response);
-    }
+	@Override
+	public void handle(Request request, Response response) {
+		wrappedRestlet.handle(request, response);
+	}
 
-    @Override
-    public boolean isStarted() {
-        return wrappedRestlet.isStarted();
-    }
+	@Override
+	public boolean isStarted() {
+		return wrappedRestlet.isStarted();
+	}
 
-    @Override
-    public boolean isStopped() {
-        return wrappedRestlet.isStopped();
-    }
+	@Override
+	public boolean isStopped() {
+		return wrappedRestlet.isStopped();
+	}
 
-    @Override
-    public void setAuthor(String author) {
-        wrappedRestlet.setAuthor(author);
-    }
+	@Override
+	public void setAuthor(String author) {
+		wrappedRestlet.setAuthor(author);
+	}
 
-    @Override
-    public void setContext(Context context) {
-        wrappedRestlet.setContext(context);
-    }
+	@Override
+	public void setContext(Context context) {
+		wrappedRestlet.setContext(context);
+	}
 
-    @Override
-    public void setDescription(String description) {
-        wrappedRestlet.setDescription(description);
-    }
+	@Override
+	public void setDescription(String description) {
+		wrappedRestlet.setDescription(description);
+	}
 
-    @Override
-    public void setName(String name) {
-        wrappedRestlet.setName(name);
-    }
+	@Override
+	public void setName(String name) {
+		wrappedRestlet.setName(name);
+	}
 
-    @Override
-    public void setOwner(String owner) {
-        wrappedRestlet.setOwner(owner);
-    }
+	@Override
+	public void setOwner(String owner) {
+		wrappedRestlet.setOwner(owner);
+	}
 
-    @Override
-    public synchronized void start() throws Exception {
-        wrappedRestlet.start();
-    }
+	@Override
+	public synchronized void start() throws Exception {
+		wrappedRestlet.start();
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        wrappedRestlet.stop();
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		wrappedRestlet.stop();
+	}
 
 }

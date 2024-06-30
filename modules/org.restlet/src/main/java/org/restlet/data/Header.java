@@ -36,94 +36,89 @@ import org.restlet.util.NamedValue;
  */
 public class Header implements NamedValue<String> {
 
-    /** The name. */
-    private volatile String name;
+	/** The name. */
+	private volatile String name;
 
-    /** The value. */
-    private volatile String value;
+	/** The value. */
+	private volatile String value;
 
-    /**
-     * Default constructor.
-     */
-    public Header() {
-    }
+	/**
+	 * Default constructor.
+	 */
+	public Header() {
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The header name.
-     * @param value
-     *            The header value.
-     */
-    public Header(String name, String value) {
-        super();
-        this.name = name;
-        this.value = value;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param name  The header name.
+	 * @param value The header value.
+	 */
+	public Header(String name, String value) {
+		super();
+		this.name = name;
+		this.value = value;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof Header)) {
-            return false;
-        }
+	/** {@inheritDoc} */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Header)) {
+			return false;
+		}
 
-        Header that = (Header) obj;
-        return Objects.equals(getName(), that.getName())
-                && Objects.equals(getValue(), that.getValue());
-    }
+		Header that = (Header) obj;
+		return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
+	}
 
-    /**
-     * Returns the name.
-     * 
-     * @return The name.
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Returns the name.
+	 * 
+	 * @return The name.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Returns the value.
-     * 
-     * @return The value.
-     */
-    public String getValue() {
-        return value;
-    }
+	/**
+	 * Returns the value.
+	 * 
+	 * @return The value.
+	 */
+	public String getValue() {
+		return value;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(getName(), getValue());
-    }
+	/** {@inheritDoc} */
+	@Override
+	public int hashCode() {
+		return SystemUtils.hashCode(getName(), getValue());
+	}
 
-    /**
-     * Sets the name.
-     * 
-     * @param name
-     *            The name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Sets the name.
+	 * 
+	 * @param name The name.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Sets the value.
-     * 
-     * @param value
-     *            The value.
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+	/**
+	 * Sets the value.
+	 * 
+	 * @param value The value.
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public String toString() {
-        return "[" + getName() + ": " + getValue() + "]";
-    }
+	@Override
+	public String toString() {
+		return "[" + getName() + ": " + getValue() + "]";
+	}
 
 }

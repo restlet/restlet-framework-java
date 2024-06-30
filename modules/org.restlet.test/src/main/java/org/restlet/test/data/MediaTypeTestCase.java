@@ -24,13 +24,6 @@
 
 package org.restlet.test.data;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.test.RestletTestCase;
-import org.restlet.util.Series;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -38,6 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
+import org.restlet.test.RestletTestCase;
+import org.restlet.util.Series;
 
 /**
  * Test {@link org.restlet.data.MediaType}.

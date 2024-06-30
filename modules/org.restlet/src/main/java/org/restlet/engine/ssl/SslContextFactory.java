@@ -46,19 +46,18 @@ import org.restlet.util.Series;
  */
 public abstract class SslContextFactory {
 
-    /**
-     * Creates a configured and initialized SSLContext.
-     * 
-     * @return A configured and initialized SSLContext.
-     * @throws Exception
-     */
-    public abstract SSLContext createSslContext() throws Exception;
+	/**
+	 * Creates a configured and initialized SSLContext.
+	 * 
+	 * @return A configured and initialized SSLContext.
+	 * @throws Exception
+	 */
+	public abstract SSLContext createSslContext() throws Exception;
 
-    /**
-     * Initialize the factory with the given connector parameters.
-     * 
-     * @param parameters
-     *            The connector parameters.
-     */
-    public abstract void init(Series<Parameter> parameters);
+	/**
+	 * Initialize the factory with the given connector parameters.
+	 * 
+	 * @param parameters The connector parameters.
+	 */
+	public abstract void init(Series<Parameter> parameters);
 }

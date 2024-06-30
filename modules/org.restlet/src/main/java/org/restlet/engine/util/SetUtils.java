@@ -35,18 +35,17 @@ import java.util.Set;
  */
 public class SetUtils {
 
-    /**
-     * Returns a new {@link java.util.HashSet} with the given elements
-     * 
-     * @param elements
-     *            The elements
-     * @return A new {@link java.util.HashSet} with the given elements
-     */
-    @SafeVarargs
-    public static <E> Set<E> newHashSet(E... elements) {
-        HashSet<E> set = new HashSet<>(elements.length);
-        Collections.addAll(set, elements);
-        return set;
-    }
+	/**
+	 * Returns a new {@link java.util.HashSet} with the given elements
+	 * 
+	 * @param elements The elements
+	 * @return A new {@link java.util.HashSet} with the given elements
+	 */
+	@SafeVarargs
+	public static <E> Set<E> newHashSet(E... elements) {
+		HashSet<E> set = new HashSet<>(elements.length);
+		Collections.addAll(set, elements);
+		return set;
+	}
 
 }

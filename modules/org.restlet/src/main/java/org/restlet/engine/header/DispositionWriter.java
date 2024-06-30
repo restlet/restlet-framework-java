@@ -34,39 +34,37 @@ import org.restlet.data.Parameter;
  */
 public class DispositionWriter extends HeaderWriter<Disposition> {
 
-    /**
-     * Formats a disposition.
-     * 
-     * @param disposition
-     *            The disposition to format.
-     * @return The formatted disposition.
-     */
-    public static String write(Disposition disposition) {
-        return new DispositionWriter().append(disposition).toString();
-    }
+	/**
+	 * Formats a disposition.
+	 * 
+	 * @param disposition The disposition to format.
+	 * @return The formatted disposition.
+	 */
+	public static String write(Disposition disposition) {
+		return new DispositionWriter().append(disposition).toString();
+	}
 
-    @Override
-    public DispositionWriter append(Disposition disposition) {
-        if (Disposition.TYPE_NONE.equals(disposition.getType())
-                || disposition.getType() == null) {
-            return this;
-        }
+	@Override
+	public DispositionWriter append(Disposition disposition) {
+		if (Disposition.TYPE_NONE.equals(disposition.getType()) || disposition.getType() == null) {
+			return this;
+		}
 
-        append(disposition.getType());
+		append(disposition.getType());
 
-        for (Parameter parameter : disposition.getParameters()) {
-            append("; ");
-            append(parameter.getName());
-            append("=");
+		for (Parameter parameter : disposition.getParameters()) {
+			append("; ");
+			append(parameter.getName());
+			append("=");
 
-            if (HeaderUtils.isToken(parameter.getValue())) {
-                append(parameter.getValue());
-            } else {
-                appendQuotedString(parameter.getValue());
-            }
-        }
+			if (HeaderUtils.isToken(parameter.getValue())) {
+				append(parameter.getValue());
+			} else {
+				appendQuotedString(parameter.getValue());
+			}
+		}
 
-        return this;
-    }
+		return this;
+	}
 
 }

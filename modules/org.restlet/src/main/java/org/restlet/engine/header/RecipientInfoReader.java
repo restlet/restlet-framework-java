@@ -37,58 +37,52 @@ import org.restlet.data.RecipientInfo;
  * @author Jerome Louvel
  */
 public class RecipientInfoReader extends HeaderReader<RecipientInfo> {
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header,
-            Collection<RecipientInfo> collection) {
-        new RecipientInfoReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<RecipientInfo> collection) {
+		new RecipientInfoReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public RecipientInfoReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public RecipientInfoReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public RecipientInfo readValue() throws IOException {
-        RecipientInfo result = new RecipientInfo();
-        String protocolToken = readToken();
+	@Override
+	public RecipientInfo readValue() throws IOException {
+		RecipientInfo result = new RecipientInfo();
+		String protocolToken = readToken();
 
-        if (protocolToken == null || "".equals(protocolToken)) {
-            throw new IOException(
-                    "Unexpected empty protocol token for while reading recipient info header, please check the value.");
-        }
+		if (protocolToken == null || "".equals(protocolToken)) {
+			throw new IOException(
+					"Unexpected empty protocol token for while reading recipient info header, please check the value.");
+		}
 
-        if (peek() == '/') {
-            read();
-            result.setProtocol(new Protocol(protocolToken, protocolToken, null,
-                    -1, readToken()));
-        } else {
-            result.setProtocol(new Protocol("HTTP", "HTTP", null, -1,
-                    protocolToken));
-        }
+		if (peek() == '/') {
+			read();
+			result.setProtocol(new Protocol(protocolToken, protocolToken, null, -1, readToken()));
+		} else {
+			result.setProtocol(new Protocol("HTTP", "HTTP", null, -1, protocolToken));
+		}
 
-        // Move to the next text
-        if (skipSpaces()) {
-            result.setName(readRawText());
+		// Move to the next text
+		if (skipSpaces()) {
+			result.setName(readRawText());
 
-            // Move to the next text
-            if (skipSpaces()) {
-                result.setComment(readComment());
-            }
-        }
+			// Move to the next text
+			if (skipSpaces()) {
+				result.setComment(readComment());
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 }

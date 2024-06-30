@@ -36,41 +36,40 @@ import org.restlet.data.Parameter;
  */
 public class DispositionReader extends HeaderReader<Disposition> {
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public DispositionReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public DispositionReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Disposition readValue() throws IOException {
-        Disposition result = null;
-        String type = readToken();
+	@Override
+	public Disposition readValue() throws IOException {
+		Disposition result = null;
+		String type = readToken();
 
-        if (type.length() > 0) {
-            result = new Disposition();
-            result.setType(type);
+		if (type.length() > 0) {
+			result = new Disposition();
+			result.setType(type);
 
-            if (skipParameterSeparator()) {
-                Parameter param = readParameter();
+			if (skipParameterSeparator()) {
+				Parameter param = readParameter();
 
-                while (param != null) {
-                    result.getParameters().add(param);
+				while (param != null) {
+					result.getParameters().add(param);
 
-                    if (skipParameterSeparator()) {
-                        param = readParameter();
-                    } else {
-                        param = null;
-                    }
-                }
-            }
-        }
+					if (skipParameterSeparator()) {
+						param = readParameter();
+					} else {
+						param = null;
+					}
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

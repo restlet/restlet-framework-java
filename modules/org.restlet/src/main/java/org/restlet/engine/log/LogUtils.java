@@ -31,48 +31,45 @@ package org.restlet.engine.log;
  */
 public class LogUtils {
 
-    /**
-     * Prevent instantiation of the class.
-     */
-    private LogUtils() {
-    }
+	/**
+	 * Prevent instantiation of the class.
+	 */
+	private LogUtils() {
+	}
 
-    /**
-     * Return the best class name. If the class is anonymous, then it returns
-     * the super class name.
-     * 
-     * @param clazz
-     *            The class to name.
-     * @return The class name.
-     */
-    public static String getBestClassName(Class<?> clazz) {
-        String result = clazz.getSimpleName();
+	/**
+	 * Return the best class name. If the class is anonymous, then it returns the
+	 * super class name.
+	 * 
+	 * @param clazz The class to name.
+	 * @return The class name.
+	 */
+	public static String getBestClassName(Class<?> clazz) {
+		String result = clazz.getSimpleName();
 
-        if ((result == null) || (result.equals(""))) {
-            result = getBestClassName(clazz.getSuperclass());
-        }
+		if ((result == null) || (result.equals(""))) {
+			result = getBestClassName(clazz.getSuperclass());
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a non-null logger name. It is composed by the canonical class
-     * name of the owner object suffixed by the owner's hash code.
-     * 
-     * @param baseName
-     *            The base logger name to prepend, without a trailing dot.
-     * @param owner
-     *            The context owner.
-     * @return The logger name.
-     */
-    public static String getLoggerName(String baseName, Object owner) {
-        String result = baseName;
+	/**
+	 * Returns a non-null logger name. It is composed by the canonical class name of
+	 * the owner object suffixed by the owner's hash code.
+	 * 
+	 * @param baseName The base logger name to prepend, without a trailing dot.
+	 * @param owner    The context owner.
+	 * @return The logger name.
+	 */
+	public static String getLoggerName(String baseName, Object owner) {
+		String result = baseName;
 
-        if ((owner != null) && (owner.getClass().getSimpleName() != null)) {
-            result += "." + getBestClassName(owner.getClass());
-        }
+		if ((owner != null) && (owner.getClass().getSimpleName() != null)) {
+			result += "." + getBestClassName(owner.getClass());
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

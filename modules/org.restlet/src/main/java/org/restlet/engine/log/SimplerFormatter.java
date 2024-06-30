@@ -39,36 +39,35 @@ import java.util.logging.LogRecord;
  */
 public class SimplerFormatter extends Formatter {
 
-    /**
-     * Format the given LogRecord.
-     * 
-     * @param record
-     *            the log record to be formatted.
-     * @return a formatted log record
-     */
-    public synchronized String format(LogRecord record) {
-        StringBuilder sb = new StringBuilder();
+	/**
+	 * Format the given LogRecord.
+	 * 
+	 * @param record the log record to be formatted.
+	 * @return a formatted log record
+	 */
+	public synchronized String format(LogRecord record) {
+		StringBuilder sb = new StringBuilder();
 
-        sb.append(record.getLevel().getLocalizedName());
-        sb.append(" [");
-        sb.append(record.getLoggerName());
-        sb.append("] - ");
-        sb.append(formatMessage(record));
-        sb.append('\n');
+		sb.append(record.getLevel().getLocalizedName());
+		sb.append(" [");
+		sb.append(record.getLoggerName());
+		sb.append("] - ");
+		sb.append(formatMessage(record));
+		sb.append('\n');
 
-        if (record.getThrown() != null) {
-            try {
-                sb.append(System.getProperty("line.separator"));
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                record.getThrown().printStackTrace(pw);
-                pw.close();
-                sb.append(sw.toString());
-            } catch (Exception ex) {
-            }
-        }
+		if (record.getThrown() != null) {
+			try {
+				sb.append(System.getProperty("line.separator"));
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				record.getThrown().printStackTrace(pw);
+				pw.close();
+				sb.append(sw.toString());
+			} catch (Exception ex) {
+			}
+		}
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
 }

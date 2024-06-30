@@ -24,6 +24,9 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -35,9 +38,6 @@ import org.restlet.data.Disposition;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.DispositionWriter;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for the HTTP calls.

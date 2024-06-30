@@ -37,31 +37,28 @@ import org.restlet.data.Tag;
  */
 public class TagReader extends HeaderReader<Tag> {
 
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header, Collection<Tag> collection) {
-        new TagReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<Tag> collection) {
+		new TagReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public TagReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public TagReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Tag readValue() throws IOException {
-        return Tag.parse(readRawValue());
-    }
+	@Override
+	public Tag readValue() throws IOException {
+		return Tag.parse(readRawValue());
+	}
 
 }

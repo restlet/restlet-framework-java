@@ -24,12 +24,12 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Reference;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpAwsS3HostNameTestCase extends RestletTestCase {
 

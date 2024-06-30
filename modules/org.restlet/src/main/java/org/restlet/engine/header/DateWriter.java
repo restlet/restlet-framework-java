@@ -35,32 +35,29 @@ import org.restlet.engine.util.DateUtils;
  */
 public class DateWriter {
 
-    /**
-     * Writes a date header.
-     * 
-     * @param date
-     *            The date to write.
-     * @return The formatted date.
-     */
-    public static String write(Date date) {
-        return write(date, false);
-    }
+	/**
+	 * Writes a date header.
+	 * 
+	 * @param date The date to write.
+	 * @return The formatted date.
+	 */
+	public static String write(Date date) {
+		return write(date, false);
+	}
 
-    /**
-     * Writes a date header.
-     * 
-     * @param date
-     *            The date to write.
-     * @param cookie
-     *            Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public static String write(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        }
+	/**
+	 * Writes a date header.
+	 * 
+	 * @param date   The date to write.
+	 * @param cookie Indicates if the date should be in the cookie format.
+	 * @return The formatted date.
+	 */
+	public static String write(Date date, boolean cookie) {
+		if (cookie) {
+			return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+		}
 
-        return DateUtils.format(date);
-    }
+		return DateUtils.format(date);
+	}
 
 }

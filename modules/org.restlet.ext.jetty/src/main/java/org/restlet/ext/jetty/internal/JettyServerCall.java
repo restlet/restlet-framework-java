@@ -24,15 +24,7 @@
 
 package org.restlet.ext.jetty.internal;
 
-import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.server.HttpChannel;
-import org.restlet.Response;
-import org.restlet.Server;
-import org.restlet.data.Header;
-import org.restlet.data.Status;
-import org.restlet.engine.adapter.ServerCall;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.util.Series;
+import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +35,15 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 
-import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
+import org.eclipse.jetty.io.EofException;
+import org.eclipse.jetty.server.HttpChannel;
+import org.restlet.Response;
+import org.restlet.Server;
+import org.restlet.data.Header;
+import org.restlet.data.Status;
+import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.util.Series;
 
 /**
  * Call that is used by the Jetty HTTP server connectors.

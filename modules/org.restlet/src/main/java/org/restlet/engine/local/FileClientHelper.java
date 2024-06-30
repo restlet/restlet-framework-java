@@ -86,13 +86,15 @@ import org.restlet.resource.Directory;
  * <td>temporaryExtension</td>
  * <td>String</td>
  * <td>tmp</td>
- * <td>The name of the extension to use to store the temporary content while uploading content via the PUT method.</td>
+ * <td>The name of the extension to use to store the temporary content while
+ * uploading content via the PUT method.</td>
  * </tr>
  * <tr>
  * <td>resumeUpload</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if a failed upload can be resumed. This will prevent the deletion of the temporary file created.</td>
+ * <td>Indicates if a failed upload can be resumed. This will prevent the
+ * deletion of the temporary file created.</td>
  * </tr>
  * </table>
  * 
@@ -101,550 +103,528 @@ import org.restlet.resource.Directory;
  */
 public class FileClientHelper extends EntityClientHelper {
 
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public FileClientHelper(Client client) {
-        super(client);
-        getProtocols().add(FILE);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public FileClientHelper(Client client) {
+		super(client);
+		getProtocols().add(FILE);
+	}
 
-    /**
-     * Check that all extensions of the file correspond to a known metadata.
-     * 
-     * @param file
-     *            The file whose extensions are checked.
-     * @return True if all extensions of the file are known by the metadata
-     *         service.
-     */
-    protected boolean checkExtensionsConsistency(File file) {
-        boolean knownExtension = true;
+	/**
+	 * Check that all extensions of the file correspond to a known metadata.
+	 * 
+	 * @param file The file whose extensions are checked.
+	 * @return True if all extensions of the file are known by the metadata service.
+	 */
+	protected boolean checkExtensionsConsistency(File file) {
+		boolean knownExtension = true;
 
-        Collection<String> set = Entity.getExtensions(file.getName(), getMetadataService());
-        Iterator<String> iterator = set.iterator();
-        while (iterator.hasNext() && knownExtension) {
-            knownExtension = getMetadataService().getMetadata(iterator.next()) != null;
-        }
+		Collection<String> set = Entity.getExtensions(file.getName(), getMetadataService());
+		Iterator<String> iterator = set.iterator();
+		while (iterator.hasNext() && knownExtension) {
+			knownExtension = getMetadataService().getMetadata(iterator.next()) != null;
+		}
 
-        return knownExtension;
-    }
+		return knownExtension;
+	}
 
-    /**
-     * Checks that the URI and the representation are compatible. The whole set
-     * of metadata of the representation must be included in the set of those of
-     * the URI
-     * 
-     * @param fileName
-     *            The name of the resource
-     * @param representation
-     *            The provided representation.
-     * @return True if the metadata of the representation are compatible with
-     *         the metadata extracted from the filename
-     */
-    private boolean checkMetadataConsistency(String fileName, Representation representation) {
-        if (representation != null) {
-            Variant var = new Variant();
-            Entity.updateMetadata(fileName, var, false, getMetadataService());
+	/**
+	 * Checks that the URI and the representation are compatible. The whole set of
+	 * metadata of the representation must be included in the set of those of the
+	 * URI
+	 * 
+	 * @param fileName       The name of the resource
+	 * @param representation The provided representation.
+	 * @return True if the metadata of the representation are compatible with the
+	 *         metadata extracted from the filename
+	 */
+	private boolean checkMetadataConsistency(String fileName, Representation representation) {
+		if (representation != null) {
+			Variant var = new Variant();
+			Entity.updateMetadata(fileName, var, false, getMetadataService());
 
-            // "var" contains the theoretical correct metadata
-            if (!var.getLanguages().isEmpty()
-                    && !representation.getLanguages().isEmpty()
-                    && !var.getLanguages().containsAll(representation.getLanguages())) {
-                return false;
-            }
+			// "var" contains the theoretical correct metadata
+			if (!var.getLanguages().isEmpty() && !representation.getLanguages().isEmpty()
+					&& !var.getLanguages().containsAll(representation.getLanguages())) {
+				return false;
+			}
 
-            if ((var.getMediaType() != null)
-                    && (representation.getMediaType() != null)
-                    && !(var.getMediaType().includes(representation.getMediaType()))) {
-                return false;
-            }
+			if ((var.getMediaType() != null) && (representation.getMediaType() != null)
+					&& !(var.getMediaType().includes(representation.getMediaType()))) {
+				return false;
+			}
 
-            if (!var.getEncodings().isEmpty()
-                    && !representation.getEncodings().isEmpty()
-                    && !var.getEncodings().containsAll(representation.getEncodings())) {
-                return false;
-            }
-        }
-        return true;
-    }
+			if (!var.getEncodings().isEmpty() && !representation.getEncodings().isEmpty()
+					&& !var.getEncodings().containsAll(representation.getEncodings())) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    @Override
-    public Entity getEntity(String decodedPath) {
-        return new FileEntity(
-                getFileWithLocalizedPath(decodedPath),
-                getMetadataService());
-    }
+	@Override
+	public Entity getEntity(String decodedPath) {
+		return new FileEntity(getFileWithLocalizedPath(decodedPath), getMetadataService());
+	}
 
-    /**
-     * Returns a new {@link File} instance for the given path name.<br>
-     * It ensures to translate the "/" to the local supported file separator (mainly useful for Windows OS).
-     *
-     * @param path
-     *         The Path of the file
-     * @return a new {@link File} instance for the given path name.
-     */
-    private static File getFileWithLocalizedPath(final String path) {
-        return new File(LocalReference.localizePath(path));
-    }
+	/**
+	 * Returns a new {@link File} instance for the given path name.<br>
+	 * It ensures to translate the "/" to the local supported file separator (mainly
+	 * useful for Windows OS).
+	 *
+	 * @param path The Path of the file
+	 * @return a new {@link File} instance for the given path name.
+	 */
+	private static File getFileWithLocalizedPath(final String path) {
+		return new File(LocalReference.localizePath(path));
+	}
 
-    /**
-     * Returns the name of the extension to use to store the temporary content
-     * while uploading content via the PUT method. Defaults to "tmp".
-     * 
-     * @return The name of the extension to use to store the temporary content.
-     */
-    public String getTemporaryExtension() {
-        return getHelpedParameters().getFirstValue("temporaryExtension", "tmp");
-    }
+	/**
+	 * Returns the name of the extension to use to store the temporary content while
+	 * uploading content via the PUT method. Defaults to "tmp".
+	 * 
+	 * @return The name of the extension to use to store the temporary content.
+	 */
+	public String getTemporaryExtension() {
+		return getHelpedParameters().getFirstValue("temporaryExtension", "tmp");
+	}
 
-    @Override
-    protected void handleLocal(Request request, Response response,
-            String decodedPath) {
-        String scheme = request.getResourceRef().getScheme();
+	@Override
+	protected void handleLocal(Request request, Response response, String decodedPath) {
+		String scheme = request.getResourceRef().getScheme();
 
-        if (!FILE.getSchemeName().equalsIgnoreCase(scheme)) {
-            throw new IllegalArgumentException(format(
-                    "Protocol \"%s\" not supported by the connector. Only FILE is supported.", scheme));
-        }
+		if (!FILE.getSchemeName().equalsIgnoreCase(scheme)) {
+			throw new IllegalArgumentException(
+					format("Protocol \"%s\" not supported by the connector. Only FILE is supported.", scheme));
+		}
 
-        handleFile(request, response, decodedPath);
-    }
+		handleFile(request, response, decodedPath);
+	}
 
-    protected void handleFile(Request request, Response response, String decodedPath) {
-        final Directory directory = (Directory) request.getAttributes().get("org.restlet.directory");
-        final File fileWithLocalizedPath = getFileWithLocalizedPath(decodedPath);
+	protected void handleFile(Request request, Response response, String decodedPath) {
+		final Directory directory = (Directory) request.getAttributes().get("org.restlet.directory");
+		final File fileWithLocalizedPath = getFileWithLocalizedPath(decodedPath);
 
-        if (!isFileInDirectory(directory, fileWithLocalizedPath)) {
-            response.setStatus(CLIENT_ERROR_FORBIDDEN);
-        } else if (GET.equals(request.getMethod())
-                || HEAD.equals(request.getMethod())) {
-            handleEntityGet(request, response, getEntity(decodedPath));
-        } else if (PUT.equals(request.getMethod())) {
-            handleFilePut(request, response, decodedPath, fileWithLocalizedPath);
-        } else if (DELETE.equals(request.getMethod())) {
-            handleFileDelete(response, fileWithLocalizedPath);
-        } else {
-            response.setStatus(CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            response.getAllowedMethods().add(GET);
-            response.getAllowedMethods().add(HEAD);
-            response.getAllowedMethods().add(PUT);
-            response.getAllowedMethods().add(DELETE);
-        }
-    }
+		if (!isFileInDirectory(directory, fileWithLocalizedPath)) {
+			response.setStatus(CLIENT_ERROR_FORBIDDEN);
+		} else if (GET.equals(request.getMethod()) || HEAD.equals(request.getMethod())) {
+			handleEntityGet(request, response, getEntity(decodedPath));
+		} else if (PUT.equals(request.getMethod())) {
+			handleFilePut(request, response, decodedPath, fileWithLocalizedPath);
+		} else if (DELETE.equals(request.getMethod())) {
+			handleFileDelete(response, fileWithLocalizedPath);
+		} else {
+			response.setStatus(CLIENT_ERROR_METHOD_NOT_ALLOWED);
+			response.getAllowedMethods().add(GET);
+			response.getAllowedMethods().add(HEAD);
+			response.getAllowedMethods().add(PUT);
+			response.getAllowedMethods().add(DELETE);
+		}
+	}
 
-    /**
-     * Indicates whether the given file is located inside the root directory.
-     *
-     * @param directory
-     *         The root directory
-     * @param file
-     *         The file.
-     * @return True if the path is located under the root directory, false otherwise.
-     */
-    private static boolean isFileInDirectory(final Directory directory, final File file) {
-        boolean result = true;
+	/**
+	 * Indicates whether the given file is located inside the root directory.
+	 *
+	 * @param directory The root directory
+	 * @param file      The file.
+	 * @return True if the path is located under the root directory, false
+	 *         otherwise.
+	 */
+	private static boolean isFileInDirectory(final Directory directory, final File file) {
+		boolean result = true;
 
-        if (directory != null) {
-        	final String fileAbsolute = directory.getRootRef().getPath(true);
-        	final String filePath;
-        	
-        	if(fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
-        		filePath = fileAbsolute.substring(1);
-        	}else {
-        		filePath = fileAbsolute;
-        	}
-        	
-            final Path rootDirectoryPath = Paths.get(filePath).normalize();
-            final Path actualFilePath = file.toPath().normalize();
-            result = !rootDirectoryPath.relativize(actualFilePath).toString().startsWith("..");
-        }
+		if (directory != null) {
+			final String fileAbsolute = directory.getRootRef().getPath(true);
+			final String filePath;
 
-        return result;
-    }
+			if (fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
+				filePath = fileAbsolute.substring(1);
+			} else {
+				filePath = fileAbsolute;
+			}
 
-    /**
-     * Handles a DELETE call for the FILE protocol.
-     * 
-     * @param response
-     *            The response to update.
-     * @param file
-     *            The file or directory to delete.
-     */
-    protected void handleFileDelete(Response response, File file) {
-        if (file.isDirectory()) {
-            final File[] files = file.listFiles();
-            if (files == null || files.length == 0) {
-                if (IoUtils.delete(file)) {
-                    response.setStatus(SUCCESS_NO_CONTENT);
-                } else {
-                    response.setStatus(SERVER_ERROR_INTERNAL, "Couldn't delete the directory");
-                }
-            } else {
-                response.setStatus(CLIENT_ERROR_FORBIDDEN, "Couldn't delete the non-empty directory");
-            }
-        } else {
-            if (IoUtils.delete(file)) {
-                response.setStatus(SUCCESS_NO_CONTENT);
-            } else {
-                response.setStatus(SERVER_ERROR_INTERNAL, "Couldn't delete the file");
-            }
-        }
-    }
+			final Path rootDirectoryPath = Paths.get(filePath).normalize();
+			final Path actualFilePath = file.toPath().normalize();
+			result = !rootDirectoryPath.relativize(actualFilePath).toString().startsWith("..");
+		}
 
-    /**
-     * Handles a PUT call for the FILE protocol.
-     * 
-     * @param request
-     *            The request to update.
-     * @param response
-     *            The response to update.
-     * @param path
-     *            The encoded path of the requested file or directory.
-     * @param file
-     *            The requested file or directory.
-     */
-    protected void handleFilePut(Request request, Response response, String path, File file) {
-        response.setStatus(doHandleFilePut(request, path, file));
-    }
+		return result;
+	}
 
-    private Status doHandleFilePut(Request request, String path, File file) {
-        // Handle directory
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                return new Status(CLIENT_ERROR_FORBIDDEN, "Can't put a new representation of a directory");
-            }
-        } else if (path.endsWith("/")) {
-            // It seems the request targets a directory
-            // Create a new directory and its parents if necessary
-            if (file.mkdirs()) {
-                return SUCCESS_NO_CONTENT;
-            } else {
-                getLogger().warning("Unable to create the new directory");
-                return new Status(SERVER_ERROR_INTERNAL, "Unable to create the new directory");
-            }
-        }
+	/**
+	 * Handles a DELETE call for the FILE protocol.
+	 * 
+	 * @param response The response to update.
+	 * @param file     The file or directory to delete.
+	 */
+	protected void handleFileDelete(Response response, File file) {
+		if (file.isDirectory()) {
+			final File[] files = file.listFiles();
+			if (files == null || files.length == 0) {
+				if (IoUtils.delete(file)) {
+					response.setStatus(SUCCESS_NO_CONTENT);
+				} else {
+					response.setStatus(SERVER_ERROR_INTERNAL, "Couldn't delete the directory");
+				}
+			} else {
+				response.setStatus(CLIENT_ERROR_FORBIDDEN, "Couldn't delete the non-empty directory");
+			}
+		} else {
+			if (IoUtils.delete(file)) {
+				response.setStatus(SUCCESS_NO_CONTENT);
+			} else {
+				response.setStatus(SERVER_ERROR_INTERNAL, "Couldn't delete the file");
+			}
+		}
+	}
 
-        // Several checks : first the consistency of the metadata and the filename
-        if (!checkMetadataConsistency(file.getName(), request.getEntity())) {
-            // Ask the client to reiterate properly its request
-            return new Status(CLIENT_ERROR_BAD_REQUEST, "The metadata are not consistent with the URI");
-        }
+	/**
+	 * Handles a PUT call for the FILE protocol.
+	 * 
+	 * @param request  The request to update.
+	 * @param response The response to update.
+	 * @param path     The encoded path of the requested file or directory.
+	 * @param file     The requested file or directory.
+	 */
+	protected void handleFilePut(Request request, Response response, String path, File file) {
+		response.setStatus(doHandleFilePut(request, path, file));
+	}
 
-        // We look for the possible variants
-        // Set up base name as the longest part of the name without known extensions (beginning from the left)
-        final String baseName = Entity.getBaseName(file.getName(), getMetadataService());
+	private Status doHandleFilePut(Request request, String path, File file) {
+		// Handle directory
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				return new Status(CLIENT_ERROR_FORBIDDEN, "Can't put a new representation of a directory");
+			}
+		} else if (path.endsWith("/")) {
+			// It seems the request targets a directory
+			// Create a new directory and its parents if necessary
+			if (file.mkdirs()) {
+				return SUCCESS_NO_CONTENT;
+			} else {
+				getLogger().warning("Unable to create the new directory");
+				return new Status(SERVER_ERROR_INTERNAL, "Unable to create the new directory");
+			}
+		}
 
-        // Look for resources with the same base name
-        FileFilter filter = new FileFilter() {
-            public boolean accept(File file) {
-                return file.isFile()
-                        && baseName.equals(Entity.getBaseName(file.getName(), getMetadataService()));
-            }
-        };
+		// Several checks : first the consistency of the metadata and the filename
+		if (!checkMetadataConsistency(file.getName(), request.getEntity())) {
+			// Ask the client to reiterate properly its request
+			return new Status(CLIENT_ERROR_BAD_REQUEST, "The metadata are not consistent with the URI");
+		}
 
-        File[] files = file.getParentFile().listFiles(filter);
-        File uniqueVariant = null;
-        List<File> variantsList = new ArrayList<File>();
+		// We look for the possible variants
+		// Set up base name as the longest part of the name without known extensions
+		// (beginning from the left)
+		final String baseName = Entity.getBaseName(file.getName(), getMetadataService());
 
-        if (files != null && files.length > 0) {
-            // Set the list of extensions, due to the file name and the
-            // default metadata.
-            // TODO It seems we could handle more clearly the equivalence
-            // between the file name space and the target resource (URI
-            // completed by default metadata)
-            Variant variant = new Variant();
-            Entity.updateMetadata(file.getName(), variant, false, getMetadataService());
-            Collection<String> extensions = Entity.getExtensions(variant, getMetadataService());
+		// Look for resources with the same base name
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File file) {
+				return file.isFile() && baseName.equals(Entity.getBaseName(file.getName(), getMetadataService()));
+			}
+		};
 
-            for (File entry : files) {
-                Collection<String> entryExtensions = Entity.getExtensions(entry.getName(), getMetadataService());
+		File[] files = file.getParentFile().listFiles(filter);
+		File uniqueVariant = null;
+		List<File> variantsList = new ArrayList<File>();
 
-                if (entryExtensions.containsAll(extensions)) {
-                    variantsList.add(entry);
+		if (files != null && files.length > 0) {
+			// Set the list of extensions, due to the file name and the
+			// default metadata.
+			// TODO It seems we could handle more clearly the equivalence
+			// between the file name space and the target resource (URI
+			// completed by default metadata)
+			Variant variant = new Variant();
+			Entity.updateMetadata(file.getName(), variant, false, getMetadataService());
+			Collection<String> extensions = Entity.getExtensions(variant, getMetadataService());
 
-                    if (extensions.containsAll(entryExtensions)) {
-                        // The right representation has been found.
-                        uniqueVariant = entry;
-                    }
-                }
-            }
-        }
+			for (File entry : files) {
+				Collection<String> entryExtensions = Entity.getExtensions(entry.getName(), getMetadataService());
 
-        if (uniqueVariant != null) {
-            file = uniqueVariant;
-        } else {
-            if (!variantsList.isEmpty()) {
-                // Negotiated resource (several variants, but not the right one).
-                // Check if the request could be completed or not.
-                // The request could be more precise
-                return new Status(CLIENT_ERROR_NOT_ACCEPTABLE,
-                        "Unable to process properly the request. Several variants exist but none of them suits precisely.");
-            }
+				if (entryExtensions.containsAll(extensions)) {
+					variantsList.add(entry);
 
-            // This resource does not exist, yet. Complete it with the
-            // default metadata
-            Entity.updateMetadata(file.getName(), request.getEntity(), true, getMetadataService());
+					if (extensions.containsAll(entryExtensions)) {
+						// The right representation has been found.
+						uniqueVariant = entry;
+					}
+				}
+			}
+		}
 
-            // Update the URI
-            StringBuilder fileName = new StringBuilder(baseName);
+		if (uniqueVariant != null) {
+			file = uniqueVariant;
+		} else {
+			if (!variantsList.isEmpty()) {
+				// Negotiated resource (several variants, but not the right one).
+				// Check if the request could be completed or not.
+				// The request could be more precise
+				return new Status(CLIENT_ERROR_NOT_ACCEPTABLE,
+						"Unable to process properly the request. Several variants exist but none of them suits precisely.");
+			}
 
-            for (Language language : request.getEntity().getLanguages()) {
-                updateFileExtension(fileName, language);
-            }
+			// This resource does not exist, yet. Complete it with the
+			// default metadata
+			Entity.updateMetadata(file.getName(), request.getEntity(), true, getMetadataService());
 
-            for (Encoding encoding : request.getEntity().getEncodings()) {
-                updateFileExtension(fileName, encoding);
-            }
+			// Update the URI
+			StringBuilder fileName = new StringBuilder(baseName);
 
-            // It is important to finish with the media type as it is
-            // often leveraged by operating systems to detect file type
-            updateFileExtension(fileName, request.getEntity().getMediaType());
+			for (Language language : request.getEntity().getLanguages()) {
+				updateFileExtension(fileName, language);
+			}
 
-            file = new File(file.getParentFile(), fileName.toString());
-        }
+			for (Encoding encoding : request.getEntity().getEncodings()) {
+				updateFileExtension(fileName, encoding);
+			}
 
-        // Before putting the file representation, we check that all the extensions are known
-        if (!checkExtensionsConsistency(file)) {
-            return new Status(SERVER_ERROR_INTERNAL,
-                    "Unable to process properly the URI. At least one extension is not known by the server.");
-        }
+			// It is important to finish with the media type as it is
+			// often leveraged by operating systems to detect file type
+			updateFileExtension(fileName, request.getEntity().getMediaType());
 
-        // This helper supports only single "bytes" range.
-        Range range = (!request.getRanges().isEmpty()
-                && isBytesRange(request.getRanges().get(0))) ? request.getRanges().get(0) : null;
+			file = new File(file.getParentFile(), fileName.toString());
+		}
 
-        if (file.exists()) {
-            // The PUT call is handled in two phases:
-            // 1- write a temporary file
-            // 2- rename the target file
-            if (range != null) {
-                return updateFileWithPartialContent(request, file, range);
-            }
-            return replaceFile(request, file);
-        } else {
-            // The file does not exist yet.
-            File parent = file.getParentFile();
+		// Before putting the file representation, we check that all the extensions are
+		// known
+		if (!checkExtensionsConsistency(file)) {
+			return new Status(SERVER_ERROR_INTERNAL,
+					"Unable to process properly the URI. At least one extension is not known by the server.");
+		}
 
-            if ((parent != null) && !parent.exists()) {
-                // Create the parent directories then the new file
-                if (!parent.mkdirs()) {
-                    String message = "Unable to create the parent directory";
-                    getLogger().warning(message);
-                    return new Status(SERVER_ERROR_INTERNAL, message);
-                }
-            }
+		// This helper supports only single "bytes" range.
+		Range range = (!request.getRanges().isEmpty() && isBytesRange(request.getRanges().get(0)))
+				? request.getRanges().get(0)
+				: null;
 
-            // Create the new file
-            if (range != null) {
-                return createFileWithPartialContent(request, file, range);
-            }
-            return createFile(request, file);
-        }
-    }
+		if (file.exists()) {
+			// The PUT call is handled in two phases:
+			// 1- write a temporary file
+			// 2- rename the target file
+			if (range != null) {
+				return updateFileWithPartialContent(request, file, range);
+			}
+			return replaceFile(request, file);
+		} else {
+			// The file does not exist yet.
+			File parent = file.getParentFile();
 
-    private Status updateFileWithPartialContent(Request request, File file, Range range) {
-        File tmp = null;
+			if ((parent != null) && !parent.exists()) {
+				// Create the parent directories then the new file
+				if (!parent.mkdirs()) {
+					String message = "Unable to create the parent directory";
+					getLogger().warning(message);
+					return new Status(SERVER_ERROR_INTERNAL, message);
+				}
+			}
 
-        // Replace the content of the file. First, create a temporary file
-        try {
-            // The temporary file used for partial PUT.
-            tmp = new File(file.getCanonicalPath() + "." + getTemporaryExtension());
+			// Create the new file
+			if (range != null) {
+				return createFileWithPartialContent(request, file, range);
+			}
+			return createFile(request, file);
+		}
+	}
 
-            cleanTemporaryFileIfUploadNotResumed(tmp);
+	private Status updateFileWithPartialContent(Request request, File file, Range range) {
+		File tmp = null;
 
-            if (!tmp.exists()) {
-                // Copy the target file.
-                Files.copy(file.toPath(), tmp.toPath());
-            }
+		// Replace the content of the file. First, create a temporary file
+		try {
+			// The temporary file used for partial PUT.
+			tmp = new File(file.getCanonicalPath() + "." + getTemporaryExtension());
 
-            try (RandomAccessFile raf = new RandomAccessFile(tmp, "rwd")) {
-                // Go to the desired offset.
-                if (range.getIndex() == Range.INDEX_LAST) {
-                    if (raf.length() <= range.getSize()) {
-                        raf.seek(range.getSize());
-                    } else {
-                        raf.seek(raf.length() - range.getSize());
-                    }
-                } else {
-                    raf.seek(range.getIndex());
-                }
+			cleanTemporaryFileIfUploadNotResumed(tmp);
 
-                // Write the entity to the temporary file.
-                if (request.isEntityAvailable()) {
-                    IoUtils.copy(request.getEntity().getStream(), raf);
-                }
-            } catch (IOException ioe) {
-                getLogger().log(WARNING, "Unable to close the temporary file", ioe);
-                cleanTemporaryFileIfUploadNotResumed(tmp);
-                return new Status(SERVER_ERROR_INTERNAL, ioe);
-            }
+			if (!tmp.exists()) {
+				// Copy the target file.
+				Files.copy(file.toPath(), tmp.toPath());
+			}
 
-            return replaceFileByTemporaryFile(request, file, tmp);
-        } catch (IOException ioe) {
-            getLogger().log(WARNING, "Unable to create the temporary file", ioe);
-            if (tmp != null) {
-                cleanTemporaryFileIfUploadNotResumed(tmp);
-            }
-            return new Status(SERVER_ERROR_INTERNAL, "Unable to create a temporary file");
-        }
-    }
+			try (RandomAccessFile raf = new RandomAccessFile(tmp, "rwd")) {
+				// Go to the desired offset.
+				if (range.getIndex() == Range.INDEX_LAST) {
+					if (raf.length() <= range.getSize()) {
+						raf.seek(range.getSize());
+					} else {
+						raf.seek(raf.length() - range.getSize());
+					}
+				} else {
+					raf.seek(range.getIndex());
+				}
 
-    private Status replaceFile(Request request, File file) {
-        File tmp = null;
-        try {
-            tmp = File.createTempFile("restlet-upload", "bin");
-            if (request.isEntityAvailable()) {
-                Files.copy(request.getEntity().getStream(), tmp.toPath(), REPLACE_EXISTING);
-            }
-        } catch (IOException ioe) {
-            getLogger().log(WARNING, "Unable to create the temporary file", ioe);
-            cleanTemporaryFileIfUploadNotResumed(tmp);
-            return new Status(SERVER_ERROR_INTERNAL, "Unable to create a temporary file");
-        }
-        return replaceFileByTemporaryFile(request, file, tmp);
-    }
+				// Write the entity to the temporary file.
+				if (request.isEntityAvailable()) {
+					IoUtils.copy(request.getEntity().getStream(), raf);
+				}
+			} catch (IOException ioe) {
+				getLogger().log(WARNING, "Unable to close the temporary file", ioe);
+				cleanTemporaryFileIfUploadNotResumed(tmp);
+				return new Status(SERVER_ERROR_INTERNAL, ioe);
+			}
 
-    private Status replaceFileByTemporaryFile(Request request, File file, File tmp) {
-        if (!tmp.exists()) {
-            return new Status(SERVER_ERROR_INTERNAL, "Can't replace the existing file without new content.");
-        }
+			return replaceFileByTemporaryFile(request, file, tmp);
+		} catch (IOException ioe) {
+			getLogger().log(WARNING, "Unable to create the temporary file", ioe);
+			if (tmp != null) {
+				cleanTemporaryFileIfUploadNotResumed(tmp);
+			}
+			return new Status(SERVER_ERROR_INTERNAL, "Unable to create a temporary file");
+		}
+	}
 
-        // Then delete the existing file
-        if (!IoUtils.delete(file)) {
-            cleanTemporaryFileIfUploadNotResumed(tmp);
-            return new Status(SERVER_ERROR_INTERNAL, "Unable to delete the existing file");
-        }
+	private Status replaceFile(Request request, File file) {
+		File tmp = null;
+		try {
+			tmp = File.createTempFile("restlet-upload", "bin");
+			if (request.isEntityAvailable()) {
+				Files.copy(request.getEntity().getStream(), tmp.toPath(), REPLACE_EXISTING);
+			}
+		} catch (IOException ioe) {
+			getLogger().log(WARNING, "Unable to create the temporary file", ioe);
+			cleanTemporaryFileIfUploadNotResumed(tmp);
+			return new Status(SERVER_ERROR_INTERNAL, "Unable to create a temporary file");
+		}
+		return replaceFileByTemporaryFile(request, file, tmp);
+	}
 
-        // Finally move the temporary file to the existing file location
-        if (tmp.renameTo(file)) {
-            if (request.isEntityAvailable()) {
-                return SUCCESS_NO_CONTENT;
-            }
-            return SUCCESS_OK;
-        }
+	private Status replaceFileByTemporaryFile(Request request, File file, File tmp) {
+		if (!tmp.exists()) {
+			return new Status(SERVER_ERROR_INTERNAL, "Can't replace the existing file without new content.");
+		}
 
-        // Many aspects of the behavior of the method "renameTo" are inherently platform-dependent.
-        // The rename operation might not be able to move a file from one file system to another.
-        if (!tmp.exists()) {
-            return new Status(SERVER_ERROR_INTERNAL, "Unable to move the temporary file to replace the existing file");
-        }
-        try {
-            Files.move(tmp.toPath(), file.toPath(), REPLACE_EXISTING);
-        } catch (IOException e) {
-            return new Status(SERVER_ERROR_INTERNAL, e,
-                    "Unable to move the temporary file to replace the existing file");
-        }
-        return SUCCESS_OK;
-    }
+		// Then delete the existing file
+		if (!IoUtils.delete(file)) {
+			cleanTemporaryFileIfUploadNotResumed(tmp);
+			return new Status(SERVER_ERROR_INTERNAL, "Unable to delete the existing file");
+		}
 
-    private Status createFileWithPartialContent(Request request, File file, Range range) {
-        // This is a partial PUT
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rwd")) {
-            // Go to the desired offset.
-            if (range.getIndex() == Range.INDEX_LAST) {
-                if (raf.length() <= range.getSize()) {
-                    raf.seek(range.getSize());
-                } else {
-                    raf.seek(raf.length() - range.getSize());
-                }
-            } else {
-                raf.seek(range.getIndex());
-            }
-            // Write the entity to the file.
-            if (request.isEntityAvailable()) {
-                IoUtils.copy(request.getEntity().getStream(), raf);
-                return SUCCESS_CREATED;
-            }
-            return SUCCESS_NO_CONTENT;
-        } catch (IOException ioe) {
-            getLogger().log(WARNING, "Unable to create the new file", ioe);
-            return new Status(SERVER_ERROR_INTERNAL, ioe);
-        }
-    }
+		// Finally move the temporary file to the existing file location
+		if (tmp.renameTo(file)) {
+			if (request.isEntityAvailable()) {
+				return SUCCESS_NO_CONTENT;
+			}
+			return SUCCESS_OK;
+		}
 
-    private Status createFile(Request request, File file) {
-        // This is simple PUT of the full entity
-        try {
-            if (request.isEntityAvailable()) {
-                Files.copy(request.getEntity().getStream(), file.toPath());
-                return SUCCESS_CREATED;
-            }
-            if (file.createNewFile()) {
-                return SUCCESS_NO_CONTENT;
-            }
-        } catch (IOException ioe) {
-            getLogger().log(WARNING, "Unable to create the new file", ioe);
-            return new Status(SERVER_ERROR_INTERNAL, ioe);
-        }
+		// Many aspects of the behavior of the method "renameTo" are inherently
+		// platform-dependent.
+		// The rename operation might not be able to move a file from one file system to
+		// another.
+		if (!tmp.exists()) {
+			return new Status(SERVER_ERROR_INTERNAL, "Unable to move the temporary file to replace the existing file");
+		}
+		try {
+			Files.move(tmp.toPath(), file.toPath(), REPLACE_EXISTING);
+		} catch (IOException e) {
+			return new Status(SERVER_ERROR_INTERNAL, e,
+					"Unable to move the temporary file to replace the existing file");
+		}
+		return SUCCESS_OK;
+	}
 
-        String message = "Unable to create the new file";
-        getLogger().warning(message);
-        return new Status(SERVER_ERROR_INTERNAL, message);
-    }
+	private Status createFileWithPartialContent(Request request, File file, Range range) {
+		// This is a partial PUT
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rwd")) {
+			// Go to the desired offset.
+			if (range.getIndex() == Range.INDEX_LAST) {
+				if (raf.length() <= range.getSize()) {
+					raf.seek(range.getSize());
+				} else {
+					raf.seek(raf.length() - range.getSize());
+				}
+			} else {
+				raf.seek(range.getIndex());
+			}
+			// Write the entity to the file.
+			if (request.isEntityAvailable()) {
+				IoUtils.copy(request.getEntity().getStream(), raf);
+				return SUCCESS_CREATED;
+			}
+			return SUCCESS_NO_CONTENT;
+		} catch (IOException ioe) {
+			getLogger().log(WARNING, "Unable to create the new file", ioe);
+			return new Status(SERVER_ERROR_INTERNAL, ioe);
+		}
+	}
 
-    private void cleanTemporaryFileIfUploadNotResumed(File tmp) {
-        if (tmp.exists() && !isResumeUpload()) {
-            IoUtils.delete(tmp);
-        }
-    }
+	private Status createFile(Request request, File file) {
+		// This is simple PUT of the full entity
+		try {
+			if (request.isEntityAvailable()) {
+				Files.copy(request.getEntity().getStream(), file.toPath());
+				return SUCCESS_CREATED;
+			}
+			if (file.createNewFile()) {
+				return SUCCESS_NO_CONTENT;
+			}
+		} catch (IOException ioe) {
+			getLogger().log(WARNING, "Unable to create the new file", ioe);
+			return new Status(SERVER_ERROR_INTERNAL, ioe);
+		}
 
-    /**
-     * Indicates if a failed upload can be resumed. This will prevent the
-     * deletion of the temporary file created. Defaults to "false".
-     * 
-     * @return True if a failed upload can be resumed, false otherwise.
-     */
-    public boolean isResumeUpload() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "resumeUpload", "false"));
-    }
+		String message = "Unable to create the new file";
+		getLogger().warning(message);
+		return new Status(SERVER_ERROR_INTERNAL, message);
+	}
 
-    /**
-     * Complete the given file name with the extension corresponding to the
-     * given metadata.
-     * 
-     * @param fileName
-     *            The file name to complete.
-     * @param metadata
-     *            The metadata.
-     */
-    private void updateFileExtension(StringBuilder fileName, Metadata metadata) {
-        boolean defaultMetadata = true;
+	private void cleanTemporaryFileIfUploadNotResumed(File tmp) {
+		if (tmp.exists() && !isResumeUpload()) {
+			IoUtils.delete(tmp);
+		}
+	}
 
-        if (getMetadataService() != null) {
-            if (metadata instanceof Language) {
-                Language language = (Language) metadata;
-                defaultMetadata = language.equals(getMetadataService()
-                        .getDefaultLanguage());
-            } else if (metadata instanceof MediaType) {
-                MediaType mediaType = (MediaType) metadata;
-                defaultMetadata = mediaType.equals(getMetadataService()
-                        .getDefaultMediaType());
-            } else if (metadata instanceof CharacterSet) {
-                CharacterSet characterSet = (CharacterSet) metadata;
-                defaultMetadata = characterSet.equals(getMetadataService()
-                        .getDefaultCharacterSet());
-            } else if (metadata instanceof Encoding) {
-                Encoding encoding = (Encoding) metadata;
-                defaultMetadata = encoding.equals(getMetadataService()
-                        .getDefaultEncoding());
-            }
-        }
+	/**
+	 * Indicates if a failed upload can be resumed. This will prevent the deletion
+	 * of the temporary file created. Defaults to "false".
+	 * 
+	 * @return True if a failed upload can be resumed, false otherwise.
+	 */
+	public boolean isResumeUpload() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("resumeUpload", "false"));
+	}
 
-        // We only add extension for metadata that differs from default ones
-        if (!defaultMetadata) {
-            String extension = getMetadataService().getExtension(metadata);
+	/**
+	 * Complete the given file name with the extension corresponding to the given
+	 * metadata.
+	 * 
+	 * @param fileName The file name to complete.
+	 * @param metadata The metadata.
+	 */
+	private void updateFileExtension(StringBuilder fileName, Metadata metadata) {
+		boolean defaultMetadata = true;
 
-            if (extension != null) {
-                fileName.append(".").append(extension);
-            } else {
-                if (metadata.getParent() != null) {
-                    updateFileExtension(fileName, metadata.getParent());
-                }
-            }
-        }
-    }
+		if (getMetadataService() != null) {
+			if (metadata instanceof Language) {
+				Language language = (Language) metadata;
+				defaultMetadata = language.equals(getMetadataService().getDefaultLanguage());
+			} else if (metadata instanceof MediaType) {
+				MediaType mediaType = (MediaType) metadata;
+				defaultMetadata = mediaType.equals(getMetadataService().getDefaultMediaType());
+			} else if (metadata instanceof CharacterSet) {
+				CharacterSet characterSet = (CharacterSet) metadata;
+				defaultMetadata = characterSet.equals(getMetadataService().getDefaultCharacterSet());
+			} else if (metadata instanceof Encoding) {
+				Encoding encoding = (Encoding) metadata;
+				defaultMetadata = encoding.equals(getMetadataService().getDefaultEncoding());
+			}
+		}
+
+		// We only add extension for metadata that differs from default ones
+		if (!defaultMetadata) {
+			String extension = getMetadataService().getExtension(metadata);
+
+			if (extension != null) {
+				fileName.append(".").append(extension);
+			} else {
+				if (metadata.getParent() != null) {
+					updateFileExtension(fileName, metadata.getParent());
+				}
+			}
+		}
+	}
 }

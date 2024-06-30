@@ -35,9 +35,9 @@ import java.util.logging.LogRecord;
  */
 public class AccessLogFormatter extends Formatter {
 
-    @Override
-    public String format(LogRecord logRecord) {
-        return logRecord.getMessage() + '\n';
-    }
+	@Override
+	public String format(LogRecord logRecord) {
+		return logRecord.getMessage() + '\n';
+	}
 
 }

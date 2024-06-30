@@ -24,32 +24,14 @@
 
 package org.restlet.client.engine.io;
 
-import static org.restlet.client.data.Range.isBytesRange;
-
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.channels.Channel;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.WritableByteChannel;
-import java.util.logging.Level;
 
-import org.restlet.client.Context;
 import org.restlet.client.data.CharacterSet;
 import org.restlet.client.data.Range;
-import org.restlet.client.engine.Edition;
-import org.restlet.client.engine.Engine;
 import org.restlet.client.representation.Representation;
 
 /**

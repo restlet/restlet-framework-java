@@ -24,18 +24,18 @@
 
 package org.restlet.test.engine.io;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.data.CharacterSet;
-import org.restlet.engine.io.ReaderInputStream;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.test.RestletTestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.restlet.data.CharacterSet;
+import org.restlet.engine.io.ReaderInputStream;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test the conversion from {@link Reader} to {@link InputStream} and the other

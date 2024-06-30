@@ -24,14 +24,13 @@
 
 package org.restlet.example.book.restlet.ch03.sec3.client;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.example.book.restlet.ch03.sec3.server.MailServerComponent;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Mail client JUnit test case.

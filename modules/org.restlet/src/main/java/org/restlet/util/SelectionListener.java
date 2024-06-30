@@ -33,14 +33,12 @@ import java.io.IOException;
  */
 public interface SelectionListener {
 
-    /**
-     * Callback method invoked when the connection has been selected for IO
-     * operations it registered interest in.
-     * 
-     * @param selectionRegistration
-     *            The selected registration.
-     */
-    void onSelected(SelectionRegistration selectionRegistration)
-            throws IOException;
+	/**
+	 * Callback method invoked when the connection has been selected for IO
+	 * operations it registered interest in.
+	 * 
+	 * @param selectionRegistration The selected registration.
+	 */
+	void onSelected(SelectionRegistration selectionRegistration) throws IOException;
 
 }

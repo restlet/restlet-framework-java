@@ -27,7 +27,6 @@ package org.restlet.client.engine.adapter;
 import java.util.logging.Level;
 
 import org.restlet.client.Client;
-import org.restlet.client.Context;
 import org.restlet.client.Request;
 import org.restlet.client.Response;
 import org.restlet.client.data.Status;

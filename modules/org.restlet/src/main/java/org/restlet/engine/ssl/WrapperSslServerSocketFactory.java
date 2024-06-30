@@ -39,116 +39,104 @@ import javax.net.ssl.SSLServerSocketFactory;
  */
 public class WrapperSslServerSocketFactory extends SSLServerSocketFactory {
 
-    /** The parent SSL context factory. */
-    private final DefaultSslContextFactory contextFactory;
+	/** The parent SSL context factory. */
+	private final DefaultSslContextFactory contextFactory;
 
-    /** The wrapped SSL server socket factory. */
-    private final SSLServerSocketFactory wrappedSocketFactory;
+	/** The wrapped SSL server socket factory. */
+	private final SSLServerSocketFactory wrappedSocketFactory;
 
-    /**
-     * Constructor.
-     * 
-     * @param contextFactory
-     *            The parent SSL context factory.
-     * @param wrappedSocketFactory
-     *            The wrapped SSL server socket factory.
-     */
-    public WrapperSslServerSocketFactory(
-            DefaultSslContextFactory contextFactory,
-            SSLServerSocketFactory wrappedSocketFactory) {
-        this.wrappedSocketFactory = wrappedSocketFactory;
-        this.contextFactory = contextFactory;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param contextFactory       The parent SSL context factory.
+	 * @param wrappedSocketFactory The wrapped SSL server socket factory.
+	 */
+	public WrapperSslServerSocketFactory(DefaultSslContextFactory contextFactory,
+			SSLServerSocketFactory wrappedSocketFactory) {
+		this.wrappedSocketFactory = wrappedSocketFactory;
+		this.contextFactory = contextFactory;
+	}
 
-    @Override
-    public ServerSocket createServerSocket() throws IOException {
-        SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory()
-                .createServerSocket();
-        return initSslServerSocket(result);
-    }
+	@Override
+	public ServerSocket createServerSocket() throws IOException {
+		SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory().createServerSocket();
+		return initSslServerSocket(result);
+	}
 
-    @Override
-    public ServerSocket createServerSocket(int port) throws IOException {
-        SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory()
-                .createServerSocket(port);
-        return initSslServerSocket(result);
-    }
+	@Override
+	public ServerSocket createServerSocket(int port) throws IOException {
+		SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory().createServerSocket(port);
+		return initSslServerSocket(result);
+	}
 
-    @Override
-    public ServerSocket createServerSocket(int port, int backLog)
-            throws IOException {
-        SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory()
-                .createServerSocket(port, backLog);
-        return initSslServerSocket(result);
-    }
+	@Override
+	public ServerSocket createServerSocket(int port, int backLog) throws IOException {
+		SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory().createServerSocket(port, backLog);
+		return initSslServerSocket(result);
+	}
 
-    @Override
-    public ServerSocket createServerSocket(int port, int backLog,
-            InetAddress ifAddress) throws IOException {
-        SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory()
-                .createServerSocket(port, backLog, ifAddress);
-        return initSslServerSocket(result);
-    }
+	@Override
+	public ServerSocket createServerSocket(int port, int backLog, InetAddress ifAddress) throws IOException {
+		SSLServerSocket result = (SSLServerSocket) getWrappedSocketFactory().createServerSocket(port, backLog,
+				ifAddress);
+		return initSslServerSocket(result);
+	}
 
-    /**
-     * Returns the parent SSL context factory.
-     * 
-     * @return The parent SSL context factory.
-     */
-    public DefaultSslContextFactory getContextFactory() {
-        return contextFactory;
-    }
+	/**
+	 * Returns the parent SSL context factory.
+	 * 
+	 * @return The parent SSL context factory.
+	 */
+	public DefaultSslContextFactory getContextFactory() {
+		return contextFactory;
+	}
 
-    @Override
-    public String[] getDefaultCipherSuites() {
-        return getWrappedSocketFactory().getDefaultCipherSuites();
-    }
+	@Override
+	public String[] getDefaultCipherSuites() {
+		return getWrappedSocketFactory().getDefaultCipherSuites();
+	}
 
-    @Override
-    public String[] getSupportedCipherSuites() {
-        return getWrappedSocketFactory().getSupportedCipherSuites();
-    }
+	@Override
+	public String[] getSupportedCipherSuites() {
+		return getWrappedSocketFactory().getSupportedCipherSuites();
+	}
 
-    /**
-     * Returns the wrapped SSL server socket factory.
-     * 
-     * @return The wrapped SSL server socket factory.
-     */
-    public SSLServerSocketFactory getWrappedSocketFactory() {
-        return wrappedSocketFactory;
-    }
+	/**
+	 * Returns the wrapped SSL server socket factory.
+	 * 
+	 * @return The wrapped SSL server socket factory.
+	 */
+	public SSLServerSocketFactory getWrappedSocketFactory() {
+		return wrappedSocketFactory;
+	}
 
-    /**
-     * Initializes the SSL server socket. Configures the certificate request
-     * (need or want) and the enabled cipher suites.
-     * 
-     * @param sslServerSocket
-     *            The server socket to initialize.
-     * @return The initialized server socket.
-     */
-    protected SSLServerSocket initSslServerSocket(
-            SSLServerSocket sslServerSocket) {
-        if (getContextFactory().isNeedClientAuthentication()) {
-            sslServerSocket.setNeedClientAuth(true);
-        } else if (getContextFactory().isWantClientAuthentication()) {
-            sslServerSocket.setWantClientAuth(true);
-        }
+	/**
+	 * Initializes the SSL server socket. Configures the certificate request (need
+	 * or want) and the enabled cipher suites.
+	 * 
+	 * @param sslServerSocket The server socket to initialize.
+	 * @return The initialized server socket.
+	 */
+	protected SSLServerSocket initSslServerSocket(SSLServerSocket sslServerSocket) {
+		if (getContextFactory().isNeedClientAuthentication()) {
+			sslServerSocket.setNeedClientAuth(true);
+		} else if (getContextFactory().isWantClientAuthentication()) {
+			sslServerSocket.setWantClientAuth(true);
+		}
 
-        if ((getContextFactory().getEnabledCipherSuites() != null)
-                || (getContextFactory().getDisabledCipherSuites() != null)) {
-            sslServerSocket.setEnabledCipherSuites(getContextFactory()
-                    .getSelectedCipherSuites(
-                            sslServerSocket.getSupportedCipherSuites()));
-        }
+		if ((getContextFactory().getEnabledCipherSuites() != null)
+				|| (getContextFactory().getDisabledCipherSuites() != null)) {
+			sslServerSocket.setEnabledCipherSuites(
+					getContextFactory().getSelectedCipherSuites(sslServerSocket.getSupportedCipherSuites()));
+		}
 
-        if ((getContextFactory().getEnabledProtocols() != null)
-                || (getContextFactory().getDisabledProtocols() != null)) {
-            sslServerSocket.setEnabledProtocols(getContextFactory()
-                    .getSelectedSslProtocols(
-                            sslServerSocket.getSupportedProtocols()));
-        }
+		if ((getContextFactory().getEnabledProtocols() != null)
+				|| (getContextFactory().getDisabledProtocols() != null)) {
+			sslServerSocket.setEnabledProtocols(
+					getContextFactory().getSelectedSslProtocols(sslServerSocket.getSupportedProtocols()));
+		}
 
-        return sslServerSocket;
-    }
+		return sslServerSocket;
+	}
 
 }

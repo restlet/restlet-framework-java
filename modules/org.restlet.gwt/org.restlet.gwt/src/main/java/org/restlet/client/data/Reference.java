@@ -24,13 +24,11 @@
 
 package org.restlet.client.data;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.client.Context;
-import org.restlet.client.engine.Edition;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the

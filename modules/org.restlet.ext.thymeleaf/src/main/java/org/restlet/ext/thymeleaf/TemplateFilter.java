@@ -24,6 +24,9 @@
 
 package org.restlet.ext.thymeleaf;
 
+import java.util.Locale;
+import java.util.Map;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -31,9 +34,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.routing.Filter;
 import org.restlet.util.Resolver;
-
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Filters response's entity and wraps it with a Thymeleaf's template

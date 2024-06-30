@@ -26,7 +26,6 @@ package org.restlet.client.engine.util;
 
 import java.util.List;
 
-import org.restlet.client.Request;
 import org.restlet.client.data.Cookie;
 import org.restlet.client.util.Series;
 

@@ -35,37 +35,35 @@ import org.restlet.Context;
  */
 public class Adapter {
 
-    /** The context. */
-    private volatile Context context;
+	/** The context. */
+	private volatile Context context;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context to use.
-     */
-    public Adapter(Context context) {
-        this.context = context;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context The context to use.
+	 */
+	public Adapter(Context context) {
+		this.context = context;
+	}
 
-    /**
-     * Returns the context.
-     * 
-     * @return The context.
-     */
-    public Context getContext() {
-        return this.context;
-    }
+	/**
+	 * Returns the context.
+	 * 
+	 * @return The context.
+	 */
+	public Context getContext() {
+		return this.context;
+	}
 
-    /**
-     * Returns the logger.
-     * 
-     * @return The logger.
-     */
-    public Logger getLogger() {
-        Logger result = (getContext() != null) ? getContext().getLogger()
-                : null;
-        return (result != null) ? result : Context.getCurrentLogger();
-    }
+	/**
+	 * Returns the logger.
+	 * 
+	 * @return The logger.
+	 */
+	public Logger getLogger() {
+		Logger result = (getContext() != null) ? getContext().getLogger() : null;
+		return (result != null) ? result : Context.getCurrentLogger();
+	}
 
 }

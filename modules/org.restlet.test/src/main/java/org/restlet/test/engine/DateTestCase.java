@@ -24,13 +24,13 @@
 
 package org.restlet.test.engine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link DateUtils}

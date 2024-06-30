@@ -37,60 +37,57 @@ import org.restlet.data.Protocol;
  */
 public final class ClientList extends WrapperList<Client> {
 
-    /** The context. */
-    private volatile Context context;
+	/** The context. */
+	private volatile Context context;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public ClientList(Context context) {
-        super(new CopyOnWriteArrayList<Client>());
-        this.context = context;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context The context.
+	 */
+	public ClientList(Context context) {
+		super(new CopyOnWriteArrayList<Client>());
+		this.context = context;
+	}
 
-    @Override
-    public boolean add(Client client) {
-        // Set the client's context, if the client does not have already one.
-        if (client.getContext() == null) {
-            client.setContext(getContext().createChildContext());
-        }
+	@Override
+	public boolean add(Client client) {
+		// Set the client's context, if the client does not have already one.
+		if (client.getContext() == null) {
+			client.setContext(getContext().createChildContext());
+		}
 
-        return super.add(client);
-    }
+		return super.add(client);
+	}
 
-    /**
-     * Adds a new client connector in the map supporting the given protocol.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     * @return The added client.
-     */
-    public Client add(Protocol protocol) {
-        final Client result = new Client(protocol);
-        result.setContext(getContext().createChildContext());
-        add(result);
-        return result;
-    }
+	/**
+	 * Adds a new client connector in the map supporting the given protocol.
+	 * 
+	 * @param protocol The connector protocol.
+	 * @return The added client.
+	 */
+	public Client add(Protocol protocol) {
+		final Client result = new Client(protocol);
+		result.setContext(getContext().createChildContext());
+		add(result);
+		return result;
+	}
 
-    /**
-     * Returns the context.
-     * 
-     * @return The context.
-     */
-    public Context getContext() {
-        return this.context;
-    }
+	/**
+	 * Returns the context.
+	 * 
+	 * @return The context.
+	 */
+	public Context getContext() {
+		return this.context;
+	}
 
-    /**
-     * Sets the context.
-     * 
-     * @param context
-     *            The context.
-     */
-    public void setContext(Context context) {
-        this.context = context;
-    }
+	/**
+	 * Sets the context.
+	 * 
+	 * @param context The context.
+	 */
+	public void setContext(Context context) {
+		this.context = context;
+	}
 }

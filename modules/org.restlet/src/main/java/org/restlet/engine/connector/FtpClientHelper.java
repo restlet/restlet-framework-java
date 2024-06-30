@@ -75,143 +75,127 @@ import org.restlet.representation.InputRepresentation;
  * </tr>
  * </table>
  * 
- * @see <a
- *      href="https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
+ * @see <a href=
+ *      "https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
  */
 public class FtpClientHelper extends ClientHelper {
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public FtpClientHelper(Client client) {
-        super(client);
-        getProtocols().add(Protocol.FTP);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public FtpClientHelper(Client client) {
+		super(client);
+		getProtocols().add(Protocol.FTP);
+	}
 
-    /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "readTimeout", "60000"));
-    }
+	/**
+	 * Returns the read timeout value. A timeout of zero is interpreted as an
+	 * infinite timeout.
+	 * 
+	 * @return The read timeout value.
+	 */
+	public int getReadTimeout() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout", "60000"));
+	}
 
-    /**
-     * Returns the connection timeout. Defaults to 15000.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
+	/**
+	 * Returns the connection timeout. Defaults to 15000.
+	 * 
+	 * @return The connection timeout.
+	 */
+	public int getSocketConnectTimeoutMs() {
+		int result = 0;
 
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "15000"));
-        }
+		if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+			result = Integer.parseInt(getHelpedParameters().getFirstValue("socketConnectTimeoutMs", "15000"));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public void handle(Request request, Response response) {
-        try {
-            if (Protocol.FTP.equals(request.getProtocol())) {
-                if (Method.GET.equals(request.getMethod())) {
-                    Reference ftpRef = request.getResourceRef();
-                    String userInfo = null;
+	@Override
+	public void handle(Request request, Response response) {
+		try {
+			if (Protocol.FTP.equals(request.getProtocol())) {
+				if (Method.GET.equals(request.getMethod())) {
+					Reference ftpRef = request.getResourceRef();
+					String userInfo = null;
 
-                    if ((request.getChallengeResponse() != null)
-                            && ChallengeScheme.FTP_PLAIN.equals(request
-                                    .getChallengeResponse().getScheme())
-                            && (request.getChallengeResponse().getIdentifier() != null)) {
-                        userInfo = request.getChallengeResponse()
-                                .getIdentifier();
+					if ((request.getChallengeResponse() != null)
+							&& ChallengeScheme.FTP_PLAIN.equals(request.getChallengeResponse().getScheme())
+							&& (request.getChallengeResponse().getIdentifier() != null)) {
+						userInfo = request.getChallengeResponse().getIdentifier();
 
-                        if (request.getChallengeResponse().getSecret() != null) {
-                            userInfo += ":"
-                                    + new String(request.getChallengeResponse()
-                                            .getSecret());
-                        }
-                    }
+						if (request.getChallengeResponse().getSecret() != null) {
+							userInfo += ":" + new String(request.getChallengeResponse().getSecret());
+						}
+					}
 
-                    if (userInfo != null) {
-                        ftpRef.setUserInfo(userInfo);
-                    }
+					if (userInfo != null) {
+						ftpRef.setUserInfo(userInfo);
+					}
 
-                    URL url = ftpRef.toUrl();
-                    URLConnection connection = url.openConnection();
+					URL url = ftpRef.toUrl();
+					URLConnection connection = url.openConnection();
 
-                    // These properties can only be used with Java 1.5 and upper
-                    // releases
-                    int majorVersionNumber = SystemUtils.getJavaMajorVersion();
-                    int minorVersionNumber = SystemUtils.getJavaMinorVersion();
-                    if ((majorVersionNumber > 1)
-                            || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
-                        connection
-                                .setConnectTimeout(getSocketConnectTimeoutMs());
-                        connection.setReadTimeout(getReadTimeout());
-                    }
+					// These properties can only be used with Java 1.5 and upper
+					// releases
+					int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+					int minorVersionNumber = SystemUtils.getJavaMinorVersion();
+					if ((majorVersionNumber > 1) || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
+						connection.setConnectTimeout(getSocketConnectTimeoutMs());
+						connection.setReadTimeout(getReadTimeout());
+					}
 
-                    connection
-                            .setAllowUserInteraction(isAllowUserInteraction());
-                    connection.setUseCaches(isUseCaches());
-                    response.setEntity(new InputRepresentation(connection
-                            .getInputStream()));
+					connection.setAllowUserInteraction(isAllowUserInteraction());
+					connection.setUseCaches(isUseCaches());
+					response.setEntity(new InputRepresentation(connection.getInputStream()));
 
-                    // Try to infer the metadata from the file extensions
-                    Entity.updateMetadata(request.getResourceRef().getPath(),
-                            response.getEntity(), true, getMetadataService());
-                } else {
-                    getLogger()
-                            .log(Level.WARNING,
-                                    "Only GET method are supported by this FTP connector");
-                }
-            }
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "FTP client error", e);
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
-        }
-    }
+					// Try to infer the metadata from the file extensions
+					Entity.updateMetadata(request.getResourceRef().getPath(), response.getEntity(), true,
+							getMetadataService());
+				} else {
+					getLogger().log(Level.WARNING, "Only GET method are supported by this FTP connector");
+				}
+			}
+		} catch (IOException e) {
+			getLogger().log(Level.WARNING, "FTP client error", e);
+			response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
+		}
+	}
 
-    /**
-     * Indicates if this URL is being examined in a context in which it makes
-     * sense to allow user interactions such as popping up an authentication
-     * dialog.
-     * 
-     * @return True if it makes sense to allow user interactions.
-     */
-    public boolean isAllowUserInteraction() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "allowUserInteraction", "false"));
-    }
+	/**
+	 * Indicates if this URL is being examined in a context in which it makes sense
+	 * to allow user interactions such as popping up an authentication dialog.
+	 * 
+	 * @return True if it makes sense to allow user interactions.
+	 */
+	public boolean isAllowUserInteraction() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("allowUserInteraction", "false"));
+	}
 
-    /**
-     * Indicates if the protocol is allowed to use caching whenever it can.
-     * 
-     * @return True if the protocol is allowed to use caching whenever it can.
-     */
-    public boolean isUseCaches() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "useCaches", "false"));
-    }
+	/**
+	 * Indicates if the protocol is allowed to use caching whenever it can.
+	 * 
+	 * @return True if the protocol is allowed to use caching whenever it can.
+	 */
+	public boolean isUseCaches() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("useCaches", "false"));
+	}
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        getLogger().info("Starting the internal FTP client");
-    }
+	@Override
+	public synchronized void start() throws Exception {
+		super.start();
+		getLogger().info("Starting the internal FTP client");
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        getLogger().info("Stopping the internal FTP client");
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		super.stop();
+		getLogger().info("Stopping the internal FTP client");
+	}
 
 }

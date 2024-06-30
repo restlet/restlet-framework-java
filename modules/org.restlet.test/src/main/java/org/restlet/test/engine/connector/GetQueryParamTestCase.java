@@ -24,6 +24,12 @@
 
 package org.restlet.test.engine.connector;
 
+import static org.testng.AssertJUnit.assertEquals;
+
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -37,12 +43,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * Test that a simple get with query parameters works for all the connectors.

@@ -33,18 +33,18 @@ import org.restlet.engine.Helper;
  */
 public abstract class ProtocolHelper extends Helper {
 
-    /**
-     * Constructor.
-     */
-    public ProtocolHelper() {
-        super();
-        registerMethods();
-    }
+	/**
+	 * Constructor.
+	 */
+	public ProtocolHelper() {
+		super();
+		registerMethods();
+	}
 
-    /**
-     * Register all supported methods. The implementation relies on the
-     * {@link org.restlet.data.Method#register(org.restlet.data.Method)} method.
-     */
-    public abstract void registerMethods();
+	/**
+	 * Register all supported methods. The implementation relies on the
+	 * {@link org.restlet.data.Method#register(org.restlet.data.Method)} method.
+	 */
+	public abstract void registerMethods();
 
 }

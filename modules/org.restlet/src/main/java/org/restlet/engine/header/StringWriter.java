@@ -33,20 +33,19 @@ import java.util.Set;
  */
 public class StringWriter extends HeaderWriter<String> {
 
-    /**
-     * Writes a set of values with a comma separator.
-     * 
-     * @param values
-     *            The set of values.
-     * @return The formatted set of values.
-     */
-    public static String write(Set<String> values) {
-        return new StringWriter().append(values).toString();
-    }
+	/**
+	 * Writes a set of values with a comma separator.
+	 * 
+	 * @param values The set of values.
+	 * @return The formatted set of values.
+	 */
+	public static String write(Set<String> values) {
+		return new StringWriter().append(values).toString();
+	}
 
-    @Override
-    public StringWriter append(String value) {
-        return (StringWriter) appendToken(value);
-    }
+	@Override
+	public StringWriter append(String value) {
+		return (StringWriter) appendToken(value);
+	}
 
 }

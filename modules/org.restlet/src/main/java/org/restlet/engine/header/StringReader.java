@@ -36,31 +36,28 @@ import org.restlet.data.Header;
  */
 public class StringReader extends HeaderReader<String> {
 
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header, Collection<String> collection) {
-        new StringReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<String> collection) {
+		new StringReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public StringReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public StringReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public String readValue() throws IOException {
-        return readToken();
-    }
+	@Override
+	public String readValue() throws IOException {
+		return readToken();
+	}
 
 }

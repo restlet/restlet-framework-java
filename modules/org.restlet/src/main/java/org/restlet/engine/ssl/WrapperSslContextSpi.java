@@ -44,115 +44,104 @@ import javax.net.ssl.TrustManager;
  */
 public class WrapperSslContextSpi extends SSLContextSpi {
 
-    /** The parent SSL context factory. */
-    private final DefaultSslContextFactory contextFactory;
+	/** The parent SSL context factory. */
+	private final DefaultSslContextFactory contextFactory;
 
-    /** The wrapped SSL context. */
-    private final SSLContext wrappedContext;
+	/** The wrapped SSL context. */
+	private final SSLContext wrappedContext;
 
-    /**
-     * Constructor.
-     * 
-     * @param contextFactory
-     *            The parent SSL context factory.
-     * @param wrappedContext
-     *            The wrapped SSL context.
-     */
-    public WrapperSslContextSpi(DefaultSslContextFactory contextFactory,
-            SSLContext wrappedContext) {
-        this.contextFactory = contextFactory;
-        this.wrappedContext = wrappedContext;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param contextFactory The parent SSL context factory.
+	 * @param wrappedContext The wrapped SSL context.
+	 */
+	public WrapperSslContextSpi(DefaultSslContextFactory contextFactory, SSLContext wrappedContext) {
+		this.contextFactory = contextFactory;
+		this.wrappedContext = wrappedContext;
+	}
 
-    @Override
-    protected SSLEngine engineCreateSSLEngine() {
-        SSLEngine result = getWrappedContext().createSSLEngine();
-        initEngine(result);
-        return result;
-    }
+	@Override
+	protected SSLEngine engineCreateSSLEngine() {
+		SSLEngine result = getWrappedContext().createSSLEngine();
+		initEngine(result);
+		return result;
+	}
 
-    @Override
-    protected SSLEngine engineCreateSSLEngine(String peerHost, int peerPort) {
-        SSLEngine result = getWrappedContext().createSSLEngine(peerHost,
-                peerPort);
-        initEngine(result);
-        return result;
-    }
+	@Override
+	protected SSLEngine engineCreateSSLEngine(String peerHost, int peerPort) {
+		SSLEngine result = getWrappedContext().createSSLEngine(peerHost, peerPort);
+		initEngine(result);
+		return result;
+	}
 
-    @Override
-    protected SSLSessionContext engineGetClientSessionContext() {
-        return getWrappedContext().getClientSessionContext();
-    }
+	@Override
+	protected SSLSessionContext engineGetClientSessionContext() {
+		return getWrappedContext().getClientSessionContext();
+	}
 
-    @Override
-    protected SSLSessionContext engineGetServerSessionContext() {
-        return getWrappedContext().getServerSessionContext();
-    }
+	@Override
+	protected SSLSessionContext engineGetServerSessionContext() {
+		return getWrappedContext().getServerSessionContext();
+	}
 
-    @Override
-    protected SSLServerSocketFactory engineGetServerSocketFactory() {
-        return new WrapperSslServerSocketFactory(getContextFactory(),
-                getWrappedContext().getServerSocketFactory());
-    }
+	@Override
+	protected SSLServerSocketFactory engineGetServerSocketFactory() {
+		return new WrapperSslServerSocketFactory(getContextFactory(), getWrappedContext().getServerSocketFactory());
+	}
 
-    @Override
-    protected SSLSocketFactory engineGetSocketFactory() {
-        return new WrapperSslSocketFactory(getContextFactory(),
-                getWrappedContext().getSocketFactory());
-    }
+	@Override
+	protected SSLSocketFactory engineGetSocketFactory() {
+		return new WrapperSslSocketFactory(getContextFactory(), getWrappedContext().getSocketFactory());
+	}
 
-    @Override
-    protected void engineInit(KeyManager[] km, TrustManager[] tm,
-            SecureRandom random) throws KeyManagementException {
-        getWrappedContext().init(km, tm, random);
-    }
+	@Override
+	protected void engineInit(KeyManager[] km, TrustManager[] tm, SecureRandom random) throws KeyManagementException {
+		getWrappedContext().init(km, tm, random);
+	}
 
-    /**
-     * Returns the parent SSL context factory.
-     * 
-     * @return The parent SSL context factory.
-     */
-    protected DefaultSslContextFactory getContextFactory() {
-        return contextFactory;
-    }
+	/**
+	 * Returns the parent SSL context factory.
+	 * 
+	 * @return The parent SSL context factory.
+	 */
+	protected DefaultSslContextFactory getContextFactory() {
+		return contextFactory;
+	}
 
-    /**
-     * Returns the wrapped SSL context.
-     * 
-     * @return The wrapped SSL context.
-     */
-    protected SSLContext getWrappedContext() {
-        return wrappedContext;
-    }
+	/**
+	 * Returns the wrapped SSL context.
+	 * 
+	 * @return The wrapped SSL context.
+	 */
+	protected SSLContext getWrappedContext() {
+		return wrappedContext;
+	}
 
-    /**
-     * Initializes the SSL engine with additional parameters from the SSL
-     * context factory.
-     * 
-     * @param sslEngine
-     *            The SSL engine to initialize.
-     */
-    protected void initEngine(SSLEngine sslEngine) {
-        if (getContextFactory().isNeedClientAuthentication()) {
-            sslEngine.setNeedClientAuth(true);
-        } else if (getContextFactory().isWantClientAuthentication()) {
-            sslEngine.setWantClientAuth(true);
-        }
+	/**
+	 * Initializes the SSL engine with additional parameters from the SSL context
+	 * factory.
+	 * 
+	 * @param sslEngine The SSL engine to initialize.
+	 */
+	protected void initEngine(SSLEngine sslEngine) {
+		if (getContextFactory().isNeedClientAuthentication()) {
+			sslEngine.setNeedClientAuth(true);
+		} else if (getContextFactory().isWantClientAuthentication()) {
+			sslEngine.setWantClientAuth(true);
+		}
 
-        if ((getContextFactory().getEnabledCipherSuites() != null)
-                || (getContextFactory().getDisabledCipherSuites() != null)) {
-            sslEngine.setEnabledCipherSuites(getContextFactory()
-                    .getSelectedCipherSuites(
-                            sslEngine.getSupportedCipherSuites()));
-        }
+		if ((getContextFactory().getEnabledCipherSuites() != null)
+				|| (getContextFactory().getDisabledCipherSuites() != null)) {
+			sslEngine.setEnabledCipherSuites(
+					getContextFactory().getSelectedCipherSuites(sslEngine.getSupportedCipherSuites()));
+		}
 
-        if ((getContextFactory().getEnabledProtocols() != null)
-                || (getContextFactory().getDisabledProtocols() != null)) {
-            sslEngine
-                    .setEnabledProtocols(getContextFactory()
-                            .getSelectedSslProtocols(
-                                    sslEngine.getSupportedProtocols()));
-        }
-    }
+		if ((getContextFactory().getEnabledProtocols() != null)
+				|| (getContextFactory().getDisabledProtocols() != null)) {
+			sslEngine.setEnabledProtocols(
+					getContextFactory().getSelectedSslProtocols(sslEngine.getSupportedProtocols()));
+		}
+	}
 
 }

@@ -24,6 +24,12 @@
 
 package org.restlet.test.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
@@ -34,13 +40,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit test case for the Zip client connector.

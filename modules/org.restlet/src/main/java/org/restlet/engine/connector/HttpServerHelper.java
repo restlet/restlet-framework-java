@@ -42,57 +42,55 @@ import com.sun.net.httpserver.HttpServer;
  */
 @SuppressWarnings("restriction")
 public class HttpServerHelper extends NetServerHelper {
-    /** The underlying HTTP server. */
-    private volatile HttpServer server;
+	/** The underlying HTTP server. */
+	private volatile HttpServer server;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server The server to help.
+	 */
+	public HttpServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.HTTP);
+	}
 
-    @Override
-    public void start() throws Exception {
-        // Use ephemeral port
-        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
-        if (getHelped().getAddress() != null) {
-            // This call may throw UnknownHostException and otherwise always
-            // returns an instance of INetAddress.
-            // Note: textual representation of inet addresses are supported
-            InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
+	@Override
+	public void start() throws Exception {
+		// Use ephemeral port
+		int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+		if (getHelped().getAddress() != null) {
+			// This call may throw UnknownHostException and otherwise always
+			// returns an instance of INetAddress.
+			// Note: textual representation of inet addresses are supported
+			InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
 
-            // Note: the backlog of 50 is the default
-            setAddress(new InetSocketAddress(iaddr, port));
-        } else {
-            // Listens to any local IP address
-            setAddress(new InetSocketAddress(port));
-        }
+			// Note: the backlog of 50 is the default
+			setAddress(new InetSocketAddress(iaddr, port));
+		} else {
+			// Listens to any local IP address
+			setAddress(new InetSocketAddress(port));
+		}
 
-        this.server = HttpServer.create(getAddress(), 0);
-        server.createContext("/", new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                HttpServerHelper.this.handle(new HttpExchangeCall(getHelped(),
-                        httpExchange));
-            }
-        });
-        // creates a default executor
-        server.setExecutor(createThreadPool());
-        server.start();
+		this.server = HttpServer.create(getAddress(), 0);
+		server.createContext("/", new HttpHandler() {
+			@Override
+			public void handle(HttpExchange httpExchange) throws IOException {
+				HttpServerHelper.this.handle(new HttpExchangeCall(getHelped(), httpExchange));
+			}
+		});
+		// creates a default executor
+		server.setExecutor(createThreadPool());
+		server.start();
 
-        setConfidential(false);
-        setEphemeralPort(server.getAddress().getPort());
-        super.start();
-    }
+		setConfidential(false);
+		setEphemeralPort(server.getAddress().getPort());
+		super.start();
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        this.server.stop(0);
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		super.stop();
+		this.server.stop(0);
+	}
 }

@@ -24,28 +24,16 @@
 
 package org.restlet.client.engine;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.restlet.client.Client;
 import org.restlet.client.Context;
-import org.restlet.client.Request;
-import org.restlet.client.Response;
-import org.restlet.client.data.ChallengeScheme;
-import org.restlet.client.data.Method;
 import org.restlet.client.data.Protocol;
-import org.restlet.client.engine.io.IoUtils;
 import org.restlet.client.engine.log.LoggerFacade;
 
 /**

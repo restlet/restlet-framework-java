@@ -35,15 +35,14 @@ import org.restlet.data.Language;
  */
 public class LanguageWriter extends MetadataWriter<Language> {
 
-    /**
-     * Writes a list of languages.
-     * 
-     * @param languages
-     *            The languages to write.
-     * @return This writer.
-     */
-    public static String write(List<Language> languages) {
-        return new LanguageWriter().append(languages).toString();
-    }
+	/**
+	 * Writes a list of languages.
+	 * 
+	 * @param languages The languages to write.
+	 * @return This writer.
+	 */
+	public static String write(List<Language> languages) {
+		return new LanguageWriter().append(languages).toString();
+	}
 
 }

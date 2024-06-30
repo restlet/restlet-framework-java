@@ -46,90 +46,74 @@ import org.restlet.service.LogService;
  * @author Jerome Louvel
  */
 public class LogFilter extends Filter {
-    /** The log service. */
-    protected volatile LogService logService;
+	/** The log service. */
+	protected volatile LogService logService;
 
-    /** The log service logger. */
-    private volatile Logger logLogger;
+	/** The log service logger. */
+	private volatile Logger logLogger;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param logService
-     *            The log service descriptor.
-     */
-    public LogFilter(Context context, LogService logService) {
-        super(context);
-        this.logService = logService;
+	/**
+	 * Constructor.
+	 * 
+	 * @param context    The context.
+	 * @param logService The log service descriptor.
+	 */
+	public LogFilter(Context context, LogService logService) {
+		super(context);
+		this.logService = logService;
 
-        if (logService != null) {
-            if (logService.getLoggerName() != null) {
-                this.logLogger = Engine.getLogger(logService.getLoggerName());
-            } else if ((context != null)
-                    && (context.getLogger().getParent() != null)) {
-                this.logLogger = Engine.getLogger(context.getLogger()
-                        .getParent().getName()
-                        + "."
-                        + LogUtils.getBestClassName(logService.getClass()));
-            } else {
-                this.logLogger = Engine.getLogger(LogUtils
-                        .getBestClassName(logService.getClass()));
-            }
-        }
-    }
+		if (logService != null) {
+			if (logService.getLoggerName() != null) {
+				this.logLogger = Engine.getLogger(logService.getLoggerName());
+			} else if ((context != null) && (context.getLogger().getParent() != null)) {
+				this.logLogger = Engine.getLogger(context.getLogger().getParent().getName() + "."
+						+ LogUtils.getBestClassName(logService.getClass()));
+			} else {
+				this.logLogger = Engine.getLogger(LogUtils.getBestClassName(logService.getClass()));
+			}
+		}
+	}
 
-    /**
-     * Allows filtering after processing by the next Restlet. Logs the call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    protected void afterHandle(Request request, Response response) {
-        try {
-            if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
-                long startTime = (Long) request.getAttributes().get(
-                        "org.restlet.startTime");
-                int duration = (int) (System.currentTimeMillis() - startTime);
-                this.logLogger.log(Level.INFO, this.logService
-                        .getResponseLogMessage(response, duration));
-            }
-        } catch (Throwable e) {
-            // Error while logging the call, cf issue #931
-            getLogger().log(Level.SEVERE, "Cannot log call", e);
-        }
-    }
+	/**
+	 * Allows filtering after processing by the next Restlet. Logs the call.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The response to update.
+	 */
+	@Override
+	protected void afterHandle(Request request, Response response) {
+		try {
+			if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
+				long startTime = (Long) request.getAttributes().get("org.restlet.startTime");
+				int duration = (int) (System.currentTimeMillis() - startTime);
+				this.logLogger.log(Level.INFO, this.logService.getResponseLogMessage(response, duration));
+			}
+		} catch (Throwable e) {
+			// Error while logging the call, cf issue #931
+			getLogger().log(Level.SEVERE, "Cannot log call", e);
+		}
+	}
 
-    /**
-     * Allows filtering before processing by the next Restlet. Saves the start
-     * time.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The continuation status.
-     */
-    @Override
-    protected int beforeHandle(Request request, Response response) {
-        request.getAttributes().put("org.restlet.startTime",
-                System.currentTimeMillis());
+	/**
+	 * Allows filtering before processing by the next Restlet. Saves the start time.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The response to update.
+	 * @return The continuation status.
+	 */
+	@Override
+	protected int beforeHandle(Request request, Response response) {
+		request.getAttributes().put("org.restlet.startTime", System.currentTimeMillis());
 
-        // Set the log level for the given request
-        request.setLoggable(this.logService.isLoggable(request));
+		// Set the log level for the given request
+		request.setLoggable(this.logService.isLoggable(request));
 
-        if (request.isLoggable() && this.logLogger.isLoggable(Level.FINE)) {
-            this.logLogger.fine("Processing request to: \""
-                    + ((request.getResourceRef() == null) ? "Unknown URI"
-                            : request.getResourceRef().getTargetRef()
-                                    .toString()) + "\"");
-        }
+		if (request.isLoggable() && this.logLogger.isLoggable(Level.FINE)) {
+			this.logLogger.fine("Processing request to: \"" + ((request.getResourceRef() == null) ? "Unknown URI"
+					: request.getResourceRef().getTargetRef().toString()) + "\"");
+		}
 
-        return CONTINUE;
-    }
+		return CONTINUE;
+	}
 
 }

@@ -35,19 +35,18 @@ import org.restlet.data.Encoding;
  */
 public class EncodingWriter extends MetadataWriter<Encoding> {
 
-    /**
-     * Writes a list of encodings.
-     * 
-     * @param encodings
-     *            The encodings to write.
-     * @return This writer.
-     */
-    public static String write(List<Encoding> encodings) {
-        return new EncodingWriter().append(encodings).toString();
-    }
+	/**
+	 * Writes a list of encodings.
+	 * 
+	 * @param encodings The encodings to write.
+	 * @return This writer.
+	 */
+	public static String write(List<Encoding> encodings) {
+		return new EncodingWriter().append(encodings).toString();
+	}
 
-    @Override
-    protected boolean canWrite(Encoding encoding) {
-        return !encoding.equals(Encoding.IDENTITY);
-    }
+	@Override
+	protected boolean canWrite(Encoding encoding) {
+		return !encoding.equals(Encoding.IDENTITY);
+	}
 }

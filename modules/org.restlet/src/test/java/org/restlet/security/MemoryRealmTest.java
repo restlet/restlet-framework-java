@@ -24,49 +24,49 @@
 
 package org.restlet.security;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
+
 public class MemoryRealmTest {
 
-    @Test
-    public void whenUmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
-        // given a Memory Realm, a Group and a Role
-        MemoryRealm memoryRealm = new MemoryRealm();
-        Group group = new Group();
-        Role role = new Role();
+	@Test
+	public void whenUmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
+		// given a Memory Realm, a Group and a Role
+		MemoryRealm memoryRealm = new MemoryRealm();
+		Group group = new Group();
+		Role role = new Role();
 
-        // Given the group and role are mapped
-        memoryRealm.map(group, role);
-        // Then there is a mapping for this group
-        assertFalse(memoryRealm.findRoles(group).isEmpty());
+		// Given the group and role are mapped
+		memoryRealm.map(group, role);
+		// Then there is a mapping for this group
+		assertFalse(memoryRealm.findRoles(group).isEmpty());
 
-        // When I remove this mapping
-        memoryRealm.unmap(group, role);
+		// When I remove this mapping
+		memoryRealm.unmap(group, role);
 
-        // Then the memory realm has no more mapping
-        assertTrue(memoryRealm.findRoles(group).isEmpty());
-    }
+		// Then the memory realm has no more mapping
+		assertTrue(memoryRealm.findRoles(group).isEmpty());
+	}
 
-    @Test
-    public void whenUmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
-        // given a Memory Realm, a Group and a Role
-        MemoryRealm memoryRealm = new MemoryRealm();
-        User user = new User();
-        Role role = new Role();
+	@Test
+	public void whenUmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
+		// given a Memory Realm, a Group and a Role
+		MemoryRealm memoryRealm = new MemoryRealm();
+		User user = new User();
+		Role role = new Role();
 
-        // Given the user and role are mapped
-        memoryRealm.map(user, role);
-        // Then there is a mapping for this user
-        assertFalse(memoryRealm.findRoles(user).isEmpty());
+		// Given the user and role are mapped
+		memoryRealm.map(user, role);
+		// Then there is a mapping for this user
+		assertFalse(memoryRealm.findRoles(user).isEmpty());
 
-        // When I remove this mapping
-        memoryRealm.unmap(user, role);
+		// When I remove this mapping
+		memoryRealm.unmap(user, role);
 
-        // Then the memory realm has no more mapping
-        assertTrue(memoryRealm.findRoles(user).isEmpty());
-    }
+		// Then the memory realm has no more mapping
+		assertTrue(memoryRealm.findRoles(user).isEmpty());
+	}
 
 }

@@ -30,7 +30,6 @@ import org.restlet.client.Uniform;
 import org.restlet.client.data.Reference;
 import org.restlet.client.data.Status;
 import org.restlet.client.engine.io.StringInputStream;
-import org.restlet.client.representation.Representation;
 import org.restlet.client.util.Series;
 
 import com.google.gwt.http.client.Header;

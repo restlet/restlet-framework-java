@@ -43,182 +43,161 @@ import org.restlet.routing.VirtualHost;
  * @author Jerome Louvel
  */
 public class HostRoute extends Route {
-    /**
-     * Constructor.
-     * 
-     * @param router
-     *            The parent router.
-     * @param target
-     *            The target virtual host.
-     */
-    public HostRoute(Router router, VirtualHost target) {
-        super(router, target);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param router The parent router.
+	 * @param target The target virtual host.
+	 */
+	public HostRoute(Router router, VirtualHost target) {
+		super(router, target);
+	}
 
-    /**
-     * Allows filtering before processing by the next Restlet. Set the base
-     * reference.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The continuation status.
-     */
-    @Override
-    protected int beforeHandle(Request request, Response response) {
-        if (request.getHostRef() == null) {
-            request.getResourceRef().setBaseRef(
-                    request.getResourceRef().getHostIdentifier());
-        } else {
-            request.getResourceRef().setBaseRef(request.getHostRef());
-        }
+	/**
+	 * Allows filtering before processing by the next Restlet. Set the base
+	 * reference.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The response to update.
+	 * @return The continuation status.
+	 */
+	@Override
+	protected int beforeHandle(Request request, Response response) {
+		if (request.getHostRef() == null) {
+			request.getResourceRef().setBaseRef(request.getResourceRef().getHostIdentifier());
+		} else {
+			request.getResourceRef().setBaseRef(request.getHostRef());
+		}
 
-        if (request.isLoggable() && getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine(
-                    "Base URI: \"" + request.getResourceRef().getBaseRef()
-                            + "\". Remaining part: \""
-                            + request.getResourceRef().getRemainingPart()
-                            + "\"");
-        }
+		if (request.isLoggable() && getLogger().isLoggable(Level.FINE)) {
+			getLogger().fine("Base URI: \"" + request.getResourceRef().getBaseRef() + "\". Remaining part: \""
+					+ request.getResourceRef().getRemainingPart() + "\"");
+		}
 
-        return CONTINUE;
-    }
+		return CONTINUE;
+	}
 
-    /**
-     * Returns the target virtual host.
-     * 
-     * @return The target virtual host.
-     */
-    public VirtualHost getVirtualHost() {
-        return (VirtualHost) getNext();
-    }
+	/**
+	 * Returns the target virtual host.
+	 * 
+	 * @return The target virtual host.
+	 */
+	public VirtualHost getVirtualHost() {
+		return (VirtualHost) getNext();
+	}
 
-    /**
-     * Matches a formatted string against a regex pattern, in a case insensitive
-     * manner.
-     * 
-     * @param regex
-     *            The pattern to use.
-     * @param formattedString
-     *            The formatted string to match.
-     * @return True if the formatted string matched the pattern.
-     */
-    private boolean matches(String regex, String formattedString) {
-        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE)
-                .matcher(formattedString).matches();
-    }
+	/**
+	 * Matches a formatted string against a regex pattern, in a case insensitive
+	 * manner.
+	 * 
+	 * @param regex           The pattern to use.
+	 * @param formattedString The formatted string to match.
+	 * @return True if the formatted string matched the pattern.
+	 */
+	private boolean matches(String regex, String formattedString) {
+		return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(formattedString).matches();
+	}
 
-    /**
-     * Returns the score for a given call (between 0 and 1.0).
-     * 
-     * @param request
-     *            The request to score.
-     * @param response
-     *            The response to score.
-     * @return The score for a given call (between 0 and 1.0).
-     */
-    @Override
-    public float score(Request request, Response response) {
-        float result = 0F;
+	/**
+	 * Returns the score for a given call (between 0 and 1.0).
+	 * 
+	 * @param request  The request to score.
+	 * @param response The response to score.
+	 * @return The score for a given call (between 0 and 1.0).
+	 */
+	@Override
+	public float score(Request request, Response response) {
+		float result = 0F;
 
-        // Prepare the value to be matched
-        String hostDomain = "";
-        String hostPort = "";
-        String hostScheme = "";
+		// Prepare the value to be matched
+		String hostDomain = "";
+		String hostPort = "";
+		String hostScheme = "";
 
-        if (request.getHostRef() != null) {
-            hostDomain = request.getHostRef().getHostDomain();
+		if (request.getHostRef() != null) {
+			hostDomain = request.getHostRef().getHostDomain();
 
-            if (hostDomain == null) {
-                hostDomain = "";
-            }
+			if (hostDomain == null) {
+				hostDomain = "";
+			}
 
-            int basePortValue = request.getHostRef().getHostPort();
+			int basePortValue = request.getHostRef().getHostPort();
 
-            if (basePortValue == -1) {
-                basePortValue = request.getHostRef().getSchemeProtocol()
-                        .getDefaultPort();
-            }
+			if (basePortValue == -1) {
+				basePortValue = request.getHostRef().getSchemeProtocol().getDefaultPort();
+			}
 
-            hostPort = Integer.toString(basePortValue);
+			hostPort = Integer.toString(basePortValue);
 
-            hostScheme = request.getHostRef().getScheme();
+			hostScheme = request.getHostRef().getScheme();
 
-            if (hostScheme == null) {
-                hostScheme = "";
-            }
-        }
+			if (hostScheme == null) {
+				hostScheme = "";
+			}
+		}
 
-        if (request.getResourceRef() != null) {
-            String resourceDomain = request.getResourceRef().getHostDomain();
+		if (request.getResourceRef() != null) {
+			String resourceDomain = request.getResourceRef().getHostDomain();
 
-            if (resourceDomain == null) {
-                resourceDomain = "";
-            }
+			if (resourceDomain == null) {
+				resourceDomain = "";
+			}
 
-            int resourcePortValue = request.getResourceRef().getHostPort();
+			int resourcePortValue = request.getResourceRef().getHostPort();
 
-            if (resourcePortValue == -1
-                    && request.getResourceRef()
-                            .getSchemeProtocol() != null) {
-                resourcePortValue = request.getResourceRef()
-                        .getSchemeProtocol().getDefaultPort();
-            }
+			if (resourcePortValue == -1 && request.getResourceRef().getSchemeProtocol() != null) {
+				resourcePortValue = request.getResourceRef().getSchemeProtocol().getDefaultPort();
+			}
 
-            String resourcePort = (resourcePortValue == -1) ? "" : Integer.toString(resourcePortValue);
+			String resourcePort = (resourcePortValue == -1) ? "" : Integer.toString(resourcePortValue);
 
-            String resourceScheme = request.getResourceRef().getScheme();
+			String resourceScheme = request.getResourceRef().getScheme();
 
-            if (resourceScheme == null) {
-                resourceScheme = "";
-            }
+			if (resourceScheme == null) {
+				resourceScheme = "";
+			}
 
-            String serverAddress = response.getServerInfo().getAddress();
+			String serverAddress = response.getServerInfo().getAddress();
 
-            if (serverAddress == null) {
-                serverAddress = "";
-            }
+			if (serverAddress == null) {
+				serverAddress = "";
+			}
 
-            int serverPortValue = response.getServerInfo().getPort();
+			int serverPortValue = response.getServerInfo().getPort();
 
-            if (serverPortValue == -1) {
-                serverPortValue = request.getProtocol().getDefaultPort();
-            }
+			if (serverPortValue == -1) {
+				serverPortValue = request.getProtocol().getDefaultPort();
+			}
 
-            String serverPort = Integer.toString(response.getServerInfo()
-                    .getPort());
+			String serverPort = Integer.toString(response.getServerInfo().getPort());
 
-            // Check if all the criteria match
-            if (matches(getVirtualHost().getHostDomain(), hostDomain)
-                    && matches(getVirtualHost().getHostPort(), hostPort)
-                    && matches(getVirtualHost().getHostScheme(), hostScheme)
-                    && matches(getVirtualHost().getResourceDomain(), resourceDomain)
-                    && matches(getVirtualHost().getResourcePort(), resourcePort)
-                    && matches(getVirtualHost().getResourceScheme(), resourceScheme)
-                    && matches(getVirtualHost().getServerAddress(), serverAddress)
-                    && matches(getVirtualHost().getServerPort(), serverPort)) {
-                result = 1F;
-            }
-        }
+			// Check if all the criteria match
+			if (matches(getVirtualHost().getHostDomain(), hostDomain)
+					&& matches(getVirtualHost().getHostPort(), hostPort)
+					&& matches(getVirtualHost().getHostScheme(), hostScheme)
+					&& matches(getVirtualHost().getResourceDomain(), resourceDomain)
+					&& matches(getVirtualHost().getResourcePort(), resourcePort)
+					&& matches(getVirtualHost().getResourceScheme(), resourceScheme)
+					&& matches(getVirtualHost().getServerAddress(), serverAddress)
+					&& matches(getVirtualHost().getServerPort(), serverPort)) {
+				result = 1F;
+			}
+		}
 
-        // Log the result of the matching
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer(
-                    "Call score for the \"" + getVirtualHost().getName()
-                            + "\" host: " + result);
-        }
+		// Log the result of the matching
+		if (getLogger().isLoggable(Level.FINER)) {
+			getLogger().finer("Call score for the \"" + getVirtualHost().getName() + "\" host: " + result);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Sets the next virtual host.
-     * 
-     * @param next
-     *            The next virtual host.
-     */
-    public void setNext(VirtualHost next) {
-        super.setNext(next);
-    }
+	/**
+	 * Sets the next virtual host.
+	 * 
+	 * @param next The next virtual host.
+	 */
+	public void setNext(VirtualHost next) {
+		super.setNext(next);
+	}
 }

@@ -24,6 +24,11 @@
 
 package org.restlet.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -38,11 +43,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
-
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HeaderTestCase extends RestletTestCase {
 

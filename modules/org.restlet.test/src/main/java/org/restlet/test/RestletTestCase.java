@@ -28,8 +28,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.restlet.engine.Engine;
 import org.restlet.representation.ObjectRepresentation;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 
 /**
  * Marker class. All Restlet tests should be derived from this class.

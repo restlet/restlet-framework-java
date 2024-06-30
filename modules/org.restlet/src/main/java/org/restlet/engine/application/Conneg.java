@@ -37,71 +37,68 @@ import org.restlet.service.MetadataService;
  */
 public abstract class Conneg {
 
-    /** The request including client preferences. */
-    private final Request request;
+	/** The request including client preferences. */
+	private final Request request;
 
-    /**
-     * Constructor.
-     * 
-     * @param request
-     *            The request including client preferences.
-     * @param metadataService
-     *            The metadata service used to get default metadata values.
-     */
-    public Conneg(Request request, MetadataService metadataService) {
-        this.request = request;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param request         The request including client preferences.
+	 * @param metadataService The metadata service used to get default metadata
+	 *                        values.
+	 */
+	public Conneg(Request request, MetadataService metadataService) {
+		this.request = request;
+	}
 
-    /**
-     * Returns the request including client preferences.
-     * 
-     * @return The request including client preferences.
-     */
-    public Request getRequest() {
-        return request;
-    }
+	/**
+	 * Returns the request including client preferences.
+	 * 
+	 * @return The request including client preferences.
+	 */
+	public Request getRequest() {
+		return request;
+	}
 
-    /**
-     * Returns the best variant representation for a given resource according
-     * the the client preferences.<br>
-     * A default language is provided in case the variants don't match the
-     * client preferences.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @return The preferred variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     */
-    public Variant getPreferredVariant(List<? extends Variant> variants) {
-        Variant result = null;
+	/**
+	 * Returns the best variant representation for a given resource according the
+	 * the client preferences.<br>
+	 * A default language is provided in case the variants don't match the client
+	 * preferences.
+	 * 
+	 * @param variants The list of variants to compare.
+	 * @return The preferred variant.
+	 * @see <a href=
+	 *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+	 *      content negotiation algorithm</a>
+	 */
+	public Variant getPreferredVariant(List<? extends Variant> variants) {
+		Variant result = null;
 
-        if ((variants != null) && !variants.isEmpty()) {
-            float bestScore = -1.0F;
-            float current;
+		if ((variants != null) && !variants.isEmpty()) {
+			float bestScore = -1.0F;
+			float current;
 
-            // Compute the score of each variant
-            for (Variant variant : variants) {
-                current = scoreVariant(variant);
+			// Compute the score of each variant
+			for (Variant variant : variants) {
+				current = scoreVariant(variant);
 
-                if (current > bestScore) {
-                    bestScore = current;
-                    result = variant;
-                }
-            }
-        }
+				if (current > bestScore) {
+					bestScore = current;
+					result = variant;
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Scores a variant relatively to enriched client preferences.
-     * 
-     * @param variant
-     *            The variant to score.
-     * @return The enriched client preferences.
-     */
-    public abstract float scoreVariant(Variant variant);
+	/**
+	 * Scores a variant relatively to enriched client preferences.
+	 * 
+	 * @param variant The variant to score.
+	 * @return The enriched client preferences.
+	 */
+	public abstract float scoreVariant(Variant variant);
 
 }

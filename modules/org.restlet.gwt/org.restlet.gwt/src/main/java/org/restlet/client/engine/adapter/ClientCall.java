@@ -25,7 +25,6 @@
 package org.restlet.client.engine.adapter;
 
 import static org.restlet.client.data.Encoding.IDENTITY;
-import static org.restlet.client.data.Status.CONNECTOR_ERROR_COMMUNICATION;
 import static org.restlet.client.data.Status.REDIRECTION_NOT_MODIFIED;
 import static org.restlet.client.data.Status.SUCCESS_NO_CONTENT;
 import static org.restlet.client.data.Status.SUCCESS_RESET_CONTENT;
@@ -33,7 +32,6 @@ import static org.restlet.client.representation.Representation.UNKNOWN_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.Level;
 
 import org.restlet.client.Context;
@@ -41,8 +39,6 @@ import org.restlet.client.Request;
 import org.restlet.client.Response;
 import org.restlet.client.data.Header;
 import org.restlet.client.data.Method;
-import org.restlet.client.data.Status;
-import org.restlet.client.engine.connector.ConnectorHelper;
 import org.restlet.client.engine.header.HeaderConstants;
 import org.restlet.client.engine.header.HeaderUtils;
 import org.restlet.client.representation.Representation;

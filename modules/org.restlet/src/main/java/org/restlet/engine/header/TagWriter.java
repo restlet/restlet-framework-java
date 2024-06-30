@@ -35,31 +35,29 @@ import org.restlet.data.Tag;
  */
 public class TagWriter extends HeaderWriter<Tag> {
 
-    /**
-     * Writes a list of tags.
-     * 
-     * @param tags
-     *            The tags to write.
-     * @return This writer.
-     */
-    public static String write(List<Tag> tags) {
-        return new TagWriter().append(tags).toString();
-    }
+	/**
+	 * Writes a list of tags.
+	 * 
+	 * @param tags The tags to write.
+	 * @return This writer.
+	 */
+	public static String write(List<Tag> tags) {
+		return new TagWriter().append(tags).toString();
+	}
 
-    /**
-     * Writes a tag.
-     * 
-     * @param tag
-     *            The tag to write.
-     * @return This writer.
-     */
-    public static String write(Tag tag) {
-        return tag.format();
-    }
+	/**
+	 * Writes a tag.
+	 * 
+	 * @param tag The tag to write.
+	 * @return This writer.
+	 */
+	public static String write(Tag tag) {
+		return tag.format();
+	}
 
-    @Override
-    public HeaderWriter<Tag> append(Tag tag) {
-        return append(write(tag));
-    }
+	@Override
+	public HeaderWriter<Tag> append(Tag tag) {
+		return append(write(tag));
+	}
 
 }

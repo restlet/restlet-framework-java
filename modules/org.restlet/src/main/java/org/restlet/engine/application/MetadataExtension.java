@@ -38,77 +38,75 @@ import org.restlet.data.Metadata;
  */
 public class MetadataExtension {
 
-    /** The mapped metadata. */
-    private final Metadata metadata;
+	/** The mapped metadata. */
+	private final Metadata metadata;
 
-    /** The name of the extension. */
-    private final String name;
+	/** The name of the extension. */
+	private final String name;
 
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The extension name.
-     * @param metadata
-     *            The metadata.
-     */
-    public MetadataExtension(String name, Metadata metadata) {
-        this.name = name;
-        this.metadata = metadata;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param name     The extension name.
+	 * @param metadata The metadata.
+	 */
+	public MetadataExtension(String name, Metadata metadata) {
+		this.name = name;
+		this.metadata = metadata;
+	}
 
-    /**
-     * Returns the character set.
-     * 
-     * @return the character set.
-     */
-    public CharacterSet getCharacterSet() {
-        return (CharacterSet) getMetadata();
-    }
+	/**
+	 * Returns the character set.
+	 * 
+	 * @return the character set.
+	 */
+	public CharacterSet getCharacterSet() {
+		return (CharacterSet) getMetadata();
+	}
 
-    /**
-     * Returns the encoding.
-     * 
-     * @return the encoding.
-     */
-    public Encoding getEncoding() {
-        return (Encoding) getMetadata();
-    }
+	/**
+	 * Returns the encoding.
+	 * 
+	 * @return the encoding.
+	 */
+	public Encoding getEncoding() {
+		return (Encoding) getMetadata();
+	}
 
-    /**
-     * Returns the language.
-     * 
-     * @return the language.
-     */
-    public Language getLanguage() {
-        return (Language) getMetadata();
-    }
+	/**
+	 * Returns the language.
+	 * 
+	 * @return the language.
+	 */
+	public Language getLanguage() {
+		return (Language) getMetadata();
+	}
 
-    /**
-     * Returns the media type.
-     * 
-     * @return the media type.
-     */
-    public MediaType getMediaType() {
-        return (MediaType) getMetadata();
-    }
+	/**
+	 * Returns the media type.
+	 * 
+	 * @return the media type.
+	 */
+	public MediaType getMediaType() {
+		return (MediaType) getMetadata();
+	}
 
-    /**
-     * Returns the metadata.
-     * 
-     * @return the metadata.
-     */
-    public Metadata getMetadata() {
-        return this.metadata;
-    }
+	/**
+	 * Returns the metadata.
+	 * 
+	 * @return the metadata.
+	 */
+	public Metadata getMetadata() {
+		return this.metadata;
+	}
 
-    /**
-     * Returns the extension name.
-     * 
-     * @return The extension name.
-     */
-    public String getName() {
-        return this.name;
-    }
+	/**
+	 * Returns the extension name.
+	 * 
+	 * @return The extension name.
+	 */
+	public String getName() {
+		return this.name;
+	}
 
 }

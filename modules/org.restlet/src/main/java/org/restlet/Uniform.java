@@ -33,21 +33,19 @@ package org.restlet;
  * Implementations are decoupled from the services they provide, which
  * encourages independent evolvability." Roy T. Fielding
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
+ * @see <a href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
  * @author Jerome Louvel
  */
 public interface Uniform {
 
-    /**
-     * Handles a uniform call. It is important to realize that this interface
-     * can be used either on the client-side or on the server-side.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The associated response.
-     */
-    void handle(Request request, Response response);
+	/**
+	 * Handles a uniform call. It is important to realize that this interface can be
+	 * used either on the client-side or on the server-side.
+	 * 
+	 * @param request  The request to handle.
+	 * @param response The associated response.
+	 */
+	void handle(Request request, Response response);
 }

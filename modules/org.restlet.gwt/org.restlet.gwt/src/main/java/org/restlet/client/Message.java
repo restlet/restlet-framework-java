@@ -25,7 +25,6 @@
 package org.restlet.client;
 
 import static org.restlet.client.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
-import static org.restlet.client.representation.Representation.UNKNOWN_SIZE;
 
 import java.io.IOException;
 import java.util.Date;
@@ -42,7 +41,6 @@ import org.restlet.client.data.RecipientInfo;
 import org.restlet.client.data.Warning;
 import org.restlet.client.representation.Representation;
 import org.restlet.client.representation.StringRepresentation;
-import org.restlet.client.resource.ClientResource;
 import org.restlet.client.util.Series;
 
 /**

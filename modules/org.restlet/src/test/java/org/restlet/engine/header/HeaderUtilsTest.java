@@ -24,46 +24,48 @@
 
 package org.restlet.engine.header;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.util.Series;
 
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 public class HeaderUtilsTest {
 
-    @Test
-    public void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
-        // Given a retry_after header that contains a decimal value
-        Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
+	@Test
+	public void whenHeaderRetryAfterIsDecimalThenParsingIsStillFine() {
+		// Given a retry_after header that contains a decimal value
+		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1");
 
-        // Given a response
-        Response response = new Response(new Request());
+		// Given a response
+		Response response = new Response(new Request());
 
-        // When I copy the retry_after header to the response
-        HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)), response);
+		// When I copy the retry_after header to the response
+		HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)),
+				response);
 
-        // Then the response contains a valid value for the retry_after header
-        assertNotNull(response.getRetryAfter());
-    }
+		// Then the response contains a valid value for the retry_after header
+		assertNotNull(response.getRetryAfter());
+	}
 
-    @Test
-    public void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
-        // Given a retry_after header that contains an alphabetical value
-        Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
+	@Test
+	public void whenHeaderRetryAfterIsAlphabeticalThenParsingFailsSilently() {
+		// Given a retry_after header that contains an alphabetical value
+		Header header = new Header(HeaderConstants.HEADER_RETRY_AFTER, "2.1a");
 
-        // Given a response
-        Response response = new Response(new Request());
+		// Given a response
+		Response response = new Response(new Request());
 
-        // When I copy the retry_after header to the response
-        HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)), response);
+		// When I copy the retry_after header to the response
+		HeaderUtils.copyResponseTransportHeaders(new Series<>(Header.class, Collections.singletonList(header)),
+				response);
 
-        // Then the response does not contain a retry_after header
-        assertNull(response.getRetryAfter());
-    }
+		// Then the response does not contain a retry_after header
+		assertNull(response.getRetryAfter());
+	}
 }

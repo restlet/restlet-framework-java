@@ -35,19 +35,18 @@ import org.restlet.data.Language;
  */
 public class LanguageReader extends HeaderReader<Language> {
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public LanguageReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public LanguageReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Language readValue() throws IOException {
-        return Language.valueOf(readRawValue());
-    }
+	@Override
+	public Language readValue() throws IOException {
+		return Language.valueOf(readRawValue());
+	}
 
 }

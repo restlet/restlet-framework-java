@@ -24,6 +24,16 @@
 
 package org.restlet.test.engine.application;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collection;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -33,16 +43,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Options;
 import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
-
-import java.util.Collection;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
  /**
  * @author Manuel Boillod

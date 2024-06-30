@@ -69,412 +69,359 @@ import org.restlet.resource.ResourceException;
  */
 public class StatusService extends Service {
 
-    /** The service used to select the preferred variant. */
-    private volatile ConnegService connegService;
+	/** The service used to select the preferred variant. */
+	private volatile ConnegService connegService;
 
-    /** The email address to contact in case of error. */
-    private volatile String contactEmail;
+	/** The email address to contact in case of error. */
+	private volatile String contactEmail;
 
-    /** The service used to convert between status/throwable and representation. */
-    private volatile ConverterService converterService;
+	/** The service used to convert between status/throwable and representation. */
+	private volatile ConverterService converterService;
 
-    /** The home URI to propose in case of error. */
-    private volatile Reference homeRef;
+	/** The home URI to propose in case of error. */
+	private volatile Reference homeRef;
 
-    /** The service used to select the preferred variant. */
-    private volatile MetadataService metadataService;
+	/** The service used to select the preferred variant. */
+	private volatile MetadataService metadataService;
 
-    /** True if an existing entity should be overwritten. */
-    private volatile boolean overwriting;
+	/** True if an existing entity should be overwritten. */
+	private volatile boolean overwriting;
 
-    /**
-     * Constructor. By default, it creates the necessary services.
-     */
-    public StatusService() {
-        this(true);
-    }
+	/**
+	 * Constructor. By default, it creates the necessary services.
+	 */
+	public StatusService() {
+		this(true);
+	}
 
-    /**
-     * Constructor. By default, it creates the necessary services.
-     * 
-     * @param enabled
-     *            True if the service has been enabled.
-     * 
-     */
-    public StatusService(boolean enabled) {
-        this(enabled, new ConverterService(), new MetadataService(),
-                new ConnegService());
-    }
+	/**
+	 * Constructor. By default, it creates the necessary services.
+	 * 
+	 * @param enabled True if the service has been enabled.
+	 * 
+	 */
+	public StatusService(boolean enabled) {
+		this(enabled, new ConverterService(), new MetadataService(), new ConnegService());
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param enabled
-     *            True if the service has been enabled.
-     * @param converterService
-     *            The service used to convert between status/throwable and
-     *            representation.
-     * @param metadataService
-     *            The service used to select the preferred variant.
-     * @param connegService
-     *            The service used to select the preferred variant.
-     */
-    public StatusService(boolean enabled, ConverterService converterService,
-            MetadataService metadataService, ConnegService connegService) {
-        super(enabled);
-        this.converterService = converterService;
-        this.metadataService = metadataService;
-        this.connegService = connegService;
-        this.contactEmail = null;
-        this.homeRef = new Reference("/");
-        this.overwriting = false;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param enabled          True if the service has been enabled.
+	 * @param converterService The service used to convert between status/throwable
+	 *                         and representation.
+	 * @param metadataService  The service used to select the preferred variant.
+	 * @param connegService    The service used to select the preferred variant.
+	 */
+	public StatusService(boolean enabled, ConverterService converterService, MetadataService metadataService,
+			ConnegService connegService) {
+		super(enabled);
+		this.converterService = converterService;
+		this.metadataService = metadataService;
+		this.connegService = connegService;
+		this.contactEmail = null;
+		this.homeRef = new Reference("/");
+		this.overwriting = false;
+	}
 
-    @Override
-    public org.restlet.routing.Filter createInboundFilter(Context context) {
-        return new org.restlet.engine.application.StatusFilter(context, this);
-    }
+	@Override
+	public org.restlet.routing.Filter createInboundFilter(Context context) {
+		return new org.restlet.engine.application.StatusFilter(context, this);
+	}
 
-    /**
-     * Returns the service used to select the preferred variant.
-     * 
-     * @return The service used to select the preferred variant.
-     */
-    public ConnegService getConnegService() {
-        return connegService;
-    }
+	/**
+	 * Returns the service used to select the preferred variant.
+	 * 
+	 * @return The service used to select the preferred variant.
+	 */
+	public ConnegService getConnegService() {
+		return connegService;
+	}
 
-    /**
-     * Returns the email address to contact in case of error. This is typically
-     * used when creating the status representations.
-     * 
-     * @return The email address to contact in case of error.
-     */
-    public String getContactEmail() {
-        return this.contactEmail;
-    }
+	/**
+	 * Returns the email address to contact in case of error. This is typically used
+	 * when creating the status representations.
+	 * 
+	 * @return The email address to contact in case of error.
+	 */
+	public String getContactEmail() {
+		return this.contactEmail;
+	}
 
-    /**
-     * Returns the service used to convert between status/throwable and
-     * representation.
-     * 
-     * @return The service used to convert between status/throwable and
-     *         representation.
-     */
-    public ConverterService getConverterService() {
-        return converterService;
-    }
+	/**
+	 * Returns the service used to convert between status/throwable and
+	 * representation.
+	 * 
+	 * @return The service used to convert between status/throwable and
+	 *         representation.
+	 */
+	public ConverterService getConverterService() {
+		return converterService;
+	}
 
-    /**
-     * Returns the home URI to propose in case of error.
-     * 
-     * @return The home URI to propose in case of error.
-     */
-    public Reference getHomeRef() {
-        return this.homeRef;
-    }
+	/**
+	 * Returns the home URI to propose in case of error.
+	 * 
+	 * @return The home URI to propose in case of error.
+	 */
+	public Reference getHomeRef() {
+		return this.homeRef;
+	}
 
-    /**
-     * Returns the service used to select the preferred variant.
-     * 
-     * @return The service used to select the preferred variant.
-     */
-    public MetadataService getMetadataService() {
-        return metadataService;
-    }
+	/**
+	 * Returns the service used to select the preferred variant.
+	 * 
+	 * @return The service used to select the preferred variant.
+	 */
+	public MetadataService getMetadataService() {
+		return metadataService;
+	}
 
-    /**
-     * Returns a representation for the given status. In order to customize the
-     * default representation, this method can be overridden. It returns null by
-     * default.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     * @deprecated Use {@link #toRepresentation(Status, Request, Response)}
-     *             instead.
-     */
-    @Deprecated
-    public Representation getRepresentation(Status status, Request request,
-            Response response) {
-        Representation result = null;
+	/**
+	 * Returns a representation for the given status. In order to customize the
+	 * default representation, this method can be overridden. It returns null by
+	 * default.
+	 * 
+	 * @param status   The status to represent.
+	 * @param request  The request handled.
+	 * @param response The response updated.
+	 * @return The representation of the given status.
+	 * @deprecated Use {@link #toRepresentation(Status, Request, Response)} instead.
+	 */
+	@Deprecated
+	public Representation getRepresentation(Status status, Request request, Response response) {
+		Representation result = null;
 
-        // Do content negotiation for status
-        if (converterService != null && connegService != null
-                && metadataService != null) {
-            Object representationObject = null;
+		// Do content negotiation for status
+		if (converterService != null && connegService != null && metadataService != null) {
+			Object representationObject = null;
 
-            // Serialize exception if any and if {@link
-            // org.restlet.resource.Status} annotation asks for it
-            Throwable cause = status.getThrowable();
+			// Serialize exception if any and if {@link
+			// org.restlet.resource.Status} annotation asks for it
+			Throwable cause = status.getThrowable();
 
-            if (cause != null) {
-                org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
-                        .getInstance().getThrowableAnnotationInfo(
-                                cause.getClass());
+			if (cause != null) {
+				org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
+						.getInstance().getThrowableAnnotationInfo(cause.getClass());
 
-                if (tai != null && tai.isSerializable()) {
-                    if (Application.getCurrent() != null
-                            && !Application.getCurrent().isDebugging()) {
-                        // We clear the stack trace to prevent technical
-                        // information leak
-                        cause.setStackTrace(new StackTraceElement[] {});
+				if (tai != null && tai.isSerializable()) {
+					if (Application.getCurrent() != null && !Application.getCurrent().isDebugging()) {
+						// We clear the stack trace to prevent technical
+						// information leak
+						cause.setStackTrace(new StackTraceElement[] {});
 
-                        if (cause.getCause() != null) {
-                            Context.getCurrentLogger()
-                                    .log(Level.WARNING,
-                                            "The cause of the exception should be null except in debug mode");
-                        }
-                    }
+						if (cause.getCause() != null) {
+							Context.getCurrentLogger().log(Level.WARNING,
+									"The cause of the exception should be null except in debug mode");
+						}
+					}
 
-                    representationObject = cause;
-                }
-            }
+					representationObject = cause;
+				}
+			}
 
-            try {
-                // Default representation match with the status properties
-                if (representationObject == null) {
-                    representationObject = new StatusInfo(status,
-                            getContactEmail(), getHomeRef().toString());
-                }
+			try {
+				// Default representation match with the status properties
+				if (representationObject == null) {
+					representationObject = new StatusInfo(status, getContactEmail(), getHomeRef().toString());
+				}
 
-                List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
-                        .getVariants(representationObject.getClass(), null);
-                if (variants == null) {
-                    variants = new ArrayList<>();
-                }
+				List<org.restlet.engine.resource.VariantInfo> variants = org.restlet.engine.converter.ConverterUtils
+						.getVariants(representationObject.getClass(), null);
+				if (variants == null) {
+					variants = new ArrayList<>();
+				}
 
-                Variant variant = connegService.getPreferredVariant(variants,
-                        request, metadataService);
-                result = converterService.toRepresentation(
-                        representationObject, variant);
-            } catch (Exception e) {
-                Context.getCurrentLogger().log(
-                        Level.WARNING,
-                        "Could not serialize throwable class "
-                                + ((cause == null) ? null : cause.getClass()),
-                        e);
-            }
-        }
+				Variant variant = connegService.getPreferredVariant(variants, request, metadataService);
+				result = converterService.toRepresentation(representationObject, variant);
+			} catch (Exception e) {
+				Context.getCurrentLogger().log(Level.WARNING,
+						"Could not serialize throwable class " + ((cause == null) ? null : cause.getClass()), e);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a status for a given exception or error. By default it unwraps
-     * the status of {@link ResourceException}. For other exceptions or errors,
-     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
-     * <br>
-     * In order to customize the default behavior, this method can be
-     * overridden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
-     */
-    @Deprecated
-    public Status getStatus(Throwable throwable, Request request,
-            Response response) {
-        Status result;
+	/**
+	 * Returns a status for a given exception or error. By default it unwraps the
+	 * status of {@link ResourceException}. For other exceptions or errors, it
+	 * returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
+	 * <br>
+	 * In order to customize the default behavior, this method can be overridden.
+	 * 
+	 * @param throwable The exception or error caught.
+	 * @param request   The request handled.
+	 * @param response  The response updated.
+	 * @return The representation of the given status.
+	 * @deprecated Use {@link #toStatus(Throwable, Request, Response)} instead.
+	 */
+	@Deprecated
+	public Status getStatus(Throwable throwable, Request request, Response response) {
+		Status result;
 
-        Status defaultStatus = Status.SERVER_ERROR_INTERNAL;
-        Throwable t = throwable;
+		Status defaultStatus = Status.SERVER_ERROR_INTERNAL;
+		Throwable t = throwable;
 
-        // If throwable is a ResourceException, use its status and the cause.
-        if (throwable instanceof ResourceException) {
-            defaultStatus = ((ResourceException) throwable).getStatus();
+		// If throwable is a ResourceException, use its status and the cause.
+		if (throwable instanceof ResourceException) {
+			defaultStatus = ((ResourceException) throwable).getStatus();
 
-            if (throwable.getCause() != null
-                    && throwable.getCause() != throwable) {
-                t = throwable.getCause();
-            }
-        }
+			if (throwable.getCause() != null && throwable.getCause() != throwable) {
+				t = throwable.getCause();
+			}
+		}
 
-        // look for Status annotation
-        org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
-                .getInstance().getThrowableAnnotationInfo(t.getClass());
+		// look for Status annotation
+		org.restlet.engine.resource.ThrowableAnnotationInfo tai = org.restlet.engine.resource.AnnotationUtils
+				.getInstance().getThrowableAnnotationInfo(t.getClass());
 
-        if (tai != null) {
-            result = new Status(tai.getStatus(), t);
-        } else {
-            result = new Status(defaultStatus, t);
-        }
+		if (tai != null) {
+			result = new Status(tai.getStatus(), t);
+		} else {
+			result = new Status(defaultStatus, t);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be
-     * overridden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param resource
-     *            The parent resource.
-     * @return The representation of the given status.
-     * @deprecated Use {@link #toStatus(Throwable, Resource)} instead.
-     */
-    @Deprecated
-    public Status getStatus(Throwable throwable, Resource resource) {
-        return toStatus(throwable,
-                (resource == null) ? null : resource.getRequest(),
-                (resource == null) ? null : resource.getResponse());
-    }
+	/**
+	 * Returns a status for a given exception or error. By default it returns an
+	 * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+	 * In order to customize the default behavior, this method can be overridden.
+	 * 
+	 * @param throwable The exception or error caught.
+	 * @param resource  The parent resource.
+	 * @return The representation of the given status.
+	 * @deprecated Use {@link #toStatus(Throwable, Resource)} instead.
+	 */
+	@Deprecated
+	public Status getStatus(Throwable throwable, Resource resource) {
+		return toStatus(throwable, (resource == null) ? null : resource.getRequest(),
+				(resource == null) ? null : resource.getResponse());
+	}
 
-    /**
-     * Indicates if an existing entity should be overwritten. False by default.
-     * 
-     * @return True if an existing entity should be overwritten.
-     */
-    public boolean isOverwriting() {
-        return this.overwriting;
-    }
+	/**
+	 * Indicates if an existing entity should be overwritten. False by default.
+	 * 
+	 * @return True if an existing entity should be overwritten.
+	 */
+	public boolean isOverwriting() {
+		return this.overwriting;
+	}
 
-    /**
-     * Sets the service used to select the preferred variant.
-     * 
-     * @param connegService
-     *            The service used to select the preferred variant.
-     */
-    public void setConnegService(ConnegService connegService) {
-        this.connegService = connegService;
-    }
+	/**
+	 * Sets the service used to select the preferred variant.
+	 * 
+	 * @param connegService The service used to select the preferred variant.
+	 */
+	public void setConnegService(ConnegService connegService) {
+		this.connegService = connegService;
+	}
 
-    /**
-     * Sets the email address to contact in case of error. This is typically
-     * used when creating the status representations.
-     * 
-     * @param contactEmail
-     *            The email address to contact in case of error.
-     */
-    public void setContactEmail(String contactEmail) {
-        this.contactEmail = contactEmail;
-    }
+	/**
+	 * Sets the email address to contact in case of error. This is typically used
+	 * when creating the status representations.
+	 * 
+	 * @param contactEmail The email address to contact in case of error.
+	 */
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
+	}
 
-    /**
-     * Sets the service used to convert between status/throwable and
-     * representation.
-     * 
-     * @param converterService
-     *            The service used to convert between status/throwable and
-     *            representation.
-     */
-    public void setConverterService(ConverterService converterService) {
-        this.converterService = converterService;
-    }
+	/**
+	 * Sets the service used to convert between status/throwable and representation.
+	 * 
+	 * @param converterService The service used to convert between status/throwable
+	 *                         and representation.
+	 */
+	public void setConverterService(ConverterService converterService) {
+		this.converterService = converterService;
+	}
 
-    /**
-     * Sets the home URI to propose in case of error.
-     * 
-     * @param homeRef
-     *            The home URI to propose in case of error.
-     */
-    public void setHomeRef(Reference homeRef) {
-        this.homeRef = homeRef;
-    }
+	/**
+	 * Sets the home URI to propose in case of error.
+	 * 
+	 * @param homeRef The home URI to propose in case of error.
+	 */
+	public void setHomeRef(Reference homeRef) {
+		this.homeRef = homeRef;
+	}
 
-    /**
-     * Sets the service used to select the preferred variant.
-     * 
-     * @param metadataService
-     *            The service used to select the preferred variant.
-     */
-    public void setMetadataService(MetadataService metadataService) {
-        this.metadataService = metadataService;
-    }
+	/**
+	 * Sets the service used to select the preferred variant.
+	 * 
+	 * @param metadataService The service used to select the preferred variant.
+	 */
+	public void setMetadataService(MetadataService metadataService) {
+		this.metadataService = metadataService;
+	}
 
-    /**
-     * Indicates if an existing entity should be overwritten.
-     * 
-     * @param overwriting
-     *            True if an existing entity should be overwritten.
-     */
-    public void setOverwriting(boolean overwriting) {
-        this.overwriting = overwriting;
-    }
+	/**
+	 * Indicates if an existing entity should be overwritten.
+	 * 
+	 * @param overwriting True if an existing entity should be overwritten.
+	 */
+	public void setOverwriting(boolean overwriting) {
+		this.overwriting = overwriting;
+	}
 
-    /**
-     * Returns a representation for the given status. In order to customize the
-     * default representation, this method can be overridden. It returns a
-     * {@link org.restlet.data.Status} representation by default or a
-     * {@link java.lang.Throwable} representation if the throwable is annotated
-     * with {@link org.restlet.resource.Status}.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    public Representation toRepresentation(Status status, Request request,
-            Response response) {
-        return getRepresentation(status, request, response);
-    }
+	/**
+	 * Returns a representation for the given status. In order to customize the
+	 * default representation, this method can be overridden. It returns a
+	 * {@link org.restlet.data.Status} representation by default or a
+	 * {@link java.lang.Throwable} representation if the throwable is annotated with
+	 * {@link org.restlet.resource.Status}.
+	 * 
+	 * @param status   The status to represent.
+	 * @param request  The request handled.
+	 * @param response The response updated.
+	 * @return The representation of the given status.
+	 */
+	public Representation toRepresentation(Status status, Request request, Response response) {
+		return getRepresentation(status, request, response);
+	}
 
-    /**
-     * Returns a representation for the given status.<br>
-     * In order to customize the default representation, this method can be
-     * overridden. By default it invokes
-     * {@link #toRepresentation(Status, Request, Response)}
-     * 
-     * @param status
-     *            The status to represent.
-     * @param resource
-     *            The parent resource.
-     * @return The representation of the given status.
-     */
-    public Representation toRepresentation(Status status, Resource resource) {
-        return toRepresentation(status, resource.getRequest(),
-                resource.getResponse());
-    }
+	/**
+	 * Returns a representation for the given status.<br>
+	 * In order to customize the default representation, this method can be
+	 * overridden. By default it invokes
+	 * {@link #toRepresentation(Status, Request, Response)}
+	 * 
+	 * @param status   The status to represent.
+	 * @param resource The parent resource.
+	 * @return The representation of the given status.
+	 */
+	public Representation toRepresentation(Status status, Resource resource) {
+		return toRepresentation(status, resource.getRequest(), resource.getResponse());
+	}
 
-    /**
-     * Returns a status for a given exception or error. By default it unwraps
-     * the status of {@link ResourceException}. For other exceptions or errors,
-     * it returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
-     * <br>
-     * In order to customize the default behavior, this method can be
-     * overridden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
-    public Status toStatus(Throwable throwable, Request request,
-            Response response) {
-        return getStatus(throwable, request, response);
-    }
+	/**
+	 * Returns a status for a given exception or error. By default it unwraps the
+	 * status of {@link ResourceException}. For other exceptions or errors, it
+	 * returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
+	 * <br>
+	 * In order to customize the default behavior, this method can be overridden.
+	 * 
+	 * @param throwable The exception or error caught.
+	 * @param request   The request handled.
+	 * @param response  The response updated.
+	 * @return The representation of the given status.
+	 */
+	public Status toStatus(Throwable throwable, Request request, Response response) {
+		return getStatus(throwable, request, response);
+	}
 
-    /**
-     * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
-     * In order to customize the default behavior, this method can be
-     * overridden.
-     * 
-     * @param throwable
-     *            The exception or error caught.
-     * @param resource
-     *            The parent resource.
-     * @return The representation of the given status.
-     */
-    public Status toStatus(Throwable throwable, Resource resource) {
-        return getStatus(throwable, resource);
-    }
+	/**
+	 * Returns a status for a given exception or error. By default it returns an
+	 * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+	 * In order to customize the default behavior, this method can be overridden.
+	 * 
+	 * @param throwable The exception or error caught.
+	 * @param resource  The parent resource.
+	 * @return The representation of the given status.
+	 */
+	public Status toStatus(Throwable throwable, Resource resource) {
+		return getStatus(throwable, resource);
+	}
 }

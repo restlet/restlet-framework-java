@@ -43,67 +43,58 @@ import org.restlet.routing.Router;
  * @author Jerome Louvel
  */
 public class ClientRoute extends Route {
-    /**
-     * Constructor.
-     * 
-     * @param router
-     *            The parent router.
-     * @param target
-     *            The target client.
-     */
-    public ClientRoute(Router router, Client target) {
-        super(router, target);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param router The parent router.
+	 * @param target The target client.
+	 */
+	public ClientRoute(Router router, Client target) {
+		super(router, target);
+	}
 
-    /**
-     * Returns the target client.
-     * 
-     * @return The target client.
-     */
-    public Client getClient() {
-        return (Client) getNext();
-    }
+	/**
+	 * Returns the target client.
+	 * 
+	 * @return The target client.
+	 */
+	public Client getClient() {
+		return (Client) getNext();
+	}
 
-    /**
-     * Returns the score for a given call (between 0 and 1.0).
-     * 
-     * @param request
-     *            The request to score.
-     * @param response
-     *            The response to score.
-     * @return The score for a given call (between 0 and 1.0).
-     */
-    @Override
-    public float score(Request request, Response response) {
-        float result = 0F;
+	/**
+	 * Returns the score for a given call (between 0 and 1.0).
+	 * 
+	 * @param request  The request to score.
+	 * @param response The response to score.
+	 * @return The score for a given call (between 0 and 1.0).
+	 */
+	@Override
+	public float score(Request request, Response response) {
+		float result = 0F;
 
-        // Add the protocol score
-        final Protocol protocol = request.getProtocol();
+		// Add the protocol score
+		final Protocol protocol = request.getProtocol();
 
-        if (protocol == null) {
-            getLogger().warning(
-                    "Unable to determine the protocol to use for this call.");
-        } else if (getClient().getProtocols().contains(protocol)) {
-            result = 1.0F;
-        }
+		if (protocol == null) {
+			getLogger().warning("Unable to determine the protocol to use for this call.");
+		} else if (getClient().getProtocols().contains(protocol)) {
+			result = 1.0F;
+		}
 
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer(
-                    "Call score for the \""
-                            + getClient().getProtocols().toString()
-                            + "\" client: " + result);
-        }
+		if (getLogger().isLoggable(Level.FINER)) {
+			getLogger().finer("Call score for the \"" + getClient().getProtocols().toString() + "\" client: " + result);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Sets the next client.
-     * 
-     * @param next
-     *            The next client.
-     */
-    public void setNext(Client next) {
-        super.setNext(next);
-    }
+	/**
+	 * Sets the next client.
+	 * 
+	 * @param next The next client.
+	 */
+	public void setNext(Client next) {
+		super.setNext(next);
+	}
 }

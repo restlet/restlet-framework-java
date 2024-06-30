@@ -24,10 +24,10 @@
 
 package org.restlet.test.data;
 
+import static org.testng.AssertJUnit.assertSame;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Method;
-
-import static org.testng.AssertJUnit.assertSame;
 
 /**
  * Test {@link org.restlet.data.Method}.

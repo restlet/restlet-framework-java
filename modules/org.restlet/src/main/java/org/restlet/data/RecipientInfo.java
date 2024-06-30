@@ -35,92 +35,86 @@ package org.restlet.data;
  */
 public class RecipientInfo {
 
-    /** The protocol used to communicate with the recipient. */
-    private volatile Protocol protocol;
+	/** The protocol used to communicate with the recipient. */
+	private volatile Protocol protocol;
 
-    /** The optional comment, typically the software agent name. */
-    private volatile String comment;
+	/** The optional comment, typically the software agent name. */
+	private volatile String comment;
 
-    /** The host name and port number or a pseudonym. */
-    private volatile String name;
+	/** The host name and port number or a pseudonym. */
+	private volatile String name;
 
-    /**
-     * Default constructor.
-     */
-    public RecipientInfo() {
-    }
+	/**
+	 * Default constructor.
+	 */
+	public RecipientInfo() {
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param protocol
-     *            The protocol used to communicate with the recipient.
-     * @param name
-     *            The host name and port number or a pseudonym.
-     * @param agent
-     *            The software agent.
-     */
-    public RecipientInfo(Protocol protocol, String name, String agent) {
-        this.protocol = protocol;
-        this.name = name;
-        this.comment = agent;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param protocol The protocol used to communicate with the recipient.
+	 * @param name     The host name and port number or a pseudonym.
+	 * @param agent    The software agent.
+	 */
+	public RecipientInfo(Protocol protocol, String name, String agent) {
+		this.protocol = protocol;
+		this.name = name;
+		this.comment = agent;
+	}
 
-    /**
-     * Returns the optional comment, typically the software agent name.
-     * 
-     * @return The optional comment.
-     */
-    public String getComment() {
-        return comment;
-    }
+	/**
+	 * Returns the optional comment, typically the software agent name.
+	 * 
+	 * @return The optional comment.
+	 */
+	public String getComment() {
+		return comment;
+	}
 
-    /**
-     * Returns the host name and port number or a pseudonym.
-     * 
-     * @return The host name and port number or a pseudonym.
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Returns the host name and port number or a pseudonym.
+	 * 
+	 * @return The host name and port number or a pseudonym.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Returns the protocol used to communicate with the recipient.
-     * 
-     * @return The protocol used to communicate with the recipient.
-     */
-    public Protocol getProtocol() {
-        return protocol;
-    }
+	/**
+	 * Returns the protocol used to communicate with the recipient.
+	 * 
+	 * @return The protocol used to communicate with the recipient.
+	 */
+	public Protocol getProtocol() {
+		return protocol;
+	}
 
-    /**
-     * Sets the optional comment, typically the software agent name.
-     * 
-     * @param comment
-     *            The optional comment.
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	/**
+	 * Sets the optional comment, typically the software agent name.
+	 * 
+	 * @param comment The optional comment.
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    /**
-     * Sets the host name and port number or a pseudonym.
-     * 
-     * @param name
-     *            The host name and port number or a pseudonym.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Sets the host name and port number or a pseudonym.
+	 * 
+	 * @param name The host name and port number or a pseudonym.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Sets the protocol used to communicate with the recipient.
-     * 
-     * @param protocol
-     *            The protocol used to communicate with the recipient.
-     */
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
+	/**
+	 * Sets the protocol used to communicate with the recipient.
+	 * 
+	 * @param protocol The protocol used to communicate with the recipient.
+	 */
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
+	}
 
 }

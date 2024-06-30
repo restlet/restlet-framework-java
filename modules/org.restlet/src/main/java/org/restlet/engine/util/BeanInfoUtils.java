@@ -37,43 +37,38 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class BeanInfoUtils {
 
-    /** BeanInfo cache. */
-    private static final ConcurrentMap<Class<?>, BeanInfo> cache = new ConcurrentHashMap<Class<?>, BeanInfo>();
+	/** BeanInfo cache. */
+	private static final ConcurrentMap<Class<?>, BeanInfo> cache = new ConcurrentHashMap<Class<?>, BeanInfo>();
 
-    /**
-     * Get a BeanInfo from cache or create it. Stop introspection to
-     * {@link Object} or {@link Throwable} if the class is a subtype of
-     * {@link Throwable}
-     * 
-     * @param clazz
-     *            The class
-     * @return BeanInfo of the class
-     */
-    public static BeanInfo getBeanInfo(Class<?> clazz) {
-        BeanInfo result = cache.get(clazz);
+	/**
+	 * Get a BeanInfo from cache or create it. Stop introspection to {@link Object}
+	 * or {@link Throwable} if the class is a subtype of {@link Throwable}
+	 * 
+	 * @param clazz The class
+	 * @return BeanInfo of the class
+	 */
+	public static BeanInfo getBeanInfo(Class<?> clazz) {
+		BeanInfo result = cache.get(clazz);
 
-        if (result == null) {
-            // Inspect the class itself for annotations
+		if (result == null) {
+			// Inspect the class itself for annotations
 
-            Class<?> stopClass = Throwable.class.isAssignableFrom(clazz) ? Throwable.class
-                    : Object.class;
-            try {
-                result = Introspector.getBeanInfo(clazz, stopClass,
-                        Introspector.IGNORE_ALL_BEANINFO);
-            } catch (IntrospectionException e) {
-                throw new RuntimeException("Could not get BeanInfo of class "
-                        + clazz.getName(), e);
-            }
+			Class<?> stopClass = Throwable.class.isAssignableFrom(clazz) ? Throwable.class : Object.class;
+			try {
+				result = Introspector.getBeanInfo(clazz, stopClass, Introspector.IGNORE_ALL_BEANINFO);
+			} catch (IntrospectionException e) {
+				throw new RuntimeException("Could not get BeanInfo of class " + clazz.getName(), e);
+			}
 
-            // Put the list in the cache if no one was previously present
-            BeanInfo prev = cache.putIfAbsent(clazz, result);
+			// Put the list in the cache if no one was previously present
+			BeanInfo prev = cache.putIfAbsent(clazz, result);
 
-            if (prev != null) {
-                // Reuse the previous entry
-                result = prev;
-            }
-        }
+			if (prev != null) {
+				// Reuse the previous entry
+				result = prev;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 }

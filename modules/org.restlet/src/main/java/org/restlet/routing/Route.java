@@ -42,61 +42,54 @@ import org.restlet.Restlet;
  */
 public abstract class Route extends Filter {
 
-    /** The parent router. */
-    private volatile Router router;
+	/** The parent router. */
+	private volatile Router router;
 
-    /**
-     * Constructor behaving as a simple extractor filter.
-     * 
-     * @param next
-     *            The next Restlet.
-     */
-    public Route(Restlet next) {
-        this(null, next);
-    }
+	/**
+	 * Constructor behaving as a simple extractor filter.
+	 * 
+	 * @param next The next Restlet.
+	 */
+	public Route(Restlet next) {
+		this(null, next);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param router
-     *            The parent router.
-     * @param next
-     *            The next Restlet.
-     */
-    public Route(Router router, Restlet next) {
-        super((router != null) ? router.getContext() : (next != null) ? next
-                .getContext() : null, next);
-        this.router = router;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param router The parent router.
+	 * @param next   The next Restlet.
+	 */
+	public Route(Router router, Restlet next) {
+		super((router != null) ? router.getContext() : (next != null) ? next.getContext() : null, next);
+		this.router = router;
+	}
 
-    /**
-     * Returns the parent router.
-     * 
-     * @return The parent router.
-     */
-    public Router getRouter() {
-        return this.router;
-    }
+	/**
+	 * Returns the parent router.
+	 * 
+	 * @return The parent router.
+	 */
+	public Router getRouter() {
+		return this.router;
+	}
 
-    /**
-     * Returns the score for a given call (between 0 and 1.0).
-     * 
-     * @param request
-     *            The request to score.
-     * @param response
-     *            The response to score.
-     * @return The score for a given call (between 0 and 1.0).
-     */
-    public abstract float score(Request request, Response response);
+	/**
+	 * Returns the score for a given call (between 0 and 1.0).
+	 * 
+	 * @param request  The request to score.
+	 * @param response The response to score.
+	 * @return The score for a given call (between 0 and 1.0).
+	 */
+	public abstract float score(Request request, Response response);
 
-    /**
-     * Sets the parent router.
-     * 
-     * @param router
-     *            The parent router.
-     */
-    public void setRouter(Router router) {
-        this.router = router;
-    }
+	/**
+	 * Sets the parent router.
+	 * 
+	 * @param router The parent router.
+	 */
+	public void setRouter(Router router) {
+		this.router = router;
+	}
 
 }

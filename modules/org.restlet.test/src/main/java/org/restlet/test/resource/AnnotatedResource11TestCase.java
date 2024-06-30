@@ -24,6 +24,8 @@
 
 package org.restlet.test.resource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -35,8 +37,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test annotated resource that reimplements of one the annotated method from

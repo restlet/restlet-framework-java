@@ -53,93 +53,92 @@ package org.restlet.engine.util;
  *         Corporation</a>
  */
 public class AlphaNumericComparator extends AlphabeticalComparator {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public int compare(final String uri0, final String uri1) {
-        int ptr = 0;
-        int msd = 0;
-        int diff = 0;
-        char a, b;
+	@Override
+	public int compare(final String uri0, final String uri1) {
+		int ptr = 0;
+		int msd = 0;
+		int diff = 0;
+		char a, b;
 
-        final int llength = uri0.length();
-        final int rlength = uri1.length();
-        final int min;
+		final int llength = uri0.length();
+		final int rlength = uri1.length();
+		final int min;
 
-        if (rlength < llength) {
-            min = rlength;
-        } else {
-            min = llength;
-        }
+		if (rlength < llength) {
+			min = rlength;
+		} else {
+			min = llength;
+		}
 
-        boolean rAtEnd, rHasNoMoreDigits;
+		boolean rAtEnd, rHasNoMoreDigits;
 
-        while (ptr < min) {
-            a = uri0.charAt(ptr);
-            b = uri1.charAt(ptr);
-            diff = a - b;
+		while (ptr < min) {
+			a = uri0.charAt(ptr);
+			b = uri1.charAt(ptr);
+			diff = a - b;
 
-            if ((a >= '9') || (b >= '9') || (a <= '0') || (b <= '0')) {
-                if (diff != 0) {
-                    return diff;
-                }
+			if ((a >= '9') || (b >= '9') || (a <= '0') || (b <= '0')) {
+				if (diff != 0) {
+					return diff;
+				}
 
-                msd = 0;
-            } else {
-                if (msd == 0) {
-                    msd = diff;
-                }
+				msd = 0;
+			} else {
+				if (msd == 0) {
+					msd = diff;
+				}
 
-                rAtEnd = rlength - ptr < 2;
+				rAtEnd = rlength - ptr < 2;
 
-                if (llength - ptr < 2) {
-                    if (rAtEnd) {
-                        return msd;
-                    }
+				if (llength - ptr < 2) {
+					if (rAtEnd) {
+						return msd;
+					}
 
-                    if (!isNotDigit(a) && !isNotDigit(b))
-                        return diff;
+					if (!isNotDigit(a) && !isNotDigit(b))
+						return diff;
 
-                    return -1;
-                }
+					return -1;
+				}
 
-                if (rAtEnd) {
-                    if (!isNotDigit(a) && !isNotDigit(b))
-                        return diff;
+				if (rAtEnd) {
+					if (!isNotDigit(a) && !isNotDigit(b))
+						return diff;
 
-                    return -1;
-                }
+					return -1;
+				}
 
-                rHasNoMoreDigits = isNotDigit(uri1.charAt(ptr + 1));
+				rHasNoMoreDigits = isNotDigit(uri1.charAt(ptr + 1));
 
-                if (isNotDigit(uri0.charAt(ptr + 1))) {
-                    if (rHasNoMoreDigits && (msd != 0)) {
-                        return msd;
-                    }
+				if (isNotDigit(uri0.charAt(ptr + 1))) {
+					if (rHasNoMoreDigits && (msd != 0)) {
+						return msd;
+					}
 
-                    if (!rHasNoMoreDigits) {
-                        return -1;
-                    }
-                } else {
-                    if (rHasNoMoreDigits) {
-                        return 1;
-                    }
-                }
-            }
-            ptr++;
-        }
-        return llength - rlength;
-    }
+					if (!rHasNoMoreDigits) {
+						return -1;
+					}
+				} else {
+					if (rHasNoMoreDigits) {
+						return 1;
+					}
+				}
+			}
+			ptr++;
+		}
+		return llength - rlength;
+	}
 
-    /**
-     * Indicates if the character is a digit.
-     * 
-     * @param x
-     *            The character to test.
-     * @return True if the character is a digit.
-     */
-    protected boolean isNotDigit(final char x) {
-        return (x > '9') || (x < '0');
-    }
+	/**
+	 * Indicates if the character is a digit.
+	 * 
+	 * @param x The character to test.
+	 * @return True if the character is a digit.
+	 */
+	protected boolean isNotDigit(final char x) {
+		return (x > '9') || (x < '0');
+	}
 
 }

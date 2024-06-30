@@ -42,72 +42,70 @@ import org.restlet.routing.TemplateRoute;
  */
 public class InternalRouter extends Router {
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The current context.
-     */
-    public InternalRouter(Context context) {
-        super(context);
-        // Override Router's default modes
-        setDefaultMatchingMode(Template.MODE_STARTS_WITH);
-        setRoutingMode(Router.MODE_BEST_MATCH);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context The current context.
+	 */
+	public InternalRouter(Context context) {
+		super(context);
+		// Override Router's default modes
+		setDefaultMatchingMode(Template.MODE_STARTS_WITH);
+		setRoutingMode(Router.MODE_BEST_MATCH);
+	}
 
-    @Override
-    protected TemplateRoute createRoute(String uriPattern, Restlet target,
-            int matchingMode) {
-        TemplateRoute result = new TemplateRoute(this, uriPattern, target) {
-            @Override
-            protected int beforeHandle(Request request, Response response) {
-                final int result = super.beforeHandle(request, response);
+	@Override
+	protected TemplateRoute createRoute(String uriPattern, Restlet target, int matchingMode) {
+		TemplateRoute result = new TemplateRoute(this, uriPattern, target) {
+			@Override
+			protected int beforeHandle(Request request, Response response) {
+				final int result = super.beforeHandle(request, response);
 
-                // Set the request's root reference in order to help the
-                // retrieval of the relative reference.
-                request.setRootRef(request.getResourceRef().getBaseRef());
+				// Set the request's root reference in order to help the
+				// retrieval of the relative reference.
+				request.setRootRef(request.getResourceRef().getBaseRef());
 
-                return result;
-            }
-        };
+				return result;
+			}
+		};
 
-        result.getTemplate().setMatchingMode(matchingMode);
-        result.setMatchingQuery(getDefaultMatchingQuery());
-        return result;
-    }
+		result.getTemplate().setMatchingMode(matchingMode);
+		result.setMatchingQuery(getDefaultMatchingQuery());
+		return result;
+	}
 
-    @Override
-    public TemplateRoute attach(Restlet target) {
-        if (target.getContext() == null) {
-            target.setContext(getContext().createChildContext());
-        }
+	@Override
+	public TemplateRoute attach(Restlet target) {
+		if (target.getContext() == null) {
+			target.setContext(getContext().createChildContext());
+		}
 
-        return super.attach(target);
-    }
+		return super.attach(target);
+	}
 
-    @Override
-    public TemplateRoute attach(String uriPattern, Restlet target) {
-        if (target.getContext() == null) {
-            target.setContext(getContext().createChildContext());
-        }
+	@Override
+	public TemplateRoute attach(String uriPattern, Restlet target) {
+		if (target.getContext() == null) {
+			target.setContext(getContext().createChildContext());
+		}
 
-        return super.attach(uriPattern, target);
-    }
+		return super.attach(uriPattern, target);
+	}
 
-    @Override
-    public TemplateRoute attachDefault(Restlet defaultTarget) {
-        if (defaultTarget.getContext() == null) {
-            defaultTarget.setContext(getContext().createChildContext());
-        }
+	@Override
+	public TemplateRoute attachDefault(Restlet defaultTarget) {
+		if (defaultTarget.getContext() == null) {
+			defaultTarget.setContext(getContext().createChildContext());
+		}
 
-        return super.attachDefault(defaultTarget);
-    }
+		return super.attachDefault(defaultTarget);
+	}
 
-    @Override
-    public Finder createFinder(Class<? extends ServerResource> targetClass) {
-        Finder result = super.createFinder(targetClass);
-        result.setContext(getContext().createChildContext());
-        return result;
-    }
+	@Override
+	public Finder createFinder(Class<? extends ServerResource> targetClass) {
+		Finder result = super.createFinder(targetClass);
+		result.setContext(getContext().createChildContext());
+		return result;
+	}
 
 }

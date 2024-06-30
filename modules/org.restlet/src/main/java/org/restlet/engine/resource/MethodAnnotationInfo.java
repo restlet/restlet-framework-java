@@ -52,408 +52,369 @@ import org.restlet.service.MetadataService;
  */
 public class MethodAnnotationInfo extends AnnotationInfo {
 
-    /** The input part of the annotation value. */
-    private final String input;
+	/** The input part of the annotation value. */
+	private final String input;
 
-    /** The output part of the annotation value. */
-    private final String output;
+	/** The output part of the annotation value. */
+	private final String output;
 
-    /** The optional query part of the annotation value. */
-    private final String query;
+	/** The optional query part of the annotation value. */
+	private final String query;
 
-    /** The matching Restlet method. */
-    private final Method restletMethod;
+	/** The matching Restlet method. */
+	private final Method restletMethod;
 
-    /**
-     * Constructor.
-     *
-     * @param javaClass
-     *         The class or interface that hosts the annotated Java method.
-     * @param restletMethod
-     *         The matching Restlet method.
-     * @param javaMethod
-     *         The annotated Java method.
-     * @param annotationValue
-     *         The annotation value.
-     */
-    public MethodAnnotationInfo(Class<?> javaClass, Method restletMethod,
-            java.lang.reflect.Method javaMethod, String annotationValue) {
-        super(javaClass, javaMethod, annotationValue);
-        this.restletMethod = restletMethod;
+	/**
+	 * Constructor.
+	 *
+	 * @param javaClass       The class or interface that hosts the annotated Java
+	 *                        method.
+	 * @param restletMethod   The matching Restlet method.
+	 * @param javaMethod      The annotated Java method.
+	 * @param annotationValue The annotation value.
+	 */
+	public MethodAnnotationInfo(Class<?> javaClass, Method restletMethod, java.lang.reflect.Method javaMethod,
+			String annotationValue) {
+		super(javaClass, javaMethod, annotationValue);
+		this.restletMethod = restletMethod;
 
-        // Parse the main components of the annotation value
-        if (!StringUtils.isNullOrEmpty(annotationValue)) {
-            int queryIndex = annotationValue.indexOf('?');
+		// Parse the main components of the annotation value
+		if (!StringUtils.isNullOrEmpty(annotationValue)) {
+			int queryIndex = annotationValue.indexOf('?');
 
-            if (queryIndex != -1) {
-                this.query = annotationValue.substring(queryIndex + 1);
-                annotationValue = annotationValue.substring(0, queryIndex);
-            } else {
-                this.query = null;
-            }
+			if (queryIndex != -1) {
+				this.query = annotationValue.substring(queryIndex + 1);
+				annotationValue = annotationValue.substring(0, queryIndex);
+			} else {
+				this.query = null;
+			}
 
-            int ioSeparatorIndex = annotationValue.indexOf(':');
+			int ioSeparatorIndex = annotationValue.indexOf(':');
 
-            if (ioSeparatorIndex != -1) {
-                this.input = annotationValue.substring(0, ioSeparatorIndex);
-                this.output = annotationValue.substring(ioSeparatorIndex + 1);
-            } else {
-                this.input = annotationValue;
-                this.output = annotationValue;
-            }
+			if (ioSeparatorIndex != -1) {
+				this.input = annotationValue.substring(0, ioSeparatorIndex);
+				this.output = annotationValue.substring(ioSeparatorIndex + 1);
+			} else {
+				this.input = annotationValue;
+				this.output = annotationValue;
+			}
 
-        } else {
-            this.query = null;
-            this.input = null;
-            this.output = null;
-        }
-    }
+		} else {
+			this.query = null;
+			this.input = null;
+			this.output = null;
+		}
+	}
 
-    /**
-     * Indicates if the current object is equal to the given object.
-     *
-     * @param other
-     *         The other object.
-     * @return True if the current object includes the other.
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof MethodAnnotationInfo)) {
-            return false;
-        }
+	/**
+	 * Indicates if the current object is equal to the given object.
+	 *
+	 * @param other The other object.
+	 * @return True if the current object includes the other.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		if (!(other instanceof MethodAnnotationInfo)) {
+			return false;
+		}
 
-        MethodAnnotationInfo that = (MethodAnnotationInfo) other;
+		MethodAnnotationInfo that = (MethodAnnotationInfo) other;
 
-        return super.equals(that)
-                && Objects.equals(getRestletMethod(), that.getRestletMethod());
-    }
+		return super.equals(that) && Objects.equals(getRestletMethod(), that.getRestletMethod());
+	}
 
-    /**
-     * Returns the input part of the annotation value.
-     *
-     * @return The input part of the annotation value.
-     */
-    public String getInput() {
-        return input;
-    }
+	/**
+	 * Returns the input part of the annotation value.
+	 *
+	 * @return The input part of the annotation value.
+	 */
+	public String getInput() {
+		return input;
+	}
 
-    /**
-     * Returns the generic type for the given input parameter.
-     *
-     * @param index
-     *         The input parameter index.
-     * @return The generic type.
-     */
-    private Class<?> getJavaInputType(int index) {
-        return getJavaActualType(javaMethodImpl.getParameterTypes()[index],
-                javaMethodImpl.getGenericParameterTypes()[index]);
-    }
+	/**
+	 * Returns the generic type for the given input parameter.
+	 *
+	 * @param index The input parameter index.
+	 * @return The generic type.
+	 */
+	private Class<?> getJavaInputType(int index) {
+		return getJavaActualType(javaMethodImpl.getParameterTypes()[index],
+				javaMethodImpl.getGenericParameterTypes()[index]);
+	}
 
-    /**
-     * Returns the input types of the Java method.
-     *
-     * @return The input types of the Java method.
-     */
-    public Class<?>[] getJavaInputTypes() {
-        int count = getJavaMethod().getParameterTypes().length;
-        Class<?>[] classes = new Class[count];
+	/**
+	 * Returns the input types of the Java method.
+	 *
+	 * @return The input types of the Java method.
+	 */
+	public Class<?>[] getJavaInputTypes() {
+		int count = getJavaMethod().getParameterTypes().length;
+		Class<?>[] classes = new Class[count];
 
-        for (int i = 0; i < count; i++) {
-            classes[i] = getJavaInputType(i);
-        }
+		for (int i = 0; i < count; i++) {
+			classes[i] = getJavaInputType(i);
+		}
 
-        return classes;
-    }
+		return classes;
+	}
 
-    /**
-     * Returns the output type of the Java method.
-     *
-     * @return The output type of the Java method.
-     */
-    public Class<?> getJavaOutputType() {
-        return getJavaActualType(javaMethodImpl.getReturnType(),
-                javaMethodImpl.getGenericReturnType());
-    }
+	/**
+	 * Returns the output type of the Java method.
+	 *
+	 * @return The output type of the Java method.
+	 */
+	public Class<?> getJavaOutputType() {
+		return getJavaActualType(javaMethodImpl.getReturnType(), javaMethodImpl.getGenericReturnType());
+	}
 
-    /**
-     * Returns the output part of the annotation value.
-     *
-     * @return The output part of the annotation value.
-     */
-    public String getOutput() {
-        return output;
-    }
+	/**
+	 * Returns the output part of the annotation value.
+	 *
+	 * @return The output part of the annotation value.
+	 */
+	public String getOutput() {
+		return output;
+	}
 
-    /**
-     * Returns the optional query part of the annotation value.
-     *
-     * @return The optional query part of the annotation value.
-     */
-    public String getQuery() {
-        return query;
-    }
+	/**
+	 * Returns the optional query part of the annotation value.
+	 *
+	 * @return The optional query part of the annotation value.
+	 */
+	public String getQuery() {
+		return query;
+	}
 
-    /**
-     * Returns a list of request variants based on the annotation value.
-     *
-     * @param metadataService
-     *         The metadata service to use.
-     * @return A list of request variants.
-     * @throws IOException
-     */
-    public List<Variant> getRequestVariants(MetadataService metadataService,
-            org.restlet.service.ConverterService converterService)
-            throws IOException {
-        List<Variant> result = null;
-        Class<?>[] classes = getJavaInputTypes();
+	/**
+	 * Returns a list of request variants based on the annotation value.
+	 *
+	 * @param metadataService The metadata service to use.
+	 * @return A list of request variants.
+	 * @throws IOException
+	 */
+	public List<Variant> getRequestVariants(MetadataService metadataService,
+			org.restlet.service.ConverterService converterService) throws IOException {
+		List<Variant> result = null;
+		Class<?>[] classes = getJavaInputTypes();
 
-        if (classes != null && classes.length >= 1) {
-            result = getVariants(metadataService, getInput());
+		if (classes != null && classes.length >= 1) {
+			result = getVariants(metadataService, getInput());
 
-            if (result == null) {
-                Class<?> inputClass = classes[0];
+			if (result == null) {
+				Class<?> inputClass = classes[0];
 
-                if (inputClass != null) {
-                    result = (List<Variant>) converterService.getVariants(
-                            inputClass, null);
-                }
-            }
-        }
+				if (inputClass != null) {
+					result = (List<Variant>) converterService.getVariants(inputClass, null);
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns a list of response variants based on the annotation value.
-     *
-     * @param metadataService
-     *         The metadata service to use.
-     * @param converterService
-     *         The converter service to use.
-     * @return A list of response variants.
-     * @throws IOException
-     */
-    public List<Variant> getResponseVariants(MetadataService metadataService,
-            org.restlet.service.ConverterService converterService)
-            throws IOException {
-        List<Variant> result = null;
+	/**
+	 * Returns a list of response variants based on the annotation value.
+	 *
+	 * @param metadataService  The metadata service to use.
+	 * @param converterService The converter service to use.
+	 * @return A list of response variants.
+	 * @throws IOException
+	 */
+	public List<Variant> getResponseVariants(MetadataService metadataService,
+			org.restlet.service.ConverterService converterService) throws IOException {
+		List<Variant> result = null;
 
-        if ((getJavaOutputType() != null)
-                && (getJavaOutputType() != void.class)
-                && (getJavaOutputType() != Void.class)) {
-            result = getVariants(metadataService, getOutput());
+		if ((getJavaOutputType() != null) && (getJavaOutputType() != void.class)
+				&& (getJavaOutputType() != Void.class)) {
+			result = getVariants(metadataService, getOutput());
 
-            if (result == null) {
-                result = (List<Variant>) converterService.getVariants(
-                        getJavaOutputType(), null);
-            }
-        }
+			if (result == null) {
+				result = (List<Variant>) converterService.getVariants(getJavaOutputType(), null);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the matching Restlet method.
-     *
-     * @return The matching Restlet method.
-     */
-    public Method getRestletMethod() {
-        return restletMethod;
-    }
+	/**
+	 * Returns the matching Restlet method.
+	 *
+	 * @return The matching Restlet method.
+	 */
+	public Method getRestletMethod() {
+		return restletMethod;
+	}
 
-    /**
-     * Returns the list of representation variants associated to a given
-     * annotation value, corresponding to either an input or output entity.
-     *
-     * @param metadataService
-     *         The metadata service to use.
-     * @param annotationValue
-     *         The entity annotation value.
-     * @return A list of variants.
-     */
-    private List<Variant> getVariants(MetadataService metadataService,
-            String annotationValue) {
-        List<Variant> result = null;
+	/**
+	 * Returns the list of representation variants associated to a given annotation
+	 * value, corresponding to either an input or output entity.
+	 *
+	 * @param metadataService The metadata service to use.
+	 * @param annotationValue The entity annotation value.
+	 * @return A list of variants.
+	 */
+	private List<Variant> getVariants(MetadataService metadataService, String annotationValue) {
+		List<Variant> result = null;
 
-        if (annotationValue != null) {
+		if (annotationValue != null) {
 
-            StringTokenizer stValue = new StringTokenizer(annotationValue,
-                    "\\|");
-            while (stValue.hasMoreTokens()) {
-                String variantValue = stValue.nextToken().trim();
+			StringTokenizer stValue = new StringTokenizer(annotationValue, "\\|");
+			while (stValue.hasMoreTokens()) {
+				String variantValue = stValue.nextToken().trim();
 
-                Variant variant = null;
-                List<MediaType> mediaTypes = null;
-                List<Language> languages = null;
-                CharacterSet characterSet = null;
+				Variant variant = null;
+				List<MediaType> mediaTypes = null;
+				List<Language> languages = null;
+				CharacterSet characterSet = null;
 
-                StringTokenizer stExtension = new StringTokenizer(variantValue,
-                        "\\+");
-                while (stExtension.hasMoreTokens()) {
-                    String extension = stExtension.nextToken().trim();
-                    if (extension == null) {
-                        continue;
-                    }
+				StringTokenizer stExtension = new StringTokenizer(variantValue, "\\+");
+				while (stExtension.hasMoreTokens()) {
+					String extension = stExtension.nextToken().trim();
+					if (extension == null) {
+						continue;
+					}
 
-                    List<Metadata> metadataList = metadataService
-                            .getAllMetadata(extension);
+					List<Metadata> metadataList = metadataService.getAllMetadata(extension);
 
-                    if (metadataList != null) {
-                        for (Metadata metadata : metadataList) {
-                            if (metadata instanceof MediaType) {
-                                if (mediaTypes == null) {
-                                    mediaTypes = new ArrayList<>();
-                                }
+					if (metadataList != null) {
+						for (Metadata metadata : metadataList) {
+							if (metadata instanceof MediaType) {
+								if (mediaTypes == null) {
+									mediaTypes = new ArrayList<>();
+								}
 
-                                mediaTypes.add((MediaType) metadata);
-                            } else if (metadata instanceof Language) {
-                                if (languages == null) {
-                                    languages = new ArrayList<>();
-                                }
+								mediaTypes.add((MediaType) metadata);
+							} else if (metadata instanceof Language) {
+								if (languages == null) {
+									languages = new ArrayList<>();
+								}
 
-                                languages.add((Language) metadata);
-                            } else if (metadata instanceof CharacterSet) {
-                                if (characterSet == null) {
-                                    characterSet = (CharacterSet) metadata;
-                                } else {
-                                    Context.getCurrentLogger()
-                                            .warning(
-                                                    "A representation variant can have only one character set. Please check your annotation value.");
-                                }
-                            }
-                        }
-                    }
-                }
+								languages.add((Language) metadata);
+							} else if (metadata instanceof CharacterSet) {
+								if (characterSet == null) {
+									characterSet = (CharacterSet) metadata;
+								} else {
+									Context.getCurrentLogger().warning(
+											"A representation variant can have only one character set. Please check your annotation value.");
+								}
+							}
+						}
+					}
+				}
 
-                // Now build the representation variants
-                if (mediaTypes != null) {
-                    for (MediaType mediaType : mediaTypes) {
-                        if ((result == null) || (!result.contains(mediaType))) {
-                            if (result == null) {
-                                result = new ArrayList<>();
-                            }
+				// Now build the representation variants
+				if (mediaTypes != null) {
+					for (MediaType mediaType : mediaTypes) {
+						if ((result == null) || (!result.contains(mediaType))) {
+							if (result == null) {
+								result = new ArrayList<>();
+							}
 
-                            variant = new Variant(mediaType);
+							variant = new Variant(mediaType);
 
-                            if (languages != null) {
-                                variant.getLanguages().addAll(languages);
-                            }
+							if (languages != null) {
+								variant.getLanguages().addAll(languages);
+							}
 
-                            if (characterSet != null) {
-                                variant.setCharacterSet(characterSet);
-                            }
+							if (characterSet != null) {
+								variant.setCharacterSet(characterSet);
+							}
 
-                            result.add(variant);
-                        }
-                    }
-                }
-            }
-        }
+							result.add(variant);
+						}
+					}
+				}
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(super.hashCode(), restletMethod);
-    }
+	@Override
+	public int hashCode() {
+		return SystemUtils.hashCode(super.hashCode(), restletMethod);
+	}
 
-    /**
-     * Indicates if the annotated method described is compatible with the given
-     * parameters.
-     *
-     * @param restletMethod
-     *         The Restlet method to match.
-     * @param requestEntity
-     *         Optional request entity.
-     * @param metadataService
-     *         The metadata service to use.
-     * @param converterService
-     *         The converter service to use.
-     * @return True if the annotated method is compatible.
-     * @throws IOException
-     */
-    public boolean isCompatible(Method restletMethod, Form queryParams,
-            Representation requestEntity, MetadataService metadataService,
-            org.restlet.service.ConverterService converterService)
-            throws IOException {
-        boolean result = true;
+	/**
+	 * Indicates if the annotated method described is compatible with the given
+	 * parameters.
+	 *
+	 * @param restletMethod    The Restlet method to match.
+	 * @param requestEntity    Optional request entity.
+	 * @param metadataService  The metadata service to use.
+	 * @param converterService The converter service to use.
+	 * @return True if the annotated method is compatible.
+	 * @throws IOException
+	 */
+	public boolean isCompatible(Method restletMethod, Form queryParams, Representation requestEntity,
+			MetadataService metadataService, org.restlet.service.ConverterService converterService) throws IOException {
+		boolean result = true;
 
-        // Verify query parameters
-        if (getQuery() != null) {
-            Form requiredParams = new Form(getQuery());
+		// Verify query parameters
+		if (getQuery() != null) {
+			Form requiredParams = new Form(getQuery());
 
-            for (Iterator<Parameter> iter = requiredParams.iterator(); iter
-                    .hasNext() && result; ) {
-                result = queryParams.contains(iter.next());
-            }
-        }
+			for (Iterator<Parameter> iter = requiredParams.iterator(); iter.hasNext() && result;) {
+				result = queryParams.contains(iter.next());
+			}
+		}
 
-        // Verify HTTP method
-        if (result) {
-            result = getRestletMethod().equals(restletMethod);
-        }
+		// Verify HTTP method
+		if (result) {
+			result = getRestletMethod().equals(restletMethod);
+		}
 
-        // Verify request entity
-        if (result) {
-            result = isCompatibleRequestEntity(requestEntity, metadataService,
-                    converterService);
+		// Verify request entity
+		if (result) {
+			result = isCompatibleRequestEntity(requestEntity, metadataService, converterService);
 
-        }
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Indicates if the given request entity is compatible with the annotated
-     * method described.
-     *
-     * @param requestEntity
-     *         Optional request entity.
-     * @param metadataService
-     *         The metadata service to use.
-     * @param converterService
-     *         The converter service to use.
-     * @return True if the given request entity is compatible with the annotated
-     * method described.
-     * @throws IOException
-     */
-    public boolean isCompatibleRequestEntity(Representation requestEntity,
-            MetadataService metadataService,
-            org.restlet.service.ConverterService converterService)
-            throws IOException {
-        boolean result = true;
+	/**
+	 * Indicates if the given request entity is compatible with the annotated method
+	 * described.
+	 *
+	 * @param requestEntity    Optional request entity.
+	 * @param metadataService  The metadata service to use.
+	 * @param converterService The converter service to use.
+	 * @return True if the given request entity is compatible with the annotated
+	 *         method described.
+	 * @throws IOException
+	 */
+	public boolean isCompatibleRequestEntity(Representation requestEntity, MetadataService metadataService,
+			org.restlet.service.ConverterService converterService) throws IOException {
+		boolean result = true;
 
-        if ((requestEntity != null) && requestEntity.isAvailable()) {
-            List<Variant> requestVariants = getRequestVariants(metadataService,
-                    converterService);
+		if ((requestEntity != null) && requestEntity.isAvailable()) {
+			List<Variant> requestVariants = getRequestVariants(metadataService, converterService);
 
-            if ((requestVariants != null) && !requestVariants.isEmpty()) {
-                // Check that the compatibility
-                result = false;
+			if ((requestVariants != null) && !requestVariants.isEmpty()) {
+				// Check that the compatibility
+				result = false;
 
-                for (int i = 0; (!result) && (i < requestVariants.size()); i++) {
-                    result = (requestVariants.get(i)
-                            .isCompatible(requestEntity));
-                }
-            } else {
-                result = false;
-            }
-        }
+				for (int i = 0; (!result) && (i < requestVariants.size()); i++) {
+					result = (requestVariants.get(i).isCompatible(requestEntity));
+				}
+			} else {
+				result = false;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public String toString() {
-        return "MethodAnnotationInfo [javaMethod: " + javaMethod
-                + ", javaClass: " + getJavaClass() + ", restletMethod: "
-                + restletMethod + ", input: " + getInput() + ", value: "
-                + getAnnotationValue() + ", output: " + getOutput()
-                + ", query: " + getQuery() + "]";
-    }
+	@Override
+	public String toString() {
+		return "MethodAnnotationInfo [javaMethod: " + javaMethod + ", javaClass: " + getJavaClass()
+				+ ", restletMethod: " + restletMethod + ", input: " + getInput() + ", value: " + getAnnotationValue()
+				+ ", output: " + getOutput() + ", query: " + getQuery() + "]";
+	}
 
 }

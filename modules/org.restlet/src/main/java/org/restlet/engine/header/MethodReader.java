@@ -37,31 +37,28 @@ import org.restlet.data.Method;
  */
 public class MethodReader extends HeaderReader<Method> {
 
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header, Collection<Method> collection) {
-        new MethodReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<Method> collection) {
+		new MethodReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public MethodReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public MethodReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Method readValue() throws IOException {
-        return Method.valueOf(readToken());
-    }
+	@Override
+	public Method readValue() throws IOException {
+		return Method.valueOf(readToken());
+	}
 
 }

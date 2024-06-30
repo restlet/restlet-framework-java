@@ -35,19 +35,16 @@ import org.restlet.Response;
  */
 public class ConfidentialAuthorizer extends Authorizer {
 
-    /**
-     * Authorizes the request only if its method is one of the authorized
-     * methods.
-     * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
-     * @return True if the authorization succeeded.
-     */
-    @Override
-    public boolean authorize(Request request, Response response) {
-        return request.isConfidential();
-    }
+	/**
+	 * Authorizes the request only if its method is one of the authorized methods.
+	 * 
+	 * @param request  The request sent.
+	 * @param response The response to update.
+	 * @return True if the authorization succeeded.
+	 */
+	@Override
+	public boolean authorize(Request request, Response response) {
+		return request.isConfidential();
+	}
 
 }

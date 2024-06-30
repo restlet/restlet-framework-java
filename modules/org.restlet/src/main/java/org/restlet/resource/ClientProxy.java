@@ -34,11 +34,11 @@ package org.restlet.resource;
  */
 public interface ClientProxy {
 
-    /**
-     * Returns the wrapped client resource.
-     * 
-     * @return The wrapped client resource.
-     */
-    ClientResource getClientResource();
+	/**
+	 * Returns the wrapped client resource.
+	 * 
+	 * @return The wrapped client resource.
+	 */
+	ClientResource getClientResource();
 
 }

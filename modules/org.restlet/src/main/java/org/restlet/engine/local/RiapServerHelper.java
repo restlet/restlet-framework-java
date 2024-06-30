@@ -36,26 +36,25 @@ import org.restlet.engine.connector.ServerHelper;
  */
 public class RiapServerHelper extends ServerHelper {
 
-    /** The unique registered helper. */
-    public static RiapServerHelper instance = null;
+	/** The unique registered helper. */
+	public static RiapServerHelper instance = null;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public RiapServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.RIAP);
+	/**
+	 * Constructor.
+	 * 
+	 * @param server The server to help.
+	 */
+	public RiapServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.RIAP);
 
-        // Lazy initialization with double-check.
-        if (server != null && RiapServerHelper.instance == null) {
-            synchronized (this.getClass()) {
-                if (RiapServerHelper.instance == null) {
-                    RiapServerHelper.instance = this;
-                }
-            }
-        }
-    }
+		// Lazy initialization with double-check.
+		if (server != null && RiapServerHelper.instance == null) {
+			synchronized (this.getClass()) {
+				if (RiapServerHelper.instance == null) {
+					RiapServerHelper.instance = this;
+				}
+			}
+		}
+	}
 }

@@ -44,23 +44,21 @@ import org.restlet.engine.io.IoUtils;
  * @author Jerome Louvel
  */
 public abstract class WritableRepresentation extends ChannelRepresentation {
-    /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The representation's media type.
-     */
-    public WritableRepresentation(MediaType mediaType) {
-        super(mediaType);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mediaType The representation's media type.
+	 */
+	public WritableRepresentation(MediaType mediaType) {
+		super(mediaType);
+	}
 
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        return IoUtils.getChannel(this);
-    }
+	@Override
+	public ReadableByteChannel getChannel() throws IOException {
+		return IoUtils.getChannel(this);
+	}
 
-    @Override
-    public abstract void write(WritableByteChannel writableChannel)
-            throws IOException;
+	@Override
+	public abstract void write(WritableByteChannel writableChannel) throws IOException;
 
 }

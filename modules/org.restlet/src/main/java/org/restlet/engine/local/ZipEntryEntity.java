@@ -41,118 +41,105 @@ import org.restlet.service.MetadataService;
  */
 public class ZipEntryEntity extends Entity {
 
-    /** The Zip entry. */
-    protected final ZipEntry entry;
+	/** The Zip entry. */
+	protected final ZipEntry entry;
 
-    /** The Zip file. */
-    protected final ZipFile zipFile;
+	/** The Zip file. */
+	protected final ZipFile zipFile;
 
-    /**
-     * Constructor.
-     * 
-     * @param zipFile
-     *            The Zip file.
-     * @param entryName
-     *            The Zip entry name.
-     * @param metadataService
-     *            The metadata service to use.
-     */
-    public ZipEntryEntity(ZipFile zipFile, String entryName,
-            MetadataService metadataService) {
-        super(metadataService);
-        this.zipFile = zipFile;
-        ZipEntry entry = zipFile.getEntry(entryName);
-        if (entry == null)
-            this.entry = new ZipEntry(entryName);
-        else {
-            // Checking we don't have a directory
-            ZipEntry entryDir = zipFile.getEntry(entryName + "/");
-            if (entryDir != null)
-                this.entry = entryDir;
-            else
-                this.entry = entry;
-        }
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param zipFile         The Zip file.
+	 * @param entryName       The Zip entry name.
+	 * @param metadataService The metadata service to use.
+	 */
+	public ZipEntryEntity(ZipFile zipFile, String entryName, MetadataService metadataService) {
+		super(metadataService);
+		this.zipFile = zipFile;
+		ZipEntry entry = zipFile.getEntry(entryName);
+		if (entry == null)
+			this.entry = new ZipEntry(entryName);
+		else {
+			// Checking we don't have a directory
+			ZipEntry entryDir = zipFile.getEntry(entryName + "/");
+			if (entryDir != null)
+				this.entry = entryDir;
+			else
+				this.entry = entry;
+		}
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param zipFile
-     *            The Zip file.
-     * @param entry
-     *            The Zip entry.
-     * @param metadataService
-     *            The metadata service to use.
-     */
-    public ZipEntryEntity(ZipFile zipFile, ZipEntry entry,
-            MetadataService metadataService) {
-        super(metadataService);
-        this.zipFile = zipFile;
-        this.entry = entry;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param zipFile         The Zip file.
+	 * @param entry           The Zip entry.
+	 * @param metadataService The metadata service to use.
+	 */
+	public ZipEntryEntity(ZipFile zipFile, ZipEntry entry, MetadataService metadataService) {
+		super(metadataService);
+		this.zipFile = zipFile;
+		this.entry = entry;
+	}
 
-    @Override
-    public boolean exists() {
-        if ("".equals(getName()))
-            return true;
-        // ZipEntry re = zipFile.getEntry(entry.getName());
-        // return re != null;
-        return entry.getSize() != -1;
-    }
+	@Override
+	public boolean exists() {
+		if ("".equals(getName()))
+			return true;
+		// ZipEntry re = zipFile.getEntry(entry.getName());
+		// return re != null;
+		return entry.getSize() != -1;
+	}
 
-    @Override
-    public List<Entity> getChildren() {
-        List<Entity> result = null;
+	@Override
+	public List<Entity> getChildren() {
+		List<Entity> result = null;
 
-        if (isDirectory()) {
-            result = new ArrayList<Entity>();
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            String n = entry.getName();
-            while (entries.hasMoreElements()) {
-                ZipEntry e = entries.nextElement();
-                if (e.getName().startsWith(n)
-                        && e.getName().length() != n.length())
-                    result.add(new ZipEntryEntity(zipFile, e,
-                            getMetadataService()));
-            }
-        }
+		if (isDirectory()) {
+			result = new ArrayList<Entity>();
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			String n = entry.getName();
+			while (entries.hasMoreElements()) {
+				ZipEntry e = entries.nextElement();
+				if (e.getName().startsWith(n) && e.getName().length() != n.length())
+					result.add(new ZipEntryEntity(zipFile, e, getMetadataService()));
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public String getName() {
-        return entry.getName();
-    }
+	@Override
+	public String getName() {
+		return entry.getName();
+	}
 
-    @Override
-    public Entity getParent() {
-        if ("".equals(entry.getName()))
-            return null;
+	@Override
+	public Entity getParent() {
+		if ("".equals(entry.getName()))
+			return null;
 
-        String n = entry.getName();
-        String pn = n.substring(0, n.lastIndexOf('/') + 1);
-        return new ZipEntryEntity(zipFile, zipFile.getEntry(pn),
-                getMetadataService());
-    }
+		String n = entry.getName();
+		String pn = n.substring(0, n.lastIndexOf('/') + 1);
+		return new ZipEntryEntity(zipFile, zipFile.getEntry(pn), getMetadataService());
+	}
 
-    @Override
-    public Representation getRepresentation(MediaType defaultMediaType,
-            int timeToLive) {
-        return new ZipEntryRepresentation(defaultMediaType, zipFile, entry,
-                timeToLive);
-    }
+	@Override
+	public Representation getRepresentation(MediaType defaultMediaType, int timeToLive) {
+		return new ZipEntryRepresentation(defaultMediaType, zipFile, entry, timeToLive);
+	}
 
-    @Override
-    public boolean isDirectory() {
-        if ("".equals(entry.getName()))
-            return true;
-        return entry.isDirectory();
-    }
+	@Override
+	public boolean isDirectory() {
+		if ("".equals(entry.getName()))
+			return true;
+		return entry.isDirectory();
+	}
 
-    @Override
-    public boolean isNormal() {
-        return !entry.isDirectory();
-    }
+	@Override
+	public boolean isNormal() {
+		return !entry.isDirectory();
+	}
 
 }

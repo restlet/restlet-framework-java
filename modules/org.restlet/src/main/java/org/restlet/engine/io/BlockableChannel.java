@@ -33,11 +33,11 @@ import java.nio.channels.Channel;
  */
 public interface BlockableChannel extends Channel {
 
-    /**
-     * Indicates if the channel is likely to block upon IO operations.
-     * 
-     * @return True if the channel is likely to block upon IO operations.
-     */
-    boolean isBlocking();
+	/**
+	 * Indicates if the channel is likely to block upon IO operations.
+	 * 
+	 * @return True if the channel is likely to block upon IO operations.
+	 */
+	boolean isBlocking();
 
 }

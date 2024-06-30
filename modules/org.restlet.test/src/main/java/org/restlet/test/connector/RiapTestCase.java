@@ -24,6 +24,13 @@
 
 package org.restlet.test.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.Serializable;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -38,13 +45,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
-
-import java.io.Serializable;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.

@@ -36,57 +36,55 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MapVerifier extends LocalVerifier {
 
-    /** The map of local secrets. */
-    private final ConcurrentMap<String, char[]> localSecrets;
+	/** The map of local secrets. */
+	private final ConcurrentMap<String, char[]> localSecrets;
 
-    /**
-     * Constructor.
-     */
-    public MapVerifier() {
-        this(new ConcurrentHashMap<String, char[]>());
-    }
+	/**
+	 * Constructor.
+	 */
+	public MapVerifier() {
+		this(new ConcurrentHashMap<String, char[]>());
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param localSecrets
-     *            The map of local secrets.
-     */
-    public MapVerifier(ConcurrentMap<String, char[]> localSecrets) {
-        this.localSecrets = localSecrets;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param localSecrets The map of local secrets.
+	 */
+	public MapVerifier(ConcurrentMap<String, char[]> localSecrets) {
+		this.localSecrets = localSecrets;
+	}
 
-    @Override
-    public char[] getLocalSecret(String identifier) {
-        return (identifier == null) ? null : getLocalSecrets().get(identifier);
-    }
+	@Override
+	public char[] getLocalSecret(String identifier) {
+		return (identifier == null) ? null : getLocalSecrets().get(identifier);
+	}
 
-    /**
-     * Returns the map of local secrets.
-     * 
-     * @return The map of local secrets.
-     */
-    public ConcurrentMap<String, char[]> getLocalSecrets() {
-        return localSecrets;
-    }
+	/**
+	 * Returns the map of local secrets.
+	 * 
+	 * @return The map of local secrets.
+	 */
+	public ConcurrentMap<String, char[]> getLocalSecrets() {
+		return localSecrets;
+	}
 
-    /**
-     * Sets the modifiable map of local secrets. This method clears the current
-     * map and puts all entries in the parameter map.
-     * 
-     * @param localSecrets
-     *            A map of local secrets.
-     */
-    public void setLocalSecrets(Map<String, char[]> localSecrets) {
-        synchronized (getLocalSecrets()) {
-            if (localSecrets != getLocalSecrets()) {
-                getLocalSecrets().clear();
+	/**
+	 * Sets the modifiable map of local secrets. This method clears the current map
+	 * and puts all entries in the parameter map.
+	 * 
+	 * @param localSecrets A map of local secrets.
+	 */
+	public void setLocalSecrets(Map<String, char[]> localSecrets) {
+		synchronized (getLocalSecrets()) {
+			if (localSecrets != getLocalSecrets()) {
+				getLocalSecrets().clear();
 
-                if (localSecrets != null) {
-                    getLocalSecrets().putAll(localSecrets);
-                }
-            }
-        }
-    }
+				if (localSecrets != null) {
+					getLocalSecrets().putAll(localSecrets);
+				}
+			}
+		}
+	}
 
 }

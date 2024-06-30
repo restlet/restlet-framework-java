@@ -36,17 +36,16 @@ import java.io.OutputStream;
  */
 public class UnclosableOutputStream extends FilterOutputStream {
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The decorated source stream.
-     */
-    public UnclosableOutputStream(OutputStream source) {
-        super(source);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param source The decorated source stream.
+	 */
+	public UnclosableOutputStream(OutputStream source) {
+		super(source);
+	}
 
-    @Override
-    public void close() throws IOException {
-    }
+	@Override
+	public void close() throws IOException {
+	}
 }

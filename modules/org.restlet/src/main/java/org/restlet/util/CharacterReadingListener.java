@@ -41,49 +41,43 @@ import org.restlet.representation.Representation;
  */
 public abstract class CharacterReadingListener extends ByteReadingListener {
 
-    /** The character set of the associated representation. */
-    private final CharacterSet characterSet;
+	/** The character set of the associated representation. */
+	private final CharacterSet characterSet;
 
-    /**
-     * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
-     * length.
-     * 
-     * @param source
-     *            The source representation.
-     * @throws IOException
-     */
-    public CharacterReadingListener(Representation source) throws IOException {
-        this(source, IoUtils.BUFFER_SIZE);
-    }
+	/**
+	 * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
+	 * length.
+	 * 
+	 * @param source The source representation.
+	 * @throws IOException
+	 */
+	public CharacterReadingListener(Representation source) throws IOException {
+		this(source, IoUtils.BUFFER_SIZE);
+	}
 
-    /**
-     * Constructor. Uses a byte buffer of a given size.
-     * 
-     * @param source
-     *            The source representation.
-     * @param bufferSize
-     *            The byte buffer to use.
-     * @throws IOException
-     */
-    public CharacterReadingListener(Representation source, int bufferSize)
-            throws IOException {
-        super(source, bufferSize);
-        this.characterSet = source.getCharacterSet();
-    }
+	/**
+	 * Constructor. Uses a byte buffer of a given size.
+	 * 
+	 * @param source     The source representation.
+	 * @param bufferSize The byte buffer to use.
+	 * @throws IOException
+	 */
+	public CharacterReadingListener(Representation source, int bufferSize) throws IOException {
+		super(source, bufferSize);
+		this.characterSet = source.getCharacterSet();
+	}
 
-    @Override
-    protected final void onContent(InputStream inputStream) {
-        InputStreamReader isr = new InputStreamReader(inputStream,
-                this.characterSet.toCharset());
-        onContent(isr);
-    }
+	@Override
+	protected final void onContent(InputStream inputStream) {
+		InputStreamReader isr = new InputStreamReader(inputStream, this.characterSet.toCharset());
+		onContent(isr);
+	}
 
-    /**
-     * Callback invoked when new content is available.
-     * 
-     * @param reader
-     *            The reader allowing to retrieve the new content.
-     */
-    protected abstract void onContent(Reader reader);
+	/**
+	 * Callback invoked when new content is available.
+	 * 
+	 * @param reader The reader allowing to retrieve the new content.
+	 */
+	protected abstract void onContent(Reader reader);
 
 }

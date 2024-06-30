@@ -24,18 +24,18 @@
 
 package org.restlet.test.data;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.data.Tag;
-import org.restlet.engine.header.TagReader;
-import org.restlet.test.RestletTestCase;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.restlet.data.Tag;
+import org.restlet.engine.header.TagReader;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test {@link org.restlet.data.Tag}.

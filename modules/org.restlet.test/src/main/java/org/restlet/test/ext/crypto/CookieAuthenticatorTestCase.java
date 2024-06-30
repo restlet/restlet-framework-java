@@ -24,6 +24,10 @@
 
 package org.restlet.test.ext.crypto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.testng.AssertJUnit.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -39,10 +43,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.MapVerifier;
 import org.restlet.test.RestletTestCase;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.testng.AssertJUnit.assertNotNull;
 
 /**
  * Unit test for the {@link CookieAuthenticator} class.

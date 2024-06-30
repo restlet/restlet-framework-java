@@ -53,217 +53,205 @@ import org.restlet.util.WrapperRepresentation;
  * @author Jerome Louvel
  */
 public class DecodeRepresentation extends WrapperRepresentation {
-    /**
-     * Returns the list of supported encodings.
-     * 
-     * @return The list of supported encodings.
-     */
-    public static List<Encoding> getSupportedEncodings() {
-        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.DEFLATE_NOWRAP, Encoding.ZIP, Encoding.IDENTITY);
-    }
+	/**
+	 * Returns the list of supported encodings.
+	 * 
+	 * @return The list of supported encodings.
+	 */
+	public static List<Encoding> getSupportedEncodings() {
+		return Arrays.<Encoding>asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.DEFLATE_NOWRAP, Encoding.ZIP,
+				Encoding.IDENTITY);
+	}
 
-    /** Indicates if the decoding can happen. */
-    private volatile boolean decoding;
+	/** Indicates if the decoding can happen. */
+	private volatile boolean decoding;
 
-    /** List of encodings still applied to the decodeRepresentation */
-    private final List<Encoding> wrappedEncodings;
+	/** List of encodings still applied to the decodeRepresentation */
+	private final List<Encoding> wrappedEncodings;
 
-    /**
-     * Constructor.
-     * 
-     * @param wrappedRepresentation
-     *            The wrapped representation.
-     */
-    public DecodeRepresentation(Representation wrappedRepresentation) {
-        super(wrappedRepresentation);
-        this.decoding = getSupportedEncodings().containsAll(
-                wrappedRepresentation.getEncodings());
-        this.wrappedEncodings = new CopyOnWriteArrayList<Encoding>(
-                wrappedRepresentation.getEncodings());
-    }
-    
-    @Override
-    public long getAvailableSize() {
-        return IoUtils.getAvailableSize(this);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param wrappedRepresentation The wrapped representation.
+	 */
+	public DecodeRepresentation(Representation wrappedRepresentation) {
+		super(wrappedRepresentation);
+		this.decoding = getSupportedEncodings().containsAll(wrappedRepresentation.getEncodings());
+		this.wrappedEncodings = new CopyOnWriteArrayList<Encoding>(wrappedRepresentation.getEncodings());
+	}
 
-    /**
-     * Returns a readable byte channel. If it is supported by a file a read-only
-     * instance of FileChannel is returned.
-     * 
-     * @return A readable byte channel.
-     */
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        if (isDecoding()) {
-            return IoUtils.getChannel(getStream());
-        } else {
-            return getWrappedRepresentation().getChannel();
-        }
-    }
+	@Override
+	public long getAvailableSize() {
+		return IoUtils.getAvailableSize(this);
+	}
 
-    /**
-     * Returns a decoded stream for a given encoding and coded stream.
-     * 
-     * @param encoding
-     *            The encoding to use.
-     * @param encodedStream
-     *            The encoded stream.
-     * @return The decoded stream.
-     * @throws IOException
-     */
-    private InputStream getDecodedStream(Encoding encoding,
-            InputStream encodedStream) throws IOException {
-        InputStream result = null;
+	/**
+	 * Returns a readable byte channel. If it is supported by a file a read-only
+	 * instance of FileChannel is returned.
+	 * 
+	 * @return A readable byte channel.
+	 */
+	@Override
+	public ReadableByteChannel getChannel() throws IOException {
+		if (isDecoding()) {
+			return IoUtils.getChannel(getStream());
+		} else {
+			return getWrappedRepresentation().getChannel();
+		}
+	}
 
-        if (encodedStream != null) {
-            if (encoding.equals(Encoding.GZIP)) {
-                result = new GZIPInputStream(encodedStream);
-            } else if (encoding.equals(Encoding.DEFLATE)) {
-                result = new InflaterInputStream(encodedStream);
-            } else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
-                result = new InflaterInputStream(encodedStream, new Inflater(
-                        true));
-            } else if (encoding.equals(Encoding.ZIP)) {
-                @SuppressWarnings("resource")
-                final ZipInputStream stream = new ZipInputStream(encodedStream);
-                if (stream.getNextEntry() != null) {
-                    result = stream;
-                }
-            } else if (encoding.equals(Encoding.IDENTITY)) {
-                throw new IOException(
-                        "Decoder unecessary for identity decoding");
-            }
-        }
+	/**
+	 * Returns a decoded stream for a given encoding and coded stream.
+	 * 
+	 * @param encoding      The encoding to use.
+	 * @param encodedStream The encoded stream.
+	 * @return The decoded stream.
+	 * @throws IOException
+	 */
+	private InputStream getDecodedStream(Encoding encoding, InputStream encodedStream) throws IOException {
+		InputStream result = null;
 
-        return result;
-    }
+		if (encodedStream != null) {
+			if (encoding.equals(Encoding.GZIP)) {
+				result = new GZIPInputStream(encodedStream);
+			} else if (encoding.equals(Encoding.DEFLATE)) {
+				result = new InflaterInputStream(encodedStream);
+			} else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
+				result = new InflaterInputStream(encodedStream, new Inflater(true));
+			} else if (encoding.equals(Encoding.ZIP)) {
+				@SuppressWarnings("resource")
+				final ZipInputStream stream = new ZipInputStream(encodedStream);
+				if (stream.getNextEntry() != null) {
+					result = stream;
+				}
+			} else if (encoding.equals(Encoding.IDENTITY)) {
+				throw new IOException("Decoder unecessary for identity decoding");
+			}
+		}
 
-    /**
-     * Returns the encodings applied to the entity.
-     * 
-     * @return The encodings applied to the entity.
-     */
-    @Override
-    public List<Encoding> getEncodings() {
-        if (isDecoding()) {
-            return new ArrayList<Encoding>();
-        } else {
-            return this.wrappedEncodings;
-        }
-    }
+		return result;
+	}
 
-    @Override
-    public Reader getReader() throws IOException {
-        if (isDecoding()) {
-            return IoUtils.getReader(getStream(), getCharacterSet());
-        } else {
-            return getWrappedRepresentation().getReader();
-        }
-    }
+	/**
+	 * Returns the encodings applied to the entity.
+	 * 
+	 * @return The encodings applied to the entity.
+	 */
+	@Override
+	public List<Encoding> getEncodings() {
+		if (isDecoding()) {
+			return new ArrayList<Encoding>();
+		} else {
+			return this.wrappedEncodings;
+		}
+	}
 
-    /**
-     * Returns the size in bytes of the decoded representation if known,
-     * UNKNOWN_SIZE (-1) otherwise.
-     * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     */
-    @Override
-    public long getSize() {
-        long result = UNKNOWN_SIZE;
+	@Override
+	public Reader getReader() throws IOException {
+		if (isDecoding()) {
+			return IoUtils.getReader(getStream(), getCharacterSet());
+		} else {
+			return getWrappedRepresentation().getReader();
+		}
+	}
 
-        if (isDecoding()) {
-            boolean identity = true;
-            for (final Iterator<Encoding> iter = this.wrappedEncodings.iterator(); identity
-                    && iter.hasNext();) {
-                identity = (iter.next().equals(Encoding.IDENTITY));
-            }
-            if (identity) {
-                result = getWrappedRepresentation().getSize();
-            }
-        } else {
-            result = getWrappedRepresentation().getSize();
-        }
+	/**
+	 * Returns the size in bytes of the decoded representation if known,
+	 * UNKNOWN_SIZE (-1) otherwise.
+	 * 
+	 * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+	 */
+	@Override
+	public long getSize() {
+		long result = UNKNOWN_SIZE;
 
-        return result;
-    }
+		if (isDecoding()) {
+			boolean identity = true;
+			for (final Iterator<Encoding> iter = this.wrappedEncodings.iterator(); identity && iter.hasNext();) {
+				identity = (iter.next().equals(Encoding.IDENTITY));
+			}
+			if (identity) {
+				result = getWrappedRepresentation().getSize();
+			}
+		} else {
+			result = getWrappedRepresentation().getSize();
+		}
 
-    /**
-     * Returns a stream with the representation's content.
-     * 
-     * @return A stream with the representation's content.
-     */
-    @Override
-    public InputStream getStream() throws IOException {
-        InputStream result = getWrappedRepresentation().getStream();
+		return result;
+	}
 
-        if (isDecoding()) {
-            for (int i = this.wrappedEncodings.size() - 1; i >= 0; i--) {
-                if (!this.wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
-                    result = getDecodedStream(this.wrappedEncodings.get(i),
-                            result);
-                }
-            }
-        }
+	/**
+	 * Returns a stream with the representation's content.
+	 * 
+	 * @return A stream with the representation's content.
+	 */
+	@Override
+	public InputStream getStream() throws IOException {
+		InputStream result = getWrappedRepresentation().getStream();
 
-        return result;
-    }
+		if (isDecoding()) {
+			for (int i = this.wrappedEncodings.size() - 1; i >= 0; i--) {
+				if (!this.wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
+					result = getDecodedStream(this.wrappedEncodings.get(i), result);
+				}
+			}
+		}
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     */
-    @Override
-    public String getText() throws IOException {
-        if (isDecoding()) {
-            return IoUtils.toString(getStream(), getCharacterSet());
-        } else {
-            return getWrappedRepresentation().getText();
-        }
-    }
+		return result;
+	}
 
-    /**
-     * Indicates if the decoding can happen.
-     * 
-     * @return True if the decoding can happen.
-     */
-    public boolean isDecoding() {
-        return this.decoding;
-    }
+	/**
+	 * Converts the representation to a string value. Be careful when using this
+	 * method as the conversion of large content to a string fully stored in memory
+	 * can result in OutOfMemoryErrors being thrown.
+	 * 
+	 * @return The representation as a string value.
+	 */
+	@Override
+	public String getText() throws IOException {
+		if (isDecoding()) {
+			return IoUtils.toString(getStream(), getCharacterSet());
+		} else {
+			return getWrappedRepresentation().getText();
+		}
+	}
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (isDecoding()) {
-            IoUtils.copy(getStream(), outputStream);
-        } else {
-            getWrappedRepresentation().write(outputStream);
-        }
-    }
+	/**
+	 * Indicates if the decoding can happen.
+	 * 
+	 * @return True if the decoding can happen.
+	 */
+	public boolean isDecoding() {
+		return this.decoding;
+	}
 
-    /**
-     * Writes the representation to a byte channel.
-     * 
-     * @param writableChannel
-     *            A writable byte channel.
-     */
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        if (isDecoding()) {
-            OutputStream os = IoUtils.getStream(writableChannel);
-            write(os);
-            os.flush();
-        } else {
-            getWrappedRepresentation().write(writableChannel);
-        }
-    }
+	/**
+	 * Writes the representation to a byte stream.
+	 * 
+	 * @param outputStream The output stream.
+	 */
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		if (isDecoding()) {
+			IoUtils.copy(getStream(), outputStream);
+		} else {
+			getWrappedRepresentation().write(outputStream);
+		}
+	}
+
+	/**
+	 * Writes the representation to a byte channel.
+	 * 
+	 * @param writableChannel A writable byte channel.
+	 */
+	@Override
+	public void write(WritableByteChannel writableChannel) throws IOException {
+		if (isDecoding()) {
+			OutputStream os = IoUtils.getStream(writableChannel);
+			write(os);
+			os.flush();
+		} else {
+			getWrappedRepresentation().write(writableChannel);
+		}
+	}
 }

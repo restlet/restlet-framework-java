@@ -33,37 +33,30 @@ import java.util.List;
  * @author Rob Heittman
  */
 public class ListUtils {
-    /**
-     * Unlike List.subList(), which returns a live view of a set of List
-     * elements, this method returns a new copy of the list. List.subList() is
-     * not available in GWT 1.5 and was removed on purpose.
-     * 
-     * @param list
-     *            The source List
-     * @param fromIndex
-     *            Starting index in the source List
-     * @param toIndex
-     *            Ending index in the source List
-     * @throws IndexOutOfBoundsException
-     *             Call exceeds the bounds of the source List
-     * @throws IllegalArgumentException
-     *             fromIndex and toIndex are not in sequence
-     * @return a copy of the selected range
-     */
-    public static <T> List<T> copySubList(List<T> list, int fromIndex,
-            int toIndex) {
-        if (fromIndex < 0)
-            throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
-        if (toIndex > list.size())
-            throw new IndexOutOfBoundsException("toIndex = " + toIndex);
-        if (fromIndex > toIndex)
-            throw new IllegalArgumentException("fromIndex(" + fromIndex
-                    + ") > toIndex(" + toIndex + ")");
-        ArrayList<T> subList = new ArrayList<T>();
-        for (int i = fromIndex; i <= toIndex; i++) {
-            subList.add(list.get(i));
-        }
-        return subList;
-    }
+	/**
+	 * Unlike List.subList(), which returns a live view of a set of List elements,
+	 * this method returns a new copy of the list. List.subList() is not available
+	 * in GWT 1.5 and was removed on purpose.
+	 * 
+	 * @param list      The source List
+	 * @param fromIndex Starting index in the source List
+	 * @param toIndex   Ending index in the source List
+	 * @throws IndexOutOfBoundsException Call exceeds the bounds of the source List
+	 * @throws IllegalArgumentException  fromIndex and toIndex are not in sequence
+	 * @return a copy of the selected range
+	 */
+	public static <T> List<T> copySubList(List<T> list, int fromIndex, int toIndex) {
+		if (fromIndex < 0)
+			throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
+		if (toIndex > list.size())
+			throw new IndexOutOfBoundsException("toIndex = " + toIndex);
+		if (fromIndex > toIndex)
+			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+		ArrayList<T> subList = new ArrayList<T>();
+		for (int i = fromIndex; i <= toIndex; i++) {
+			subList.add(list.get(i));
+		}
+		return subList;
+	}
 
 }

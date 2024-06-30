@@ -36,60 +36,51 @@ import org.restlet.data.Header;
  * @author Jerome Louvel
  */
 public class DimensionReader extends HeaderReader<Dimension> {
-    /**
-     * Adds values to the given collection.
-     * 
-     * @param header
-     *            The header to read.
-     * @param collection
-     *            The collection to update.
-     */
-    public static void addValues(Header header, Collection<Dimension> collection) {
-        new DimensionReader(header.getValue()).addValues(collection);
-    }
+	/**
+	 * Adds values to the given collection.
+	 * 
+	 * @param header     The header to read.
+	 * @param collection The collection to update.
+	 */
+	public static void addValues(Header header, Collection<Dimension> collection) {
+		new DimensionReader(header.getValue()).addValues(collection);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param header
-     *            The header to read.
-     */
-    public DimensionReader(String header) {
-        super(header);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param header The header to read.
+	 */
+	public DimensionReader(String header) {
+		super(header);
+	}
 
-    @Override
-    public Dimension readValue() throws IOException {
-        Dimension result = null;
-        String value = readRawValue();
+	@Override
+	public Dimension readValue() throws IOException {
+		Dimension result = null;
+		String value = readRawValue();
 
-        if (value != null) {
-            if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
-                result = Dimension.MEDIA_TYPE;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
-                result = Dimension.CHARACTER_SET;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
-                result = Dimension.ENCODING;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
-                result = Dimension.LANGUAGE;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
-                result = Dimension.AUTHORIZATION;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
-                result = Dimension.CLIENT_AGENT;
-            } else if (value
-                    .equalsIgnoreCase(HeaderConstants.HEADER_ORIGIN)) {
-                result = Dimension.ORIGIN;
-            } else if (value.equals("*")) {
-                result = Dimension.UNSPECIFIED;
-            }
-        }
+		if (value != null) {
+			if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT)) {
+				result = Dimension.MEDIA_TYPE;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_CHARSET)) {
+				result = Dimension.CHARACTER_SET;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_ENCODING)) {
+				result = Dimension.ENCODING;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_ACCEPT_LANGUAGE)) {
+				result = Dimension.LANGUAGE;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_AUTHORIZATION)) {
+				result = Dimension.AUTHORIZATION;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_USER_AGENT)) {
+				result = Dimension.CLIENT_AGENT;
+			} else if (value.equalsIgnoreCase(HeaderConstants.HEADER_ORIGIN)) {
+				result = Dimension.ORIGIN;
+			} else if (value.equals("*")) {
+				result = Dimension.UNSPECIFIED;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

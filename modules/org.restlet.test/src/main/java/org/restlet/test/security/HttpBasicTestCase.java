@@ -24,6 +24,10 @@
 
 package org.restlet.test.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,10 +47,6 @@ import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Restlet unit tests for HTTP Basic authentication client/server. By default,

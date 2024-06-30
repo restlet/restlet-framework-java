@@ -24,9 +24,9 @@
 
 package org.restlet.client.engine.application;
 
-import org.restlet.client.data.Status;
-
 import java.io.Serializable;
+
+import org.restlet.client.data.Status;
 
 /**
  * 

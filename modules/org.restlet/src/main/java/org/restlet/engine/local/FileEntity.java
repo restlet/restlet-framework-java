@@ -38,108 +38,104 @@ import org.restlet.service.MetadataService;
  */
 public class FileEntity extends Entity {
 
-    /** The underlying regular file. */
-    private final File file;
+	/** The underlying regular file. */
+	private final File file;
 
-    /**
-     * Constructor.
-     * 
-     * @param file
-     *            The underlying file.
-     * @param metadataService
-     *            The metadata service to use.
-     */
-    public FileEntity(File file, MetadataService metadataService) {
-        super(metadataService);
-        this.file = file;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param file            The underlying file.
+	 * @param metadataService The metadata service to use.
+	 */
+	public FileEntity(File file, MetadataService metadataService) {
+		super(metadataService);
+		this.file = file;
+	}
 
-    @Override
-    public boolean exists() {
-        // [ifndef gae] instruction
-        return getFile().exists();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().exists();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
-    }
+	@Override
+	public boolean exists() {
+		// [ifndef gae] instruction
+		return getFile().exists();
+		// [ifdef gae] uncomment
+		// try {
+		// return getFile().exists();
+		// } catch (java.security.AccessControlException ace) {
+		// return false;
+		// }
+		// [enddef]
+	}
 
-    @Override
-    public List<Entity> getChildren() {
-        List<Entity> result = null;
+	@Override
+	public List<Entity> getChildren() {
+		List<Entity> result = null;
 
-        if (isDirectory()) {
-            result = new ArrayList<Entity>();
+		if (isDirectory()) {
+			result = new ArrayList<Entity>();
 
-            // [ifdef gae] uncomment
-            // try {
-            // [enddef]
-            for (File f : getFile().listFiles()) {
-                result.add(new FileEntity(f, getMetadataService()));
-            }
-            // [ifdef gae] uncomment
-            // } catch (java.security.AccessControlException ace) {
-            // }
-            // [enddef]
-        }
+			// [ifdef gae] uncomment
+			// try {
+			// [enddef]
+			for (File f : getFile().listFiles()) {
+				result.add(new FileEntity(f, getMetadataService()));
+			}
+			// [ifdef gae] uncomment
+			// } catch (java.security.AccessControlException ace) {
+			// }
+			// [enddef]
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the underlying regular file.
-     * 
-     * @return The underlying regular file.
-     */
-    public File getFile() {
-        return file;
-    }
+	/**
+	 * Returns the underlying regular file.
+	 * 
+	 * @return The underlying regular file.
+	 */
+	public File getFile() {
+		return file;
+	}
 
-    @Override
-    public String getName() {
-        return getFile().getName();
-    }
+	@Override
+	public String getName() {
+		return getFile().getName();
+	}
 
-    @Override
-    public Entity getParent() {
-        File parentFile = getFile().getParentFile();
-        return (parentFile == null) ? null : new FileEntity(parentFile,
-                getMetadataService());
-    }
+	@Override
+	public Entity getParent() {
+		File parentFile = getFile().getParentFile();
+		return (parentFile == null) ? null : new FileEntity(parentFile, getMetadataService());
+	}
 
-    @Override
-    public Representation getRepresentation(MediaType defaultMediaType,
-            int timeToLive) {
-        return new FileRepresentation(getFile(), defaultMediaType, timeToLive);
-    }
+	@Override
+	public Representation getRepresentation(MediaType defaultMediaType, int timeToLive) {
+		return new FileRepresentation(getFile(), defaultMediaType, timeToLive);
+	}
 
-    @Override
-    public boolean isDirectory() {
-        // [ifndef gae] instruction
-        return getFile().isDirectory();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().isDirectory();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
+	@Override
+	public boolean isDirectory() {
+		// [ifndef gae] instruction
+		return getFile().isDirectory();
+		// [ifdef gae] uncomment
+		// try {
+		// return getFile().isDirectory();
+		// } catch (java.security.AccessControlException ace) {
+		// return false;
+		// }
+		// [enddef]
 
-    }
+	}
 
-    @Override
-    public boolean isNormal() {
-        // [ifndef gae] instruction
-        return getFile().isFile();
-        // [ifdef gae] uncomment
-        // try {
-        // return getFile().isFile();
-        // } catch (java.security.AccessControlException ace) {
-        // return false;
-        // }
-        // [enddef]
-    }
+	@Override
+	public boolean isNormal() {
+		// [ifndef gae] instruction
+		return getFile().isFile();
+		// [ifdef gae] uncomment
+		// try {
+		// return getFile().isFile();
+		// } catch (java.security.AccessControlException ace) {
+		// return false;
+		// }
+		// [enddef]
+	}
 }

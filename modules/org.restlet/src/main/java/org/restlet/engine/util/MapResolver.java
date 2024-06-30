@@ -35,21 +35,20 @@ import org.restlet.util.Resolver;
  */
 public class MapResolver extends Resolver<Object> {
 
-    /** The variables to use when formatting. */
-    private final Map<String, ?> map;
+	/** The variables to use when formatting. */
+	private final Map<String, ?> map;
 
-    /**
-     * Constructor.
-     * 
-     * @param map
-     *            The variables to use when formatting.
-     */
-    public MapResolver(Map<String, ?> map) {
-        this.map = map;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param map The variables to use when formatting.
+	 */
+	public MapResolver(Map<String, ?> map) {
+		this.map = map;
+	}
 
-    @Override
-    public Object resolve(String variableName) {
-        return this.map.get(variableName);
-    }
+	@Override
+	public Object resolve(String variableName) {
+		return this.map.get(variableName);
+	}
 }

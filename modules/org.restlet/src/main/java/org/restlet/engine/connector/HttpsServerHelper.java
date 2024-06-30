@@ -71,71 +71,69 @@ import com.sun.net.httpserver.HttpsServer;
  */
 @SuppressWarnings("restriction")
 public class HttpsServerHelper extends NetServerHelper {
-    /** The underlying HTTPS server. */
-    private volatile HttpsServer server;
+	/** The underlying HTTPS server. */
+	private volatile HttpsServer server;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public HttpsServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTPS);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server The server to help.
+	 */
+	public HttpsServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.HTTPS);
+	}
 
-    /** Starts the Restlet. */
-    @Override
-    public void start() throws Exception {
-        // Use ephemeral port
-        int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
-        if (getHelped().getAddress() != null) {
-            // This call may throw UnknownHostException and otherwise always
-            // returns an instance of INetAddress.
-            // Note: textual representation of inet addresses are supported
-            InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
+	/** Starts the Restlet. */
+	@Override
+	public void start() throws Exception {
+		// Use ephemeral port
+		int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+		if (getHelped().getAddress() != null) {
+			// This call may throw UnknownHostException and otherwise always
+			// returns an instance of INetAddress.
+			// Note: textual representation of inet addresses are supported
+			InetAddress iaddr = InetAddress.getByName(getHelped().getAddress());
 
-            // Note: the backlog of 50 is the default
-            setAddress(new InetSocketAddress(iaddr, port));
-        } else {
-            // Listens to any local IP address
-            setAddress(new InetSocketAddress(port));
-        }
+			// Note: the backlog of 50 is the default
+			setAddress(new InetSocketAddress(iaddr, port));
+		} else {
+			// Listens to any local IP address
+			setAddress(new InetSocketAddress(port));
+		}
 
-        // Complete initialization
-        this.server = HttpsServer.create(getAddress(), 0);
+		// Complete initialization
+		this.server = HttpsServer.create(getAddress(), 0);
 
-        // Initialize the SSL context
-        SslContextFactory sslContextFactory = SslUtils.getSslContextFactory(this);
-        SSLContext sslContext = sslContextFactory.createSslContext();
-        final SSLParameters sslParams = sslContext.getDefaultSSLParameters();
-        server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-            public void configure(HttpsParameters params) {
-                params.setSSLParameters(sslParams);
-            }
-        });
+		// Initialize the SSL context
+		SslContextFactory sslContextFactory = SslUtils.getSslContextFactory(this);
+		SSLContext sslContext = sslContextFactory.createSslContext();
+		final SSLParameters sslParams = sslContext.getDefaultSSLParameters();
+		server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+			public void configure(HttpsParameters params) {
+				params.setSSLParameters(sslParams);
+			}
+		});
 
-        server.createContext("/", new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                HttpsServerHelper.this.handle(new HttpExchangeCall(getHelped(),
-                        httpExchange, true));
-            }
-        });
-        // creates a default executor
-        server.setExecutor(createThreadPool());
-        server.start();
+		server.createContext("/", new HttpHandler() {
+			@Override
+			public void handle(HttpExchange httpExchange) throws IOException {
+				HttpsServerHelper.this.handle(new HttpExchangeCall(getHelped(), httpExchange, true));
+			}
+		});
+		// creates a default executor
+		server.setExecutor(createThreadPool());
+		server.start();
 
-        setConfidential(true);
-        setEphemeralPort(server.getAddress().getPort());
-        super.start();
-    }
+		setConfidential(true);
+		setEphemeralPort(server.getAddress().getPort());
+		super.start();
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        this.server.stop(0);
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		super.stop();
+		this.server.stop(0);
+	}
 
 }

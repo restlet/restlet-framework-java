@@ -35,48 +35,48 @@ import org.restlet.security.User;
  */
 public class RoleMapping {
 
-    /**
-     * The source of the mapping. It must be an instance of one of these
-     * classes: {@link User} or {@link Group}.
-     */
-    private volatile Object source;
+	/**
+	 * The source of the mapping. It must be an instance of one of these classes:
+	 * {@link User} or {@link Group}.
+	 */
+	private volatile Object source;
 
-    /** The target role of the mapping. */
-    private volatile Role target;
+	/** The target role of the mapping. */
+	private volatile Role target;
 
-    /**
-     * Default constructor.
-     */
-    public RoleMapping() {
-        this(null, null);
-    }
+	/**
+	 * Default constructor.
+	 */
+	public RoleMapping() {
+		this(null, null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     * @param target
-     */
-    public RoleMapping(Object source, Role target) {
-        super();
-        this.source = source;
-        this.target = target;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param source
+	 * @param target
+	 */
+	public RoleMapping(Object source, Role target) {
+		super();
+		this.source = source;
+		this.target = target;
+	}
 
-    public Object getSource() {
-        return source;
-    }
+	public Object getSource() {
+		return source;
+	}
 
-    public Role getTarget() {
-        return target;
-    }
+	public Role getTarget() {
+		return target;
+	}
 
-    public void setSource(Object source) {
-        this.source = source;
-    }
+	public void setSource(Object source) {
+		this.source = source;
+	}
 
-    public void setTarget(Role target) {
-        this.target = target;
-    }
+	public void setTarget(Role target) {
+		this.target = target;
+	}
 
 }

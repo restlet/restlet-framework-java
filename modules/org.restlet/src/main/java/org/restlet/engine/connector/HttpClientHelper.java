@@ -113,131 +113,119 @@ import org.restlet.engine.util.ReferenceUtils;
  * this behavior for POST requests only by setting the system property
  * "sun.net.http.retryPost" to "false".
  * 
- * @see <a
- *      href="https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
+ * @see <a href=
+ *      "https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
  */
-public class HttpClientHelper extends
-        org.restlet.engine.adapter.HttpClientHelper {
+public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
 
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public HttpClientHelper(Client client) {
-        super(client);
-        getProtocols().add(Protocol.HTTP);
-        getProtocols().add(Protocol.HTTPS);
+	/**
+	 * Constructor.
+	 * 
+	 * @param client The client to help.
+	 */
+	public HttpClientHelper(Client client) {
+		super(client);
+		getProtocols().add(Protocol.HTTP);
+		getProtocols().add(Protocol.HTTPS);
 
-        if (Edition.CURRENT == Edition.GAE) {
-            getProtocols().add(Protocol.SDC);
-        }
-    }
+		if (Edition.CURRENT == Edition.GAE) {
+			getProtocols().add(Protocol.SDC);
+		}
+	}
 
-    /**
-     * Creates a low-level HTTP client call from a high-level uniform call.
-     * 
-     * @param request
-     *            The high-level request.
-     * @return A low-level HTTP client call.
-     */
-    @Override
-    public ClientCall create(Request request) {
-        ClientCall result = null;
+	/**
+	 * Creates a low-level HTTP client call from a high-level uniform call.
+	 * 
+	 * @param request The high-level request.
+	 * @return A low-level HTTP client call.
+	 */
+	@Override
+	public ClientCall create(Request request) {
+		ClientCall result = null;
 
-        try {
-            result = new HttpUrlConnectionCall(this, request.getMethod()
-                    .toString(), ReferenceUtils.update(
-                    request.getResourceRef(), request).toString(),
-                    request.isEntityAvailable());
-        } catch (IOException ioe) {
-            getLogger().log(Level.WARNING,
-                    "Unable to create the HTTP client call", ioe);
-        }
+		try {
+			result = new HttpUrlConnectionCall(this, request.getMethod().toString(),
+					ReferenceUtils.update(request.getResourceRef(), request).toString(), request.isEntityAvailable());
+		} catch (IOException ioe) {
+			getLogger().log(Level.WARNING, "Unable to create the HTTP client call", ioe);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the chunk-length when using chunked encoding streaming mode for
-     * response entities. A value of -1 means chunked encoding is disabled for
-     * response entities.
-     * 
-     * @return The chunk-length when using chunked encoding streaming mode for
-     *         response entities.
-     */
-    public int getChunkLength() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "chunkLength", "0"));
-    }
+	/**
+	 * Returns the chunk-length when using chunked encoding streaming mode for
+	 * response entities. A value of -1 means chunked encoding is disabled for
+	 * response entities.
+	 * 
+	 * @return The chunk-length when using chunked encoding streaming mode for
+	 *         response entities.
+	 */
+	public int getChunkLength() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("chunkLength", "0"));
+	}
 
-    /**
-     * Returns the hostname verifier by looking up the "hostnameVerifier"
-     * attribute of the client's context.
-     * 
-     * @return The hostname verifier or null.
-     */
-    public HostnameVerifier getHostnameVerifier() {
-        return (HostnameVerifier) ((getContext() == null) ? null : getContext()
-                .getAttributes().get("hostnameVerifier"));
-    }
+	/**
+	 * Returns the hostname verifier by looking up the "hostnameVerifier" attribute
+	 * of the client's context.
+	 * 
+	 * @return The hostname verifier or null.
+	 */
+	public HostnameVerifier getHostnameVerifier() {
+		return (HostnameVerifier) ((getContext() == null) ? null
+				: getContext().getAttributes().get("hostnameVerifier"));
+	}
 
-    /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout. Defaults to 60000.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "readTimeout", "60000"));
-    }
+	/**
+	 * Returns the read timeout value. A timeout of zero is interpreted as an
+	 * infinite timeout. Defaults to 60000.
+	 * 
+	 * @return The read timeout value.
+	 */
+	public int getReadTimeout() {
+		return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout", "60000"));
+	}
 
-    /**
-     * Indicates if this URL is being examined in a context in which it makes
-     * sense to allow user interactions such as popping up an authentication
-     * dialog.
-     * 
-     * @return True if it makes sense to allow user interactions.
-     */
-    public boolean isAllowUserInteraction() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "allowUserInteraction", "false"));
-    }
+	/**
+	 * Indicates if this URL is being examined in a context in which it makes sense
+	 * to allow user interactions such as popping up an authentication dialog.
+	 * 
+	 * @return True if it makes sense to allow user interactions.
+	 */
+	public boolean isAllowUserInteraction() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("allowUserInteraction", "false"));
+	}
 
-    /**
-     * Indicates if the protocol will automatically follow redirects.
-     * 
-     * @return True if the protocol will automatically follow redirects.
-     */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "followRedirects", "false"));
-    }
+	/**
+	 * Indicates if the protocol will automatically follow redirects.
+	 * 
+	 * @return True if the protocol will automatically follow redirects.
+	 */
+	public boolean isFollowRedirects() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("followRedirects", "false"));
+	}
 
-    /**
-     * Indicates if the protocol is allowed to use caching whenever it can.
-     * 
-     * @return True if the protocol is allowed to use caching whenever it can.
-     */
-    public boolean isUseCaches() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "useCaches", "false"));
-    }
+	/**
+	 * Indicates if the protocol is allowed to use caching whenever it can.
+	 * 
+	 * @return True if the protocol is allowed to use caching whenever it can.
+	 */
+	public boolean isUseCaches() {
+		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("useCaches", "false"));
+	}
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        getLogger().info("Starting the internal HTTP client");
-    }
+	@Override
+	public synchronized void start() throws Exception {
+		super.start();
+		getLogger().info("Starting the internal HTTP client");
+	}
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        getLogger().info("Stopping the internal HTTP client");
-    }
+	@Override
+	public synchronized void stop() throws Exception {
+		super.stop();
+		getLogger().info("Stopping the internal HTTP client");
+	}
 
 }
