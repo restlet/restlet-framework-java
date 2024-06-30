@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.data.Header;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Edition;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -333,7 +334,6 @@ public abstract class Call {
 		return this.confidential;
 	}
 
-	// [ifndef gae] method
 	/**
 	 * Returns true if the given exception is caused by a broken connection.
 	 * 
@@ -341,7 +341,11 @@ public abstract class Call {
 	 * @return True if the given exception is caused by a broken connection.
 	 */
 	public boolean isConnectionBroken(Throwable exception) {
-		return isBroken(exception);
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException("Edition GAE does not support this method");
+		} else {
+			return isBroken(exception);			
+		}
 	}
 
 	/**

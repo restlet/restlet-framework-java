@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
@@ -54,15 +55,15 @@ public class FileEntity extends Entity {
 
 	@Override
 	public boolean exists() {
-		// [ifndef gae] instruction
-		return getFile().exists();
-		// [ifdef gae] uncomment
-		// try {
-		// return getFile().exists();
-		// } catch (java.security.AccessControlException ace) {
-		// return false;
-		// }
-		// [enddef]
+		if (Edition.GAE.isCurrentEdition()) {
+			try {
+				return getFile().exists();
+			} catch (java.security.AccessControlException ace) {
+				return false; // mute java.security.AccessControlException for GAE edition
+			}
+		} else {
+			return getFile().exists();
+		}
 	}
 
 	@Override
@@ -72,16 +73,16 @@ public class FileEntity extends Entity {
 		if (isDirectory()) {
 			result = new ArrayList<Entity>();
 
-			// [ifdef gae] uncomment
-			// try {
-			// [enddef]
-			for (File f : getFile().listFiles()) {
-				result.add(new FileEntity(f, getMetadataService()));
+			try {
+				for (File f : getFile().listFiles()) {
+					result.add(new FileEntity(f, getMetadataService()));
+				}
+			} catch (java.security.AccessControlException ace) {
+				// mute java.security.AccessControlException for GAE edition
+				if (Edition.GAE.isNotCurrentEdition()) {
+					throw ace;
+				}
 			}
-			// [ifdef gae] uncomment
-			// } catch (java.security.AccessControlException ace) {
-			// }
-			// [enddef]
 		}
 
 		return result;
@@ -114,28 +115,29 @@ public class FileEntity extends Entity {
 
 	@Override
 	public boolean isDirectory() {
-		// [ifndef gae] instruction
-		return getFile().isDirectory();
-		// [ifdef gae] uncomment
-		// try {
-		// return getFile().isDirectory();
-		// } catch (java.security.AccessControlException ace) {
-		// return false;
-		// }
-		// [enddef]
-
+		try {
+			return getFile().isDirectory();
+		} catch (java.security.AccessControlException ace) {
+			// mute java.security.AccessControlException for GAE edition
+			if (Edition.GAE.isCurrentEdition()) {
+				return false;
+			} else {
+				throw ace;
+			}
+		}
 	}
 
 	@Override
 	public boolean isNormal() {
-		// [ifndef gae] instruction
-		return getFile().isFile();
-		// [ifdef gae] uncomment
-		// try {
-		// return getFile().isFile();
-		// } catch (java.security.AccessControlException ace) {
-		// return false;
-		// }
-		// [enddef]
+		try {
+			return getFile().isFile();
+		} catch (java.security.AccessControlException ace) {
+			// mute java.security.AccessControlException for GAE edition
+			if (Edition.GAE.isCurrentEdition()) {
+				return false;
+			} else {
+				throw ace;
+			}
+		}
 	}
 }

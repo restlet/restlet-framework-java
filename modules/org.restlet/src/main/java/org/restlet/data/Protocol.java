@@ -92,7 +92,6 @@ public final class Protocol {
 	/** JDBC protocol. */
 	public static final Protocol JDBC = new Protocol("jdbc", "JDBC", "Java DataBase Connectivity", UNKNOWN_PORT);
 
-	// [ifdef osgi] member
 	/**
 	 * OBAP (OSGi Bundle Access Protocol) is a custom scheme to access to
 	 * representations via bundles referenced using their symbolic name. Example

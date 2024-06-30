@@ -42,6 +42,7 @@ import org.restlet.Response;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
@@ -61,15 +62,15 @@ public abstract class ClientCall extends Call {
 	 * @return The local IP address or 127.0.0.1 if the resolution fails.
 	 */
 	public static String getLocalAddress() {
-		// [ifndef gae]
+		if (Edition.GAE.isCurrentEdition()) {
+			return "127.0.0.1";
+		}
+
 		try {
 			return java.net.InetAddress.getLocalHost().getHostAddress();
 		} catch (java.net.UnknownHostException e) {
-			// [enddef]
 			return "127.0.0.1";
-			// [ifndef gae]
 		}
-		// [enddef]
 	}
 
 	/** The parent HTTP client helper. */

@@ -91,15 +91,15 @@ public class HttpUrlConnectionCall extends ClientCall {
 				this.connection.setReadTimeout(getHelper().getReadTimeout());
 			}
 
-			// [ifndef gae] instruction
-			this.connection.setAllowUserInteraction(getHelper().isAllowUserInteraction());
+			if (Edition.GAE.isNotCurrentEdition()) {
+				this.connection.setAllowUserInteraction(getHelper().isAllowUserInteraction());
+			}
 			this.connection.setDoOutput(hasEntity);
 			this.connection.setInstanceFollowRedirects(getHelper().isFollowRedirects());
 			this.connection.setUseCaches(getHelper().isUseCaches());
 			this.responseHeadersAdded = false;
 
-			// [ifndef gae]
-			if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
+			if (Edition.GAE.isNotCurrentEdition() && this.connection instanceof javax.net.ssl.HttpsURLConnection) {
 				setConfidential(true);
 				javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
 				org.restlet.engine.ssl.SslContextFactory sslContextFactory = org.restlet.engine.ssl.SslUtils
@@ -120,7 +120,6 @@ public class HttpUrlConnectionCall extends ClientCall {
 					https.setHostnameVerifier(verifier);
 				}
 			}
-			// [enddef]
 		} else {
 			throw new IllegalArgumentException("Only HTTP or HTTPS resource URIs are allowed here");
 		}
