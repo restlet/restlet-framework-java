@@ -289,7 +289,6 @@ public class Engine {
      *            Optional helper class name.
      * @return The new helper.
      */
-    @SuppressWarnings("unchecked")
     public org.restlet.client.engine.connector.ConnectorHelper<Client> createHelper(
             Client client, String helperClass) {
         org.restlet.client.engine.connector.ConnectorHelper<Client> result = null;
@@ -316,10 +315,6 @@ public class Engine {
                 }
 
                 sb.append(". Please add the JAR of a matching connector to your classpath.");
-
-                if (Edition.CURRENT == Edition.ANDROID) {
-                    sb.append(" Then, register this connector helper manually.");
-                }
 
                 Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
