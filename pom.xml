@@ -102,10 +102,10 @@
                 <module>modules/org.restlet.ext.freemarker</module>
                 <module>modules/org.restlet.ext.gae</module>
                 <module>modules/org.restlet.ext.gson</module>
+                <module>modules/org.restlet.ext.guice</module>
                 <module>modules/org.restlet.ext.gwt</module>
                 <module>modules/org.restlet.ext.html</module>
                 <module>modules/org.restlet.ext.httpclient</module>
-                <module>modules/org.restlet.ext.inject</module>
                 <module>modules/org.restlet.ext.jaas</module>
                 <module>modules/org.restlet.ext.jackson</module>
                 <module>modules/org.restlet.ext.jaxb</module>
@@ -134,10 +134,10 @@
                 <module>modules/org.restlet.ext.freemarker</module>
                 <module>modules/org.restlet.ext.gae</module>
                 <module>modules/org.restlet.ext.gson</module>
+                <module>modules/org.restlet.ext.guice</module>
                 <module>modules/org.restlet.ext.gwt</module>
                 <module>modules/org.restlet.ext.html</module>
                 <module>modules/org.restlet.ext.httpclient</module>
-                <module>modules/org.restlet.ext.inject</module>
                 <module>modules/org.restlet.ext.jaas</module>
                 <module>modules/org.restlet.ext.jackson</module>
                 <module>modules/org.restlet.ext.jaxb</module>

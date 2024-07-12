@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>org.restlet</groupId>
-            <artifactId>org.restlet.ext.inject</artifactId>
+            <artifactId>org.restlet.ext.guice</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
