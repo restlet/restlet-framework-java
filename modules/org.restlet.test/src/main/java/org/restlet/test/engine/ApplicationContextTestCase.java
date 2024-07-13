@@ -2,6 +2,8 @@ package org.restlet.test.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -58,21 +60,18 @@ public class ApplicationContextTestCase extends RestletTestCase {
 
     private Component component;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         this.component = new Component();
         this.component.getServers().add(Protocol.HTTP, TEST_PORT);
-
-        component.getDefaultHost().attach("/api", new WebApiApplication());
-        component.getInternalRouter().attach("/internal", new InternalApplication());
-
-        component.start();
+        this.component.getDefaultHost().attach("/api", new WebApiApplication());
+        this.component.getInternalRouter().attach("/internal", new InternalApplication());
+        this.component.start();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        component.stop();
+    @AfterEach
+    protected void tearDownEach() throws Exception {
+    	this.component.stop();
     }
 
     @Test

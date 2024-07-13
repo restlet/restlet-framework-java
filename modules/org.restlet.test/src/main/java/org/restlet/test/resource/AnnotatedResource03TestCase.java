@@ -26,6 +26,8 @@ package org.restlet.test.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
@@ -42,8 +44,8 @@ public class AnnotatedResource03TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Finder finder = new Finder();
         finder.setTargetClass(MyResource03.class);
 
@@ -51,10 +53,9 @@ public class AnnotatedResource03TestCase extends RestletTestCase {
         this.clientResource.setNext(finder);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         clientResource = null;
-        super.tearDown();
     }
 
     @Test

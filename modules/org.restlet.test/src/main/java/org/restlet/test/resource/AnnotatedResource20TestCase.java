@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
@@ -54,8 +56,8 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
 
     private MyResource20 myResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().getRegisteredConverters()
                 .add(new JacksonConverter());
@@ -72,11 +74,10 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         this.myResource = clientResource.wrap(MyResource20.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         clientResource = null;
         myResource = null;
-        super.tearDown();
     }
 
     @Test

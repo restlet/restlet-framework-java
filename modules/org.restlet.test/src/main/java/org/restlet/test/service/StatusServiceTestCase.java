@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -52,14 +53,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 public class StatusServiceTestCase extends RestletTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUpEach() throws Exception {
         Application application = new Application();
         Application.setCurrent(application);
     }
 
-    protected void setUpEngine() {
+    public static void setUpEngine() {
         Engine.clearThreadLocalVariables();
 
         // Restore a clean engine

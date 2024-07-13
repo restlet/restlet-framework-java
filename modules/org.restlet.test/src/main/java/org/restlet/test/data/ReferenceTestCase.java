@@ -152,18 +152,23 @@ public class ReferenceTestCase extends RestletTestCase {
         assertTrue(ref1.equals(ref2));
     }
 
-    @Test
+	@Test
     public void testGetLastSegment() {
         Reference reference = new Reference("http://hostname");
         assertNull(reference.getLastSegment());
+        
         reference = new Reference("http://hostname/");
-        assertNull("", reference.getLastSegment());
+        assertNull(reference.getLastSegment());
+        
         reference = new Reference("http://hostname/abc");
         assertEquals("abc", reference.getLastSegment());
+        
         reference = new Reference("http://hostname/abc/");
         assertEquals("abc", reference.getLastSegment());
+        
         reference = new Reference("http://hostname/123/abc/");
         assertEquals("abc", reference.getLastSegment());
+        
         reference = new Reference("http://hostname/123/abc");
         assertEquals("abc", reference.getLastSegment());
     }

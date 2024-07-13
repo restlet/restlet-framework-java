@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -58,9 +59,8 @@ public class CorsResponseFilterTestCase extends RestletTestCase {
         public void doGet(){}
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUpEach() throws Exception {
         corsFilter = new CorsFilter();
         corsFilter.setNext(DummyServerResource.class);
     }

@@ -36,7 +36,6 @@ import java.io.StringReader;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
@@ -106,16 +105,12 @@ public class GsonTestCase {
         }
     }
 
-    @BeforeAll
-    public static void setUpBeforeClass() throws Exception {
-    }
-
     private GsonConverter c;
 
     private User user;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUpEach() throws Exception {
         user = new User("hello", "secret", 1, true, new Date(), new Date());
         c = new GsonConverter();
     }

@@ -55,7 +55,7 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
     private Request uploadRequest;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUpEach() throws Exception {
         getRequest = new Request();
         Series<Header> headers = new Series<Header>(Header.class);
         getRequest.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
@@ -100,23 +100,20 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDownEach() throws Exception {
         getRequest = null;
         putRequest = null;
         uploadRequest = null;
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testGetCanonicalizedAmzHeaders() {
-        Series<Header> headers = (Series<Header>) getRequest.getAttributes()
-                .get(HeaderConstants.ATTRIBUTE_HEADERS);
+        Series<Header> headers = getRequest.getHeaders();
         String expected = "";
         String actual = AwsUtils.getCanonicalizedAmzHeaders(headers);
         assertEquals(expected, actual);
 
-        headers = (Series<Header>) uploadRequest.getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
+        headers = uploadRequest.getHeaders();
         expected = "x-amz-acl:public-read\n"
                 + "x-amz-meta-checksumalgorithm:crc32\n"
                 + "x-amz-meta-filechecksum:0x02661779\n"

@@ -102,6 +102,6 @@ public class MultiPartFormTestCase extends RestletTestCase {
                 + "test" + "\r\n" + boundaryBis + "\r\n"
                 + "Content-Disposition: form-data; name=\"tos\"\r\n" + "\r\n"
                 + "agree\r\n" + boundaryBis + "--\r\n";
-        assertEquals("Value 1", expected, form.getText());
+        assertEquals(expected, form.getText());
     }
 }

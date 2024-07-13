@@ -26,6 +26,7 @@ package org.restlet.test.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -66,8 +67,8 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
         return request;
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    public void setUpEach() {
         this.application = new Application() {
             @Override
             public Restlet createInboundRoot() {

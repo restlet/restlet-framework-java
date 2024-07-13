@@ -31,6 +31,8 @@ import static org.testng.AssertJUnit.assertTrue;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.ServerResource;
@@ -97,21 +99,19 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
                 new RootBeanDefinition(resourceClass, new ConstructorArgumentValues(), values));
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         this.beanFactory = new DefaultListableBeanFactory();
         this.applicationContext = new StaticApplicationContext();
         this.finder = new SpringBeanFinder();
         this.finder.setBeanName(BEAN_NAME);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         this.beanFactory = null;
         this.applicationContext = null;
         this.finder = null;
-        super.tearDown();
     }
 
     @Test
@@ -222,8 +222,8 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeServerResource);
-        assertEquals("Resource not from spring context", "spring",
-                ((SomeServerResource) actual).getSrc());
+        assertEquals("spring",
+                ((SomeServerResource) actual).getSrc(), "Resource not from spring context");
     }
 
     @Test

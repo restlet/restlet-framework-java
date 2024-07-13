@@ -26,6 +26,8 @@ package org.restlet.test.resource;
 
 import java.util.logging.Level;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -96,8 +98,8 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         response.getEntity().release();
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         setUpCommon();
         int serverPort = setUpServer(0, "/test");
         setUpClient(serverPort, "/test");
@@ -123,11 +125,10 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         return server.getActualPort();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         tearDownClient();
         tearDownServer();
-        super.tearDown();
     }
 
     protected void tearDownClient() throws Exception {

@@ -28,6 +28,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -109,10 +112,8 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @BeforeEach
+    public void setUpEach() throws Exception {
         try {
             if (!testKeystoreFile.exists()) {
                 // Prepare a temporary directory for the tests
@@ -160,9 +161,8 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         this.component = null;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         IoUtils.delete(this.testKeystoreFile);
         IoUtils.delete(this.testDir, true);
 
@@ -170,6 +170,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         org.restlet.engine.Engine.register();
     }
 
+    @Test
     public void testSslInternalAndApache() throws Exception {
         if (this.enabledServerInternal && this.enabledClientApache) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
@@ -177,6 +178,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testSslInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
@@ -184,6 +186,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testSslInternalAndJetty() throws Exception {
         if (this.enabledServerInternal && this.enabledClientJetty) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
@@ -191,6 +194,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testSslJettyAndApache() throws Exception {
         if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
@@ -198,6 +202,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testSslJettyAndInternal() throws Exception {
         if (this.enabledServerJetty && this.enabledClientInternal) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
@@ -205,6 +210,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testSslJettyAndJetty() throws Exception {
         if (this.enabledServerJetty && this.enabledClientJetty) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),

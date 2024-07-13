@@ -51,13 +51,6 @@ import org.restlet.routing.Router;
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
-    // [ifdef jse] method
-    public static void main(String[] args) throws Exception {
-        SslGetTestCase sgt = new SslGetTestCase();
-        sgt.setUp();
-        sgt.testSslJettyAndApache();
-    }
-
     public static class GetTestResource extends ServerResource {
 
         public GetTestResource() {

@@ -60,7 +60,7 @@ public class ReaderInputStreamTestCase extends RestletTestCase {
         InputRepresentation ir = new InputRepresentation(is);
         ir.setCharacterSet(CharacterSet.ISO_8859_1);
 
-        assertEquals("Value", s, ir.getText());
+        assertEquals(s, ir.getText());
     }
 
 }

@@ -63,7 +63,7 @@ import org.restlet.test.RestletTestCase;
  * Transformer/TransformerRepresentation to guarantee proper functioning of the
  * xsl :import, :include and document() features.
  * 
- * @author Marc Portier (mpo@outerthought.org)
+ * @author Marc Portier
  */
 public class ResolvingTransformerTestCase extends RestletTestCase {
 
@@ -113,7 +113,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
                 // impls)
                 fail("test implementation currently doesn't handle other source (e.g. sax) implementations");
             }
-            assertEquals(message, testData, data.toString());
+            assertEquals(testData, data.toString(), message);
         }
     }
 
@@ -286,7 +286,7 @@ public class ResolvingTransformerTestCase extends RestletTestCase {
 
         String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
                 + thirdDocData + "</output>";
-        assertEquals("xslt result doesn't match expectations", expectedResult,
-                xmlOut);
+        assertEquals(expectedResult,
+                xmlOut, "xslt result doesn't match expectations");
     }
 }

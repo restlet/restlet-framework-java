@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -141,22 +143,19 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         return uris;
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         this.factory = new DefaultListableBeanFactory();
         registerServerResourceBeanDefinition("ore", ORE_URI);
         registerServerResourceBeanDefinition("fish", FISH_URI);
         registerBeanDefinition("someOtherBean", null, String.class, null);
-
         this.router = new SpringBeanRouter();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         this.factory = null;
         this.router = null;
-        super.tearDown();
     }
 
     @Test

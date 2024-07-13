@@ -52,7 +52,7 @@ public class CookieTestCase extends RestletTestCase {
     }
 
     /**
-     * Unequality tests.
+     * Inequality tests.
      */
     @Test
     public void testUnEquals() {

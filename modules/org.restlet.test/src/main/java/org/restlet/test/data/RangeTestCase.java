@@ -31,6 +31,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -168,9 +170,8 @@ public class RangeTestCase extends RestletTestCase {
     /** Component used for the tests. */
     private Component component;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         component = new Component();
         component.getServers().add(Protocol.HTTP, TEST_PORT);
         component.getClients().add(Protocol.FILE);
@@ -178,11 +179,10 @@ public class RangeTestCase extends RestletTestCase {
         component.start();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         component.stop();
         component = null;
-        super.tearDown();
     }
 
     /**

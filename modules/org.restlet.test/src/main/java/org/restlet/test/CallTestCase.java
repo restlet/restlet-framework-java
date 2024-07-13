@@ -106,11 +106,13 @@ public class CallTestCase extends RestletTestCase {
         final Reference resourceRef = getReference(resourceRefURI);
         request.setResourceRef(resourceRefURI);
         assertEquals(resourceRef, request.getResourceRef());
+        
         String uri = "http://restlet.org/path";
         Reference reference = getReference(uri);
         request.getResourceRef().setBaseRef(uri);
         assertEquals(uri, request.getResourceRef().getBaseRef().toString());
         assertEquals(reference, request.getResourceRef().getBaseRef());
+        
         uri = "http://restlet.org/path/to";
         reference = getReference(uri);
         request.getResourceRef().setBaseRef(uri);
@@ -139,6 +141,7 @@ public class CallTestCase extends RestletTestCase {
         String name = "Restlet";
         client.setAgent(name);
         assertEquals(name, client.getAgent());
+        
         name = "Restlet Client";
         client.setAgent(name);
         assertEquals(name, client.getAgent());
@@ -156,6 +159,7 @@ public class CallTestCase extends RestletTestCase {
                 secondAddress });
         client.getForwardedAddresses().addAll(addresses);
         assertEquals(addresses, client.getForwardedAddresses());
+        
         client.getForwardedAddresses().clear();
         client.getForwardedAddresses().addAll(addresses);
         assertEquals(addresses, client.getForwardedAddresses());
@@ -169,6 +173,7 @@ public class CallTestCase extends RestletTestCase {
         final Request request = getRequest();
         request.setMethod(Method.GET);
         assertEquals(Method.GET, request.getMethod());
+        
         request.setMethod(Method.POST);
         assertEquals(Method.POST, request.getMethod());
     }
@@ -184,6 +189,7 @@ public class CallTestCase extends RestletTestCase {
         Reference reference = getReference(uri);
         response.setLocationRef(uri);
         assertEquals(reference, response.getLocationRef());
+        
         uri = "http://restlet.org/something";
         reference = getReference(uri);
         response.setLocationRef(reference);
@@ -200,6 +206,7 @@ public class CallTestCase extends RestletTestCase {
         Reference reference = getReference(uri);
         request.setReferrerRef(uri);
         assertEquals(reference, request.getReferrerRef());
+        
         uri = "http://restlet.org/something";
         reference = getReference(uri);
         request.setReferrerRef(reference);
@@ -232,6 +239,7 @@ public class CallTestCase extends RestletTestCase {
         String address = "127.0.0.1";
         response.getServerInfo().setAddress(address);
         assertEquals(address, response.getServerInfo().getAddress());
+        
         address = "192.168.99.10";
         response.getServerInfo().setAddress(address);
         assertEquals(address, response.getServerInfo().getAddress());
@@ -247,6 +255,7 @@ public class CallTestCase extends RestletTestCase {
         String name = "Restlet";
         response.getServerInfo().setAgent(name);
         assertEquals(name, response.getServerInfo().getAgent());
+        
         name = "Restlet Server";
         response.getServerInfo().setAgent(name);
         assertEquals(name, response.getServerInfo().getAgent());
@@ -261,6 +270,7 @@ public class CallTestCase extends RestletTestCase {
         final Response response = getResponse(request);
         response.setStatus(Status.SUCCESS_OK);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+        
         response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
     }

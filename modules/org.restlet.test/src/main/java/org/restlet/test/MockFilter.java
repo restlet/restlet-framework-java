@@ -37,24 +37,24 @@ import org.restlet.routing.Filter;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
+ * @author Lars Heuer (heuer[at]semagia.com)
+ *         <a href="http://www.semagia.com/">Semagia</a>
  */
 public class MockFilter extends Filter {
-    public MockFilter(Context context) {
-        super(context);
-    }
+	public MockFilter(Context context) {
+		super(context);
+	}
 
-    @Override
-    protected int beforeHandle(Request request, Response response) {
-        if (!super.isStarted()) {
-            throw new IllegalStateException("Filter is not started");
-        }
-        if (!super.hasNext()) {
-            throw new IllegalStateException("Target is not set");
-        }
+	@Override
+	protected int beforeHandle(Request request, Response response) {
+		if (!super.isStarted()) {
+			throw new IllegalStateException("Filter is not started");
+		}
+		if (!super.hasNext()) {
+			throw new IllegalStateException("Target is not set");
+		}
 
-        return CONTINUE;
-    }
+		return CONTINUE;
+	}
 
 }

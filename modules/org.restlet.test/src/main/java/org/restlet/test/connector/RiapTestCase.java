@@ -49,13 +49,13 @@ import org.restlet.test.RestletTestCase;
 /**
  * Unit test case for the RIAP Internal routing protocol.
  *
- * @author Marc Portier (mpo@outerthought.org)
+ * @author Marc Portier
  */
 public class RiapTestCase extends RestletTestCase {
 
     private static final String DEFAULT_MSG = "no-default";
 
-    // Just Some Serializable dummy object handle...
+    // Just some serializable dummy object handle...
     public static class Dummy implements Serializable {
         private static final long serialVersionUID = 1L;
     }
