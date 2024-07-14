@@ -33,6 +33,7 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.log.LogFilter;
 import org.restlet.representation.Representation;
@@ -153,8 +154,9 @@ public class LogService extends Service {
 		sb.append('\t');
 
 		// Append the user name (via IDENT protocol)
-		if (isIdentityCheck()) {
-			// [ifndef gae]
+		if (Edition.GAE.isCurrentEdition()) {
+			sb.append('-'); // TODO compile with GAE?
+		} else if (isIdentityCheck()) {
 			org.restlet.engine.log.IdentClient ic = new org.restlet.engine.log.IdentClient(
 					request.getClientInfo().getUpstreamAddress(), request.getClientInfo().getPort(),
 					response.getServerInfo().getPort());
@@ -163,7 +165,6 @@ public class LogService extends Service {
 				&& (request.getChallengeResponse().getIdentifier() != null)) {
 			sb.append(request.getChallengeResponse().getIdentifier());
 		} else {
-			// [enddef]
 			sb.append('-');
 		}
 
@@ -430,7 +431,10 @@ public class LogService extends Service {
 		super.start();
 
 		this.responseLogTemplate = (getResponseLogFormat() == null) ? null : new Template(getResponseLogFormat());
-		// [ifndef gae]
+
+		if (Edition.GAE.isCurrentEdition()) {
+			return;
+		}
 		if (getLogPropertiesRef() != null) {
 			Representation logProperties = new ClientResource(getContext(), getLogPropertiesRef()).get();
 
@@ -438,6 +442,5 @@ public class LogService extends Service {
 				java.util.logging.LogManager.getLogManager().readConfiguration(logProperties.getStream());
 			}
 		}
-		// [enddef]
 	}
 }

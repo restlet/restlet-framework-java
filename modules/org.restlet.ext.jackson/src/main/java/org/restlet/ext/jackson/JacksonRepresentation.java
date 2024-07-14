@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.ext.jackson.internal.XmlFactoryProvider;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
@@ -62,7 +63,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  *            The type to wrap.
  */
 public class JacksonRepresentation<T> extends OutputRepresentation {
-    // [ifndef android] member
+
     /**
      * True for expanding entity references when parsing XML representations.
      * Default value provided by system property
@@ -71,7 +72,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     public final static boolean XML_EXPANDING_ENTITY_REFS = Boolean
             .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
 
-    // [ifndef android] member
     /**
      * True for validating DTD documents when parsing XML representations.
      * Default value provided by system property
@@ -83,7 +83,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     /** The modifiable Jackson CSV schema. */
     private CsvSchema csvSchema;
 
-    // [ifndef android] member
     /**
      * Specifies that the parser will expand entity reference nodes. By default
      * the value of this is set to false.
@@ -108,7 +107,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     /** The representation to parse. */
     private volatile Representation representation;
 
-    // [ifndef android] member
     /**
      * Indicates the desire for validating this type of XML representations
      * against a DTD. Note that for XML schema or Relax NG validation, use the
@@ -137,10 +135,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
-        // [ifndef android] instruction
-        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
-        // [ifndef android] instruction
-        this.validatingDtd = XML_VALIDATING_DTD;
+        if (Edition.ANDROID.isNotCurrentEdition()) {
+            this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+            this.validatingDtd = XML_VALIDATING_DTD;
+        }
     }
 
     /**
@@ -161,10 +159,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
-        // [ifndef android] instruction
-        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
-        // [ifndef android] instruction
-        this.validatingDtd = XML_VALIDATING_DTD;
+        if (Edition.ANDROID.isNotCurrentEdition()) {
+            this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+            this.validatingDtd = XML_VALIDATING_DTD;
+        }
     }
 
     /**
@@ -207,9 +205,9 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             SmileFactory smileFactory = new SmileFactory();
             smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new ObjectMapper(smileFactory);
-            // [ifndef android]
-        } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
-                || MediaType.TEXT_XML.isCompatible(getMediaType())) {
+
+        } else if (Edition.ANDROID.isNotCurrentEdition()  && (MediaType.APPLICATION_XML.isCompatible(getMediaType())
+                || MediaType.TEXT_XML.isCompatible(getMediaType()))) {
             javax.xml.stream.XMLInputFactory xif = XmlFactoryProvider.newInputFactory();
             xif.setProperty(
                     javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
@@ -222,7 +220,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             XmlFactory xmlFactory = new XmlFactory(xif, xof);
             xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new XmlMapper(xmlFactory);
-            // [enddef]
+
         } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())
                 || MediaType.TEXT_YAML.isCompatible(getMediaType())) {
             YAMLFactory yamlFactory = new YAMLFactory();
@@ -365,18 +363,19 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         return this.objectWriter;
     }
 
-    // [ifndef android] method
     /**
-     * Indicates if the parser will expand entity reference nodes. By default
+     * Indicates if the parser will expand entity reference nodes. By default,
      * the value of this is set to true.
      * 
      * @return True if the parser will expand entity reference nodes.
      */
     public boolean isExpandingEntityRefs() {
-        return expandingEntityRefs;
+        if (Edition.ANDROID.isCurrentEdition()) {
+            throw new RuntimeException(); // TODO right thing to do?
+        }
+        return  expandingEntityRefs;
     }
 
-    // [ifndef android] method
     /**
      * Indicates the desire for validating this type of XML representations
      * against an XML schema if one is referenced within the contents.
@@ -384,6 +383,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * @return True if the schema-based validation is enabled.
      */
     public boolean isValidatingDtd() {
+        if (Edition.ANDROID.isCurrentEdition()) {
+            throw new RuntimeException(); // TODO right thing to do?
+        }
+
         return validatingDtd;
     }
 
@@ -397,7 +400,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.csvSchema = csvSchema;
     }
 
-    // [ifndef android] method
     /**
      * Indicates if the parser will expand entity reference nodes. By default
      * the value of this is set to true.
@@ -406,6 +408,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      *            True if the parser will expand entity reference nodes.
      */
     public void setExpandingEntityRefs(boolean expandEntityRefs) {
+        if (Edition.ANDROID.isCurrentEdition()) {
+            throw new RuntimeException(); // TODO right thing to do?
+        }
+
         this.expandingEntityRefs = expandEntityRefs;
     }
 
@@ -459,7 +465,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectWriter = objectWriter;
     }
 
-    // [ifndef android] method
     /**
      * Indicates the desire for validating this type of XML representations
      * against an XML schema if one is referenced within the contents.
@@ -468,6 +473,10 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      *            The new validation flag to set.
      */
     public void setValidatingDtd(boolean validating) {
+        if (Edition.ANDROID.isCurrentEdition()) {
+            throw new RuntimeException(); // TODO right thing to do?
+        }
+
         this.validatingDtd = validating;
     }
 

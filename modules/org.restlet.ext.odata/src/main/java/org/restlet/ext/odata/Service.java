@@ -47,6 +47,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
+import org.restlet.engine.Edition;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.ext.atom.Content;
@@ -562,25 +563,25 @@ public class Service {
                 || MediaType.TEXT_XML.isCompatible(representation
                         .getMediaType())) {
             DomRepresentation xmlRep = new DomRepresentation(representation);
-            // [ifndef android] instruction
-            Node node = xmlRep.getNode("//" + tagName);
 
-            // [ifdef android] uncomment
-            // Node node = null;
-            // try {
-            // org.w3c.dom.NodeList nl = xmlRep.getDocument()
-            // .getElementsByTagName(tagName);
-            // node = (nl.getLength() > 0) ? nl.item(0) : null;
-            // } catch (IOException e1) {
-            // }
-            // [enddef]
+            Node node = null;
+            if (Edition.ANDROID.isCurrentEdition()) {
+                try {
+                    org.w3c.dom.NodeList nl = xmlRep.getDocument()
+                            .getElementsByTagName(tagName);
+                    node = (nl.getLength() > 0) ? nl.item(0) : null;
+                } catch (IOException e1) {
+                }
+            } else {
+                node = xmlRep.getNode("//" + tagName);
+            }
 
             if (node != null) {
-                // [ifndef android] instruction
-                result = node.getTextContent();
-                // [ifdef android] instruction uncomment
-                // result =
-                // org.restlet.ext.xml.XmlRepresentation.getTextContent(node);
+                if (Edition.ANDROID.isCurrentEdition()) {
+                    result = org.restlet.ext.xml.XmlRepresentation.getTextContent(node);
+                } else {
+                    result = node.getTextContent();
+                }
             }
         } else {
             result = representation.getText();

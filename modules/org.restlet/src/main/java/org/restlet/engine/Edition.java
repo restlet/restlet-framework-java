@@ -97,5 +97,17 @@ public enum Edition {
 	public boolean isNotCurrentEdition() {
 		return this != CURRENT;
 	}
+
+	public static boolean isCurrentEditionOneOf(Edition... editions) {
+		boolean result = false;
+
+		if (editions != null) {
+			for (int i = 0; i < editions.length && !result; i++) {
+				result = editions[i].isCurrentEdition();
+			}
+		}
+
+		return result;
+	}
 	
 }

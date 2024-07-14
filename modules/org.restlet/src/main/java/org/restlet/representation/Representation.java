@@ -38,6 +38,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
+import org.restlet.engine.Edition;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.DateUtils;
 
@@ -308,7 +309,6 @@ public abstract class Representation extends RepresentationInfo {
 	 */
 	public abstract Reader getReader() throws IOException;
 
-	// [ifndef gae] method
 	/**
 	 * Returns the NIO registration of the related channel with its selector. You
 	 * can modify this registration to be called back when some readable content is
@@ -320,6 +320,9 @@ public abstract class Representation extends RepresentationInfo {
 	 * @see #isSelectable()
 	 */
 	public org.restlet.util.SelectionRegistration getRegistration() throws IOException {
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException(); // TODO compile with GAE?
+		}
 		if (isSelectable()) {
 			return ((org.restlet.engine.io.SelectionChannel) getChannel()).getRegistration();
 		}
@@ -412,7 +415,6 @@ public abstract class Representation extends RepresentationInfo {
 		return getSize() == 0;
 	}
 
-	// [ifndef gae] method
 	/**
 	 * Indicates if the representation content supports NIO selection. In this case,
 	 * the {@link #getRegistration()} method can be called to be notified when new
@@ -421,6 +423,9 @@ public abstract class Representation extends RepresentationInfo {
 	 * @return True if the representation content supports NIO selection.
 	 */
 	public boolean isSelectable() {
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException(); // TODO Compile with GAE?
+		}
 		try {
 			return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
 		} catch (IOException e) {
@@ -510,14 +515,16 @@ public abstract class Representation extends RepresentationInfo {
 		this.expirationDate = DateUtils.unmodifiable(expirationDate);
 	}
 
-	// [ifndef gae] method
 	/**
-	 * Sets a listener for NIO read events. If the listener is null, it clear any
+	 * Sets a listener for NIO read events. If the listener is null, it clears any
 	 * existing listener.
 	 * 
 	 * @param readingListener The listener for NIO read events.
 	 */
 	public void setListener(org.restlet.util.ReadingListener readingListener) {
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException(); // TODO Compile with GAE?
+		}
 		try {
 			org.restlet.util.SelectionRegistration sr = getRegistration();
 
