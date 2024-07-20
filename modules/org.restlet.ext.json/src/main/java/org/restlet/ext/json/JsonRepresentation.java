@@ -35,6 +35,7 @@ import org.json.JSONStringer;
 import org.json.JSONTokener;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
@@ -115,7 +116,6 @@ public class JsonRepresentation extends WriterRepresentation {
         this(new JSONObject(map));
     }
 
-    // [ifndef android] method
     /**
      * Constructor from a bean using reflection to generate JSON names.
      * 
@@ -124,7 +124,7 @@ public class JsonRepresentation extends WriterRepresentation {
      * @see org.json.JSONObject#JSONObject(Object)
      */
     public JsonRepresentation(Object bean) {
-        this(new JSONObject(bean));
+        this(new JSONObject(bean)); // TODO Should be called if Android edition
     }
 
     /**
@@ -227,10 +227,11 @@ public class JsonRepresentation extends WriterRepresentation {
             try {
                 result = this.jsonRepresentation.getText();
             } catch (IOException e) {
-                // [ifndef android] instruction
-                throw new JSONException(e);
-                // [ifdef android] instruction uncomment
-                // throw new JSONException(e.getMessage());
+                if (Edition.ANDROID.isCurrentEdition()) {
+                    throw new JSONException(e.getMessage());
+                } else {
+                    throw new JSONException(e);
+                }
             }
         }
 

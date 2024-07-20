@@ -47,6 +47,7 @@ import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.LanguageReader;
@@ -187,9 +188,12 @@ public class ServletCall extends ServerCall {
         return this.request;
     }
 
-    // [ifdef gae] method
     @Override
     public Representation getRequestEntity() {
+        if (Edition.GAE.isCurrentEdition()) {
+            throw new RuntimeException(); // TODO right thing to do?
+        }
+
         Representation result = null;
 
         if (getRequest().getContentType() != null

@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.engine.Edition;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -43,7 +44,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Jerome Louvel
  */
 public class DefaultSaxHandler extends DefaultHandler
-// [ifndef android]
+// [ifndef android] TODO how to handle this?
 		implements org.w3c.dom.ls.LSResourceResolver
 // [enddef]
 {
@@ -118,7 +119,6 @@ public class DefaultSaxHandler extends DefaultHandler
 		return super.resolveEntity(publicId, systemId);
 	}
 
-	// [ifndef android] method
 	/**
 	 * Allow the application to resolve external resources.
 	 * <p>
@@ -133,6 +133,9 @@ public class DefaultSaxHandler extends DefaultHandler
 	 */
 	public org.w3c.dom.ls.LSInput resolveResource(String type, String namespaceUri, String publicId, String systemId,
 			String baseUri) {
+		if (Edition.ANDROID.isCurrentEdition()) {
+			throw new RuntimeException(); // TODO actually should not compile with Android
+		}
 		if (loggable) {
 			logger.config("Resolve resource with type [" + type + "], namespace URI [" + namespaceUri + "], PUBLIC ["
 					+ publicId + "], SYSTEM [" + systemId + "], and base URI [" + baseUri + "]");

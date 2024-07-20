@@ -25,6 +25,7 @@
 package org.restlet.engine.component;
 
 import org.restlet.Context;
+import org.restlet.engine.Edition;
 import org.restlet.engine.log.LogUtils;
 import org.restlet.engine.util.ChildContext;
 
@@ -48,8 +49,9 @@ public class ComponentContext extends Context {
 		this.componentHelper = componentHelper;
 		setClientDispatcher(new ComponentClientDispatcher(this));
 		setServerDispatcher(new ComponentServerDispatcher(this));
-		// [ifndef gae] instruction
-		setExecutorService(componentHelper.getHelped().getTaskService());
+		if (Edition.GAE.isNotCurrentEdition()) {
+			setExecutorService(componentHelper.getHelped().getTaskService());			
+		}
 	}
 
 	@Override

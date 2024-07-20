@@ -29,7 +29,9 @@ import java.nio.channels.Selector;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-// [excludes gwt,android]
+import org.restlet.engine.Edition;
+
+// [excludes android] TODO how to exclude this class?
 /**
  * Factory used to dispatch/share <code>Selector</code>.
  * 
@@ -48,19 +50,18 @@ public class SelectorFactory {
 	/** The timeout before we exit. */
 	public static final long TIMEOUT = 5000;
 
-	// [ifndef gae]
 	/** Creates the <code>Selector</code>. */
 	static {
-		try {
-			for (int i = 0; i < MAX_SELECTORS; i++) {
-				SELECTORS.add(Selector.open());
+		if (Edition.GAE.isNotCurrentEdition()) {
+			try {
+				for (int i = 0; i < MAX_SELECTORS; i++) {
+					SELECTORS.add(Selector.open());
+				}
+			} catch (IOException ex) {
+				// do nothing.
 			}
-		} catch (IOException ex) {
-			// do nothing.
 		}
 	}
-
-	// [enddef]
 
 	/**
 	 * Get an exclusive <code>Selector</code>.

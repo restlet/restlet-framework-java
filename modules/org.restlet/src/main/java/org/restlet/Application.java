@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Filter;
 import java.util.logging.Level;
 
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
@@ -171,9 +172,9 @@ public class Application extends Restlet {
 		this.services.add(converterService);
 		this.services.add(metadataService);
 
-		// [ifndef gae]
-		this.services.add(new org.restlet.service.TaskService(false));
-		// [enddef]
+		if (Edition.GAE.isNotCurrentEdition()) {
+			this.services.add(new org.restlet.service.TaskService(false));
+		}
 	}
 
 	/**
@@ -361,10 +362,13 @@ public class Application extends Restlet {
 	 * @return A task service.
 	 * @deprecated
 	 */
-	// [ifndef gae] method
 	@Deprecated
 	public org.restlet.service.TaskService getTaskService() {
-		return getServices().get(org.restlet.service.TaskService.class);
+		if (Edition.GAE.isCurrentEdition()) {
+			return getServices().get(org.restlet.service.TaskService.class);
+		} else {
+			throw new RuntimeException("Edition GAE does not support this method");
+		}
 	}
 
 	/**
@@ -549,9 +553,12 @@ public class Application extends Restlet {
 	 * 
 	 * @param taskService The task service.
 	 */
-	// [ifndef gae] method
 	public void setTaskService(org.restlet.service.TaskService taskService) {
-		getServices().set(taskService);
+		if (Edition.GAE.isCurrentEdition()) {
+			getServices().set(taskService);
+		} else {
+			throw new RuntimeException("Edition GAE does not support this method");
+		}
 	}
 
 	/**

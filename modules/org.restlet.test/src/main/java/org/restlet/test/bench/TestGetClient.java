@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.representation.Representation;
@@ -40,8 +41,9 @@ public class TestGetClient {
         ConnectorHelper<Client> helper;
         helper = new org.restlet.engine.connector.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
-        // [ifdef jse] instruction
-        Engine.setLogLevel(Level.FINE);
+        if (Edition.JSE.isCurrentEdition()) {
+            Engine.setLogLevel(Level.FINE);
+        }
         long startTime = System.currentTimeMillis();
 
         ClientResource resource = new ClientResource("http://localhost:8554/");

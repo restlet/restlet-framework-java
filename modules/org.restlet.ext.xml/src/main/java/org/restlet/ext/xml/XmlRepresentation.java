@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.w3c.dom.Document;
@@ -66,7 +67,7 @@ import org.xml.sax.SAXException;
  * @author Jerome Louvel
  */
 public abstract class XmlRepresentation extends WriterRepresentation
-// [ifndef android]
+// [ifndef android] TODO issue with Android?
         implements javax.xml.namespace.NamespaceContext
 // [enddef]
 {
@@ -86,7 +87,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
     public final static boolean XML_VALIDATING_DTD = Boolean
             .getBoolean("org.restlet.ext.xml.validatingDtd");
 
-    // [ifdef android] method
     /**
      * Appends the text content of a given node and its descendants to the given
      * buffer.
@@ -97,6 +97,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The buffer.
      */
     private static void appendTextContent(Node node, StringBuilder sb) {
+        if (Edition.ANDROID.isNotCurrentEdition()) {
+            throw new RuntimeException();
+        }
         switch (node.getNodeType()) {
         case Node.TEXT_NODE:
             sb.append(node.getNodeValue());
@@ -141,7 +144,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         }
     }
 
-    // [ifndef android] method
     /**
      * Returns a SAX source.
      * 
@@ -152,6 +154,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public static javax.xml.transform.sax.SAXSource getSaxSource(
             Representation xmlRepresentation) throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         javax.xml.transform.sax.SAXSource result = null;
 
         if (xmlRepresentation != null) {
@@ -167,7 +172,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return result;
     }
 
-    // [ifndef android] method
     /**
      * Returns the wrapped schema.
      * 
@@ -176,6 +180,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     private static javax.xml.validation.Schema getSchema(
             Representation schemaRepresentation) throws Exception {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         javax.xml.validation.Schema result = null;
 
         if (schemaRepresentation != null) {
@@ -214,7 +221,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return result;
     }
 
-    // [ifdef android] method
     /**
      * Returns the text content of a given node and its descendants.
      * 
@@ -223,6 +229,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The text content of a given node.
      */
     public static String getTextContent(Node node) {
+        if (Edition.ANDROID.isNotCurrentEdition()) {
+            throw new RuntimeException();
+        }
         StringBuilder sb = new StringBuilder();
         appendTextContent(node, sb);
         return sb.toString();
@@ -275,7 +284,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
     /** Internal map of namespaces. */
     private volatile Map<String, String> namespaces;
 
-    // [ifndef android] member
     /**
      * A (compiled) {@link javax.xml.validation.Schema} to use when validating
      * this type of XML representations.
@@ -332,11 +340,13 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.namespaces = null;
         this.validatingDtd = XML_VALIDATING_DTD;
         this.xIncludeAware = false;
-        // [ifndef android] line
-        this.schema = null;
+
+        if (Edition.ANDROID.isNotCurrentEdition()) { // TODO Compile with Android?
+            this.schema = null;
+        }
+
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a boolean. If the evaluation fails, null
      * will be returned.
@@ -344,6 +354,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Boolean getBoolean(String expression) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return (Boolean) internalEval(expression,
                 javax.xml.xpath.XPathConstants.BOOLEAN);
     }
@@ -384,13 +397,13 @@ public abstract class XmlRepresentation extends WriterRepresentation
                         "The JAXP parser doesn't support XInclude.", uoe);
             }
 
-            // [ifndef android]
-            javax.xml.validation.Schema xsd = getSchema();
+            if (Edition.ANDROID.isNotCurrentEdition()) { // TODO Compile with Android?
+                javax.xml.validation.Schema xsd = getSchema();
 
-            if (xsd != null) {
-                dbf.setSchema(xsd);
+                if (xsd != null) {
+                    dbf.setSchema(xsd);
+                }
             }
-            // [enddef]
 
             result = dbf.newDocumentBuilder();
             result.setEntityResolver(getEntityResolver());
@@ -403,7 +416,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return result;
     }
 
-    // [ifndef android] method
     /**
      * Returns a DOM source.
      * 
@@ -411,6 +423,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @throws IOException
      */
     public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         javax.xml.transform.dom.DOMSource result = null;
         Node document = null;
 
@@ -479,7 +494,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return (this.namespaces == null) ? null : this.namespaces.get(prefix);
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a DOM Node. If the evaluation fails,
      * null will be returned.
@@ -487,11 +501,13 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Node getNode(String expression) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return (Node) internalEval(expression,
                 javax.xml.xpath.XPathConstants.NODE);
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a DOM NodeList. If the evaluation fails,
      * null will be returned.
@@ -499,12 +515,14 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public NodeList getNodes(String expression) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         final org.w3c.dom.NodeList nodes = (org.w3c.dom.NodeList) internalEval(
                 expression, javax.xml.xpath.XPathConstants.NODESET);
         return (nodes == null) ? null : new NodeList(nodes);
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a number. If the evaluation fails, null
      * will be returned.
@@ -512,6 +530,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Double getNumber(String expression) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return (Double) internalEval(expression,
                 javax.xml.xpath.XPathConstants.NUMBER);
     }
@@ -554,7 +575,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return Collections.unmodifiableList(result).iterator();
     }
 
-    // [ifndef android] method
     /**
      * Returns a SAX source.
      * 
@@ -562,10 +582,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @throws IOException
      */
     public javax.xml.transform.sax.SAXSource getSaxSource() throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return getSaxSource(this);
     }
 
-    // [ifndef android] method
     /**
      * Return the possibly null {@link javax.xml.validation.Schema} to use for
      * this type of XML representations.
@@ -574,10 +596,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *         XML representations.
      */
     public javax.xml.validation.Schema getSchema() {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return schema;
     }
 
-    // [ifndef android] method
     /**
      * Returns a stream of XML markup.
      * 
@@ -586,6 +610,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public javax.xml.transform.stream.StreamSource getStreamSource()
             throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         final javax.xml.transform.stream.StreamSource result = new javax.xml.transform.stream.StreamSource(
                 getStream());
 
@@ -596,18 +623,19 @@ public abstract class XmlRepresentation extends WriterRepresentation
         return result;
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression as a string.
      * 
      * @return The evaluation result.
      */
     public String getText(String expression) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return (String) internalEval(expression,
                 javax.xml.xpath.XPathConstants.STRING);
     }
 
-    // [ifndef android] method
     /**
      * Evaluates an XPath expression and returns the result as in the given
      * return type.
@@ -618,6 +646,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     private Object internalEval(String expression,
             javax.xml.namespace.QName returnType) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         try {
             Object result = null;
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -820,7 +851,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.namespaces = namespaces;
     }
 
-    // [ifndef android] method
     /**
      * Set a (compiled) {@link javax.xml.validation.Schema} to use when parsing
      * and validating this type of XML representations.
@@ -830,10 +860,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            set.
      */
     public void setSchema(javax.xml.validation.Schema schema) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         this.schema = schema;
     }
 
-    // [ifndef android] method
     /**
      * Set a schema representation to be compiled and used when parsing and
      * validating this type of XML representations.
@@ -842,6 +874,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The schema representation to set.
      */
     public void setSchema(Representation schemaRepresentation) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         try {
             this.schema = getSchema(schemaRepresentation);
         } catch (Exception e) {
@@ -873,7 +908,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
         xIncludeAware = includeAware;
     }
 
-    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -881,10 +915,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The XML schema to use.
      */
     public void validate(javax.xml.validation.Schema schema) throws Exception {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         validate(schema, null);
     }
 
-    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -895,10 +931,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public void validate(javax.xml.validation.Schema schema,
             javax.xml.transform.Result result) throws Exception {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         schema.newValidator().validate(getSaxSource(), result);
     }
 
-    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -906,10 +944,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The XML schema representation to use.
      */
     public void validate(Representation schemaRepresentation) throws Exception {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         validate(schemaRepresentation, null);
     }
 
-    // [ifndef android] method
     /**
      * Validates the XML representation against a given schema.
      * 
@@ -920,6 +960,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public void validate(Representation schemaRepresentation,
             javax.xml.transform.Result result) throws Exception {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         validate(getSchema(schemaRepresentation), result);
     }
 

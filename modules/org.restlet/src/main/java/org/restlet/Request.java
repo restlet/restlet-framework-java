@@ -259,7 +259,6 @@ public class Request extends Message {
 		}
 
 		clientInfo.setUser(rci.getUser());
-		// [enddef]
 
 		// Copy conditions
 		conditions = new Conditions();

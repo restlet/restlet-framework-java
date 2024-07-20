@@ -349,7 +349,6 @@ public class MetadataService extends Service {
 		ext(dm, "yaml", MediaType.TEXT_YAML);
 		ext(dm, "z", MediaType.APPLICATION_COMPRESS);
 		ext(dm, "zip", MediaType.APPLICATION_ZIP);
-		// [enddef]
 		ext(dm, "htm", MediaType.TEXT_HTML);
 		ext(dm, "html", MediaType.TEXT_HTML);
 		ext(dm, "json", MediaType.APPLICATION_JSON);

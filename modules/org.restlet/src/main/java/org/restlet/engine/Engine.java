@@ -89,15 +89,12 @@ public class Engine {
 	/** The registered engine. */
 	private static volatile Engine instance = null;
 
-	// [ifdef jse,android,osgi] member
 	/** The org.restlet log level . */
 	private static volatile boolean logConfigured = false;
 
-	// [ifdef jse,android,osgi] member
 	/** The general log formatter. */
 	private static volatile Class<? extends Formatter> logFormatter = org.restlet.engine.log.SimplestFormatter.class;
 
-	// [ifdef jse,android,osgi] member
 	/** The general log level . */
 	private static volatile Level logLevel = Level.INFO;
 
@@ -110,7 +107,6 @@ public class Engine {
 	/** Release number. */
 	public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
-	// [ifdef jse,android,osgi] member
 	/** The org.restlet log level . */
 	private static volatile Level restletLogLevel;
 
@@ -165,7 +161,7 @@ public class Engine {
 
 		// [ifndef gae] instruction
 		return new Thread(r, name);
-		// [ifdef gae] instruction uncomment
+		// [ifdef gae] instruction uncomment TODO Should we add dependency on gae lib?
 		// return
 		// com.google.appengine.api.ThreadManager.createThreadForCurrentRequest(r);
 	}
@@ -180,11 +176,13 @@ public class Engine {
 		org.restlet.Application.setCurrent(null);
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Updates the global log configuration of the JVM programmatically.
 	 */
 	public static void configureLog() {
+		if (!Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.OSGI)) {
+			return; // TODO Throw exception?
+		}
 		if ((System.getProperty("java.util.logging.config.file") == null)
 				&& (System.getProperty("java.util.logging.config.class") == null)) {
 			StringBuilder sb = new StringBuilder();
@@ -218,7 +216,7 @@ public class Engine {
 	}
 
 	/**
-	 * Returns an anonymous logger. By default it calls {@link #getLogger(String)}
+	 * Returns an anonymous logger. By default, it calls {@link #getLogger(String)}
 	 * with a "" name.
 	 * 
 	 * @return The logger.
@@ -242,14 +240,17 @@ public class Engine {
 		return result;
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Returns the general log formatter.
 	 * 
 	 * @return The general log formatter.
 	 */
 	public static Class<? extends Formatter> getLogFormatter() {
-		return Engine.logFormatter;
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.JSE)) {
+			return Engine.logFormatter;
+		} else {
+			throw new RuntimeException(""); // TODO right thing to do?
+		}
 	}
 
 	/**
@@ -296,14 +297,17 @@ public class Engine {
 		return getInstance().getLoggerFacade().getLogger(loggerName);
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Returns the general log level.
 	 * 
 	 * @return The general log level.
 	 */
 	public static Level getLogLevel() {
-		return Engine.logLevel;
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.JSE)) {
+			return Engine.logLevel;
+		} else {
+			throw new RuntimeException(); // TODO right thing to do?
+		}
 	}
 
 	/**
@@ -316,7 +320,6 @@ public class Engine {
 		return getInstance().getClassLoader().getResource(name);
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Returns the Restlet log level. For loggers with a name starting with
 	 * "org.restlet".
@@ -324,7 +327,11 @@ public class Engine {
 	 * @return The Restlet log level.
 	 */
 	public static Level getRestletLogLevel() {
-		return Engine.restletLogLevel;
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.JSE)) {
+			return Engine.restletLogLevel;
+		} else {
+			throw new RuntimeException(); // TODO right thing to do?
+		}
 	}
 
 	/**
@@ -354,39 +361,39 @@ public class Engine {
 	 * @return The registered engine.
 	 */
 	public static synchronized Engine register(boolean discoverPlugins) {
-		// [ifdef jse,android,osgi]
-		if (!logConfigured) {
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.OSGI) && !logConfigured) {
 			configureLog();
 		}
-		// [enddef]
+
 		Engine result = new Engine(discoverPlugins);
 		instance = result;
 		return result;
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Sets the general log formatter.
 	 * 
 	 * @param logFormatter The general log formatter.
 	 */
 	public static void setLogFormatter(Class<? extends Formatter> logFormatter) {
-		Engine.logFormatter = logFormatter;
-		configureLog();
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.OSGI)) {
+			Engine.logFormatter = logFormatter;
+			configureLog();
+		} // TODO Else throw exception?
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Sets the general log level. Modifies the global JVM's {@link LogManager}.
 	 * 
 	 * @param logLevel The general log level.
 	 */
 	public static void setLogLevel(Level logLevel) {
-		Engine.logLevel = logLevel;
-		configureLog();
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.OSGI)) {
+			Engine.logLevel = logLevel;
+			configureLog();
+		} // TODO else throw exception?
 	}
 
-	// [ifdef jse,android,osgi] method
 	/**
 	 * Sets the Restlet log level. For loggers with a name starting with
 	 * "org.restlet".
@@ -394,8 +401,10 @@ public class Engine {
 	 * @param restletLogLevel The Restlet log level.
 	 */
 	public static void setRestletLogLevel(Level restletLogLevel) {
-		Engine.restletLogLevel = restletLogLevel;
-		configureLog();
+		if (Edition.isCurrentEditionOneOf(Edition.JSE, Edition.ANDROID, Edition.OSGI)) {
+			Engine.restletLogLevel = restletLogLevel;
+			configureLog();
+		} // TODO else throw exception?
 	}
 
 	/** Class loader to use for dynamic class loading. */
@@ -768,24 +777,23 @@ public class Engine {
 	 * Registers the default client and server connectors.
 	 */
 	public void registerDefaultConnectors() {
-		// [ifndef gae]
-		getRegisteredClients().add(new org.restlet.engine.connector.FtpClientHelper(null));
-		// [enddef]
+		if (Edition.GAE.isNotCurrentEdition()) {
+			getRegisteredClients().add(new org.restlet.engine.connector.FtpClientHelper(null));
+		}
 		getRegisteredClients().add(new org.restlet.engine.connector.HttpClientHelper(null));
 		getRegisteredClients().add(new org.restlet.engine.local.ClapClientHelper(null));
 		getRegisteredClients().add(new org.restlet.engine.local.RiapClientHelper(null));
 		getRegisteredServers().add(new org.restlet.engine.local.RiapServerHelper(null));
 
-		// [ifndef android, gae]
-		getRegisteredServers().add(new org.restlet.engine.connector.HttpServerHelper(null));
-		getRegisteredServers().add(new org.restlet.engine.connector.HttpsServerHelper(null));
-		// [enddef]
+		if (Edition.GAE.isNotCurrentEdition() && Edition.ANDROID.isNotCurrentEdition()) {
+			getRegisteredServers().add(new org.restlet.engine.connector.HttpServerHelper(null));
+			getRegisteredServers().add(new org.restlet.engine.connector.HttpsServerHelper(null));
+		}
 
-		// [ifndef gae]
-		getRegisteredClients().add(new org.restlet.engine.local.FileClientHelper(null));
-		getRegisteredClients().add(new org.restlet.engine.local.ZipClientHelper(null));
-		// [enddef]
-
+		if (Edition.GAE.isNotCurrentEdition()) {
+			getRegisteredClients().add(new org.restlet.engine.local.FileClientHelper(null));
+			getRegisteredClients().add(new org.restlet.engine.local.ZipClientHelper(null));
+		}
 	}
 
 	/**
@@ -884,7 +892,6 @@ public class Engine {
 		}
 	}
 
-	// [ifndef gae] method
 	/**
 	 * Registers a factory that is used by the URL class to create the
 	 * {@link java.net.URLConnection} instances when the
@@ -895,6 +902,9 @@ public class Engine {
 	 * as provided by {@link Context#getCurrent()} method.
 	 */
 	public void registerUrlFactory() {
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException("GAE edition does not support registerUrlFactory");
+		}
 		// Set up an java.net.URLStreamHandlerFactory for
 		// proper creation of java.net.URL instances
 		java.net.URL.setURLStreamHandlerFactory(new java.net.URLStreamHandlerFactory() {

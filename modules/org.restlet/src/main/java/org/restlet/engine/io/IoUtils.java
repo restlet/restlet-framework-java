@@ -328,8 +328,7 @@ public class IoUtils {
 	public static ReadableByteChannel getChannel(final Representation representation) throws IOException {
 		ReadableByteChannel result = null;
 
-		if (Edition.CURRENT != Edition.GAE) {
-			// [ifndef gae]
+		if (Edition.GAE.isNotCurrentEdition()) {
 			final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
 
 			// Get a thread that will handle the task of continuously
@@ -364,11 +363,11 @@ public class IoUtils {
 			}
 
 			result = pipe.source();
-			// [enddef]
 		} else {
 			Context.getCurrentLogger().log(Level.WARNING,
 					"The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
 		}
+
 		return result;
 	}
 
