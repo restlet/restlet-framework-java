@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 
 /**
  * Representation based on a serializable Java object.<br>
@@ -169,8 +170,7 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 			}
 
 			ois.close();
-			// [ifndef android]
-		} else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(serializedRepresentation.getMediaType())) {
+		} else if (Edition.ANDROID.isNotCurrentEdition() && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(serializedRepresentation.getMediaType())) {
 			if (!variantObjectXmlSupported) {
 				throw new IllegalArgumentException("SECURITY WARNING: The usage of XMLDecoder when "
 						+ "deserializing XML representations from unstrusted "
@@ -194,7 +194,6 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 			}
 
 			decoder.close();
-			// [enddef]
 		} else {
 			throw new IllegalArgumentException("The serialized representation must have this media type: "
 					+ MediaType.APPLICATION_JAVA_OBJECT.toString() + " or this one: "
@@ -261,12 +260,10 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 			ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 			oos.writeObject(getObject());
 			oos.flush();
-			// [ifndef android]
-		} else if (MediaType.APPLICATION_JAVA_OBJECT_XML.isCompatible(getMediaType())) {
+		} else if (Edition.ANDROID.isNotCurrentEdition() && MediaType.APPLICATION_JAVA_OBJECT_XML.isCompatible(getMediaType())) {
 			java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(outputStream);
 			encoder.writeObject(getObject());
 			encoder.close();
-			// [enddef]
 		}
 	}
 

@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.restlet.data.Reference;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.InternalRouter;
@@ -176,9 +177,10 @@ public class Component extends Restlet {
 		this.services = new ServiceList(getContext());
 
 		if (Engine.getInstance() != null) {
-			// [ifndef gae] instruction
-			// To be done before setting the helper...
-			this.services.add(new org.restlet.service.TaskService());
+			if (Edition.GAE.isNotCurrentEdition()) {
+				// To be done before setting the helper...
+				this.services.add(new org.restlet.service.TaskService());
+			}
 
 			this.helper = new ComponentHelper(this);
 			Context childContext = getContext().createChildContext();
@@ -385,9 +387,12 @@ public class Component extends Restlet {
 	 * 
 	 * @return A task service.
 	 */
-	// [ifndef gae] method
 	public org.restlet.service.TaskService getTaskService() {
-		return getServices().get(org.restlet.service.TaskService.class);
+		if (Edition.GAE.isCurrentEdition()) {
+			return getServices().get(org.restlet.service.TaskService.class);
+		} else {
+			throw new RuntimeException("Edition GAE does not support this method");
+		}
 	}
 
 	@Override
@@ -523,15 +528,18 @@ public class Component extends Restlet {
 	 * 
 	 * @param taskService The task service.
 	 */
-	// [ifndef gae] method
 	public void setTaskService(org.restlet.service.TaskService taskService) {
-		getServices().set(taskService);
+		if (Edition.GAE.isCurrentEdition()) {
+			getServices().set(taskService);
+		} else {
+			throw new RuntimeException("Edition GAE does not support this method");
+		}
 	}
 
 	/**
 	 * Starts the component. First it starts all the connectors (clients then
 	 * servers), the routers, the services, the realms and then the component's
-	 * internal helper. Finally it calls the start method of the super class.
+	 * internal helper. Finally, it calls the start method of the super class.
 	 * 
 	 * @see #startClients()
 	 * @see #startServers()

@@ -96,7 +96,6 @@ public class DomRepresentation extends XmlRepresentation {
         this.xmlRepresentation = xmlRepresentation;
     }
 
-    // [ifndef android] method
     /**
      * Creates a new JAXP Transformer object that will be used to serialize this
      * DOM. This method may be overridden in order to set custom properties on
@@ -106,6 +105,9 @@ public class DomRepresentation extends XmlRepresentation {
      */
     protected javax.xml.transform.Transformer createTransformer()
             throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         try {
             javax.xml.transform.Transformer transformer = javax.xml.transform.TransformerFactory
                     .newInstance().newTransformer();
@@ -172,7 +174,6 @@ public class DomRepresentation extends XmlRepresentation {
         return this.document;
     }
 
-    // [ifndef android] method
     /**
      * Returns a DOM source.
      * 
@@ -180,6 +181,9 @@ public class DomRepresentation extends XmlRepresentation {
      */
     @Override
     public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
+            throw new RuntimeException();
+        }
         return new javax.xml.transform.dom.DOMSource(getDocument());
     }
 
@@ -237,11 +241,11 @@ public class DomRepresentation extends XmlRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        if (Edition.CURRENT == Edition.ANDROID) {
+        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
             throw new UnsupportedOperationException(
                     "Instances of DomRepresentation cannot be written at this time.");
         }
-        // [ifndef android]
+
         try {
             if (getDocument() != null) {
                 final javax.xml.transform.Transformer transformer = createTransformer();
@@ -259,6 +263,5 @@ public class DomRepresentation extends XmlRepresentation {
             throw new IOException("Couldn't write the XML representation: "
                     + tfce.getMessage());
         }
-        // [enddef]
     }
 }

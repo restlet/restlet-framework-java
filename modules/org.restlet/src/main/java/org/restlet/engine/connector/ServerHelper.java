@@ -27,6 +27,7 @@ package org.restlet.engine.connector;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.Edition;
 
 /**
  * Server connector helper.
@@ -73,14 +74,17 @@ public class ServerHelper extends ConnectorHelper<Server> {
 		}
 	}
 
-	// [ifndef gae] method
 	/**
 	 * Sets the ephemeral port in the attributes map if necessary.
 	 * 
 	 * @param socket The bound server socket.
 	 */
 	public void setEphemeralPort(java.net.ServerSocket socket) {
-		setEphemeralPort(socket.getLocalPort());
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException("Edition GAE does not support this method");
+		} else {
+			setEphemeralPort(socket.getLocalPort());	
+		}
 	}
 
 	@Override

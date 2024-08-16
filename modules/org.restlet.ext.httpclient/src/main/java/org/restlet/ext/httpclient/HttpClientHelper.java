@@ -52,6 +52,7 @@ import org.apache.http.params.HttpParams;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
@@ -272,7 +273,10 @@ public class HttpClientHelper extends
         schemeRegistry.register(new Scheme("http", PlainSocketFactory
                 .getSocketFactory(), 80));
 
-        // [ifndef android]
+        if (Edition.ANDROID.isCurrentEdition()) {
+            return; // TODO Compile with Android?
+        }
+
         SSLSocketFactory sslSocketFactory = null;
         SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
@@ -302,7 +306,6 @@ public class HttpClientHelper extends
         }
 
         schemeRegistry.register(new Scheme("https", 443, sslSocketFactory));
-        // [enddef]
     }
 
     /**

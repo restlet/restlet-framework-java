@@ -34,8 +34,10 @@ public enum Edition {
 	/**
 	 * Android mobile OS, Google App Engine, JEE, JSE, OSGI.
 	 */
-	ANDROID("Android", "Android", "Android"), GAE("Google App Engine", "GAE", "GAE"),
-	JEE("Java Enterprise Edition", "Java EE", "JEE"), JSE("Java Standard Edition", "Java SE", "JSE"),
+	ANDROID("Android", "Android", "Android"),
+	GAE("Google App Engine", "GAE", "GAE"),
+	JEE("Java Enterprise Edition", "Java EE", "JEE"),
+	JSE("Java Standard Edition", "Java SE", "JSE"),
 	OSGI("OSGi", "OSGi", "OSGi");
 
 	/** The current engine edition. */
@@ -77,4 +79,35 @@ public enum Edition {
 	public String getShortName() {
 		return shortName;
 	}
+	
+	/**
+	 * Returns true if this edition is the current one.
+	 *
+	 * @return True if this edition is the current one.
+	 */
+	public boolean isCurrentEdition() {
+		return this == CURRENT;
+	}
+	
+	/**
+	 * Returns true if this edition is not the current one.
+	 *
+	 * @return True if this edition is not the current one.
+	 */
+	public boolean isNotCurrentEdition() {
+		return this != CURRENT;
+	}
+
+	public static boolean isCurrentEditionOneOf(Edition... editions) {
+		boolean result = false;
+
+		if (editions != null) {
+			for (int i = 0; i < editions.length && !result; i++) {
+				result = editions[i].isCurrentEdition();
+			}
+		}
+
+		return result;
+	}
+	
 }

@@ -45,6 +45,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Edition;
 import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.InputRepresentation;
@@ -108,8 +109,10 @@ public class RestletXmlTestCase extends RestletTestCase {
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         DefaultSaxHandler handler = new DefaultSaxHandler();
         schemaFactory.setErrorHandler(handler);
-        // [ifndef android] line
-        schemaFactory.setResourceResolver(handler);
+        if (Edition.ANDROID.isNotCurrentEdition()) {
+            schemaFactory.setResourceResolver(handler);        	
+        }
+
         InputStream is = getClass().getResourceAsStream(
                 "/org/restlet/Component.xsd");
         assertNotNull("Component.xsd stream MUST NOT be null", is);

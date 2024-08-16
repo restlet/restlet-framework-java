@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.Edition;
 import org.restlet.engine.RestletHelper;
 
 /**
@@ -106,7 +107,6 @@ public class SslUtils {
 		return keySize;
 	}
 
-	// [ifndef gae] method
 	/**
 	 * Returns the SSL context factory. It first look for a "sslContextFactory"
 	 * attribute (instance), then for a "sslContextFactory" parameter (class name to
@@ -117,6 +117,10 @@ public class SslUtils {
 	 * @return The SSL context factory.
 	 */
 	public static SslContextFactory getSslContextFactory(RestletHelper<?> helper) {
+		if (Edition.GAE.isCurrentEdition()) {
+			throw new RuntimeException("Edition GAE does not support this method");
+		}
+		
 		SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
 				: helper.getContext().getAttributes().get("sslContextFactory"));
 

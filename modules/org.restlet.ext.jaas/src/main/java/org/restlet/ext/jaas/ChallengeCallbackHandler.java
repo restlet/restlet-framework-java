@@ -33,6 +33,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.engine.Edition;
 
 /**
  * JAAS callback handler that automatically provides the identifier and secret
@@ -90,16 +91,13 @@ public class ChallengeCallbackHandler implements CallbackHandler {
      */
     protected void handle(Callback callback)
             throws UnsupportedCallbackException {
-        // [ifndef android]
-        if (callback instanceof javax.security.auth.callback.NameCallback) {
+        if (Edition.ANDROID.isNotCurrentEdition() && callback instanceof javax.security.auth.callback.NameCallback) {
             javax.security.auth.callback.NameCallback nc = (javax.security.auth.callback.NameCallback) callback;
 
             if (getRequest().getChallengeResponse() != null) {
                 nc.setName(getRequest().getChallengeResponse().getIdentifier());
             }
-        } else
-        // [enddef]
-        if (callback instanceof PasswordCallback) {
+        } else if (callback instanceof PasswordCallback) {
             PasswordCallback pc = (PasswordCallback) callback;
 
             if (getRequest().getChallengeResponse() != null) {

@@ -33,6 +33,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.representation.FileRepresentation;
@@ -43,8 +44,9 @@ public class TestGetServer {
         ConnectorHelper<Server> helper;
         helper = new org.restlet.engine.connector.HttpServerHelper(null);
         Engine.getInstance().getRegisteredServers().add(0, helper);
-        // [ifdef jse] instruction
-        Engine.setLogLevel(Level.FINE);
+        if (Edition.JSE.isCurrentEdition()) {
+            Engine.setLogLevel(Level.FINE);
+        }
 
         Server server = new Server(new Context(), Protocol.HTTP, 8554,
                 new Restlet() {
