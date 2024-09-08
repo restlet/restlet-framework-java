@@ -94,8 +94,8 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         assertInstanceOf(SpringBeanFinder.class, restlet, "Restlet is not a bean finder restlet: "
                 + restlet.getClass().getName());
         final SpringBeanFinder actualFinder = (SpringBeanFinder) restlet;
-        assertEquals("Finder does not point to correct bean", expectedBeanName,
-                actualFinder.getBeanName());
+        assertEquals(expectedBeanName, actualFinder.getBeanName(),
+                "Finder does not point to correct bean");
         assertEquals(this.factory, actualFinder.getBeanFactory(), "Finder does not point to correct bean factory");
     }
 
