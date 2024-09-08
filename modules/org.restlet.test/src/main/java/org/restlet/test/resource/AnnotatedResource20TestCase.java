@@ -59,8 +59,7 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
     @BeforeEach
     protected void setUpEach() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
-                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
 
         // Hosts resources into an Application because we need some services for
@@ -84,15 +83,14 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
     public void testGet() throws IOException, ResourceException {
         try {
             myResource.represent();
-            fail("Should fail");
+            fail("Exception should be thrown");
         } catch (MyException01 e) {
-            fail("Exception should be caught by client resource", e);
+            fail("Exception should be caught by client resource (i.e.: wrapped as ResourceException)", e);
         } catch (ResourceException e) {
             assertEquals(400, e.getStatus().getCode());
             Representation responseEntity = clientResource.getResponseEntity();
             if (responseEntity instanceof JacksonRepresentation) {
-                assertTrue(JacksonRepresentation.class
-                        .isAssignableFrom(responseEntity.getClass()));
+                assertTrue(JacksonRepresentation.class.isAssignableFrom(responseEntity.getClass()));
                 @SuppressWarnings("rawtypes")
                 JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
                 Object entity = jacksonRepresentation.getObject();
@@ -104,18 +102,16 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
     }
 
     @Test
-    public void testGetAndSerializeException() throws IOException,
-            ResourceException {
+    public void testGetAndSerializeException() throws IOException, ResourceException {
         try {
             myResource.representAndSerializeException();
-            fail("Should fail");
+            fail("Exception should be thrown");
         } catch (MyException02 e) {
-            fail("Exception should be caught by client resource");
+            fail("Exception should be caught by client resource (i.e.: wrapped as ResourceException)", e);
         } catch (ResourceException e) {
             assertEquals(400, e.getStatus().getCode());
             Representation responseEntity = clientResource.getResponseEntity();
-            assertTrue(JacksonRepresentation.class
-                    .isAssignableFrom(responseEntity.getClass()));
+            assertTrue(JacksonRepresentation.class.isAssignableFrom(responseEntity.getClass()));
 
             @SuppressWarnings("rawtypes")
             JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
