@@ -58,14 +58,14 @@ import org.restlet.test.RestletTestCase;
  */
 public class HttpBasicTestCase extends RestletTestCase {
 
-    public class AuthenticatedRestlet extends Restlet {
+    public static class AuthenticatedRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
             response.setEntity(AUTHENTICATED_MSG, MediaType.TEXT_PLAIN);
         }
     }
 
-    public class TestVerifier extends MapVerifier {
+    public static class TestVerifier extends MapVerifier {
         public TestVerifier() {
             getLocalSecrets().put(SHORT_USERNAME, SHORT_PASSWORD.toCharArray());
             getLocalSecrets().put(LONG_USERNAME, LONG_PASSWORD.toCharArray());
@@ -76,7 +76,6 @@ public class HttpBasicTestCase extends RestletTestCase {
             // NOTE: Allocating Strings are not really secure treatment of
             // passwords
             String almostSecret = new String(inputSecret);
-            System.out.println("Checking " + identifier + " " + almostSecret);
 
             try {
                 return super.verify(identifier, inputSecret);
@@ -112,7 +111,7 @@ public class HttpBasicTestCase extends RestletTestCase {
     @Test
     public void guardLong() {
         assertEquals(
-                Verifier.RESULT_INVALID,
+                Verifier.RESULT_VALID,
                 this.verifier.verify(LONG_USERNAME, LONG_PASSWORD.toCharArray()),
                 "Didn't authenticate short user/pwd"
         );
@@ -285,7 +284,7 @@ public class HttpBasicTestCase extends RestletTestCase {
 
     @AfterEach
     public void stopServer() throws Exception {
-        if ((this.component != null) && this.component.isStarted()) {
+        if (this.component.isStarted()) {
             this.component.stop();
         }
         this.component = null;

@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
@@ -81,7 +82,7 @@ public class HeaderTestCase extends RestletTestCase {
 	 * @param additionalHeaders The list of header used to build the request.
 	 * @return The response of the request.
 	 */
-	Response getWithParams(Header... additionalHeaders) {
+	private Response getWithParams(Header... additionalHeaders) {
 		Request request = new Request(Method.GET, "http://localhost:" + TEST_PORT);
 		Collections.addAll(request.getHeaders(), additionalHeaders);
 		return client.handle(request);
@@ -90,16 +91,10 @@ public class HeaderTestCase extends RestletTestCase {
 	@BeforeEach
 	void setUpEach() throws Exception {
 		this.client = new Client(Protocol.HTTP);
-
-		if (this.component == null) {
-			this.component = new Component();
-			this.component.getServers().add(Protocol.HTTP, TEST_PORT);
-			this.component.getDefaultHost().attachDefault(new TestHeaderRestlet());
-		}
-
-		if (!this.component.isStarted()) {
-			this.component.start();
-		}
+		component = new Component();
+		component.getServers().add(Protocol.HTTP, TEST_PORT);
+		component.getDefaultHost().attachDefault(new TestHeaderRestlet());
+		component.start();
 	}
 
 	@AfterEach

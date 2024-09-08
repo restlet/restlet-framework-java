@@ -60,8 +60,7 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
     protected abstract Application createApplication(final String path);
 
     protected Request createRequest(Method method) {
-        Request request = new Request(method, getUri());
-        return request;
+        return new Request(method, getUri());
     }
 
     public Component getC() {
@@ -77,12 +76,10 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
     }
 
     protected Response handle(Request request) {
-        Response response;
-        response = getClient().handle(request);
-        return response;
+        return getClient().handle(request);
     }
 
-    public void initClient() throws Exception {
+    public void initClient() {
         setUpEngine();
         setUpCommon();
         setUpClient(8888, "/test");
@@ -105,13 +102,13 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         setUpClient(serverPort, "/test");
     }
 
-    protected void setUpClient(int serverPort, String path) throws Exception {
+    protected void setUpClient(int serverPort, String path) {
         this.client = new Client(Protocol.HTTP);
         this.uri = "http://localhost:" + serverPort + path;
         this.client = new Client(Protocol.HTTP);
     }
 
-    protected void setUpCommon() throws Exception {
+    protected void setUpCommon() {
         Engine.setLogLevel(Level.INFO);
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();

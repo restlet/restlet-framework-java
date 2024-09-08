@@ -31,6 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -48,6 +50,7 @@ public class AnnotatedResource16TestCase extends RestletTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource16.class);
 
@@ -62,10 +65,10 @@ public class AnnotatedResource16TestCase extends RestletTestCase {
 
     @Test
     public void testQuery() {
-        Representation rep = null;
-        MyBean myBean = new MyBean("test", "description");
-        rep = clientResource.post(new JacksonRepresentation<MyBean>(myBean),
+        final MyBean myBean = new MyBean("test", "description");
+        final Representation rep = clientResource.post(new JacksonRepresentation<MyBean>(myBean),
                 MediaType.APPLICATION_JSON);
+
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
     }

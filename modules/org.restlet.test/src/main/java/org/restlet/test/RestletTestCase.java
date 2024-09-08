@@ -52,7 +52,7 @@ public abstract class RestletTestCase {
 	}
 
 	@BeforeAll
-	static void setUp() throws Exception {
+	static void setUp() {
 		setUpEngine();
 	}
 
@@ -78,7 +78,7 @@ public abstract class RestletTestCase {
 	}
 
 	@AfterAll
-	static void tearDown() throws Exception {
+	static void tearDown() {
 		tearDownEngine();
 	}
 

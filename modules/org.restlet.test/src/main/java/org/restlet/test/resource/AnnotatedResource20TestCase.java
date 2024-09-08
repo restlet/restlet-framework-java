@@ -86,7 +86,7 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
             myResource.represent();
             fail("Should fail");
         } catch (MyException01 e) {
-            fail("Exception should be caught by client resource");
+            fail("Exception should be caught by client resource", e);
         } catch (ResourceException e) {
             assertEquals(400, e.getStatus().getCode());
             Representation responseEntity = clientResource.getResponseEntity();

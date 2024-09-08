@@ -159,7 +159,7 @@ public class RangeTestCase extends RestletTestCase {
     private static final File testDir = new File(System.getProperty("java.io.tmpdir"), "rangeTestCase");
 
     // Sample string.
-    private static String str1000;
+    private static final String str1000;
     
     static {
         char[] tab = new char[1000];
