@@ -312,21 +312,16 @@ public class DirectoryTestCase extends RestletTestCase {
     @Test
     public void testUserPreferences() throws IOException {
         application.getTunnelService().setExtensionsTunnel(true); // Allow extensions tunneling
+        application.getMetadataService().setDefaultLanguage(Language.ENGLISH); // default language is not es or fr.
         this.testDir = Files.createTempDirectory("testUserPreferences").toFile();
+        System.out.println(this.testDir.getAbsolutePath());
         application.setTestDirectory(testDir);
-
         application.getDirectory().setModifiable(true);
 
-        // Create a temporary directory
-        final File testDirectory = new File(this.testDir, "nego");
-        testDirectory.mkdir();
-
-        // Create a temporary file
-        final String testDirectoryUrl = this.webSiteURL.concat(testDirectory.getName());
-        final String testFileUrl = testDirectoryUrl.concat("/test");
-        final String testTxtFileUrl = testDirectoryUrl.concat("/test.txt");
-        final String testFrTxtFileUrl = testDirectoryUrl.concat("/test.fr.txt");
-        final String testEsTxtFileUrl = testDirectoryUrl.concat("/test.es.txt");
+        final String testFileUrl = this.webSiteURL.concat("test");
+        final String testTxtFileUrl = this.webSiteURL.concat("test.txt");
+        final String testFrTxtFileUrl = this.webSiteURL.concat("test.fr.txt");
+        final String testEsTxtFileUrl = this.webSiteURL.concat("test.es.txt");
 
         // Create two files
         Response response = new TestRequest(testFrTxtFileUrl)
@@ -548,14 +543,14 @@ public class DirectoryTestCase extends RestletTestCase {
                 .query("x", "y")
                 .handle(GET);
         assertEquals(SUCCESS_OK, response.getStatus());
-        assertTrue(response.getEntityAsText().equals("this is test 3b"));
+        assertEquals("this is test 3b", response.getEntityAsText());
 
         // Test 4 : Try to get the representation of the new file
         response = new TestRequest(this.baseFileUrl)
                 .baseRef(this.webSiteURL)
                 .handle(GET);
         assertEquals(SUCCESS_OK, response.getStatus());
-        assertTrue(response.getEntityAsText().equals("this is test 3b"));
+        assertEquals("this is test 3b", response.getEntityAsText());
 
         // Test 5 : add a new representation of the same base file
         response = new TestRequest(this.baseFileUrlEn)
@@ -591,7 +586,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test 6c : delete a directory (without and with trailing slash)
         // Distinct behaviors if an index has been defined or not
-        if (indexName.length() == 0) {
+        if (indexName.isEmpty()) {
             response = new TestRequest(testDirectoryUrl)
                     .baseRef(this.webSiteURL)
                     .handle(DELETE);
@@ -608,7 +603,7 @@ public class DirectoryTestCase extends RestletTestCase {
             assertEquals(CLIENT_ERROR_FORBIDDEN, response.getStatus());
         } else {
             // As there is no index file in the directory, the response must
-            // return the status Status.CLIENT_ERROR_NOT_FOUND
+            // return Status.CLIENT_ERROR_NOT_FOUND
             response = new TestRequest(testDirectoryUrl, "/")
                     .baseRef(this.webSiteURL)
                     .handle(DELETE);
@@ -774,7 +769,7 @@ public class DirectoryTestCase extends RestletTestCase {
         assertEquals(SUCCESS_CREATED, response.getStatus());
 
         // Test 10b : Try to create a directory (with the trailing "/") with an
-        // unkown hierarchy of parent directories.
+        // unknown hierarchy of parent directories.
         response = new TestRequest(this.testCreationDirectory, "/")
                 .baseRef(this.webSiteURL)
                 .entity("useless entity")
@@ -830,8 +825,6 @@ public class DirectoryTestCase extends RestletTestCase {
                 .handle(GET);
         assertEquals("https://myapplication:123/a%20new%20%25file.txt.fr", response.getEntity().getLocationRef()
                 .toString());
-
-        IoUtils.delete(testDirectory, true);
     }
 
 }
