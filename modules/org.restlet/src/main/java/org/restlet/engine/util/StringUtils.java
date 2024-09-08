@@ -503,8 +503,8 @@ public class StringUtils {
 	 *         rules.
 	 */
 	public static String htmlEscape(String str) {
-		if (str == null) {
-			return null;
+		if (str == null || str.isEmpty()) {
+			return str;
 		}
 		int len = str.length();
 		StringBuilder sb = new StringBuilder((int) (len * 1.5));
@@ -535,8 +535,8 @@ public class StringUtils {
 	 *         rules.
 	 */
 	public static String htmlUnescape(String str) {
-		if (str == null) {
-			return null;
+		if (str == null || str.isEmpty()) {
+			return str;
 		}
 		int len = str.length();
 		StringBuilder sb = new StringBuilder(len);
@@ -598,9 +598,9 @@ public class StringUtils {
 					}
 					i = semicolonIndex;
 				} else if (stop) {
-					// found a "&" character
-					sb.append(str, i, ampersandIndex).append('&');
-					i = ampersandIndex;
+					// found a "&" character, it could be another entity
+					sb.append(str, i, ampersandIndex); // add the consumed characters
+					i = ampersandIndex - 1; // put the index in order to read the "&" character
 				} else {
 					// End of the string reached, no more entities to parse.
 					sb.append(str, i, len);
