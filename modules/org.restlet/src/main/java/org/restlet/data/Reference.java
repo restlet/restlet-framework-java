@@ -516,7 +516,7 @@ public class Reference {
 	}
 
 	/**
-	 * Constructor from an URI reference (most likely relative).
+	 * Constructor from a URI reference (most likely relative).
 	 * 
 	 * @param baseRef The base reference.
 	 * @param uriRef  The URI reference, either absolute or relative.
@@ -543,7 +543,7 @@ public class Reference {
 	}
 
 	/**
-	 * Constructor from an URI reference.
+	 * Constructor from a URI reference.
 	 * 
 	 * @param uriReference The URI reference, either absolute or relative.
 	 */
