@@ -64,14 +64,11 @@ public class AnnotatedResource18TestCase extends RestletTestCase {
 
     @Test
     public void testQuery() throws IOException {
-        Representation rep = null;
         MyBean myBean = new MyBean("test", "description");
-        rep = clientResource.post(new JacksonRepresentation<>(myBean),
-                MediaType.APPLICATION_JSON);
+        Representation rep = clientResource.post(new JacksonRepresentation<>(myBean), MediaType.APPLICATION_JSON);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
-        JacksonRepresentation<MyBean> jr = new JacksonRepresentation<>(
-                rep, MyBean.class);
+        JacksonRepresentation<MyBean> jr = new JacksonRepresentation<>(rep, MyBean.class);
         assertNotNull(jr.getObject());
         assertEquals("test", jr.getObject().getName());
     }

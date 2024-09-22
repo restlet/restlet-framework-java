@@ -885,64 +885,71 @@ public abstract class ServerResource extends Resource {
 	 * @param method The method.
 	 * @return The modifiable list of variants.
 	 */
-	protected List<Variant> getVariants(Method method) {
-		List<Variant> result = this.variants;
+	protected List<Variant> getVariants(final Method method) {
 
-		if (result == null) {
-			result = new ArrayList<Variant>();
+		if (this.variants == null && isAnnotated() && hasAnnotations()) {
+			this.variants = getVariantsFromAnnotations((Method.HEAD.equals(method)) ? Method.GET : method);
+		} else if (this.variants == null) {
+			this.variants = new ArrayList<>();
+		}
 
-			// Add annotation-based variants in priority
-			if (isAnnotated() && hasAnnotations()) {
-				List<Variant> annoVariants = null;
-				method = (Method.HEAD.equals(method)) ? Method.GET : method;
+		return this.variants;
+	}
 
-				for (AnnotationInfo annotationInfo : getAnnotations()) {
-					try {
-						if (annotationInfo instanceof MethodAnnotationInfo) {
-							MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
+	private List<Variant> getVariantsFromAnnotations(Method method) {
+		final List<Variant> result = new ArrayList<>();
 
-							if (methodAnnotationInfo.isCompatible(method, getQuery(), getRequestEntity(),
-									getMetadataService(), getConverterService())) {
-								annoVariants = methodAnnotationInfo.getResponseVariants(getMetadataService(),
-										getConverterService());
-
-								if (annoVariants != null) {
-									// Compute an affinity score between this
-									// annotation and the input entity.
-									float score = 0.5f;
-									if ((getRequest().getEntity() != null) && getRequest().getEntity().isAvailable()) {
-										MediaType emt = getRequest().getEntity().getMediaType();
-										List<MediaType> amts = getMetadataService()
-												.getAllMediaTypes(methodAnnotationInfo.getInput());
-										if (amts != null) {
-											for (MediaType amt : amts) {
-												if (amt.equals(emt)) {
-													score = 1.0f;
-												} else if (amt.includes(emt)) {
-													score = Math.max(0.8f, score);
-												} else if (amt.isCompatible(emt)) {
-													score = Math.max(0.6f, score);
-												}
-											}
-										}
-									}
-
-									for (Variant v : annoVariants) {
-										VariantInfo vi = new VariantInfo(v, methodAnnotationInfo);
-										vi.setInputScore(score);
-										result.add(vi);
-									}
-								}
-							}
-						}
-					} catch (IOException e) {
-						getLogger().log(Level.FINE, "Unable to get variants from annotation", e);
-
-					}
-				}
+		for (AnnotationInfo annotationInfo : getAnnotations()) {
+			if (!(annotationInfo instanceof MethodAnnotationInfo)) {
+				continue;
 			}
 
-			this.variants = result;
+			final MethodAnnotationInfo methodAnnotationInfo = (MethodAnnotationInfo) annotationInfo;
+			try {
+				final boolean methodAnnotationIsCompatible = methodAnnotationInfo.isCompatible(method, getQuery(), getRequestEntity(),
+						getMetadataService(), getConverterService());
+
+				if (!methodAnnotationIsCompatible) {
+					continue;
+				}
+
+				final List<Variant> responseVariants = methodAnnotationInfo.getResponseVariants(getMetadataService(), getConverterService());
+
+				if (responseVariants == null) {
+					continue;
+				}
+
+				// Compute an affinity score between this annotation and the input entity.
+				float score = 0.5f;
+				if ((getRequest().getEntity() != null) && getRequest().getEntity().isAvailable()) {
+					final MediaType requestEntityMediaType = getRequest().getEntity().getMediaType();
+					final List<MediaType> amts = getMetadataService().getAllMediaTypes(methodAnnotationInfo.getInput());
+					if (amts != null) {
+						for (MediaType amt : amts) {
+							if (amt.equals(requestEntityMediaType)) {
+								score = 1.0f;
+							} else if (amt.includes(requestEntityMediaType)) {
+								score = Math.max(0.8f, score);
+							} else if (amt.isCompatible(requestEntityMediaType)) {
+								score = Math.max(0.6f, score);
+							}
+						}
+					}
+				} else if (methodAnnotationInfo.getInput() == null || methodAnnotationInfo.getInput().isEmpty()) { // the annotation does not declare input media type
+					score = 1.0f;
+				} else if (methodAnnotationInfo.getJavaInputTypes() == null || methodAnnotationInfo.getJavaInputTypes().length == 0) { // the annotated method does not require an entity
+					score = 0.9f;
+				}
+
+				for (Variant variant : responseVariants) {
+					final VariantInfo variantInfo = new VariantInfo(variant, methodAnnotationInfo);
+					variantInfo.setInputScore(score);
+					result.add(variantInfo);
+				}
+
+			} catch (IOException e) {
+				getLogger().log(Level.FINE, "Unable to get variants from annotation", e);
+			}
 		}
 
 		return result;

@@ -64,8 +64,7 @@ public class AnnotatedResource05TestCase extends RestletTestCase {
 
     @Test
     public void testPost() throws IOException, ResourceException {
-        Representation result = clientResource.post("[\"root\"]",
-                MediaType.APPLICATION_JSON);
+        Representation result = clientResource.post("[\"root\"]", MediaType.APPLICATION_JSON);
         assertNotNull(result);
         assertEquals("[\"root\"]", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());

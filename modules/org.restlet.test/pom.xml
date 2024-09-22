@@ -167,5 +167,16 @@
             <artifactId>snakeyaml</artifactId>
             <version>${lib-snakeyaml-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${lib-junit-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${lib-junit-version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

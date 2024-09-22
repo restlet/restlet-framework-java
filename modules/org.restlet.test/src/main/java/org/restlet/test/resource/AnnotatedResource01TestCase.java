@@ -58,8 +58,7 @@ public class AnnotatedResource01TestCase extends RestletTestCase {
     @BeforeEach
     protected void setUpEach() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
-                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource01.class);
@@ -107,8 +106,7 @@ public class AnnotatedResource01TestCase extends RestletTestCase {
                 result);
 
         ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
-        result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
-                .getText();
+        result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML).getText();
         assertTrue(result
                 .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                 && result.contains("<java version=\""));
@@ -139,11 +137,9 @@ public class AnnotatedResource01TestCase extends RestletTestCase {
 
         // Attempt to send an unknown entity
         try {
-            clientResource.put(new StringRepresentation("wxyz",
-                    MediaType.APPLICATION_GNU_ZIP));
+            clientResource.put(new StringRepresentation("wxyz", MediaType.APPLICATION_GNU_ZIP));
         } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
-                    re.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
         }
     }
 

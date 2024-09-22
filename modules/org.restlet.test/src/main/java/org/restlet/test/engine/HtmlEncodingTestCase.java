@@ -26,36 +26,54 @@ package org.restlet.test.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.test.RestletTestCase;
+
+import java.util.stream.Stream;
 
 /**
  * Unit tests for the HTML encoding/decoding.
  *
  * @author Thierry Boileau
  */
-public class HtmlEncodingTestCase extends RestletTestCase {
+public class HtmlEncodingTestCase {
 
-    @Test
-    public void testEncodingDecoding() {
-        assertEquals("", StringUtils.htmlEscape(""));
-        assertNull(StringUtils.htmlEscape(null));
-        assertEquals("", StringUtils.htmlUnescape(""));
-        assertNull(StringUtils.htmlUnescape(null));
+    private static final String MIXED_ENCODED_STRING = "<test>azertyéè@à&%ù€®&#174;&reg;</test>&&&;&testest";
+    private static final String ENCODED_STRING = "&lt;test&gt;azerty&eacute;&egrave;@&agrave;&amp;%&ugrave;&euro;&reg;&amp;#174;&amp;reg;&lt;/test&gt;&amp;&amp;&amp;;&amp;testest";
+    private static final String DECODED_STRING = "<test>azertyéè@à&%ù€®®®</test>&&&;&testest";
 
-        String str = "<test>azertyéè@à&%ù€®&#174;&reg;</test>&&&;&testest";
-        String strEncoded = "&lt;test&gt;azerty&eacute;&egrave;@&agrave;&amp;%&ugrave;&euro;&reg;&amp;#174;&amp;reg;&lt;/test&gt;&amp;&amp;&amp;;&amp;testest";
-        String strDecoded = "<test>azertyéè@à&%ù€®®®</test>&&&;&testest";
-
-        assertEquals(strEncoded, StringUtils.htmlEscape(str));
-        assertEquals(strDecoded, StringUtils.htmlUnescape(str));
-
-        // Test encoding/decoding as identity tranformation
-        assertEquals(str, StringUtils.htmlUnescape(StringUtils.htmlEscape(str)));
-        // Test decoding twice
-        assertEquals(strDecoded,
-                StringUtils.htmlUnescape(StringUtils.htmlUnescape(str)));
+    static Stream<Arguments> htmlEscapeArgumentsProvider() {
+        return Stream.of(
+                arguments("", ""),
+                arguments(null, null),
+                arguments(MIXED_ENCODED_STRING, ENCODED_STRING)
+        );
     }
+
+    @ParameterizedTest
+    @MethodSource("htmlEscapeArgumentsProvider")
+    public void testEncoding(final String toEscape, final String expected) {
+        assertEquals(expected, StringUtils.htmlEscape(toEscape), "Error while escaping " + toEscape);
+    }
+
+    static Stream<Arguments> htmlUnescapeArgumentsProvider() {
+        return Stream.of(
+                arguments("", ""),
+                arguments(null, null),
+                arguments(MIXED_ENCODED_STRING, DECODED_STRING),
+                arguments(ENCODED_STRING, MIXED_ENCODED_STRING),
+                arguments(DECODED_STRING, DECODED_STRING)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("htmlUnescapeArgumentsProvider")
+    public void testDecoding(final String toUnescape, final String expected) {
+        assertEquals(expected, StringUtils.htmlUnescape(toUnescape), "Error while unescaping " + toUnescape);
+    }
+
 }

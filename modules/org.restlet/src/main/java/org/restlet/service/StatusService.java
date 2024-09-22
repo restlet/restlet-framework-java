@@ -196,8 +196,7 @@ public class StatusService extends Service {
 		if (converterService != null && connegService != null && metadataService != null) {
 			Object representationObject = null;
 
-			// Serialize exception if any and if {@link
-			// org.restlet.resource.Status} annotation asks for it
+			// Serialize exception if any and if {@link org.restlet.resource.Status} annotation asks for it
 			Throwable cause = status.getThrowable();
 
 			if (cause != null) {
@@ -244,7 +243,7 @@ public class StatusService extends Service {
 	}
 
 	/**
-	 * Returns a status for a given exception or error. By default it unwraps the
+	 * Returns a status for a given exception or error. By default, it unwraps the
 	 * status of {@link ResourceException}. For other exceptions or errors, it
 	 * returns an {@link Status#SERVER_ERROR_INTERNAL} status.<br>
 	 * <br>
@@ -385,7 +384,7 @@ public class StatusService extends Service {
 	/**
 	 * Returns a representation for the given status.<br>
 	 * In order to customize the default representation, this method can be
-	 * overridden. By default it invokes
+	 * overridden. By default, it invokes
 	 * {@link #toRepresentation(Status, Request, Response)}
 	 * 
 	 * @param status   The status to represent.
