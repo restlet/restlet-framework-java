@@ -24,6 +24,7 @@
 
 package org.restlet.test.connector;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -36,6 +37,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class RestartTestCase extends RestletTestCase {
 
+	@Test
     public void testRestart() throws Exception {
         final int waitTime = 100;
 

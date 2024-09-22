@@ -27,8 +27,12 @@ package org.restlet.test.resource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -44,8 +48,8 @@ public class AnnotatedResource15TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource15.class);
 
@@ -53,17 +57,16 @@ public class AnnotatedResource15TestCase extends RestletTestCase {
         this.clientResource.setNext(finder);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
+        clientResource.release();
         clientResource = null;
-        super.tearDown();
     }
 
     @Test
     public void testQuery() {
-        Representation rep = null;
         MyBean myBean = new MyBean("test", "description");
-        rep = clientResource.post(new JacksonRepresentation<>(myBean),
+        Representation rep = clientResource.post(new JacksonRepresentation<>(myBean),
                 MediaType.APPLICATION_JSON);
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());

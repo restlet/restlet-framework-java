@@ -24,6 +24,8 @@
 
 package org.restlet.test.engine.connector;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -101,14 +103,13 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         this.component = null;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         // Restore a clean engine
         org.restlet.engine.Engine.register();
     }
 
+    @Test
     public void testInternalAndApache() throws Exception {
         if (this.enabledServerInternal && this.enabledClientApache) {
             runTest(new org.restlet.engine.connector.HttpServerHelper(null),
@@ -116,6 +117,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
             runTest(new org.restlet.engine.connector.HttpServerHelper(null),
@@ -123,6 +125,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testInternalAndJetty() throws Exception {
         if (this.enabledServerInternal && this.enabledClientJetty) {
             runTest(new org.restlet.engine.connector.HttpServerHelper(null),
@@ -130,6 +133,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testJettyAndApache() throws Exception {
         if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
@@ -137,6 +141,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testJettyAndInternal() throws Exception {
         if (this.enabledServerJetty && this.enabledClientInternal) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
@@ -144,6 +149,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
+    @Test
     public void testJettyAndJetty() throws Exception {
         if (this.enabledServerJetty && this.enabledClientJetty) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),

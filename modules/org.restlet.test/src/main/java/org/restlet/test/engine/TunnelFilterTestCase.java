@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -235,9 +237,8 @@ public class TunnelFilterTestCase extends RestletTestCase {
         this.accEncodings = this.request.getClientInfo().getAcceptedEncodings();
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUpEach() throws Exception {
         Application app = new Application(new Context());
         Application.setCurrent(app);
         this.tunnelFilter = new TunnelFilter(app.getContext());
@@ -245,12 +246,11 @@ public class TunnelFilterTestCase extends RestletTestCase {
                 .setExtensionsTunnel(true);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         this.tunnelFilter = null;
         this.request = null;
         this.response = null;
-        super.tearDown();
     }
 
     @Test

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
@@ -53,9 +54,8 @@ import org.restlet.util.Series;
  */
 public class AuthenticationTestCase extends RestletTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         org.restlet.engine.Engine.clear();
     }
 

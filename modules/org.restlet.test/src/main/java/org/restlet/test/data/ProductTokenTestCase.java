@@ -135,9 +135,6 @@ public class ProductTokenTestCase extends RestletTestCase {
         }
     }
 
-    /**
-     * Tests.
-     */
     @Test
     public void testProductTokens() {
         final String userAgent1 = "Mozilla/4.0 (compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)";

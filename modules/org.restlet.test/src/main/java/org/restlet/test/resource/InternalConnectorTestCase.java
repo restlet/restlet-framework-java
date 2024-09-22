@@ -26,6 +26,8 @@ package org.restlet.test.resource;
 
 import java.util.logging.Level;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -58,8 +60,7 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
     protected abstract Application createApplication(final String path);
 
     protected Request createRequest(Method method) {
-        Request request = new Request(method, getUri());
-        return request;
+        return new Request(method, getUri());
     }
 
     public Component getC() {
@@ -75,12 +76,10 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
     }
 
     protected Response handle(Request request) {
-        Response response;
-        response = getClient().handle(request);
-        return response;
+        return getClient().handle(request);
     }
 
-    public void initClient() throws Exception {
+    public void initClient() {
         setUpEngine();
         setUpCommon();
         setUpClient(8888, "/test");
@@ -96,20 +95,20 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         response.getEntity().release();
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         setUpCommon();
         int serverPort = setUpServer(0, "/test");
         setUpClient(serverPort, "/test");
     }
 
-    protected void setUpClient(int serverPort, String path) throws Exception {
+    protected void setUpClient(int serverPort, String path) {
         this.client = new Client(Protocol.HTTP);
         this.uri = "http://localhost:" + serverPort + path;
         this.client = new Client(Protocol.HTTP);
     }
 
-    protected void setUpCommon() throws Exception {
+    protected void setUpCommon() {
         Engine.setLogLevel(Level.INFO);
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();
@@ -123,11 +122,10 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         return server.getActualPort();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         tearDownClient();
         tearDownServer();
-        super.tearDown();
     }
 
     protected void tearDownClient() throws Exception {

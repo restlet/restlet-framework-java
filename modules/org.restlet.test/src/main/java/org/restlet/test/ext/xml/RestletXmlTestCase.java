@@ -41,6 +41,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
@@ -97,10 +98,8 @@ public class RestletXmlTestCase extends RestletTestCase {
         return new ByteArrayInputStream(xmlString.getBytes());
     }
 
-    @Override
     @BeforeEach
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void setUpEach() throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
@@ -127,11 +126,10 @@ public class RestletXmlTestCase extends RestletTestCase {
         validator = schema.newValidator();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         builder = null;
         validator = null;
-        super.tearDown();
     }
 
     @Test

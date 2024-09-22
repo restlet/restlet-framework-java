@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.junit.jupiter.api.Test;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 
@@ -40,6 +41,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class ImmutableDateTestCase extends RestletTestCase {
 
+	@Test
     public void test() {
         Date now = new Date();
         Calendar yesterdayCal = new GregorianCalendar();

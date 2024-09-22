@@ -26,10 +26,17 @@ package org.restlet.test.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.restlet.data.MediaType.*;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -47,8 +54,8 @@ public class AnnotatedResource08TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Finder finder = new Finder();
         finder.setTargetClass(MyResource08.class);
 
@@ -56,51 +63,29 @@ public class AnnotatedResource08TestCase extends RestletTestCase {
         this.clientResource.setNext(finder);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         clientResource = null;
-        super.tearDown();
     }
 
-    @Test
-    public void testPost() throws IOException, ResourceException {
-        Representation input = new StringRepresentation("root",
-                MediaType.APPLICATION_XML);
-        Representation result = clientResource.post(input,
-                MediaType.APPLICATION_XML);
+    @ParameterizedTest
+    @MethodSource("argumentsProvider")
+    public void testPost(final MediaType requestBodyMediaType, final String requestBody, final MediaType responseBodyMediaType, final String responseBody) throws IOException, ResourceException {
+        Representation input = new StringRepresentation(requestBody, requestBodyMediaType);
+        Representation result = clientResource.post(input, responseBodyMediaType);
         assertNotNull(result);
-        assertEquals("root1", result.getText());
-        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
+        assertEquals(responseBody, result.getText());
+        assertEquals(responseBodyMediaType, result.getMediaType());
+    }
 
-        input = new StringRepresentation("root", MediaType.APPLICATION_XML);
-        result = clientResource.post(input, MediaType.APPLICATION_JSON);
-        assertNotNull(result);
-        assertEquals("root1", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
-
-        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
-        result = clientResource.post(input, MediaType.APPLICATION_JSON);
-        assertNotNull(result);
-        assertEquals("root1", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
-
-        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
-        result = clientResource.post(input, MediaType.APPLICATION_XML);
-        assertNotNull(result);
-        assertEquals("root1", result.getText());
-        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
-
-        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
-        result = clientResource.post(input, MediaType.APPLICATION_WWW_FORM);
-        assertNotNull(result);
-        assertEquals("root2", result.getText());
-        assertEquals(MediaType.APPLICATION_WWW_FORM, result.getMediaType());
-
-        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
-        result = clientResource.post(input, MediaType.TEXT_HTML);
-        assertNotNull(result);
-        assertEquals("root2", result.getText());
-        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
+    static Stream<Arguments> argumentsProvider() {
+        return Stream.of(
+                arguments(APPLICATION_XML, "root", APPLICATION_XML, "root1"),
+                arguments(APPLICATION_XML, "root", APPLICATION_JSON, "root1"),
+                arguments(APPLICATION_JSON, "root", APPLICATION_XML, "root1"),
+                arguments(APPLICATION_WWW_FORM, "root", APPLICATION_WWW_FORM, "root2"),
+                arguments(APPLICATION_WWW_FORM, "root", TEXT_HTML, "root2")
+        );
     }
 
 }

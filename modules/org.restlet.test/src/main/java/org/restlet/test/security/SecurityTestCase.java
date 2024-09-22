@@ -44,6 +44,12 @@ import org.restlet.test.RestletTestCase;
  */
 public class SecurityTestCase extends RestletTestCase {
 
+
+    private final ChallengeResponse lambdaUserCR = new ChallengeResponse(
+            ChallengeScheme.HTTP_BASIC, "stiger", "pwd");
+    private final ChallengeResponse adminUserCR = new ChallengeResponse(
+            ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd");
+
     private Component component;
 
     @BeforeEach
@@ -54,7 +60,7 @@ public class SecurityTestCase extends RestletTestCase {
 
     @AfterEach
     public void stopServer() throws Exception {
-        if ((this.component != null) && this.component.isStarted()) {
+        if (this.component.isStarted()) {
             this.component.stop();
         }
 
@@ -62,100 +68,71 @@ public class SecurityTestCase extends RestletTestCase {
     }
 
     @Test
-    public void testSecurity() {
-        try {
-            startComponent();
-
-            String uri = "http://localhost:" + TEST_PORT + "/test1";
-            ClientResource resource = new ClientResource(uri);
-
-            // TEST SERIES 1
-
-            // Try without authentication
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, resource.getStatus());
-
-            // Try with authentication
-            resource.setChallengeResponse(new ChallengeResponse(
-                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.SUCCESS_OK, resource.getStatus());
-
-            // TEST SERIES 2
-            uri = "http://localhost:" + TEST_PORT + "/test2";
-            resource = new ClientResource(uri);
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.SUCCESS_OK, resource.getStatus());
-
-            // TEST SERIES 3
-            uri = "http://localhost:" + TEST_PORT + "/test3";
-            resource = new ClientResource(uri);
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
-
-            // TEST SERIES 4
-            uri = "http://localhost:" + TEST_PORT + "/test4";
-            resource = new ClientResource(uri);
-            resource.setChallengeResponse(new ChallengeResponse(
-                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
-
-            // Try again with another user
-            resource.setChallengeResponse(new ChallengeResponse(
-                    ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.SUCCESS_OK, resource.getStatus());
-
-            // TEST SERIES 5
-            uri = "http://localhost:" + TEST_PORT + "/test5";
-            resource = new ClientResource(uri);
-            resource.setChallengeResponse(new ChallengeResponse(
-                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.SUCCESS_OK, resource.getStatus());
-
-            // Try again with another user
-            resource.setChallengeResponse(new ChallengeResponse(
-                    ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
-            try {
-                resource.get();
-            } catch (ResourceException e) {
-            }
-            resource.release();
-            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
-
-            stopServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void withoutAuthenticationHttpBasicAuthenticatorShouldReturnUnauthorizedResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/httpBasicAuthenticator");
+        runClientResource(resource);
+        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, resource.getStatus());
     }
+
+    @Test
+    public void withAuthenticationHttpBasicAuthenticatorShouldReturnOkResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/httpBasicAuthenticator");
+        resource.setChallengeResponse(lambdaUserCR);
+        runClientResource(resource);
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
+    }
+
+    @Test
+    public void withoutAuthenticationAlwaysAuthenticatorShouldReturnOkResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/alwaysAuthenticator");
+        runClientResource(resource);
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
+    }
+
+    @Test
+    public void withAuthenticationNeverAuthenticatorShouldReturnForbiddenResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/neverAuthenticator");
+        runClientResource(resource);
+        assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
+    }
+
+    @Test
+    public void withLambdaUserAuthenticationAdminRoleAuthorizerAuthenticatorShouldReturnForbiddenResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/adminRoleAuthorizer");
+        resource.setChallengeResponse(lambdaUserCR);
+        runClientResource(resource);
+        assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
+    }
+
+    @Test
+    public void withAdminUserAuthenticationAdminRoleAuthorizerAuthenticatorShouldReturnOkResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/adminRoleAuthorizer");
+        resource.setChallengeResponse(adminUserCR);
+        runClientResource(resource);
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
+    }
+
+    @Test
+    public void withAdminUserAuthenticationAdminRoleForbiddenAuthorizerAuthenticatorShouldReturnForbiddenResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/adminRoleForbiddenAuthorizer");
+        resource.setChallengeResponse(adminUserCR);
+        runClientResource(resource);
+        assertEquals(Status.CLIENT_ERROR_FORBIDDEN, resource.getStatus());
+    }
+
+    @Test
+    public void withLambdaUserAuthenticationAdminRoleForbiddenAuthorizerAuthenticatorShouldReturnOkResponse() {
+        ClientResource resource = new ClientResource("http://localhost:" + TEST_PORT + "/adminRoleForbiddenAuthorizer");
+        resource.setChallengeResponse(lambdaUserCR);
+        runClientResource(resource);
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
+    }
+
+    private static void runClientResource(ClientResource resource) {
+        try {
+            resource.get();
+        } catch (ResourceException e) {}
+        resource.release();
+    }
+
 }

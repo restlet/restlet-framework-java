@@ -34,7 +34,7 @@ public class Anno09Client {
 
         AnnotatedResource09TestCase anno9 = new AnnotatedResource09TestCase();
         anno9.initClient();
-        anno9.testSI();
+        anno9.testCustomMethod(AnnotatedResource09TestCase.SI);
 
     }
 

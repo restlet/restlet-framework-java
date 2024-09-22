@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Request;
@@ -41,7 +42,6 @@ import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.StatusService;
-import org.restlet.test.RestletTestCase;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -50,16 +50,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 
  * @author Jerome Louvel
  */
-public class StatusServiceTestCase extends RestletTestCase {
+public class StatusServiceTestCase  {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+	@BeforeAll
+	static void setUp() throws Exception {
         Application application = new Application();
         Application.setCurrent(application);
-    }
 
-    protected void setUpEngine() {
         Engine.clearThreadLocalVariables();
 
         // Restore a clean engine
@@ -212,7 +209,8 @@ public class StatusServiceTestCase extends RestletTestCase {
             this.value = value;
         }
 
-        public int getValue() {
+        @SuppressWarnings("unused")
+		public int getValue() {
             return value;
         }
     }
@@ -226,7 +224,8 @@ public class StatusServiceTestCase extends RestletTestCase {
 
         private int value;
 
-        public Status401SerializableException() {
+        @SuppressWarnings("unused")
+		public Status401SerializableException() {
         }
 
        public Status401SerializableException(String message, int value) {
@@ -245,7 +244,8 @@ public class StatusServiceTestCase extends RestletTestCase {
         }
     }
 
-    @JsonIgnoreProperties({ "cause", "localizedMessage", "message",
+    @SuppressWarnings("serial")
+	@JsonIgnoreProperties({ "cause", "localizedMessage", "message",
             "stackTrace", "suppressed" })
     private static class StatusBusinessException extends Throwable {
         private StatusBusinessException(String message) {

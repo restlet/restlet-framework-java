@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -63,10 +65,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
 
     private String uri;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         uri = "http://localhost:" + TEST_PORT + "/";
 
         component = new Component();
@@ -84,15 +84,14 @@ public class FileRepresentationTestCase extends RestletTestCase {
         os.close();
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         component.stop();
         IoUtils.delete(this.file);
         IoUtils.delete(this.testDir, true);
         component = null;
         this.file = null;
         this.testDir = null;
-        super.tearDown();
     }
 
     @Test

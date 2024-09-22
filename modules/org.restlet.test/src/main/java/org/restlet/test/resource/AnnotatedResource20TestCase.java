@@ -25,20 +25,17 @@
 package org.restlet.test.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
-import org.restlet.engine.application.StatusInfo;
 import org.restlet.ext.jackson.JacksonConverter;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
@@ -54,11 +51,10 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
 
     private MyResource20 myResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters()
-                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
         Engine.getInstance().registerDefaultConverters();
 
         // Hosts resources into an Application because we need some services for
@@ -72,58 +68,34 @@ public class AnnotatedResource20TestCase extends RestletTestCase {
         this.myResource = clientResource.wrap(MyResource20.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         clientResource = null;
         myResource = null;
-        super.tearDown();
     }
 
     @Test
-    public void testGet() throws IOException, ResourceException {
+    public void testGet() throws IOException {
         try {
             myResource.represent();
-            fail("Should fail");
+            fail("Exception should be thrown");
         } catch (MyException01 e) {
-            fail("Exception should be caught by client resource");
+            assertEquals(400, clientResource.getStatus().getCode());
         } catch (ResourceException e) {
-            assertEquals(400, e.getStatus().getCode());
-            Representation responseEntity = clientResource.getResponseEntity();
-            if (responseEntity instanceof JacksonRepresentation) {
-                assertTrue(JacksonRepresentation.class
-                        .isAssignableFrom(responseEntity.getClass()));
-                @SuppressWarnings("rawtypes")
-                JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
-                Object entity = jacksonRepresentation.getObject();
-                assertTrue(StatusInfo.class.isAssignableFrom(entity.getClass()));
-                StatusInfo statusInfo = (StatusInfo) entity;
-                assertEquals(400, statusInfo.getCode());
-            }
+            fail("Exception should be MyException01", e);
         }
     }
 
     @Test
-    public void testGetAndSerializeException() throws IOException,
-            ResourceException {
+    public void testGetAndSerializeException() throws IOException {
         try {
             myResource.representAndSerializeException();
-            fail("Should fail");
+            fail("Exception should be thrown");
         } catch (MyException02 e) {
-            fail("Exception should be caught by client resource");
+            assertEquals("my custom error", e.getCustomProperty());
+            assertEquals(400, clientResource.getStatus().getCode());
         } catch (ResourceException e) {
-            assertEquals(400, e.getStatus().getCode());
-            Representation responseEntity = clientResource.getResponseEntity();
-            assertTrue(JacksonRepresentation.class
-                    .isAssignableFrom(responseEntity.getClass()));
-
-            @SuppressWarnings("rawtypes")
-            JacksonRepresentation jacksonRepresentation = (JacksonRepresentation) responseEntity;
-            Object entity = jacksonRepresentation.getObject();
-            assertTrue(Map.class.isAssignableFrom(entity.getClass()));
-
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) entity;
-            assertEquals("my custom error", map.get("customProperty"));
+            fail("Exception should be MyException02", e);
         }
     }
 }

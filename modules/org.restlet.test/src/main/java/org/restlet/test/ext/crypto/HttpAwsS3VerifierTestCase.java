@@ -67,7 +67,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUpEach() throws Exception {
         localVerifier = new LocalVerifier() {
             @Override
             public char[] getLocalSecret(String identifier) {
@@ -82,7 +82,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    public void tearDownEach() throws Exception {
         awsVerifier = null;
         localVerifier = null;
     }

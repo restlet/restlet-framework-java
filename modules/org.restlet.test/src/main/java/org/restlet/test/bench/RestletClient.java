@@ -57,11 +57,8 @@ public class RestletClient {
         }
 
         for (int i = 0; i < 1; i++) {
-            ClientResource cr = new ClientResource("http://restlet.org"
-            // "https://www.amazon.com/gp/css/homepage.html"
-            // "https://github.com/restlet/restlet-framework-java"
-            );
-            cr.get().write(System.out);
-        }
+			ClientResource cr = new ClientResource("https://github.com/restlet/restlet-framework-java");
+			cr.get().write(System.out);
+		}
     }
 }

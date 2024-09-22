@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -35,9 +37,8 @@ public class Bug1145TestCase extends RestletTestCase {
 
     private Component component;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUpEach() throws Exception {
         this.client = new Client(Protocol.HTTP);
 
         if (this.component == null) {
@@ -51,12 +52,11 @@ public class Bug1145TestCase extends RestletTestCase {
         }
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @AfterEach
+    public void tearDownEach() throws Exception {
         this.client.stop();
         this.component.stop();
         this.component = null;
-        super.tearDown();
     }
 
     @Test

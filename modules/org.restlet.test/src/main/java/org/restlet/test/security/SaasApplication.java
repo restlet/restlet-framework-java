@@ -65,17 +65,17 @@ public class SaasApplication extends Application {
         ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
                 getContext(), ChallengeScheme.HTTP_BASIC, "saas");
         authenticator.setNext(new HelloWorldRestlet());
-        root.attach("/test1", authenticator);
+        root.attach("/httpBasicAuthenticator", authenticator);
 
         // Attach test 2
         Authorizer authorizer = Authorizer.ALWAYS;
         authorizer.setNext(new HelloWorldRestlet());
-        root.attach("/test2", authorizer);
+        root.attach("/alwaysAuthenticator", authorizer);
 
         // Attach test 3
         authorizer = Authorizer.NEVER;
         authorizer.setNext(new HelloWorldRestlet());
-        root.attach("/test3", authorizer);
+        root.attach("/neverAuthenticator", authorizer);
 
         // Attach test 4
         RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
@@ -85,7 +85,7 @@ public class SaasApplication extends Application {
         authenticator = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "saas");
         authenticator.setNext(roleAuthorizer);
-        root.attach("/test4", authenticator);
+        root.attach("/adminRoleAuthorizer", authenticator);
 
         // Attach test 5
         roleAuthorizer = new RoleAuthorizer();
@@ -95,7 +95,7 @@ public class SaasApplication extends Application {
         authenticator = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "saas");
         authenticator.setNext(roleAuthorizer);
-        root.attach("/test5", authenticator);
+        root.attach("/adminRoleForbiddenAuthorizer", authenticator);
 
         return root;
     }

@@ -674,8 +674,8 @@ public class MetadataService extends Service {
 
 	/**
 	 * Returns the encoding associated to this extension. It returns null if the
-	 * extension was not declared of it is corresponds to another type of medatata
-	 * such as a media type. If several metadata are associated to the same
+	 * extension was not declared or if it corresponds to another type of medatata
+	 * such as a media type. If some metadata are associated to the same
 	 * extension then only the first matching metadata is returned.
 	 * 
 	 * @param extension The extension name without any delimiter.

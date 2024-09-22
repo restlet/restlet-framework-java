@@ -27,6 +27,8 @@ package org.restlet.test.ext.crypto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -82,9 +84,8 @@ public class HttpDigestTestCase extends RestletTestCase {
         }
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         component = new Component();
         Server server = component.getServers().add(Protocol.HTTP, 0);
         Application application = new MyApplication();
@@ -93,11 +94,10 @@ public class HttpDigestTestCase extends RestletTestCase {
         port = server.getEphemeralPort();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         component.stop();
         component = null;
-        super.tearDown();
     }
 
     @Test

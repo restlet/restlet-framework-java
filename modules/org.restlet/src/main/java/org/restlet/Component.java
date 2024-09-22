@@ -388,7 +388,7 @@ public class Component extends Restlet {
 	 * @return A task service.
 	 */
 	public org.restlet.service.TaskService getTaskService() {
-		if (Edition.GAE.isCurrentEdition()) {
+		if (Edition.GAE.isNotCurrentEdition()) {
 			return getServices().get(org.restlet.service.TaskService.class);
 		} else {
 			throw new RuntimeException("Edition GAE does not support this method");

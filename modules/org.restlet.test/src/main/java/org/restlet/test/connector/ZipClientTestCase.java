@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
@@ -48,21 +50,20 @@ import org.restlet.test.RestletTestCase;
  */
 public class ZipClientTestCase extends RestletTestCase {
 
+    final File testDir = new File(System.getProperty("java.io.tmpdir"),
+            "zipClientTestCase");
     private File zipFile;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        final File testDir = new File(System.getProperty("java.io.tmpdir"),
-                "zipClientTestCase");
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         IoUtils.delete(testDir, true);
         testDir.mkdirs();
         zipFile = new File(testDir, "test.zip");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        // BioUtils.delete(testDir, true);
+    @AfterEach
+    protected void tearDownEach() throws Exception {
+        IoUtils.delete(testDir, true);
     }
 
     @Test

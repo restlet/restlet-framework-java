@@ -28,9 +28,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.restlet.data.LocalReference.RIAP_APPLICATION;
+import static org.restlet.data.LocalReference.createRiapReference;
 
 import java.io.Serializable;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -49,13 +52,13 @@ import org.restlet.test.RestletTestCase;
 /**
  * Unit test case for the RIAP Internal routing protocol.
  *
- * @author Marc Portier (mpo@outerthought.org)
+ * @author Marc Portier
  */
 public class RiapTestCase extends RestletTestCase {
 
     private static final String DEFAULT_MSG = "no-default";
 
-    // Just Some Serializable dummy object handle...
+    // Just some serializable dummy object handle...
     public static class Dummy implements Serializable {
         private static final long serialVersionUID = 1L;
     }
@@ -64,13 +67,15 @@ public class RiapTestCase extends RestletTestCase {
 
     private static final String ECHO_TEST_MSG = JUST_SOME_OBJ.toString();
 
-    private String buildAggregate(String echoMessage, String echoCopy) {
-        return "ORIGINAL: " + echoMessage + "\n" + "ECHOCOPY: " + echoCopy
-                + "\n";
+    private static String buildAggregate(String echoMessage, String echoCopy) {
+        return String.format("ORIGINAL: %s\nECHOCOPY: %s\n", echoMessage, echoCopy);
     }
 
-    @Test
-    public void testRiap() throws Exception {
+    static Restlet dispatcher;
+    static String localBase;
+
+    @BeforeAll
+    public static void setUp() {
         final Component comp = new Component();
         final Application localOnly = new Application() {
             @Override
@@ -78,39 +83,27 @@ public class RiapTestCase extends RestletTestCase {
                 return new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
-                        final String selfBase = "riap://application";
                         final Reference ref = request.getResourceRef();
                         final String remainder = ref.getRemainingPart();
 
-                        Representation result = new StringRepresentation(
-                                DEFAULT_MSG);
+                        Representation result = new StringRepresentation(DEFAULT_MSG);
 
                         if (remainder.startsWith("/echo/")) {
-                            result = new StringRepresentation(
-                                    remainder.substring(6));
+                            result = new StringRepresentation(remainder.substring(6));
                         } else if (remainder.equals("/object")) {
-                            result = new ObjectRepresentation<>(
-                                    JUST_SOME_OBJ);
+                            result = new ObjectRepresentation<>(JUST_SOME_OBJ);
                         } else if (remainder.equals("/null")) {
-                            result = new ObjectRepresentation<>(
-                                    (Serializable) null);
+                            result = new ObjectRepresentation<>((Serializable) null);
                         } else if (remainder.equals("/self-aggregated")) {
                             final String echoMessage = ECHO_TEST_MSG;
-                            final Reference echoRef = new LocalReference(
-                                    selfBase + "/echo/" + echoMessage);
-                            String echoCopy = null;
+                            final Reference echoRef = createRiapReference(RIAP_APPLICATION, "/echo/" + echoMessage);
                             try {
-                                ClientResource r = new ClientResource(echoRef);
-                                echoCopy = r.get().getText();
+                                String echoCopy = new ClientResource(echoRef).get().getText();
+                                assertEquals(echoMessage, echoCopy, "expected echoMessage back");
+                                result = new StringRepresentation(buildAggregate( echoMessage, echoCopy));
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                fail("Error getting internal reference to "
-                                        + echoRef);
+                                fail("Error getting internal reference to " + echoRef, e);
                             }
-                            assertEquals("expected echoMessage back",
-                                    echoMessage, echoCopy);
-                            result = new StringRepresentation(buildAggregate(
-                                    echoMessage, echoCopy));
                         }
                         response.setEntity(result);
                     }
@@ -119,43 +112,46 @@ public class RiapTestCase extends RestletTestCase {
         };
 
         comp.getInternalRouter().attach("/local", localOnly);
-        String localBase = "riap://component/local";
 
-        Restlet dispatcher = comp.getContext().getClientDispatcher();
+        localBase = createRiapReference(LocalReference.RIAP_COMPONENT, "/local").toString();
+        dispatcher = comp.getContext().getClientDispatcher();
+    }
 
+    @Test
+    public void testEcho() throws Exception {
         String msg = "this%20message";
-        String echoURI = localBase + "/echo/" + msg;
-        Representation echoRep = dispatcher.handle(
-                new Request(Method.GET, echoURI)).getEntity();
-        assertEquals("expected echo of uri-remainder", msg, echoRep.getText());
+        Representation echoRep = sendLocalRequestAndGetRepresentation("/echo/" + msg);
+        assertEquals(msg, echoRep.getText(), "expected echo of uri-remainder");
+    }
 
-        final String objURI = localBase + "/object";
-        final Representation objRep = dispatcher.handle(
-                new Request(Method.GET, objURI)).getEntity();
-        assertSame(
-                JUST_SOME_OBJ, ((ObjectRepresentation<?>) objRep).getObject(),
+    @Test
+    public void testObject() throws Exception {
+        final Representation objRep = sendLocalRequestAndGetRepresentation("/object");
+        assertSame(JUST_SOME_OBJ, ((ObjectRepresentation<?>) objRep).getObject(),
                 "expected specific test-object"
         );
+    }
 
-        final String nullURI = localBase + "/null";
-        final Representation nullRep = dispatcher.handle(
-                new Request(Method.GET, nullURI)).getEntity();
+    @Test
+    public void testNull() throws Exception {
+        final Representation nullRep = sendLocalRequestAndGetRepresentation("/null");
         assertNull(((ObjectRepresentation<?>) nullRep).getObject(), "expected null");
+    }
 
-        final String anyURI = localBase + "/whatever";
-        final Representation anyRep = dispatcher.handle(
-                new Request(Method.GET, anyURI)).getEntity();
-        assertEquals("expected echo of uri-remainder", DEFAULT_MSG,
-                anyRep.getText());
+    @Test
+    public void testWhatever() throws Exception {
+        final Representation anyRep = sendLocalRequestAndGetRepresentation("/whatever");
+        assertEquals(DEFAULT_MSG, anyRep.getText(), "expected echo of uri-remainder");
+    }
 
-        final String aggURI = localBase + "/self-aggregated";
-        final Representation aggRep = dispatcher.handle(
-                new Request(Method.GET, aggURI)).getEntity();
-        final String expectedResult = buildAggregate(ECHO_TEST_MSG,
-                ECHO_TEST_MSG);
-        assertEquals("expected specific aggregated message", expectedResult,
-                aggRep.getText());
+    @Test
+    public void testSelfAggregated() throws Exception {
+        final Representation aggRep = sendLocalRequestAndGetRepresentation("/self-aggregated");
+        final String expectedResult = buildAggregate(ECHO_TEST_MSG, ECHO_TEST_MSG);
+        assertEquals(expectedResult, aggRep.getText(), "expected specific aggregated message");
+    }
 
-        dispatcher.stop();
+    private static Representation sendLocalRequestAndGetRepresentation(final String url) {
+        return dispatcher.handle(new Request(Method.GET, localBase+ url)).getEntity();
     }
 }

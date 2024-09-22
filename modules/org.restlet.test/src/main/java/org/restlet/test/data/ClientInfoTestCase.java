@@ -47,25 +47,12 @@ import org.restlet.test.RestletTestCase;
  */
 public class ClientInfoTestCase extends RestletTestCase {
 
-    MetadataService ms;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ms = new MetadataService();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        ms = null;
-        super.tearDown();
-    }
-
     /**
      * Conneg tests.
      */
     @Test
     public void testConneg() {
+        MetadataService ms = new MetadataService();
         ConnegService connegService = new ConnegService();
         Request request = new Request();
         ClientInfo ci = request.getClientInfo();

@@ -52,8 +52,8 @@ public class FileClientTestCase extends RestletTestCase {
         LocalReference fr = LocalReference
                 .createFileReference(File.createTempFile("Restlet", ".txt."
                         + Language.DEFAULT.getName()));
-
         ClientResource resource = new ClientResource(fr);
+
         try {
             // Update the text of the temporary file
             resource.put(new StringRepresentation(text));

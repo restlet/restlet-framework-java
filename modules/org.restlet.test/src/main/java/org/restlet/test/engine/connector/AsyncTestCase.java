@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -114,10 +116,8 @@ public class AsyncTestCase extends RestletTestCase {
         latch.await();
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         // Create components
         clientComponent = new Component();
         originComponent = new Component();
@@ -199,12 +199,10 @@ public class AsyncTestCase extends RestletTestCase {
         testCall(context, 10, Method.DELETE);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         // Stop the components
         clientComponent.stop();
         originComponent.stop();
-
-        super.tearDown();
     }
 }

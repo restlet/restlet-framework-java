@@ -45,7 +45,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Kevin Conaway
  */
-public class BioUtilsTestCase extends RestletTestCase {
+public class IoUtilsTestCase extends RestletTestCase {
 
     @Test
     public void testGetStream() throws IOException {

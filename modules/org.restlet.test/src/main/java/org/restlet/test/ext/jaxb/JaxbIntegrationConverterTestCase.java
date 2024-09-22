@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -74,8 +76,8 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
 
     private String uri;
 
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUpEach() throws Exception {
         // make sure the jaxb converter is registered
         Engine.getInstance().getRegisteredConverters().add(new JaxbConverter());
         this.component = new Component();
@@ -86,13 +88,13 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
         uri = "http://localhost:" + server.getEphemeralPort() + "/test";
     }
 
-    public void tearDown() throws Exception {
+    @AfterEach
+    public void tearDownEach() throws Exception {
         if (component != null) {
             component.stop();
         }
 
         this.component = null;
-        super.tearDown();
     }
 
     protected Application createApplication(Component component) {

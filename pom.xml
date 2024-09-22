@@ -89,74 +89,6 @@
 
     <profiles>
         <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>modules/org.restlet</module>
-                <!-- module>modules/org.restlet.example</module -->
-                <module>modules/org.restlet.ext.atom</module>
-                <module>modules/org.restlet.ext.crypto</module>
-                <module>modules/org.restlet.ext.fileupload</module>
-                <module>modules/org.restlet.ext.freemarker</module>
-                <module>modules/org.restlet.ext.gae</module>
-                <module>modules/org.restlet.ext.gson</module>
-                <module>modules/org.restlet.ext.guice</module>
-                <module>modules/org.restlet.ext.gwt</module>
-                <module>modules/org.restlet.ext.html</module>
-                <module>modules/org.restlet.ext.httpclient</module>
-                <module>modules/org.restlet.ext.jaas</module>
-                <module>modules/org.restlet.ext.jackson</module>
-                <module>modules/org.restlet.ext.jaxb</module>
-                <module>modules/org.restlet.ext.jetty</module>
-                <module>modules/org.restlet.ext.json</module>
-                <module>modules/org.restlet.ext.odata</module>
-                <module>modules/org.restlet.ext.osgi</module>
-                <module>modules/org.restlet.ext.rdf</module>
-                <module>modules/org.restlet.ext.servlet</module>
-                <module>modules/org.restlet.ext.slf4j</module>
-                <module>modules/org.restlet.ext.spring</module>
-                <module>modules/org.restlet.ext.thymeleaf</module>
-                <module>modules/org.restlet.ext.velocity</module>
-                <module>modules/org.restlet.ext.xml</module>
-                <module>modules/org.restlet.gwt</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>test</id>
-            <modules>
-                <module>modules/org.restlet</module>
-                <module>modules/org.restlet.example</module>
-                <module>modules/org.restlet.ext.atom</module>
-                <module>modules/org.restlet.ext.crypto</module>
-                <module>modules/org.restlet.ext.fileupload</module>
-                <module>modules/org.restlet.ext.freemarker</module>
-                <module>modules/org.restlet.ext.gae</module>
-                <module>modules/org.restlet.ext.gson</module>
-                <module>modules/org.restlet.ext.guice</module>
-                <module>modules/org.restlet.ext.gwt</module>
-                <module>modules/org.restlet.ext.html</module>
-                <module>modules/org.restlet.ext.httpclient</module>
-                <module>modules/org.restlet.ext.jaas</module>
-                <module>modules/org.restlet.ext.jackson</module>
-                <module>modules/org.restlet.ext.jaxb</module>
-                <module>modules/org.restlet.ext.jetty</module>
-                <module>modules/org.restlet.ext.json</module>
-                <module>modules/org.restlet.ext.odata</module>
-                <module>modules/org.restlet.ext.osgi</module>
-                <module>modules/org.restlet.ext.rdf</module>
-                <module>modules/org.restlet.ext.servlet</module>
-                <module>modules/org.restlet.ext.slf4j</module>
-                <module>modules/org.restlet.ext.spring</module>
-                <module>modules/org.restlet.ext.thymeleaf</module>
-                <module>modules/org.restlet.ext.velocity</module>
-                <module>modules/org.restlet.ext.xml</module>
-                <module>modules/org.restlet.gwt</module>
-                <module>modules/org.restlet.test</module>
-            </modules>
-        </profile>
-        <profile>
             <id>github</id>
             <activation>
                 <property>
@@ -330,6 +262,37 @@
         </profile>
     </profiles>
 
+    <modules>
+        <module>modules/org.restlet</module>
+        <module>modules/org.restlet.example</module>
+        <module>modules/org.restlet.ext.atom</module>
+        <module>modules/org.restlet.ext.crypto</module>
+        <module>modules/org.restlet.ext.fileupload</module>
+        <module>modules/org.restlet.ext.freemarker</module>
+        <module>modules/org.restlet.ext.gae</module>
+        <module>modules/org.restlet.ext.gson</module>
+        <module>modules/org.restlet.ext.guice</module>
+        <module>modules/org.restlet.ext.gwt</module>
+        <module>modules/org.restlet.ext.html</module>
+        <module>modules/org.restlet.ext.httpclient</module>
+        <module>modules/org.restlet.ext.jaas</module>
+        <module>modules/org.restlet.ext.jackson</module>
+        <module>modules/org.restlet.ext.jaxb</module>
+        <module>modules/org.restlet.ext.jetty</module>
+        <module>modules/org.restlet.ext.json</module>
+        <module>modules/org.restlet.ext.odata</module>
+        <module>modules/org.restlet.ext.osgi</module>
+        <module>modules/org.restlet.ext.rdf</module>
+        <module>modules/org.restlet.ext.servlet</module>
+        <module>modules/org.restlet.ext.slf4j</module>
+        <module>modules/org.restlet.ext.spring</module>
+        <module>modules/org.restlet.ext.thymeleaf</module>
+        <module>modules/org.restlet.ext.velocity</module>
+        <module>modules/org.restlet.ext.xml</module>
+        <module>modules/org.restlet.gwt</module>
+        <module>modules/org.restlet.test</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -374,6 +337,9 @@
                     <exclude>**/package.html</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -416,6 +382,8 @@
                     <version>3.13.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                     </configuration>
                 </plugin>
                 <plugin>

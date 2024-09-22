@@ -45,8 +45,8 @@ public class TestGetClient {
             Engine.setLogLevel(Level.FINE);
         }
         long startTime = System.currentTimeMillis();
-
         ClientResource resource = new ClientResource("http://localhost:8554/");
+        
         try {
             Representation entity = resource.get();
             System.out.println("Status: " + resource.getStatus());

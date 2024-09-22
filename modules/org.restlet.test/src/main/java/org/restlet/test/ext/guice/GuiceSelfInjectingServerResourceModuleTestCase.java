@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -105,10 +107,8 @@ public class GuiceSelfInjectingServerResourceModuleTestCase extends RestletTestC
 
     private volatile Component component;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Guice.createInjector(new TestModule(),
                 new SelfInjectingServerResourceModule());
 
@@ -126,12 +126,11 @@ public class GuiceSelfInjectingServerResourceModuleTestCase extends RestletTestC
 
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @AfterEach
+    public void tearDownEach() throws Exception {
         this.client.stop();
         this.component.stop();
         this.component = null;
-        super.tearDown();
     }
 
     @Test

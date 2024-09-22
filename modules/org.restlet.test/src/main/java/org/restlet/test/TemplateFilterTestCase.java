@@ -1,24 +1,24 @@
 /**
  * Copyright 2005-2024 Qlik
- * 
+ * <p>
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ * <p>
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ * <p>
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ * <p>
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ * <p>
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ * <p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;
@@ -45,14 +46,14 @@ import org.restlet.resource.Directory;
 
 /**
  * Test case for template filters.
- * 
+ *
  * @author Thierry Boileau
  */
 public class TemplateFilterTestCase extends RestletTestCase {
 
     /**
      * Internal class used for test purpose
-     * 
+     *
      * @author Thierry Boileau
      */
     private static class MyFreemakerApplication extends Application {
@@ -62,7 +63,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
         /**
          * Constructor.
-         * 
+         *
          * @param testDirectory
          *            The test directory.
          */
@@ -91,7 +92,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
     /**
      * Internal class used for test purpose
-     * 
+     *
      * @author Thierry Boileau
      */
     private static class MyVelocityApplication extends Application {
@@ -128,106 +129,102 @@ public class TemplateFilterTestCase extends RestletTestCase {
     File testDir;
 
     @Test
-    public void testTemplateFilter() {
-        try {
-            // Create a temporary directory for the tests
-            this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "TemplateFilterTestCase");
-            IoUtils.delete(this.testDir, true);
-            this.testDir.mkdir();
+    public void testTemplateFilter() throws Exception {
+        // Create a temporary directory for the tests
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "TemplateFilterTestCase");
+        IoUtils.delete(this.testDir, true);
+        this.testDir.mkdir();
 
-            // Create temporary template files
-            // Will be templated
-            File testFileFm1 = new File(this.testDir, "testFm1.txt.fmt");
-            FileWriter fw = new FileWriter(testFileFm1);
-            fw.write("Method=${m}/Authority=${ra}");
-            fw.close();
+        // Create temporary template files
+        // Will be templated
+        File testFileFm1 = new File(this.testDir, "testFm1.txt.fmt");
+        FileWriter fw = new FileWriter(testFileFm1);
+        fw.write("Method=${m}/Authority=${ra}");
+        fw.close();
 
-            // Will not be templated
-            File testFileFm2 = new File(this.testDir, "testFm2.txt");
-            fw = new FileWriter(testFileFm2);
-            fw.write("Method=${m}/Authority=${ra}");
-            fw.close();
+        // Will not be templated
+        File testFileFm2 = new File(this.testDir, "testFm2.txt");
+        fw = new FileWriter(testFileFm2);
+        fw.write("Method=${m}/Authority=${ra}");
+        fw.close();
 
-            // Will be templated
-            File testFileVl1 = new File(this.testDir, "testVl1.txt.vm");
-            fw = new FileWriter(testFileVl1);
-            fw.write("Method=${m}/Path=${rp}");
-            fw.close();
+        // Will be templated
+        File testFileVl1 = new File(this.testDir, "testVl1.txt.vm");
+        fw = new FileWriter(testFileVl1);
+        fw.write("Method=${m}/Path=${rp}");
+        fw.close();
 
-            // Will not be templated
-            File testFileVl2 = new File(this.testDir, "testVl2.txt");
-            fw = new FileWriter(testFileVl2);
-            fw.write("Method=${m}/Path=${rp}");
-            fw.close();
+        // Will not be templated
+        File testFileVl2 = new File(this.testDir, "testVl2.txt");
+        fw = new FileWriter(testFileVl2);
+        fw.write("Method=${m}/Path=${rp}");
+        fw.close();
 
-            // Create a new component
-            Component component = new Component();
-            component.getServers().add(Protocol.HTTP, TEST_PORT);
-            component.getClients().add(Protocol.FILE);
+        // Create a new component
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, TEST_PORT);
+        component.getClients().add(Protocol.FILE);
 
-            // Create an application filtered with FreeMarker
-            MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
-                    this.testDir);
-            // Create an application filtered with Velocity
-            MyVelocityApplication velocityApplication = new MyVelocityApplication(
-                    this.testDir);
+        // Create an application filtered with FreeMarker
+        MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
+                this.testDir);
+        // Create an application filtered with Velocity
+        MyVelocityApplication velocityApplication = new MyVelocityApplication(
+                this.testDir);
 
-            // Attach the applications to the component and start it
-            component.getDefaultHost().attach("/freemarker",
-                    freemarkerApplication);
-            component.getDefaultHost().attach("/velocity", velocityApplication);
+        // Attach the applications to the component and start it
+        component.getDefaultHost().attach("/freemarker",
+                freemarkerApplication);
+        component.getDefaultHost().attach("/velocity", velocityApplication);
 
-            // Now, let's start the component!
-            component.start();
+        // Now, let's start the component!
+        component.start();
 
-            // Allow extensions tunneling
-            freemarkerApplication.getTunnelService().setExtensionsTunnel(true);
-            velocityApplication.getTunnelService().setExtensionsTunnel(true);
-            Client client = new Client(Protocol.HTTP);
-            Response response = client.handle(new Request(Method.GET,
-                    "http://localhost:" + TEST_PORT + "/freemarker/"
-                            + testFileFm1.getName()));
+        // Allow extensions tunneling
+        freemarkerApplication.getTunnelService().setExtensionsTunnel(true);
+        velocityApplication.getTunnelService().setExtensionsTunnel(true);
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(new Request(Method.GET,
+                "http://localhost:" + TEST_PORT + "/freemarker/"
+                        + testFileFm1.getName()));
 
-            if (response.isEntityAvailable()) {
-                assertEquals("Method=GET/Authority=localhost:" + TEST_PORT,
-                        response.getEntity().getText());
-            }
-
-            response = client.handle(new Request(Method.GET,
-                    "http://localhost:" + TEST_PORT + "/freemarker/"
-                            + testFileFm2.getName()));
-            assertTrue(response.getStatus().isSuccess());
-
-            if (response.isEntityAvailable()) {
-                assertEquals("Method=${m}/Authority=${ra}", response
-                        .getEntity().getText());
-            }
-
-            response = client.handle(new Request(Method.GET,
-                    "http://localhost:" + TEST_PORT + "/velocity/"
-                            + testFileVl1.getName()));
-
-            if (response.isEntityAvailable()) {
-                assertEquals("Method=GET/Path=/velocity/testVl1", response
-                        .getEntity().getText());
-            }
-
-            response = client.handle(new Request(Method.GET,
-                    "http://localhost:" + TEST_PORT + "/velocity/"
-                            + testFileVl2.getName()));
-            assertTrue(response.getStatus().isSuccess());
-
-            if (response.isEntityAvailable()) {
-                assertEquals("Method=${m}/Path=${rp}", response.getEntity()
-                        .getText());
-            }
-
-            // Now, let's stop the component!
-            component.stop();
-            client.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (response.isEntityAvailable()) {
+            assertEquals("Method=GET/Authority=localhost:" + TEST_PORT,
+                    response.getEntity().getText());
         }
+
+        response = client.handle(new Request(Method.GET,
+                "http://localhost:" + TEST_PORT + "/freemarker/"
+                        + testFileFm2.getName()));
+        assertTrue(response.getStatus().isSuccess());
+
+        if (response.isEntityAvailable()) {
+            assertEquals("Method=${m}/Authority=${ra}", response
+                    .getEntity().getText());
+        }
+
+        response = client.handle(new Request(Method.GET,
+                "http://localhost:" + TEST_PORT + "/velocity/"
+                        + testFileVl1.getName()));
+
+        if (response.isEntityAvailable()) {
+            assertEquals("Method=GET/Path=/velocity/testVl1", response
+                    .getEntity().getText());
+        }
+
+        response = client.handle(new Request(Method.GET,
+                "http://localhost:" + TEST_PORT + "/velocity/"
+                        + testFileVl2.getName()));
+        assertTrue(response.getStatus().isSuccess());
+
+        if (response.isEntityAvailable()) {
+            assertEquals("Method=${m}/Path=${rp}", response.getEntity()
+                    .getText());
+        }
+
+        // Now, let's stop the component!
+        component.stop();
+        client.stop();
     }
 }

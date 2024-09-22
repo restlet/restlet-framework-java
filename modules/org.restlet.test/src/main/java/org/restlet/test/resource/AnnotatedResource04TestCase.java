@@ -26,10 +26,16 @@ package org.restlet.test.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -46,8 +52,8 @@ public class AnnotatedResource04TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    protected void setUpEach() throws Exception {
         Finder finder = new Finder();
         finder.setTargetClass(MyResource04.class);
 
@@ -55,29 +61,26 @@ public class AnnotatedResource04TestCase extends RestletTestCase {
         this.clientResource.setNext(finder);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    protected void tearDownEach() throws Exception {
         clientResource = null;
-        super.tearDown();
     }
 
-    @Test
-    public void testGet() throws IOException, ResourceException {
-        Representation result = clientResource.get(MediaType.APPLICATION_JSON);
+    @ParameterizedTest
+    @MethodSource("argumentsProvider")
+    public void testGet(final MediaType responseMediaType, final String responseBody) throws IOException, ResourceException {
+        Representation result = clientResource.get(responseMediaType);
         assertNotNull(result);
-        assertEquals("[\"root\"]", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+        assertEquals(responseBody, result.getText());
+        assertEquals(responseMediaType, result.getMediaType());
+    }
 
-        result = clientResource.get(MediaType.APPLICATION_XML);
-        assertNotNull(result);
-        assertEquals("<root/>", result.getText());
-        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
-
-        result = clientResource.get(MediaType.TEXT_HTML);
-        assertNotNull(result);
-        assertEquals("<html><body>root</body></html>", result.getText());
-        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
-
+    static Stream<Arguments> argumentsProvider() {
+        return Stream.of(
+                arguments(MediaType.TEXT_HTML, "<html><body>root</body></html>"),
+                arguments(MediaType.APPLICATION_JSON, "[\"root\"]"),
+                arguments(MediaType.APPLICATION_XML, "<root/>")
+        );
     }
 
 }
