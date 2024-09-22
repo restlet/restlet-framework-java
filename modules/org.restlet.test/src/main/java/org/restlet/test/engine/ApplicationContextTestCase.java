@@ -78,6 +78,8 @@ public class ApplicationContextTestCase extends RestletTestCase {
     public void testApplicationContext() throws Exception {
         ClientResource res = new ClientResource("http://localhost:" + TEST_PORT + "/api/test");
         Representation rep = res.get(MediaType.TEXT_PLAIN);
-        assertEquals("WebApiApplication", rep.getText());
+        // following https://github.com/restlet/restlet-framework-java/issues/1317 fix,
+        // should return "InternalApplication" since the current Application thread variable has not been cleared
+        assertEquals("InternalApplication", rep.getText());
     }
 }
