@@ -25,11 +25,9 @@
 package org.restlet.test.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
-import org.restlet.engine.application.StatusInfo;
 import org.restlet.ext.jackson.JacksonConverter;
-import org.restlet.ext.jackson.JacksonRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
