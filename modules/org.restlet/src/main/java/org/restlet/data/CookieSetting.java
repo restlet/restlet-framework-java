@@ -58,6 +58,24 @@ public final class CookieSetting extends Cookie {
     /** Indicates if cookie should only be transmitted by secure means. */
     private volatile boolean secure;
 
+    /** Explicitly specifies a same site policy for browsers. */
+    private volatile SameSite sameSite;
+    
+    public enum SameSite {
+    	LAX("Lax"),
+    	STRICT("Strict"),
+    	NONE("None");
+    	
+    	final String value;
+    	SameSite(String value) {
+    		this.value = value;
+    	}
+    	
+    	public String toString() {
+    		return value;
+    	}
+    }
+    
     /**
      * Default constructor.
      */
@@ -164,6 +182,47 @@ public final class CookieSetting extends Cookie {
         this.secure = secure;
         this.accessRestricted = accessRestricted;
     }
+    
+    /**
+     * Constructor.
+     * 
+     * @param version
+     *            The cookie's version.
+     * @param name
+     *            The cookie's name.
+     * @param value
+     *            The cookie's value.
+     * @param path
+     *            The cookie's path.
+     * @param domain
+     *            The cookie's domain name.
+     * @param comment
+     *            The cookie's comment.
+     * @param maxAge
+     *            Sets the maximum age in seconds.<br>
+     *            Use 0 to immediately discard an existing cookie.<br>
+     *            Use -1 to discard the cookie at the end of the session
+     *            (default).
+     * @param secure
+     *            Indicates if cookie should only be transmitted by secure
+     *            means.
+     * @param accessRestricted
+     *            Indicates whether to restrict cookie access to untrusted
+     *            parties. Currently this toggles the non-standard but widely
+     *            supported HttpOnly cookie parameter.
+     * @param sameSite
+     *            The cookie's same site policy.
+     */
+    public CookieSetting(int version, String name, String value, String path,
+            String domain, String comment, int maxAge, boolean secure,
+            boolean accessRestricted, SameSite sameSite) {
+        super(version, name, value, path, domain);
+        this.comment = comment;
+        this.maxAge = maxAge;
+        this.secure = secure;
+        this.accessRestricted = accessRestricted;
+        this.sameSite = sameSite;
+    }
 
     /**
      * Preferred constructor.
@@ -192,7 +251,8 @@ public final class CookieSetting extends Cookie {
         return super.equals(obj)
                 && this.maxAge == that.maxAge
                 && this.secure == that.secure
-                && Objects.equals(this.comment, that.comment);
+                && Objects.equals(this.comment, that.comment)
+                && Objects.equals(this.sameSite, that.sameSite);
     }
 
     /**
@@ -228,7 +288,7 @@ public final class CookieSetting extends Cookie {
     @Override
     public int hashCode() {
         return SystemUtils.hashCode(super.hashCode(), getComment(),
-                getMaxAge(), isSecure());
+                getMaxAge(), isSecure(), getSameSite());
     }
 
     /**
@@ -251,6 +311,17 @@ public final class CookieSetting extends Cookie {
         return this.secure;
     }
 
+
+    /**
+     * Returns the currently set same site policy.
+     * 
+     * @return sameSite
+     * 		  The currently set same site attribute setting.
+     */
+    public SameSite getSameSite() {
+    	return this.sameSite;
+    }
+    
     /**
      * Indicates whether to restrict cookie access to untrusted parties.
      * Currently this toggles the non-standard but widely supported HttpOnly
@@ -293,6 +364,16 @@ public final class CookieSetting extends Cookie {
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
+    
+    /**
+     * Sets the same site policy for the browser to apply to this cookie.
+     * 
+     * @param sameSite
+     * 		The new same site policy to set.
+     */
+    public void setSameSite(SameSite sameSite) {
+    	this.sameSite = sameSite;
+    }
 
     @Override
     public String toString() {
@@ -300,7 +381,8 @@ public final class CookieSetting extends Cookie {
                 + ", comment=" + comment + ", maxAge=" + maxAge + ", secure="
                 + secure + ", domain=" + getDomain() + ", name=" + getName()
                 + ", path=" + getPath() + ", value=" + getValue()
-                + ", version=" + getVersion() + "]";
+                + ", version=" + getVersion() 
+                +", sameSite=" +  "]";
     }
 
 }
