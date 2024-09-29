@@ -41,7 +41,7 @@ public enum Edition {
 	OSGI("OSGi", "OSGi", "OSGi");
 
 	/** The current engine edition. */
-	public static final Edition CURRENT = Edition.JSE;
+	public static Edition CURRENT = Edition.JSE;
 
 	private final String fullName;
 	private final String mediumName;
@@ -109,5 +109,13 @@ public enum Edition {
 
 		return result;
 	}
-	
+
+	/**
+	 * Set this edition as the current one.
+	 */
+	public void setCurrentEdition() {
+		CURRENT = this;
+	}
+
+
 }

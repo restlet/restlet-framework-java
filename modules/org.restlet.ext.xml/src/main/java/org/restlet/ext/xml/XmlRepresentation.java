@@ -66,11 +66,7 @@ import org.xml.sax.SAXException;
  *      Entity Expansion injection attack</a>
  * @author Jerome Louvel
  */
-public abstract class XmlRepresentation extends WriterRepresentation
-// [ifndef android] TODO issue with Android?
-        implements javax.xml.namespace.NamespaceContext
-// [enddef]
-{
+public abstract class XmlRepresentation extends WriterRepresentation implements javax.xml.namespace.NamespaceContext  {
     /**
      * True for expanding entity references when parsing XML representations;
      * default value provided by system property
@@ -97,9 +93,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The buffer.
      */
     private static void appendTextContent(Node node, StringBuilder sb) {
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            throw new RuntimeException();
-        }
         switch (node.getNodeType()) {
         case Node.TEXT_NODE:
             sb.append(node.getNodeValue());
@@ -154,9 +147,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public static javax.xml.transform.sax.SAXSource getSaxSource(
             Representation xmlRepresentation) throws IOException {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         javax.xml.transform.sax.SAXSource result = null;
 
         if (xmlRepresentation != null) {
@@ -180,9 +170,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     private static javax.xml.validation.Schema getSchema(
             Representation schemaRepresentation) throws Exception {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         javax.xml.validation.Schema result = null;
 
         if (schemaRepresentation != null) {
@@ -229,9 +216,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The text content of a given node.
      */
     public static String getTextContent(Node node) {
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            throw new RuntimeException();
-        }
         StringBuilder sb = new StringBuilder();
         appendTextContent(node, sb);
         return sb.toString();
@@ -239,7 +223,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
     /**
      * Specifies that the parser will convert CDATA nodes to text nodes and
-     * append it to the adjacent (if any) text node. By default the value of
+     * append it to the adjacent (if any) text node. By default, the value of
      * this is set to false.
      */
     private volatile boolean coalescing;
@@ -261,20 +245,20 @@ public abstract class XmlRepresentation extends WriterRepresentation
     private volatile ErrorHandler errorHandler;
 
     /**
-     * Specifies that the parser will expand entity reference nodes. By default
+     * Specifies that the parser will expand entity reference nodes. By default,
      * the value of this is set to true.
      */
     private volatile boolean expandingEntityRefs;
 
     /**
-     * Indicates if the parser will ignore comments. By default the value of
+     * Indicates if the parser will ignore comments. By default, the value of
      * this is set to false.
      */
     private volatile boolean ignoringComments;
 
     /**
      * Indicates if the parser will ignore extra white spaces in element
-     * content. By default the value of this is set to false.
+     * content. By default, the value of this is set to false.
      */
     private volatile boolean ignoringExtraWhitespaces;
 
@@ -303,7 +287,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations. By default the value of this is set to
+     * type of XML representations. By default, the value of this is set to
      * false.
      * 
      * @see DocumentBuilderFactory#setXIncludeAware(boolean)
@@ -340,11 +324,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.namespaces = null;
         this.validatingDtd = XML_VALIDATING_DTD;
         this.xIncludeAware = false;
-
-        if (Edition.ANDROID.isNotCurrentEdition()) { // TODO Compile with Android?
-            this.schema = null;
-        }
-
+        this.schema = null;
     }
 
     /**
@@ -354,9 +334,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Boolean getBoolean(String expression) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return (Boolean) internalEval(expression,
                 javax.xml.xpath.XPathConstants.BOOLEAN);
     }
@@ -397,13 +374,11 @@ public abstract class XmlRepresentation extends WriterRepresentation
                         "The JAXP parser doesn't support XInclude.", uoe);
             }
 
-            if (Edition.ANDROID.isNotCurrentEdition()) { // TODO Compile with Android?
-                javax.xml.validation.Schema xsd = getSchema();
-
-                if (xsd != null) {
-                    dbf.setSchema(xsd);
-                }
+            javax.xml.validation.Schema xsd = getSchema();
+            if (xsd != null) {
+                dbf.setSchema(xsd);
             }
+
 
             result = dbf.newDocumentBuilder();
             result.setEntityResolver(getEntityResolver());
@@ -423,9 +398,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @throws IOException
      */
     public javax.xml.transform.dom.DOMSource getDomSource() throws IOException {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         javax.xml.transform.dom.DOMSource result = null;
         Node document = null;
 
@@ -501,9 +473,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Node getNode(String expression) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return (Node) internalEval(expression,
                 javax.xml.xpath.XPathConstants.NODE);
     }
@@ -515,9 +484,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public NodeList getNodes(String expression) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         final org.w3c.dom.NodeList nodes = (org.w3c.dom.NodeList) internalEval(
                 expression, javax.xml.xpath.XPathConstants.NODESET);
         return (nodes == null) ? null : new NodeList(nodes);
@@ -530,9 +496,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public Double getNumber(String expression) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return (Double) internalEval(expression,
                 javax.xml.xpath.XPathConstants.NUMBER);
     }
@@ -543,8 +506,8 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public String getPrefix(String namespaceURI) {
         String result = null;
-        boolean found = false;
 
+        boolean found = false;
         for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
                 .hasNext() && !found;) {
             String key = iterator.next();
@@ -582,9 +545,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @throws IOException
      */
     public javax.xml.transform.sax.SAXSource getSaxSource() throws IOException {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return getSaxSource(this);
     }
 
@@ -596,9 +556,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *         XML representations.
      */
     public javax.xml.validation.Schema getSchema() {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return schema;
     }
 
@@ -610,9 +567,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public javax.xml.transform.stream.StreamSource getStreamSource()
             throws IOException {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         final javax.xml.transform.stream.StreamSource result = new javax.xml.transform.stream.StreamSource(
                 getStream());
 
@@ -629,9 +583,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      * @return The evaluation result.
      */
     public String getText(String expression) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         return (String) internalEval(expression,
                 javax.xml.xpath.XPathConstants.STRING);
     }
@@ -646,11 +597,9 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     private Object internalEval(String expression,
             javax.xml.namespace.QName returnType) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         try {
             Object result = null;
+
             XPath xpath = XPathFactory.newInstance().newXPath();
             xpath.setNamespaceContext(this);
             Document xmlDocument = getDocument();
@@ -674,7 +623,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     /**
      * Indicates if the parser should be coalescing text. If true the parser
      * will convert CDATA nodes to text nodes and append it to the adjacent (if
-     * any) text node. By default the value of this is set to false.
+     * any) text node. By default, the value of this is set to false.
      * 
      * @return True if parser should be coalescing text.
      */
@@ -683,7 +632,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
-     * Indicates if the parser will expand entity reference nodes. By default
+     * Indicates if the parser will expand entity reference nodes. By default,
      * the value of this is set to true.
      * 
      * @return True if the parser will expand entity reference nodes.
@@ -693,7 +642,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
-     * Indicates if the parser will ignore comments. By default the value of
+     * Indicates if the parser will ignore comments. By default, the value of
      * this is set to false.
      * 
      * @return True if the parser will ignore comments.
@@ -705,7 +654,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     /**
      * Indicates if the parser will ignore extra white spaces in element
      * content. Note that the {@link #isValidatingDtd()} must be true when this
-     * property is 'true' as validation is needed for it to work. By default the
+     * property is 'true' as validation is needed for it to work. By default, the
      * value of this is set to false.
      * 
      * @return True if the parser will ignore extra white spaces.
@@ -735,7 +684,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations. By default the value of this is set to
+     * type of XML representations. By default, the value of this is set to
      * false.
      * 
      * @return The current value of the xIncludeAware flag.
@@ -759,7 +708,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     /**
      * Indicates if the parser should be coalescing text. If true the parser
      * will convert CDATA nodes to text nodes and append it to the adjacent (if
-     * any) text node. By default the value of this is set to false.
+     * any) text node. By default, the value of this is set to false.
      * 
      * @param coalescing
      *            True if parser should be coalescing text.
@@ -790,7 +739,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
-     * Indicates if the parser will expand entity reference nodes. By default
+     * Indicates if the parser will expand entity reference nodes. By default,
      * the value of this is set to true.
      * 
      * @param expandEntityRefs
@@ -801,7 +750,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
-     * Indicates if the parser will ignore comments. By default the value of
+     * Indicates if the parser will ignore comments. By default, the value of
      * this is set to false.
      * 
      * @param ignoringComments
@@ -860,9 +809,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            set.
      */
     public void setSchema(javax.xml.validation.Schema schema) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         this.schema = schema;
     }
 
@@ -874,9 +820,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The schema representation to set.
      */
     public void setSchema(Representation schemaRepresentation) {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         try {
             this.schema = getSchema(schemaRepresentation);
         } catch (Exception e) {
@@ -898,7 +841,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
     /**
      * Indicates the desire for processing <em>XInclude</em> if found in this
-     * type of XML representations. By default the value of this is set to
+     * type of XML representations. By default, the value of this is set to
      * false.
      * 
      * @param includeAware
@@ -915,9 +858,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The XML schema to use.
      */
     public void validate(javax.xml.validation.Schema schema) throws Exception {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         validate(schema, null);
     }
 
@@ -931,9 +871,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public void validate(javax.xml.validation.Schema schema,
             javax.xml.transform.Result result) throws Exception {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         schema.newValidator().validate(getSaxSource(), result);
     }
 
@@ -944,9 +881,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      *            The XML schema representation to use.
      */
     public void validate(Representation schemaRepresentation) throws Exception {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         validate(schemaRepresentation, null);
     }
 
@@ -960,9 +894,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
      */
     public void validate(Representation schemaRepresentation,
             javax.xml.transform.Result result) throws Exception {
-        if (Edition.ANDROID.isCurrentEdition()) { // TODO Compile with Android?
-            throw new RuntimeException();
-        }
         validate(getSchema(schemaRepresentation), result);
     }
 

@@ -75,6 +75,7 @@
         <lib-sdc-version>1.3.rc2</lib-sdc-version>
         <lib-servlet-version>3.1.0</lib-servlet-version>
         <lib-slf4j-version>2.0.13</lib-slf4j-version>
+        <lib-snakeyaml-version>2.2</lib-snakeyaml-version>
         <lib-spring-version>5.3.34</lib-spring-version>
         <lib-sun-istack-version>3.0.10</lib-sun-istack-version>
         <lib-stax2-version>3.1.4</lib-stax2-version>
@@ -82,6 +83,7 @@
         <lib-testng-version>7.5.1</lib-testng-version>
         <lib-thymeleaf-version>3.0.11.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.3</lib-velocity-version>
+        <lib-woodstock-core-version>4.4.1</lib-woodstock-core-version>
     </properties>
 
     <profiles>

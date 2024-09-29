@@ -170,7 +170,7 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 			}
 
 			ois.close();
-		} else if (Edition.ANDROID.isNotCurrentEdition() && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(serializedRepresentation.getMediaType())) {
+		} else if (MediaType.APPLICATION_JAVA_OBJECT_XML.equals(serializedRepresentation.getMediaType())) {
 			if (!variantObjectXmlSupported) {
 				throw new IllegalArgumentException("SECURITY WARNING: The usage of XMLDecoder when "
 						+ "deserializing XML representations from unstrusted "
@@ -179,7 +179,7 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 						+ "the XMLDecoder class is able to force the JVM to "
 						+ "execute unwanted Java code described inside the XML "
 						+ "file. Thus, the support of such format has been "
-						+ "disactivated by default. You can activate this "
+						+ "disabled by default. You can activate this "
 						+ "support by turning on the following system property: "
 						+ "org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED.");
 			}
@@ -260,7 +260,7 @@ public class ObjectRepresentation<T extends Serializable> extends OutputRepresen
 			ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 			oos.writeObject(getObject());
 			oos.flush();
-		} else if (Edition.ANDROID.isNotCurrentEdition() && MediaType.APPLICATION_JAVA_OBJECT_XML.isCompatible(getMediaType())) {
+		} else if (MediaType.APPLICATION_JAVA_OBJECT_XML.isCompatible(getMediaType())) {
 			java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(outputStream);
 			encoder.writeObject(getObject());
 			encoder.close();

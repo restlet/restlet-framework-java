@@ -274,7 +274,7 @@ public class HttpClientHelper extends
                 .getSocketFactory(), 80));
 
         if (Edition.ANDROID.isCurrentEdition()) {
-            return; // TODO Compile with Android?
+            //return; // SSLSocketFactory unsupported by Android.
         }
 
         SSLSocketFactory sslSocketFactory = null;

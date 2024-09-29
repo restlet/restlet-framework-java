@@ -107,11 +107,7 @@ public final class ImmutableDate extends Date {
 	 */
 	@Override
 	public void setTime(long arg0) {
-		if (Edition.CURRENT == Edition.ANDROID) {
-			super.setTime(arg0);
-		} else {
-			throw new UnsupportedOperationException("ImmutableDate is immutable");
-		}
+		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 
 	/**
