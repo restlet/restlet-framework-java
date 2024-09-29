@@ -91,7 +91,7 @@ public class ChallengeCallbackHandler implements CallbackHandler {
      */
     protected void handle(Callback callback)
             throws UnsupportedCallbackException {
-        if (Edition.ANDROID.isNotCurrentEdition() && callback instanceof javax.security.auth.callback.NameCallback) {
+        if (callback instanceof javax.security.auth.callback.NameCallback) {
             javax.security.auth.callback.NameCallback nc = (javax.security.auth.callback.NameCallback) callback;
 
             if (getRequest().getChallengeResponse() != null) {

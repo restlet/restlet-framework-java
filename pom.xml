@@ -29,7 +29,6 @@
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
 
         <!-- dependencies -->
-        <lib-activation-version>1.1.1</lib-activation-version>
         <lib-aopalliance-version>1.0</lib-aopalliance-version>
         <lib-bloat-version>1.0</lib-bloat-version>
         <lib-cglib-version>3.3.0</lib-cglib-version>

@@ -40,11 +40,6 @@
             <version>${lib-jetty-version}</version>
         </dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>

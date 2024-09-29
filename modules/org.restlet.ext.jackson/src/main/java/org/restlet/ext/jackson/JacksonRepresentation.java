@@ -135,10 +135,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
-            this.validatingDtd = XML_VALIDATING_DTD;
-        }
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+        this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
@@ -159,10 +157,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
-            this.validatingDtd = XML_VALIDATING_DTD;
-        }
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+       this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
@@ -200,14 +196,20 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new ObjectMapper(jsonFactory);
-        } else if (MediaType.APPLICATION_JSON_SMILE
-                .isCompatible(getMediaType())) {
+        } else if (MediaType.APPLICATION_JSON_SMILE.isCompatible(getMediaType())) {
             SmileFactory smileFactory = new SmileFactory();
             smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new ObjectMapper(smileFactory);
 
-        } else if (Edition.ANDROID.isNotCurrentEdition()  && (MediaType.APPLICATION_XML.isCompatible(getMediaType())
-                || MediaType.TEXT_XML.isCompatible(getMediaType()))) {
+        } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
+                || MediaType.TEXT_XML.isCompatible(getMediaType())) {
+            if (Edition.ANDROID.isCurrentEdition() && XmlFactoryProvider.inputFactoryProvider == null) {
+                XmlFactoryProvider.inputFactoryProvider = new com.ctc.wstx.osgi.InputFactoryProviderImpl();
+            }
+            if (Edition.ANDROID.isCurrentEdition() && XmlFactoryProvider.outputFactoryProvider == null) {
+                XmlFactoryProvider.outputFactoryProvider = new com.ctc.wstx.osgi.OutputFactoryProviderImpl();
+            }
+
             javax.xml.stream.XMLInputFactory xif = XmlFactoryProvider.newInputFactory();
             xif.setProperty(
                     javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
@@ -364,15 +366,12 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     }
 
     /**
-     * Indicates if the parser will expand entity reference nodes. By default,
-     * the value of this is set to true.
+     * Indicates if the parser expands entity reference nodes.
+     * By default, the value of this is set to true.
      * 
-     * @return True if the parser will expand entity reference nodes.
+     * @return True if the parser expands entity reference nodes.
      */
     public boolean isExpandingEntityRefs() {
-        if (Edition.ANDROID.isCurrentEdition()) {
-            throw new RuntimeException(); // TODO right thing to do?
-        }
         return  expandingEntityRefs;
     }
 
@@ -383,10 +382,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * @return True if the schema-based validation is enabled.
      */
     public boolean isValidatingDtd() {
-        if (Edition.ANDROID.isCurrentEdition()) {
-            throw new RuntimeException(); // TODO right thing to do?
-        }
-
         return validatingDtd;
     }
 
@@ -401,17 +396,13 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     }
 
     /**
-     * Indicates if the parser will expand entity reference nodes. By default
-     * the value of this is set to true.
+     * Indicates if the parser expands entity reference nodes.
+     * By default, the value of this is set to true.
      * 
      * @param expandEntityRefs
-     *            True if the parser will expand entity reference nodes.
+     *            True if the parser expands entity reference nodes.
      */
     public void setExpandingEntityRefs(boolean expandEntityRefs) {
-        if (Edition.ANDROID.isCurrentEdition()) {
-            throw new RuntimeException(); // TODO right thing to do?
-        }
-
         this.expandingEntityRefs = expandEntityRefs;
     }
 
@@ -473,10 +464,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      *            The new validation flag to set.
      */
     public void setValidatingDtd(boolean validating) {
-        if (Edition.ANDROID.isCurrentEdition()) {
-            throw new RuntimeException(); // TODO right thing to do?
-        }
-
         this.validatingDtd = validating;
     }
 

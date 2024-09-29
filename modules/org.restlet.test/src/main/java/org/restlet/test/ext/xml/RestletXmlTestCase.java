@@ -109,9 +109,7 @@ public class RestletXmlTestCase extends RestletTestCase {
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         DefaultSaxHandler handler = new DefaultSaxHandler();
         schemaFactory.setErrorHandler(handler);
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            schemaFactory.setResourceResolver(handler);        	
-        }
+        schemaFactory.setResourceResolver(handler);
 
         InputStream is = getClass().getResourceAsStream(
                 "/org/restlet/Component.xsd");

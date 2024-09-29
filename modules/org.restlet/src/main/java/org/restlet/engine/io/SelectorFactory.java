@@ -31,7 +31,6 @@ import java.util.Stack;
 
 import org.restlet.engine.Edition;
 
-// [excludes android] TODO how to exclude this class?
 /**
  * Factory used to dispatch/share <code>Selector</code>.
  * 

@@ -43,14 +43,11 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Raif S. Naffah
  * @author Jerome Louvel
  */
-public class DefaultSaxHandler extends DefaultHandler
-// [ifndef android] TODO how to handle this?
-		implements org.w3c.dom.ls.LSResourceResolver
-// [enddef]
+public class DefaultSaxHandler extends DefaultHandler implements org.w3c.dom.ls.LSResourceResolver
 {
 
 	/**
-	 * A class field set to {@code true} if the the JAXP debug property is turned
+	 * A class field set to {@code true} if the JAXP debug property is turned
 	 * on; {@code false} otherwise. This is used to control the degree of output
 	 * generated in the logs.
 	 */
@@ -133,9 +130,6 @@ public class DefaultSaxHandler extends DefaultHandler
 	 */
 	public org.w3c.dom.ls.LSInput resolveResource(String type, String namespaceUri, String publicId, String systemId,
 			String baseUri) {
-		if (Edition.ANDROID.isCurrentEdition()) {
-			throw new RuntimeException(); // TODO actually should not compile with Android
-		}
 		if (loggable) {
 			logger.config("Resolve resource with type [" + type + "], namespace URI [" + namespaceUri + "], PUBLIC ["
 					+ publicId + "], SYSTEM [" + systemId + "], and base URI [" + baseUri + "]");

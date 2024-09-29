@@ -123,10 +123,8 @@ public class JacksonConverter extends ConverterHelper {
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_JSON_SMILE);
-            if (Edition.ANDROID.isNotCurrentEdition()) { // TODO check why?
-                result = addVariant(result, VARIANT_APPLICATION_XML);
-                result = addVariant(result, VARIANT_TEXT_XML);
-            }
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            result = addVariant(result, VARIANT_TEXT_XML);
             result = addVariant(result, VARIANT_APPLICATION_YAML);
             result = addVariant(result, VARIANT_TEXT_YAML);
             result = addVariant(result, VARIANT_TEXT_CSV);
@@ -148,8 +146,8 @@ public class JacksonConverter extends ConverterHelper {
         return (variant != null)
                 && (VARIANT_JSON.isCompatible(variant)
                         || VARIANT_JSON_SMILE.isCompatible(variant)
-                        || (Edition.ANDROID.isNotCurrentEdition() && VARIANT_APPLICATION_XML.isCompatible(variant))
-                        || (Edition.ANDROID.isNotCurrentEdition() && VARIANT_TEXT_XML.isCompatible(variant))
+                        || (VARIANT_APPLICATION_XML.isCompatible(variant))
+                        || (VARIANT_TEXT_XML.isCompatible(variant))
                         || VARIANT_APPLICATION_YAML.isCompatible(variant)
                         || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
                             .isCompatible(variant));
@@ -242,10 +240,8 @@ public class JacksonConverter extends ConverterHelper {
             Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
-        if (Edition.ANDROID.isNotCurrentEdition()) {
-            updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
-            updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
-        }
+        updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_YAML, 1.0F);
         updatePreferences(preferences, MediaType.TEXT_YAML, 1.0F);
         updatePreferences(preferences, MediaType.TEXT_CSV, 1.0F);
