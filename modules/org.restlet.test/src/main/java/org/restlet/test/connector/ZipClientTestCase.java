@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,20 +51,16 @@ import org.restlet.test.RestletTestCase;
  */
 public class ZipClientTestCase extends RestletTestCase {
 
-    final File testDir = new File(System.getProperty("java.io.tmpdir"),
-            "zipClientTestCase");
     private File zipFile;
 
     @BeforeEach
     protected void setUpEach() throws Exception {
-        IoUtils.delete(testDir, true);
-        testDir.mkdirs();
-        zipFile = new File(testDir, "test.zip");
+        zipFile = Files.createTempFile("ZipClientTestCase", "test.zip").toFile();
     }
 
     @AfterEach
     protected void tearDownEach() throws Exception {
-        IoUtils.delete(testDir, true);
+        zipFile.delete();
     }
 
     @Test
@@ -72,50 +69,52 @@ public class ZipClientTestCase extends RestletTestCase {
         String text2 = "Test content\nLine 2";
         LocalReference fr = LocalReference.createFileReference(zipFile);
         Reference zr = new Reference("zip:" + fr);
-        String fzr = zr + "!/test.txt";
-        String fzd = zr + "!/dir/";
-        String fzr2 = zr + "!/test2.txt";
-        String fzr3 = fzd + "test3.txt";
+        String testFileEntryReference = zr + "!/test.txt";
+        String test2FileEntryReference = zr + "!/test2.txt";
+        String dirEntryReference = zr + "!/dir/";
+        String test3FileInDirEntryReference = dirEntryReference + "test3.txt";
 
-        // Write the text to file
-        ClientResource r = new ClientResource(fzr);
-        r.put(new StringRepresentation(text));
-        assertEquals(r.getStatus(), Status.SUCCESS_CREATED);
+        // Write test.txt as first entry
+        ClientResource testFileEntryClientResource = new ClientResource(testFileEntryReference);
+        testFileEntryClientResource.put(new StringRepresentation(text));
+        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_CREATED);
 
         // Get the text and compare to the original
-        r.get();
-        assertEquals(r.getStatus(), Status.SUCCESS_OK);
-        assertEquals(r.getResponseEntity().getText(), text);
-        r.release();
+        testFileEntryClientResource.get();
+        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(testFileEntryClientResource.getResponseEntity().getText(), text);
+        testFileEntryClientResource.release();
 
-        // Write the text to file
-        ClientResource r2 = new ClientResource(fzr2);
-        r2.put(new StringRepresentation(text2));
-        assertEquals(r2.getStatus(), Status.SUCCESS_OK);
+        // Write test2.txt as second entry
+        ClientResource test2FileEntryClientResource = new ClientResource(test2FileEntryReference);
+        test2FileEntryClientResource.put(new StringRepresentation(text2));
+        assertEquals(test2FileEntryClientResource.getStatus(), Status.SUCCESS_OK);
 
-        // Checking first one was not overwritten
-        r.get();
-        assertEquals(r.getStatus(), Status.SUCCESS_OK);
-        assertEquals(r.getResponseEntity().getText(), text);
-        r.release();
+        // Check that the first entry has not been overwritten
+        testFileEntryClientResource.get();
+        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(testFileEntryClientResource.getResponseEntity().getText(), text);
+        testFileEntryClientResource.release();
 
         // Put a directory
-        ClientResource rd = new ClientResource(fzd);
-        rd.put(new EmptyRepresentation());
-        assertEquals(rd.getStatus(), Status.SUCCESS_OK);
+        ClientResource dirEntryClientResource = new ClientResource(dirEntryReference);
+        dirEntryClientResource.put(new EmptyRepresentation());
+        assertEquals(dirEntryClientResource.getStatus(), Status.SUCCESS_OK);
 
-        rd.get();
-        assertEquals(rd.getStatus(), Status.SUCCESS_OK);
+        dirEntryClientResource.get();
+        assertEquals(dirEntryClientResource.getStatus(), Status.SUCCESS_OK);
 
-        ClientResource r3 = new ClientResource(fzr3);
-        r3.put(new StringRepresentation(text));
-        assertEquals(r3.getStatus(), Status.SUCCESS_OK);
+        // Add a file inside the directory
+        ClientResource testFileInDirEntryCLientResource = new ClientResource(test3FileInDirEntryReference);
+        testFileInDirEntryCLientResource.put(new StringRepresentation(text));
+        assertEquals(testFileInDirEntryCLientResource.getStatus(), Status.SUCCESS_OK);
 
-        // Checking second one was output
-        r2.get();
-        assertEquals(r2.getStatus(), Status.SUCCESS_OK, "Could not get " + fzr2);
-        assertEquals(r2.getResponseEntity().getText(), text2);
+        // Check that the second entry is still there
+        test2FileEntryClientResource.get();
+        assertEquals(test2FileEntryClientResource.getStatus(), Status.SUCCESS_OK, "Could not get " + test2FileEntryReference);
+        assertEquals(test2FileEntryClientResource.getResponseEntity().getText(), text2);
 
+        // Check that content negotiation does not work
         try {
             ClientResource rTest2 = new ClientResource(zr + "!test2");
             rTest2.get();
@@ -125,7 +124,7 @@ public class ZipClientTestCase extends RestletTestCase {
 
         // Try to replace file by directory
         try {
-            ClientResource r2d = new ClientResource(fzr2 + "/");
+            ClientResource r2d = new ClientResource(test2FileEntryReference + "/");
             r2d.put(new EmptyRepresentation());
             fail();
         } catch (ResourceException e) {
