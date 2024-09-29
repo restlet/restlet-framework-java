@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +57,8 @@ public class ZipClientTestCase extends RestletTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
-        zipFile = Files.createTempFile("ZipClientTestCase", "test.zip").toFile();
+        Path testCaseDirectoryPath = Files.createTempDirectory("ZipClientTestCase");
+        zipFile = testCaseDirectoryPath.resolve("test.zip").toFile();
     }
 
     @AfterEach
