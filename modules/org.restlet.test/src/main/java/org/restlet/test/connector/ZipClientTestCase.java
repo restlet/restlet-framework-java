@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;

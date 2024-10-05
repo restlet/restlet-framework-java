@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Application;

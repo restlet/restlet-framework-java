@@ -35,7 +35,6 @@ import org.json.JSONStringer;
 import org.json.JSONTokener;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;

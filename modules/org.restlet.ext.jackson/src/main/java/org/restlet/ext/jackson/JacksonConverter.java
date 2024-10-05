@@ -29,7 +29,6 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
-import org.restlet.engine.Edition;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;

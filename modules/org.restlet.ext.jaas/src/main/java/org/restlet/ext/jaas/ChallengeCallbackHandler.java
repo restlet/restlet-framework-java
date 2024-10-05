@@ -33,7 +33,6 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.Edition;
 
 /**
  * JAAS callback handler that automatically provides the identifier and secret

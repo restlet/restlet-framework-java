@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.Edition;
 
 /**
  * Representation based on a serializable Java object.<br>

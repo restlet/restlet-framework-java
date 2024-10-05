@@ -119,7 +119,6 @@ public class DecodeRepresentation extends WrapperRepresentation {
 			} else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
 				result = new InflaterInputStream(encodedStream, new Inflater(true));
 			} else if (encoding.equals(Encoding.ZIP)) {
-				@SuppressWarnings("resource")
 				final ZipInputStream stream = new ZipInputStream(encodedStream);
 				if (stream.getNextEntry() != null) {
 					result = stream;

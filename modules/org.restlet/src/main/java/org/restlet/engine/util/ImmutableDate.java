@@ -26,8 +26,6 @@ package org.restlet.engine.util;
 
 import java.util.Date;
 
-import org.restlet.engine.Edition;
-
 /**
  * Class acting as an immutable date class based on the {@link Date} class.
  * 
