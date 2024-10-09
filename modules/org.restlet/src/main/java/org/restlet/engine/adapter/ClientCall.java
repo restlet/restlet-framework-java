@@ -62,10 +62,6 @@ public abstract class ClientCall extends Call {
 	 * @return The local IP address or 127.0.0.1 if the resolution fails.
 	 */
 	public static String getLocalAddress() {
-		if (Edition.GAE.isCurrentEdition()) {
-			return "127.0.0.1";
-		}
-
 		try {
 			return java.net.InetAddress.getLocalHost().getHostAddress();
 		} catch (java.net.UnknownHostException e) {

@@ -80,11 +80,7 @@ public class ServerHelper extends ConnectorHelper<Server> {
 	 * @param socket The bound server socket.
 	 */
 	public void setEphemeralPort(java.net.ServerSocket socket) {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException("Edition GAE does not support this method");
-		} else {
-			setEphemeralPort(socket.getLocalPort());	
-		}
+		setEphemeralPort(socket.getLocalPort());
 	}
 
 	@Override

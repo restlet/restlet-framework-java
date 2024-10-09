@@ -177,10 +177,8 @@ public class Component extends Restlet {
 		this.services = new ServiceList(getContext());
 
 		if (Engine.getInstance() != null) {
-			if (Edition.GAE.isNotCurrentEdition()) {
-				// To be done before setting the helper...
-				this.services.add(new org.restlet.service.TaskService());
-			}
+			// To be done before setting the helper...
+			this.services.add(new org.restlet.service.TaskService());
 
 			this.helper = new ComponentHelper(this);
 			Context childContext = getContext().createChildContext();
@@ -388,11 +386,7 @@ public class Component extends Restlet {
 	 * @return A task service.
 	 */
 	public org.restlet.service.TaskService getTaskService() {
-		if (Edition.GAE.isNotCurrentEdition()) {
-			return getServices().get(org.restlet.service.TaskService.class);
-		} else {
-			throw new RuntimeException("Edition GAE does not support this method");
-		}
+		return getServices().get(org.restlet.service.TaskService.class);
 	}
 
 	@Override
@@ -529,11 +523,7 @@ public class Component extends Restlet {
 	 * @param taskService The task service.
 	 */
 	public void setTaskService(org.restlet.service.TaskService taskService) {
-		if (Edition.GAE.isCurrentEdition()) {
-			getServices().set(taskService);
-		} else {
-			throw new RuntimeException("Edition GAE does not support this method");
-		}
+		getServices().set(taskService);
 	}
 
 	/**

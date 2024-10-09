@@ -117,10 +117,7 @@ public class SslUtils {
 	 * @return The SSL context factory.
 	 */
 	public static SslContextFactory getSslContextFactory(RestletHelper<?> helper) {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException("Edition GAE does not support this method");
-		}
-		
+
 		SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
 				: helper.getContext().getAttributes().get("sslContextFactory"));
 

@@ -51,14 +51,12 @@ public class SelectorFactory {
 
 	/** Creates the <code>Selector</code>. */
 	static {
-		if (Edition.GAE.isNotCurrentEdition()) {
-			try {
-				for (int i = 0; i < MAX_SELECTORS; i++) {
-					SELECTORS.add(Selector.open());
-				}
-			} catch (IOException ex) {
-				// do nothing.
+		try {
+			for (int i = 0; i < MAX_SELECTORS; i++) {
+				SELECTORS.add(Selector.open());
 			}
+		} catch (IOException ex) {
+			// do nothing.
 		}
 	}
 

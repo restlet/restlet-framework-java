@@ -172,9 +172,7 @@ public class Application extends Restlet {
 		this.services.add(converterService);
 		this.services.add(metadataService);
 
-		if (Edition.GAE.isNotCurrentEdition()) {
-			this.services.add(new org.restlet.service.TaskService(false));
-		}
+		this.services.add(new org.restlet.service.TaskService(false));
 	}
 
 	/**
@@ -364,11 +362,7 @@ public class Application extends Restlet {
 	 */
 	@Deprecated
 	public org.restlet.service.TaskService getTaskService() {
-		if (Edition.GAE.isCurrentEdition()) {
-			return getServices().get(org.restlet.service.TaskService.class);
-		} else {
-			throw new RuntimeException("Edition GAE does not support this method");
-		}
+		return getServices().get(org.restlet.service.TaskService.class);
 	}
 
 	/**
@@ -554,11 +548,7 @@ public class Application extends Restlet {
 	 * @param taskService The task service.
 	 */
 	public void setTaskService(org.restlet.service.TaskService taskService) {
-		if (Edition.GAE.isCurrentEdition()) {
-			getServices().set(taskService);
-		} else {
-			throw new RuntimeException("Edition GAE does not support this method");
-		}
+		getServices().set(taskService);
 	}
 
 	/**

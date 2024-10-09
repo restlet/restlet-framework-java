@@ -102,10 +102,7 @@ public class ServletAdapter extends ServletServerAdapter {
      *            The next Restlet.
      */
     public ServletAdapter(ServletContext context, Restlet next) {
-        // [ifndef gae] instruction TODO cannot express this with if because super() must be first call
         super(new Context(new ServletLogger(context)));
-        // [ifdef gae] instruction uncomment
-        // super(new Context());
         this.next = next;
     }
 

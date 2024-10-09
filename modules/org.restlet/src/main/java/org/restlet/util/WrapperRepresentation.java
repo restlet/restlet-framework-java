@@ -167,9 +167,6 @@ public class WrapperRepresentation extends Representation {
 
 	@Override
 	public boolean isSelectable() {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException(); // TODO Compile with GAE?
-		}
 		return getWrappedRepresentation().isSelectable();
 	}
 

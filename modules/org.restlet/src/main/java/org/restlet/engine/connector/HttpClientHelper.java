@@ -129,10 +129,6 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 		super(client);
 		getProtocols().add(Protocol.HTTP);
 		getProtocols().add(Protocol.HTTPS);
-
-		if (Edition.CURRENT == Edition.GAE) {
-			getProtocols().add(Protocol.SDC);
-		}
 	}
 
 	/**

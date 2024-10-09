@@ -51,9 +51,7 @@ import org.restlet.util.Series;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpURLConnection class.
- * On the GAE edition, it also supports the SDC protocol by setting
- * automatically the special "use_intranet" header.
- * 
+ *
  * @author Jerome Louvel
  */
 public class HttpUrlConnectionCall extends ClientCall {
@@ -91,15 +89,13 @@ public class HttpUrlConnectionCall extends ClientCall {
 				this.connection.setReadTimeout(getHelper().getReadTimeout());
 			}
 
-			if (Edition.GAE.isNotCurrentEdition()) {
-				this.connection.setAllowUserInteraction(getHelper().isAllowUserInteraction());
-			}
+			this.connection.setAllowUserInteraction(getHelper().isAllowUserInteraction());
 			this.connection.setDoOutput(hasEntity);
 			this.connection.setInstanceFollowRedirects(getHelper().isFollowRedirects());
 			this.connection.setUseCaches(getHelper().isUseCaches());
 			this.responseHeadersAdded = false;
 
-			if (Edition.GAE.isNotCurrentEdition() && this.connection instanceof javax.net.ssl.HttpsURLConnection) {
+			if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
 				setConfidential(true);
 				javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
 				org.restlet.engine.ssl.SslContextFactory sslContextFactory = org.restlet.engine.ssl.SslUtils
@@ -330,14 +326,6 @@ public class HttpUrlConnectionCall extends ClientCall {
 					getHelper().getLogger()
 							.info("The following header has a null value and has been discarded: " + header.getName());
 				}
-			}
-
-			if ((Edition.CURRENT == Edition.GAE) && (request.getProtocol() == Protocol.SDC)) {
-				// This is to ensure portable code with other Restlet editions.
-				// that uses the proxy authorization header to transmit SDC
-				// security parameters (not required on GAE).
-				getConnection().getRequestProperties().remove(HeaderConstants.HEADER_PROXY_AUTHORIZATION);
-				getConnection().setRequestProperty("use_intranet", "true");
 			}
 
 			// Ensure that the connection is active

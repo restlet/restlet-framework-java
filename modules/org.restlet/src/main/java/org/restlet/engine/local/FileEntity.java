@@ -55,15 +55,7 @@ public class FileEntity extends Entity {
 
 	@Override
 	public boolean exists() {
-		if (Edition.GAE.isCurrentEdition()) {
-			try {
-				return getFile().exists();
-			} catch (java.security.AccessControlException ace) {
-				return false; // mute java.security.AccessControlException for GAE edition
-			}
-		} else {
-			return getFile().exists();
-		}
+		return getFile().exists();
 	}
 
 	@Override
@@ -73,15 +65,8 @@ public class FileEntity extends Entity {
 		if (isDirectory()) {
 			result = new ArrayList<Entity>();
 
-			try {
-				for (File f : getFile().listFiles()) {
-					result.add(new FileEntity(f, getMetadataService()));
-				}
-			} catch (java.security.AccessControlException ace) {
-				// mute java.security.AccessControlException for GAE edition
-				if (Edition.GAE.isNotCurrentEdition()) {
-					throw ace;
-				}
+			for (File f : getFile().listFiles()) {
+				result.add(new FileEntity(f, getMetadataService()));
 			}
 		}
 
@@ -115,29 +100,11 @@ public class FileEntity extends Entity {
 
 	@Override
 	public boolean isDirectory() {
-		try {
-			return getFile().isDirectory();
-		} catch (java.security.AccessControlException ace) {
-			// mute java.security.AccessControlException for GAE edition
-			if (Edition.GAE.isCurrentEdition()) {
-				return false;
-			} else {
-				throw ace;
-			}
-		}
+		return getFile().isDirectory();
 	}
 
 	@Override
 	public boolean isNormal() {
-		try {
-			return getFile().isFile();
-		} catch (java.security.AccessControlException ace) {
-			// mute java.security.AccessControlException for GAE edition
-			if (Edition.GAE.isCurrentEdition()) {
-				return false;
-			} else {
-				throw ace;
-			}
-		}
+		return getFile().isFile();
 	}
 }

@@ -328,45 +328,40 @@ public class IoUtils {
 	public static ReadableByteChannel getChannel(final Representation representation) throws IOException {
 		ReadableByteChannel result = null;
 
-		if (Edition.GAE.isNotCurrentEdition()) {
-			final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
+		final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
 
-			// Get a thread that will handle the task of continuously
-			// writing the representation into the input side of the pipe
-			Runnable task = new Runnable() {
+		// Get a thread that will handle the task of continuously
+		// writing the representation into the input side of the pipe
+		Runnable task = new Runnable() {
 				public void run() {
-					WritableByteChannel wbc = null;
+				WritableByteChannel wbc = null;
 
-					try {
-						wbc = pipe.sink();
-						representation.write(wbc);
-					} catch (IOException ioe) {
-						Context.getCurrentLogger().log(Level.WARNING, "Error while writing to the piped channel.", ioe);
-					} finally {
-						if (wbc != null)
-							try {
-								wbc.close();
-							} catch (IOException e) {
-								Context.getCurrentLogger().log(Level.WARNING,
-										"Error while closing to the piped channel.", e);
-							}
-					}
+				try {
+					wbc = pipe.sink();
+					representation.write(wbc);
+				} catch (IOException ioe) {
+					Context.getCurrentLogger().log(Level.WARNING, "Error while writing to the piped channel.", ioe);
+				} finally {
+					if (wbc != null)
+						try {
+							wbc.close();
+						} catch (IOException e) {
+							Context.getCurrentLogger().log(Level.WARNING,
+									"Error while closing to the piped channel.", e);
+						}
 				}
+			}
 			};
 
-			org.restlet.Context context = org.restlet.Context.getCurrent();
+		org.restlet.Context context = org.restlet.Context.getCurrent();
 
-			if (context != null && context.getExecutorService() != null) {
-				context.getExecutorService().execute(task);
-			} else {
-				Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils").start();
-			}
-
-			result = pipe.source();
+		if (context != null && context.getExecutorService() != null) {
+			context.getExecutorService().execute(task);
 		} else {
-			Context.getCurrentLogger().log(Level.WARNING,
-					"The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
+			Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils").start();
 		}
+
+		result = pipe.source();
 
 		return result;
 	}

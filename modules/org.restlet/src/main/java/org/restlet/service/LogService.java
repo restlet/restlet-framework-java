@@ -154,9 +154,7 @@ public class LogService extends Service {
 		sb.append('\t');
 
 		// Append the user name (via IDENT protocol)
-		if (Edition.GAE.isCurrentEdition()) {
-			sb.append('-'); // TODO compile with GAE?
-		} else if (isIdentityCheck()) {
+		if (isIdentityCheck()) {
 			org.restlet.engine.log.IdentClient ic = new org.restlet.engine.log.IdentClient(
 					request.getClientInfo().getUpstreamAddress(), request.getClientInfo().getPort(),
 					response.getServerInfo().getPort());
@@ -432,9 +430,6 @@ public class LogService extends Service {
 
 		this.responseLogTemplate = (getResponseLogFormat() == null) ? null : new Template(getResponseLogFormat());
 
-		if (Edition.GAE.isCurrentEdition()) {
-			return;
-		}
 		if (getLogPropertiesRef() != null) {
 			Representation logProperties = new ClientResource(getContext(), getLogPropertiesRef()).get();
 

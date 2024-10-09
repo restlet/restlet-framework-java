@@ -341,11 +341,7 @@ public abstract class Call {
 	 * @return True if the given exception is caused by a broken connection.
 	 */
 	public boolean isConnectionBroken(Throwable exception) {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException("Edition GAE does not support this method");
-		} else {
-			return isBroken(exception);			
-		}
+		return isBroken(exception);
 	}
 
 	/**

@@ -32,10 +32,9 @@ package org.restlet.engine;
 public enum Edition {
 
 	/**
-	 * Android mobile OS, Google App Engine, JEE, JSE, OSGI.
+	 * Android mobile OS, JEE, JSE, OSGI.
 	 */
 	ANDROID("Android", "Android", "Android"),
-	GAE("Google App Engine", "GAE", "GAE"),
 	JEE("Java Enterprise Edition", "Java EE", "JEE"),
 	JSE("Java Standard Edition", "Java SE", "JSE"),
 	OSGI("OSGi", "OSGi", "OSGi");

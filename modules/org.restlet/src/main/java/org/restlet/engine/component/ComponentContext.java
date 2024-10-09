@@ -49,9 +49,7 @@ public class ComponentContext extends Context {
 		this.componentHelper = componentHelper;
 		setClientDispatcher(new ComponentClientDispatcher(this));
 		setServerDispatcher(new ComponentServerDispatcher(this));
-		if (Edition.GAE.isNotCurrentEdition()) {
-			setExecutorService(componentHelper.getHelped().getTaskService());			
-		}
+		setExecutorService(componentHelper.getHelped().getTaskService());
 	}
 
 	@Override

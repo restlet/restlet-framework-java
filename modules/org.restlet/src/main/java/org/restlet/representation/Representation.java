@@ -320,9 +320,6 @@ public abstract class Representation extends RepresentationInfo {
 	 * @see #isSelectable()
 	 */
 	public org.restlet.util.SelectionRegistration getRegistration() throws IOException {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException(); // TODO compile with GAE?
-		}
 		if (isSelectable()) {
 			return ((org.restlet.engine.io.SelectionChannel) getChannel()).getRegistration();
 		}
@@ -423,9 +420,6 @@ public abstract class Representation extends RepresentationInfo {
 	 * @return True if the representation content supports NIO selection.
 	 */
 	public boolean isSelectable() {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException(); // TODO Compile with GAE?
-		}
 		try {
 			return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
 		} catch (IOException e) {
@@ -522,9 +516,6 @@ public abstract class Representation extends RepresentationInfo {
 	 * @param readingListener The listener for NIO read events.
 	 */
 	public void setListener(org.restlet.util.ReadingListener readingListener) {
-		if (Edition.GAE.isCurrentEdition()) {
-			throw new RuntimeException(); // TODO Compile with GAE?
-		}
 		try {
 			org.restlet.util.SelectionRegistration sr = getRegistration();
 

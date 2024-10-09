@@ -190,10 +190,6 @@ public class ServletCall extends ServerCall {
 
     @Override
     public Representation getRequestEntity() {
-        if (Edition.GAE.isCurrentEdition()) {
-            throw new RuntimeException(); // TODO right thing to do?
-        }
-
         Representation result = null;
 
         if (getRequest().getContentType() != null
