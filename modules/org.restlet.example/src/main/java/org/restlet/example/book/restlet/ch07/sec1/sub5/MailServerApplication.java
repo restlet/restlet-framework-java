@@ -26,6 +26,7 @@ package org.restlet.example.book.restlet.ch07.sec1.sub5;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
@@ -49,6 +50,13 @@ public class MailServerApplication extends Application {
         mailServer.getDefaultHost().attach(new MailServerApplication());
         mailServer.start();
     }
+    
+    public MailServerApplication() {
+	}
+    
+    public MailServerApplication(Context parentContext) {
+		super(parentContext);
+	}
 
     /**
      * Creates a root Router to dispatch call to server resources.

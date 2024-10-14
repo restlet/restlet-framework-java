@@ -27,7 +27,7 @@ package org.restlet.ext.fileupload;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.fileupload.RequestContext;
+import org.apache.commons.fileupload.UploadContext;
 import org.restlet.representation.Representation;
 
 /**
@@ -36,7 +36,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class RepresentationContext implements RequestContext {
+public class RepresentationContext implements UploadContext  {
 
     /** The representation to adapt. */
     private volatile Representation multipartForm;
@@ -51,11 +51,12 @@ public class RepresentationContext implements RequestContext {
         this.multipartForm = multipartForm;
     }
 
-    /**
-     * Returns the character encoding for the form.
-     * 
-     * @return The character encoding for the form.
-     */
+	@Override
+	public long contentLength() {
+        return this.multipartForm.getSize();
+	}
+
+	@Override
     public String getCharacterEncoding() {
         if (this.multipartForm.getCharacterSet() != null) {
             return this.multipartForm.getCharacterSet().getName();
@@ -64,20 +65,12 @@ public class RepresentationContext implements RequestContext {
         return null;
     }
 
-    /**
-     * Returns the content length of the form.
-     * 
-     * @return The content length of the form.
-     */
+	@Override
     public int getContentLength() {
-        return (int) this.multipartForm.getSize();
+        return (int) contentLength();
     }
 
-    /**
-     * Returns the content type of the form.
-     * 
-     * @return The content type of the form.
-     */
+	@Override
     public String getContentType() {
         if (this.multipartForm.getMediaType() != null) {
             return this.multipartForm.getMediaType().toString();
@@ -86,11 +79,7 @@ public class RepresentationContext implements RequestContext {
         return null;
     }
 
-    /**
-     * Returns the input stream.
-     * 
-     * @return The input stream.
-     */
+	@Override
     public InputStream getInputStream() throws IOException {
         return this.multipartForm.getStream();
     }
