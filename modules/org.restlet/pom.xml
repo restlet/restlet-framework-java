@@ -19,6 +19,7 @@
             <artifactId>org.osgi.core</artifactId>
             <version>${lib-osgi-version}</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
