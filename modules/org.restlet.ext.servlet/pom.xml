@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>org.restlet.ext.servlet</artifactId>
+    <packaging>bundle</packaging>
     <name>Restlet Extension - Servlet</name>
     <description>Integration with Servlet API.</description>
 
@@ -26,4 +27,13 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

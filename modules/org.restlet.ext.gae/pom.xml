@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>org.restlet.ext.gae</artifactId>
+    <packaging>bundle</packaging>
     <name>Restlet Extension - GAE</name>
     <description>Integration to the Google App Engine UserService for the GAE edition.</description>
 
@@ -25,4 +26,13 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

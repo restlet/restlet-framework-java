@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.fileupload</artifactId>
+	<packaging>bundle</packaging>
 	<name>Restlet Extension - FileUpload</name>
 	<description>Integration with Apache FileUpload.</description>
 
@@ -31,4 +32,13 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

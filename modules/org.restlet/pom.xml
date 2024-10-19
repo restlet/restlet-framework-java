@@ -11,6 +11,7 @@
 
     <artifactId>org.restlet</artifactId>
     <name>Restlet Core - API and Engine</name>
+    <packaging>bundle</packaging>
     <description>RESTful web framework for Java (API and Engine).</description>
 
     <dependencies>
@@ -28,4 +29,28 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>com.sun.net.httpserver;resolution=optional,
+                            javax.net.ssl;resolution=optional,
+                            javax.security.auth.x500;resolution=optional,
+                            javax.xml.parsers;resolution=optional,
+                            org.osgi.framework;resolution:=optional,
+                            org.w3c.dom;resolution=optional,
+                            org.w3c.dom.ls;resolution=optional,
+                            org.xml.sax.*;resolution=optional,
+                            *
+                        </Import-Package>
+                        <Bundle-Activator>org.restlet.engine.internal.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
