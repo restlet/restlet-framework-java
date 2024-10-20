@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>org.restlet.ext.osgi</artifactId>
+    <packaging>bundle</packaging>
     <name>Restlet Extension - OSGi</name>
     <description>Support for the OSGi specification.</description>
 
@@ -32,4 +33,19 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>org.restlet.ext.osgi</Export-Package>
+                        <Bundle-Activator>org.restlet.engine.ext.osgi.internal.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

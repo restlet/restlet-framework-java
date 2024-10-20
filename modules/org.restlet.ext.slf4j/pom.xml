@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.slf4j</artifactId>
+	<packaging>bundle</packaging>
 	<name>Restlet Extension - SLF4J</name>
 	<description>Support for the SLF4J logging bridge.</description>
 
@@ -25,4 +26,13 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

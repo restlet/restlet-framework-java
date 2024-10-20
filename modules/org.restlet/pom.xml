@@ -11,6 +11,7 @@
 
     <artifactId>org.restlet</artifactId>
     <name>Restlet Core - API and Engine</name>
+    <packaging>bundle</packaging>
     <description>RESTful web framework for Java (API and Engine).</description>
 
     <dependencies>
@@ -28,4 +29,18 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>org.restlet.engine.internal.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

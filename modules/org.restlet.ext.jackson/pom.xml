@@ -10,6 +10,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jackson</artifactId>
+	<packaging>bundle</packaging>
 	<name>Restlet Extension - Jackson</name>
 	<description>Integration with Jackson.</description>
 
@@ -65,4 +66,13 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
