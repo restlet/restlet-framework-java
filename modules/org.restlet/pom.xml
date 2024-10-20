@@ -37,10 +37,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>
-                            org.osgi.framework;resolution:=optional,
-                            *
-                        </Import-Package>
                         <Bundle-Activator>org.restlet.engine.internal.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
