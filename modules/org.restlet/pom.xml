@@ -37,14 +37,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>com.sun.net.httpserver;resolution=optional,
-                            javax.net.ssl;resolution=optional,
-                            javax.security.auth.x500;resolution=optional,
-                            javax.xml.parsers;resolution=optional,
+                        <Import-Package>
                             org.osgi.framework;resolution:=optional,
-                            org.w3c.dom;resolution=optional,
-                            org.w3c.dom.ls;resolution=optional,
-                            org.xml.sax.*;resolution=optional,
                             *
                         </Import-Package>
                         <Bundle-Activator>org.restlet.engine.internal.Activator</Bundle-Activator>
