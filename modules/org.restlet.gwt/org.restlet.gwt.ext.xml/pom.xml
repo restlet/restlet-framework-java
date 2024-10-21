@@ -10,7 +10,7 @@
     </parent>
 
 	<artifactId>org.restlet.gwt.ext.xml</artifactId>
-	<name>Restlet Extension - XML</name>
+	<name>Restlet project - GWT edition - XML extension</name>
 	<description>Support for the XML documents.</description>
 
 	<dependencies>

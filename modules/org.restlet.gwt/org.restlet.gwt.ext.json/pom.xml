@@ -10,7 +10,7 @@
     </parent>
 
 	<artifactId>org.restlet.gwt.ext.json</artifactId>
-	<name>Restlet Extension - JSON</name>
+	<name>Restlet project - GWT edition - JSON extension</name>
 	<description>Support for JSON representations.</description>
 
 	<dependencies>

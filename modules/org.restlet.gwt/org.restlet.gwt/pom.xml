@@ -10,8 +10,8 @@
     </parent>
 
 	<artifactId>org.restlet.gwt</artifactId>
-	<name>Restlet Core - API and Engine</name>
-	<description>RESTful web framework for Java (API and Engine).</description>
+	<name>Restlet project - GWT edition - API and Engine</name>
+	<description>RESTful web framework for GWT (API and Engine).</description>
 
 	<dependencies>
 		<dependency>
