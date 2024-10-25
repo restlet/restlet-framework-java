@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet.parent</artifactId>
+        <version>2.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+	<groupId>org.restlet.java</groupId>
+	<artifactId>org.restlet.java.parent</artifactId>
+    <packaging>pom</packaging>
+    <name>Restlet project - Java edition</name>
+    <description>Lightweight REST framework</description>
+
+	<modules>
+		<module>org.restlet</module>
+		<module>org.restlet.example</module>
+		<module>org.restlet.ext.atom</module>
+		<module>org.restlet.ext.crypto</module>
+		<module>org.restlet.ext.fileupload</module>
+		<module>org.restlet.ext.freemarker</module>
+		<module>org.restlet.ext.gae</module>
+		<module>org.restlet.ext.gson</module>
+		<module>org.restlet.ext.guice</module>
+		<module>org.restlet.ext.gwt</module>
+		<module>org.restlet.ext.html</module>
+		<module>org.restlet.ext.httpclient</module>
+		<module>org.restlet.ext.jaas</module>
+		<module>org.restlet.ext.jackson</module>
+		<module>org.restlet.ext.jaxb</module>
+		<module>org.restlet.ext.jetty</module>
+		<module>org.restlet.ext.json</module>
+		<module>org.restlet.ext.odata</module>
+		<module>org.restlet.ext.osgi</module>
+		<module>org.restlet.ext.rdf</module>
+		<module>org.restlet.ext.servlet</module>
+		<module>org.restlet.ext.slf4j</module>
+		<module>org.restlet.ext.spring</module>
+		<module>org.restlet.ext.thymeleaf</module>
+		<module>org.restlet.ext.velocity</module>
+		<module>org.restlet.ext.xml</module>
+		<module>org.restlet.test</module>
+	</modules>
+
+</project>
