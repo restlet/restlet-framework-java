@@ -42,7 +42,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.restlet.ext.osgi</Export-Package>
-                        <Bundle-Activator>org.restlet.engine.ext.osgi.internal.Activator</Bundle-Activator>
+                        <Private-Package>org.restlet.ext.osgi.internal</Private-Package>
+                        <Bundle-Activator>org.restlet.ext.osgi.internal.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
