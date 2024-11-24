@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
-import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 
 import org.restlet.data.Form;
@@ -56,7 +55,6 @@ public class DefaultConverter extends ConverterHelper {
 		result = addObjectClass(result, String.class);
 		result = addObjectClass(result, InputStream.class);
 		result = addObjectClass(result, Reader.class);
-		result = addObjectClass(result, ReadableByteChannel.class);
 
 		if (source.getMediaType() != null) {
 			MediaType mediaType = source.getMediaType();
@@ -295,7 +293,7 @@ public class DefaultConverter extends ConverterHelper {
 		} else if (String.class.isAssignableFrom(entity) || Reader.class.isAssignableFrom(entity)) {
 			updatePreferences(preferences, MediaType.TEXT_PLAIN, 1.0F);
 			updatePreferences(preferences, MediaType.TEXT_ALL, 0.5F);
-		} else if (InputStream.class.isAssignableFrom(entity) || ReadableByteChannel.class.isAssignableFrom(entity)) {
+		} else if (InputStream.class.isAssignableFrom(entity)) {
 			updatePreferences(preferences, MediaType.APPLICATION_OCTET_STREAM, 1.0F);
 			updatePreferences(preferences, MediaType.APPLICATION_ALL, 0.5F);
 		}

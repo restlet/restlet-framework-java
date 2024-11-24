@@ -24,9 +24,6 @@ public final class Status {
 	private static final String BASE_RESTLET = "https://javadocs.restlet.talend.com/" + Engine.MAJOR_NUMBER + '.'
 			+ Engine.MINOR_NUMBER + "/api/";
 
-	@Deprecated
-	private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
-
 	/**
 	 * The request could not be understood by the server due to malformed syntax.
 	 * 
@@ -57,18 +54,6 @@ public final class Status {
 	public static final Status CLIENT_ERROR_EXPECTATION_FAILED = new Status(417);
 
 	/**
-	 * This status code means that the method could not be performed on the resource
-	 * because the requested action depended on another action and that action
-	 * failed.
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV RFC
-	 *      - 10.5 424 Failed Dependency</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status CLIENT_ERROR_FAILED_DEPENDENCY = new Status(424);
-
-	/**
 	 * The server understood the request, but is refusing to fulfill it as it could
 	 * be explained in the entity.
 	 * 
@@ -96,17 +81,6 @@ public final class Status {
 	 *      RFC - 10.4.12 411 Length Required</a>
 	 */
 	public static final Status CLIENT_ERROR_LENGTH_REQUIRED = new Status(411);
-
-	/**
-	 * The source or destination resource of a method is locked (or temporarily
-	 * involved in another process).
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV RFC
-	 *      - 10.4 423 Locked</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status CLIENT_ERROR_LOCKED = new Status(423);
 
 	/**
 	 * The method specified in the Request-Line is not allowed for the resource
@@ -228,18 +202,6 @@ public final class Status {
 	public static final Status CLIENT_ERROR_UNAUTHORIZED = new Status(401);
 
 	/**
-	 * This status code means the server understands the content type of the request
-	 * entity (syntactically correct) but was unable to process the contained
-	 * instructions.
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC
-	 *      - 10.3 422 Unprocessable Entity</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(422);
-
-	/**
 	 * The server is refusing to service the request because the entity of the
 	 * request is in a format not supported by the requested resource for the
 	 * requested method.
@@ -310,19 +272,6 @@ public final class Status {
 	 *      RFC - 14.46 Warning</a>
 	 */
 	public static final Status INFO_MISC_WARNING = new Status(199);
-
-	/**
-	 * This interim response is used to inform the client that the server has
-	 * accepted the complete request, but has not yet completed it since the server
-	 * has a reasonable expectation that the request will take significant time to
-	 * complete.
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC
-	 *      - 10.1 102 Processing</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status INFO_PROCESSING = new Status(102);
 
 	/**
 	 * Warning status code, typically returned by a cache, indicating that the
@@ -449,18 +398,6 @@ public final class Status {
 	public static final Status SERVER_ERROR_GATEWAY_TIMEOUT = new Status(504);
 
 	/**
-	 * This status code means the method could not be performed on the resource
-	 * because the server is unable to store the representation needed to
-	 * successfully complete the request.
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV RFC
-	 *      - 10.6 507 Insufficient Storage</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status SERVER_ERROR_INSUFFICIENT_STORAGE = new Status(507);
-
-	/**
 	 * The server encountered an unexpected condition which prevented it from
 	 * fulfilling the request.
 	 * 
@@ -528,17 +465,6 @@ public final class Status {
 	 *      RFC - 14.46 Warning</a>
 	 */
 	public static final Status SUCCESS_MISC_PERSISTENT_WARNING = new Status(299);
-
-	/**
-	 * This response is used to inform the client that the HTTP response entity
-	 * contains a set of status codes generated during the method invocation.
-	 * 
-	 * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV RFC
-	 *      - 10.2 207 Multi-Status</a>
-	 * @deprecated Will be removed in next version.
-	 */
-	@Deprecated
-	public static final Status SUCCESS_MULTI_STATUS = new Status(207);
 
 	/**
 	 * The server has fulfilled the request but does not need to return an
@@ -722,8 +648,6 @@ public final class Status {
 			return INFO_CONTINUE;
 		case 101:
 			return INFO_SWITCHING_PROTOCOL;
-		case 102:
-			return INFO_PROCESSING;
 		case 110:
 			return INFO_STALE_RESPONSE;
 		case 111:
@@ -749,8 +673,6 @@ public final class Status {
 			return SUCCESS_RESET_CONTENT;
 		case 206:
 			return SUCCESS_PARTIAL_CONTENT;
-		case 207:
-			return SUCCESS_MULTI_STATUS;
 		case 214:
 			return SUCCESS_TRANSFORMATION_APPLIED;
 		case 299:
@@ -807,12 +729,6 @@ public final class Status {
 			return CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE;
 		case 417:
 			return CLIENT_ERROR_EXPECTATION_FAILED;
-		case 422:
-			return CLIENT_ERROR_UNPROCESSABLE_ENTITY;
-		case 423:
-			return CLIENT_ERROR_LOCKED;
-		case 424:
-			return CLIENT_ERROR_FAILED_DEPENDENCY;
 		case 429:
 			return CLIENT_ERROR_TOO_MANY_REQUESTS;
 
@@ -828,8 +744,6 @@ public final class Status {
 			return SERVER_ERROR_GATEWAY_TIMEOUT;
 		case 505:
 			return SERVER_ERROR_VERSION_NOT_SUPPORTED;
-		case 507:
-			return SERVER_ERROR_INSUFFICIENT_STORAGE;
 
 		case 1000:
 			return CONNECTOR_ERROR_CONNECTION;
@@ -1029,7 +943,7 @@ public final class Status {
 	}
 
 	/**
-	 * Returns the corresponding code (HTTP or WebDAV or custom code).
+	 * Returns the corresponding code (HTTP or custom code).
 	 * 
 	 * @return The corresponding code.
 	 */
@@ -1054,8 +968,6 @@ public final class Status {
 			return "The client should continue with its request";
 		case 101:
 			return "The server is willing to change the application protocol being used on this connection";
-		case 102:
-			return "Interim response used to inform the client that the server has accepted the complete request, but has not yet completed it";
 		case 110:
 			return "MUST be included whenever the returned response is stale";
 		case 111:
@@ -1081,8 +993,6 @@ public final class Status {
 			return "The server has fulfilled the request and the user agent should reset the document view which caused the request to be sent";
 		case 206:
 			return "The server has fulfilled the partial get request for the resource";
-		case 207:
-			return "Provides status for multiple independent operations";
 		case 214:
 			return "MUST be added by an intermediate cache or proxy if it applies any transformation changing the content-coding (as specified in the Content-Encoding header) or media-type (as specified in the Content-Type header) of the response, or the entity-body of the response, unless this Warning code already appears in the response";
 		case 299:
@@ -1139,12 +1049,6 @@ public final class Status {
 			return "For byte ranges, this means that the first byte position were greater than the current length of the selected resource";
 		case 417:
 			return "The expectation given in the request header could not be met by this server";
-		case 422:
-			return "The server understands the content type of the request entity and the syntax of the request entity is correct but was unable to process the contained instructions";
-		case 423:
-			return "The source or destination resource of a method is locked";
-		case 424:
-			return "The method could not be performed on the resource because the requested action depended on another action and that action failed";
 		case 429:
 			return "The server is refusing to service the request because the user has sent too many requests in a given amount of time (\"rate limiting\")";
 
@@ -1160,8 +1064,6 @@ public final class Status {
 			return "The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server specified by the URI (e.g. HTTP, FTP, LDAP) or some other auxiliary server (e.g. DNS) it needed to access in attempting to complete the request";
 		case 505:
 			return "The server does not support, or refuses to support, the protocol version that was used in the request message";
-		case 507:
-			return "The method could not be performed on the resource because the server is unable to store the representation needed to successfully complete the request";
 
 		case 1000:
 			return "The connector failed to connect to the server";
@@ -1191,8 +1093,6 @@ public final class Status {
 			return "Continue";
 		case 101:
 			return "Switching Protocols";
-		case 102:
-			return "Processing";
 		case 110:
 			return "Response is stale";
 		case 111:
@@ -1218,8 +1118,6 @@ public final class Status {
 			return "Reset Content";
 		case 206:
 			return "Partial Content";
-		case 207:
-			return "Multi-Status";
 		case 214:
 			return "Transformation applied";
 		case 299:
@@ -1276,12 +1174,6 @@ public final class Status {
 			return "Requested Range Not Satisfiable";
 		case 417:
 			return "Expectation Failed";
-		case 422:
-			return "Unprocessable Entity";
-		case 423:
-			return "Locked";
-		case 424:
-			return "Failed Dependency";
 		case 429:
 			return "Too Many Requests";
 
@@ -1297,8 +1189,6 @@ public final class Status {
 			return "Gateway Timeout";
 		case 505:
 			return "Version Not Supported";
-		case 507:
-			return "Insufficient Storage";
 
 		case 1000:
 			return "Connection Error";
@@ -1335,8 +1225,6 @@ public final class Status {
 			return BASE_HTTP + "#sec10.1.1";
 		case 101:
 			return BASE_HTTP + "#sec10.1.2";
-		case 102:
-			return BASE_WEBDAV + "#STATUS_102";
 		case 110:
 		case 111:
 		case 112:
@@ -1360,8 +1248,6 @@ public final class Status {
 			return BASE_HTTP + "#sec10.2.6";
 		case 206:
 			return BASE_HTTP + "#sec10.2.7";
-		case 207:
-			return BASE_WEBDAV + "#STATUS_207";
 
 		case 300:
 			return BASE_HTTP + "#sec10.3.1";
@@ -1414,12 +1300,6 @@ public final class Status {
 			return BASE_HTTP + "#sec10.4.17";
 		case 417:
 			return BASE_HTTP + "#sec10.4.18";
-		case 422:
-			return BASE_WEBDAV + "#STATUS_422";
-		case 423:
-			return BASE_WEBDAV + "#STATUS_423";
-		case 424:
-			return BASE_WEBDAV + "#STATUS_424";
 		case 429:
 			return BASE_ADDED_HTTP + "#section-4";
 
@@ -1435,8 +1315,6 @@ public final class Status {
 			return BASE_HTTP + "#sec10.5.5";
 		case 505:
 			return BASE_HTTP + "#sec10.5.6";
-		case 507:
-			return BASE_WEBDAV + "#STATUS_507";
 
 		case 1000:
 			return BASE_RESTLET + "org/restlet/data/Status.html#CONNECTOR_ERROR_CONNECTION";

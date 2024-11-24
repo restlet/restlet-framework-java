@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -180,12 +178,6 @@ public class DigesterRepresentation extends WrapperRepresentation {
 		return result;
 	}
 
-	@Override
-	@Deprecated
-	public ReadableByteChannel getChannel() throws IOException {
-		return IoUtils.getChannel(getStream());
-	}
-
 	/**
 	 * Returns the current computed digest value of the representation. User must be
 	 * aware that, if the representation has not been entirely read or written, the
@@ -243,14 +235,6 @@ public class DigesterRepresentation extends WrapperRepresentation {
 		OutputStream dos = new DigestOutputStream(outputStream, this.computedDigest);
 		getWrappedRepresentation().write(dos);
 		dos.flush();
-	}
-
-	@Override
-	@Deprecated
-	public void write(WritableByteChannel writableChannel) throws IOException {
-		OutputStream os = IoUtils.getStream(writableChannel);
-		write(os);
-		os.flush();
 	}
 
 	@Override

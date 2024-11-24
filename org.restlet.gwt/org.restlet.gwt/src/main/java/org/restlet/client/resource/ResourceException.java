@@ -185,18 +185,6 @@ public class ResourceException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
-     * @param status
-     *            The status to associate.
-     * @deprecated use constructor with status, request and response instead.
-     */
-    @Deprecated
-    public ResourceException(Status status, Resource resource) {
-        this(status, (status == null) ? null : status.getThrowable(), resource.getRequest(), resource.getResponse());
-    }
-
-    /**
-     * Constructor.
      *
      * @param status
      *            The status to associate.

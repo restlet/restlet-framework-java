@@ -428,9 +428,6 @@ public class ServerServlet extends HttpServlet {
         if (component == null) {
             component = new Component();
 
-            // The status service is disabled by default.
-            component.getStatusService().setEnabled(false);
-
             // Define the list of supported client protocols.
             final String clientProtocolsString = getInitParameter(CLIENTS_KEY,
                     null);

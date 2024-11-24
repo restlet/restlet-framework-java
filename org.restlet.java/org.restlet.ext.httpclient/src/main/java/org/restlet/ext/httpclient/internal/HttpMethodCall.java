@@ -15,8 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.apache.http.Header;
@@ -165,24 +163,12 @@ public class HttpMethodCall extends ClientCall {
     }
 
     @Override
-    @Deprecated
-    public WritableByteChannel getRequestEntityChannel() {
-        return null;
-    }
-
-    @Override
     public OutputStream getRequestEntityStream() {
         return null;
     }
 
     @Override
     public OutputStream getRequestHeadStream() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 

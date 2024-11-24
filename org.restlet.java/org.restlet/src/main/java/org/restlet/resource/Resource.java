@@ -837,7 +837,7 @@ public abstract class Resource {
 			} catch (ResourceException e) {
 				throw e;
 			} catch (Exception e) {
-				throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
+				throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, e);
 			}
 		}
 

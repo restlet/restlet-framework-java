@@ -12,8 +12,6 @@ package org.restlet.ext.jetty.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -136,21 +134,11 @@ public class JettyClientCall extends ClientCall {
         return httpResponse == null ? null : httpResponse.getReason();
     }
 
-    @Deprecated
-    public WritableByteChannel getRequestEntityChannel() {
-        return null;
-    }
-
     public OutputStream getRequestEntityStream() {
         return null;
     }
 
     public OutputStream getRequestHeadStream() {
-        return null;
-    }
-
-    @Deprecated
-    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 

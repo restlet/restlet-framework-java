@@ -17,8 +17,6 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Request;
@@ -143,12 +141,6 @@ public class HttpUrlConnectionCall extends ClientCall {
 	}
 
 	@Override
-	@Deprecated
-	public WritableByteChannel getRequestEntityChannel() {
-		return null;
-	}
-
-	@Override
 	public OutputStream getRequestEntityStream() {
 		return getRequestStream();
 	}
@@ -169,12 +161,6 @@ public class HttpUrlConnectionCall extends ClientCall {
 		} catch (IOException ioe) {
 			return null;
 		}
-	}
-
-	@Override
-	@Deprecated
-	public ReadableByteChannel getResponseEntityChannel(long size) {
-		return null;
 	}
 
 	@Override

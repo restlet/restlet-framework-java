@@ -751,7 +751,6 @@ public class Engine {
 	 */
 	public void registerDefaultAuthentications() {
 		getRegisteredAuthenticators().add(new org.restlet.engine.security.HttpBasicHelper());
-		getRegisteredAuthenticators().add(new org.restlet.engine.security.SmtpPlainHelper());
 	}
 
 	/**
@@ -784,10 +783,8 @@ public class Engine {
 	/**
 	 * Registers the default protocols.
 	 */
-	@SuppressWarnings("deprecation")
 	public void registerDefaultProtocols() {
 		getRegisteredProtocols().add(new org.restlet.engine.connector.HttpProtocolHelper());
-		getRegisteredProtocols().add(new org.restlet.engine.connector.WebDavProtocolHelper());
 	}
 
 	/**

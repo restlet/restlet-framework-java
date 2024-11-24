@@ -11,7 +11,6 @@ package org.restlet.representation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.ReadableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
@@ -46,12 +45,6 @@ public abstract class OutputRepresentation extends StreamRepresentation {
 	public OutputRepresentation(MediaType mediaType, long expectedSize) {
 		super(mediaType);
 		setSize(expectedSize);
-	}
-
-	@Override
-	@Deprecated
-	public ReadableByteChannel getChannel() throws IOException {
-		return IoUtils.getChannel(this);
 	}
 
 	/**

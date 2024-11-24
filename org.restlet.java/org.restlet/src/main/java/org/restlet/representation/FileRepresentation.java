@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
 import org.restlet.data.Disposition;
@@ -124,22 +122,6 @@ public class FileRepresentation extends Representation {
 	}
 
 	/**
-	 * Returns a readable byte channel. If it is supported by a file a read-only
-	 * instance of FileChannel is returned.
-	 * 
-	 * @return A readable byte channel.
-	 */
-	@Override
-	@Deprecated
-	public FileChannel getChannel() throws IOException {
-		try {
-			return new FileInputStream(this.file).getChannel();
-		} catch (FileNotFoundException fnfe) {
-			throw new IOException("Couldn't get the channel. File not found");
-		}
-	}
-
-	/**
 	 * Returns the file handle.
 	 * 
 	 * @return the file handle.
@@ -230,18 +212,6 @@ public class FileRepresentation extends Representation {
 	@Override
 	public void write(OutputStream outputStream) throws IOException {
 		IoUtils.copy(getStream(), outputStream);
-	}
-
-	/**
-	 * Writes the representation to a byte channel. Optimizes using the file channel
-	 * transferTo method.
-	 * 
-	 * @param writableChannel A writable byte channel.
-	 */
-	@Override
-	@Deprecated
-	public void write(WritableByteChannel writableChannel) throws IOException {
-		IoUtils.copy(getChannel(), writableChannel);
 	}
 
 	@Override

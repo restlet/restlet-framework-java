@@ -218,18 +218,6 @@ public abstract class Call {
 	}
 
 	/**
-	 * Returns the representation wrapping the given channel.
-	 * 
-	 * @param channel The response channel.
-	 * @return The wrapping representation.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	protected Representation getRepresentation(java.nio.channels.ReadableByteChannel channel) {
-		return new org.restlet.representation.ReadableRepresentation(channel, null);
-	}
-
-	/**
 	 * Returns the modifiable list of request headers.
 	 * 
 	 * @return The modifiable list of request headers.

@@ -93,26 +93,8 @@ public final class ChallengeScheme {
             "HTTP_MAC", "Mac",
             "OAuth 2.0 message authentication code authentication");
 
-    /** Basic POP scheme. Based on the USER/PASS commands. */
-    public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
-            "POP_BASIC", "Basic",
-            "Basic POP authentication (USER/PASS commands)");
-
-    /** Digest POP scheme. Based on the APOP command. */
-    public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
-            "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
-
     /** Private list of schemes for optimization purpose. */
     private static Map<String, ChallengeScheme> SCHEMES;
-
-    /** Secure Data Connector scheme. */
-    @Deprecated
-    public static final ChallengeScheme SDC = new ChallengeScheme("SDC", "SDC",
-            "Secure Data Connector authentication");
-
-    /** Plain SMTP scheme. */
-    public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
-            "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");
 
     static {
         Map<String, ChallengeScheme> schemes = new HashMap<String, ChallengeScheme>();
@@ -133,10 +115,6 @@ public final class ChallengeScheme {
         schemes.put(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH);
         schemes.put(HTTP_OAUTH_BEARER.getName().toLowerCase(), HTTP_OAUTH);
         schemes.put(HTTP_OAUTH_MAC.getName().toLowerCase(), HTTP_OAUTH);
-        schemes.put(POP_BASIC.getName().toLowerCase(), POP_BASIC);
-        schemes.put(POP_DIGEST.getName().toLowerCase(), POP_DIGEST);
-        schemes.put(SDC.getName().toLowerCase(), SDC);
-        schemes.put(SMTP_PLAIN.getName().toLowerCase(), SMTP_PLAIN);
 
         ChallengeScheme.SCHEMES = Collections.unmodifiableMap(schemes);
     }

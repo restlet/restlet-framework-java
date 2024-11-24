@@ -56,12 +56,6 @@ public class WrapperRepresentation extends Representation {
 	}
 
 	@Override
-	@Deprecated
-	public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
-		return getWrappedRepresentation().getChannel();
-	}
-
-	@Override
 	public CharacterSet getCharacterSet() {
 		return getWrappedRepresentation().getCharacterSet();
 	}
@@ -151,20 +145,8 @@ public class WrapperRepresentation extends Representation {
 	}
 
 	@Override
-	@Deprecated
-	public boolean isSelectable() {
-		return getWrappedRepresentation().isSelectable();
-	}
-
-	@Override
 	public boolean isTransient() {
 		return getWrappedRepresentation().isTransient();
-	}
-
-	@Override
-	@Deprecated
-	public org.restlet.util.SelectionRegistration getRegistration() throws IOException {
-		return getWrappedRepresentation().getRegistration();
 	}
 
 	@Override
@@ -255,11 +237,5 @@ public class WrapperRepresentation extends Representation {
 	@Override
 	public void write(java.io.Writer writer) throws IOException {
 		getWrappedRepresentation().write(writer);
-	}
-
-	@Override
-	@Deprecated
-	public void write(java.nio.channels.WritableByteChannel writableChannel) throws IOException {
-		getWrappedRepresentation().write(writableChannel);
 	}
 }

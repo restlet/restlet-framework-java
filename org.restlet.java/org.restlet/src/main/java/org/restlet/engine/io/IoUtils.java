@@ -12,7 +12,6 @@ package org.restlet.engine.io;
 import static org.restlet.data.Range.isBytesRange;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,13 +20,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.channels.Channel;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -107,22 +99,6 @@ public class IoUtils {
 		}
 
 		inputStream.close();
-	}
-
-	/**
-	 * Writes a readable channel to a writable channel.
-	 * 
-	 * @param readableChannel The readable channel.
-	 * @param writableChannel The writable channel.
-	 * @throws IOException
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static void copy(ReadableByteChannel readableChannel, WritableByteChannel writableChannel)
-			throws IOException {
-		if ((readableChannel != null) && (writableChannel != null)) {
-			copy(getStream(readableChannel), getStream(writableChannel));
-		}
 	}
 
 	/**
@@ -272,92 +248,6 @@ public class IoUtils {
 		return Representation.UNKNOWN_SIZE;
 	}
 
-	/**
-	 * Returns a readable byte channel based on a given input stream. If it is
-	 * supported by a file a read-only instance of FileChannel is returned.
-	 * 
-	 * @param inputStream The input stream to convert.
-	 * @return A readable byte channel.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static ReadableByteChannel getChannel(InputStream inputStream) throws IOException {
-		ReadableByteChannel result = null;
-
-		if (inputStream instanceof FileInputStream) {
-			result = ((FileInputStream) inputStream).getChannel();
-		} else if (inputStream != null) {
-			result = new InputStreamChannel(inputStream);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns a writable byte channel based on a given output stream.
-	 * 
-	 * @param outputStream The output stream.
-	 * @return A writable byte channel.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static WritableByteChannel getChannel(OutputStream outputStream) {
-		return (outputStream != null) ? Channels.newChannel(outputStream) : null;
-	}
-
-	/**
-	 * Returns a readable byte channel based on the given representation's content
-	 * and its write(WritableByteChannel) method. Internally, it uses a writer
-	 * thread and a pipe channel.
-	 * 
-	 * @param representation the representation to get the {@link OutputStream}
-	 *                       from.
-	 * @return A readable byte channel.
-	 * @throws IOException
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static ReadableByteChannel getChannel(final Representation representation) throws IOException {
-		ReadableByteChannel result = null;
-
-		final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
-
-		// Get a thread that will handle the task of continuously
-		// writing the representation into the input side of the pipe
-		Runnable task = new Runnable() {
-				public void run() {
-				WritableByteChannel wbc = null;
-
-				try {
-					wbc = pipe.sink();
-					representation.write(wbc);
-				} catch (IOException ioe) {
-					Context.getCurrentLogger().log(Level.WARNING, "Error while writing to the piped channel.", ioe);
-				} finally {
-					if (wbc != null)
-						try {
-							wbc.close();
-						} catch (IOException e) {
-							Context.getCurrentLogger().log(Level.WARNING,
-									"Error while closing to the piped channel.", e);
-						}
-				}
-			}
-			};
-
-		org.restlet.Context context = org.restlet.Context.getCurrent();
-
-		if (context != null && context.getExecutorService() != null) {
-			context.getExecutorService().execute(task);
-		} else {
-			Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils").start();
-		}
-
-		result = pipe.source();
-
-		return result;
-	}
-
 	private static int getProperty(String name, int defaultValue) {
 		int result = defaultValue;
 
@@ -447,25 +337,6 @@ public class IoUtils {
 	}
 
 	/**
-	 * Returns an input stream based on a given readable byte channel.
-	 * 
-	 * @param readableChannel The readable byte channel.
-	 * @return An input stream based on a given readable byte channel.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static InputStream getStream(ReadableByteChannel readableChannel) {
-		InputStream result = null;
-
-		if (readableChannel != null) {
-			result = isBlocking(readableChannel) ? Channels.newInputStream(readableChannel)
-					: new NbChannelInputStream(readableChannel);
-		}
-
-		return result;
-	}
-
-	/**
 	 * Returns an input stream based on a given character reader.
 	 * 
 	 * @param reader       The character reader.
@@ -537,25 +408,6 @@ public class IoUtils {
 	}
 
 	/**
-	 * Returns an output stream based on a given writable byte channel.
-	 * 
-	 * @param writableChannel The writable byte channel.
-	 * @return An output stream based on a given writable byte channel.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static OutputStream getStream(WritableByteChannel writableChannel) {
-		OutputStream result = null;
-
-		if (writableChannel != null) {
-			result = isBlocking(writableChannel) ? Channels.newOutputStream(writableChannel)
-					: new NbChannelOutputStream(writableChannel);
-		}
-
-		return result;
-	}
-
-	/**
 	 * Converts the representation to a string value. Be careful when using this
 	 * method as the conversion of large content to a string fully stored in memory
 	 * can result in OutOfMemoryErrors being thrown.
@@ -599,47 +451,6 @@ public class IoUtils {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Indicates if the channel is in blocking mode. It returns false when the
-	 * channel is selectable and configured to be non blocking.
-	 * 
-	 * @param channel The channel to test.
-	 * @return True if the channel is in blocking mode.
-	 */
-	public static boolean isBlocking(Channel channel) {
-		boolean result = true;
-
-		if (channel instanceof SelectableChannel) {
-			SelectableChannel selectableChannel = (SelectableChannel) channel;
-			result = selectableChannel.isBlocking();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Release the selection key, working around for bug #6403933.
-	 * 
-	 * @param selector     The associated selector.
-	 * @param selectionKey The used selection key.
-	 * @throws IOException
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public static void release(Selector selector, SelectionKey selectionKey) throws IOException {
-		if (selectionKey != null) {
-			// The key you registered on the temporary selector
-			selectionKey.cancel();
-
-			if (selector != null) {
-				// Flush the canceled key
-				selector.selectNow();
-				SelectorFactory.returnSelector(selector);
-			}
-		}
-
 	}
 
 	/**

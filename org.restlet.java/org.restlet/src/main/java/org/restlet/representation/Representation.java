@@ -14,9 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Disposition;
@@ -224,20 +222,6 @@ public abstract class Representation extends RepresentationInfo {
 	}
 
 	/**
-	 * Returns a channel with the representation's content.<br>
-	 * If it is supported by a file, a read-only instance of FileChannel is
-	 * returned.<br>
-	 * This method is ensured to return a fresh channel for each invocation unless
-	 * it is a transient representation, in which case null is returned.
-	 * 
-	 * @return A channel with the representation's content.
-	 * @throws IOException
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public abstract java.nio.channels.ReadableByteChannel getChannel() throws IOException;
-
-	/**
 	 * Returns the representation digest if any.<br>
 	 * <br>
 	 * Note that when used with HTTP connectors, this property maps to the
@@ -294,25 +278,6 @@ public abstract class Representation extends RepresentationInfo {
 	 * @throws IOException
 	 */
 	public abstract Reader getReader() throws IOException;
-
-	/**
-	 * Returns the NIO registration of the related channel with its selector. You
-	 * can modify this registration to be called back when some readable content is
-	 * available. Note that the listener will keep being called back until you
-	 * suspend or cancel the registration returned by this method.
-	 * 
-	 * @return The NIO registration.
-	 * @throws IOException
-	 * @see #isSelectable()
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public org.restlet.util.SelectionRegistration getRegistration() throws IOException {
-		if (isSelectable()) {
-			return ((org.restlet.engine.io.SelectionChannel) getChannel()).getRegistration();
-		}
-		throw new IllegalStateException("The representation isn't selectable");
-	}
 
 	/**
 	 * Returns the total size in bytes if known, UNKNOWN_SIZE (-1) otherwise. When
@@ -401,23 +366,6 @@ public abstract class Representation extends RepresentationInfo {
 	}
 
 	/**
-	 * Indicates if the representation content supports NIO selection. In this case,
-	 * the {@link #getRegistration()} method can be called to be notified when new
-	 * content is ready for reading.
-	 * 
-	 * @return True if the representation content supports NIO selection.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public boolean isSelectable() {
-		try {
-			return getChannel() instanceof org.restlet.engine.io.SelectionChannel;
-		} catch (IOException e) {
-			return false;
-		}
-	}
-
-	/**
 	 * Indicates if the representation's content is transient, which means that it
 	 * can be obtained only once. This is often the case with representations
 	 * transmitted via network sockets for example. In such case, if you need to
@@ -500,30 +448,6 @@ public abstract class Representation extends RepresentationInfo {
 	}
 
 	/**
-	 * Sets a listener for NIO read events. If the listener is null, it clears any
-	 * existing listener.
-	 * 
-	 * @param readingListener The listener for NIO read events.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public void setListener(org.restlet.util.ReadingListener readingListener) {
-		try {
-			org.restlet.util.SelectionRegistration sr = getRegistration();
-
-			if ((readingListener == null)) {
-				sr.setNoInterest();
-			} else {
-				sr.setReadInterest();
-			}
-
-			sr.setSelectionListener(readingListener);
-		} catch (IOException ioe) {
-			Context.getCurrentLogger().log(Level.WARNING, "Unable to register the reading listener", ioe);
-		}
-	}
-
-	/**
 	 * Sets the range where in the full content the partial content available should
 	 * be applied.<br>
 	 * <br>
@@ -571,18 +495,6 @@ public abstract class Representation extends RepresentationInfo {
 	 * @throws IOException
 	 */
 	public abstract void write(java.io.Writer writer) throws IOException;
-
-	/**
-	 * Writes the representation to a byte channel. This method is ensured to write
-	 * the full content for each invocation unless it is a transient representation,
-	 * in which case an exception is thrown.
-	 * 
-	 * @param writableChannel A writable byte channel.
-	 * @throws IOException
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	public abstract void write(java.nio.channels.WritableByteChannel writableChannel) throws IOException;
 
 	/**
 	 * Writes the representation to a byte stream. This method is ensured to write

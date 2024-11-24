@@ -107,7 +107,6 @@ public class Component extends Restlet {
 			this.services.add(new LogService());
 			getLogService().setContext(childContext);
 			this.services.add(new StatusService());
-			getStatusService().setContext(childContext);
 			this.clients.setContext(childContext);
 			this.servers.setContext(childContext);
 		}
@@ -231,17 +230,6 @@ public class Component extends Restlet {
 	 */
 	public ServiceList getServices() {
 		return services;
-	}
-
-	/**
-	 * Returns the status service, enabled by default.
-	 * 
-	 * @return The status service.
-	 * @deprecated Use {@link Application#getStatusService()} instead.
-	 */
-	@Deprecated
-	public StatusService getStatusService() {
-		return getServices().get(StatusService.class);
 	}
 
 	/**
@@ -369,17 +357,6 @@ public class Component extends Restlet {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Sets the status service.
-	 * 
-	 * @param statusService The status service.
-	 * @deprecated Use {@link Application#setStatusService(StatusService)} instead.
-	 */
-	@Deprecated
-	public void setStatusService(StatusService statusService) {
-		getServices().set(statusService);
 	}
 
 	/**

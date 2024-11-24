@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Range;
 import org.restlet.engine.io.IoUtils;
@@ -60,12 +59,6 @@ public class RangeRepresentation extends WrapperRepresentation {
 	@Override
 	public long getAvailableSize() {
 		return IoUtils.getAvailableSize(this);
-	}
-
-	@Override
-	@Deprecated
-	public java.nio.channels.ReadableByteChannel getChannel() throws IOException {
-		return IoUtils.getChannel(getStream());
 	}
 
 	/**
@@ -115,14 +108,6 @@ public class RangeRepresentation extends WrapperRepresentation {
 	@Override
 	public void write(OutputStream outputStream) throws IOException {
 		IoUtils.copy(getStream(), outputStream);
-	}
-
-	@Override
-	@Deprecated
-	public void write(WritableByteChannel writableChannel) throws IOException {
-		OutputStream os = IoUtils.getStream(writableChannel);
-		write(os);
-		os.flush();
 	}
 
 }

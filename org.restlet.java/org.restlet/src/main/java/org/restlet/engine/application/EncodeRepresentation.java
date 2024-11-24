@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -98,23 +96,6 @@ public class EncodeRepresentation extends WrapperRepresentation {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Returns a readable byte channel. If it is supported by a file a read-only
-	 * instance of FileChannel is returned.
-	 * 
-	 * @return A readable byte channel.
-	 * @deprecated NIO will be removed in next major release.
-	 */
-	@Deprecated
-	@Override
-	public ReadableByteChannel getChannel() throws IOException {
-		if (canEncode()) {
-			return IoUtils.getChannel(this);
-		} else {
-			return getWrappedRepresentation().getChannel();
-		}
 	}
 
 	/**
@@ -269,18 +250,6 @@ public class EncodeRepresentation extends WrapperRepresentation {
 			}
 		} else {
 			getWrappedRepresentation().write(outputStream);
-		}
-	}
-
-	@Deprecated
-	@Override
-	public void write(WritableByteChannel writableChannel) throws IOException {
-		if (canEncode()) {
-			OutputStream os = IoUtils.getStream(writableChannel);
-			write(os);
-			os.flush();
-		} else {
-			getWrappedRepresentation().write(writableChannel);
 		}
 	}
 
