@@ -22,7 +22,6 @@
 		<module>org.restlet.ext.crypto</module>
 		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
-		<module>org.restlet.ext.gae</module>
 		<module>org.restlet.ext.gson</module>
 		<module>org.restlet.ext.guice</module>
 		<module>org.restlet.ext.gwt</module>
@@ -34,8 +33,6 @@
 		<module>org.restlet.ext.jetty</module>
 		<module>org.restlet.ext.json</module>
 		<module>org.restlet.ext.odata</module>
-		<module>org.restlet.ext.osgi</module>
-		<module>org.restlet.ext.rdf</module>
 		<module>org.restlet.ext.servlet</module>
 		<module>org.restlet.ext.slf4j</module>
 		<module>org.restlet.ext.spring</module>
