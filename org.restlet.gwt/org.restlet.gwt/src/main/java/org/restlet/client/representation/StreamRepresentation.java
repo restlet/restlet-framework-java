@@ -10,7 +10,7 @@
 package org.restlet.client.representation;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.StringReader;
 
 import org.restlet.client.data.MediaType;
 import org.restlet.client.engine.io.IoUtils;
@@ -34,7 +34,7 @@ public abstract class StreamRepresentation extends Representation {
 
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         return IoUtils.getReader(getStream(), getCharacterSet());
     }
 

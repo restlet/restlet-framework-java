@@ -12,7 +12,7 @@ package org.restlet.client.engine;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

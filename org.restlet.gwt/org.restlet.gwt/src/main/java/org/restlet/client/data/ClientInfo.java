@@ -10,7 +10,7 @@
 package org.restlet.client.data;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 /**
  * Client specific data related to a call. When extracted from a request, most

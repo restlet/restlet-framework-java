@@ -11,7 +11,7 @@ package org.restlet.client.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 import org.restlet.client.data.CharacterSet;
 import org.restlet.client.data.Encoding;

@@ -12,6 +12,7 @@
 	<artifactId>org.restlet.gwt</artifactId>
 	<name>Restlet Framework - GWT edition - Core</name>
 	<description>RESTful web framework for GWT (API and Engine).</description>
+	<packaging>gwt-lib</packaging>
 
 	<dependencies>
 		<dependency>
@@ -25,4 +26,16 @@
 			<version>${lib-gwt-version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.ltgt.gwt.maven</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<moduleName>org.restlet.Restlet</moduleName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

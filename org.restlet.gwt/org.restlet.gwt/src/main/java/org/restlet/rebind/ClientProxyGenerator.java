@@ -61,7 +61,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SerializationStreamFactory;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import com.google.gwt.user.rebind.rpc.RestletBlackListTypeFilter;
 import com.google.gwt.user.rebind.rpc.SerializableTypeOracle;
 import com.google.gwt.user.rebind.rpc.SerializableTypeOracleBuilder;
 import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
@@ -604,7 +603,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 }
             }
 
-            this.stob.setTypeFilter(new RestletBlackListTypeFilter(getLogger(), getContext().getPropertyOracle()));
+            //this.stob.setTypeFilter(new RestletBlackListTypeFilter(getLogger(), getContext().getPropertyOracle()));
 
             // Discover and add serializable types
             getStob().addRootType(getLogger(), getTypeOracle().getType(String.class.getName()));

@@ -10,6 +10,7 @@
     </parent>
 
 	<artifactId>org.restlet.gwt.ext.json</artifactId>
+	<packaging>gwt-lib</packaging>
 	<name>Restlet Framework - GWT edition - JSON extension</name>
 	<description>Support for JSON representations.</description>
 
@@ -20,4 +21,16 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>net.ltgt.gwt.maven</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<moduleName>org.restlet.JSON</moduleName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

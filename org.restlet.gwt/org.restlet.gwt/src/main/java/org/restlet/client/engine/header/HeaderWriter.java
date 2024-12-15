@@ -9,7 +9,7 @@
 
 package org.restlet.client.engine.header;
 
-import java.io.StringWriter;
+import org.restlet.client.engine.util.emul.StringWriter;
 import java.util.Collection;
 
 import org.restlet.client.data.CharacterSet;
