@@ -28,7 +28,6 @@ import com.sun.net.httpserver.HttpExchange;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("restriction")
 public class HttpExchangeCall extends ServerCall {
 
 	/** The wrapped HTTP exchange. */

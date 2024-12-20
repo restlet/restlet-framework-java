@@ -25,7 +25,6 @@ import com.sun.net.httpserver.HttpServer;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("restriction")
 public class HttpServerHelper extends NetServerHelper {
 	/** The underlying HTTP server. */
 	private volatile HttpServer server;

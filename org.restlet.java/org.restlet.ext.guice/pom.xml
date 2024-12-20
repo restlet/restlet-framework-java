@@ -21,19 +21,9 @@
 			<version>${lib-guice-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${lib-guava-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>${lib-javax-inject-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>aopalliance</groupId>
-			<artifactId>aopalliance</artifactId>
-			<version>${lib-aopalliance-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>

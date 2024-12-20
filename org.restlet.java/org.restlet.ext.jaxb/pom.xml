@@ -26,12 +26,6 @@
 			<version>${lib-jaxb-api-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.istack</groupId>
-			<artifactId>istack-commons-runtime</artifactId>
-			<version>${lib-sun-istack-version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>

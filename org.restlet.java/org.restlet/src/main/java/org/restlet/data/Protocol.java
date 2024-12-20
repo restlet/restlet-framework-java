@@ -22,11 +22,6 @@ public final class Protocol {
 	/** Indicates that the port number is undefined. */
 	public static final int UNKNOWN_PORT = -1;
 
-	/**
-	 * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
-	 */
-	public static final Protocol AJP = new Protocol("ajp", "AJP", "Apache Jakarta Protocol", 8009);
-
 	/** All protocols wildcard. */
 	public static final Protocol ALL = new Protocol("all", "ALL", "Wildcard for all protocols", UNKNOWN_PORT);
 
@@ -78,17 +73,6 @@ public final class Protocol {
 	public static final Protocol JDBC = new Protocol("jdbc", "JDBC", "Java DataBase Connectivity", UNKNOWN_PORT);
 
 	/**
-	 * OBAP (OSGi Bundle Access Protocol) is a custom scheme to access to
-	 * representations via bundles referenced using their symbolic name. Example
-	 * URI: "obap://org.restlet/org/restlet/Restlet.class".<br>
-	 * <br>
-	 * In order to work, OBAP requires a client connector provided by the extension
-	 * for the OSGi platform.
-	 */
-	public static final Protocol OBAP = new Protocol("obap", "OBAP", "OSGi Bundle Access Protocol",
-			Protocol.UNKNOWN_PORT, true);
-
-	/**
 	 * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
 	 * representations via internal calls to virtual hosts/components. Example URIs:
 	 * "riap://component/myAppPath/myResource" and
@@ -124,9 +108,7 @@ public final class Protocol {
 		Protocol result = null;
 
 		if (!StringUtils.isNullOrEmpty(name)) {
-			if (name.equalsIgnoreCase(AJP.getSchemeName())) {
-				result = AJP;
-			} else if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
+			if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
 				result = CLAP;
 			} else if (name.equalsIgnoreCase(FILE.getSchemeName())) {
 				result = FILE;

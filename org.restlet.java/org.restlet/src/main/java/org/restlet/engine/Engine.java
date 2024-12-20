@@ -87,10 +87,10 @@ public class Engine {
 	public static final String MAJOR_NUMBER = "2";
 
 	/** Minor version number. */
-	public static final String MINOR_NUMBER = "5";
+	public static final String MINOR_NUMBER = "6";
 
 	/** Release number. */
-	public static final String RELEASE_NUMBER = "-RC1";
+	public static final String RELEASE_NUMBER = "-SNAPSHOT";
 
 	/** The org.restlet log level . */
 	private static volatile Level restletLogLevel;

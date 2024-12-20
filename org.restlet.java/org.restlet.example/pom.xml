@@ -38,6 +38,7 @@
             <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.fileupload</artifactId>
             <version>${project.version}</version>
+			<type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.restlet</groupId>

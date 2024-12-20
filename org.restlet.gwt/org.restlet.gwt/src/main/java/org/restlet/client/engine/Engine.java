@@ -372,14 +372,7 @@ public class Engine {
     public void registerDefaultProtocols() {
         getRegisteredProtocols().add(
                 new org.restlet.client.engine.connector.HttpProtocolHelper());
-        getRegisteredProtocols().add(
-                new org.restlet.client.engine.connector.WebDavProtocolHelper());
     }
-
-
-
-
-
 
     /**
      * Sets the logger facade to use.

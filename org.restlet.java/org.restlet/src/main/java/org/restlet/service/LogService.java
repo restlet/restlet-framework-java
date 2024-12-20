@@ -64,9 +64,6 @@ import org.restlet.routing.Template;
  */
 public class LogService extends Service {
 
-	/** Indicates if the debugging mode is enabled. */
-	private volatile boolean debugging;
-
 	/** Indicates if the identity check (as specified by RFC1413) is enabled. */
 	private volatile boolean identityCheck;
 
