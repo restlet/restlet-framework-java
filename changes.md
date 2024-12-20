@@ -9,7 +9,7 @@ Changes log
     - Bugs fixed
        - ...
     - Misc
-      - Removed deprecated extensions GAE, OSGi, RDF.
+      - Removed deprecated extensions FileUpload, GAE, OSGi, RDF.
       - Removed deprecated code related to WebDAV, NIO, POP, POPS, SDC, SIP, SIPS, SMTP, SMTPS.
       ...
 
