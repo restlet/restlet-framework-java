@@ -15,7 +15,7 @@ Changes log
       - Removed deprecation of GWT extension as the new intent is to keep the GWT edition and extension maintained in the new
         major 2.6 release.
       - Deprecated extensions (Apache) HTTP Client, HTML and (Apache) FileUpload as we intend to remove them in version 2.6 to
-        rely instead on the Jetty extension for a more robust alternative. 
+        rely instead on the Jetty extension for a more robust alternative. Issue #1437.
 
 - 2.5 Release Candidate 1 (12-11-2024)
     - Enhancements

@@ -40,7 +40,9 @@ import org.restlet.representation.Representation;
  * method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class RestletFileUpload extends FileUpload {
 	/**
 	 * Determines if the request has multipart content.

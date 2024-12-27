@@ -20,7 +20,9 @@ import org.restlet.representation.Representation;
  * processor.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class RepresentationContext implements UploadContext  {
 
     /** The representation to adapt. */

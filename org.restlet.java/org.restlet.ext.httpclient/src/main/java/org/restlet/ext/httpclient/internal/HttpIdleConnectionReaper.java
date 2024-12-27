@@ -20,7 +20,9 @@ import org.apache.http.client.HttpClient;
  * is equal to 0.
  * 
  * @author Sanjay Acharya
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class HttpIdleConnectionReaper {
 
     /**

@@ -17,7 +17,9 @@ import org.apache.http.params.HttpParams;
  * Factory that creates {@link IgnoreCookieSpec} instances.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class IgnoreCookieSpecFactory implements CookieSpecFactory {
 
     /**

@@ -22,7 +22,9 @@ import org.apache.http.impl.cookie.CookieSpecBase;
  * Cookie specifications that ignore all cookies.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class IgnoreCookieSpec extends CookieSpecBase {
 
     /**

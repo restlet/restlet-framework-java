@@ -24,7 +24,9 @@ import org.restlet.resource.Resource;
  * Converter between the HTML API and Representation classes.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class HtmlConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_MULTIPART = new VariantInfo(

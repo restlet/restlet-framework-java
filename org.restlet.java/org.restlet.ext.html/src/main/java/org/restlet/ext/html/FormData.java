@@ -26,7 +26,9 @@ import org.restlet.util.NamedValue;
  * as a binary file uploaded).
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class FormData implements NamedValue<String> {
 
     /** The name of the associated form control. */

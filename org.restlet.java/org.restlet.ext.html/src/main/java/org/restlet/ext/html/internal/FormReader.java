@@ -28,7 +28,9 @@ import org.restlet.util.Series;
  * Form reader.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class FormReader {
 
     /** The encoding to use, decoding is enabled, see {@link #decoding}. */

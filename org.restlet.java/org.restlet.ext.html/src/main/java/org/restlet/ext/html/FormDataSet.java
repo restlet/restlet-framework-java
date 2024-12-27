@@ -28,7 +28,9 @@ import org.restlet.util.Series;
  * HTML form supporting either URL encoding or multipart encoding.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next minor release in favor or Jetty extension.
  */
+@Deprecated
 public class FormDataSet extends OutputRepresentation {
 
     /** The default boundary separating multipart entries. */
