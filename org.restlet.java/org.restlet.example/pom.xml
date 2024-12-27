@@ -15,11 +15,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${lib-mongodb-version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${lib-testng-version}</version>
@@ -33,12 +28,6 @@
             <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.crypto</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet</groupId>
-            <artifactId>org.restlet.ext.fileupload</artifactId>
-            <version>${project.version}</version>
-			<type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.restlet</groupId>

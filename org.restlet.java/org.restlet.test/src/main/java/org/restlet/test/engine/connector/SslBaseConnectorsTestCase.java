@@ -156,14 +156,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     }
 
     @Test
-    public void testSslInternalAndApache() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientApache) {
-            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    @Test
     public void testSslInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
@@ -176,14 +168,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         if (this.enabledServerInternal && this.enabledClientJetty) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
                     new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    @Test
-    public void testSslJettyAndApache() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientApache) {
-            runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 

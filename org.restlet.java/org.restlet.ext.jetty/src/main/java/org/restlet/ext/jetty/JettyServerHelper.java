@@ -9,21 +9,20 @@
 
 package org.restlet.ext.jetty;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
-
-import javax.servlet.ServletException;
 
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.LowResourceMonitor;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
@@ -64,26 +63,29 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>threadPool.idleTimeout</td>
  * <td>int</td>
  * <td>60000</td>
- * <td>Thread pool idle timeout in milliseconds; threads that are idle for longer than this period may be stopped</td>
+ * <td>Thread pool idle timeout in milliseconds; threads that are idle for
+ * longer than this period may be stopped</td>
  * </tr>
  * <tr>
  * <td>threadPool.stopTimeout</td>
  * <td>long</td>
  * <td>5000</td>
- * <td>Thread pool stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
+ * <td>Thread pool stop timeout in milliseconds; the maximum time allowed for
+ * the service to shutdown</td>
  * </tr>
  * <tr>
  * <td>connector.acceptors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector acceptor thread count; when -1, Jetty will default to {@link Runtime#availableProcessors()} / 2, with a
- * minimum of 1</td>
+ * <td>Connector acceptor thread count; when -1, Jetty will default to
+ * {@link Runtime#availableProcessors()} / 2, with a minimum of 1</td>
  * </tr>
  * <tr>
  * <td>connector.selectors</td>
  * <td>int</td>
  * <td>-1</td>
- * <td>Connector selector thread count; when -1, Jetty will default to {@link Runtime#availableProcessors()}</td>
+ * <td>Connector selector thread count; when -1, Jetty will default to
+ * {@link Runtime#availableProcessors()}</td>
  * </tr>
  * <tr>
  * <td>connector.acceptQueueSize</td>
@@ -95,9 +97,10 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>connector.idleTimeout</td>
  * <td>int</td>
  * <td>30000</td>
- * <td>Connector idle timeout in milliseconds; see {@link Socket#setSoTimeout(int)}; this value is interpreted as the
- * maximum time between some progress being made on the connection; so if a single byte is read or written, then the
- * timeout is reset</td>
+ * <td>Connector idle timeout in milliseconds; see
+ * {@link Socket#setSoTimeout(int)}; this value is interpreted as the maximum
+ * time between some progress being made on the connection; so if a single byte
+ * is read or written, then the timeout is reset</td>
  * </tr>
  * <tr>
  * <td>connector.soLingerTime</td>
@@ -110,7 +113,8 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>connector.stopTimeout</td>
  * <td>long</td>
  * <td>30000</td>
- * <td>Connector stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
+ * <td>Connector stop timeout in milliseconds; the maximum time allowed for the
+ * service to shutdown</td>
  * </tr>
  * <tr>
  * <td>http.headerCacheSize</td>
@@ -122,30 +126,34 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>http.requestHeaderSize</td>
  * <td>int</td>
  * <td>8*1024</td>
- * <td>HTTP request header size in bytes; larger headers will allow for more and/or larger cookies plus larger form
- * content encoded in a URL; however, larger headers consume more memory and can make a server more vulnerable to denial
- * of service attacks</td>
+ * <td>HTTP request header size in bytes; larger headers will allow for more
+ * and/or larger cookies plus larger form content encoded in a URL; however,
+ * larger headers consume more memory and can make a server more vulnerable to
+ * denial of service attacks</td>
  * </tr>
  * <tr>
  * <td>http.responseHeaderSize</td>
  * <td>int</td>
  * <td>8*1024</td>
- * <td>HTTP response header size in bytes; larger headers will allow for more and/or larger cookies and longer HTTP
- * headers (e.g. for redirection); however, larger headers will also consume more memory</td>
+ * <td>HTTP response header size in bytes; larger headers will allow for more
+ * and/or larger cookies and longer HTTP headers (e.g. for redirection);
+ * however, larger headers will also consume more memory</td>
  * </tr>
  * <tr>
  * <td>http.outputBufferSize</td>
  * <td>int</td>
  * <td>32*1024</td>
- * <td>HTTP output buffer size in bytes; a larger buffer can improve performance by allowing a content producer to run
- * without blocking, however larger buffers consume more memory and may induce some latency before a client starts
- * processing the content</td>
+ * <td>HTTP output buffer size in bytes; a larger buffer can improve performance
+ * by allowing a content producer to run without blocking, however larger
+ * buffers consume more memory and may induce some latency before a client
+ * starts processing the content</td>
  * </tr>
  * <tr>
  * <td>lowResource.period</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>Low resource monitor period in milliseconds; when 0, low resource monitoring is disabled</td>
+ * <td>Low resource monitor period in milliseconds; when 0, low resource
+ * monitoring is disabled</td>
  * </tr>
  * <tr>
  * <td>lowResource.threads</td>
@@ -157,8 +165,8 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>lowResource.maxMemory</td>
  * <td>int</td>
  * <td>0</td>
- * <td>Low resource monitor max memory in bytes; when 0, the check disabled; memory used is calculated as
- * (totalMemory-freeMemory)</td>
+ * <td>Low resource monitor max memory in bytes; when 0, the check disabled;
+ * memory used is calculated as (totalMemory-freeMemory)</td>
  * </tr>
  * <tr>
  * <td>lowResource.maxConnections</td>
@@ -170,21 +178,26 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
  * <td>lowResource.idleTimeout</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>Low resource monitor idle timeout in milliseconds; applied to EndPoints when in the low resources state</td>
+ * <td>Low resource monitor idle timeout in milliseconds; applied to EndPoints
+ * when in the low resources state</td>
  * </tr>
  * <tr>
  * <td>lowResource.stopTimeout</td>
  * <td>long</td>
  * <td>30000</td>
- * <td>Low resource monitor stop timeout in milliseconds; the maximum time allowed for the service to shutdown</td>
+ * <td>Low resource monitor stop timeout in milliseconds; the maximum time
+ * allowed for the service to shutdown</td>
  * </tr>
  * </table>
  * 
- * @see <a href="https://eclipse.dev/jetty/documentation/jetty-9/index.html">Jetty SPDY and NPN page</a>
+ * @see <a href=
+ *      "https://eclipse.dev/jetty/documentation/jetty-9/index.html">Jetty SPDY
+ *      and NPN page</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpServerHelper {
+public abstract class JettyServerHelper
+        extends org.restlet.engine.adapter.HttpServerHelper {
 
     /**
      * Jetty server wrapped by a parent Restlet HTTP server connector.
@@ -193,48 +206,35 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @author Tal Liron
      */
     private static class WrappedServer extends org.eclipse.jetty.server.Server {
-        private final JettyServerHelper helper;
+        private final JettyServerHelper serverHelper;
 
         /**
          * Constructor.
          * 
-         * @param server
-         *            The Jetty HTTP server.
-         * @param threadPool
-         *            The thread pool.
+         * @param serverHelper The Jetty HTTP server.
+         * @param threadPool   The thread pool.
          */
-        public WrappedServer(JettyServerHelper server, ThreadPool threadPool) {
+        public WrappedServer(JettyServerHelper serverHelper,
+                ThreadPool threadPool) {
             super(threadPool);
-            this.helper = server;
+            this.serverHelper = serverHelper;
         }
 
         /**
-         * Handler method converting a Jetty HttpChannel into a Restlet Call.
+         * Handler method converting a Jetty call into a Restlet Call.
          * 
-         * @param channel
-         *            The channel to handle.
+         * @param request  The Jetty request to handle.
+         * @param response The Jetty response to handle.
+         * @param callback The Jetty callback to use if needed.
+         * @return True if processing was successful.
          */
         @Override
-        public void handle(HttpChannel channel) throws IOException,
-                ServletException {
-            try {
-                helper.handle(new JettyServerCall(helper.getHelped(), channel));
-            } catch (Throwable e) {
-                channel.getEndPoint().close();
-                throw new IOException("Exception when closing Jetty HttpChannel", e);
-            }
-        }
-
-        @Override
-        public void handleAsync(HttpChannel channel) throws IOException,
-                ServletException {
-            // TODO: should we handle async differently?
-            try {
-                helper.handle(new JettyServerCall(helper.getHelped(), channel));
-            } catch (Throwable e) {
-                channel.getEndPoint().close();
-                throw new IOException("Exception when closing Jetty HttpChannel", e);
-            }
+        public boolean handle(Request request, Response response,
+                Callback callback) throws Exception {
+            this.serverHelper
+                    .handle(new JettyServerCall(this.serverHelper.getHelped(),
+                            request, response, callback));
+            return true;
         }
     }
 
@@ -244,8 +244,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param server The server to help.
      */
     public JettyServerHelper(Server server) {
         super(server);
@@ -262,17 +261,18 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         configuration.setRequestHeaderSize(getHttpRequestHeaderSize());
         configuration.setResponseHeaderSize(getHttpResponseHeaderSize());
         configuration.setOutputBufferSize(getHttpOutputBufferSize());
+
         // ask Jetty connector to let us handling the Date header,
         // otherwise two Date headers are generated in the request
         configuration.setSendDateHeader(false);
+        
         return configuration;
     }
 
     /**
      * Creates new internal Jetty connection factories.
      * 
-     * @param configuration
-     *            The HTTP configuration.
+     * @param configuration The HTTP configuration.
      * @return New internal Jetty connection factories.
      */
     protected abstract ConnectionFactory[] createConnectionFactories(
@@ -281,13 +281,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     /**
      * Creates a Jetty connector.
      * 
-     * @param server
-     *            The Jetty server.
+     * @param server The Jetty server.
      * @return A Jetty connector.
      */
     private Connector createConnector(org.eclipse.jetty.server.Server server) {
         final HttpConfiguration configuration = createConfiguration();
-        final ConnectionFactory[] connectionFactories = createConnectionFactories(configuration);
+        final ConnectionFactory[] connectionFactories = createConnectionFactories(
+                configuration);
 
         final int acceptors = getConnectorAcceptors();
         final int selectors = getConnectorSelectors();
@@ -306,8 +306,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
         connector.setAcceptQueueSize(getConnectorAcceptQueueSize());
         connector.setIdleTimeout(getConnectorIdleTimeout());
-        connector.setSoLingerTime(getConnectorSoLingerTime());
-        connector.setStopTimeout(getConnectorStopTimeout());
+//        connector.setSoLingerTime(getConnectorSoLingerTime());
+//        connector.setStopTimeout(getConnectorStopTimeout());
 
         return connector;
     }
@@ -315,8 +315,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     /**
      * Creates a Jetty low resource monitor.
      * 
-     * @param server
-     *            A Jetty server.
+     * @param server A Jetty server.
      * @return A Jetty low resource monitor or null.
      */
     private LowResourceMonitor createLowResourceMonitor(
@@ -325,18 +324,16 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         if (period > 0) {
             final LowResourceMonitor lowResourceMonitor = new LowResourceMonitor(
                     server);
-            lowResourceMonitor.setMonitoredConnectors(Arrays.asList(server
-                    .getConnectors()));
+            lowResourceMonitor.setMonitoredConnectors(
+                    Arrays.asList(server.getConnectors()));
             lowResourceMonitor.setPeriod(period);
             lowResourceMonitor
                     .setMonitorThreads(getLowResourceMonitorThreads());
             lowResourceMonitor.setMaxMemory(getLowResourceMonitorMaxMemory());
-            lowResourceMonitor
-                    .setMaxConnections(getLowResourceMonitorMaxConnections());
-            lowResourceMonitor
-                    .setLowResourcesIdleTimeout(getLowResourceMonitorIdleTimeout());
-            lowResourceMonitor
-                    .setStopTimeout(getLowResourceMonitorStopTimeout());
+//            lowResourceMonitor.setMaxConnections(getLowResourceMonitorMaxConnections());
+            lowResourceMonitor.setLowResourcesIdleTimeout(
+                    getLowResourceMonitorIdleTimeout());
+//            lowResourceMonitor.setStopTimeout(getLowResourceMonitorStopTimeout());
             server.addBean(lowResourceMonitor);
             return lowResourceMonitor;
         }
@@ -390,8 +387,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Connector acceptor thread count.
      */
     public int getConnectorAcceptors() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.acceptors", "-1"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.acceptors", "-1"));
     }
 
     /**
@@ -402,12 +399,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Connector accept queue size.
      */
     public int getConnectorAcceptQueueSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.acceptQueueSize", "0"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.acceptQueueSize", "0"));
     }
 
     /**
-     * Connector byte buffer pool. Defaults to null. When null, will use a new {@link ArrayByteBufferPool}.
+     * Connector byte buffer pool. Defaults to null. When null, will use a new
+     * {@link ArrayByteBufferPool}.
      * 
      * @return Connector byte buffer pool or null.
      */
@@ -430,18 +428,20 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * <p>
      * See {@link Socket#setSoTimeout(int)}.
      * <p>
-     * This value is interpreted as the maximum time between some progress being made on the connection. So if a single
-     * byte is read or written, then the timeout is reset.
+     * This value is interpreted as the maximum time between some progress being
+     * made on the connection. So if a single byte is read or written, then the
+     * timeout is reset.
      * 
      * @return Connector idle timeout.
      */
     public int getConnectorIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.idleTimeout", "30000"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.idleTimeout", "30000"));
     }
 
     /**
-     * Connector scheduler. Defaults to null. When null, will use a new {@link ScheduledExecutorScheduler}.
+     * Connector scheduler. Defaults to null. When null, will use a new
+     * {@link ScheduledExecutorScheduler}.
      * 
      * @return Connector scheduler or null.
      */
@@ -456,8 +456,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Connector acceptor thread count.
      */
     public int getConnectorSelectors() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.selectors", "-1"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.selectors", "-1"));
     }
 
     /**
@@ -469,8 +469,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Connector TCP/IP SO linger time.
      */
     public int getConnectorSoLingerTime() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.soLingerTime", "-1"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.soLingerTime", "-1"));
     }
 
     /**
@@ -481,8 +481,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Connector stop timeout.
      */
     public int getConnectorStopTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "connector.stopTimeout", "30000"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("connector.stopTimeout", "30000"));
     }
 
     /**
@@ -491,47 +491,50 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return HTTP header cache size.
      */
     public int getHttpHeaderCacheSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "http.headerCacheSize", "512"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("http.headerCacheSize", "512"));
     }
 
     /**
      * HTTP output buffer size in bytes. Defaults to 32*1024.
      * <p>
-     * A larger buffer can improve performance by allowing a content producer to run without blocking, however larger
-     * buffers consume more memory and may induce some latency before a client starts processing the content.
+     * A larger buffer can improve performance by allowing a content producer to
+     * run without blocking, however larger buffers consume more memory and may
+     * induce some latency before a client starts processing the content.
      * 
      * @return HTTP output buffer size.
      */
     public int getHttpOutputBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "http.outputBufferSize", "32768"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("http.outputBufferSize", "32768"));
     }
 
     /**
      * HTTP request header size in bytes. Defaults to 8*1024.
      * <p>
-     * Larger headers will allow for more and/or larger cookies plus larger form content encoded in a URL. However,
-     * larger headers consume more memory and can make a server more vulnerable to denial of service attacks.
+     * Larger headers will allow for more and/or larger cookies plus larger form
+     * content encoded in a URL. However, larger headers consume more memory and
+     * can make a server more vulnerable to denial of service attacks.
      * 
      * @return HTTP request header size.
      */
     public int getHttpRequestHeaderSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "http.requestHeaderSize", "8192"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("http.requestHeaderSize", "8192"));
     }
 
     /**
      * HTTP response header size in bytes. Defaults to 8*1024.
      * <p>
-     * Larger headers will allow for more and/or larger cookies and longer HTTP headers (e.g. for redirection). However,
-     * larger headers will also consume more memory.
+     * Larger headers will allow for more and/or larger cookies and longer HTTP
+     * headers (e.g. for redirection). However, larger headers will also consume
+     * more memory.
      * 
      * @return HTTP response header size.
      */
     public int getHttpResponseHeaderSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "http.responseHeaderSize", "8192"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("http.responseHeaderSize", "8192"));
     }
 
     /**
@@ -542,8 +545,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor idle timeout.
      */
     public int getLowResourceMonitorIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "lowResource.idleTimeout", "1000"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("lowResource.idleTimeout", "1000"));
     }
 
     /**
@@ -553,8 +556,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor max connections.
      */
     public int getLowResourceMonitorMaxConnections() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "lowResource.maxConnections", "0"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("lowResource.maxConnections", "0"));
     }
 
     /**
@@ -566,8 +569,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor max memory.
      */
     public long getLowResourceMonitorMaxMemory() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "lowResource.maxMemory", "0"));
+        return Long.parseLong(getHelpedParameters()
+                .getFirstValue("lowResource.maxMemory", "0"));
     }
 
     /**
@@ -577,8 +580,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor period.
      */
     public int getLowResourceMonitorPeriod() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "lowResource.period", "1000"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("lowResource.period", "1000"));
     }
 
     /**
@@ -589,8 +592,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor stop timeout.
      */
     public long getLowResourceMonitorStopTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "lowResource.stopTimeout", "30000"));
+        return Long.parseLong(getHelpedParameters()
+                .getFirstValue("lowResource.stopTimeout", "30000"));
     }
 
     /**
@@ -600,8 +603,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Low resource monitor threads.
      */
     public boolean getLowResourceMonitorThreads() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "lowResource.threads", "true"));
+        return Boolean.parseBoolean(getHelpedParameters()
+                .getFirstValue("lowResource.threads", "true"));
     }
 
     /**
@@ -612,8 +615,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Thread pool idle timeout.
      */
     public int getThreadPoolIdleTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadPool.idleTimeout", "60000"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("threadPool.idleTimeout", "60000"));
     }
 
     /**
@@ -622,8 +625,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Thread pool maximum threads.
      */
     public int getThreadPoolMaxThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadPool.maxThreads", "200"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("threadPool.maxThreads", "200"));
     }
 
     /**
@@ -632,8 +635,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Thread pool minimum threads.
      */
     public int getThreadPoolMinThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "threadPool.minThreads", "8"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("threadPool.minThreads", "8"));
     }
 
     /**
@@ -644,8 +647,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @return Thread pool stop timeout.
      */
     public long getThreadPoolStopTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "threadPool.stopTimeout", "5000"));
+        return Long.parseLong(getHelpedParameters()
+                .getFirstValue("threadPool.stopTimeout", "5000"));
     }
 
     /**
@@ -673,10 +676,10 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     /**
      * Sets the wrapped Jetty server.
      * 
-     * @param wrappedServer
-     *            The wrapped Jetty server.
+     * @param wrappedServer The wrapped Jetty server.
      */
-    protected void setWrappedServer(org.eclipse.jetty.server.Server wrappedServer) {
+    protected void setWrappedServer(
+            org.eclipse.jetty.server.Server wrappedServer) {
         this.wrappedServer = wrappedServer;
     }
 
@@ -685,13 +688,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
         super.start();
         org.eclipse.jetty.server.Server server = getWrappedServer();
         ServerConnector connector = (ServerConnector) server.getConnectors()[0];
-        getLogger().info(
-                "Starting the Jetty " + getProtocols() + " server on port "
-                        + getHelped().getPort());
+        getLogger().info("Starting the Jetty " + getProtocols()
+                + " server on port " + getHelped().getPort());
         try {
             server.start();
         } catch (Exception e) {
-            // Make sure that all resources are released, otherwise threadpool may still be running.
+            // Make sure that all resources are released, otherwise threadpool
+            // may still be running.
             server.stop();
             throw e;
         }
@@ -702,9 +705,8 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
     @Override
     public void stop() throws Exception {
-        getLogger().info(
-                "Stopping the Jetty " + getProtocols() + " server on port "
-                        + getHelped().getPort());
+        getLogger().info("Stopping the Jetty " + getProtocols()
+                + " server on port " + getHelped().getPort());
         getWrappedServer().stop();
         super.stop();
     }

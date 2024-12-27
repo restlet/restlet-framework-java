@@ -1488,7 +1488,6 @@ public final class XmlWriter extends XMLFilterImpl {
      *                SAXException if there is an error writing the Namespace
      *                declarations.
      */
-    @SuppressWarnings("unchecked")
     private void writeNSDecls() throws SAXException {
         final Enumeration<String> prefixes = this.nsSupport
                 .getDeclaredPrefixes();

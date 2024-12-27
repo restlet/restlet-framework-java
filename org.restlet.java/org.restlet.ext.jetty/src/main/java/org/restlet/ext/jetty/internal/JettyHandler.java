@@ -9,15 +9,10 @@
 
 package org.restlet.ext.jetty.internal;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 import org.restlet.Server;
 import org.restlet.ext.jetty.HttpServerHelper;
 import org.restlet.ext.jetty.HttpsServerHelper;
@@ -32,7 +27,7 @@ import org.restlet.ext.jetty.JettyServerHelper;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class JettyHandler extends AbstractHandler {
+public class JettyHandler extends Handler.Abstract {
 
     /** The Restlet server helper. */
     private final JettyServerHelper helper;
@@ -40,8 +35,7 @@ public class JettyHandler extends AbstractHandler {
     /**
      * Constructor for HTTP server connectors.
      * 
-     * @param server
-     *            Restlet HTTP server connector.
+     * @param server Restlet HTTP server connector.
      */
     public JettyHandler(Server server) {
         this(server, false);
@@ -50,10 +44,8 @@ public class JettyHandler extends AbstractHandler {
     /**
      * Constructor for HTTP server connectors.
      * 
-     * @param server
-     *            Restlet server connector.
-     * @param secure
-     *            Indicates if the server supports HTTP or HTTPS.
+     * @param server Restlet server connector.
+     * @param secure Indicates if the server supports HTTP or HTTPS.
      */
     public JettyHandler(Server server, boolean secure) {
         if (secure)
@@ -78,24 +70,16 @@ public class JettyHandler extends AbstractHandler {
      * Handles a Jetty call by converting it to a Restlet call and giving it for
      * processing to the Restlet server.
      * 
-     * @param target
-     *            The target of the request, either a URI or a name.
-     * @param request
-     *            The Jetty request.
-     * @param servletRequest
-     *            The Servlet request.
-     * @param servletResponse
-     *            The Servlet response.
+     * @param request  The Jetty request.
+     * @param response The Jetty response.
+     * @param callback The Jetty callback.
      */
-    public void handle(String target, Request request,
-            HttpServletRequest servletRequest,
-            HttpServletResponse servletResponse) throws IOException,
-            ServletException {
-        final HttpChannel channel = request.getHttpChannel();
-        final Request baseRequest = (servletRequest instanceof Request) ? (Request) servletRequest
-                : channel.getRequest();
-        this.helper
-                .handle(new JettyServerCall(this.helper.getHelped(), channel));
-        baseRequest.setHandled(true);
+    @Override
+    public boolean handle(Request request, Response response, Callback callback)
+            throws Exception {
+        this.helper.handle(new JettyServerCall(this.helper.getHelped(), request,
+                response, callback));
+        return true;
     }
+
 }

@@ -15,12 +15,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -955,7 +955,7 @@ public class ServerServlet extends HttpServlet {
                 String initParam;
 
                 // Copy all the Servlet component initialization parameters
-                javax.servlet.ServletConfig servletConfig = getServletConfig();
+                jakarta.servlet.ServletConfig servletConfig = getServletConfig();
                 for (Enumeration<String> enum1 = servletConfig
                         .getInitParameterNames(); enum1.hasMoreElements();) {
                     initParam = enum1.nextElement();
@@ -1001,7 +1001,7 @@ public class ServerServlet extends HttpServlet {
 
             // Copy all the Servlet container initialization parameters
             String initParam;
-            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            jakarta.servlet.ServletConfig servletConfig = getServletConfig();
 
             for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {

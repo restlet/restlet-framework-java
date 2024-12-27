@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
@@ -98,6 +100,7 @@ public abstract class ServerCall extends Call {
 	 * Returns the chain of client SSL certificates, if available and accessible.
 	 *
 	 * @return The chain of client SSL certificates, if available and accessible.
+	 * @throws SSLPeerUnverifiedException 
 	 */
 	public List<Certificate> getCertificates() {
 		return null;
@@ -182,7 +185,14 @@ public abstract class ServerCall extends Call {
 					}
 				} catch (IOException e) {
 					getLogger().fine("Unable to read request entity");
-				}
+					
+                    if(pbi != null)
+                        try {
+                            pbi.close();
+                        } catch (IOException e1) {
+                            getLogger().fine("Unable to close request entity");
+                        }
+                }
 			}
 
 			if (requestStream != null) {
@@ -407,7 +417,6 @@ public abstract class ServerCall extends Call {
 
 					responseEntityStream = getResponseEntityStream();
 					writeResponseBody(responseEntity, responseEntityStream);
-
 				}
 			} finally {
 				if (responseEntityStream != null) {

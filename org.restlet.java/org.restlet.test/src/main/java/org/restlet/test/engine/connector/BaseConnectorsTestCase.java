@@ -95,14 +95,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     }
 
     @Test
-    public void testInternalAndApache() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientApache) {
-            runTest(new org.restlet.engine.connector.HttpServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    @Test
     public void testInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
             runTest(new org.restlet.engine.connector.HttpServerHelper(null),
@@ -115,14 +107,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         if (this.enabledServerInternal && this.enabledClientJetty) {
             runTest(new org.restlet.engine.connector.HttpServerHelper(null),
                     new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    @Test
-    public void testJettyAndApache() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientApache) {
-            runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 

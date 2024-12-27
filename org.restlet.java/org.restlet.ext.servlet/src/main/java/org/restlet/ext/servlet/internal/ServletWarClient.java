@@ -43,7 +43,7 @@ public class ServletWarClient extends Client {
      *            The parent context.
      */
     public ServletWarClient(Context parentContext,
-            javax.servlet.ServletContext servletContext) {
+            jakarta.servlet.ServletContext servletContext) {
         super(parentContext.createChildContext(), (List<Protocol>) null);
         getProtocols().add(Protocol.WAR);
         this.helper = new ServletWarClientHelper(this, servletContext);

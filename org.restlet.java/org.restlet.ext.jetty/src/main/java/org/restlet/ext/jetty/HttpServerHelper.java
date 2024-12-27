@@ -26,17 +26,23 @@ public class HttpServerHelper extends JettyServerHelper {
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param server The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
     }
 
+    /**
+     * Create and configure the Jetty HTTP connector
+     * 
+     * @param configuration The HTTP configuration.
+     */
     @Override
-    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-        // Create and configure the Jetty HTTP connector
-        return new ConnectionFactory[]{new HttpConnectionFactory(configuration) };
+    protected ConnectionFactory[] createConnectionFactories(
+            final HttpConfiguration configuration) {
+        return new ConnectionFactory[] {
+                new HttpConnectionFactory(configuration) };
     }
+
 }

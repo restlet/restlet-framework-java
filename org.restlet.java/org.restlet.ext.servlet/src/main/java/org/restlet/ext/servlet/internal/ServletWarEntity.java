@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;

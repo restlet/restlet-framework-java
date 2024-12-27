@@ -9,7 +9,7 @@
 
 package org.restlet.ext.servlet.internal;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.restlet.Client;
 import org.restlet.Request;

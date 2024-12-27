@@ -24,7 +24,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * 
  * @author Jerome Louvel
  */
-public class RestletSslContextFactory extends SslContextFactory {
+public class RestletSslContextFactoryServer extends SslContextFactory.Server {
 
     /**
      * Constructor.
@@ -33,7 +33,7 @@ public class RestletSslContextFactory extends SslContextFactory {
      *            The Restlet SSL context factory to leverage.
      * @throws Exception
      */
-    public RestletSslContextFactory(
+    public RestletSslContextFactoryServer(
             org.restlet.engine.ssl.SslContextFactory restletSslContextFactory)
             throws Exception {
         setSslContext(restletSslContextFactory.createSslContext());
