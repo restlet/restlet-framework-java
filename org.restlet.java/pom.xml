@@ -20,13 +20,10 @@
 		<module>org.restlet.example</module>
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.crypto</module>
-		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
 		<module>org.restlet.ext.gson</module>
 		<module>org.restlet.ext.guice</module>
 		<module>org.restlet.ext.gwt</module>
-		<module>org.restlet.ext.html</module>
-		<module>org.restlet.ext.httpclient</module>
 		<module>org.restlet.ext.jaas</module>
 		<module>org.restlet.ext.jackson</module>
 		<module>org.restlet.ext.jaxb</module>
