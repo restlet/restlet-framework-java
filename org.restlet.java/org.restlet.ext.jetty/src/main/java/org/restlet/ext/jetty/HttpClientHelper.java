@@ -337,13 +337,16 @@ public class HttpClientHelper
 
         HttpClient httpClient = new HttpClient(httpTransport);
         httpClient.setAddressResolutionTimeout(getAddressResolutionTimeout());
-        httpClient.setAuthenticationStore(getAuthenticationStore());
+        if(getAuthenticationStore() != null) {
+            httpClient.setAuthenticationStore(getAuthenticationStore());
+        }
         httpClient.setBindAddress(getBindAddress());
         httpClient.setConnectBlocking(isConnectBlocking());
         httpClient.setConnectTimeout(getConnectTimeout());
         httpClient.setDestinationIdleTimeout(getDestinationIdleTimeout());
         httpClient.setExecutor(getExecutor());
         httpClient.setFollowRedirects(isFollowRedirects());
+
 
         switch (getHttpComplianceMode()) {
         case "RFC7230":

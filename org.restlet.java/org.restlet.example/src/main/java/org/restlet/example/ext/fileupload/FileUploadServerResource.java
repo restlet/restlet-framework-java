@@ -12,12 +12,8 @@ package org.restlet.example.ext.fileupload;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
@@ -28,6 +24,7 @@ public class FileUploadServerResource extends ServerResource {
     @Post
     public Representation accept(Representation entity) throws Exception {
         Representation result = null;
+        /*
         if (entity != null
                 && MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(),
                         true)) {
@@ -74,6 +71,8 @@ public class FileUploadServerResource extends ServerResource {
             // POST request with no entity.
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         }
+
+         */
 
         return result;
     }

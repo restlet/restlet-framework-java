@@ -37,8 +37,8 @@
 		<module>org.restlet.ext.xml</module>
 		<!-- TODO dispatch examples in another repository and dispatch tests in each project when possible
 		<module>org.restlet.example</module>
-		<module>org.restlet.test</module>
 		 -->
+		<module>org.restlet.test</module>
 	</modules>
 
 </project>
