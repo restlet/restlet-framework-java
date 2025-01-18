@@ -35,8 +35,32 @@ import org.restlet.routing.Router;
  * also to receive a chunked response.
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
+    private static final int LOOP_NUMBER = 20;
 
-    private static int LOOP_NUMBER = 20;
+    @Override
+    protected void call(String uri) throws Exception {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(uri, 10);
+        }
+
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(uri, 50000);
+        }
+
+        sendPut(uri, 100000);
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", PutTestResource.class);
+                return router;
+            }
+        };
+    }
 
     /**
      * Test resource that answers to PUT requests by sending back the received
@@ -67,49 +91,22 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         return rep;
     }
 
-    @Override
-    protected void call(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 10);
-        }
-
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 50000);
-        }
-
-        sendPut(uri, 100000);
-    }
-
-    @Override
-    protected Application createApplication(Component component) {
-        final Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
-
     private void sendPut(String uri, int size) throws Exception {
         Request request = new Request(Method.PUT, uri,
                 createChunkedRepresentation(size));
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(request);
 
         try {
-            if (!r.getStatus().isSuccess()) {
-                System.out.println(r.getStatus());
+            if (response.getStatus().isError()) {
+                System.out.println(response.getStatus());
             }
 
-            assertNotNull(r.getEntity());
-            assertEquals(createChunkedRepresentation(size).getText(), r.getEntity().getText());
+            assertNotNull(response.getEntity());
+            assertEquals(createChunkedRepresentation(size).getText(), response.getEntity().getText());
         } finally {
-            r.release();
-            c.stop();
+            response.release();
+            client.stop();
         }
     }
 
