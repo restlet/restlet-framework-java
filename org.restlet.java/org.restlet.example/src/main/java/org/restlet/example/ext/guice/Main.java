@@ -13,8 +13,8 @@ import static com.google.inject.name.Names.named;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.restlet.Application;
 import org.restlet.Component;

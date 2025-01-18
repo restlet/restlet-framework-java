@@ -1,10 +1,10 @@
 /**
- * Integration with Google Guice 4.2.
+ * Integration with Google Guice 7.0.
  * 
  * <p>
  * Tools for dependency injection (DI) of Restlet
  * {@link org.restlet.resource.ServerResource ServerResource} types that have
- * {@code javax.inject}-annotated members. Although the extension has "guice" in
+ * {@code jakarta.inject}-annotated members. Although the extension has "guice" in
  * the package name and contains direct support for <a
  * href="https://code.google.com/p/google-guice/">Google Guice version 3.0 or
  * later</a>, the tools here can be adapted for use with any DI framework that

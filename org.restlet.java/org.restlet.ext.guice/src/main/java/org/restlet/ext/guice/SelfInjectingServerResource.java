@@ -11,7 +11,7 @@ package org.restlet.ext.guice;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.restlet.resource.ServerResource;
 

@@ -9,7 +9,7 @@
 
 package org.restlet.ext.guice;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.restlet.Application;
 import org.restlet.Request;

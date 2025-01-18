@@ -9,6 +9,7 @@ Changes log
     - Bugs fixed
        - ...
     - Misc
+      - Upgraded Guice to 7.0.0.
       - Removed deprecated extensions FileUpload, GAE, OSGi, RDF.
       - Removed deprecated code related to WebDAV, NIO, POP, POPS, SDC, SIP, SIPS, SMTP, SMTPS.
       ...

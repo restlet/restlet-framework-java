@@ -21,11 +21,6 @@
 			<version>${lib-guice-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>${lib-javax-inject-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>
