@@ -51,12 +51,34 @@ import org.w3c.dom.NodeList;
  */
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
+    private static final int LOOP_NUMBER = 50;
+
+    @Override
+    protected void call(String uri) throws Exception {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendGet(uri);
+            sendPut(uri);
+        }
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", PutTestResource.class);
+                return router;
+            }
+        };
+    }
+
+
     public static class PutTestResource extends ServerResource {
 
         public PutTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_XML));
             setNegotiated(false);
-
         }
 
         @Override
@@ -66,7 +88,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         @Override
         public Representation put(Representation entity) {
-            checkForChunkedHeader(getRequest());
+            assertChunkedHeader(getRequest());
 
             final DomRepresentation dom = new DomRepresentation(entity);
             DomRepresentation rep = null;
@@ -76,16 +98,13 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
                 rep = new DomRepresentation(MediaType.TEXT_XML, doc);
                 getResponse().setEntity(rep);
             } catch (IOException ex) {
-                ex.printStackTrace();
-                fail(ex.getMessage());
+                fail("Cannot send XML response", ex);
             }
             return rep;
         }
     }
 
-    private static int LOOP_NUMBER = 50;
-
-    static void assertXML(DomRepresentation entity) {
+    private static void assertXML(DomRepresentation entity) {
         try {
             final Document document = entity.getDocument();
             final Node root = document.getDocumentElement();
@@ -105,7 +124,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         }
     }
 
-    static void checkForChunkedHeader(Message message) {
+    private static void assertChunkedHeader(Message message) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) message.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
@@ -138,64 +157,42 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         Representation rep = null;
         try {
-            rep = new StringRepresentation(new DomRepresentation(
-                    MediaType.TEXT_XML, doc).getText());
+            String xmlRepresentionAsString = new DomRepresentation(MediaType.TEXT_XML, doc).getText();
+            rep = new StringRepresentation(xmlRepresentionAsString);
+            rep.setSize(-1); // force chunked encoding
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        rep.setSize(-1);
+
         return rep;
     }
 
-    boolean checkedForChunkedResponse;
-
-    @Override
-    protected void call(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendGet(uri);
-            sendPut(uri);
-        }
-    }
-
-    @Override
-    protected Application createApplication(Component component) {
-        final Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
-                return router;
-            }
-        };
-        return application;
-    }
 
     private void sendGet(String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
-        Client c = new Client(Protocol.HTTP);
-        final Response r = c.handle(request);
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
         try {
-            assertEquals(Status.SUCCESS_OK, r.getStatus(), r.getStatus().getDescription());
-            assertXML(new DomRepresentation(r.getEntity()));
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
+            assertXML(new DomRepresentation(response.getEntity()));
         } finally {
-            r.release();
-            c.stop();
+            response.release();
+            client.stop();
         }
     }
 
     private void sendPut(String uri) throws Exception {
         Request request = new Request(Method.PUT, uri, createTestXml());
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(request);
 
         try {
-            checkForChunkedHeader(r);
-            assertEquals(Status.SUCCESS_OK, r.getStatus(), r.getStatus().getDescription());
-            assertXML(new DomRepresentation(r.getEntity()));
+            assertChunkedHeader(response);
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
+            assertXML(new DomRepresentation(response.getEntity()));
         } finally {
-            r.release();
-            c.stop();
+            response.release();
+            client.stop();
         }
 
     }
