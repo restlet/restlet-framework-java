@@ -10,6 +10,8 @@ Changes log
        - ...
     - Misc
       - Upgraded Guice to 7.0.0.
+      - Upgraded Jetty to 12.0.16.
+      - Upgraded Spring to 6.2.0.
       - Removed deprecated extensions FileUpload, GAE, OSGi, RDF.
       - Removed deprecated code related to WebDAV, NIO, POP, POPS, SDC, SIP, SIPS, SMTP, SMTPS.
       ...
