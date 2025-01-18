@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - "2.5"
+      - "2.6"
   pull_request:
   workflow_dispatch:
 concurrency:
@@ -11,7 +11,7 @@ concurrency:
     ${{ github.repository }}-${{ github.workflow }}-${{ github.event.number || github.head_ref || github.run_id || github.sha }}
   cancel-in-progress: true
 env:
-  JAVA_VERSION: 8
+  JAVA_VERSION: 17
 jobs:
   build:
     runs-on: ubuntu-latest
