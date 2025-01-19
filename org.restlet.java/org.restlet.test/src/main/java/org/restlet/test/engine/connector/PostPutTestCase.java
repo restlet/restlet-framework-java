@@ -31,19 +31,22 @@ import org.restlet.representation.Representation;
 public class PostPutTestCase extends BaseConnectorsTestCase {
 
     @Override
-    protected void call(String uri) throws Exception {
-        Client client = new Client(Protocol.HTTP);
-        testCall(client, Method.POST, uri);
-        testCall(client, Method.PUT, uri);
-        client.stop();
+    protected void doTestUri(String uri) throws Exception {
+        final Client client = new Client(Protocol.HTTP);
+        try {
+            testCall(client, Method.POST, uri);
+            testCall(client, Method.PUT, uri);
+        } finally {
+            client.stop();
+        }
     }
 
     @Override
     protected Application createApplication(final Component component) {
-        Application application = new Application() {
+        return new Application() {
             @Override
             public Restlet createInboundRoot() {
-                final Restlet trace = new Restlet(getContext()) {
+                return new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
                         Representation entity = request.getEntity();
@@ -53,30 +56,28 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
                         }
                     }
                 };
-
-                return trace;
             }
         };
-
-        return application;
     }
 
     private void testCall(Client client, Method method, String uri) {
-        Form inputForm = new Form();
+        final Form inputForm = new Form();
         inputForm.add("a", "a");
         inputForm.add("b", "b");
 
-        Request request = new Request(method, uri);
+        final Request request = new Request(method, uri);
         request.setEntity(inputForm.getWebRepresentation());
 
-        Response response = client.handle(request);
-        Representation entity = response.getEntity();
+        final Response response = client.handle(request);
+        final Representation entity = response.getEntity();
         assertNotNull(entity);
 
-        Form outputForm = new Form(entity);
+        final Form outputForm = new Form(entity);
         assertEquals(2, outputForm.size());
         assertEquals("a", outputForm.getFirstValue("a"));
         assertEquals("b", outputForm.getFirstValue("b"));
+
+        response.release();
     }
 
 }

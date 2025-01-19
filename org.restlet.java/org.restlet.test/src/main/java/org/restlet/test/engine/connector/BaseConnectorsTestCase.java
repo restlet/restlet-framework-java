@@ -10,15 +10,20 @@
 package org.restlet.test.engine.connector;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.restlet.Application;
-import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.connector.ConnectorHelper;
+import org.restlet.engine.adapter.HttpServerHelper;
+import org.restlet.engine.connector.ClientHelper;
+import org.restlet.engine.connector.ServerHelper;
 import org.restlet.test.RestletTestCase;
+
+import java.util.stream.Stream;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -32,42 +37,63 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 
-    private final boolean enabledClientInternal = true;
-
-    private final boolean enabledClientJetty = true;
-
-    private final boolean enabledServerInternal = true;
-
-    private final boolean enabledServerJetty = true;
-
-    protected abstract void call(String uri) throws Exception;
+    protected abstract void doTestUri(String uri) throws Exception;
 
     protected abstract Application createApplication(Component component);
 
-    // Helper methods
-    protected void runTest(ConnectorHelper<Server> server,
-            ConnectorHelper<Client> client) throws Exception {
+    protected String getCallUri(String host) {
+        return host + "/test";
+    }
+
+    @ParameterizedTest(name = "{0} server and {1} client")
+    @MethodSource("listTestCases")
+    public void runTest(final HttpServer server, final HttpClient client) throws Exception {
         // Engine.setLogLevel(Level.FINE);
         Engine nre = Engine.register(false);
-        nre.getRegisteredServers().add(server);
-        nre.getRegisteredClients().add(client);
+        nre.getRegisteredServers().add(server.serverHelper);
+        nre.getRegisteredClients().add(client.clientHelper);
         nre.registerDefaultAuthentications();
         nre.registerDefaultConverters();
 
         String host = start();
         String uri = getCallUri(host);
         try {
-            call(uri);
+            doTestUri(uri);
         } finally {
             stop();
         }
     }
 
-    protected String getCallUri(String host) {
-        return host + "/test";
+    private static Stream<Arguments> listTestCases() {
+        return Stream.of(
+                Arguments.of(HttpServer.INTERNAL, HttpClient.INTERNAL),
+                Arguments.of(HttpServer.INTERNAL, HttpClient.JETTY),
+                Arguments.of(HttpServer.JETTY, HttpClient.INTERNAL),
+                Arguments.of(HttpServer.JETTY, HttpClient.JETTY)
+        );
     }
 
-    protected String start() throws Exception {
+    public enum HttpServer {
+        INTERNAL(new org.restlet.engine.connector.HttpServerHelper(null)), JETTY(new org.restlet.ext.jetty.HttpServerHelper(null));
+
+        final ServerHelper serverHelper;
+
+        HttpServer(HttpServerHelper serverHelper) {
+            this.serverHelper = serverHelper;
+        }
+    }
+
+    public enum HttpClient {
+        INTERNAL(new org.restlet.engine.connector.HttpClientHelper(null)), JETTY(new org.restlet.ext.jetty.HttpClientHelper(null));
+
+        final ClientHelper clientHelper;
+
+        HttpClient(ClientHelper clientHelper) {
+            this.clientHelper = clientHelper;
+        }
+    }
+
+    private String start() throws Exception {
         this.component = new Component();
         Server server = this.component.getServers().add(Protocol.HTTP, 0);
         // server.getContext().getParameters().add("tracing", "true");
@@ -79,7 +105,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         return "http://localhost:" + server.getEphemeralPort();
     }
 
-    protected void stop() throws Exception {
+    private void stop() throws Exception {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }
@@ -87,40 +113,19 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     }
 
     @AfterEach
-    protected void tearDownEach() throws Exception {
+    protected void resetEngine() {
         // Restore a clean engine
         org.restlet.engine.Engine.register();
     }
 
-    @Test
-    public void testInternalAndInternal() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientInternal) {
-            runTest(new org.restlet.engine.connector.HttpServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
+    public class TestCase {
+        final HttpServer httpServer;
+        final HttpClient httpClient;
+
+        public TestCase(HttpServer httpServer, HttpClient httpClient) {
+            this.httpServer = httpServer;
+            this.httpClient = httpClient;
         }
     }
 
-    @Test
-    public void testInternalAndJetty() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientJetty) {
-            runTest(new org.restlet.engine.connector.HttpServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
-
-    @Test
-    public void testJettyAndInternal() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new org.restlet.engine.connector.HttpClientHelper(null));
-        }
-    }
-
-    @Test
-    public void testJettyAndJetty() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientJetty) {
-            runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new org.restlet.ext.jetty.HttpClientHelper(null));
-        }
-    }
 }

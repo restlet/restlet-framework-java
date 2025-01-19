@@ -54,7 +54,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 50;
 
     @Override
-    protected void call(String uri) throws Exception {
+    protected void doTestUri(String uri) throws Exception {
         for (int i = 0; i < LOOP_NUMBER; i++) {
             sendGet(uri);
             sendPut(uri);
@@ -106,32 +106,19 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private static void assertXML(DomRepresentation entity) {
         try {
-            final Document document = entity.getDocument();
-            final Node root = document.getDocumentElement();
-            final NodeList children = root.getChildNodes();
-
-            assertEquals("root", root.getNodeName());
-            assertEquals(2, children.getLength());
-            assertEquals("child-0", children.item(0).getNodeName());
-            assertEquals("name-0", children.item(0).getAttributes()
-                    .getNamedItem("name").getNodeValue());
-            assertEquals("child-1", children.item(1).getNodeName());
-            assertEquals("name-1", children.item(1).getAttributes()
-                    .getNamedItem("name").getNodeValue());
-
+            String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
+            String text = entity.getText();
+            assertEquals(expected, text);
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
     }
 
     private static void assertChunkedHeader(Message message) {
-        @SuppressWarnings("unchecked")
-        Series<Header> headers = (Series<Header>) message.getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
-        Header p = headers.getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING,
-                true);
-        assertNotNull(p);
-        assertEquals("chunked", p.getValue());
+        final Header transferEncoding = message.getHeaders()
+                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        assertNotNull(transferEncoding);
+        assertEquals("chunked", transferEncoding.getValue());
     }
 
     private static Document createDocument() {
@@ -157,9 +144,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         Representation rep = null;
         try {
-            String xmlRepresentionAsString = new DomRepresentation(MediaType.TEXT_XML, doc).getText();
-            rep = new StringRepresentation(xmlRepresentionAsString);
-            rep.setSize(-1); // force chunked encoding
+            String xmlRepresentationAsString = new DomRepresentation(MediaType.TEXT_XML, doc).getText();
+            rep = new StringRepresentation(xmlRepresentationAsString);
+            rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -172,6 +159,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         final Request request = new Request(Method.GET, uri);
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
+
         try {
             assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
             assertXML(new DomRepresentation(response.getEntity()));
@@ -182,9 +170,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendPut(String uri) throws Exception {
-        Request request = new Request(Method.PUT, uri, createTestXml());
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+        final Request request = new Request(Method.PUT, uri, createTestXml());
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         try {
             assertChunkedHeader(response);

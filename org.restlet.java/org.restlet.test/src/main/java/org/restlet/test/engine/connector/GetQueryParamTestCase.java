@@ -36,6 +36,37 @@ import org.restlet.routing.Router;
  */
 public class GetQueryParamTestCase extends BaseConnectorsTestCase {
 
+    protected String getCallUri(String host) {
+        return host + "/test?q1=a&q2=b";
+    }
+
+    @Override
+    protected void doTestUri(String uri) throws Exception {
+        final Client client = new Client(Protocol.HTTP);
+        final Request request = new Request(Method.GET, uri);
+        final Response response = client.handle(request);
+
+        try {
+            assertEquals(response.getStatus().getDescription(), Status.SUCCESS_OK,
+                    response.getStatus());
+            assertEquals("{q1=a, q2=b}", response.getEntity().getText());
+        } finally {
+            client.stop();
+        }
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+       return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", GetTestResource.class);
+                return router;
+            }
+        };
+    }
+
     public static class GetTestResource extends ServerResource {
         @Get
         public String toString() {
@@ -46,32 +77,4 @@ public class GetQueryParamTestCase extends BaseConnectorsTestCase {
         }
     }
 
-    protected String getCallUri(String host) {
-        return host + "/test?q1=a&q2=b";
-    }
-
-    @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
-                r.getStatus());
-        assertEquals("{q1=a, q2=b}", r.getEntity().getText());
-        c.stop();
-    }
-
-    @Override
-    protected Application createApplication(Component component) {
-        final Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
 }

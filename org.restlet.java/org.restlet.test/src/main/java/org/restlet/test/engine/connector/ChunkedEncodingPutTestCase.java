@@ -21,7 +21,6 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -35,10 +34,10 @@ import org.restlet.routing.Router;
  * also to receive a chunked response.
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
-    private static final int LOOP_NUMBER = 20;
+    private static final int LOOP_NUMBER = 200;
 
     @Override
-    protected void call(String uri) throws Exception {
+    protected void doTestUri(String uri) throws Exception {
         for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri, 10);
         }
@@ -86,16 +85,15 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      * @return A DomRepresentation.
      */
     private static Representation createChunkedRepresentation(int size) {
-        Representation rep = new StringRepresentation(StringUtils.repeat("a", Math.max(0, size)), MediaType.TEXT_PLAIN);
-        rep.setSize(Representation.UNKNOWN_SIZE);
+        Representation rep = new StringRepresentation("a".repeat(size), MediaType.TEXT_PLAIN);
+        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
         return rep;
     }
 
     private void sendPut(String uri, int size) throws Exception {
-        Request request = new Request(Method.PUT, uri,
-                createChunkedRepresentation(size));
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+        final Request request = new Request(Method.PUT, uri, createChunkedRepresentation(size));
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         try {
             if (response.getStatus().isError()) {
@@ -103,7 +101,10 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             }
 
             assertNotNull(response.getEntity());
-            assertEquals(createChunkedRepresentation(size).getText(), response.getEntity().getText());
+            String responseEntity = response.getEntity().getText();
+            assertEquals(size, responseEntity.length(), "Length of response's entity is wrong");
+            String expectedResponseEntity = createChunkedRepresentation(size).getText();
+            assertEquals(expectedResponseEntity, responseEntity);
         } finally {
             response.release();
             client.stop();
