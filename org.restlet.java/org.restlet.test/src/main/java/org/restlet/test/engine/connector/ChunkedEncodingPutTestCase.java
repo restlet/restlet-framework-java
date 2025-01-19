@@ -101,9 +101,10 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             }
 
             assertNotNull(response.getEntity(), String.format("test #%d - size %d: response's entity is null", testIndex, size));
-            String responseEntity = response.getEntity().getText();
+            final String responseEntity = response.getEntity().getText();
+            assertNotNull(responseEntity, String.format("test #%d - size %d: response's entity content is null", testIndex, size));
             assertEquals(size, responseEntity.length(), String.format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
-            String expectedResponseEntity = createChunkedRepresentation(size).getText();
+            final String expectedResponseEntity = createChunkedRepresentation(size).getText();
             assertEquals(expectedResponseEntity, responseEntity, String.format("test #%d - size %d: response's entity is wrong", testIndex, size));
         } finally {
             response.release();

@@ -118,7 +118,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         org.restlet.engine.Engine.register();
     }
 
-    public class TestCase {
+    public static class TestCase {
         final HttpServer httpServer;
         final HttpClient httpClient;
 
