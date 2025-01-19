@@ -38,15 +38,15 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void doTestUri(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 10);
+        for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
+            sendPut(testIndex, uri, 10);
         }
 
         for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 50000);
+            sendPut(i, uri, 50000);
         }
 
-        sendPut(uri, 100000);
+        sendPut(0, uri, 100000);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         return rep;
     }
 
-    private void sendPut(String uri, int size) throws Exception {
+    private void sendPut(int testIndex, final String uri, final int size) throws Exception {
         final Request request = new Request(Method.PUT, uri, createChunkedRepresentation(size));
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
@@ -100,11 +100,11 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                 System.out.println(response.getStatus());
             }
 
-            assertNotNull(response.getEntity());
+            assertNotNull(response.getEntity(), String.format("test #%d - size %d: response's entity is null", testIndex, size));
             String responseEntity = response.getEntity().getText();
-            assertEquals(size, responseEntity.length(), "Length of response's entity is wrong");
+            assertEquals(size, responseEntity.length(), String.format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
             String expectedResponseEntity = createChunkedRepresentation(size).getText();
-            assertEquals(expectedResponseEntity, responseEntity);
+            assertEquals(expectedResponseEntity, responseEntity, String.format("test #%d - size %d: response's entity is wrong", testIndex, size));
         } finally {
             response.release();
             client.stop();

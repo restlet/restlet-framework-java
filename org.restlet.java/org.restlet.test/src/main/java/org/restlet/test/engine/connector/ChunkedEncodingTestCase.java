@@ -37,11 +37,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-import org.restlet.util.Series;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.
@@ -55,9 +52,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void doTestUri(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendGet(uri);
-            sendPut(uri);
+        for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
+            sendGet(testIndex, uri);
+            sendPut(testIndex, uri);
         }
     }
 
@@ -94,7 +91,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             DomRepresentation rep = null;
             try {
                 final Document doc = dom.getDocument();
-                assertXML(dom);
                 rep = new DomRepresentation(MediaType.TEXT_XML, doc);
                 getResponse().setEntity(rep);
             } catch (IOException ex) {
@@ -104,11 +100,11 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         }
     }
 
-    private static void assertXML(DomRepresentation entity) {
+    private static void assertXML(int testIndex, DomRepresentation entity) {
         try {
             String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
             String text = entity.getText();
-            assertEquals(expected, text);
+            assertEquals(expected, text, String.format("test #%d: xml representation is wrong", testIndex));
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
@@ -155,29 +151,29 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
 
-    private void sendGet(String uri) throws Exception {
+    private void sendGet(int testIndex, String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
 
         try {
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
-            assertXML(new DomRepresentation(response.getEntity()));
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), String.format("test #%d: response's status is wrong", testIndex));
+            assertXML(testIndex, new DomRepresentation(response.getEntity()));
         } finally {
             response.release();
             client.stop();
         }
     }
 
-    private void sendPut(String uri) throws Exception {
+    private void sendPut(int testIndex, String uri) throws Exception {
         final Request request = new Request(Method.PUT, uri, createTestXml());
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
 
         try {
             assertChunkedHeader(response);
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
-            assertXML(new DomRepresentation(response.getEntity()));
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), String.format("test #%d: response's status is wrong", testIndex));
+            assertXML(testIndex, new DomRepresentation(response.getEntity()));
         } finally {
             response.release();
             client.stop();
