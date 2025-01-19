@@ -74,13 +74,13 @@ public class Engine {
 	/** The registered engine. */
 	private static volatile Engine instance = null;
 
-	/** The org.restlet log level . */
+	/** The org.restlet log level. */
 	private static volatile boolean logConfigured = false;
 
 	/** The general log formatter. */
 	private static volatile Class<? extends Formatter> logFormatter = org.restlet.engine.log.SimplestFormatter.class;
 
-	/** The general log level . */
+	/** The general log level. */
 	private static volatile Level logLevel = Level.INFO;
 
 	/** Major version number. */
@@ -92,7 +92,7 @@ public class Engine {
 	/** Release number. */
 	public static final String RELEASE_NUMBER = "-SNAPSHOT";
 
-	/** The org.restlet log level . */
+	/** The org.restlet log level. */
 	private static volatile Level restletLogLevel;
 
 	/** Complete version. */
