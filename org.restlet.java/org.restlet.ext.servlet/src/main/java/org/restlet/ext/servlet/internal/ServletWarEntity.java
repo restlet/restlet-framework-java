@@ -32,7 +32,9 @@ import org.restlet.service.MetadataService;
  * Local entity based on a Servlet context's resource file.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletWarEntity extends Entity {
     /**
      * List of children files if it is a directory. We suppose that in a WAR

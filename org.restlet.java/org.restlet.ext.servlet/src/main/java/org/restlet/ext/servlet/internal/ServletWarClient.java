@@ -31,7 +31,9 @@ import org.restlet.engine.connector.ClientHelper;
  * should be especially careful when storing state in member variables.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletWarClient extends Client {
     /** The helper provided by the implementation. */
     private volatile ClientHelper helper;

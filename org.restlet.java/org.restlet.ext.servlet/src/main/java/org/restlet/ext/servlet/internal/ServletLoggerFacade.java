@@ -23,7 +23,9 @@ import org.restlet.engine.log.LoggerFacade;
  * 
  * @see ServletContext#log(String, Throwable)
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletLoggerFacade extends LoggerFacade {
 
 	/**

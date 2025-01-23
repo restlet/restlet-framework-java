@@ -20,7 +20,9 @@ import com.google.inject.ProvisionException;
  * Factory for dependency-injecting Finders.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public interface FinderFactory {
 
     /**

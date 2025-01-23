@@ -18,7 +18,9 @@ import jakarta.servlet.ServletContext;
  * Logger that wraps the logging methods of jakarta.servlet.ServletContext.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletLogger extends Logger {
     /** The Servlet context to use for logging. */
     private volatile ServletContext context;

@@ -26,7 +26,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * Content reader for services.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServiceContentReader extends DefaultHandler {
 
     private final static int IN_ACCEPT = 1;

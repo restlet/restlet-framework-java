@@ -214,7 +214,9 @@ import org.restlet.routing.VirtualHost;
  * auto-wiring feature is set, is added to the component's context.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServerServlet extends HttpServlet {
     /**
      * Name of the attribute key containing a reference to the current

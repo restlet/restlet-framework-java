@@ -15,7 +15,9 @@ package org.restlet.ext.odata.internal.edm;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399546.aspx">Property
  *      Element (EntityType CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ComplexProperty extends Property {
 
     /** The type of the property. */

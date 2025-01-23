@@ -75,7 +75,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/system.data.services.client.dataservicecontext.aspx">DataServiceContext
  *      Class on MSDN</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Service {
     /** WCF data services metadata namespace. */
     public final static String WCF_DATASERVICES_METADATA_NAMESPACE = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";

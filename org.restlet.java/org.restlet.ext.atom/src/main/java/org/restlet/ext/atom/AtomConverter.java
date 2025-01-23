@@ -24,7 +24,9 @@ import org.restlet.resource.Resource;
  * Converter between the Atom API and Representation classes.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class AtomConverter extends ConverterHelper {
 
     private static final VariantInfo VARIANT_ATOM = new VariantInfo(

@@ -22,7 +22,9 @@ import com.google.inject.Provides;
  * automatically after construction).
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class SelfInjectingServerResourceModule extends AbstractModule {
 
     @Override

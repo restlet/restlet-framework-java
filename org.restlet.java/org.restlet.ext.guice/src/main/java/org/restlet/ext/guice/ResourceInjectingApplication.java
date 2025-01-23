@@ -25,7 +25,9 @@ import com.google.inject.MembersInjector;
  * member injection of resource instances.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class ResourceInjectingApplication extends Application {
 
     /**

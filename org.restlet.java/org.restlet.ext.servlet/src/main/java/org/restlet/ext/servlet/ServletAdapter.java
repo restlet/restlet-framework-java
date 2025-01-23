@@ -61,7 +61,9 @@ import org.restlet.routing.Router;
  * </pre>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletAdapter extends ServletServerAdapter {
 
     /** The next Restlet. */

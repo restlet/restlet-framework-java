@@ -44,7 +44,9 @@ import org.restlet.util.Series;
  * Call that is used by the Servlet HTTP server connector.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletCall extends ServerCall {
 
     /** The HTTP Servlet request to wrap. */

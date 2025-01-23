@@ -24,7 +24,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * The content of Text constructs is Language-Sensitive.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Text {
 
     /**

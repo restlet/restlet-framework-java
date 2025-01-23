@@ -24,7 +24,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * Content reader for categories.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class CategoriesContentReader extends DefaultHandler {
 
     private Categories categories = null;

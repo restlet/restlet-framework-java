@@ -19,7 +19,9 @@ import java.util.List;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb399734.aspx">Association
  *      Element (CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Association extends NamedObject {
     /** The list of entities linked by this association. */
     private List<AssociationEnd> ends;

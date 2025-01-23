@@ -13,7 +13,9 @@ package org.restlet.ext.odata.internal.edm;
  * Represents one entity implied in an AssociationSet.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class AssociationSetEnd {
 
     /** The role of this entity relatively to this association. */

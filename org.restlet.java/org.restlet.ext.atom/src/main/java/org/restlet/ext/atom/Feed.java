@@ -33,7 +33,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * with the feed.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Feed extends SaxRepresentation {
     /** Atom Syndication Format namespace. */
     public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";

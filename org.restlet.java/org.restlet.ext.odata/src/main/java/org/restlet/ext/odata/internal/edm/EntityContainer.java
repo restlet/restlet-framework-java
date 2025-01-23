@@ -18,7 +18,9 @@ import java.util.List;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399557.aspx">Entity
  *      Containers (EDM)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntityContainer extends NamedObject {
     /** The list of associations. */
     private List<AssociationSet> associations;

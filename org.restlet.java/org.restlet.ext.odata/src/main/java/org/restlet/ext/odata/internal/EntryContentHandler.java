@@ -43,7 +43,9 @@ import org.xml.sax.SAXException;
  * @author Thierry Boileau
  * @param <T>
  *            The type of the parsed entity.
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntryContentHandler<T> extends EntryReader {
 
     private enum State {

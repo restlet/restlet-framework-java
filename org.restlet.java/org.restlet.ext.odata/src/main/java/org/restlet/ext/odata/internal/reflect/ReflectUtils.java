@@ -32,7 +32,9 @@ import org.restlet.ext.odata.internal.edm.TypeUtils;
  * Handles Java reflection operations.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ReflectUtils {
 
     /** The internal logger. */

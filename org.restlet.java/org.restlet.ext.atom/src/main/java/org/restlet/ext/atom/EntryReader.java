@@ -23,7 +23,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * EntryReader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntryReader extends DefaultHandler {
 
     /** Extra entry reader. */

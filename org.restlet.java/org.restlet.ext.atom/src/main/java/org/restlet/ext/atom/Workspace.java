@@ -23,7 +23,9 @@ import org.xml.sax.SAXException;
  * Workspace containing collections of members entries.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Workspace {
 
     /**

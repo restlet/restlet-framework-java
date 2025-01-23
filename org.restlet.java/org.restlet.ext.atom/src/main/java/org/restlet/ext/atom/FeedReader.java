@@ -23,7 +23,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * FeedReader.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class FeedReader extends DefaultHandler {
 
     /** Extra feed reader. */

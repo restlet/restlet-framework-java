@@ -19,7 +19,9 @@ import org.restlet.resource.ServerResource;
  * Base class for ServerResources that do their own member injection.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class SelfInjectingServerResource extends ServerResource {
 
     /**

@@ -16,7 +16,9 @@ package org.restlet.ext.odata.internal.edm;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/ee373839.aspx">Atom
  *      Feed Customization (ADO.NET Data Services)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Mapping {
 
     /** Is the value taken from an attribute or not. */

@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-- 2.6 Milestone 1 (??-12-2024)
+- 2.6 Milestone 1 (??-01-2025)
     - Enhancements
       - Java 17 is the minimum requirement.
     - Security
@@ -14,5 +14,6 @@ Changes log
       - Upgraded Spring to 6.2.0.
       - Removed deprecated extensions FileUpload, GAE, OSGi, RDF.
       - Removed deprecated code related to WebDAV, NIO, POP, POPS, SDC, SIP, SIPS, SMTP, SMTPS.
+      - Deprecated the Atom, JAXB, Guice, GWT, OData and Servlet extensions.
       ...
 

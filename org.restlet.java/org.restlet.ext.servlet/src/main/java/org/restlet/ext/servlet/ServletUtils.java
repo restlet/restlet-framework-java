@@ -23,7 +23,9 @@ import org.restlet.ext.servlet.internal.ServletCall;
  * Servlet related utilities.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public final class ServletUtils {
 
     /**

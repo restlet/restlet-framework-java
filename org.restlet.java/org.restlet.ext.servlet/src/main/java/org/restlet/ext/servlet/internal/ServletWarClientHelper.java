@@ -41,7 +41,9 @@ import org.restlet.engine.local.EntityClientHelper;
  </code>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletWarClientHelper extends EntityClientHelper {
 
     /** The Servlet context to use. */

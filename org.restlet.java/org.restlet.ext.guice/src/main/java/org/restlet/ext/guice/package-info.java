@@ -186,6 +186,8 @@
  * @see <a href="https://github.com/google/guice">Google Guice project</a>
  * @see <a href="https://restlet.talend.com/documentation/user-guide/2.5/extensions/guice">User Guide
  *      - Guice extension</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 package org.restlet.ext.guice;
 

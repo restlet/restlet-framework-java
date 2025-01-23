@@ -28,7 +28,9 @@ import org.restlet.ext.jaxb.JaxbRepresentation;
  * multiple, possibly concurrent calls.
  * 
  * @author Overstock.com
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Marshaller<T> {
 
     /** The JAXB classloader. */

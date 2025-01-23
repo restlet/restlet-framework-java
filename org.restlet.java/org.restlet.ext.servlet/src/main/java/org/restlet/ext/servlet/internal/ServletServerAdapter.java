@@ -29,7 +29,9 @@ import org.restlet.engine.adapter.ServerCall;
  * attributes map.
  * 
  * @author Jeremy Gustie
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletServerAdapter extends ServerAdapter {
 
     /**
