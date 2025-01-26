@@ -35,7 +35,9 @@ import org.xml.sax.XMLReader;
  * using the same schema (package).
  * 
  * @author Overstock.com
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Unmarshaller<T> {
 
     /** The JAXB classloader. */

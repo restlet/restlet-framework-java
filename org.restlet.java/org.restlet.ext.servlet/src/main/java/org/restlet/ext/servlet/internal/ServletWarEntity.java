@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -32,7 +32,9 @@ import org.restlet.service.MetadataService;
  * Local entity based on a Servlet context's resource file.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletWarEntity extends Entity {
     /**
      * List of children files if it is a directory. We suppose that in a WAR

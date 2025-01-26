@@ -29,7 +29,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Atom Protocol collection, part of a workspace.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Collection {
 
     /**

@@ -50,54 +50,26 @@
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
 
         <!-- dependencies -->
-        <lib-aopalliance-version>1.0</lib-aopalliance-version>
-        <lib-bloat-version>1.0</lib-bloat-version>
-        <lib-cglib-version>3.3.0</lib-cglib-version>
-        <lib-commons-codec-version>1.17.0</lib-commons-codec-version>
-        <lib-commons-collections-version>3.2.2</lib-commons-collections-version>
-        <lib-commons-fileupload-version>1.5</lib-commons-fileupload-version>
-        <lib-commons-httpclient-version>4.5.14</lib-commons-httpclient-version>
-        <lib-commons-httpcore-version>4.4.16</lib-commons-httpcore-version>
-        <lib-commons-httpmime-version>4.5.14</lib-commons-httpmime-version>
-        <lib-commons-io-version>2.16.1</lib-commons-io-version>
-        <lib-commons-lang-version>3.14.0</lib-commons-lang-version>
-        <lib-commons-logging-version>1.3.1</lib-commons-logging-version>
-        <lib-commons-pool-version>1.6</lib-commons-pool-version>
         <lib-freemarker-version>2.3.32</lib-freemarker-version>
-        <lib-gcollections-version>1.0</lib-gcollections-version>
-        <lib-gdata-version>1.0</lib-gdata-version>
         <lib-gson-version>2.10.1</lib-gson-version>
-        <lib-guava-version>33.1.0-jre</lib-guava-version>
-        <lib-guice-version>6.0.0</lib-guice-version>
+        <lib-guice-version>7.0.0</lib-guice-version>
         <lib-gwt-version>2.11.0</lib-gwt-version>
         <lib-gwt-server-version>2.10.0</lib-gwt-server-version>
-        <lib-hamcrest-version>1.3</lib-hamcrest-version>
         <lib-jackson-version>2.17.0</lib-jackson-version>
         <lib-jaxb-ri-version>2.4.0-b180830.0438</lib-jaxb-ri-version>
         <lib-jaxb-api-version>2.4.0-b180830.0359</lib-jaxb-api-version>
-        <lib-javax-inject-version>1</lib-javax-inject-version>
-        <lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
-        <lib-jetty-version>9.4.56.v20240826</lib-jetty-version>
         <lib-joda-time-version>2.12.7</lib-joda-time-version>
-        <lib-json4s-version>3.2.4</lib-json4s-version>
+        <lib-jetty-version>12.0.16</lib-jetty-version>
         <lib-json-version>20240303</lib-json-version>
         <lib-junit-version>5.10.2</lib-junit-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>
-        <lib-mime4j-version>0.8.11</lib-mime4j-version>
-        <lib-mongodb-version>2.14.3</lib-mongodb-version>
         <lib-osgi-version>4.0.0</lib-osgi-version>
-        <lib-protobuf-version>2.2.0</lib-protobuf-version>
-        <lib-scala-version>2.13.13</lib-scala-version>
-        <lib-servlet-version>3.1.0</lib-servlet-version>
+        <lib-servlet-version>5.0.0</lib-servlet-version>
         <lib-slf4j-version>2.0.16</lib-slf4j-version>
-        <lib-snakeyaml-version>2.2</lib-snakeyaml-version>
-        <lib-spring-version>5.3.34</lib-spring-version>
-        <lib-sun-istack-version>3.0.10</lib-sun-istack-version>
-        <lib-stax2-version>3.1.4</lib-stax2-version>
         <lib-testng-version>7.5.1</lib-testng-version>
+        <lib-spring-version>6.2.0</lib-spring-version>
         <lib-thymeleaf-version>3.0.11.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
-        <lib-woodstock-core-version>4.4.1</lib-woodstock-core-version>
     </properties>
 
     <profiles>

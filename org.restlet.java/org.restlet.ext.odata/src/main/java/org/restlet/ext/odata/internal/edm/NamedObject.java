@@ -16,7 +16,9 @@ import org.restlet.ext.odata.internal.reflect.ReflectUtils;
  * Base class for all EDM concepts that have a name.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class NamedObject {
 
     /** The name of the EDM concept. */

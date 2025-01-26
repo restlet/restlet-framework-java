@@ -20,7 +20,9 @@ import org.xml.sax.SAXException;
  * 'person').
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Person {
 
     /**

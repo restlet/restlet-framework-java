@@ -10,15 +10,32 @@
 package org.restlet.ext.jetty;
 
 import java.io.IOException;
-import java.net.CookieStore;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.client.HttpProxy;
+import org.eclipse.jetty.client.transport.HttpClientConnectionFactory;
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.http.HttpCompliance;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.transport.ClientConnectionFactoryOverHTTP2;
+import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.http3.client.HTTP3Client;
+import org.eclipse.jetty.http3.client.transport.ClientConnectionFactoryOverHTTP3;
+import org.eclipse.jetty.http3.client.transport.HttpClientTransportOverHTTP3;
+import org.eclipse.jetty.io.ClientConnectionFactory;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.quic.client.ClientQuicConfiguration;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -30,7 +47,7 @@ import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.jetty.internal.JettyClientCall;
-import org.restlet.ext.jetty.internal.RestletSslContextFactory;
+import org.restlet.ext.jetty.internal.RestletSslContextFactoryClient;
 
 /**
  * HTTP client connector using the Jetty project. Here is the list of parameters
@@ -65,6 +82,20 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * bindAddress</td>
  * </tr>
  * <tr>
+ * <td>cookieSupported</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Whether to support HTTP cookie, storing and automatically sending them
+ * back</td>
+ * </tr>
+ * <tr>
+ * <td>connectBlocking</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates whether the connect operation is blocking. See
+ * {@link HttpClient#isConnectBlocking()}.</td>
+ * </tr>
+ * <tr>
  * <td>connectTimeout</td>
  * <td>long</td>
  * <td>15000</td>
@@ -72,17 +103,24 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * destinations</td>
  * </tr>
  * <tr>
- * <td>dispatchIo</td>
- * <td>boolean</td>
- * <td>true</td>
- * <td>Whether to dispatch I/O operations from the selector thread to a
- * different thread</td>
- * </tr>
- * <tr>
  * <td>followRedirects</td>
  * <td>boolean</td>
  * <td>true</td>
  * <td>Whether to follow HTTP redirects</td>
+ * </tr>
+ * <tr>
+ * <td>httpComplianceMode</td>
+ * <td>String</td>
+ * <td>RFC7230</td>
+ * <td>Indicate the HTTP compliance mode among the following options: "RFC7230",
+ * "RFC2616", "LEGACY", "RFC7230_LEGACY". See {@link HttpCompliance}.</td>
+ * </tr>
+ * <tr>
+ * <td>httpClientTransportMode</td>
+ * <td>String</td>
+ * <td>HTTP11</td>
+ * <td>Indicate the HTTP client transport mode among the following options:
+ * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.</td>
  * </tr>
  * <tr>
  * <td>idleTimeout</td>
@@ -110,6 +148,24 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * <td>Sets the max number of requests that may be queued to a destination</td>
  * </tr>
  * <tr>
+ * <td>maxResponseHeaderSize</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>The max size in bytes of the response headers. -1 is unlimited.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyHost</td>
+ * <td>String</td>
+ * <td>System property "http.proxyHost"</td>
+ * <td>The host name of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
+ * <td>proxyPort</td>
+ * <td>int</td>
+ * <td>System property "http.proxyPort" or "3128"</td>
+ * <td>The port of the HTTP proxy.</td>
+ * </tr>
+ * <tr>
  * <td>requestBufferSize</td>
  * <td>int</td>
  * <td>4096</td>
@@ -122,29 +178,17 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * <td>The size in bytes of the buffer used to read responses</td>
  * </tr>
  * <tr>
- * <td>stopTimeout</td>
- * <td>long</td>
- * <td>60000</td>
- * <td>Stop timeout in milliseconds; the maximum time allowed for the service to
- * shutdown</td>
- * </tr>
- * <tr>
  * <td>strictEventOrdering</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Whether request events must be strictly ordered</td>
  * </tr>
  * <tr>
- * <td>tcpNoDelay</td>
- * <td>boolean</td>
- * <td>true</td>
- * <td>Whether TCP_NODELAY is enabled</td>
- * </tr>
- * <tr>
  * <td>userAgentField</td>
  * <td>String</td>
  * <td>null</td>
- * <td>The "User-Agent" HTTP header string; when null, uses the Jetty default</td>
+ * <td>The "User-Agent" HTTP header string; when null, uses the Jetty
+ * default</td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
@@ -161,8 +205,17 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class HttpClientHelper extends
-        org.restlet.engine.adapter.HttpClientHelper {
+public class HttpClientHelper
+        extends org.restlet.engine.adapter.HttpClientHelper {
+
+    public static void main(String[] args) throws Exception {
+        Client client = new Client(Protocol.HTTP, Protocol.HTTPS);
+        HttpClientHelper helper = new HttpClientHelper(client);
+        helper.start();
+        HttpClient httpClient = helper.getHttpClient();
+        ContentResponse response = httpClient.GET("http://github.io/");
+        response.getContentAsString();
+    }
 
     /**
      * The wrapped Jetty HTTP client.
@@ -170,22 +223,39 @@ public class HttpClientHelper extends
     private volatile HttpClient httpClient;
 
     /**
-     * Constructor.
+     * The wrapped Jetty authentication store.
+     */
+    private volatile AuthenticationStore authenticationStore;
+
+    /**
+     * The wrapped Jetty cookie store.
+     */
+    private volatile HttpCookieStore cookieStore;
+
+    /** The wrapper Executor. */
+    private volatile Executor executor;
+
+    /**
+     * Constructor. Properties can still be set before the wrapped Jetty HTTP
+     * client is effectively created and configured via the
+     * {@link #createHttpClient()} method.
      * 
-     * @param client
-     *            The client to help.
+     * @param client The client connector to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
+        this.authenticationStore = null;
+        this.cookieStore = isCookieSupported() ? new HttpCookieStore.Default()
+                : new HttpCookieStore.Empty();
+        this.executor = null;
     }
 
     /**
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
-     * @param request
-     *            The high-level request.
+     * @param request The high-level request.
      * @return A low-level HTTP client call.
      */
     public ClientCall create(Request request) {
@@ -208,48 +278,116 @@ public class HttpClientHelper extends
      * 
      * @return A new HTTP client.
      */
-    private HttpClient createHttpClient() {
-        SslContextFactory sslContextFactory = null;
+    protected HttpClient createHttpClient() {
+        SslContextFactory.Client sslContextFactory = null;
 
         try {
-            sslContextFactory = new RestletSslContextFactory(
+            sslContextFactory = new RestletSslContextFactoryClient(
                     org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
-                    "Unable to create the SSL context factory.", e);
+                    "Unable to create the Jetty SSL context factory", e);
         }
 
-        HttpClient httpClient = new HttpClient(sslContextFactory);
+        HttpClientTransport httpTransport = null;
+        HTTP2Client http2Client = null;
+        HTTP3Client http3Client = null;
+
+        switch (getHttpClientTransportMode()) {
+        case "HTTP2":
+            http2Client = new HTTP2Client();
+            HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(
+                    http2Client);
+            http2Transport.setUseALPN(true);
+            httpTransport = http2Transport;
+            break;
+
+        case "HTTP3":
+            ClientQuicConfiguration clientQuicConfig = new ClientQuicConfiguration(
+                    sslContextFactory, null);
+            http3Client = new HTTP3Client(clientQuicConfig);
+            http3Client.getQuicConfiguration()
+                    .setSessionRecvWindow(64 * 1024 * 1024);
+            httpTransport = new HttpClientTransportOverHTTP3(http3Client);
+            break;
+
+        case "DYNAMIC":
+            ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
+
+            http2Client = new HTTP2Client();
+            ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(
+                    http2Client);
+
+            ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(
+                    sslContextFactory, null);
+            http3Client = new HTTP3Client(quicConfiguration);
+            ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(
+                    http3Client);
+
+            HttpClientTransportDynamic httpDynamicTransport = new HttpClientTransportDynamic(
+                    new ClientConnector(), http1, http2, http3);
+            httpTransport = httpDynamicTransport;
+            break;
+
+        case "HTTP11":
+        default:
+            httpTransport = new HttpClientTransportOverHTTP();
+            break;
+        }
+
+        HttpClient httpClient = new HttpClient(httpTransport);
         httpClient.setAddressResolutionTimeout(getAddressResolutionTimeout());
-        httpClient.setBindAddress(getBindAddress());
-        httpClient.setConnectTimeout(getConnectTimeout());
-
-        CookieStore cookieStore = getCookieStore();
-
-        if (cookieStore != null) {
-            httpClient.setCookieStore(cookieStore);
+        if(getAuthenticationStore() != null) {
+            httpClient.setAuthenticationStore(getAuthenticationStore());
         }
-
-        httpClient.setDispatchIO(isDispatchIO());
+        httpClient.setBindAddress(getBindAddress());
+        httpClient.setConnectBlocking(isConnectBlocking());
+        httpClient.setConnectTimeout(getConnectTimeout());
+        httpClient.setDestinationIdleTimeout(getDestinationIdleTimeout());
         httpClient.setExecutor(getExecutor());
         httpClient.setFollowRedirects(isFollowRedirects());
+
+
+        switch (getHttpComplianceMode()) {
+        case "RFC7230":
+            httpClient.setHttpCompliance(HttpCompliance.RFC7230);
+            break;
+        case "RFC7230_LEGACY":
+            httpClient.setHttpCompliance(HttpCompliance.RFC7230_LEGACY);
+            break;
+        case "RFC2616":
+            httpClient.setHttpCompliance(HttpCompliance.RFC2616);
+            break;
+        case "RFC2616_LEGACY":
+            httpClient.setHttpCompliance(HttpCompliance.RFC2616_LEGACY);
+            break;
+        }
+
+        httpClient.setHttpCookieStore(getCookieStore());
         httpClient.setIdleTimeout(getIdleTimeout());
-        httpClient
-                .setMaxConnectionsPerDestination(getMaxConnectionsPerDestination());
+        httpClient.setMaxConnectionsPerDestination(
+                getMaxConnectionsPerDestination());
         httpClient.setMaxRedirects(getMaxRedirects());
-        httpClient
-                .setMaxRequestsQueuedPerDestination(getMaxRequestsQueuedPerDestination());
+        httpClient.setMaxRequestsQueuedPerDestination(
+                getMaxRequestsQueuedPerDestination());
+        httpClient.setMaxResponseHeadersSize(getMaxResponseHeadersSize());
+
+        String httpProxyHost = getProxyHost();
+        if (httpProxyHost != null) {
+            HttpProxy proxy = new HttpProxy(httpProxyHost, getProxyPort());
+            httpClient.getProxyConfiguration().addProxy(proxy);
+        }
+
         httpClient.setRequestBufferSize(getRequestBufferSize());
         httpClient.setResponseBufferSize(getResponseBufferSize());
         httpClient.setScheduler(getScheduler());
-        httpClient.setStopTimeout(getStopTimeout());
+        httpClient.setSslContextFactory(sslContextFactory);
         httpClient.setStrictEventOrdering(isStrictEventOrdering());
-        httpClient.setTCPNoDelay(isTcpNoDelay());
-        String userAgentField = getUserAgentField();
 
+        String userAgentField = getUserAgentField();
         if (userAgentField != null) {
-            httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT,
-                    userAgentField));
+            httpClient.setUserAgentField(
+                    new HttpField(HttpHeader.USER_AGENT, userAgentField));
         }
 
         return httpClient;
@@ -262,8 +400,17 @@ public class HttpClientHelper extends
      * @return The address resolution timeout.
      */
     public long getAddressResolutionTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "addressResolutionTimeout", "15000"));
+        return Long.parseLong(getHelpedParameters()
+                .getFirstValue("addressResolutionTimeout", "15000"));
+    }
+
+    /**
+     * Returns the wrapped Jetty authentication store.
+     * 
+     * @return The wrapped Jetty authentication store.
+     */
+    public AuthenticationStore getAuthenticationStore() {
+        return authenticationStore;
     }
 
     /**
@@ -272,8 +419,8 @@ public class HttpClientHelper extends
      * @return The bind address or null.
      */
     public SocketAddress getBindAddress() {
-        final String bindAddress = getHelpedParameters().getFirstValue(
-                "bindAddress", null);
+        final String bindAddress = getHelpedParameters()
+                .getFirstValue("bindAddress", null);
         final String bindPort = getHelpedParameters().getFirstValue("bindPort",
                 null);
         if ((bindAddress != null) && (bindPort != null))
@@ -289,28 +436,38 @@ public class HttpClientHelper extends
      * @return The connect timeout.
      */
     public long getConnectTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "connectTimeout", "15000"));
+        return Long.parseLong(
+                getHelpedParameters().getFirstValue("connectTimeout", "15000"));
     }
 
     /**
-     * The cookie store. Defaults to null. When null, creates a new instance of
-     * {@link java.net.InMemoryCookieStore}.
+     * Returns the wrapped Jetty cookie store.
      * 
-     * @return The cookie store.
+     * @return The wrapped Jetty cookie store.
      */
-    public CookieStore getCookieStore() {
-        return null;
+    public HttpCookieStore getCookieStore() {
+        return this.cookieStore;
     }
 
     /**
-     * The executor. Defaults to null. When null, creates a new instance of
+     * The timeout in milliseconds for idle destinations to be removed. Defaults
+     * to 15000.
+     * 
+     * @return The address resolution timeout.
+     */
+    public long getDestinationIdleTimeout() {
+        return Long.parseLong(getHelpedParameters()
+                .getFirstValue("destinationIdleTimeout", "15000"));
+    }
+
+    /**
+     * Returns the executor. By default returns an instance of
      * {@link QueuedThreadPool}.
      * 
-     * @return The executor.
+     * @return Returns the executor.
      */
     public Executor getExecutor() {
-        return null;
+        return this.executor;
     }
 
     /**
@@ -323,14 +480,38 @@ public class HttpClientHelper extends
     }
 
     /**
+     * Returns the HTTP compliance mode among the following options: "RFC7230",
+     * "RFC2616", "LEGACY", "RFC7230_LEGACY". See {@link HttpCompliance}.
+     * Defaults to "RFC7230".
+     * 
+     * @return The HTTP compliance mode.
+     */
+    public String getHttpComplianceMode() {
+        return getHelpedParameters().getFirstValue("httpComplianceMode",
+                "RFC7230");
+    }
+
+    /**
+     * Returns the HTTP client transport mode among the following options:
+     * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.
+     * Defaults to "HTTP11".
+     * 
+     * @return The HTTP client transport mode.
+     */
+    public String getHttpClientTransportMode() {
+        return getHelpedParameters().getFirstValue("httpClientTransportMode",
+                "HTTP11");
+    }
+
+    /**
      * The max time in milliseconds a connection can be idle (that is, without
      * traffic of bytes in either direction). Defaults to 60000.
      * 
      * @return The idle timeout.
      */
     public long getIdleTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "idleTimeout", "60000"));
+        return Long.parseLong(
+                getHelpedParameters().getFirstValue("idleTimeout", "60000"));
     }
 
     /**
@@ -347,8 +528,8 @@ public class HttpClientHelper extends
      * @return The maximum connections per destination.
      */
     public int getMaxConnectionsPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnectionsPerDestination", "10"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("maxConnectionsPerDestination", "10"));
     }
 
     /**
@@ -357,8 +538,8 @@ public class HttpClientHelper extends
      * @return The maximum redirects.
      */
     public int getMaxRedirects() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRedirects", "8"));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("maxRedirects", "8"));
     }
 
     /**
@@ -376,8 +557,39 @@ public class HttpClientHelper extends
      * @return The maximum requests queues per destination.
      */
     public int getMaxRequestsQueuedPerDestination() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxRequestsQueuedPerDestination", "1024"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("maxRequestsQueuedPerDestination", "1024"));
+    }
+
+    /**
+     * Returns the max size in bytes of the response headers. Default is -1
+     * which is unlimited.
+     * 
+     * @return the max size in bytes of the response headers.
+     */
+    public int getMaxResponseHeadersSize() {
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("maxResponseHeadersSize", "-1"));
+    }
+
+    /**
+     * Returns the host name of the HTTP proxy, if specified.
+     * 
+     * @return the host name of the HTTP proxy, if specified.
+     */
+    public String getProxyHost() {
+        return getHelpedParameters().getFirstValue("proxyHost",
+                System.getProperty("http.proxyHost"));
+    }
+
+    /**
+     * Returns the port of the HTTP proxy, if specified, 3128 otherwise.
+     * 
+     * @return the port of the HTTP proxy.
+     */
+    public int getProxyPort() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort",
+                System.getProperty("http.proxyPort", "3128")));
     }
 
     /**
@@ -386,8 +598,8 @@ public class HttpClientHelper extends
      * @return The request buffer size.
      */
     public int getRequestBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "requestBufferSize", "4096"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("requestBufferSize", "4096"));
     }
 
     /**
@@ -397,8 +609,8 @@ public class HttpClientHelper extends
      * @return The response buffer size.
      */
     public int getResponseBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "responseBufferSize", "16384"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("responseBufferSize", "16384"));
     }
 
     /**
@@ -412,18 +624,6 @@ public class HttpClientHelper extends
     }
 
     /**
-     * Stop timeout in milliseconds. Defaults to 60000.
-     * <p>
-     * The maximum time allowed for the service to shutdown.
-     * 
-     * @return The stop timeout.
-     */
-    public long getStopTimeout() {
-        return Long.parseLong(getHelpedParameters().getFirstValue(
-                "stopTimeout", "60000"));
-    }
-
-    /**
      * The "User-Agent" HTTP header string. When null, uses the Jetty default.
      * Defaults to null.
      * 
@@ -434,20 +634,25 @@ public class HttpClientHelper extends
     }
 
     /**
-     * Whether to dispatch I/O operations from the selector thread to a
-     * different thread. Defaults to true.
-     * <p>
-     * This implementation never blocks on I/O operation, but invokes
-     * application callbacks that may take time to execute or block on other
-     * I/O. If application callbacks are known to take time or block on I/O,
-     * then this should be set to true. If application callbacks are known to be
-     * quick and never block on I/O, then this may be set to false.
+     * Indicates whether the connect operation is blocking. See
+     * {@link HttpClient#isConnectBlocking()}.
      * 
-     * @return Whether to dispatch I/O.
+     * @return True if the connect operation is blocking.
      */
-    public boolean isDispatchIO() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "dispatchIo", "true"));
+    public boolean isConnectBlocking() {
+        return Boolean.parseBoolean(getHelpedParameters()
+                .getFirstValue("connectBlocking", "false"));
+    }
+
+    /**
+     * Whether to support cookies, storing and automatically sending them back.
+     * Defaults to false.
+     * 
+     * @return Whether to support cookies.
+     */
+    public boolean isCookieSupported() {
+        return Boolean.parseBoolean(getHelpedParameters()
+                .getFirstValue("cookieSupported", "false"));
     }
 
     /**
@@ -456,8 +661,8 @@ public class HttpClientHelper extends
      * @return Whether to follow redirects.
      */
     public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "followRedirects", "true"));
+        return Boolean.parseBoolean(
+                getHelpedParameters().getFirstValue("followRedirects", "true"));
     }
 
     /**
@@ -485,18 +690,36 @@ public class HttpClientHelper extends
      * @return Whether request events must be strictly ordered.
      */
     public boolean isStrictEventOrdering() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "strictEventOrdering", "false"));
+        return Boolean.parseBoolean(getHelpedParameters()
+                .getFirstValue("strictEventOrdering", "false"));
     }
 
     /**
-     * Whether TCP_NODELAY is enabled. Defaults to true.
+     * Sets the wrapped Jetty authentication store.
      * 
-     * @return Whether TCP_NODELAY is enabled.
+     * @param authenticationStore The wrapped Jetty authentication store.
      */
-    public boolean isTcpNoDelay() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "tcpNoDelay", "true"));
+    public void setAuthenticationStore(
+            AuthenticationStore authenticationStore) {
+        this.authenticationStore = authenticationStore;
+    }
+
+    /**
+     * Sets the wrapped Jetty cookie store.
+     * 
+     * @param cookieStore The wrapped Jetty cookie store.
+     */
+    public void setCookieStore(HttpCookieStore cookieStore) {
+        this.cookieStore = cookieStore;
+    }
+
+    /**
+     * Sets the executor.
+     * 
+     * @param executor The executor.
+     */
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 
     @Override

@@ -38,7 +38,9 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class JaxbRepresentation<T> extends WriterRepresentation {
 
     /** Improves performance by caching contexts which are expensive to create. */

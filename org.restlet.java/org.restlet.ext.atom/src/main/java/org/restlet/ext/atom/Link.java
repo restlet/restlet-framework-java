@@ -22,7 +22,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Defines a reference from an entry or feed to a Web resource.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Link {
 
     /** Contains or links to the content of the entry. */

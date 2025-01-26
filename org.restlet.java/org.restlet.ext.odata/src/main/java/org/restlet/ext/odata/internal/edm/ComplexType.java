@@ -18,7 +18,9 @@ import java.util.List;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb738466.aspx">Complex
  *      Type (EDM)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ComplexType extends ODataType {
 
     /** The list of complex types this type inherits from. */

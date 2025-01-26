@@ -26,7 +26,9 @@ import org.restlet.ext.odata.internal.reflect.ReflectUtils;
  * Handle type operations.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class TypeUtils {
 
     /** Formater for the EDM DateTime type. */

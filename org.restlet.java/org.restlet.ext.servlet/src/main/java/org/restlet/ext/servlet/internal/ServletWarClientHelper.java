@@ -9,7 +9,7 @@
 
 package org.restlet.ext.servlet.internal;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.restlet.Client;
 import org.restlet.Request;
@@ -41,7 +41,9 @@ import org.restlet.engine.local.EntityClientHelper;
  </code>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletWarClientHelper extends EntityClientHelper {
 
     /** The Servlet context to use. */

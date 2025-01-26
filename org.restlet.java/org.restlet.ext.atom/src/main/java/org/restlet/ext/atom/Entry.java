@@ -35,7 +35,9 @@ import org.xml.sax.SAXException;
  * associated with the entry.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Entry extends SaxRepresentation {
 
     /** The authors of the entry. */

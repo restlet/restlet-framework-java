@@ -18,7 +18,9 @@ import java.util.TreeSet;
  * Super class of complex and entity types.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ODataType extends NamedObject implements Comparable<ODataType> {
 
     /** Is this type abstract? */

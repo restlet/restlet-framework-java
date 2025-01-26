@@ -14,7 +14,9 @@ package org.restlet.ext.odata.internal.edm;
  * service.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Namespace extends NamedObject {
     /** The short alias for this namespace. */
     private String alias;

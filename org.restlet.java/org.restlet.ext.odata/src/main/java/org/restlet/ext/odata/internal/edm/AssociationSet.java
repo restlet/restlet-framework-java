@@ -19,7 +19,9 @@ import java.util.List;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb386894.aspx">AssociationSet
  *      Element (EntityContainer CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class AssociationSet extends NamedObject {
 
     /** The referenced schema's association. */

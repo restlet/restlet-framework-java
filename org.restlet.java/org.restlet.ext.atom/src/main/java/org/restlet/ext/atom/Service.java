@@ -33,7 +33,9 @@ import org.xml.sax.SAXException;
  * Represents an Atom introspection document.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Service extends SaxRepresentation {
     /** Atom Publishing Protocol namespace. */
     public static final String APP_NAMESPACE = "http://www.w3.org/2007/app";

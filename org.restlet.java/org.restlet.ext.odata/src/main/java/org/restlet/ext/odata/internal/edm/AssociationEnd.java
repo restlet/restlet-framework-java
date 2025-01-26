@@ -16,7 +16,9 @@ package org.restlet.ext.odata.internal.edm;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb399734.aspx">Association
  *      Element (SSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class AssociationEnd {
 
     /** The cardinality of the relation. */

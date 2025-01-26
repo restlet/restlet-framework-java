@@ -21,12 +21,13 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+
+import java.util.stream.Stream;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.
@@ -35,8 +36,39 @@ import org.restlet.routing.Router;
  * also to receive a chunked response.
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
+    private static final int LOOP_NUMBER = 200;
 
-    private static int LOOP_NUMBER = 20;
+    @Override
+    protected Stream<ConnectorTestCase> listTestCases() { // Drop this override while taking care of ticket #1444
+        return Stream.of(
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
+        );
+    }
+
+    @Override
+    protected void doTestUri(String uri) throws Exception {
+        for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
+            sendPut(testIndex, uri, 10);
+        }
+
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(i, uri, 50000);
+        }
+
+        sendPut(0, uri, 100000);
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", PutTestResource.class);
+                return router;
+            }
+        };
+    }
 
     /**
      * Test resource that answers to PUT requests by sending back the received
@@ -62,54 +94,30 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      * @return A DomRepresentation.
      */
     private static Representation createChunkedRepresentation(int size) {
-        Representation rep = new StringRepresentation(StringUtils.repeat("a", Math.max(0, size)), MediaType.TEXT_PLAIN);
-        rep.setSize(Representation.UNKNOWN_SIZE);
+        Representation rep = new StringRepresentation("a".repeat(size), MediaType.TEXT_PLAIN);
+        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
         return rep;
     }
 
-    @Override
-    protected void call(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 10);
-        }
-
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 50000);
-        }
-
-        sendPut(uri, 100000);
-    }
-
-    @Override
-    protected Application createApplication(Component component) {
-        final Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
-
-    private void sendPut(String uri, int size) throws Exception {
-        Request request = new Request(Method.PUT, uri,
-                createChunkedRepresentation(size));
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
+    private void sendPut(int testIndex, final String uri, final int size) throws Exception {
+        final Request request = new Request(Method.PUT, uri, createChunkedRepresentation(size));
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         try {
-            if (!r.getStatus().isSuccess()) {
-                System.out.println(r.getStatus());
+            if (response.getStatus().isError()) {
+                System.out.println(response.getStatus());
             }
 
-            assertNotNull(r.getEntity());
-            assertEquals(createChunkedRepresentation(size).getText(), r.getEntity().getText());
+            assertNotNull(response.getEntity(), String.format("test #%d - size %d: response's entity is null", testIndex, size));
+            final String responseEntity = response.getEntity().getText();
+            assertNotNull(responseEntity, String.format("test #%d - size %d: response's entity content is null", testIndex, size));
+            assertEquals(size, responseEntity.length(), String.format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
+            final String expectedResponseEntity = createChunkedRepresentation(size).getText();
+            assertEquals(expectedResponseEntity, responseEntity, String.format("test #%d - size %d: response's entity is wrong", testIndex, size));
         } finally {
-            r.release();
-            c.stop();
+            response.release();
+            client.stop();
         }
     }
 

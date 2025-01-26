@@ -27,7 +27,9 @@ import org.restlet.resource.Resource;
  * and vice versa.
  * 
  * @author Sanjay Acharya
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class JaxbConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
             MediaType.APPLICATION_ALL_XML);

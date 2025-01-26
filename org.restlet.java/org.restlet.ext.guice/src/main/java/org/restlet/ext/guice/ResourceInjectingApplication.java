@@ -9,7 +9,7 @@
 
 package org.restlet.ext.guice;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.restlet.Application;
 import org.restlet.Request;
@@ -25,7 +25,9 @@ import com.google.inject.MembersInjector;
  * member injection of resource instances.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class ResourceInjectingApplication extends Application {
 
     /**

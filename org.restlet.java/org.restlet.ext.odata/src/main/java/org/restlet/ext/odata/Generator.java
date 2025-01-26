@@ -39,7 +39,9 @@ import freemarker.template.Configuration;
  * the execution of queries on the available entities.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Generator {
 
     /**

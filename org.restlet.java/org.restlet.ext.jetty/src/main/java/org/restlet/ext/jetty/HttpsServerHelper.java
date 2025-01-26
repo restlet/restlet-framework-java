@@ -19,7 +19,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
-import org.restlet.ext.jetty.internal.RestletSslContextFactory;
+import org.restlet.ext.jetty.internal.RestletSslContextFactoryServer;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -45,8 +45,9 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactory;
  * For the default SSL parameters see the Javadocs of the
  * {@link DefaultSslContextFactory} class.
  * 
- * @see <a href="https://eclipse.dev/jetty/documentation/jetty-9/index.html#configuring-ssl">How to
- *      configure SSL for Jetty</a>
+ * @see <a href=
+ *      "https://jetty.org/docs/jetty/12/operations-guide/keystore/index.html">How
+ *      to configure SSL for Jetty</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -55,28 +56,20 @@ public class HttpsServerHelper extends JettyServerHelper {
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param server The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTPS);
     }
 
-    /**
-     * Creates new internal Jetty connection factories.
-     * 
-     * @param configuration
-     *            The HTTP configuration.
-     * @return New internal Jetty connection factories.
-     */
+    @Override
     protected ConnectionFactory[] createConnectionFactories(
             HttpConfiguration configuration) {
-
         try {
-            org.eclipse.jetty.util.ssl.SslContextFactory sslContextFactory = new RestletSslContextFactory(
+            SslContextFactory.Server sslContextFactory = new RestletSslContextFactoryServer(
                     org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
-            return  AbstractConnectionFactory.getFactories(sslContextFactory,
+            return AbstractConnectionFactory.getFactories(sslContextFactory,
                     new HttpConnectionFactory(configuration));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,

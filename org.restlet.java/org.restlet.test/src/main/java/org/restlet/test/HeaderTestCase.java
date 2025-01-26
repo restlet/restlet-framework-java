@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
 
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

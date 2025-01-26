@@ -16,7 +16,9 @@ package org.restlet.ext.odata.internal.edm;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/cc716710.aspx">FunctionImport
  *      Element (CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Parameter extends NamedObject {
 
     /** The maximum length of the parameter value. */

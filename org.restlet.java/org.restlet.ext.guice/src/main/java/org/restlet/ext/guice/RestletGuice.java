@@ -34,7 +34,9 @@ import com.google.inject.Stage;
  * Guice dependency injection for Restlet.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class RestletGuice {
 
     /**

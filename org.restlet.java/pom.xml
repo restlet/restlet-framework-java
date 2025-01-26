@@ -17,16 +17,12 @@
 
 	<modules>
 		<module>org.restlet</module>
-		<module>org.restlet.example</module>
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.crypto</module>
-		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>
 		<module>org.restlet.ext.gson</module>
 		<module>org.restlet.ext.guice</module>
 		<module>org.restlet.ext.gwt</module>
-		<module>org.restlet.ext.html</module>
-		<module>org.restlet.ext.httpclient</module>
 		<module>org.restlet.ext.jaas</module>
 		<module>org.restlet.ext.jackson</module>
 		<module>org.restlet.ext.jaxb</module>
@@ -39,6 +35,9 @@
 		<module>org.restlet.ext.thymeleaf</module>
 		<module>org.restlet.ext.velocity</module>
 		<module>org.restlet.ext.xml</module>
+		<!-- TODO dispatch examples in another repository and dispatch tests in each project when possible
+		<module>org.restlet.example</module>
+		 -->
 		<module>org.restlet.test</module>
 	</modules>
 

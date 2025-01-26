@@ -21,7 +21,9 @@ import java.util.Set;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb399206.aspx">EntityType
  *      Element (CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntityType extends ODataType {
 
     /** The list of associations. */

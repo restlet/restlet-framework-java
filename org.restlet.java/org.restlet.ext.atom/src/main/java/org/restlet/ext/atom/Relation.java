@@ -18,7 +18,9 @@ import org.restlet.engine.util.SystemUtils;
  * @see <a
  *      href="http://www.iana.org/assignments/link-relations/link-relations.xhtml">IANA
  *      Atom relations</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Relation {
     /**
      * Signifies that the IRI in the value of the href attribute identifies an

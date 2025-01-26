@@ -17,7 +17,9 @@ package org.restlet.ext.odata.internal.edm;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb387139.aspx">EntitySet
  *      Element (EntityContainer CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntitySet extends NamedObject {
 
     /** The type of contained entities. */

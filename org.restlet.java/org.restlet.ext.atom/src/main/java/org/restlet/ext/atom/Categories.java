@@ -30,7 +30,9 @@ import org.xml.sax.SAXException;
  * Collection of {@link Category} entries.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Categories extends SaxRepresentation {
 
     /**

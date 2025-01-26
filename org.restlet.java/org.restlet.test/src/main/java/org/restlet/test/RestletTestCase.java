@@ -22,55 +22,57 @@ import org.restlet.representation.ObjectRepresentation;
  */
 public abstract class RestletTestCase {
 
-	protected static final int DEFAULT_TEST_PORT = 1337;
+    protected static final int DEFAULT_TEST_PORT = 1337;
 
-	protected static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
+    protected static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
 
-	public static int TEST_PORT = getTestPort();
+    public static int TEST_PORT = getTestPort();
 
-	protected static int getTestPort() {
-		if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
-			return Integer.parseInt(System.getProperty(PROPERTY_TEST_PORT));
-		}
+    protected static int getTestPort() {
+        if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
+            return Integer.parseInt(System.getProperty(PROPERTY_TEST_PORT));
+        }
 
-		return DEFAULT_TEST_PORT;
-	}
+        return DEFAULT_TEST_PORT;
+    }
 
-	@BeforeAll
-	static void setUp() {
-		setUpEngine();
-	}
+    @BeforeAll
+    static void setUp() {
+        setUpEngine();
+    }
 
-	/**
-	 * Clears thread local variables then sets-up the Restlet engine with internal
-	 * HTTP server and Apache HTTP client connectors by default.
-	 */
-	public static void setUpEngine() {
-		Engine.clearThreadLocalVariables();
+    /**
+     * Clears thread local variables then sets-up the Restlet engine with
+     * internal HTTP server and Jetty HTTP client connectors by default.
+     */
+    public static void setUpEngine() {
+        Engine.clearThreadLocalVariables();
 
-		// Restore a clean engine
-		org.restlet.engine.Engine.register();
+        // Restore a clean engine
+        org.restlet.engine.Engine.register();
 
-		// Prefer the internal connectors
-		Engine.getInstance().getRegisteredServers().add(0, new org.restlet.engine.connector.HttpServerHelper(null));
+        // Prefer the internal connectors
+        Engine.getInstance().getRegisteredServers().add(0,
+                new org.restlet.engine.connector.HttpServerHelper(null));
 
-		// FIXME turn on the internal connector.
-		Engine.getInstance().getRegisteredClients().add(0, new org.restlet.ext.httpclient.HttpClientHelper(null));
+        // FIXME turn on the internal connector.
+        Engine.getInstance().getRegisteredClients().add(0,
+                new org.restlet.ext.jetty.HttpClientHelper(null));
 
-		// Enable object serialization
-		ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
-		ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
-	}
+        // Enable object serialization
+        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
+        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
+    }
 
-	@AfterAll
-	static void tearDown() {
-		tearDownEngine();
-	}
+    @AfterAll
+    static void tearDown() {
+        tearDownEngine();
+    }
 
-	/**
-	 * Clears thread local variables.
-	 */
-	static void tearDownEngine() {
-		Engine.clearThreadLocalVariables();
-	}
+    /**
+     * Clears thread local variables.
+     */
+    static void tearDownEngine() {
+        Engine.clearThreadLocalVariables();
+    }
 }

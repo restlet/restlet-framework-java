@@ -24,7 +24,9 @@ import org.xml.sax.SAXException;
  * Source feed's metadata for entries copied from another feed.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Source {
 
     /** The authors of the entry. */

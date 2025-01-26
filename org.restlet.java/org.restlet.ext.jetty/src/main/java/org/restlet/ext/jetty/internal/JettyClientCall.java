@@ -17,13 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
-import org.eclipse.jetty.client.HttpRequest;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.restlet.Uniform;
 import org.restlet.data.Header;
 import org.restlet.data.Protocol;
@@ -50,12 +47,12 @@ public class JettyClientCall extends ClientCall {
     /**
      * The wrapped HTTP request.
      */
-    private final HttpRequest httpRequest;
+    private final Request request;
 
     /**
      * The wrapped HTTP response.
      */
-    private volatile org.eclipse.jetty.client.api.Response httpResponse;
+    private volatile Response response;
 
     /**
      * The wrapped input stream response listener.
@@ -70,12 +67,9 @@ public class JettyClientCall extends ClientCall {
     /**
      * Constructor.
      * 
-     * @param helper
-     *            The parent HTTP client helper.
-     * @param method
-     *            The method name.
-     * @param requestUri
-     *            The request URI.
+     * @param helper     The parent HTTP client helper.
+     * @param method     The method name.
+     * @param requestUri The request URI.
      * @throws IOException
      */
     public JettyClientCall(HttpClientHelper helper, final String method,
@@ -84,11 +78,10 @@ public class JettyClientCall extends ClientCall {
         this.clientHelper = helper;
 
         if (requestUri.startsWith("http")) {
-            this.httpRequest = (HttpRequest) helper.getHttpClient().newRequest(
-                    requestUri);
-            this.httpRequest.method(method);
+            this.request = helper.getHttpClient().newRequest(requestUri);
+            this.request.method(method);
 
-            setConfidential(this.httpRequest.getURI().getScheme()
+            setConfidential(this.request.getURI().getScheme()
                     .equalsIgnoreCase(Protocol.HTTPS.getSchemeName()));
         } else {
             throw new IllegalArgumentException(
@@ -101,8 +94,8 @@ public class JettyClientCall extends ClientCall {
      * 
      * @return The HTTP request.
      */
-    public HttpRequest getHttpRequest() {
-        return this.httpRequest;
+    public Request getRequest() {
+        return this.request;
     }
 
     /**
@@ -110,8 +103,8 @@ public class JettyClientCall extends ClientCall {
      * 
      * @return The HTTP response.
      */
-    public org.eclipse.jetty.client.api.Response getHttpResponse() {
-        return this.httpResponse;
+    public Response getResponse() {
+        return this.response;
     }
 
     /**
@@ -123,25 +116,23 @@ public class JettyClientCall extends ClientCall {
         return this.inputStreamResponseListener;
     }
 
-    /**
-     * Returns the response reason phrase.
-     * 
-     * @return The response reason phrase.
-     */
     @Override
     public String getReasonPhrase() {
-        final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
+        final Response httpResponse = getResponse();
         return httpResponse == null ? null : httpResponse.getReason();
     }
 
+    @Override
     public OutputStream getRequestEntityStream() {
         return null;
     }
 
+    @Override
     public OutputStream getRequestHeadStream() {
         return null;
     }
 
+    @Override
     public InputStream getResponseEntityStream(long size) {
         final InputStreamResponseListener inputStreamResponseListener = getInputStreamResponseListener();
         return inputStreamResponseListener == null ? null
@@ -158,14 +149,14 @@ public class JettyClientCall extends ClientCall {
      * {@link org.restlet.representation.Representation#getEncodings()} to avoid
      * decoding the input stream another time.
      * 
-     * @param response
-     *            the Response to get the entity from
+     * @param response the Response to get the entity from
      * @return The response entity if available.
      */
     @Override
-    public Representation getResponseEntity(Response response) {
+    public Representation getResponseEntity(org.restlet.Response response) {
         Representation responseEntity = super.getResponseEntity(response);
-        if (responseEntity != null && !responseEntity.getEncodings().isEmpty()) {
+        if (responseEntity != null
+                && !responseEntity.getEncodings().isEmpty()) {
             responseEntity.getEncodings().clear();
             // Entity size is reset accordingly.
             responseEntity.setSize(Representation.UNKNOWN_SIZE);
@@ -183,7 +174,7 @@ public class JettyClientCall extends ClientCall {
         final Series<Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            final org.eclipse.jetty.client.api.Response httpResponse = getHttpResponse();
+            final Response httpResponse = getResponse();
             if (httpResponse != null) {
                 final HttpFields headers = httpResponse.getHeaders();
                 if (headers != null) {
@@ -206,7 +197,7 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public String getServerAddress() {
-        return this.httpRequest.getURI().getHost();
+        return this.request.getURI().getHost();
     }
 
     /**
@@ -216,19 +207,18 @@ public class JettyClientCall extends ClientCall {
      */
     @Override
     public int getStatusCode() {
-        return getHttpResponse().getStatus();
+        return getResponse().getStatus();
     }
 
     /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.
      * 
-     * @param request
-     *            The high-level request.
+     * @param request The high-level request.
      * @return The result status.
      */
     @Override
-    public Status sendRequest(Request request) {
+    public Status sendRequest(org.restlet.Request request) {
         Status result = null;
 
         try {
@@ -236,8 +226,7 @@ public class JettyClientCall extends ClientCall {
 
             // Request entity
             if (entity != null && entity.isAvailable())
-                this.httpRequest.content(new InputStreamContentProvider(entity
-                        .getStream()));
+                this.request.body(new InputStreamRequestContent(entity.getStream()));
 
             // Set the request headers
             for (Header header : getRequestHeaders()) {
@@ -247,19 +236,19 @@ public class JettyClientCall extends ClientCall {
                     // skip this header
                     break;
                 case HeaderConstants.HEADER_USER_AGENT:
-                    this.httpRequest.agent(header.getValue());
+                    this.request.agent(header.getValue());
                     break;
                 default:
-                    this.httpRequest.header(name, header.getValue());
+                    ((Mutable)this.request.getHeaders()).add(name, header.getValue());
                     break;
                 }
             }
 
             // Ensure that the connection is active
             this.inputStreamResponseListener = new InputStreamResponseListener();
-            this.httpRequest.send(this.inputStreamResponseListener);
-            this.httpResponse = this.inputStreamResponseListener.get(
-                    clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
+            this.request.send(this.inputStreamResponseListener);
+            this.response = this.inputStreamResponseListener
+                    .get(clientHelper.getIdleTimeout(), TimeUnit.MILLISECONDS);
 
             result = new Status(getStatusCode(), getReasonPhrase());
         } catch (IOException e) {
@@ -268,36 +257,36 @@ public class JettyClientCall extends ClientCall {
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
 
             // Release the connection
-            getHttpRequest().abort(e);
+            getRequest().abort(e);
         } catch (TimeoutException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "The HTTP request timed out.", e);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
 
             // Release the connection
-            getHttpRequest().abort(e);
+            getRequest().abort(e);
         } catch (InterruptedException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "The HTTP request thread was interrupted.", e);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
 
             // Release the connection
-            getHttpRequest().abort(e);
+            getRequest().abort(e);
         } catch (ExecutionException e) {
             this.clientHelper.getLogger().log(Level.WARNING,
                     "An error occurred while processing the HTTP request.", e);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, e);
 
             // Release the connection
-            getHttpRequest().abort(e);
+            getRequest().abort(e);
         }
 
         return result;
     }
 
     @Override
-    public void sendRequest(Request request, Response response, Uniform callback)
-            throws Exception {
+    public void sendRequest(org.restlet.Request request,
+            org.restlet.Response response, Uniform callback) throws Exception {
         sendRequest(request);
 
         final Uniform getOnSent = request.getOnSent();

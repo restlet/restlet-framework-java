@@ -18,7 +18,9 @@ import org.restlet.ext.odata.internal.reflect.ReflectUtils;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399546.aspx">Property
  *      Element (EntityType CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Property extends NamedObject {
 
     /** True if this property should be used for optimistic concurrency checks. */

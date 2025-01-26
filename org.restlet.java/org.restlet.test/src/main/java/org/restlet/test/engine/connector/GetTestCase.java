@@ -31,29 +31,27 @@ import org.restlet.routing.Router;
  */
 public class GetTestCase extends BaseConnectorsTestCase {
 
-    public static class GetTestResource extends ServerResource {
-        @Get
-        public String toString() {
-            return "Hello world";
+    @Override
+    protected void doTestUri(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
+
+        try {
+            assertEquals(
+                    Status.SUCCESS_OK, response.getStatus(),
+                    response.getStatus().getDescription()
+            );
+            assertEquals("Hello world", response.getEntity().getText());
+        } finally {
+            response.release();
+            client.stop();
         }
     }
 
     @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
-        assertEquals(
-                Status.SUCCESS_OK, r.getStatus(),
-                r.getStatus().getDescription()
-        );
-        assertEquals("Hello world", r.getEntity().getText());
-        c.stop();
-    }
-
-    @Override
     protected Application createApplication(Component component) {
-        final Application application = new Application() {
+        return new Application() {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
@@ -61,7 +59,13 @@ public class GetTestCase extends BaseConnectorsTestCase {
                 return router;
             }
         };
-
-        return application;
     }
+
+    public static class GetTestResource extends ServerResource {
+        @Get
+        public String toString() {
+            return "Hello world";
+        }
+    }
+
 }

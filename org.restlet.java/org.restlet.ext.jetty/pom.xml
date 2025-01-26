@@ -22,24 +22,29 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-http</artifactId>
-			<version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-io</artifactId>
-            <version>${lib-jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
             <version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-            <version>${lib-jetty-version}</version>
-        </dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>jetty-http2-client</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>jetty-http2-client-transport</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http3</groupId>
+			<artifactId>jetty-http3-client</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http3</groupId>
+			<artifactId>jetty-http3-client-transport</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>

@@ -34,7 +34,9 @@ import org.xml.sax.SAXException;
  * @author Thierry Boileau
  * @param <T>
  *            The type of the parsed entities.
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class FeedContentHandler<T> extends FeedReader {
 
     /** The value retrieved from the "count" tag. */

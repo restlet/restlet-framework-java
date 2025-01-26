@@ -11,7 +11,7 @@ package org.restlet.ext.servlet.internal;
 
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.restlet.engine.log.LoggerFacade;
 
@@ -23,7 +23,9 @@ import org.restlet.engine.log.LoggerFacade;
  * 
  * @see ServletContext#log(String, Throwable)
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletLoggerFacade extends LoggerFacade {
 
 	/**

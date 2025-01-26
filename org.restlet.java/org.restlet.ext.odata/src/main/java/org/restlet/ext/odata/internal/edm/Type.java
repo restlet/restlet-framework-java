@@ -18,7 +18,9 @@ import java.util.TreeSet;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">Simple
  *      Types (EDM)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Type extends NamedObject {
 
     /**

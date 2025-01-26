@@ -21,7 +21,9 @@ import org.restlet.data.Method;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/cc716710.aspx">FunctionImport
  *      Element (CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class FunctionImport extends NamedObject {
 
     /** The entity set returned by this function, if applicable. */

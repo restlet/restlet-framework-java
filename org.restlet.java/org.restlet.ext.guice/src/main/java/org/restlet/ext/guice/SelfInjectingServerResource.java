@@ -11,7 +11,7 @@ package org.restlet.ext.guice;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.restlet.resource.ServerResource;
 
@@ -19,7 +19,9 @@ import org.restlet.resource.ServerResource;
  * Base class for ServerResources that do their own member injection.
  * 
  * @author Tim Peierls
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public abstract class SelfInjectingServerResource extends ServerResource {
 
     /**

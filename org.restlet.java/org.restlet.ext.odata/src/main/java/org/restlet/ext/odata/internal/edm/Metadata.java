@@ -23,7 +23,9 @@ import org.restlet.representation.Representation;
  * Represents the metadata of an OData service.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Metadata extends SaxRepresentation {
 
     /** The list of entity containers. */

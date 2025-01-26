@@ -9,17 +9,11 @@
 
 package org.restlet.example.book.restlet.ch07.sec1.sub5;
 
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.example.book.restlet.ch07.sec1.sub1.Mail;
-import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
@@ -54,6 +48,7 @@ public class MailServerResource extends ServerResource {
 
     @Put
     public String store(Representation input) throws Exception {
+        /*
         // Create a factory for disk-based file items
         RestletFileUpload fileUpload = new RestletFileUpload(
                 new DiskFileItemFactory());
@@ -69,6 +64,8 @@ public class MailServerResource extends ServerResource {
                 attachment.write(System.out);
             }
         }
+
+         */
 
         return "Mail updated!";
     }

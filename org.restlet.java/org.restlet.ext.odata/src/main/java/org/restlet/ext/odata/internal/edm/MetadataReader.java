@@ -26,7 +26,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * associated object's tree.
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class MetadataReader extends DefaultHandler {
 
     /** The list of defined states of this parser. */

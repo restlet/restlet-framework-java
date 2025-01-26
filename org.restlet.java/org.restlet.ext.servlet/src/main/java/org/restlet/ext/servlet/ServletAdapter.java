@@ -9,9 +9,9 @@
 
 package org.restlet.ext.servlet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -61,7 +61,9 @@ import org.restlet.routing.Router;
  * </pre>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class ServletAdapter extends ServletServerAdapter {
 
     /** The next Restlet. */

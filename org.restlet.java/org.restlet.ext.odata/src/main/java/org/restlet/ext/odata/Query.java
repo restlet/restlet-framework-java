@@ -44,7 +44,9 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/system.data.services.client.dataservicequery.aspx"></a>
  * @param <T>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Query<T> implements Iterable<T> {
 
     /**

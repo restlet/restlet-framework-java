@@ -24,7 +24,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Either contains or links to the content of the entry.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Content {
 
     /** Reference to the external representation. */

@@ -21,7 +21,9 @@ import org.restlet.ext.odata.Service;
  * @author Thierry Boileau
  * 
  * @param <T>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class EntryIterator<E> implements Iterator<E> {
 
     /** The class of the listed objects. */

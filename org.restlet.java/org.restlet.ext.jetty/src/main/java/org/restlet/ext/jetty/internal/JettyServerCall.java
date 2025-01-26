@@ -9,25 +9,25 @@
 
 package org.restlet.ext.jetty.internal;
 
-import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.cert.Certificate;
 import java.util.Arrays;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
+import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.io.Connection;
+import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.server.HttpChannel;
-import org.restlet.Response;
+import org.eclipse.jetty.io.ssl.SslConnection.SslEndPoint;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 import org.restlet.Server;
 import org.restlet.data.Header;
-import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
-import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -38,8 +38,14 @@ import org.restlet.util.Series;
  */
 public class JettyServerCall extends ServerCall {
 
-    /** The wrapped Jetty HTTP channel. */
-    private final HttpChannel channel;
+    /** The wrapped Jetty HTTP request. */
+    private final Request request;
+
+    /** The wrapped Jetty HTTP response. */
+    private final Response response;
+
+    /** The wrapped Jetty HTTP callback. */
+    private final Callback callback;
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
@@ -47,125 +53,128 @@ public class JettyServerCall extends ServerCall {
     /**
      * Constructor.
      * 
-     * @param server
-     *            The parent server.
-     * @param channel
-     *            The wrapped Jetty HTTP channel.
+     * @param server  The parent server.
+     * @param channel The wrapped Jetty HTTP channel.
      */
-    public JettyServerCall(Server server, HttpChannel channel) {
+    public JettyServerCall(Server server, Request request, Response response,
+            Callback callback) throws Exception {
         super(server);
-        this.channel = channel;
+        this.request = request;
+        this.response = response;
+        this.callback = callback;
         this.requestHeadersAdded = false;
     }
 
-    /**
-     * Closes the end point.
-     */
+    @Override
     public boolean abort() {
-        getChannel().getEndPoint().close();
+        getEndPoint().close();
         return true;
     }
 
     @Override
     public void complete() {
-        // Flush the response
-        try {
-            getChannel().getResponse().flushBuffer();
-        } catch (IOException e) {
-            getLogger().log(Level.FINE, "Unable to flush the response", e);
-        } catch (IllegalStateException e) {
-            getLogger().log(Level.WARNING, "Unable to flush the response", e);
-        }
-
-        // Fully complete the response
-        try {
-            getChannel().getResponse().closeOutput();
-        } catch (IOException e) {
-            getLogger().log(Level.FINE, "Unable to complete the response", e);
-        }
+        getCallback().succeeded();
     }
 
     @Override
     public void flushBuffers() throws IOException {
-        getChannel().getResponse().flushBuffer();
+        getEndPoint().flush();
+    }
+
+    /**
+     * Returns the wrapped Jetty HTTP callback.
+     * 
+     * @return The wrapped Jetty HTTP callback.
+     */
+    public Callback getCallback() {
+        return this.callback;
     }
 
     @Override
     public List<Certificate> getCertificates() {
-        final Object certificateArray = getChannel().getRequest().getAttribute(
-                "javax.servlet.request.X509Certificate");
-        if (certificateArray instanceof Certificate[])
-            return Arrays.asList((Certificate[]) certificateArray);
-        return null;
-    }
-
-    /**
-     * Returns the wrapped Jetty HTTP channel.
-     * 
-     * @return The wrapped Jetty HTTP channel.
-     */
-    public HttpChannel getChannel() {
-        return this.channel;
-    }
-
-    @Override
-    public String getCipherSuite() {
-        final Object cipherSuite = getChannel().getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-        if (cipherSuite instanceof String)
-            return (String) cipherSuite;
-        return null;
-    }
-
-    @Override
-    public String getClientAddress() {
-        return getChannel().getRequest().getRemoteAddr();
-    }
-
-    @Override
-    public int getClientPort() {
-        return getChannel().getRequest().getRemotePort();
-    }
-
-    /**
-     * Returns the request method.
-     * 
-     * @return The request method.
-     */
-    @Override
-    public String getMethod() {
-        return getChannel().getRequest().getMethod();
-    }
-
-    public InputStream getRequestEntityStream(long size) {
-        try {
-            return getChannel().getRequest().getInputStream();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to get request entity stream", e);
+        if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
+            return Arrays.asList((Certificate[]) sslEndPoint.getSslSessionData()
+                    .peerCertificates());
+        } else {
             return null;
         }
     }
 
     /**
-     * Returns the list of request headers.
+     * Returns the wrapped Jetty HTTP request.
      * 
-     * @return The list of request headers.
+     * @return The wrapped Jetty HTTP request.
      */
+    public Request getRequest() {
+        return this.request;
+    }
+
+    /**
+     * Returns the wrapped Jetty HTTP response.
+     * 
+     * @return The wrapped Jetty HTTP response.
+     */
+    public Response getResponse() {
+        return this.response;
+    }
+
+    @Override
+    public String getCipherSuite() {
+        if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
+            return sslEndPoint.getSslSessionData().cipherSuite();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String getClientAddress() {
+        return Request.getRemoteAddr(getRequest());
+    }
+
+    @Override
+    public int getClientPort() {
+        return Request.getRemotePort(getRequest());
+    }
+
+    /**
+     * Returns the underlying Jetty's connection.
+     * 
+     * @return The underlying Jetty's connection.
+     */
+    protected Connection getConnection() {
+        return getRequest().getConnectionMetaData().getConnection();
+    }
+
+    /**
+     * Returns the underlying Jetty's endpoint.
+     * 
+     * @return The underlying Jetty's endpoint.
+     */
+    protected EndPoint getEndPoint() {
+        return getConnection().getEndPoint();
+    }
+
+    @Override
+    public String getMethod() {
+        return getRequest().getMethod();
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        return Request.asInputStream(getRequest());
+    }
+
     @Override
     public Series<Header> getRequestHeaders() {
         final Series<Header> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
             // Copy the headers from the request object
-            for (Enumeration<String> names = getChannel().getRequest()
-                    .getHeaderNames(); names.hasMoreElements(); ) {
-                final String headerName = names.nextElement();
-                for (Enumeration<String> values = getChannel().getRequest()
-                        .getHeaders(headerName); values.hasMoreElements(); ) {
-                    final String headerValue = values.nextElement();
-                    result.add(headerName, headerValue);
-                }
+            for (Iterator<HttpField> fields = getRequest().getHeaders()
+                    .iterator(); fields.hasNext();) {
+                HttpField field = fields.next();
+                result.add(field.getName(), field.getValue());
             }
 
             this.requestHeadersAdded = true;
@@ -179,72 +188,42 @@ public class JettyServerCall extends ServerCall {
         return null;
     }
 
-    /**
-     * Returns the URI on the request line (most like a relative reference, but
-     * not necessarily).
-     * 
-     * @return The URI on the request line.
-     */
     @Override
     public String getRequestUri() {
-        String queryString = getChannel().getRequest().getQueryString();
-
-        return getChannel().getRequest().getRequestURL().toString()
-                + (isNullOrEmpty(queryString) ? "" : "?" + queryString);
+        return getRequest().getHttpURI().asString();
     }
 
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
+    @Override
     public OutputStream getResponseEntityStream() {
-        try {
-            return getChannel().getResponse().getOutputStream();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to get response entity stream", e);
-            return null;
-        }
+        return Response.asBufferedOutputStream(getRequest(), getResponse());
     }
 
-    /**
-     * Returns the response address.<br>
-     * Corresponds to the IP address of the responding server.
-     * 
-     * @return The response address.
-     */
     @Override
     public String getServerAddress() {
-        return getChannel().getRequest().getLocalAddr();
+        return Request.getLocalAddr(getRequest());
     }
 
     @Override
     public Integer getSslKeySize() {
-        Integer keySize = (Integer) getChannel().getRequest().getAttribute(
-                "javax.servlet.request.key_size");
-        if (keySize == null)
-            keySize = super.getSslKeySize();
-        return keySize;
+        if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
+            return sslEndPoint.getSslSessionData().keySize();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String getSslSessionId() {
-        final Object sessionId = getChannel().getRequest().getAttribute(
-                "javax.servlet.request.ssl_session_id");
-        if (sessionId instanceof String)
-            return (String) sessionId;
-        return null;
+        if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
+            return sslEndPoint.getSslSessionData().sslSessionId();
+        } else {
+            return null;
+        }
     }
 
-    /**
-     * Indicates if the request was made using a confidential mean.<br>
-     * 
-     * @return True if the request was made using a confidential mean.<br>
-     */
     @Override
     public boolean isConfidential() {
-        return getChannel().getRequest().isSecure();
+        return getRequest().isSecure();
     }
 
     @Override
@@ -254,47 +233,16 @@ public class JettyServerCall extends ServerCall {
     }
 
     @Override
-    public void sendResponse(Response response) throws IOException {
+    public void sendResponse(org.restlet.Response response) throws IOException {
         // Add call headers
         for (Header header : getResponseHeaders()) {
-            switch (header.getName()) {
-                case HeaderConstants.HEADER_DATE:
-                    if (!getChannel().getHttpConfiguration().getSendDateHeader()) {
-                        getChannel().getResponse().addHeader(header.getName(), header.getValue());
-                    }
-                    break;
-                default:
-                    getChannel().getResponse().addHeader(header.getName(), header.getValue());
-                    break;
-            }
+            getResponse().getHeaders().add(header.getName(), header.getValue());
         }
 
-        int statusCode = getStatusCode();
+        // First set the response status
+        getResponse().setStatus(getStatusCode());
 
-        // the Jetty connector dislikes status >= 1000, in this case, the status line of the response looks like "HTTP/1.1 :01 :01"
-        // let's replace it with a standard "Internal server error" status.
-        if (statusCode >= 1000) {
-            statusCode = Status.SERVER_ERROR_INTERNAL.getCode();
-        }
-
-        // Set the status code in the response. We do this after adding the
-        // headers because when we have to rely on the 'sendError' method,
-        // the Servlet containers are expected to commit their response.
-        if (Status.isError(statusCode) && (response.getEntity() == null)) {
-            try {
-                getChannel().getResponse().sendError(statusCode, getReasonPhrase());
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING,
-                        "Unable to set the response error status", ioe);
-            }
-        } else {
-            // Send the response entity
-            getChannel().getResponse().setStatus(statusCode);
-            try {
-                super.sendResponse(response);
-            } catch (IllegalStateException e) {
-                getLogger().log(Level.WARNING, "Unable to set the status", e);
-            }
-        }
+        // Write the response entity if it exists
+        super.sendResponse(response);
     }
 }

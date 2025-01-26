@@ -21,7 +21,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * purposes.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Generator {
 
     /** Human-readable name for the generating agent. */

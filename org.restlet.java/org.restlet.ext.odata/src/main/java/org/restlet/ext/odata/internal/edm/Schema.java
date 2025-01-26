@@ -18,7 +18,9 @@ import java.util.List;
  * @author Thierry Boileau
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399276.aspx">Schema
  *      Element (CSDL)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Schema {
 
     /** The list of defined associations. */

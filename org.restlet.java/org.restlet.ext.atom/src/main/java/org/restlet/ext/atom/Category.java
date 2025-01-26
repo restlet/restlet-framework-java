@@ -20,7 +20,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * Conveys information about a category associated with an entry or feed.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class Category {
     /** The human-readable label for display in end-user applications. */
     private volatile String label;

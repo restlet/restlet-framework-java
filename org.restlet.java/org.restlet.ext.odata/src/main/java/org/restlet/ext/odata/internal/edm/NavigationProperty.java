@@ -16,7 +16,9 @@ package org.restlet.ext.odata.internal.edm;
  * @see <a
  *      href="http://msdn.microsoft.com/en-us/library/bb399562.aspx">Navigation
  *      Properties (EDM)</a>
+ * @deprecated Will be removed in next major release.
  */
+@Deprecated
 public class NavigationProperty extends NamedObject {
     /** The start entity of the association. */
     private AssociationEnd fromRole;
