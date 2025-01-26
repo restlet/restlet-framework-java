@@ -22,6 +22,12 @@ public final class Protocol {
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
 
+    /**
+     * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
+     */
+    public static final Protocol AJP = new Protocol("ajp", "AJP",
+            "Apache Jakarta Protocol", 8009);
+
     /** All protocols wildcard. */
     public static final Protocol ALL = new Protocol("all", "ALL",
             "Wildcard for all protocols", UNKNOWN_PORT);
@@ -75,6 +81,21 @@ public final class Protocol {
     public static final Protocol JAR = new Protocol("jar", "JAR",
             "Java ARchive", UNKNOWN_PORT, true);
 
+    /** JDBC protocol. */
+    public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
+            "Java DataBase Connectivity", UNKNOWN_PORT);
+
+
+    /** POP protocol. */
+    @Deprecated
+    public static final Protocol POP = new Protocol("pop", "POP",
+            "Post Office Protocol", 110);
+
+    /** POPS protocol (via SSL/TLS socket).. */
+    @Deprecated
+    public static final Protocol POPS = new Protocol("pops", "POPS",
+            "Post Office Protocol (Secure)", 995, true);
+
     /**
      * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
      * representations via internal calls to virtual hosts/components. Example
@@ -88,6 +109,36 @@ public final class Protocol {
      */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
+
+    /**
+     * SDC (Secure Data Connector) protocol. <br>
+     * <br>
+     * SDC is natively available on the Google App Engine platform and via a
+     * special Restlet extension on other platforms.
+     */
+    @Deprecated
+    public static final Protocol SDC = new Protocol("sdc", "SDC",
+            "Secure Data Connector Protocol", UNKNOWN_PORT, true);
+
+    /** SIP protocol. */
+    @Deprecated
+    public static final Protocol SIP = new Protocol("sip", "SIP",
+            "Session Initiation Protocol", 5060, "2.0");
+
+    /** SIPS protocol (via SSL socket). */
+    @Deprecated
+    public static final Protocol SIPS = new Protocol("sips", "SIPS", "SIP",
+            "Session Initiation Protocol (Secure)", 5061, true, "2.0");
+
+    /** SMTP protocol. */
+    @Deprecated
+    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
+            "Simple Mail Transfer Protocol", 25);
+
+    /** SMTPS protocol (via SSL/TLS socket). */
+    @Deprecated
+    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
+            "Simple Mail Transfer Protocol (Secure)", 465, true);
 
     /** Local Web Archive access protocol. */
     public static final Protocol WAR = new Protocol("war", "WAR",
@@ -115,7 +166,9 @@ public final class Protocol {
         Protocol result = null;
 
         if (!StringUtils.isNullOrEmpty(name)) {
-            if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
+            if (name.equalsIgnoreCase(AJP.getSchemeName())) {
+                result = AJP;
+            } else if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
                 result = CLAP;
             } else if (name.equalsIgnoreCase(FILE.getSchemeName())) {
                 result = FILE;
@@ -127,8 +180,22 @@ public final class Protocol {
                 result = HTTPS;
             } else if (name.equalsIgnoreCase(JAR.getSchemeName())) {
                 result = JAR;
+            } else if (name.equalsIgnoreCase(JDBC.getSchemeName())) {
+                result = JDBC;
+            } else if (name.equalsIgnoreCase(POP.getSchemeName())) {
+                result = POP;
+            } else if (name.equalsIgnoreCase(POPS.getSchemeName())) {
+                result = POPS;
             } else if (name.equalsIgnoreCase(RIAP.getSchemeName())) {
                 result = RIAP;
+            } else if (name.equalsIgnoreCase(SMTP.getSchemeName())) {
+                result = SMTP;
+            } else if (name.equalsIgnoreCase(SMTPS.getSchemeName())) {
+                result = SMTPS;
+            } else if (name.equalsIgnoreCase(SIP.getSchemeName())) {
+                result = SIP;
+            } else if (name.equalsIgnoreCase(SIPS.getSchemeName())) {
+                result = SIPS;
             } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
                 result = WAR;
             } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {

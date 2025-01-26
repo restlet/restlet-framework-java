@@ -12,6 +12,7 @@ package org.restlet.client.ext.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.restlet.client.data.MediaType;
 import org.restlet.client.engine.io.StringInputStream;
@@ -90,7 +91,7 @@ public class DomRepresentation extends Representation {
     }
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         // TODO Auto-generated method stub
         return null;
     }

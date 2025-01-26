@@ -11,7 +11,7 @@ package org.restlet.client.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 
@@ -100,7 +100,7 @@ public class WrapperRepresentation extends Representation {
 
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         return getWrappedRepresentation().getReader();
     }
 

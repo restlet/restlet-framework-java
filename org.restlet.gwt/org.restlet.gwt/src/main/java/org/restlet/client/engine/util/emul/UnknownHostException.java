@@ -7,24 +7,24 @@
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
-package com.google.gwt.emul.java.io;
+package org.restlet.client.engine.util.emul;
 
 import java.io.IOException;
 
 /**
- * Emulation of the {@link java.io.UnsupportedEncodingException} class for the
- * GWT edition.
+ * Emulation of the {@link java.io.UnknownHostException} class for the GWT
+ * edition.
  * 
  * @author Thierry Boileau
  */
 @SuppressWarnings("serial")
-public class UnsupportedEncodingException extends IOException {
+public class UnknownHostException extends IOException {
 
-    public UnsupportedEncodingException() {
+    public UnknownHostException() {
         super();
     }
 
-    public UnsupportedEncodingException(String message) {
+    public UnknownHostException(String message) {
         super(message);
     }
 

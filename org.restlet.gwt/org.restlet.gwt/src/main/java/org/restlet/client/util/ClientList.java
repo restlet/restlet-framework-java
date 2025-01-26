@@ -9,7 +9,7 @@
 
 package org.restlet.client.util;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 import org.restlet.client.Client;
 import org.restlet.client.Context;

@@ -166,7 +166,7 @@ public class JsonRepresentation extends Representation {
     }
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         return new StringReader(getText());
     }
 

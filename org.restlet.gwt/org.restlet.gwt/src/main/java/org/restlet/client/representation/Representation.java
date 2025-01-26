@@ -12,6 +12,7 @@ package org.restlet.client.representation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Date;
 
 import org.restlet.client.Request;
@@ -271,7 +272,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return A reader with the representation's content.
      * @throws IOException
      */
-    public abstract Reader getReader() throws IOException;
+    public abstract StringReader getReader() throws IOException;
 
 
     /**

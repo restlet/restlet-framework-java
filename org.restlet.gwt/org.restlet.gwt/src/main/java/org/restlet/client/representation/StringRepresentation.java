@@ -118,7 +118,7 @@ public class StringRepresentation extends CharacterRepresentation {
     }
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         if (getText() != null) {
             return new StringReader(getText());
         }
