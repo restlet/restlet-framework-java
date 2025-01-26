@@ -161,9 +161,6 @@ public class Engine {
 	 * Updates the global log configuration of the JVM programmatically.
 	 */
 	public static void configureLog() {
-		if (Edition.JEE.isCurrentEdition()) {
-			return; // TODO Throw exception?
-		}
 		if ((System.getProperty("java.util.logging.config.file") == null)
 				&& (System.getProperty("java.util.logging.config.class") == null)) {
 			StringBuilder sb = new StringBuilder();
@@ -227,11 +224,7 @@ public class Engine {
 	 * @return The general log formatter.
 	 */
 	public static Class<? extends Formatter> getLogFormatter() {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			return Engine.logFormatter;
-		} else {
-			throw new RuntimeException(""); // TODO right thing to do?
-		}
+		return Engine.logFormatter;
 	}
 
 	/**
@@ -284,11 +277,7 @@ public class Engine {
 	 * @return The general log level.
 	 */
 	public static Level getLogLevel() {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			return Engine.logLevel;
-		} else {
-			throw new RuntimeException(); // TODO right thing to do?
-		}
+		return Engine.logLevel;
 	}
 
 	/**
@@ -308,11 +297,7 @@ public class Engine {
 	 * @return The Restlet log level.
 	 */
 	public static Level getRestletLogLevel() {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			return Engine.restletLogLevel;
-		} else {
-			throw new RuntimeException(); // TODO right thing to do?
-		}
+		return Engine.restletLogLevel;
 	}
 
 	/**
@@ -357,10 +342,8 @@ public class Engine {
 	 * @param logFormatter The general log formatter.
 	 */
 	public static void setLogFormatter(Class<? extends Formatter> logFormatter) {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			Engine.logFormatter = logFormatter;
-			configureLog();
-		} // TODO Else throw exception?
+		Engine.logFormatter = logFormatter;
+		configureLog();
 	}
 
 	/**
@@ -369,10 +352,8 @@ public class Engine {
 	 * @param logLevel The general log level.
 	 */
 	public static void setLogLevel(Level logLevel) {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			Engine.logLevel = logLevel;
-			configureLog();
-		} // TODO else throw exception?
+		Engine.logLevel = logLevel;
+		configureLog();
 	}
 
 	/**
@@ -382,10 +363,8 @@ public class Engine {
 	 * @param restletLogLevel The Restlet log level.
 	 */
 	public static void setRestletLogLevel(Level restletLogLevel) {
-		if (Edition.JEE.isNotCurrentEdition()) {
-			Engine.restletLogLevel = restletLogLevel;
-			configureLog();
-		} // TODO else throw exception?
+		Engine.restletLogLevel = restletLogLevel;
+		configureLog();
 	}
 
 	/** Class loader to use for dynamic class loading. */

@@ -12,6 +12,7 @@ package org.restlet.client.representation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * Empty representation with no content. It is always considered available but
@@ -33,7 +34,7 @@ public class EmptyRepresentation extends Representation {
 
 
     @Override
-    public Reader getReader() throws IOException {
+    public StringReader getReader() throws IOException {
         return null;
     }
 

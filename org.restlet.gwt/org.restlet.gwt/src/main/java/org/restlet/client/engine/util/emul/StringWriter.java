@@ -7,7 +7,7 @@
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
-package com.google.gwt.emul.java.io;
+package org.restlet.client.engine.util.emul;
 
 import java.io.IOException;
 

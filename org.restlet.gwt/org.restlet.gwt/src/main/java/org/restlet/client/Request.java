@@ -12,8 +12,8 @@ package org.restlet.client;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArraySet;
 
 import org.restlet.client.data.CacheDirective;
 import org.restlet.client.data.ChallengeResponse;

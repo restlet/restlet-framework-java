@@ -13,7 +13,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 import org.restlet.client.data.Method;
 
@@ -83,14 +83,7 @@ public class AnnotationUtils {
                             .valueOf(((org.restlet.client.engine.connector.Method) methodAnnotation)
                                     .value());
 
-                    String toString = annotation.toString();
-                    int startIndex = annotation.annotationType()
-                            .getCanonicalName().length() + 8;
-                    int endIndex = toString.length() - 1;
-                    String value = toString.substring(startIndex, endIndex);
-                    if ("".equals(value)) {
-                        value = null;
-                    }
+                    String value = extractAnnotationValue(annotation);
 
                     result = new AnnotationInfo(restletMethod, javaMethod,
                             value);
@@ -100,6 +93,37 @@ public class AnnotationUtils {
 
         return result;
     }
+
+    /**
+     * Returns the annotation value.
+     * @param annotation The annotation
+     * @return the annotation value
+     */
+    private static String extractAnnotationValue(final Annotation annotation) {
+        final String annotationCanonicalName = annotation.annotationType().getCanonicalName();
+        final String annotationStringRepresentation = annotation.toString();
+
+        // Drop the annotation canonical name
+        final int index = annotationStringRepresentation.indexOf(annotationCanonicalName);
+        final String annotationValueStringRepresentation = annotationStringRepresentation.substring(index + annotationCanonicalName.length());
+
+        // Then extract the value, if any.
+        final String result;
+        if (annotationValueStringRepresentation.startsWith(("(value="))) { // (value=blabla) format: JDK 1.8 and below
+            result = annotationValueStringRepresentation.substring("(value=".length(), annotationValueStringRepresentation.length() - 1);
+        } else if (annotationValueStringRepresentation.startsWith(("(\""))) {
+            result = annotationValueStringRepresentation.substring("(\"".length(), annotationValueStringRepresentation.length() - 2);
+        } else if (annotationValueStringRepresentation.startsWith(("("))) {
+            result = annotationValueStringRepresentation.substring("(".length(), annotationValueStringRepresentation.length() - 1);
+        } else {
+            result = annotationValueStringRepresentation;
+        }
+
+        return result.isEmpty()
+                ? null
+                : result;
+    }
+
 
     /**
      * Returns the first annotation descriptor matching the given Java method.

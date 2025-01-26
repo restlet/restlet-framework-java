@@ -73,7 +73,7 @@ public final class MediaType extends Metadata {
 
 
     public static final MediaType APPLICATION_JAVA_OBJECT_GWT = register(
-            "application/x-java-serialized-object+gwt",
+            "text/x-gwt-rpc",
             "Java serialized object (using GWT-RPC encoder)");
 
 

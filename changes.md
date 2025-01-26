@@ -9,6 +9,7 @@ Changes log
     - Bugs fixed
        - ...
     - Misc
+      - Upgraded GWT (org.gwtproject:gwt-dev/gwt-user) to 2.12.1.
       - Upgraded Guice to 7.0.0.
       - Upgraded Jetty to 12.0.16.
       - Upgraded Spring to 6.2.0.

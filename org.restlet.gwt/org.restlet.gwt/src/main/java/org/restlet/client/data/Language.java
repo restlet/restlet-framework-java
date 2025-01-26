@@ -11,7 +11,7 @@ package org.restlet.client.data;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 /**
  * Language used in representations and preferences. A language tag is composed
