@@ -73,10 +73,10 @@ public class Engine {
     public static final String MAJOR_NUMBER = "2";
 
     /** Minor version number. */
-    public static final String MINOR_NUMBER = "4";
+    public static final String MINOR_NUMBER = "6";
 
     /** Release number. */
-    public static final String RELEASE_NUMBER = ".4";
+    public static final String RELEASE_NUMBER = "-SNAPSHOT";
 
 
     /** Complete version. */
