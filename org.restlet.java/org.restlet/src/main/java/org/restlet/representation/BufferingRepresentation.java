@@ -9,18 +9,12 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.util.WrapperRepresentation;
+
+import java.io.*;
+import java.util.logging.Level;
 
 /**
  * Representation capable of buffering the wrapped representation. This is

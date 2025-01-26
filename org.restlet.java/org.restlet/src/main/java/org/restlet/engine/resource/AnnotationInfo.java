@@ -9,16 +9,12 @@
 
 package org.restlet.engine.resource;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Objects;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.engine.util.SystemUtils;
+
+import java.lang.reflect.*;
+import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * Descriptor for Restlet annotations.

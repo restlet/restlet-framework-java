@@ -9,10 +9,6 @@
 
 package org.restlet.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -24,6 +20,10 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your

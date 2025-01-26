@@ -9,12 +9,12 @@
 
 package org.restlet.engine.io;
 
+import org.restlet.data.Range;
+import org.restlet.representation.Representation;
+
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.restlet.data.Range;
-import org.restlet.representation.Representation;
 
 /**
  * Filters an input stream to expose only a given range.

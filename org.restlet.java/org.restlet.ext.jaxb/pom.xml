@@ -26,9 +26,20 @@
 			<version>${lib-jaxb-api-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.sun.istack</groupId>
+			<artifactId>istack-commons-runtime</artifactId>
+			<version>${lib-istack-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${lib-junit-version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -9,19 +9,18 @@
 
 package org.restlet.engine.ssl;
 
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSocketFactory;
-
-import org.restlet.data.Parameter;
-import org.restlet.util.Series;
 
 /**
  * This {@link SslContextFactory} makes it possible to configure most basic

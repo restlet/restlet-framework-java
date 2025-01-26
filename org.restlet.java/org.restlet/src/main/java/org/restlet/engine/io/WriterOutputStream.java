@@ -9,14 +9,14 @@
 
 package org.restlet.engine.io;
 
+import org.restlet.data.CharacterSet;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-
-import org.restlet.data.CharacterSet;
 
 /**
  * Output stream wrapping a character writer.

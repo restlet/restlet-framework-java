@@ -9,17 +9,17 @@
 
 package org.restlet.routing;
 
-import java.util.logging.Level;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
+import java.util.logging.Level;
+
 /**
  * Filter scoring the affinity of calls with the attached Restlet. The score is
- * used by an associated Router in order to determine the most appropriate
+ * used by an associated Router to determine the most appropriate
  * Restlet for a given call. The routing is based on a reference template.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
@@ -49,7 +49,7 @@ public class TemplateRoute extends Route {
 	}
 
 	/**
-	 * Constructor. The URIs will be matched agains the template using the
+	 * Constructor. The URIs will be matched against the template using the
 	 * {@link Template#MODE_STARTS_WITH} matching mode. This can be changed by
 	 * getting the template and calling {@link Template#setMatchingMode(int)} with
 	 * {@link Template#MODE_EQUALS} for exact matching.
@@ -72,13 +72,13 @@ public class TemplateRoute extends Route {
 	 */
 	public TemplateRoute(Router router, Template template, Restlet next) {
 		super(router, next);
-		this.matchingQuery = (router == null) ? true : router.getDefaultMatchingQuery();
+		this.matchingQuery = router == null || router.getDefaultMatchingQuery();
 		this.template = template;
 	}
 
 	/**
-	 * Allows filtering before its handling by the target Restlet. By default it
-	 * parses the template variable, adjust the base reference of the target
+	 * Allows filtering before its handling by the target Restlet. By default, it
+	 * parses the template variable, adjusts the base reference of the target
 	 * resource's reference.
 	 * 
 	 * @param request  The request to filter.
@@ -98,7 +98,7 @@ public class TemplateRoute extends Route {
 				}
 			} else if (matchedLength > 0) {
 				if (request.isLoggable() && getLogger().isLoggable(Level.FINER)) {
-					getLogger().finer("" + matchedLength + " characters were matched");
+					getLogger().finer(matchedLength + " characters were matched");
 				}
 
 				// Updates the context
@@ -117,14 +117,14 @@ public class TemplateRoute extends Route {
 					if (getLogger().isLoggable(Level.FINE)) {
 						remainingPart = request.getResourceRef().getRemainingPart(false, isMatchingQuery());
 
-						if ((remainingPart != null) && (!"".equals(remainingPart))) {
-							getLogger().fine("New base URI: \"" + request.getResourceRef().getBaseRef()
-									+ "\". New remaining part: \"" + remainingPart + "\"");
-						} else {
-							getLogger().fine("New base URI: \"" + request.getResourceRef().getBaseRef()
-									+ "\". No remaining part to match");
-						}
-					}
+                        if (remainingPart == null || remainingPart.isEmpty()) {
+                            getLogger().fine("New base URI: \"" + request.getResourceRef().getBaseRef()
+                                    + "\". No remaining part to match");
+                        } else {
+                            getLogger().fine("New base URI: \"" + request.getResourceRef().getBaseRef()
+                                    + "\". New remaining part: \"" + remainingPart + "\"");
+                        }
+                    }
 
 					if (getLogger().isLoggable(Level.FINER)) {
 						getLogger().finer("Delegating the call to the target Restlet");

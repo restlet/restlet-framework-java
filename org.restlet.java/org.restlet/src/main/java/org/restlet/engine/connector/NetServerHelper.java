@@ -9,18 +9,12 @@
 
 package org.restlet.engine.connector;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.restlet.Server;
 import org.restlet.engine.adapter.HttpServerHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.*;
 
 /**
  * Abstract Internal web server connector based on com.sun.net.httpserver

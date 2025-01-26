@@ -9,13 +9,13 @@
 
 package org.restlet.engine.ssl;
 
+import org.restlet.Context;
+import org.restlet.engine.RestletHelper;
+
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.engine.RestletHelper;
 
 /**
  * Various HTTPS utilities.

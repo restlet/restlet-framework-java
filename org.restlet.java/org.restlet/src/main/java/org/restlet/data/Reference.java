@@ -9,12 +9,12 @@
 
 package org.restlet.data;
 
+import org.restlet.Context;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-
-import org.restlet.Context;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the

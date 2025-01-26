@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.Collection;
-
 import org.restlet.data.Dimension;
+
+import java.util.Collection;
 
 /**
  * Dimension header writer.

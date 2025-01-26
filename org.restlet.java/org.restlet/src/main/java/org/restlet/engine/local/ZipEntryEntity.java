@@ -9,15 +9,15 @@
 
 package org.restlet.engine.local;
 
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.service.MetadataService;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.service.MetadataService;
 
 /**
  * Local entity based on an entry in a Zip archive.

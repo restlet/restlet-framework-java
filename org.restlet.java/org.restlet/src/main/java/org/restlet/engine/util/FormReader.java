@@ -9,6 +9,13 @@
 
 package org.restlet.engine.util;
 
+import org.restlet.Context;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,13 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 /**
  * Form reader.

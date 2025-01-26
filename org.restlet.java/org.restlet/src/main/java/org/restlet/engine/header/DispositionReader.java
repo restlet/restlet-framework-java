@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-
 import org.restlet.data.Disposition;
 import org.restlet.data.Parameter;
+
+import java.io.IOException;
 
 /**
  * Disposition header reader.

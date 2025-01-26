@@ -9,16 +9,6 @@
 
 package org.restlet.engine.adapter;
 
-import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
-import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE;
-import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID;
-import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_VERSION;
-
-import java.io.IOException;
-import java.security.cert.Certificate;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.data.Header;
 import org.restlet.data.Method;
@@ -26,6 +16,13 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.security.cert.Certificate;
+import java.util.List;
+import java.util.logging.Level;
+
+import static org.restlet.engine.header.HeaderConstants.*;
 
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.

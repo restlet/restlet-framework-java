@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.Encoding;
+
+import java.util.List;
 
 /**
  * Encoding header writer.

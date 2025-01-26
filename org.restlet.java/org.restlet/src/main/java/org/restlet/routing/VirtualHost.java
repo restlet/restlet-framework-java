@@ -9,15 +9,15 @@
 
 package org.restlet.routing;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are

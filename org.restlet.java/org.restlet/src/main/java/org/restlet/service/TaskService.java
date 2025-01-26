@@ -9,28 +9,18 @@
 
 package org.restlet.service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.util.ContextualRunnable;
 import org.restlet.routing.VirtualHost;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.logging.Level;
 
 /**
  * Application service capable of running and scheduling tasks asynchronously.

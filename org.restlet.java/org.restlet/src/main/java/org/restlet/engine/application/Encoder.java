@@ -9,9 +9,6 @@
 
 package org.restlet.engine.application;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -21,6 +18,9 @@ import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 import org.restlet.service.EncoderService;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Filter compressing entities. The best encoding is automatically selected

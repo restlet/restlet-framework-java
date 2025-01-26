@@ -9,34 +9,18 @@
 
 package org.restlet.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
-import org.restlet.Client;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.Uniform;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Range;
-import org.restlet.data.Reference;
+import org.restlet.*;
 import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Client-side resource. Acts like a proxy of a target resource.<br>
@@ -107,7 +91,7 @@ public class ClientResource extends Resource {
 	private volatile boolean followingRedirects;
 
 	/**
-	 * Indicates if maximum number of redirections that can be automatically
+	 * Indicates the maximum number of redirections that can be automatically
 	 * followed for a single call.
 	 */
 	private volatile int maxRedirects;

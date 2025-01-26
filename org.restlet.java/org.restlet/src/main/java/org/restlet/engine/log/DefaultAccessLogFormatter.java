@@ -9,9 +9,9 @@
 
 package org.restlet.engine.log;
 
-import java.util.logging.Handler;
-
 import org.restlet.engine.Engine;
+
+import java.util.logging.Handler;
 
 /**
  * Access log record formatter which writes a header describing the default log

@@ -9,21 +9,17 @@
 
 package org.restlet.engine.security;
 
-import java.io.IOException;
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Header;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Base class for authentication helpers.

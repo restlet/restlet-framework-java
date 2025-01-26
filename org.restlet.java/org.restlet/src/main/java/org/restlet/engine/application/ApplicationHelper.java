@@ -9,21 +9,16 @@
 
 package org.restlet.engine.application;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Application implementation.

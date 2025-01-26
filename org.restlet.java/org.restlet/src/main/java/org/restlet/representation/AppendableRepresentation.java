@@ -9,11 +9,11 @@
 
 package org.restlet.representation;
 
-import java.io.IOException;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+
+import java.io.IOException;
 
 /**
  * Represents an appendable sequence of characters.

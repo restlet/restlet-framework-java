@@ -9,12 +9,13 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Authentication response sent by client to an origin server. This is typically
@@ -54,7 +55,7 @@ public final class ChallengeResponse extends ChallengeMessage {
 	private volatile String secretAlgorithm;
 
 	/** The server nonce count. */
-	private volatile int serverNounceCount;
+	private volatile int serverNonceCount;
 
 	/**
 	 * The time when the response was issued, as returned by
@@ -63,8 +64,8 @@ public final class ChallengeResponse extends ChallengeMessage {
 	private volatile long timeIssued;
 
 	/**
-	 * Constructor. It leverages the latest server response and challenge request in
-	 * order to compute the credentials.
+	 * Constructor. It leverages the latest server response and challenge request
+	 * to compute the credentials.
 	 * 
 	 * @param challengeRequest The challenge request sent by the origin server.
 	 * @param response         The latest server response.
@@ -98,8 +99,8 @@ public final class ChallengeResponse extends ChallengeMessage {
 	}
 
 	/**
-	 * Constructor. It leverages the latest server response and challenge request in
-	 * order to compute the credentials.
+	 * Constructor. It leverages the latest server response and challenge request
+	 * to compute the credentials.
 	 * 
 	 * @param challengeRequest The challenge request sent by the origin server.
 	 * @param response         The latest server response.
@@ -139,13 +140,13 @@ public final class ChallengeResponse extends ChallengeMessage {
 	 *                          the client unchanged.
 	 * @param clientNonce       The client nonce value.
 	 * @param serverNonce       The server nonce.
-	 * @param serverNounceCount The server nonce count.
+	 * @param serverNonceCount  The server nonce count.
 	 * @param timeIssued        The time when the response was issued, as returned
 	 *                          by {@link System#currentTimeMillis()}.
 	 */
 	public ChallengeResponse(ChallengeScheme scheme, Series<Parameter> parameters, String identifier, char[] secret,
 			String secretAlgorithm, String realm, String quality, Reference digestRef, String digestAlgorithm,
-			String opaque, String clientNonce, String serverNonce, int serverNounceCount, long timeIssued) {
+			String opaque, String clientNonce, String serverNonce, int serverNonceCount, long timeIssued) {
 		super(scheme, realm, parameters, digestAlgorithm, opaque, serverNonce);
 		this.clientNonce = clientNonce;
 		this.digestRef = digestRef;
@@ -153,7 +154,7 @@ public final class ChallengeResponse extends ChallengeMessage {
 		this.quality = quality;
 		this.secret = secret;
 		this.secretAlgorithm = secretAlgorithm;
-		this.serverNounceCount = serverNounceCount;
+		this.serverNonceCount = serverNonceCount;
 		this.timeIssued = timeIssued;
 	}
 
@@ -211,31 +212,17 @@ public final class ChallengeResponse extends ChallengeMessage {
 		}
 
 		// if obj isn't a challenge request or is null don't evaluate further
-		if (!(obj instanceof ChallengeResponse)) {
+		if (!(obj instanceof ChallengeResponse that)) {
 			return false;
 		}
 
-		ChallengeResponse that = (ChallengeResponse) obj;
-
-		if (!Objects.equals(getRawValue(), that.getRawValue()) || !Objects.equals(getIdentifier(), that.getIdentifier())
+		if (!Objects.equals(getRawValue(), that.getRawValue())
+				|| !Objects.equals(getIdentifier(), that.getIdentifier())
 				|| !Objects.equals(getScheme(), that.getScheme())) {
 			return false;
 		}
 
-		if ((getSecret() == null) || (that.getSecret() == null)) {
-			// check if both are null
-			return (getSecret() == that.getSecret());
-		}
-
-		if (getSecret().length != that.getSecret().length) {
-			return false;
-		}
-
-		boolean equals = true;
-		for (int i = 0; equals && (i < getSecret().length); i++) {
-			equals = (getSecret()[i] == that.getSecret()[i]);
-		}
-		return equals;
+		return Arrays.equals(getSecret(), that.getSecret());
 	}
 
 	/**
@@ -272,11 +259,7 @@ public final class ChallengeResponse extends ChallengeMessage {
 	 * @return The principal associated to the identifier property.
 	 */
 	public java.security.Principal getPrincipal() {
-		return new java.security.Principal() {
-			public String getName() {
-				return getIdentifier();
-			};
-		};
+		return this::getIdentifier;
 	}
 
 	/**
@@ -313,18 +296,40 @@ public final class ChallengeResponse extends ChallengeMessage {
 	 * Returns the server nonce count.
 	 * 
 	 * @return The server nonce count.
+	 * @deprecated Use {@code getServerNonceCount} instead.
 	 */
+	@Deprecated
 	public int getServerNounceCount() {
-		return serverNounceCount;
+		return getServerNonceCount();
 	}
 
 	/**
-	 * Returns the server nonce count as an hexadecimal string of eight characters.
-	 * 
-	 * @return The server nonce count as an hexadecimal string.
+	 * Returns the server nonce count.
+	 *
+	 * @return The server nonce count.
 	 */
+	public int getServerNonceCount() {
+		return serverNonceCount;
+	}
+
+	/**
+	 * Returns the server nonce count as a hexadecimal string of eight characters.
+	 *
+	 * @return The server nonce count as a hexadecimal string.
+	 * @deprecated Use {@code getServerNonceCountAsHex} instead.
+	 */
+	@Deprecated
 	public String getServerNounceCountAsHex() {
-		return org.restlet.engine.security.AuthenticatorUtils.formatNonceCount(getServerNounceCount());
+		return getServerNonceCountAsHex();
+	}
+
+	/**
+	 * Returns the server nonce count as a hexadecimal string of eight characters.
+	 * 
+	 * @return The server nonce count as a hexadecimal string.
+	 */
+	public String getServerNonceCountAsHex() {
+		return org.restlet.engine.security.AuthenticatorUtils.formatNonceCount(getServerNonceCount());
 	}
 
 	/**
@@ -412,10 +417,21 @@ public final class ChallengeResponse extends ChallengeMessage {
 	/**
 	 * Sets the server nonce count.
 	 * 
-	 * @param serverNounceCount The server nonce count.
+	 * @param serverNonceCount The server nonce count.
+	 * @deprecated Use {@code setServerNonceCount} instead.
 	 */
-	public void setServerNounceCount(int serverNounceCount) {
-		this.serverNounceCount = serverNounceCount;
+	@Deprecated
+	public void setServerNounceCount(int serverNonceCount) {
+		setServerNonceCount(serverNonceCount);
+	}
+
+	/**
+	 * Sets the server nonce count.
+	 *
+	 * @param serverNonceCount The server nonce count.
+	 */
+	public void setServerNonceCount(int serverNonceCount) {
+		this.serverNonceCount = serverNonceCount;
 	}
 
 	/**

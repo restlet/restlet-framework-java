@@ -9,9 +9,9 @@
 
 package org.restlet.engine.adapter;
 
-import java.util.logging.Logger;
-
 import org.restlet.Context;
+
+import java.util.logging.Logger;
 
 /**
  * Converter between high-level and low-level HTTP calls.

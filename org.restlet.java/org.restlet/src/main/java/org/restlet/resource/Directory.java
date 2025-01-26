@@ -9,10 +9,6 @@
 
 package org.restlet.resource;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -24,6 +20,10 @@ import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.engine.util.AlphabeticalComparator;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
@@ -67,7 +67,7 @@ public class Directory extends Finder {
 	private volatile Comparator<Reference> comparator;
 
 	/**
-	 * Indicates if the sub-directories are deeply accessible (true by default).
+	 * Indicates if the subdirectories are deeply accessible (true by default).
 	 */
 	private volatile boolean deeplyAccessible;
 
@@ -182,9 +182,9 @@ public class Directory extends Finder {
 
 	/**
 	 * Returns the variant representations of a directory index. This method can be
-	 * subclassed in order to provide alternative representations.
+	 * subclassed to provide alternative representations.
 	 * 
-	 * By default it returns a simple HTML document and a textual URI list as
+	 * By default, it returns a simple HTML document and a textual URI list as
 	 * variants. Note that a new instance of the list is created for each call.
 	 * 
 	 * @param indexContent The list of references contained in the directory index.
@@ -213,9 +213,9 @@ public class Directory extends Finder {
 	}
 
 	/**
-	 * Indicates if the sub-directories are deeply accessible (true by default).
+	 * Indicates if the subdirectories are deeply accessible (true by default).
 	 * 
-	 * @return True if the sub-directories are deeply accessible.
+	 * @return True if the subdirectories are deeply accessible.
 	 */
 	public boolean isDeeplyAccessible() {
 		return this.deeplyAccessible;
@@ -243,7 +243,7 @@ public class Directory extends Finder {
 	}
 
 	/**
-	 * Indicates if the best content is automatically negotiated. Default value is
+	 * Indicates if the best content is automatically negotiated. The default value is
 	 * true.
 	 * 
 	 * @return True if the best content is automatically negotiated.
@@ -262,9 +262,9 @@ public class Directory extends Finder {
 	}
 
 	/**
-	 * Indicates if the sub-directories are deeply accessible (true by default).
+	 * Indicates if the subdirectories are deeply accessible (true by default).
 	 * 
-	 * @param deeplyAccessible True if the sub-directories are deeply accessible.
+	 * @param deeplyAccessible True if the subdirectories are deeply accessible.
 	 */
 	public void setDeeplyAccessible(boolean deeplyAccessible) {
 		this.deeplyAccessible = deeplyAccessible;

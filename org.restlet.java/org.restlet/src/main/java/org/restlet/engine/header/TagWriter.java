@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.Tag;
+
+import java.util.List;
 
 /**
  * Tag header writer.

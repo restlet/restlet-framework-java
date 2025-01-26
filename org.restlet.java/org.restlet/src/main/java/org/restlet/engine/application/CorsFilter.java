@@ -9,10 +9,6 @@
 
 package org.restlet.engine.application;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -20,6 +16,10 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.engine.util.SetUtils;
 import org.restlet.routing.Filter;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Filter that helps support CORS requests. This filter lets the target

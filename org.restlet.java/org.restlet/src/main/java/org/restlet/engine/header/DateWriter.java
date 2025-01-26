@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.Date;
-
 import org.restlet.engine.util.DateUtils;
+
+import java.util.Date;
 
 /**
  * Date header writer.

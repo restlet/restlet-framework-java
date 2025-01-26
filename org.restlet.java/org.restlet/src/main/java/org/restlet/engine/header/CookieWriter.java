@@ -9,11 +9,11 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.Cookie;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.restlet.data.Cookie;
 
 /**
  * Cookie header writer.

@@ -9,23 +9,15 @@
 
 package org.restlet.util;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Range;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the

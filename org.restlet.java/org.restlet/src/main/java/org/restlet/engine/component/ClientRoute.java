@@ -9,14 +9,14 @@
 
 package org.restlet.engine.component;
 
-import java.util.logging.Level;
-
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
+
+import java.util.logging.Level;
 
 /**
  * Router scorer based on a target client connector.

@@ -9,18 +9,17 @@
 
 package org.restlet.security;
 
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Status;
+
+import javax.security.auth.x500.X500Principal;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.security.auth.x500.X500Principal;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Status;
 
 /**
  * Authenticator based on the SSL client certificate. If a client certificate is

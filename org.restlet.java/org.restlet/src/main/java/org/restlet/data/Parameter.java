@@ -9,11 +9,11 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
-import java.util.Objects;
-
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Multi-usage parameter. Note that the name and value properties are thread

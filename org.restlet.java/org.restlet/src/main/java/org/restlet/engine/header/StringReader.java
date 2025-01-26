@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.Header;
+
 import java.io.IOException;
 import java.util.Collection;
-
-import org.restlet.data.Header;
 
 /**
  * String header reader.

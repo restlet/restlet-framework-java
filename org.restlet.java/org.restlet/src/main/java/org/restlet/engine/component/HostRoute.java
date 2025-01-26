@@ -9,14 +9,14 @@
 
 package org.restlet.engine.component;
 
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
+
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * Route based on a target VirtualHost.

@@ -9,9 +9,6 @@
 
 package org.restlet.engine.converter;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -24,6 +21,9 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.service.StatusService;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Converter for the {@link StatusInfo} class.

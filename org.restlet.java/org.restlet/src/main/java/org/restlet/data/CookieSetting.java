@@ -9,10 +9,10 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-
 import org.restlet.Response;
 import org.restlet.engine.util.SystemUtils;
+
+import java.util.Objects;
 
 /**
  * Cookie setting provided by a server. This allows a server side application to

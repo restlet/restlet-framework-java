@@ -9,14 +9,14 @@
 
 package org.restlet.representation;
 
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.engine.io.IoUtils;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Transient representation based on a BIO characters reader.

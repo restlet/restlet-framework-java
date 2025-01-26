@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.Encoding;
+
 import java.io.IOException;
 import java.util.Collection;
-
-import org.restlet.data.Encoding;
 
 /**
  * Encoding header reader.

@@ -9,11 +9,11 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-import java.util.Collection;
-
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Header;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Cache directive header reader.

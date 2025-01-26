@@ -9,16 +9,12 @@
 
 package org.restlet.security;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Status;
+import org.restlet.data.*;
+
+import java.util.logging.Level;
 
 /**
  * Authenticator based on a challenge scheme. This is typically used to support

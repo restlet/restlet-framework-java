@@ -9,13 +9,13 @@
 
 package org.restlet.data;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Particular server behavior that is required by a client. Note that when used

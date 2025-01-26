@@ -9,14 +9,14 @@
 
 package org.restlet.engine.application;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 import org.restlet.service.StatusService;
+
+import java.util.logging.Level;
 
 /**
  * Filter associating a response entity based on the status. In order to

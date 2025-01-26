@@ -9,11 +9,11 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-
 import org.restlet.Request;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+
+import java.util.Objects;
 
 /**
  * Cookie provided by a client. To get the list of all cookies sent by a client,

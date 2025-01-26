@@ -9,6 +9,13 @@
 
 package org.restlet.engine.application;
 
+import org.restlet.data.Disposition;
+import org.restlet.data.Encoding;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
+import org.restlet.util.WrapperList;
+import org.restlet.util.WrapperRepresentation;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,18 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.restlet.data.Disposition;
-import org.restlet.data.Encoding;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Representation;
-import org.restlet.util.WrapperList;
-import org.restlet.util.WrapperRepresentation;
+import java.util.zip.*;
 
 /**
  * Content that encodes a wrapped content. Allows to apply only one encoding.

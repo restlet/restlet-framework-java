@@ -9,9 +9,9 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
-
 import org.restlet.data.MediaType;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * Representation wrapping a byte array.

@@ -9,18 +9,6 @@
 
 package org.restlet.engine.adapter;
 
-import static org.restlet.data.Encoding.IDENTITY;
-import static org.restlet.data.Status.CONNECTOR_ERROR_COMMUNICATION;
-import static org.restlet.data.Status.REDIRECTION_NOT_MODIFIED;
-import static org.restlet.data.Status.SUCCESS_NO_CONTENT;
-import static org.restlet.data.Status.SUCCESS_RESET_CONTENT;
-import static org.restlet.representation.Representation.UNKNOWN_SIZE;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -32,6 +20,15 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+
+import static org.restlet.data.Encoding.IDENTITY;
+import static org.restlet.data.Status.*;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
 
 /**
  * Low-level HTTP client call.

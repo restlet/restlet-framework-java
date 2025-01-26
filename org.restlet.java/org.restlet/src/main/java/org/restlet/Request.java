@@ -9,30 +9,15 @@
 
 package org.restlet;
 
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+import org.restlet.util.Series;
+
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.restlet.data.CacheDirective;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Protocol;
-import org.restlet.data.Range;
-import org.restlet.data.Reference;
-import org.restlet.data.Tag;
-import org.restlet.data.Warning;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 /**
  * Generic request sent by client connectors. It is then received by server

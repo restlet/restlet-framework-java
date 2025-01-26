@@ -9,20 +9,14 @@
 
 package org.restlet.representation;
 
+import org.restlet.data.*;
+import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.WrapperList;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.engine.util.SystemUtils;
-import org.restlet.util.WrapperList;
 
 /**
  * Descriptor for available representations of a resource. It contains all the

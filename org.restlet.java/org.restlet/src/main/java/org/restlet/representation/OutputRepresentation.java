@@ -9,11 +9,11 @@
 
 package org.restlet.representation;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Representation based on a BIO output stream. This class is a good basis to

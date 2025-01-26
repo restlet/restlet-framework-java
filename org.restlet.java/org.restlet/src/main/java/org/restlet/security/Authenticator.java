@@ -9,14 +9,14 @@
 
 package org.restlet.security;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
+
+import java.util.logging.Level;
 
 /**
  * Filter authenticating the client sending the inbound request. Its main role

@@ -9,12 +9,12 @@
 
 package org.restlet.util;
 
-import java.util.Map;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.util.CallResolver;
 import org.restlet.engine.util.MapResolver;
+
+import java.util.Map;
 
 /**
  * Resolves a name into a value. By default, the {@link #createResolver(Map)}

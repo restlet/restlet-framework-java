@@ -9,24 +9,16 @@
 
 package org.restlet.engine.io;
 
-import static org.restlet.data.Range.isBytesRange;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Range;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
+
+import java.io.*;
+import java.util.logging.Level;
+
+import static org.restlet.data.Range.isBytesRange;
 
 /**
  * IO manipulation utilities.

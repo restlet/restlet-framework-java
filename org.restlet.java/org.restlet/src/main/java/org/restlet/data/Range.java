@@ -75,7 +75,7 @@ public class Range {
 
 	/**
 	 * Default constructor defining a range starting on the first byte and with a
-	 * maximum size, i.e. covering the whole entity.
+	 * maximum size, i.e., covering the whole entity.
 	 */
 	public Range() {
 		this(INDEX_FIRST, SIZE_MAX);

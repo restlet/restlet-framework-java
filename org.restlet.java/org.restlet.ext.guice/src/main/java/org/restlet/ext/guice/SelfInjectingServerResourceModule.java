@@ -34,10 +34,6 @@ public class SelfInjectingServerResourceModule extends AbstractModule {
 
     @Provides
     MembersInjector membersInjector(final Injector injector) {
-        return new MembersInjector() {
-            public void injectMembers(Object object) {
-                injector.injectMembers(object);
-            }
-        };
+        return injector::injectMembers;
     }
 }

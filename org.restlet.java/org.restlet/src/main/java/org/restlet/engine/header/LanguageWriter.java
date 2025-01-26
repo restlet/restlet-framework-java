@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.Language;
+
+import java.util.List;
 
 /**
  * Language header writer.

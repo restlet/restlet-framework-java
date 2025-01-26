@@ -97,11 +97,11 @@ public class HttpDigestVerifier extends
         if (cr == null) {
             result = RESULT_MISSING;
         } else {
-            String nonce = cr.getServerNonce();
+            String serverNonce = cr.getServerNonce();
             String uri = (cr.getDigestRef() == null) ? null : cr.getDigestRef().toString();
             String qop = cr.getQuality();
-            int nc = cr.getServerNounceCount();
-            String cnonce = cr.getClientNonce();
+            int nc = cr.getServerNonceCount();
+            String clientNonce = cr.getClientNonce();
             String username = getIdentifier(request, response);
             String cresponse = null;
             char[] secret = getSecret(request, response);
@@ -113,7 +113,7 @@ public class HttpDigestVerifier extends
             }
 
             try {
-                if (!HttpDigestHelper.isNonceValid(nonce,
+                if (!HttpDigestHelper.isNonceValid(serverNonce,
                         getDigestAuthenticator().getServerKey(),
                         getDigestAuthenticator().getMaxServerNonceAge())) {
                     // Nonce expired, send challenge request with stale=true
@@ -125,7 +125,7 @@ public class HttpDigestVerifier extends
             }
 
             if (result == RESULT_VALID) {
-                if (AuthenticatorUtils.anyNull(nonce, uri)) {
+                if (AuthenticatorUtils.anyNull(serverNonce, uri)) {
                     result = RESULT_MISSING;
                 } else {
                     Reference resourceRef = request.getResourceRef();
@@ -143,22 +143,17 @@ public class HttpDigestVerifier extends
                     if (uri.equals(requestUri)) {
                         char[] a1 = getWrappedSecretDigest(username);
                         if (a1 != null) {
-                            String a2 = DigestUtils.toMd5(request.getMethod()
-                                    .toString() + ":" + requestUri);
-                            StringBuilder expectedResponse = new StringBuilder()
-                                    .append(a1).append(':').append(nonce);
-                            if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
+                            StringBuilder expectedResponse = new StringBuilder().append(a1).append(':').append(serverNonce);
+                            if (!AuthenticatorUtils.anyNull(qop, clientNonce, nc)) {
                                 expectedResponse
-                                        .append(':')
-                                        .append(AuthenticatorUtils
-                                                .formatNonceCount(nc))
-                                        .append(':').append(cnonce).append(':')
-                                        .append(qop);
+                                        .append(':').append(AuthenticatorUtils.formatNonceCount(nc))
+                                        .append(':').append(clientNonce)
+                                        .append(':').append(qop);
                             }
+                            String a2 = DigestUtils.toMd5(request.getMethod().toString() + ":" + requestUri);
                             expectedResponse.append(':').append(a2);
 
-                            if (!DigestUtils.toMd5(expectedResponse.toString())
-                                    .equals(cresponse)) {
+                            if (!DigestUtils.toMd5(expectedResponse.toString()).equals(cresponse)) {
                                 result = RESULT_INVALID;
                             }
                         } else {

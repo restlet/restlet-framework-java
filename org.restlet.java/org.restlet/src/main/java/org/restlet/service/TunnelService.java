@@ -18,7 +18,7 @@ import org.restlet.routing.Filter;
 
 /**
  * Application service tunneling request method or client preferences. The
- * tunneling can use query parameters, file-like extensions and specific
+ * tunneling can use query parameters, file-like extensions, and specific
  * headers. This is particularly useful for browser-based applications that
  * can't fully control the HTTP requests sent.<br>
  * <br>
@@ -85,11 +85,11 @@ import org.restlet.routing.Filter;
  * {@link #isUserAgentTunnel()} method.<br>
  * <br>
  * The list of new media type preferences is loaded from a property file called
- * "accept.properties" located in the classpath in the sub directory
+ * "accept.properties" located in the classpath in the subdirectory
  * "org/restlet/service". This property file is composed of blocks of
  * properties. One "block" of properties starts either with the beginning of the
  * properties file or with the end of the previous block. One block ends with
- * the "acceptNew" property which contains the value of the new accept header.
+ * the "acceptNew" property which contains the value of the new Accept header.
  * Here is a sample block.<br>
  * 
  * <pre>
@@ -98,14 +98,14 @@ import org.restlet.routing.Filter;
  * acceptNew: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
  * </pre>
  * 
- * Each declared property is a condition that must be filled in order to update
- * the client preferences. For example "agentName: firefox" expresses the fact
+ * Each declared property is a condition that must be filled to update
+ * the client preferences. For example, "agentName: firefox" expresses the fact
  * this block concerns only "firefox" clients. <br>
  * <br>
- * The "acceptOld" property allows to check the value of the current "Accept"
+ * The "acceptOld" property allows checking the value of the current "Accept"
  * header. If it equals to the value of the "acceptOld" property or if the
  * "acceptOld" property is empty, then the preferences will be updated. This can
- * be useful for AJAX clients which looks like their browser (same agentName,
+ * be useful for AJAX clients that look like their browser (same agentName,
  * agentVersion, etc.) but can provide their own "Accept" header.
  * 
  * @author Jerome Louvel
@@ -254,7 +254,7 @@ public class TunnelService extends Service {
 
 	/**
 	 * Indicates if the request from a given client can be tunneled. The default
-	 * implementation always return true. This could be customize to restrict the
+	 * implementation always returns true. This could be customized to restrict the
 	 * usage of the tunnel service.
 	 * 
 	 * @param client The client to test.

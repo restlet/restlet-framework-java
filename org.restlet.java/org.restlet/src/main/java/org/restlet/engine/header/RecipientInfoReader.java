@@ -9,12 +9,12 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-import java.util.Collection;
-
 import org.restlet.data.Header;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Recipient info header reader.

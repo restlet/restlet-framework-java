@@ -9,16 +9,6 @@
 
 package org.restlet.engine.connector;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.logging.Level;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -28,6 +18,16 @@ import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.logging.Level;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpURLConnection class.

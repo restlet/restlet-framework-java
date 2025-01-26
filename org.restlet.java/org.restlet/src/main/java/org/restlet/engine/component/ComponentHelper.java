@@ -9,19 +9,15 @@
 
 package org.restlet.engine.component;
 
-import java.util.Iterator;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Component;
-import org.restlet.Restlet;
-import org.restlet.Server;
+import org.restlet.*;
 import org.restlet.data.Protocol;
 import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.VirtualHost;
 import org.restlet.service.Service;
+
+import java.util.Iterator;
 
 /**
  * Component helper.

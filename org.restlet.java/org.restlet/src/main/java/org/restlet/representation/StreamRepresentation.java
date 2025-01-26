@@ -9,12 +9,12 @@
 
 package org.restlet.representation;
 
+import org.restlet.data.MediaType;
+import org.restlet.engine.io.IoUtils;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
-
-import org.restlet.data.MediaType;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a BIO stream.

@@ -9,18 +9,16 @@
 
 package org.restlet.engine.header;
 
-import static org.restlet.engine.util.DateUtils.FORMAT_ASC_TIME;
-import static org.restlet.engine.util.DateUtils.FORMAT_RFC_1036;
-import static org.restlet.engine.util.DateUtils.FORMAT_RFC_1123;
-
-import java.io.IOException;
-import java.util.Date;
-
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
+
+import java.io.IOException;
+import java.util.Date;
+
+import static org.restlet.engine.util.DateUtils.*;
 
 /**
  * Cookie setting header reader.

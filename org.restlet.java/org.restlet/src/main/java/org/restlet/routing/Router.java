@@ -9,8 +9,6 @@
 
 package org.restlet.routing;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -20,6 +18,8 @@ import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.util.RouteList;
+
+import java.util.logging.Level;
 
 /**
  * Restlet routing calls to one of the attached routes. Each route can compute

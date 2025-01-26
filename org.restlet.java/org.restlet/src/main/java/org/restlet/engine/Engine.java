@@ -9,6 +9,16 @@
 
 package org.restlet.engine;
 
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.log.LoggerFacade;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,16 +31,6 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
-import org.restlet.Client;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.log.LoggerFacade;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
@@ -420,12 +420,12 @@ public class Engine {
 			this.loggerFacade.getLogger("org.restlet").log(Level.WARNING, "Unable to register the logger facade", e);
 		}
 
-		this.registeredClients = new CopyOnWriteArrayList<org.restlet.engine.connector.ConnectorHelper<Client>>();
-		this.registeredProtocols = new CopyOnWriteArrayList<org.restlet.engine.connector.ProtocolHelper>();
+		this.registeredClients = new CopyOnWriteArrayList<>();
+		this.registeredProtocols = new CopyOnWriteArrayList<>();
 
-		this.registeredServers = new CopyOnWriteArrayList<org.restlet.engine.connector.ConnectorHelper<org.restlet.Server>>();
-		this.registeredAuthenticators = new CopyOnWriteArrayList<org.restlet.engine.security.AuthenticatorHelper>();
-		this.registeredConverters = new CopyOnWriteArrayList<org.restlet.engine.converter.ConverterHelper>();
+		this.registeredServers = new CopyOnWriteArrayList<>();
+		this.registeredAuthenticators = new CopyOnWriteArrayList<>();
+		this.registeredConverters = new CopyOnWriteArrayList<>();
 
 		if (discoverHelpers) {
 			try {

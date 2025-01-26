@@ -9,10 +9,6 @@
 
 package org.restlet.engine.converter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -21,6 +17,10 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Converter between Representations and regular Java objects.

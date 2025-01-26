@@ -9,11 +9,11 @@
 
 package org.restlet.security;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Request;
 import org.restlet.Response;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Authorizer based on authorized and forbidden roles. Note that if no role is

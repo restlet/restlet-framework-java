@@ -9,13 +9,13 @@
 
 package org.restlet.security;
 
+import org.restlet.Application;
+import org.restlet.engine.util.SystemUtils;
+
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.restlet.Application;
-import org.restlet.engine.util.SystemUtils;
 
 /**
  * Application specific role. Common examples are "administrator", "user",

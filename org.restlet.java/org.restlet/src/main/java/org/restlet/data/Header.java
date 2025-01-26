@@ -9,10 +9,10 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+
+import java.util.Objects;
 
 /**
  * Represents an HTTP header.

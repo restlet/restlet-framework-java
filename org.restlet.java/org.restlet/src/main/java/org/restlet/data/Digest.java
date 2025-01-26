@@ -9,10 +9,10 @@
 
 package org.restlet.data;
 
-import java.util.Arrays;
-
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
+
+import java.util.Arrays;
 
 /**
  * Describes a digest value and the digest algorithm used. Digests can have

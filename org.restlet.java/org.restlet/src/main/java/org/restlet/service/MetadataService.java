@@ -9,16 +9,12 @@
 
 package org.restlet.service;
 
+import org.restlet.data.*;
+import org.restlet.engine.application.MetadataExtension;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.engine.application.MetadataExtension;
 
 /**
  * Application service providing access to metadata and their associated

@@ -9,11 +9,7 @@
 
 package org.restlet.engine.application;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
+import org.restlet.data.*;
 
 /**
  * Associates an extension name and a metadata.

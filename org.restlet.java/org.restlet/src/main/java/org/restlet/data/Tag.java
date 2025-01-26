@@ -9,11 +9,11 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.representation.RepresentationInfo;
+
+import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * Validation tag equivalent to an HTTP entity tag (E-Tag). "A strong entity tag

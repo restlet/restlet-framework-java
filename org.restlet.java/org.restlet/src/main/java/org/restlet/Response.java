@@ -9,22 +9,15 @@
 
 package org.restlet;
 
+import org.restlet.data.*;
+import org.restlet.util.Series;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.restlet.data.AuthenticationInfo;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.ServerInfo;
-import org.restlet.data.Status;
-import org.restlet.util.Series;
 
 /**
  * Generic response sent by server connectors. It is then received by client

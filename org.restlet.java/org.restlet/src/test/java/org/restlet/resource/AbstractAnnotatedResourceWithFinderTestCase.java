@@ -1,0 +1,28 @@
+/**
+ * Copyright 2005-2024 Qlik
+ * 
+ * The contents of this file is subject to the terms of the Apache 2.0 open
+ * source license available at http://www.opensource.org/licenses/apache-2.0
+ * 
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
+package org.restlet.resource;
+
+/**
+ * Test the annotated resources, client and server sides.
+ *
+ * @author Jerome Louvel
+ */
+public abstract class AbstractAnnotatedResourceWithFinderTestCase extends AbstractAnnotatedResourceTestCase {
+
+    @Override
+    protected void configureClientResource(final ClientResource clientResource) {
+        Finder finder = new Finder();
+        clientResource.setNext(finder);
+        configureFinder(finder);
+    }
+
+    abstract void configureFinder(final Finder finder);
+
+}

@@ -9,9 +9,6 @@
 
 package org.restlet.routing;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -20,6 +17,9 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Filter extracting attributes from a call. Multiple extractions can be

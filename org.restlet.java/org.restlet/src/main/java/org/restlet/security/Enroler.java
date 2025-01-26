@@ -9,9 +9,9 @@
 
 package org.restlet.security;
 
-import java.security.Principal;
-
 import org.restlet.data.ClientInfo;
+
+import java.security.Principal;
 
 /**
  * Updates an authenticated client user with assigned roles. Typically, it is

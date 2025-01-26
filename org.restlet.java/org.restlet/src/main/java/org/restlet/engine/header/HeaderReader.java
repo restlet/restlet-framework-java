@@ -9,17 +9,12 @@
 
 package org.restlet.engine.header;
 
-import static org.restlet.engine.header.HeaderUtils.isCarriageReturn;
-import static org.restlet.engine.header.HeaderUtils.isComma;
-import static org.restlet.engine.header.HeaderUtils.isCommentText;
-import static org.restlet.engine.header.HeaderUtils.isDoubleQuote;
-import static org.restlet.engine.header.HeaderUtils.isLineFeed;
-import static org.restlet.engine.header.HeaderUtils.isLinearWhiteSpace;
-import static org.restlet.engine.header.HeaderUtils.isQuoteCharacter;
-import static org.restlet.engine.header.HeaderUtils.isQuotedText;
-import static org.restlet.engine.header.HeaderUtils.isSemiColon;
-import static org.restlet.engine.header.HeaderUtils.isSpace;
-import static org.restlet.engine.header.HeaderUtils.isTokenChar;
+import org.restlet.Context;
+import org.restlet.data.Encoding;
+import org.restlet.data.Header;
+import org.restlet.data.Parameter;
+import org.restlet.engine.util.DateUtils;
+import org.restlet.util.NamedValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +24,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.restlet.Context;
-import org.restlet.data.Encoding;
-import org.restlet.data.Header;
-import org.restlet.data.Parameter;
-import org.restlet.engine.util.DateUtils;
-import org.restlet.util.NamedValue;
+import static org.restlet.engine.header.HeaderUtils.*;
 
 /**
  * HTTP-style header reader.

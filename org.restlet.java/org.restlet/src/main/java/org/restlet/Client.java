@@ -9,13 +9,13 @@
 
 package org.restlet;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available

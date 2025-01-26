@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.Set;
-
 import org.restlet.data.Method;
+
+import java.util.Set;
 
 /**
  * Method header writer.
