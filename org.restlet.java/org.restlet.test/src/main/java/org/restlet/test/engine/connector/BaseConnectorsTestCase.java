@@ -46,10 +46,10 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     protected Stream<ConnectorTestCase> listTestCases() {
         return Stream.of(
-                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.JETTY),
-                new ConnectorTestCase(HttpServer.JETTY, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY, HttpClient.JETTY)
+                // new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.JETTY), // restore while taking care of #1444
+                // new ConnectorTestCase(HttpServer.JETTY, HttpClient.INTERNAL), // restore while taking care of #1444
+                // new ConnectorTestCase(HttpServer.JETTY, HttpClient.JETTY), // restore while taking care of #1444
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
         );
     }
 

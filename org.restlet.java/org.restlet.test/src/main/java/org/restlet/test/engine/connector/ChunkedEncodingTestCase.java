@@ -9,28 +9,8 @@
 
 package org.restlet.test.engine.connector;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.IOException;
-import java.util.stream.Stream;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Component;
-import org.restlet.Message;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.Header;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Status;
+import org.restlet.*;
+import org.restlet.data.*;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
@@ -41,6 +21,12 @@ import org.restlet.routing.Router;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * This tests the ability of the connectors to handle chunked encoding.
  *
@@ -50,13 +36,6 @@ import org.w3c.dom.Element;
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private static final int LOOP_NUMBER = 50;
-
-    @Override
-    protected Stream<ConnectorTestCase> listTestCases() { // Drop this override while taking care of ticket #1444
-        return Stream.of(
-                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
-        );
-    }
 
     @Override
     protected void doTestUri(String uri) throws Exception {

@@ -9,15 +9,7 @@
 
 package org.restlet.test.engine.connector;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Component;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -27,7 +19,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
-import java.util.stream.Stream;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.
@@ -37,13 +30,6 @@ import java.util.stream.Stream;
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 200;
-
-    @Override
-    protected Stream<ConnectorTestCase> listTestCases() { // Drop this override while taking care of ticket #1444
-        return Stream.of(
-                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
-        );
-    }
 
     @Override
     protected void doTestUri(String uri) throws Exception {

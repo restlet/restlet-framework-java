@@ -66,9 +66,6 @@ public class Engine {
     /** The registered engine. */
     private static volatile Engine instance = null;
 
-
-
-
     /** Major version number. */
     public static final String MAJOR_NUMBER = "2";
 
@@ -76,15 +73,11 @@ public class Engine {
     public static final String MINOR_NUMBER = "6";
 
     /** Release number. */
-    public static final String RELEASE_NUMBER = "-SNAPSHOT";
-
+    public static final String RELEASE_NUMBER = ".0-m1";
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
             + RELEASE_NUMBER;
-
-    /** Complete version header. */
-    public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
 
     /**
      * Clears the current Restlet Engine altogether.
