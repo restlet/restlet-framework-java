@@ -1,18 +1,16 @@
 /**
  * Copyright 2005-2024 Qlik
- * 
+ * <p>
  * The contents of this file is subject to the terms of the Apache 2.0 open
  * source license available at http://www.opensource.org/licenses/apache-2.0
- * 
+ * <p>
  * Restlet is a registered trademark of QlikTech International AB.
  */
 
 package org.restlet.test.engine.connector;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Server;
@@ -25,14 +23,15 @@ import org.restlet.test.RestletTestCase;
 
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
 /**
  * Base test case that will call an abstract method for several client/server
  * connectors configurations.
- * 
+ *
  * @author Kevin Conaway
  * @author Jerome Louvel
  */
-@SuppressWarnings("unused")
 public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
@@ -45,9 +44,27 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         return host + "/test";
     }
 
-    @ParameterizedTest(name = "{0} server and {1} client")
-    @MethodSource("listTestCases")
-    public void runTest(final HttpServer server, final HttpClient client) throws Exception {
+    protected Stream<ConnectorTestCase> listTestCases() {
+        return Stream.of(
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL),
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.JETTY),
+                new ConnectorTestCase(HttpServer.JETTY, HttpClient.INTERNAL),
+                new ConnectorTestCase(HttpServer.JETTY, HttpClient.JETTY)
+        );
+    }
+
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromStream() {
+        return listTestCases()
+                .map(testCase -> dynamicTest(
+                        testCase.getTestLabel(),
+                        () -> {
+                            runTest(testCase.httpServer, testCase.httpClient);
+                            resetEngine();
+                        }));
+    }
+
+    private void runTest(final HttpServer server, final HttpClient client) throws Exception {
         // Engine.setLogLevel(Level.FINE);
         Engine nre = Engine.register(false);
         nre.getRegisteredServers().add(server.serverHelper);
@@ -62,15 +79,6 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         } finally {
             stop();
         }
-    }
-
-    private static Stream<Arguments> listTestCases() {
-        return Stream.of(
-                Arguments.of(HttpServer.INTERNAL, HttpClient.INTERNAL),
-                Arguments.of(HttpServer.INTERNAL, HttpClient.JETTY),
-                Arguments.of(HttpServer.JETTY, HttpClient.INTERNAL),
-                Arguments.of(HttpServer.JETTY, HttpClient.JETTY)
-        );
     }
 
     public enum HttpServer {
@@ -112,20 +120,9 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         this.component = null;
     }
 
-    @AfterEach
-    protected void resetEngine() {
+    private void resetEngine() {
         // Restore a clean engine
         org.restlet.engine.Engine.register();
-    }
-
-    public static class TestCase {
-        final HttpServer httpServer;
-        final HttpClient httpClient;
-
-        public TestCase(HttpServer httpServer, HttpClient httpClient) {
-            this.httpServer = httpServer;
-            this.httpClient = httpClient;
-        }
     }
 
 }

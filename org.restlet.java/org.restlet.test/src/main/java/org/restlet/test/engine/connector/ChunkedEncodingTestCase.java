@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,6 +50,13 @@ import org.w3c.dom.Element;
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private static final int LOOP_NUMBER = 50;
+
+    @Override
+    protected Stream<ConnectorTestCase> listTestCases() {
+        return Stream.of(
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
+        );
+    }
 
     @Override
     protected void doTestUri(String uri) throws Exception {

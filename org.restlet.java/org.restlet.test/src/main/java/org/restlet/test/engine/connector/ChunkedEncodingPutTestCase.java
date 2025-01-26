@@ -27,6 +27,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import java.util.stream.Stream;
+
 /**
  * This tests the ability of the connectors to handle chunked encoding.
  *
@@ -35,6 +37,13 @@ import org.restlet.routing.Router;
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 200;
+
+    @Override
+    protected Stream<ConnectorTestCase> listTestCases() {
+        return Stream.of(
+                new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
+        );
+    }
 
     @Override
     protected void doTestUri(String uri) throws Exception {
