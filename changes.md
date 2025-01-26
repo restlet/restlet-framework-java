@@ -1,6 +1,16 @@
 Changes log
 ===========
 
+- 2.6 Release Candidate 1 (??-02-2025)
+    - Enhancements
+        - ...
+  - Security
+      - ...
+  - Bugs fixed
+      - ...
+    - Misc
+        - ...
+
 - 2.6 Milestone 1 (26-01-2025)
     - Enhancements
       - Java 17 is the minimum requirement.
