@@ -52,7 +52,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 50;
 
     @Override
-    protected Stream<ConnectorTestCase> listTestCases() {
+    protected Stream<ConnectorTestCase> listTestCases() { // Drop this override while taking care of ticket #1444
         return Stream.of(
                 new ConnectorTestCase(HttpServer.INTERNAL, HttpClient.INTERNAL)
         );
