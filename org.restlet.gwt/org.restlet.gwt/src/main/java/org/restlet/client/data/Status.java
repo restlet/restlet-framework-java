@@ -21,11 +21,7 @@ public final class Status {
 
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
-            + Engine.MAJOR_NUMBER
-            + '.'
-            + Engine.MINOR_NUMBER
-            + "/gwt/api/";
+    private static final String BASE_RESTLET = "https://javadoc.io/static/org.restlet.gwt/org.restlet.gwt/" + Engine.VERSION + "/";
 
 	@Deprecated
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
