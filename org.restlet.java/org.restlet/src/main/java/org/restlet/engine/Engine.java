@@ -90,7 +90,7 @@ public class Engine {
 	public static final String MINOR_NUMBER = "5";
 
 	/** Release number. */
-	public static final String RELEASE_NUMBER = "-SNAPSHOT";
+	public static final String RELEASE_NUMBER = ".1";
 
 	/** The org.restlet log level. */
 	private static volatile Level restletLogLevel;
