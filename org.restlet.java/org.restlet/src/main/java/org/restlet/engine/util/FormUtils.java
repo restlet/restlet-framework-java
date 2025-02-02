@@ -9,18 +9,14 @@
 
 package org.restlet.engine.util;
 
+import org.restlet.Context;
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
 
 /**
  * Representation of a Web form containing submitted parameters.

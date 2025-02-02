@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Expectation;
+
+import java.io.IOException;
 
 /**
  * Expectation header reader.

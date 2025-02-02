@@ -9,32 +9,10 @@
 
 package org.restlet.engine.application;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Header;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.PreferenceReader;
@@ -43,6 +21,13 @@ import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Series;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Filter tunneling browser calls into full REST calls. The request method can
@@ -59,7 +44,7 @@ public class TunnelFilter extends Filter {
 
 	/**
 	 * Used to describe the replacement value for an old client preference and for a
-	 * a series of specific agent (i.e. web client) attributes.
+	 * a series of specific agent (i.e., web client) attributes.
 	 * 
 	 * @author Thierry Boileau
 	 */
@@ -122,7 +107,7 @@ public class TunnelFilter extends Filter {
 		 * @param agentAttributes The user agent attributes to match.
 		 * @param headerOld       The facultative value of the current's request header
 		 *                        to match.
-		 * @return true if the given request's attibutes match the current header
+		 * @return true if the given request's attributes match the current header
 		 *         replacer.
 		 */
 		public boolean matchesConditions(Map<String, String> agentAttributes, String headerOld) {
@@ -248,7 +233,7 @@ public class TunnelFilter extends Filter {
 								final String key = keyValue[0].trim();
 								final String value = keyValue[1].trim();
 								if (oldHeaderName.equalsIgnoreCase(key)) {
-									headerReplacerBuilder.setOldValue(("".equals(value)) ? null : value);
+									headerReplacerBuilder.setOldValue((value.isEmpty()) ? null : value);
 								} else if (newHeaderName.equalsIgnoreCase(key)) {
 									headerReplacerBuilder.setNewValue(value);
 									headerReplacers.add(headerReplacerBuilder.build());
@@ -330,7 +315,7 @@ public class TunnelFilter extends Filter {
 
 				// Discover extensions from right to left and stop at the first
 				// unknown extension. Only one extension per type of metadata is
-				// also allowed: i.e. one language, one media type, one
+				// also allowed: i.e., one language, one media type, one
 				// encoding, one character set.
 				while (true) {
 					final int lastIndexOfPoint = extensions.lastIndexOf('.');
@@ -350,7 +335,7 @@ public class TunnelFilter extends Filter {
 						updateMetadata(clientInfo, metadata);
 						encodingFound = true;
 					} else {
-						// extension do not match -> break loop
+						// extension does not match -> break loop
 						break;
 					}
 					if (lastIndexOfPoint > 0) {
@@ -391,7 +376,7 @@ public class TunnelFilter extends Filter {
 				// look for the new value of the method
 				final String newMethodValue = extraHeaders.getFirstValue(getTunnelService().getMethodHeader(), true);
 
-				if (newMethodValue != null && newMethodValue.trim().length() > 0) {
+				if (newMethodValue != null && !newMethodValue.trim().isEmpty()) {
 					// set the current method to the new method
 					request.setMethod(Method.valueOf(newMethodValue));
 				}
@@ -507,11 +492,11 @@ public class TunnelFilter extends Filter {
 	 * version, etc.) taken from the "agent.properties" file located in the
 	 * classpath. See {@link ClientInfo#getAgentAttributes()} for more details.<br>
 	 * The list of new media type preferences is loaded from a property file called
-	 * "accept.properties" located in the classpath in the sub directory
+	 * "accept.properties" located in the classpath in the subdirectory
 	 * "org/restlet/service". This property file is composed of blocks of
 	 * properties. One "block" of properties starts either with the beginning of the
 	 * properties file or with the end of the previous block. One block ends with
-	 * the "acceptNew" property which contains the value of the new accept header.
+	 * the "acceptNew" property which contains the value of the new Accept header.
 	 * Here is a sample block.
 	 * 
 	 * <pre>
@@ -521,12 +506,12 @@ public class TunnelFilter extends Filter {
 	 * </pre>
 	 * 
 	 * Each declared property is a condition that must be filled in order to update
-	 * the client preferences. For example "agentName: firefox" expresses the fact
+	 * the client preferences. For example, "agentName: firefox" expresses the fact
 	 * this block concerns only "firefox" clients.
 	 * 
-	 * The "acceptOld" property allows to check the value of the current "Accept"
-	 * header. If the latest equals to the value of the "acceptOld" property then
-	 * the preferences will be updated. This is useful for Ajax clients which looks
+	 * The "acceptOld" property allows checking the value of the current "Accept"
+	 * header. If the latest equals to the value of the "acceptOld" property, then
+	 * the preferences will be updated. This is useful for Ajax clients that look
 	 * like their browser (same agentName, agentVersion, etc.) but can provide their
 	 * own "Accept" header.
 	 * 
@@ -579,16 +564,16 @@ public class TunnelFilter extends Filter {
 		if (metadata != null) {
 			if (metadata instanceof CharacterSet) {
 				clientInfo.getAcceptedCharacterSets().clear();
-				clientInfo.getAcceptedCharacterSets().add(new Preference<CharacterSet>((CharacterSet) metadata));
+				clientInfo.getAcceptedCharacterSets().add(new Preference<>((CharacterSet) metadata));
 			} else if (metadata instanceof Encoding) {
 				clientInfo.getAcceptedEncodings().clear();
-				clientInfo.getAcceptedEncodings().add(new Preference<Encoding>((Encoding) metadata));
+				clientInfo.getAcceptedEncodings().add(new Preference<>((Encoding) metadata));
 			} else if (metadata instanceof Language) {
 				clientInfo.getAcceptedLanguages().clear();
-				clientInfo.getAcceptedLanguages().add(new Preference<Language>((Language) metadata));
+				clientInfo.getAcceptedLanguages().add(new Preference<>((Language) metadata));
 			} else if (metadata instanceof MediaType) {
 				clientInfo.getAcceptedMediaTypes().clear();
-				clientInfo.getAcceptedMediaTypes().add(new Preference<MediaType>((MediaType) metadata));
+				clientInfo.getAcceptedMediaTypes().add(new Preference<>((MediaType) metadata));
 			}
 		}
 	}

@@ -9,13 +9,13 @@
 
 package org.restlet.engine.header;
 
-import java.io.StringWriter;
-import java.util.Collection;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Reference;
 import org.restlet.util.NamedValue;
+
+import java.io.StringWriter;
+import java.util.Collection;
 
 /**
  * HTTP-style header writer.

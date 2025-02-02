@@ -9,14 +9,14 @@
 
 package org.restlet.representation;
 
+import org.restlet.data.CharacterSet;
+import org.restlet.data.MediaType;
+import org.restlet.engine.io.IoUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.MediaType;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a BIO character stream.

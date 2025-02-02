@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.Expectation;
 import org.restlet.data.Parameter;
+
+import java.util.List;
 
 /**
  * Expectation header writer.

@@ -9,27 +9,21 @@
 
 package org.restlet.engine.security;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.AuthenticationInfo;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Header;
-import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.ChallengeRequestReader;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Authentication utilities.
@@ -55,7 +49,7 @@ public class AuthenticatorUtils {
 	}
 
 	/**
-	 * Formats an authentication information as a HTTP header value. The header is
+	 * Formats authentication information as an HTTP header value. The header is
 	 * {@link HeaderConstants#HEADER_AUTHENTICATION_INFO}.
 	 * 
 	 * @param info The authentication information to format.
@@ -66,13 +60,13 @@ public class AuthenticatorUtils {
 		boolean firstParameter = true;
 
 		if (info != null) {
-			if (info.getNextServerNonce() != null && info.getNextServerNonce().length() > 0) {
+			if (info.getNextServerNonce() != null && !info.getNextServerNonce().isEmpty()) {
 				cw.setFirstChallengeParameter(firstParameter);
 				cw.appendQuotedChallengeParameter("nextnonce", info.getNextServerNonce());
 				firstParameter = false;
 			}
 
-			if (info.getQuality() != null && info.getQuality().length() > 0) {
+			if (info.getQuality() != null && !info.getQuality().isEmpty()) {
 				cw.setFirstChallengeParameter(firstParameter);
 				cw.appendChallengeParameter("qop", info.getQuality());
 				firstParameter = false;
@@ -82,13 +76,13 @@ public class AuthenticatorUtils {
 				}
 			}
 
-			if (info.getResponseDigest() != null && info.getResponseDigest().length() > 0) {
+			if (info.getResponseDigest() != null && !info.getResponseDigest().isEmpty()) {
 				cw.setFirstChallengeParameter(firstParameter);
 				cw.appendQuotedChallengeParameter("rspauth", info.getResponseDigest());
 				firstParameter = false;
 			}
 
-			if (info.getClientNonce() != null && info.getClientNonce().length() > 0) {
+			if (info.getClientNonce() != null && !info.getClientNonce().isEmpty()) {
 				cw.setFirstChallengeParameter(firstParameter);
 				cw.appendChallengeParameter("cnonce", info.getClientNonce());
 				firstParameter = false;
@@ -99,7 +93,7 @@ public class AuthenticatorUtils {
 	}
 
 	/**
-	 * Formats a given nonce count as a HTTP header value. The header is
+	 * Formats a given nonce count as an HTTP header value. The header is
 	 * {@link HeaderConstants#HEADER_AUTHENTICATION_INFO}.
 	 * 
 	 * @param nonceCount The given nonce count.
@@ -115,7 +109,7 @@ public class AuthenticatorUtils {
 	}
 
 	/**
-	 * Formats a challenge request as a HTTP header value. The header is
+	 * Formats a challenge request as an HTTP header value. The header is
 	 * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE} . The default implementation
 	 * relies on
 	 * {@link AuthenticatorHelper#formatRequest(ChallengeWriter, ChallengeRequest, Response, Series)}
@@ -166,7 +160,7 @@ public class AuthenticatorUtils {
 	}
 
 	/**
-	 * Formats a challenge response as a HTTP header value. The header is
+	 * Formats a challenge response as an HTTP header value. The header is
 	 * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
 	 * relies on
 	 * {@link AuthenticatorHelper#formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)}
@@ -176,7 +170,6 @@ public class AuthenticatorUtils {
 	 * @param request     The parent request.
 	 * @param httpHeaders The current request HTTP headers.
 	 * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
-	 * @throws IOException
 	 * @link ChallengeResponse#getCredentials()}.
 	 */
 	public static String formatResponse(ChallengeResponse challenge, Request request, Series<Header> httpHeaders) {
@@ -222,7 +215,6 @@ public class AuthenticatorUtils {
 	 * 
 	 * @param header The header value to parse.
 	 * @return The equivalent {@link AuthenticationInfo} instance.
-	 * @throws IOException
 	 */
 	public static AuthenticationInfo parseAuthenticationInfo(String header) {
 		AuthenticationInfo result = null;
@@ -271,7 +263,7 @@ public class AuthenticatorUtils {
 	}
 
 	/**
-	 * Parses an authenticate header into a list of challenge request. The header is
+	 * Parses an WWW-Authenticate header into a list of challenge request. The header is
 	 * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
 	 * 
 	 * @param header      The HTTP header value to parse.
@@ -377,7 +369,7 @@ public class AuthenticatorUtils {
 	 * Optionally updates the request with a challenge response before sending it.
 	 * This is sometimes useful for authentication schemes that aren't based on the
 	 * Authorization header but instead on URI query parameters or other headers. By
-	 * default it returns the resource URI reference unchanged.
+	 * default, it returns the resource URI reference unchanged.
 	 * 
 	 * @param resourceRef       The resource URI reference to update.
 	 * @param challengeResponse The challenge response provided.
@@ -402,7 +394,7 @@ public class AuthenticatorUtils {
 
 	/**
 	 * Private constructor to ensure that the class acts as a true utility class
-	 * i.e. it isn't instantiable and extensible.
+	 * i.e., it isn't instantiable and extensible.
 	 */
 	private AuthenticatorUtils() {
 	}

@@ -52,15 +52,12 @@ public final class ChallengeResponse extends ChallengeMessage {
     private volatile String secretAlgorithm;
 
     /** The server nonce count. */
-    private volatile int serverNounceCount;
+    private volatile int serverNonceCount;
 
     /**
      * The time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      */
     private volatile long timeIssued;
-
-
-
 
     /**
      * Constructor with no credentials.
@@ -102,7 +99,7 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The client nonce value.
      * @param serverNonce
      *            The server nonce.
-     * @param serverNounceCount
+     * @param serverNonceCount
      *            The server nonce count.
      * @param timeIssued
      *            The time when the response was issued, as returned by {@link System#currentTimeMillis()}.
@@ -111,7 +108,7 @@ public final class ChallengeResponse extends ChallengeMessage {
             Series<Parameter> parameters, String identifier, char[] secret,
             String secretAlgorithm, String realm, String quality,
             Reference digestRef, String digestAlgorithm, String opaque,
-            String clientNonce, String serverNonce, int serverNounceCount,
+            String clientNonce, String serverNonce, int serverNonceCount,
             long timeIssued) {
         super(scheme, realm, parameters, digestAlgorithm, opaque, serverNonce);
         this.clientNonce = clientNonce;
@@ -120,7 +117,7 @@ public final class ChallengeResponse extends ChallengeMessage {
         this.quality = quality;
         this.secret = secret;
         this.secretAlgorithm = secretAlgorithm;
-        this.serverNounceCount = serverNounceCount;
+        this.serverNonceCount = serverNonceCount;
         this.timeIssued = timeIssued;
     }
 
@@ -284,13 +281,23 @@ public final class ChallengeResponse extends ChallengeMessage {
 
     /**
      * Returns the server nonce count.
-     * 
+     *
      * @return The server nonce count.
+     * @deprecated Use {@code getServerNonceCount} instead.
      */
+    @Deprecated
     public int getServerNounceCount() {
-        return serverNounceCount;
+        return getServerNonceCount();
     }
 
+    /**
+     * Returns the server nonce count.
+     *
+     * @return The server nonce count.
+     */
+    public int getServerNonceCount() {
+        return serverNonceCount;
+    }
 
     /**
      * Returns the time when the response was issued, as returned by {@link System#currentTimeMillis()}.
@@ -383,14 +390,23 @@ public final class ChallengeResponse extends ChallengeMessage {
 
     /**
      * Sets the server nonce count.
-     * 
-     * @param serverNounceCount
-     *            The server nonce count.
+     *
+     * @param serverNonceCount The server nonce count.
+     * @deprecated Use {@code setServerNonceCount} instead.
      */
-    public void setServerNounceCount(int serverNounceCount) {
-        this.serverNounceCount = serverNounceCount;
+    @Deprecated
+    public void setServerNounceCount(int serverNonceCount) {
+        setServerNonceCount(serverNonceCount);
     }
 
+    /**
+     * Sets the server nonce count.
+     *
+     * @param serverNonceCount The server nonce count.
+     */
+    public void setServerNonceCount(int serverNonceCount) {
+        this.serverNonceCount = serverNonceCount;
+    }
     /**
      * Sets the time when the response was issued, as returned by {@link System#currentTimeMillis()}.
      * 

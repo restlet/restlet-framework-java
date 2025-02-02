@@ -9,20 +9,16 @@
 
 package org.restlet.engine.local;
 
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.service.MetadataService;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Represents a local entity, for example a regular file or a directory.

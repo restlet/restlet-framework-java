@@ -9,13 +9,13 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.restlet.engine.util.FormUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Form which is a specialized modifiable list of parameters.

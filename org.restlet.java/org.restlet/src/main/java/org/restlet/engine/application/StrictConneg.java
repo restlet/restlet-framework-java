@@ -9,25 +9,18 @@
 
 package org.restlet.engine.application;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
+import org.restlet.data.*;
 import org.restlet.engine.resource.MethodAnnotationInfo;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Content negotiation algorithm that strictly interprets the content

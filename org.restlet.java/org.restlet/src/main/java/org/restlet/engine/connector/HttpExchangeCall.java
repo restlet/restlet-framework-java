@@ -9,19 +9,18 @@
 
 package org.restlet.engine.connector;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
 import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Call that is used by the Basic HTTP server.

@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.Range;
 import org.restlet.representation.Representation;
+
+import java.util.List;
 
 /**
  * Range header writer.

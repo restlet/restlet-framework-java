@@ -9,17 +9,16 @@
 
 package org.restlet.engine.connector;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.logging.Level;
-
-import javax.net.ssl.HostnameVerifier;
-
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.util.ReferenceUtils;
+
+import javax.net.ssl.HostnameVerifier;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.logging.Level;
 
 /**
  * HTTP client connector using the {@link HttpUrlConnectionCall}. Here is the

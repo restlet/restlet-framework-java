@@ -9,9 +9,6 @@
 
 package org.restlet;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.InternalRouter;
@@ -24,6 +21,9 @@ import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 import org.restlet.util.ServiceList;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Restlet managing a set of {@link Connector}s, {@link VirtualHost}s,

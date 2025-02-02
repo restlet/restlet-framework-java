@@ -9,12 +9,12 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.util.SystemUtils;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.restlet.engine.util.SystemUtils;
 
 /**
  * Authentication challenge sent by an origin server to a client. Upon reception

@@ -9,13 +9,13 @@
 
 package org.restlet.service;
 
-import java.util.List;
-
 import org.restlet.Request;
 import org.restlet.engine.application.Conneg;
 import org.restlet.engine.application.FlexibleConneg;
 import org.restlet.engine.application.StrictConneg;
 import org.restlet.representation.Variant;
+
+import java.util.List;
 
 /**
  * Application service negotiating the preferred resource variants. This service

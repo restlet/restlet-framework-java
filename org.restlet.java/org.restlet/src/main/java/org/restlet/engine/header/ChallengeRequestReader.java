@@ -9,13 +9,13 @@
 
 package org.restlet.engine.header;
 
-import static org.restlet.engine.header.HeaderUtils.isSpace;
-
-import java.io.IOException;
-
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
+
+import java.io.IOException;
+
+import static org.restlet.engine.header.HeaderUtils.isSpace;
 
 /**
  * Challenge request header reader.

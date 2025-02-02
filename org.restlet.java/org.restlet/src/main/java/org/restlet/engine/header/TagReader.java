@@ -9,11 +9,11 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-import java.util.Collection;
-
 import org.restlet.data.Header;
 import org.restlet.data.Tag;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Tag header reader.

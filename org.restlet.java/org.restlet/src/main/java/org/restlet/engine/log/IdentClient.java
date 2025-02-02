@@ -9,6 +9,10 @@
 
 package org.restlet.engine.log;
 
+import org.restlet.Context;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,10 +20,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.util.StringUtils;
 
 /**
  * Simple IDENT client. Follow the RFC 1413.

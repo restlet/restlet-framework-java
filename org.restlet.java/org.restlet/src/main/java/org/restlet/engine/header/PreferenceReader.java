@@ -9,24 +9,13 @@
 
 package org.restlet.engine.header;
 
-import static org.restlet.engine.header.HeaderUtils.isComma;
-import static org.restlet.engine.header.HeaderUtils.isDoubleQuote;
-import static org.restlet.engine.header.HeaderUtils.isSpace;
-import static org.restlet.engine.header.HeaderUtils.isText;
-import static org.restlet.engine.header.HeaderUtils.isTokenChar;
+import org.restlet.data.*;
+import org.restlet.util.Series;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
-import org.restlet.util.Series;
+import static org.restlet.engine.header.HeaderUtils.*;
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or

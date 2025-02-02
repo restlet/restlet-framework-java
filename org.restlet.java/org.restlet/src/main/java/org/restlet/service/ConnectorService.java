@@ -9,12 +9,12 @@
 
 package org.restlet.service;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Application;
 import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Application service declaring client and server connectors. This is useful at
@@ -42,8 +42,8 @@ public class ConnectorService extends Service {
 	 * Constructor.
 	 */
 	public ConnectorService() {
-		this.clientProtocols = new CopyOnWriteArrayList<Protocol>();
-		this.serverProtocols = new CopyOnWriteArrayList<Protocol>();
+		this.clientProtocols = new CopyOnWriteArrayList<>();
+		this.serverProtocols = new CopyOnWriteArrayList<>();
 	}
 
 	/**

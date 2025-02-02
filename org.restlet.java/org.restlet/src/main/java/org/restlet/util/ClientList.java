@@ -9,11 +9,11 @@
 
 package org.restlet.util;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Modifiable list of client connectors.

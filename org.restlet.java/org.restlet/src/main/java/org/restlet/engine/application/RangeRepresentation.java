@@ -9,16 +9,16 @@
 
 package org.restlet.engine.application;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-
 import org.restlet.data.Range;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.io.RangeInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
 
 /**
  * Representation that exposes only a range of the content of a wrapped

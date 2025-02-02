@@ -9,12 +9,6 @@
 
 package org.restlet.representation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.util.Date;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Disposition;
@@ -23,6 +17,12 @@ import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.DateUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.util.Date;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -58,7 +58,7 @@ public abstract class Representation extends RepresentationInfo {
 	private volatile boolean available;
 
 	/**
-	 * The representation digest if any.
+	 * The representation's digest, if any.
 	 */
 	private volatile org.restlet.data.Digest digest;
 
@@ -269,7 +269,7 @@ public abstract class Representation extends RepresentationInfo {
 	}
 
 	/**
-	 * Returns a characters reader with the representation's content. This method is
+	 * Returns a character reader with the representation's content. This method is
 	 * ensured to return a fresh reader for each invocation unless it is a transient
 	 * representation, in which case null is returned. If the representation has no
 	 * character set defined, the system's default one will be used.

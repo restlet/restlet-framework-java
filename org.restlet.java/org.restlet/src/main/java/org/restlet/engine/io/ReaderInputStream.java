@@ -9,6 +9,8 @@
 
 package org.restlet.engine.io;
 
+import org.restlet.data.CharacterSet;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +18,6 @@ import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharsetEncoder;
-
-import org.restlet.data.CharacterSet;
 
 /**
  * Input stream based on a reader. The implementation relies on the NIO

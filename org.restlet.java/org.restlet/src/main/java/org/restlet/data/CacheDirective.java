@@ -9,12 +9,12 @@
 
 package org.restlet.data;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Directive for caching mechanisms along the call chain. This overrides the

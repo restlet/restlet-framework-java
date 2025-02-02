@@ -9,10 +9,10 @@
 
 package org.restlet.engine.resource;
 
-import java.util.Objects;
-
 import org.restlet.data.Status;
 import org.restlet.engine.util.SystemUtils;
+
+import java.util.Objects;
 
 /**
  * Descriptor for status annotations.

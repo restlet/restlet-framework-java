@@ -9,13 +9,13 @@
 
 package org.restlet.engine.adapter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ServerHelper;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
 /**
  * Base HTTP server connector. Here is the list of parameters that are

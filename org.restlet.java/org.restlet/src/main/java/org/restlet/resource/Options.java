@@ -9,14 +9,10 @@
 
 package org.restlet.resource;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.restlet.engine.connector.Method;
 import org.restlet.service.MetadataService;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation for methods that describe a resource. Its semantics is equivalent

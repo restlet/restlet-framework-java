@@ -9,17 +9,13 @@
 
 package org.restlet.engine.internal;
 
-import java.net.URL;
-import java.util.List;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.osgi.framework.*;
 import org.restlet.Client;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
+
+import java.net.URL;
+import java.util.List;
 
 /**
  * OSGi activator. It registers the NRE into the Restlet API and also introspect

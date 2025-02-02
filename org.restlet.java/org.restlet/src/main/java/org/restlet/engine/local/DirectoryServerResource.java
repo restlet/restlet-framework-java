@@ -9,29 +9,20 @@
 
 package org.restlet.engine.local;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Level;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Resource supported by a set of context representations (from file system,

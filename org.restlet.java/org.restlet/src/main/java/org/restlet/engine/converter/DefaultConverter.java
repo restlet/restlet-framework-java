@@ -9,26 +9,15 @@
 
 package org.restlet.engine.converter;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Serializable;
-import java.util.List;
-
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.resource.VariantInfo;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.ReaderRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
+import org.restlet.representation.*;
 import org.restlet.resource.Resource;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * Converter for the built-in Representation classes.

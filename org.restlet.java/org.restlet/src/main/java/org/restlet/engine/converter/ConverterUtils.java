@@ -9,16 +9,16 @@
 
 package org.restlet.engine.converter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Utilities for the converter service.

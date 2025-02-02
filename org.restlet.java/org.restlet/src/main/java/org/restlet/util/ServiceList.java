@@ -9,13 +9,13 @@
 
 package org.restlet.util;
 
+import org.restlet.Context;
+import org.restlet.service.Service;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.service.Service;
 
 /**
  * Modifiable list of services.

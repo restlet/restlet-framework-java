@@ -9,11 +9,11 @@
 
 package org.restlet.engine.header;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.data.Range;
 import org.restlet.representation.Representation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Range header reader.
@@ -22,6 +22,8 @@ import org.restlet.representation.Representation;
  */
 public class RangeReader {
 
+	private static final String BYTES_RANGE_PREFIX = "bytes ";
+
 	/**
 	 * Parse the Content-Range header value and update the given representation.
 	 * 
@@ -29,9 +31,8 @@ public class RangeReader {
 	 * @param representation Representation to update.
 	 */
 	public static void update(String value, Representation representation) {
-		String prefix = "bytes ";
-		if (value != null && value.startsWith(prefix)) {
-			value = value.substring(prefix.length());
+		if (value != null && value.startsWith(BYTES_RANGE_PREFIX)) {
+			value = value.substring(BYTES_RANGE_PREFIX.length());
 
 			int index = value.indexOf("-");
 			int index1 = value.indexOf("/");
@@ -89,7 +90,7 @@ public class RangeReader {
 
 	/**
 	 * Private constructor to ensure that the class acts as a true utility class
-	 * i.e. it isn't instantiable and extensible.
+	 * i.e., it isn't instantiable and extensible.
 	 */
 	private RangeReader() {
 	}

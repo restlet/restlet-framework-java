@@ -9,10 +9,10 @@
 
 package org.restlet.data;
 
-import java.util.Date;
-
 import org.restlet.engine.util.DateUtils;
 import org.restlet.util.Series;
+
+import java.util.Date;
 
 /**
  * Describes the presentation of a single entity especially in the case of

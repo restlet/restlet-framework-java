@@ -9,6 +9,11 @@
 
 package org.restlet.engine.application;
 
+import org.restlet.data.Encoding;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
+import org.restlet.util.WrapperRepresentation;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,11 +27,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
-
-import org.restlet.data.Encoding;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Representation;
-import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation that decodes a wrapped representation if its encoding is

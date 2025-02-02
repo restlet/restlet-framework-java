@@ -9,11 +9,6 @@
 
 package org.restlet.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -24,6 +19,11 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Application service converting between representation and regular Java

@@ -9,13 +9,13 @@
 
 package org.restlet.engine.connector;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.Connector;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.engine.RestletHelper;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base connector helper.

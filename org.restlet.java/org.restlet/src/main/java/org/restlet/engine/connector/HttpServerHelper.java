@@ -9,16 +9,15 @@
 
 package org.restlet.engine.connector;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Internal HTTP server connector.

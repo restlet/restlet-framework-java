@@ -9,13 +9,13 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.Engine;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.restlet.engine.Engine;
 
 /**
  * Method to execute when handling a call.

@@ -9,20 +9,14 @@
 
 package org.restlet.util;
 
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Date;
 import java.util.List;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Disposition;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Tag;
-import org.restlet.representation.Representation;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich

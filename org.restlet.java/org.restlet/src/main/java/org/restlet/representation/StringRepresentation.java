@@ -9,19 +9,13 @@
 
 package org.restlet.representation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+
+import java.io.*;
+import java.util.logging.Level;
 
 /**
  * Represents an Unicode string that can be converted to any character set

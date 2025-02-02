@@ -9,16 +9,16 @@
 
 package org.restlet.engine.application;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.util.SetUtils;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Helps to generate response CORS headers.<br>

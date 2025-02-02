@@ -9,8 +9,6 @@
 
 package org.restlet.service;
 
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -23,6 +21,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Template;
+
+import java.util.logging.Level;
 
 /**
  * Service providing access logging service. The implementation is fully based

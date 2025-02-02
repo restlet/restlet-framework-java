@@ -9,12 +9,12 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
+
+import java.io.IOException;
 
 /**
  * Content type header reader.

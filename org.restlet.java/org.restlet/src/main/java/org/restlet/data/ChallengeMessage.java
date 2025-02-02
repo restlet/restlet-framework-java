@@ -9,10 +9,10 @@
 
 package org.restlet.data;
 
-import java.util.Objects;
-
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
+
+import java.util.Objects;
 
 /**
  * Base authentication challenge message exchanged between an origin server and

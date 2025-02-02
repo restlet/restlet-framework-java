@@ -21,8 +21,7 @@ public final class Status {
 
 	private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-	private static final String BASE_RESTLET = "https://javadocs.restlet.talend.com/" + Engine.MAJOR_NUMBER + '.'
-			+ Engine.MINOR_NUMBER + "/api/";
+	private static final String BASE_RESTLET = "https://javadoc.io/static/org.restlet/org.restlet/" + Engine.VERSION + "/";
 
 	/**
 	 * The request could not be understood by the server due to malformed syntax.
@@ -508,7 +507,7 @@ public final class Status {
 	public static final Status SUCCESS_PARTIAL_CONTENT = new Status(206);
 
 	/**
-	 * The server has fulfilled the request and the user agent SHOULD reset the
+	 * The server has fulfilled the request, and the user agent SHOULD reset the
 	 * document view which caused the request to be sent.
 	 * 
 	 * @see <a href=

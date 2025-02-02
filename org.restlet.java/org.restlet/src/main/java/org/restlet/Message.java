@@ -9,8 +9,11 @@
 
 package org.restlet;
 
-import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
-import static org.restlet.representation.Representation.UNKNOWN_SIZE;
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.util.Series;
 
 import java.io.IOException;
 import java.util.Date;
@@ -20,15 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.data.CacheDirective;
-import org.restlet.data.Header;
-import org.restlet.data.MediaType;
-import org.restlet.data.RecipientInfo;
-import org.restlet.data.Warning;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
-import org.restlet.util.Series;
+import static org.restlet.engine.header.HeaderConstants.ATTRIBUTE_HEADERS;
+import static org.restlet.representation.Representation.UNKNOWN_SIZE;
 
 /**
  * Generic message exchanged between components.

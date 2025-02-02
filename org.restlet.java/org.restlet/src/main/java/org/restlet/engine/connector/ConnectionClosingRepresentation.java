@@ -9,10 +9,10 @@
 
 package org.restlet.engine.connector;
 
-import java.net.HttpURLConnection;
-
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
+
+import java.net.HttpURLConnection;
 
 /**
  * Representation that wraps another representation and closes the parent

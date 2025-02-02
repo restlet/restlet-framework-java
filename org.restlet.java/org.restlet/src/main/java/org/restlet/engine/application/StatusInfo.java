@@ -9,9 +9,9 @@
 
 package org.restlet.engine.application;
 
-import java.io.Serializable;
-
 import org.restlet.data.Status;
+
+import java.io.Serializable;
 
 /**
  * Representation of a {@link Status}.

@@ -9,37 +9,23 @@
 
 package org.restlet.resource;
 
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.Status;
+import org.restlet.data.*;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.service.MetadataService;
+import org.restlet.util.Series;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.CacheDirective;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Range;
-import org.restlet.data.Reference;
-import org.restlet.data.ServerInfo;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
-import org.restlet.util.Series;
 
 /**
  * Base resource class exposing the uniform REST interface. Intended conceptual

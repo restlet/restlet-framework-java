@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.CacheDirective;
+
+import java.util.List;
 
 /**
  * Cache directive header writer.

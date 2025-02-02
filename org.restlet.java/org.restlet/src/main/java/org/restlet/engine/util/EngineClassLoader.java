@@ -9,13 +9,13 @@
 
 package org.restlet.engine.util;
 
+import org.restlet.engine.Edition;
+import org.restlet.engine.Engine;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
-
-import org.restlet.engine.Edition;
-import org.restlet.engine.Engine;
 
 /**
  * Flexible engine class loader. Uses the current class's class loader as its

@@ -9,15 +9,15 @@
 
 package org.restlet.resource;
 
-import java.lang.reflect.Constructor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Status;
+
+import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Restlet that can find the target server resource that will effectively handle
@@ -185,11 +185,11 @@ public class Finder extends Restlet {
 			ServerResource targetResource = find(request, response);
 
 			if (targetResource == null) {
-				// If the current status is a success but we couldn't
+				// If the current status is a success, but we couldn't
 				// find the target resource for the request's URI,
 				// then we set the response status to 404 (Not Found).
 				if (getLogger().isLoggable(Level.WARNING)) {
-					getLogger().warning("No target resource was defined for this finder: " + toString());
+					getLogger().warning("No target resource was defined for this finder: " + this);
 				}
 
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);

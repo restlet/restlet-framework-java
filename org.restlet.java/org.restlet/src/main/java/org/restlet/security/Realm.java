@@ -9,10 +9,10 @@
 
 package org.restlet.security;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Security realm capable of providing an enroler and a verifier.

@@ -9,17 +9,17 @@
 
 package org.restlet.engine.local;
 
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.StreamRepresentation;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.restlet.data.Disposition;
-import org.restlet.data.MediaType;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.StreamRepresentation;
 
 /**
  * An entry in a Zip/JAR file.

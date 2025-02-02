@@ -9,29 +9,9 @@
 
 package org.restlet.resource;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.Uniform;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.ServerInfo;
+import org.restlet.*;
 import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
@@ -44,6 +24,15 @@ import org.restlet.routing.Router;
 import org.restlet.security.Role;
 import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
 
 /**
  * Base class for server-side resources. It acts as a wrapper to a given call,
@@ -864,7 +853,7 @@ public abstract class ServerResource extends Resource {
 
 	/**
 	 * Returns a modifiable list of exposed variants for the given method. You can
-	 * declare variants manually by updating the result list , by overriding this
+	 * declare variants manually by updating the result list, by overriding this
 	 * method. By default, the variants will be provided based on annotated methods.
 	 * 
 	 * @param method The method.

@@ -9,16 +9,16 @@
 
 package org.restlet;
 
+import org.restlet.data.Parameter;
+import org.restlet.engine.Engine;
+import org.restlet.util.Series;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
-
-import org.restlet.data.Parameter;
-import org.restlet.engine.Engine;
-import org.restlet.util.Series;
 
 /**
  * Contextual data and services provided to a set of Restlets. The context is

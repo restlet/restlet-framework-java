@@ -9,12 +9,12 @@
 
 package org.restlet.util;
 
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+
+import java.util.logging.Logger;
 
 /**
  * Restlet wrapper. Useful for application developer who need to wrap a Restlet

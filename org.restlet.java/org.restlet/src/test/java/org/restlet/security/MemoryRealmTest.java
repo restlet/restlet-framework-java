@@ -24,15 +24,15 @@
 
 package org.restlet.security;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
 
 public class MemoryRealmTest {
 
 	@Test
-	public void whenUmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
+	public void whenUnmappingAGroupAndRoleFromAMemoryRealmThenMappingIsDropped() {
 		// given a Memory Realm, a Group and a Role
 		MemoryRealm memoryRealm = new MemoryRealm();
 		Group group = new Group();
@@ -51,7 +51,7 @@ public class MemoryRealmTest {
 	}
 
 	@Test
-	public void whenUmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
+	public void whenUnmappingAUserAndRoleFromAMemoryRealmThenMappingIsDropped() {
 		// given a Memory Realm, a Group and a Role
 		MemoryRealm memoryRealm = new MemoryRealm();
 		User user = new User();

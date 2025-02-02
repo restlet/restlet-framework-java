@@ -9,24 +9,20 @@
 
 package org.restlet.engine.security;
 
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.*;
+import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.util.Series;
+
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.logging.Level;
-
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Header;
-import org.restlet.data.Parameter;
-import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.HeaderReader;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.util.Series;
 
 /**
  * Implements the HTTP BASIC authentication.

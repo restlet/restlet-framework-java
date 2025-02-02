@@ -9,8 +9,6 @@
 
 package org.restlet.engine.component;
 
-import java.util.logging.Level;
-
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -18,6 +16,8 @@ import org.restlet.Restlet;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
+
+import java.util.logging.Level;
 
 /**
  * Router that collects calls from all server connectors and dispatches them to

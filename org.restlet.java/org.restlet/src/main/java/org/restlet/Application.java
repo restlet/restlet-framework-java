@@ -9,11 +9,6 @@
 
 package org.restlet;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Filter;
-import java.util.logging.Level;
-
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
@@ -21,16 +16,13 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Role;
-import org.restlet.service.ConnectorService;
-import org.restlet.service.ConnegService;
-import org.restlet.service.ConverterService;
-import org.restlet.service.DecoderService;
-import org.restlet.service.EncoderService;
-import org.restlet.service.MetadataService;
-import org.restlet.service.RangeService;
-import org.restlet.service.StatusService;
-import org.restlet.service.TunnelService;
+import org.restlet.service.*;
 import org.restlet.util.ServiceList;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Filter;
+import java.util.logging.Level;
 
 /**
  * Restlet managing a coherent set of resources and services. Applications are
@@ -74,7 +66,7 @@ public class Application extends Restlet {
 	 * each time a call enters an application.
 	 * 
 	 * Warning: this method should only be used under duress. You should by default
-	 * prefer obtaining the current application using methods such as
+	 * prefer getting the current application using methods such as
 	 * {@link org.restlet.resource.Resource#getApplication()}
 	 * 
 	 * @return The current context.
@@ -84,7 +76,7 @@ public class Application extends Restlet {
 	}
 
 	/**
-	 * Sets the context to associated with the current thread.
+	 * Sets the context associated with the current thread.
 	 * 
 	 * @param application The thread's context.
 	 */
@@ -112,7 +104,7 @@ public class Application extends Restlet {
 
 	/**
 	 * Constructor. Note this constructor is convenient because you don't have to
-	 * provide a context like for {@link #Application(Context)}. Therefore the
+	 * provide a context like for {@link #Application(Context)}. Therefore, the
 	 * context will initially be null. It's only when you attach the application to
 	 * a virtual host via one of its attach*() methods that a proper context will be
 	 * set.

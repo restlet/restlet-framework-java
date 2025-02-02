@@ -15,11 +15,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${lib-testng-version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.restlet</groupId>
             <artifactId>org.restlet</artifactId>
             <version>${project.version}</version>

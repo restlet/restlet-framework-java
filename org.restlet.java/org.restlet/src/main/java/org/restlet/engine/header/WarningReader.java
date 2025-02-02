@@ -9,13 +9,13 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-import java.util.Collection;
-
 import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Warning header reader.

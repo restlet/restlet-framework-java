@@ -9,9 +9,9 @@
 
 package org.restlet.engine.header;
 
-import java.util.List;
-
 import org.restlet.data.RecipientInfo;
+
+import java.util.List;
 
 /**
  * Recipient info header writer.

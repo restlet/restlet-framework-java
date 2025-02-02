@@ -9,9 +9,9 @@
 
 package org.restlet.engine.util;
 
-import java.util.Map;
-
 import org.restlet.util.Resolver;
+
+import java.util.Map;
 
 /**
  * Resolves variable values based on a map.

@@ -20,7 +20,7 @@ import org.restlet.security.User;
 import org.restlet.util.Series;
 
 /**
- * Wrapped verifier that can verify HTTP requests utilizing the Amazon S3
+ * Wrapped verifier that can verify HTTP requests using the Amazon S3
  * authentication scheme. Verifies the user by computing the request signature
  * using the local secret and comparing it to the signature provided in the
  * request.

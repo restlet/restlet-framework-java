@@ -9,15 +9,15 @@
 
 package org.restlet.engine.log;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.Engine;
 import org.restlet.routing.Filter;
 import org.restlet.service.LogService;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Filter logging all calls after their handling by the target Restlet. The

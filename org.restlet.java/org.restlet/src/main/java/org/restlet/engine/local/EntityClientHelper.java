@@ -9,20 +9,15 @@
 
 package org.restlet.engine.local;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Connector to the local entities. That connector supports the content

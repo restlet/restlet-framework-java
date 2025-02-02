@@ -9,10 +9,6 @@
 
 package org.restlet.engine.util;
 
-import static org.restlet.engine.util.DateUtils.FORMAT_RFC_1123;
-
-import java.util.Date;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
@@ -21,6 +17,10 @@ import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.util.Resolver;
+
+import java.util.Date;
+
+import static org.restlet.engine.util.DateUtils.FORMAT_RFC_1123;
 
 /**
  * Resolves variable values based on a request and a response.

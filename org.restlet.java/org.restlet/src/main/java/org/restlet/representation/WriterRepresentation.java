@@ -9,11 +9,11 @@
 
 package org.restlet.representation;
 
-import java.io.IOException;
-import java.io.Reader;
-
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.IoUtils;
+
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Representation based on a BIO characters writer. This class is a good basis

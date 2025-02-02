@@ -9,10 +9,10 @@
 
 package org.restlet.engine.util;
 
+import org.restlet.data.Reference;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import org.restlet.data.Reference;
 
 /**
  * Allows to sort the list of references set by the resource.

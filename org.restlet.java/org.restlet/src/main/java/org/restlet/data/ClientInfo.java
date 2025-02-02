@@ -9,16 +9,16 @@
 
 package org.restlet.data;
 
+import org.restlet.Context;
+import org.restlet.engine.Engine;
+import org.restlet.engine.io.IoUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.restlet.Context;
-import org.restlet.engine.Engine;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Client specific data related to a call. When extracted from a request, most

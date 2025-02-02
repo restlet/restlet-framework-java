@@ -9,23 +9,14 @@
 
 package org.restlet.engine.local;
 
-import static java.lang.String.format;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static java.util.logging.Level.WARNING;
-import static org.restlet.data.Method.DELETE;
-import static org.restlet.data.Method.GET;
-import static org.restlet.data.Method.HEAD;
-import static org.restlet.data.Method.PUT;
-import static org.restlet.data.Protocol.FILE;
-import static org.restlet.data.Range.isBytesRange;
-import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
-import static org.restlet.data.Status.CLIENT_ERROR_FORBIDDEN;
-import static org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED;
-import static org.restlet.data.Status.CLIENT_ERROR_NOT_ACCEPTABLE;
-import static org.restlet.data.Status.SERVER_ERROR_INTERNAL;
-import static org.restlet.data.Status.SUCCESS_CREATED;
-import static org.restlet.data.Status.SUCCESS_NO_CONTENT;
-import static org.restlet.data.Status.SUCCESS_OK;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.*;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -39,21 +30,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.LocalReference;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Range;
-import org.restlet.data.Status;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.Directory;
+import static java.lang.String.format;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.util.logging.Level.WARNING;
+import static org.restlet.data.Method.*;
+import static org.restlet.data.Protocol.FILE;
+import static org.restlet.data.Range.isBytesRange;
+import static org.restlet.data.Status.*;
 
 /**
  * Connector to the file resources accessible. Here is the list of parameters

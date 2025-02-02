@@ -9,11 +9,11 @@
 
 package org.restlet.engine.header;
 
-import java.io.IOException;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
+
+import java.io.IOException;
 
 /**
  * Association of a media type, a character set and modifiers.

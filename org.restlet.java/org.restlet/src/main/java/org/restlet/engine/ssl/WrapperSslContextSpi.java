@@ -9,17 +9,9 @@
 
 package org.restlet.engine.ssl;
 
+import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.SecureRandom;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLContextSpi;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSessionContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 /**
  * Default SSL context SPI capable or setting additional properties on the

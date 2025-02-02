@@ -9,10 +9,6 @@
 
 package org.restlet.engine;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -20,6 +16,10 @@ import org.restlet.Restlet;
 import org.restlet.data.Parameter;
 import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * Delegate used by API classes to get support from the implementation classes.

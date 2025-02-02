@@ -1,0 +1,57 @@
+/**
+ * Copyright 2005-2024 Qlik
+ * 
+ * The contents of this file is subject to the terms of the Apache 2.0 open
+ * source license available at http://www.opensource.org/licenses/apache-2.0
+ * 
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
+package org.restlet.data;
+
+import org.junit.jupiter.api.Test;
+import org.restlet.engine.Engine;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit test case for the File client connector.
+ * 
+ * @author Jerome Louvel
+ */
+public class FileClientTestCase {
+
+    @Test
+    public void testFileClient() throws IOException {
+        Engine.register();
+        Engine.clearThreadLocalVariables();
+
+        String fileContent = "Test content\r\nLine 2\r\nLine2";
+        File temporaryfile = File.createTempFile("Restlet", ".txt." + Language.DEFAULT.getName());
+        LocalReference fileReference = LocalReference.createFileReference(temporaryfile);
+
+        ClientResource resource = new ClientResource(fileReference);
+
+        // Update the text of the temporary file
+        resource.put(new StringRepresentation(fileContent));
+        assertTrue(resource.getStatus().isSuccess());
+
+        // Get the text and compare to the original
+        resource.get();
+        assertEquals(Status.SUCCESS_OK, resource.getStatus());
+        assertEquals(fileContent, resource.getResponse().getEntityAsText());
+
+        // Delete the file
+        resource.delete();
+        assertEquals(Status.SUCCESS_NO_CONTENT, resource.getStatus());
+        Engine.clearThreadLocalVariables();
+    }
+}

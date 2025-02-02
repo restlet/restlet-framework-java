@@ -9,12 +9,12 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
 
 /**
  * Preference header writer.

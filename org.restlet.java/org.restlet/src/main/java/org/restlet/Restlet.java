@@ -9,11 +9,11 @@
 
 package org.restlet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many

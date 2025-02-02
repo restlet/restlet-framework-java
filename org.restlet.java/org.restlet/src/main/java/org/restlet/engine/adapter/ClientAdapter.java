@@ -9,9 +9,6 @@
 
 package org.restlet.engine.adapter;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -22,6 +19,9 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.

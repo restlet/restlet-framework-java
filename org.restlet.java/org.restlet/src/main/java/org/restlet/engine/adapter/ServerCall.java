@@ -9,6 +9,21 @@
 
 package org.restlet.engine.adapter;
 
+import org.restlet.Context;
+import org.restlet.Response;
+import org.restlet.Server;
+import org.restlet.data.Digest;
+import org.restlet.data.Header;
+import org.restlet.engine.connector.ConnectorHelper;
+import org.restlet.engine.header.*;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.util.StringUtils;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.service.ConnectorService;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,29 +32,6 @@ import java.security.cert.Certificate;
 import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
-
-import javax.net.ssl.SSLPeerUnverifiedException;
-
-import org.restlet.Context;
-import org.restlet.Response;
-import org.restlet.Server;
-import org.restlet.data.Digest;
-import org.restlet.data.Header;
-import org.restlet.engine.connector.ConnectorHelper;
-import org.restlet.engine.header.ContentType;
-import org.restlet.engine.header.DispositionReader;
-import org.restlet.engine.header.EncodingReader;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.header.HeaderReader;
-import org.restlet.engine.header.HeaderUtils;
-import org.restlet.engine.header.LanguageReader;
-import org.restlet.engine.header.RangeReader;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.util.StringUtils;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.service.ConnectorService;
 
 /**
  * Abstract HTTP server connector call.

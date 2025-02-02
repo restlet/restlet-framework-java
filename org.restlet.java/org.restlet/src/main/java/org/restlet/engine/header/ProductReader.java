@@ -9,10 +9,10 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.Product;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.restlet.data.Product;
 
 /**
  * User agent header reader.

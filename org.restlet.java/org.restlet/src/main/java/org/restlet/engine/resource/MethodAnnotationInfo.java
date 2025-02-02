@@ -9,26 +9,16 @@
 
 package org.restlet.engine.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringTokenizer;
-
 import org.restlet.Context;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
+import org.restlet.data.*;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Descriptor for method annotations.

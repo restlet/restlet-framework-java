@@ -201,9 +201,9 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if ((challenge.getQuality() != null)
-                && (challenge.getServerNounceCount() > 0)) {
+                && (challenge.getServerNonceCount() > 0)) {
             cw.appendChallengeParameter("nc",
-                    challenge.getServerNounceCountAsHex());
+                    challenge.getServerNonceCountAsHex());
         }
 
         for (Parameter param : challenge.getParameters()) {
@@ -246,22 +246,19 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         if (a1 != null
                 && !AuthenticatorUtils.anyNull(request.getMethod(),
                         challengeResponse.getDigestRef())) {
-            String a2 = DigestUtils.toMd5(request.getMethod().toString() + ":"
-                    + challengeResponse.getDigestRef().toString());
             StringBuilder sb = new StringBuilder().append(a1).append(':')
                     .append(challengeResponse.getServerNonce());
 
             if (!AuthenticatorUtils.anyNull(challengeResponse.getQuality(),
                     challengeResponse.getClientNonce(),
-                    challengeResponse.getServerNounceCount())) {
-                sb.append(':')
-                        .append(AuthenticatorUtils
-                                .formatNonceCount(challengeResponse
-                                        .getServerNounceCount())).append(':')
-                        .append(challengeResponse.getClientNonce()).append(':')
-                        .append(challengeResponse.getQuality());
+                    challengeResponse.getServerNonceCount())) {
+                sb.append(':').append(AuthenticatorUtils.formatNonceCount(challengeResponse.getServerNonceCount()))
+                        .append(':').append(challengeResponse.getClientNonce())
+                        .append(':').append(challengeResponse.getQuality());
             }
 
+            String a2 = DigestUtils.toMd5(request.getMethod().toString() + ":"
+                    + challengeResponse.getDigestRef().toString());
             sb.append(':').append(a2);
 
             return DigestUtils.toMd5(sb.toString()).toCharArray();
@@ -355,7 +352,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                         } else if ("qop".equals(param.getName())) {
                             challenge.setQuality(param.getValue());
                         } else if ("nc".equals(param.getName())) {
-                            challenge.setServerNounceCount(Integer.valueOf(
+                            challenge.setServerNonceCount(Integer.valueOf(
                                     param.getValue(), 16));
                         } else {
                             challenge.getParameters().add(param);

@@ -9,11 +9,11 @@
 
 package org.restlet.engine.application;
 
-import java.util.List;
-
 import org.restlet.Request;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
+
+import java.util.List;
 
 /**
  * Content negotiation algorithm.

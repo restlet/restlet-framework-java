@@ -9,14 +9,14 @@
 
 package org.restlet.engine.adapter;
 
-import java.util.logging.Level;
-
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.connector.ClientHelper;
+
+import java.util.logging.Level;
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are

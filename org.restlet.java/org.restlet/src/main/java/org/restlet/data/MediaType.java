@@ -9,16 +9,16 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
 import org.restlet.Context;
 import org.restlet.engine.header.HeaderWriter;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Metadata used to specify the format of representations. The

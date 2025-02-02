@@ -9,18 +9,12 @@
 
 package org.restlet.engine.application;
 
+import org.restlet.Request;
+import org.restlet.data.*;
+import org.restlet.service.MetadataService;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.restlet.Request;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Preference;
-import org.restlet.service.MetadataService;
 
 /**
  * Content negotiation algorithm that flexibly interprets the content

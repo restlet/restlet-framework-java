@@ -9,11 +9,11 @@
 
 package org.restlet.engine.resource;
 
-import java.util.Objects;
-
 import org.restlet.data.MediaType;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Variant;
+
+import java.util.Objects;
 
 /**
  * Variant that is declared by an annotated Java method.
