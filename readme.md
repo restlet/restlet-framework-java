@@ -23,4 +23,4 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2024 Qlik
+Copyright 2025 Qlik
