@@ -15,12 +15,12 @@ While Restlet applications can be deployed in Servlet containers, they can also 
 To learn more about Restlet Framework, please have a look at the following resources:
 
 * [Download](https://restlet.talend.com/downloads/current/)
-* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.5/)
-* [User Guide](https://restlet.talend.com/documentation/user-guide/2.5/)
-* [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.5/)
-* [Change Log](https://restlet.talend.com/documentation/2.5/changelog)
+* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.6/)
+* [User Guide](https://restlet.talend.com/documentation/user-guide/2.6/)
+* [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.6/)
+* [Change Log](https://restlet.talend.com/documentation/2.6/changelog)
 * [Issues](https://github.com/restlet/restlet-framework-java/issues)
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
 
-Copyright 2024 Qlik
+Copyright 2025 Qlik
