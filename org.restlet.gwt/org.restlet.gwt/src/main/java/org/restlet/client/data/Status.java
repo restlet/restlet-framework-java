@@ -1111,10 +1111,9 @@ public final class Status {
     }
 
     /**
-     * Returns the description. This value is typically used by the
-     * {@link org.restlet.client.service.StatusService} to build a meaningful
-     * description of an error via a response entity.
-     * 
+     *
+     * Returns the description.
+     *
      * @return The description.
      */
     public String getDescription() {

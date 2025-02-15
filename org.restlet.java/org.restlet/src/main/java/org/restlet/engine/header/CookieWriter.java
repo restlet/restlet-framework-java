@@ -137,7 +137,7 @@ public class CookieWriter extends HeaderWriter<Cookie> {
 	 */
 	public CookieWriter appendValue(String value, int version) {
 		if (version == 0) {
-			append(value.toString());
+			append(value);
 		} else {
 			appendQuotedString(value);
 		}

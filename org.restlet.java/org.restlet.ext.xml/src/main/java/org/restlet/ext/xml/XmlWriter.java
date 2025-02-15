@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Stack;
@@ -692,10 +693,8 @@ public final class XmlWriter extends XMLFilterImpl {
     private void doIndent() throws SAXException {
         if ((this.indentStep > 0) && (this.depth > 0)) {
             final int n = this.indentStep * this.depth;
-            final char ch[] = new char[n];
-            for (int i = 0; i < n; i++) {
-                ch[i] = ' ';
-            }
+            final char[] ch = new char[n];
+            Arrays.fill(ch, ' ');
             characters(ch, 0, n);
         }
     }
@@ -732,19 +731,18 @@ public final class XmlWriter extends XMLFilterImpl {
         }
         prefix = this.doneDeclTable.get(uri);
         if ((prefix != null)
-                && (((!isElement || (defaultNS != null)) && "".equals(prefix)) || (this.nsSupport
+                && (((!isElement || (defaultNS != null)) && prefix.isEmpty()) || (this.nsSupport
                         .getURI(prefix) != null))) {
             prefix = null;
         }
         if (prefix == null) {
             prefix = this.prefixTable.get(uri);
             if ((prefix != null)
-                    && (((!isElement || (defaultNS != null)) && ""
-                            .equals(prefix)) || (this.nsSupport.getURI(prefix) != null))) {
+                    && (((!isElement || (defaultNS != null)) && prefix.isEmpty()) || (this.nsSupport.getURI(prefix) != null))) {
                 prefix = null;
             }
         }
-        if ((prefix == null) && (qName != null) && !"".equals(qName)) {
+        if ((prefix == null) && (qName != null) && !qName.isEmpty()) {
             final int i = qName.indexOf(':');
             if (i == -1) {
                 if (isElement && (defaultNS == null)) {
@@ -1473,7 +1471,7 @@ public final class XmlWriter extends XMLFilterImpl {
             boolean isElement) throws SAXException {
 
         final String prefix = doPrefix(uri, qName, isElement);
-        if ((prefix != null) && !"".equals(prefix)) {
+        if ((prefix != null) && !prefix.isEmpty()) {
             write(prefix);
             write(':');
         }

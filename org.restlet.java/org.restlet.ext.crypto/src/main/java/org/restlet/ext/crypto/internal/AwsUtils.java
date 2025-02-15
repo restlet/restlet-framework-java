@@ -104,7 +104,7 @@ public class AwsUtils {
 
         // Append the bucket
         if (hostName != null) {
-            // If the host name contains a port number remove it
+            // If the host name contains a port number, remove it
             if (hostName.contains(":"))
                 hostName = hostName.substring(0, hostName.indexOf(":"));
 
@@ -112,9 +112,9 @@ public class AwsUtils {
             if (hostName.endsWith(".s3.amazonaws.com")) {
                 String bucketName = hostName.substring(0,
                         hostName.length() - 17);
-                sb.append("/" + bucketName);
+                sb.append("/").append(bucketName);
             } else if (!hostNameMatcher.matches()) {
-                sb.append("/" + hostName);
+                sb.append("/").append(hostName);
             }
         }
 
@@ -122,13 +122,13 @@ public class AwsUtils {
 
         // Append the resource path
         if (queryIdx >= 0)
-            sb.append(path.substring(0, queryIdx));
+            sb.append(path, 0, queryIdx);
         else
-            sb.append(path.substring(0, path.length()));
+            sb.append(path);
 
         // Append the AWS sub-resource
         if (queryIdx >= 0) {
-            String query = path.substring(queryIdx - 1, path.length());
+            String query = path.substring(queryIdx - 1);
 
             if (query.contains("?acl"))
                 sb.append("?acl");
@@ -310,15 +310,15 @@ public class AwsUtils {
                 "X-Amz-Date", true);
         String method = request.getMethod().getName();
 
-        // If amazon's date header wasn't found try to grab the regular date
+        // If amazon's date header wasn't found, try to grab the regular date
         // header
-        if (date == null || (date.length() == 0)) {
+        if (date == null || (date.isEmpty())) {
             date = (headers == null) ? null : headers.getFirstValue(
                     HeaderConstants.HEADER_DATE, true);
         }
 
-        // If no date header exists make one
-        if (date == null || (date.length() == 0)) {
+        // If no date header exists, make one
+        if (date == null || (date.isEmpty())) {
             date = DateUtils.format(new Date(),
                     DateUtils.FORMAT_RFC_1123.get(0));
             if (headers != null) {
@@ -326,7 +326,7 @@ public class AwsUtils {
             }
         }
 
-        if (contentType == null || (contentType.length() == 0)) {
+        if (contentType == null || (contentType.isEmpty())) {
             boolean applyPatch = false;
 
             // This patch seems to apply to Sun JVM only.

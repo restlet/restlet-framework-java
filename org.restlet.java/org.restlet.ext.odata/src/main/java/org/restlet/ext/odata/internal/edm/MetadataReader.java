@@ -92,8 +92,8 @@ public class MetadataReader extends DefaultHandler {
     /**
      * Constructor.
      * 
-     * @param feed
-     *            The feed object to update during the parsing.
+     * @param metadata
+     *            The metadata object to update during the parsing.
      */
     public MetadataReader(Metadata metadata) {
         this.states = new ArrayList<State>();
@@ -411,8 +411,7 @@ public class MetadataReader extends DefaultHandler {
      * @return the current state when processing the document.
      */
     private State getState() {
-        final State result = this.states.get(0);
-        return result;
+        return this.states.get(0);
     }
 
     /**
@@ -442,7 +441,7 @@ public class MetadataReader extends DefaultHandler {
      *            The namedObject to find.
      * @param register
      *            The register.
-     * @param schema
+     * @param currentSchema
      *            The schema of the named object.
      * @return The namedObject if found inside the register, null otherwise.
      */

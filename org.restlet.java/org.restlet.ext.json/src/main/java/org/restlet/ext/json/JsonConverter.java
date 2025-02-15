@@ -161,7 +161,7 @@ public class JsonConverter extends ConverterHelper {
             }
         }
 
-        return (T) result;
+        return result;
     }
 
     @Override

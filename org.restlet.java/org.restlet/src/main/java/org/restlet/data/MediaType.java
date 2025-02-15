@@ -34,7 +34,7 @@ public final class MediaType extends Metadata {
 	 * Illegal ASCII characters as defined in RFC 1521.<br>
 	 * Keep the underscore for the ordering
 	 * 
-	 * @see http://www.ietf.org/rfc/rfc1521.txt
+	 * @see <a href="https://www.ietf.org/rfc/rfc1521.txt">RFC 1521</a>
 	 */
 	private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
 
@@ -487,7 +487,7 @@ public final class MediaType extends Metadata {
 
 		// Makes sure we're not dealing with a "*" token.
 		token = token.trim();
-		if ("".equals(token) || "*".equals(token))
+		if (token.isEmpty() || "*".equals(token))
 			return "*";
 
 		// Makes sure the token is RFC compliant.

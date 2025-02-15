@@ -126,7 +126,7 @@ public class ReferenceTestCase {
         final Reference ref1 = getDefaultReference();
         final Reference ref2 = getDefaultReference();
         assertEquals(ref1, ref2);
-        assertTrue(ref1.equals(ref2));
+        assertEquals(ref1, ref2);
     }
 
 	@Test
@@ -682,14 +682,14 @@ public class ReferenceTestCase {
         final String uri2 = "http://restlet.net/";
         final Reference ref1 = new Reference(uri1);
         final Reference ref2 = new Reference(uri2);
-        assertFalse(ref1.equals(ref2));
-        assertFalse(ref1.equals(null));
+        assertNotEquals(ref1, ref2);
+        assertNotEquals(null, ref1);
     }
 
     @Test
     public void testUserinfo() {
         final Reference reference = new Reference("http://localhost:81");
-        // This format is depre. however we may prevent failures.
+        // This format is depre. however, we may prevent failures.
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());

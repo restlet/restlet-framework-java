@@ -224,16 +224,15 @@ public class FormUtils {
 	 */
 	public static void parse(Form form, String parametersString, CharacterSet characterSet, boolean decode,
 			char separator) {
-		if ((parametersString != null) && !parametersString.equals("")) {
-			FormReader fr = null;
-			fr = new FormReader(parametersString, characterSet, separator, decode);
+		if ((parametersString != null) && !parametersString.isEmpty()) {
+			FormReader fr = new FormReader(parametersString, characterSet, separator, decode);
 			fr.addParameters(form);
 		}
 	}
 
 	/**
 	 * Private constructor to ensure that the class acts as a true utility class
-	 * i.e. it isn't instantiable and extensible.
+	 * i.e., it isn't instantiable and extensible.
 	 */
 	private FormUtils() {
 	}

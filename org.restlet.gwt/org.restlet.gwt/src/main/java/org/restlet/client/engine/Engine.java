@@ -23,12 +23,11 @@ import org.restlet.client.engine.log.LoggerFacade;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various {@link Helper} types:
- * {@link org.restlet.client.engine.security.AuthenticatorHelper} , {@link org.restlet.client.engine.connector.ClientHelper},
- * {@link org.restlet.client.engine.converter.ConverterHelper} and {@link org.restlet.client.engine.connector.ServerHelper} classes.<br>
+ * {@link org.restlet.client.engine.connector.ClientHelper} classes.<br>
  * <br>
- * Note that by default the JULI logging mechanism is used but it is possible to
+ * Note that by default the JULI logging mechanism is used, but it is possible to
  * replace it by providing an alternate {@link LoggerFacade} implementation. For
- * this, just pass a system property named
+ * this, pass a system property named
  * "org.restlet.client.engine.loggerFacadeClass" with the qualified class name as a
  * value.
  *
@@ -90,7 +89,7 @@ public class Engine {
 
 
     /**
-     * Returns an anonymous logger. By default it calls {@link #getLogger(String)} with a "" name.
+     * Returns an anonymous logger. By default, it calls {@link #getLogger(String)} with a "" name.
      *
      * @return The logger.
      */

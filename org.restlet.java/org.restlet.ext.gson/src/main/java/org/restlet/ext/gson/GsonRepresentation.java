@@ -46,7 +46,7 @@ public class GsonRepresentation<T> extends WriterRepresentation {
      * 
      * @author Neal Mi.
      */
-    private class ISODateDeserializer implements JsonDeserializer<Date> {
+    private static class ISODateDeserializer implements JsonDeserializer<Date> {
         public Date deserialize(JsonElement json, Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException {
             return new DateTime(json.getAsJsonPrimitive().getAsString())
@@ -59,7 +59,7 @@ public class GsonRepresentation<T> extends WriterRepresentation {
      * 
      * @author Neal Mi.
      */
-    private class ISODateSerializer implements JsonSerializer<Date> {
+    private static class ISODateSerializer implements JsonSerializer<Date> {
         public JsonElement serialize(Date src, Type typeOfSrc,
                 JsonSerializationContext context) {
             DateTime dt = new DateTime(src);

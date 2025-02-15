@@ -93,7 +93,7 @@ public class HttpExchangeCall extends ServerCall {
 			final Headers headers = this.exchange.getRequestHeaders();
 
 			for (String name : headers.keySet()) {
-				for (String value : (List<String>) headers.get(name)) {
+				for (String value : headers.get(name)) {
 					result.add(name, value);
 				}
 			}

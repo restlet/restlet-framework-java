@@ -260,7 +260,7 @@ public class ServletCall extends ServerCall {
     public String getRequestUri() {
         final String queryString = getRequest().getQueryString();
 
-        if ((queryString == null) || (queryString.equals(""))) {
+        if ((queryString == null) || (queryString.isEmpty())) {
             return getRequest().getRequestURI();
         }
 
@@ -328,7 +328,7 @@ public class ServletCall extends ServerCall {
         Object sessionId = getRequest().getAttribute(
                 "jakarta.servlet.request.ssl_session_id");
 
-        if ((sessionId != null) && (sessionId instanceof String)) {
+        if (sessionId instanceof String) {
             return (String) sessionId;
         }
 

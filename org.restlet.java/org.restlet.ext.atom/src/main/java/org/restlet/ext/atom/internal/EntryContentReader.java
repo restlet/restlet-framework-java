@@ -229,7 +229,7 @@ public class EntryContentReader extends EntryReader {
                             .toString().trim();
                     contentDepth = -1;
 
-                    if ("".equals(content)) {
+                    if (content.isEmpty()) {
                         this.currentLink.setContent(null);
                     } else {
                         if (this.currentLink.getType() != null) {
@@ -264,7 +264,7 @@ public class EntryContentReader extends EntryReader {
                                 .toString().trim();
                         contentDepth = -1;
 
-                        if ("".equals(content)) {
+                        if (content.isEmpty()) {
                             this.currentEntry.setContent(null);
                         } else {
                             currentContent

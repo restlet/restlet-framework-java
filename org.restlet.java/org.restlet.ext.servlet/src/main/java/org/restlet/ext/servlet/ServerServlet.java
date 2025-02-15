@@ -408,7 +408,7 @@ public class ServerServlet extends HttpServlet {
                         .getConstructor();
 
                 log("[Restlet] ServerServlet: instantiating custom component");
-                component = (Component) ctor.newInstance();
+                component = ctor.newInstance();
             } catch (IllegalAccessException e) {
                 log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
                         + componentClassName, e);

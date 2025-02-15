@@ -743,7 +743,7 @@ public class ClientResource extends Resource {
      * @return The optional response entity.
      */
     protected Representation handle(Method method, MediaType mediaType) {
-        return handle(method, (Representation) null, mediaType);
+        return handle(method, null, mediaType);
     }
 
 
@@ -989,9 +989,7 @@ public class ClientResource extends Resource {
     }
 
     /**
-     * Patches a resource with the given object as delta state. Automatically
-     * serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Patches a resource with the given object as delta state.
      * 
      * @param entity
      *            The object entity containing the patch.
@@ -1009,9 +1007,7 @@ public class ClientResource extends Resource {
 
 
     /**
-     * Patches a resource with the given object as delta state. Automatically
-     * serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Patches a resource with the given object as delta state.
      * 
      * @param entity
      *            The object entity containing the patch.
@@ -1045,8 +1041,7 @@ public class ClientResource extends Resource {
     }
 
     /**
-     * Posts an object entity. Automatically serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Posts an object entity.
      * 
      * @param entity
      *            The object entity to post.
@@ -1066,8 +1061,7 @@ public class ClientResource extends Resource {
 
 
     /**
-     * Posts an object entity. Automatically serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Posts an object entity.
      * 
      * @param entity
      *            The object entity to post.
@@ -1105,8 +1099,7 @@ public class ClientResource extends Resource {
     }
 
     /**
-     * Puts an object entity. Automatically serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Puts an object entity.
      * 
      * @param entity
      *            The object entity to put.
@@ -1126,8 +1119,7 @@ public class ClientResource extends Resource {
 
 
     /**
-     * Puts an object entity. Automatically serializes the object using the
-     * {@link org.restlet.client.service.ConverterService}.
+     * Puts an object entity.
      * 
      * @param entity
      *            The object entity to post.

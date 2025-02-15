@@ -40,13 +40,11 @@ public class HttpAwsQueryHelper extends AuthenticatorHelper {
         Form query = result.getQueryAsForm();
 
         if (query.getFirst("Action") != null) {
-            query.add("AWSAccessKeyId", new String(request
-                    .getChallengeResponse().getIdentifier()));
+            query.add("AWSAccessKeyId", request.getChallengeResponse().getIdentifier());
             query.add("SignatureMethod", "HmacSHA256");
             query.add("SignatureVersion", "2");
             query.add("Version", "2009-04-15");
-            String df = DateUtils.format(new Date(),
-                    DateUtils.FORMAT_ISO_8601.get(0));
+            String df = DateUtils.format(new Date(), DateUtils.FORMAT_ISO_8601.get(0));
             query.add("Timestamp", df);
 
             // Compute then add the signature parameter

@@ -32,7 +32,7 @@ public class LogUtils {
 	public static String getBestClassName(Class<?> clazz) {
 		String result = clazz.getSimpleName();
 
-		if ((result == null) || (result.equals(""))) {
+		if (result.isEmpty()) {
 			result = getBestClassName(clazz.getSuperclass());
 		}
 

@@ -42,8 +42,7 @@ public class EncoderService extends Service {
 	 * @return The list of default encoded media types.
 	 */
 	public static List<MediaType> getDefaultAcceptedMediaTypes() {
-		final List<MediaType> result = Arrays.<MediaType>asList(MediaType.ALL);
-		return result;
+        return Arrays.asList(MediaType.ALL);
 	}
 
 	/**
@@ -54,11 +53,10 @@ public class EncoderService extends Service {
 	 * @return The list of default ignored media types.
 	 */
 	public static List<MediaType> getDefaultIgnoredMediaTypes() {
-		final List<MediaType> result = Arrays.<MediaType>asList(MediaType.APPLICATION_CAB,
+        return Arrays.asList(MediaType.APPLICATION_CAB,
 				MediaType.APPLICATION_GNU_ZIP, MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
 				MediaType.APPLICATION_JAVA_ARCHIVE, MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
 				MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
-		return result;
 	}
 
 	/**

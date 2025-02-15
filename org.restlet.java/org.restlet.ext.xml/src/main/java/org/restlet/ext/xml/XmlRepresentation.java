@@ -79,14 +79,8 @@ public abstract class XmlRepresentation extends WriterRepresentation implements 
     private static void appendTextContent(Node node, StringBuilder sb) {
         switch (node.getNodeType()) {
         case Node.TEXT_NODE:
-            sb.append(node.getNodeValue());
-            break;
         case Node.CDATA_SECTION_NODE:
-            sb.append(node.getNodeValue());
-            break;
         case Node.COMMENT_NODE:
-            sb.append(node.getNodeValue());
-            break;
         case Node.PROCESSING_INSTRUCTION_NODE:
             sb.append(node.getNodeValue());
             break;
@@ -97,20 +91,8 @@ public abstract class XmlRepresentation extends WriterRepresentation implements 
             }
             break;
         case Node.ELEMENT_NODE:
-            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-                appendTextContent(node.getChildNodes().item(i), sb);
-            }
-            break;
         case Node.ATTRIBUTE_NODE:
-            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-                appendTextContent(node.getChildNodes().item(i), sb);
-            }
-            break;
         case Node.ENTITY_NODE:
-            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-                appendTextContent(node.getChildNodes().item(i), sb);
-            }
-            break;
         case Node.DOCUMENT_FRAGMENT_NODE:
             for (int i = 0; i < node.getChildNodes().getLength(); i++) {
                 appendTextContent(node.getChildNodes().item(i), sb);

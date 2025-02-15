@@ -134,7 +134,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                     cw.append(',');
                 }
 
-                cw.appendToken(challenge.getQualityOptions().get(i).toString());
+                cw.appendToken(challenge.getQualityOptions().get(i));
             }
 
             cw.append('"');

@@ -12,14 +12,12 @@ package org.restlet.client.data;
 import java.util.Arrays;
 
 import org.restlet.client.engine.util.SystemUtils;
-import org.restlet.client.representation.Representation;
 
 /**
  * Describes a digest value and the digest algorithm used. Digests can have
- * several use cases such as ensuring the integrity of representations exchanges
+ * several use cases such as ensuring the integrity of representations' exchanges
  * between resources, or for authentication purpose.
  * 
- * @see Representation#getDigest()
  * @author Jerome Louvel
  * @deprecated Will be removed in the next 2.7/3.0 release.
  */
@@ -38,18 +36,18 @@ public class Digest {
     /** Digest algorithm defined in Secure Hash Standard, NIST FIPS 180-1. */
     public static final String ALGORITHM_SHA_1 = "SHA-1";
 
-    /** NIST approved digest algorithm from SHA-2 family. */
+    /** NIST approved digest algorithm from the SHA-2 family. */
     public static final String ALGORITHM_SHA_256 = "SHA-256";
 
-    /** NIST approved digest algorithm from SHA-2 family. */
+    /** NIST approved digest algorithm from the SHA-2 family. */
     public static final String ALGORITHM_SHA_384 = "SHA-384";
 
-    /** NIST approved digest algorithm from SHA-2 family. */
+    /** NIST approved digest algorithm from the SHA-2 family. */
     public static final String ALGORITHM_SHA_512 = "SHA-512";
 
     /**
      * Digest algorithm for the HTTP DIGEST scheme. This is exactly the A1 value
-     * specified in RFC2617 which is a MD5 hash of the user name, realm and
+     * specified in RFC2617, which is a MD5 hash of the username, realm and
      * password, separated by a colon character.
      */
     public static final String ALGORITHM_HTTP_DIGEST = "HTTP-DIGEST-A1";
@@ -83,15 +81,12 @@ public class Digest {
 
         // In Java 6, use Arrays.copyOf.
         this.value = new byte[value.length];
-        for (int i = 0; i < value.length; i++) {
-            this.value[i] = value[i];
-        }
+        System.arraycopy(value, 0, this.value, 0, value.length);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Digest) {
-            Digest that = (Digest) obj;
+        if (obj instanceof Digest that) {
             if (getAlgorithm().equals(that.getAlgorithm())) {
                 return Arrays.equals(getValue(), that.getValue());
             }
@@ -116,9 +111,7 @@ public class Digest {
     public byte[] getValue() {
         // In Java 6, use Arrays.copyOf.
         byte[] result = new byte[this.value.length];
-        for (int i = 0; i < this.value.length; i++) {
-            result[i] = this.value[i];
-        }
+        System.arraycopy(this.value, 0, result, 0, this.value.length);
 
         return result;
     }

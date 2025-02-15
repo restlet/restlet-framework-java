@@ -210,10 +210,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return The number of bytes consumed or -1 if unknown.
      */
     public long exhaust() throws IOException {
-        long result = -1L;
-
-
-        return result;
+        return -1L;
     }
 
     /**
@@ -239,8 +236,8 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Returns the future date when this representation expire. If this
-     * information is not known, returns null.<br>
+     * Returns the future date when this representation expires.
+     * If this information is not known, returns null.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Expires" header.
@@ -265,10 +262,10 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Returns a characters reader with the representation's content. This
-     * method is ensured to return a fresh reader for each invocation unless it
-     * is a transient representation, in which case null is returned. If the
-     * representation has no character set defined, the system's default one
+     * Returns a reader of characters with the representation's content.
+     * This method is ensured to return a fresh reader for each invocation unless it
+     * is a transient representation, in which case null is returned.
+     * If the representation has no character set defined, the system's default one
      * will be used.
      * 
      * @return A reader with the representation's content.
@@ -305,7 +302,7 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Indicates if the size of representation is known. It basically means that
-     * its size 0 or superior.
+     * its size is 0 or superior.
      * 
      * @return True if the representation has content.
      */
@@ -315,11 +312,11 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Indicates if some fresh content is potentially available, without having
-     * to actually call one of the content manipulation method like getStream()
+     * to actually call one of the content manipulation methods like getStream()
      * that would actually consume it. Note that when the size of a
-     * representation is 0 is a not considered available. However, sometimes the
+     * representation is 0, then it is considered as unavailable. However, sometimes the
      * size isn't known until a read attempt is made, so availability doesn't
-     * guarantee a non empty content.<br>
+     * guarantee a non-empty content.<br>
      * <br>
      * This is especially useful for transient representation whose content can
      * only be accessed once and also when the size of the representation is not
@@ -354,8 +351,8 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Indicates if the representation's content is transient, which means that
      * it can be obtained only once. This is often the case with representations
-     * transmitted via network sockets for example. In such case, if you need to
-     * read the content several times, you need to cache it first, for example
+     * transmitted via network sockets, for example. In such a case, if you need to
+     * read the content several times, you need to cache it first, for example,
      * into memory or into a file.
      * 
      * @return True if the representation's content is transient.
@@ -376,7 +373,7 @@ public abstract class Representation extends RepresentationInfo {
      * <br>
      * Note that for transient socket-bound representations, calling this method
      * after consuming the whole content shouldn't prevent the reuse of
-     * underlying socket via persistent connections for example. However, if the
+     * underlying socket via persistent connections, for example. However, if the
      * content hasn't been read, or has been partially read, the impact should
      * be to discard the remaining content and to close the underlying
      * connections.<br>
@@ -385,9 +382,7 @@ public abstract class Representation extends RepresentationInfo {
      * content, you should first call the {@link #exhaust()} method or if this
      * could be too costly, you should instead explicitly abort the parent
      * request and the underlying connections using the {@link Request#abort()}
-     * method or a shortcut one like
-     * {@link org.restlet.client.resource.ServerResource#abort()} or
-     * {@link Response#abort()}.
+     * method or {@link Response#abort()}.
      */
     public void release() {
         setAvailable(false);
@@ -415,8 +410,8 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Sets the future date when this representation expire. If this information
-     * is not known, pass null.<br>
+     * Sets the future date when this representation expires.
+     * If this information is not known, pass null.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Expires" header.

@@ -138,7 +138,7 @@ public final class ChallengeScheme {
 	private final String description;
 
 	/** The name. */
-	private volatile String name;
+	private final String name;
 
 	/** The technical name. */
 	private volatile String technicalName;

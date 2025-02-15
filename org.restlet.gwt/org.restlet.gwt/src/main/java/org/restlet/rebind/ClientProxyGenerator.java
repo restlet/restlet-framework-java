@@ -651,13 +651,11 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 }
 
                 JType[] exceptions = method.getThrows();
-                if (exceptions.length > 0) {
-                    for (JType exception : exceptions) {
-                        if (!exceptionClass.isAssignableFrom(exception.isClass())) {
-                            getLogger().log(Type.WARN, "Only checked exceptions are supported");
-                        }
-                        addRootType(exception);
+                for (JType exception : exceptions) {
+                    if (!exceptionClass.isAssignableFrom(exception.isClass())) {
+                        getLogger().log(Type.WARN, "Only checked exceptions are supported");
                     }
+                    addRootType(exception);
                 }
             }
 

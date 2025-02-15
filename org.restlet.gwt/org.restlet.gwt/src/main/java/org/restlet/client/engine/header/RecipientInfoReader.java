@@ -50,7 +50,7 @@ public class RecipientInfoReader extends HeaderReader<RecipientInfo> {
         RecipientInfo result = new RecipientInfo();
         String protocolToken = readToken();
 
-        if (protocolToken == null || "".equals(protocolToken)) {
+        if (protocolToken == null || protocolToken.isEmpty()) {
             throw new IOException(
                     "Unexpected empty protocol token for while reading recipient info header, please check the value.");
         }

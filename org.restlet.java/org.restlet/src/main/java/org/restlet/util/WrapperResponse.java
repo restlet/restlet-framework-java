@@ -37,7 +37,7 @@ public class WrapperResponse extends Response {
 	 * @param wrappedResponse The wrapped response.
 	 */
 	public WrapperResponse(Response wrappedResponse) {
-		super((Request) null);
+		super(null);
 		this.wrappedResponse = wrappedResponse;
 	}
 

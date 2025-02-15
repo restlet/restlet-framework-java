@@ -139,10 +139,10 @@ public class EntityType extends ODataType {
     }
 
     /**
-     * Returns true if this type a blob, that is to say it represents binary
+     * Returns true if this type is a blob, that is to say it represents binary
      * data.
      * 
-     * @return True if this type a blob, that is to say it represents binary
+     * @return True, if this type is a blob, that is to say, it represents binary
      *         data.
      */
     public boolean isBlob() {
@@ -160,10 +160,10 @@ public class EntityType extends ODataType {
     }
 
     /**
-     * Indicates if this type a blob, that is to say it represents binary data.
+     * Indicates if this type is a blob, that is to say it represents binary data.
      * 
-     * @param media
-     *            True if this type a blob, that is to say it represents binary
+     * @param blob
+     *            True, if this type is a blob, that is to say, it represents binary
      *            data.
      */
     public void setBlob(boolean blob) {

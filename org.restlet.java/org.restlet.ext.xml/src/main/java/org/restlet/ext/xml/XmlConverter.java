@@ -130,13 +130,13 @@ public class XmlConverter extends ConverterHelper {
                 }
             } else if (DomRepresentation.class.isAssignableFrom(target)) {
                 if (source instanceof DomRepresentation) {
-                    result = (DomRepresentation) source;
+                    result = source;
                 } else {
                     result = new DomRepresentation(source);
                 }
             } else if (SaxRepresentation.class.isAssignableFrom(target)) {
                 if (source instanceof SaxRepresentation) {
-                    result = (SaxRepresentation) source;
+                    result = source;
                 } else {
                     result = new SaxRepresentation(source);
                 }

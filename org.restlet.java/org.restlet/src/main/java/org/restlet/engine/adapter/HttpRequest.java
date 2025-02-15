@@ -411,7 +411,7 @@ public class HttpRequest extends Request {
 	@Override
 	public Representation getEntity() {
 		if (!this.entityAdded) {
-			setEntity(((ServerCall) getHttpCall()).getRequestEntity());
+			setEntity(getHttpCall().getRequestEntity());
 			this.entityAdded = true;
 		}
 

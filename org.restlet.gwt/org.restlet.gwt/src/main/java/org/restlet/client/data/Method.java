@@ -268,7 +268,7 @@ public final class Method implements Comparable<Method> {
      */
     public static void register(Method method) {
         String name = (method == null) ? null : method.getName().toLowerCase();
-        if ((name != null) && !name.equals("")) {
+        if ((name != null) && !name.isEmpty()) {
             _methods.put(name, method);
         }
     }
@@ -298,7 +298,7 @@ public final class Method implements Comparable<Method> {
     public static Method valueOf(final String name) {
         Method result = null;
 
-        if ((name != null) && !name.equals("")) {
+        if ((name != null) && !name.isEmpty()) {
             result = Method._methods.get(name.toLowerCase());
             if (result == null) {
                 result = new Method(name);
@@ -312,7 +312,7 @@ public final class Method implements Comparable<Method> {
     private final String description;
 
     /**
-     * Indicates if the side-effects of several requests is the same as a single
+     * Indicates if the side effects of several requests is the same as a single
      * request.
      */
     private volatile boolean idempotent;

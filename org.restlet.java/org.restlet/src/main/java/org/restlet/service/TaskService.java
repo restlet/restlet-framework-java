@@ -594,7 +594,7 @@ public class TaskService extends Service implements ScheduledExecutorService {
 	 */
 	public List<Runnable> shutdownNow() {
 		return isShutdownAllowed() && (getWrapped() != null) ? getWrapped().shutdownNow()
-				: Collections.<Runnable>emptyList();
+				: Collections.emptyList();
 	}
 
 	@Override

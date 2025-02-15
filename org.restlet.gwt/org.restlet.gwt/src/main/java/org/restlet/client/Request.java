@@ -113,7 +113,7 @@ public class Request extends Message {
      * Constructor.
      */
     public Request() {
-        this((Method) null, (Reference) null, (Representation) null);
+        this(null, (Reference) null, null);
     }
 
     /**
@@ -284,7 +284,7 @@ public class Request extends Message {
 
     /**
      * Ask the connector to attempt to abort the related network connection, for
-     * example immediately closing the socket.
+     * example, immediately closing the socket.
      * 
      * @return True if the request was aborted.
      */
@@ -416,7 +416,7 @@ public class Request extends Message {
 
     /**
      * Returns the host reference. This may be different from the resourceRef's
-     * host, for example for URNs and other URIs that don't contain host
+     * host, for example, for URNs and other URIs that don't contain host
      * information.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
@@ -479,10 +479,11 @@ public class Request extends Message {
             // Attempt to guess the protocol to use
             // from the target reference scheme
             result = getResourceRef().getSchemeProtocol();
-            // Fallback: look at base reference scheme
+            // Fallback: look at the scheme of the base reference
             if (result == null) {
-                result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
-                        .getBaseRef().getSchemeProtocol() : null;
+                result = (getResourceRef().getBaseRef() != null)
+                        ? getResourceRef() .getBaseRef().getSchemeProtocol()
+                        : null;
             }
         }
 
@@ -530,18 +531,11 @@ public class Request extends Message {
      * 
      * If you need to get the URI reference originally requested by the client,
      * then you should use the {@link #getOriginalRef()} method instead. Also,
-     * note that beside the update of its base property, the resource reference
+     * note that besides the update of its base property, the resource reference
      * can be modified during the request processing.
      * 
-     * For example, the {@link org.restlet.client.service.TunnelService} associated to
-     * an application can extract some special extensions or query parameters
-     * and replace them by semantically equivalent properties on the request
-     * object. Therefore, the resource reference can become different from the
-     * original reference.
-     * 
-     * Finally, when sending out requests via a dispatcher such as {@link Context#getClientDispatcher()} or
-     * {@link Context#getServerDispatcher()}, if the reference contains URI
-     * template variables, those variables are automatically resolved using the
+     * Finally, when sending out requests via a dispatcher such as {@link Context#getClientDispatcher()},
+     * if the reference contains URI template variables, those variables are automatically resolved using the
      * request's attributes.
      * 
      * @return The reference of the target resource.
@@ -583,7 +577,7 @@ public class Request extends Message {
     /**
      * Indicates if a content is available and can be sent. Several conditions
      * must be met: the method must allow the sending of content, the content
-     * must exists and have some available data.
+     * must exist and have some available data.
      * 
      * @return True if a content is available and can be sent.
      */
@@ -736,7 +730,7 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the host reference using an URI string. Note that when used with
+     * Sets the host reference using a URI string. Note that when used with
      * HTTP connectors, this property maps to the "Host" header.
      * 
      * @param hostUri
@@ -848,7 +842,7 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the referrer reference if available using an URI string. Note that
+     * Sets the referrer reference if available using a URI string. Note that
      * when used with HTTP connectors, this property maps to the "Referer"
      * header.
      * 
@@ -875,8 +869,8 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the target resource reference using an URI string. Note that the URI
-     * can be either absolute or relative to the context's base reference.
+     * Sets the target resource reference using a URI string.
+     * Note that the URI can be either absolute or relative to the context's base reference.
      * 
      * @param resourceUri
      *            The resource URI.

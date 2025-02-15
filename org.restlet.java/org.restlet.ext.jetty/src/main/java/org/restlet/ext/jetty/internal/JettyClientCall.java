@@ -143,9 +143,7 @@ public class JettyClientCall extends ClientCall {
      * Returns the response entity if available. Note that no metadata is
      * associated by default, you have to manually set them from your headers.
      * 
-     * As jetty client decode the input stream on the fly in
-     * {@link org.eclipse.jetty.client.HttpReceiver#responseContent(org.eclipse.jetty.client.HttpExchange, java.nio.ByteBuffer, org.eclipse.jetty.util.Callback)}
-     * we have to clear the
+     * As a jetty client decodes the input stream on the fly, we have to clear the
      * {@link org.restlet.representation.Representation#getEncodings()} to avoid
      * decoding the input stream another time.
      * 
@@ -211,7 +209,7 @@ public class JettyClientCall extends ClientCall {
     }
 
     /**
-     * Sends the request to the client. Commits the request line, headers and
+     * Sends the request to the client. Commits the request line, headers, and
      * optional entity and send them over the network.
      * 
      * @param request The high-level request.

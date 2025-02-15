@@ -135,18 +135,18 @@ public class ReferenceList extends WrapperList<Reference> {
 		sb.append("<html><body style=\"font-family: sans-serif;\">\n");
 
 		if (getIdentifier() != null) {
-			sb.append("<h2>Listing of \"" + getIdentifier().getPath() + "\"</h2>\n");
+			sb.append("<h2>Listing of \"").append(getIdentifier().getPath()).append("\"</h2>\n");
 			final Reference parentRef = getIdentifier().getParentRef();
 
 			if (!parentRef.equals(getIdentifier())) {
-				sb.append("<a href=\"" + parentRef + "\">..</a><br>\n");
+				sb.append("<a href=\"").append(parentRef).append("\">..</a><br>\n");
 			}
 		} else {
 			sb.append("<h2>List of references</h2>\n");
 		}
 
 		for (final Reference ref : this) {
-			sb.append("<a href=\"" + ref.toString() + "\">" + ref.getRelativeRef(getIdentifier()) + "</a><br>\n");
+			sb.append("<a href=\"").append(ref.toString()).append("\">").append(ref.getRelativeRef(getIdentifier())).append("</a><br>\n");
 		}
 		sb.append("</body></html>\n");
 

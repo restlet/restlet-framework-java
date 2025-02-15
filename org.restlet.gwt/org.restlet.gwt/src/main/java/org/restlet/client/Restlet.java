@@ -61,7 +61,7 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
-     * Constructor with the Restlet's context which can be the parent's
+     * Constructor with the Restlet's context, which can be the parent's
      * application context, but shouldn't be the parent Component's context for
      * security reasons.
      * 
@@ -166,10 +166,9 @@ public abstract class Restlet implements Uniform {
 
 
     /**
-     * Handles a call. The default behavior is to initialize the Restlet by
-     * setting the current context using the {@link Context#setCurrent(Context)}
-     * method and by attempting to start it, unless it was already started. If
-     * an exception is thrown during the start action, then the response status
+     * Handles a call.
+     * The default behavior is to attempt to start it, unless it was already started.
+     * If an exception is thrown during the start action, then the response status
      * is set to {@link Status#SERVER_ERROR_INTERNAL}.
      * <p>
      * Subclasses overriding this method should make sure that they call
@@ -307,11 +306,11 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
-     * Starts the Restlet. By default its only sets "started" internal property
-     * to true.
+     * Starts the Restlet.
+     * By default, its only sets "started" internal property to true.
      * 
      * WARNING: this method must be called at the end of the starting process by
-     * subclasses otherwise concurrent threads could enter into the call
+     *  subclasses, otherwise concurrent threads could enter into the call
      * handling logic too early.
      */
     public synchronized void start() throws Exception {
@@ -319,11 +318,11 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
-     * Stops the Restlet. By default its only sets "started" internal property
-     * to false.
+     * Stops the Restlet.
+     * By default, its only sets "started" internal property to false.
      * 
      * WARNING: this method must be called at the beginning of the stopping
-     * process by subclasses otherwise concurrent threads could continue to
+     * process by subclasses, otherwise concurrent threads could continue to
      * (improperly) handle calls.
      */
     public synchronized void stop() throws Exception {

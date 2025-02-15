@@ -756,13 +756,9 @@ public class EntryContentHandler<T> extends EntryReader {
                     inlineEntryHandler.startEntry(entry);
                 break;
             case CONTENT:
-                break;
             case ENTRY:
-                break;
             case PROPERTIES:
-                break;
             case PROPERTY:
-                break;
             default:
                 break;
             }

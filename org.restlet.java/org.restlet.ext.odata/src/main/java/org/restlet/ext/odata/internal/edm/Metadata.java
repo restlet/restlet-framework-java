@@ -91,7 +91,7 @@ public class Metadata extends SaxRepresentation {
     public ComplexType getComplexType(Class<?> entityClass) {
         ComplexType result = null;
 
-        // Try to match the entity class names (without package);
+        // Try to match the entity class names (without the package);
         String className = entityClass.getName();
         int index = className.lastIndexOf(".");
         if (index != -1) {
@@ -126,11 +126,11 @@ public class Metadata extends SaxRepresentation {
     }
 
     /**
-     * Returns the subpath of the entitySet of the given entity type.
+     * Returns the sub-path of the entitySet of the given entity type.
      * 
-     * @param entity
-     *            The entity.
-     * @return The subpath of the entitySet of the given entity type.
+     * @param entityType
+     *            The entity type.
+     * @return The sub-path of the entitySet of the given entity type.
      */
     public String getEntitySetSubpath(EntityType entityType) {
         String result = null;
@@ -139,7 +139,7 @@ public class Metadata extends SaxRepresentation {
             return result;
         }
 
-        // Try to match the entity class names (without package);
+        // Try to match the entity class names (without the package);
         for (EntityContainer entityContainer : getContainers()) {
             for (EntitySet entitySet : entityContainer.getEntities()) {
                 EntityType type = entitySet.getType();
@@ -162,7 +162,7 @@ public class Metadata extends SaxRepresentation {
     public EntityType getEntityType(Class<?> entityClass) {
         EntityType result = null;
 
-        // Try to match the entity class names (without package);
+        // Try to match the entity class names (without the package);
         String className = entityClass.getName();
         int index = className.lastIndexOf(".");
         if (index != -1) {
@@ -197,7 +197,7 @@ public class Metadata extends SaxRepresentation {
      *         error.
      */
     public String getKeyValue(EntityType type, Object entity) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         if (type.getKeys() != null && !type.getKeys().isEmpty()) {
             if (type.getKeys().size() == 1) {
@@ -358,7 +358,7 @@ public class Metadata extends SaxRepresentation {
             return result;
         }
 
-        // Try to match the entity class names (without package);
+        // Try to match the entity class names (without the package);
         String entityClass = entity.getClass().getName();
         int index = entityClass.lastIndexOf(".");
         if (index != -1) {

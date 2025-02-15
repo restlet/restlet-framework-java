@@ -138,8 +138,7 @@ public class CallTestCase {
         final ClientInfo client = getRequest().getClientInfo();
         String firstAddress = "127.0.0.1";
         final String secondAddress = "192.168.99.10";
-        List<String> addresses = Arrays.asList(new String[] { firstAddress,
-                secondAddress });
+        List<String> addresses = Arrays.asList(firstAddress, secondAddress);
         client.getForwardedAddresses().addAll(addresses);
         assertEquals(addresses, client.getForwardedAddresses());
         

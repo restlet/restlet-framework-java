@@ -49,15 +49,9 @@ public class AlphaNumericComparator extends AlphabeticalComparator {
 
 		final int llength = uri0.length();
 		final int rlength = uri1.length();
-		final int min;
+		final int min = Math.min(rlength, llength);
 
-		if (rlength < llength) {
-			min = rlength;
-		} else {
-			min = llength;
-		}
-
-		boolean rAtEnd, rHasNoMoreDigits;
+        boolean rAtEnd, rHasNoMoreDigits;
 
 		while (ptr < min) {
 			a = uri0.charAt(ptr);

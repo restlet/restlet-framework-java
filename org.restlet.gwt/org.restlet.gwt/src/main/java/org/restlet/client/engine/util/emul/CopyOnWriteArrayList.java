@@ -9,11 +9,7 @@
 
 package org.restlet.client.engine.util.emul;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Emulate the CopyOnWriteArrayList class, especially for the GWT module.
@@ -22,7 +18,7 @@ import java.util.ListIterator;
  */
 public class CopyOnWriteArrayList<E> implements List<E> {
 
-    private List<E> list;
+    private final List<E> list;
 
     public CopyOnWriteArrayList() {
         super();
@@ -60,7 +56,7 @@ public class CopyOnWriteArrayList<E> implements List<E> {
     }
 
     public boolean containsAll(Collection<?> c) {
-        return list.containsAll(c);
+        return new HashSet<>(list).containsAll(c);
     }
 
     public E get(int index) {

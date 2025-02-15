@@ -56,13 +56,7 @@ public class IoUtils {
 	public static void copy(InputStream inputStream, java.io.OutputStream outputStream) throws IOException {
 		if (inputStream != null) {
 			if (outputStream != null) {
-				int bytesRead;
-				byte[] buffer = new byte[2048];
-
-				while ((bytesRead = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-
+				inputStream.transferTo(outputStream);
 				outputStream.flush();
 				inputStream.close();
 			} else {
@@ -102,13 +96,7 @@ public class IoUtils {
 	 * @throws IOException
 	 */
 	public static void copy(Reader reader, java.io.Writer writer) throws IOException {
-		int charsRead;
-		char[] buffer = new char[2048];
-
-		while ((charsRead = reader.read(buffer)) > 0) {
-			writer.write(buffer, 0, charsRead);
-		}
-
+		reader.transferTo(writer);
 		writer.flush();
 		reader.close();
 	}

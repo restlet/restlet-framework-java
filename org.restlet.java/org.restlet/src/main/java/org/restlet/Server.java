@@ -194,7 +194,7 @@ public class Server extends Connector {
 	 * @param next      The next Restlet.
 	 */
 	public Server(List<Protocol> protocols, int port, Restlet next) {
-		this((Context) null, protocols, port, next);
+		this(null, protocols, port, next);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class Server extends Connector {
 	 * @param next      The next Restlet.
 	 */
 	public Server(List<Protocol> protocols, String address, int port, Restlet next) {
-		this((Context) null, protocols, address, port, next);
+		this(null, protocols, address, port, next);
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class Server extends Connector {
 	 * @param protocol The connector protocol.
 	 */
 	public Server(Protocol protocol) {
-		this((Context) null, protocol, (Restlet) null);
+		this(null, protocol, (Restlet) null);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class Server extends Connector {
 	 * @param nextClass The next server resource.
 	 */
 	public Server(Protocol protocol, Class<? extends ServerResource> nextClass) {
-		this((Context) null, protocol);
+		this(null, protocol);
 		setNext(createFinder(nextClass));
 	}
 
@@ -238,7 +238,7 @@ public class Server extends Connector {
 	 * @param port     The listening port.
 	 */
 	public Server(Protocol protocol, int port) {
-		this((Context) null, protocol, port, (Restlet) null);
+		this(null, protocol, port, (Restlet) null);
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class Server extends Connector {
 	 * @param next     The next Restlet.
 	 */
 	public Server(Protocol protocol, int port, Restlet next) {
-		this((Context) null, protocol, port, next);
+		this(null, protocol, port, next);
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class Server extends Connector {
 	 * @param next     The next Restlet.
 	 */
 	public Server(Protocol protocol, Restlet next) {
-		this((Context) null, protocol, next);
+		this(null, protocol, next);
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class Server extends Connector {
 	 *                 the IP address to listen to.
 	 */
 	public Server(Protocol protocol, String address) {
-		this((Context) null, protocol, address, protocol.getDefaultPort(), null);
+		this(null, protocol, address, protocol.getDefaultPort(), null);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class Server extends Connector {
 	 * @param port     The listening port.
 	 */
 	public Server(Protocol protocol, String address, int port) {
-		this((Context) null, protocol, address, port, null);
+		this(null, protocol, address, port, null);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class Server extends Connector {
 	 * @param next     The next Restlet.
 	 */
 	public Server(Protocol protocol, String address, int port, Restlet next) {
-		this((Context) null, protocol, address, port, next);
+		this(null, protocol, address, port, next);
 	}
 
 	/**
@@ -337,7 +337,7 @@ public class Server extends Connector {
 	 * @param next     The next Restlet.
 	 */
 	public Server(Protocol protocol, String address, Restlet next) {
-		this((Context) null, protocol, address, protocol.getDefaultPort(), next);
+		this(null, protocol, address, protocol.getDefaultPort(), next);
 	}
 
 	/**

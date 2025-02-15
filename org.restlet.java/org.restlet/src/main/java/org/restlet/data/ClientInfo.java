@@ -111,7 +111,7 @@ public final class ClientInfo {
 	/**
 	 * List of user-agent templates defined in "agent.properties" file.<br>
 	 * 
-	 * @see The {@link ClientInfo#getAgentAttributes()} method.
+	 * @see ClientInfo#getAgentAttributes()
 	 */
 	private static volatile List<String> userAgentTemplates = null;
 
@@ -145,7 +145,7 @@ public final class ClientInfo {
 	 * Returns the list of user-agent templates defined in "agent.properties" file.
 	 * 
 	 * @return The list of user-agent templates defined in "agent.properties" file.
-	 * @see The {@link ClientInfo#getAgentAttributes()} method.
+	 * @see ClientInfo#getAgentAttributes()
 	 */
 	private static List<String> getUserAgentTemplates() {
 		// Lazy initialization with double-check.

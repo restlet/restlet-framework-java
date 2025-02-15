@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -561,77 +562,69 @@ public class DefaultSslContextFactory extends SslContextFactory {
 	public void init(Series<Parameter> helperParameters) {
 		// Parses and set the disabled cipher suites
 		String[] disabledCipherSuitesArray = helperParameters.getValuesArray("disabledCipherSuites");
-		Set<String> disabledCipherSuites = new HashSet<String>();
+		Set<String> disabledCipherSuites = new HashSet<>();
 
 		for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
-			for (String disabledCipherSuite : disabledCipherSuiteSeries.split(" ")) {
-				disabledCipherSuites.add(disabledCipherSuite);
-			}
+            Collections.addAll(disabledCipherSuites, disabledCipherSuiteSeries.split(" "));
 		}
 
-		if (disabledCipherSuites.size() > 0) {
-			disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
-			disabledCipherSuites.toArray(disabledCipherSuitesArray);
-			setDisabledCipherSuites(disabledCipherSuitesArray);
-		} else {
-			setDisabledCipherSuites(null);
-		}
+        if (disabledCipherSuites.isEmpty()) {
+            setDisabledCipherSuites(null);
+        } else {
+            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
+            disabledCipherSuites.toArray(disabledCipherSuitesArray);
+            setDisabledCipherSuites(disabledCipherSuitesArray);
+        }
 
-		// Parses and set the disabled protocols
+        // Parses and set the disabled protocols
 		String[] disabledProtocolsArray = helperParameters.getValuesArray("disabledProtocols");
-		Set<String> disabledProtocols = new HashSet<String>();
+		Set<String> disabledProtocols = new HashSet<>();
 
 		for (String disabledProtocolsSeries : disabledProtocolsArray) {
-			for (String disabledProtocol : disabledProtocolsSeries.split(" ")) {
-				disabledProtocols.add(disabledProtocol);
-			}
+            Collections.addAll(disabledProtocols, disabledProtocolsSeries.split(" "));
 		}
 
-		if (disabledProtocols.size() > 0) {
-			disabledProtocolsArray = new String[disabledProtocols.size()];
-			disabledProtocols.toArray(disabledProtocolsArray);
-			setDisabledProtocols(disabledProtocolsArray);
-		} else {
-			setDisabledProtocols(null);
-		}
+        if (disabledProtocols.isEmpty()) {
+            setDisabledProtocols(null);
+        } else {
+            disabledProtocolsArray = new String[disabledProtocols.size()];
+            disabledProtocols.toArray(disabledProtocolsArray);
+            setDisabledProtocols(disabledProtocolsArray);
+        }
 
-		// Parses and set the enabled cipher suites
+        // Parses and set the enabled cipher suites
 		String[] enabledCipherSuitesArray = helperParameters.getValuesArray("enabledCipherSuites");
-		Set<String> enabledCipherSuites = new HashSet<String>();
+		Set<String> enabledCipherSuites = new HashSet<>();
 
 		for (String enabledCipherSuiteSeries : enabledCipherSuitesArray) {
-			for (String enabledCipherSuite : enabledCipherSuiteSeries.split(" ")) {
-				enabledCipherSuites.add(enabledCipherSuite);
-			}
+            Collections.addAll(enabledCipherSuites, enabledCipherSuiteSeries.split(" "));
 		}
 
-		if (enabledCipherSuites.size() > 0) {
-			enabledCipherSuitesArray = new String[enabledCipherSuites.size()];
-			enabledCipherSuites.toArray(enabledCipherSuitesArray);
-			setEnabledCipherSuites(enabledCipherSuitesArray);
-		} else {
-			setEnabledCipherSuites(null);
-		}
+        if (enabledCipherSuites.isEmpty()) {
+            setEnabledCipherSuites(null);
+        } else {
+            enabledCipherSuitesArray = new String[enabledCipherSuites.size()];
+            enabledCipherSuites.toArray(enabledCipherSuitesArray);
+            setEnabledCipherSuites(enabledCipherSuitesArray);
+        }
 
-		// Parses and set the enabled protocols
+        // Parses and set the enabled protocols
 		String[] enabledProtocolsArray = helperParameters.getValuesArray("enabledProtocols");
-		Set<String> enabledProtocols = new HashSet<String>();
+		Set<String> enabledProtocols = new HashSet<>();
 
 		for (String enabledProtocolSeries : enabledProtocolsArray) {
-			for (String enabledProtocol : enabledProtocolSeries.split(" ")) {
-				enabledProtocols.add(enabledProtocol);
-			}
+            Collections.addAll(enabledProtocols, enabledProtocolSeries.split(" "));
 		}
 
-		if (enabledProtocols.size() > 0) {
-			enabledProtocolsArray = new String[enabledProtocols.size()];
-			enabledProtocols.toArray(enabledProtocolsArray);
-			setEnabledProtocols(enabledProtocolsArray);
-		} else {
-			setEnabledProtocols(null);
-		}
+        if (enabledProtocols.isEmpty()) {
+            setEnabledProtocols(null);
+        } else {
+            enabledProtocolsArray = new String[enabledProtocols.size()];
+            enabledProtocols.toArray(enabledProtocolsArray);
+            setEnabledProtocols(enabledProtocolsArray);
+        }
 
-		setKeyManagerAlgorithm(helperParameters.getFirstValue("keyManagerAlgorithm", true,
+        setKeyManagerAlgorithm(helperParameters.getFirstValue("keyManagerAlgorithm", true,
 				System.getProperty("ssl.KeyManagerFactory.algorithm", "SunX509")));
 		setKeyStorePassword(helperParameters.getFirstValue("keyStorePassword", true,
 				System.getProperty("javax.net.ssl.keyStorePassword", "")));

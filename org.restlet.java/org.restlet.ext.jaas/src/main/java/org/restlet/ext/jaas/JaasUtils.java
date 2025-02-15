@@ -94,7 +94,7 @@ public final class JaasUtils {
     public static <T> T doAsPriviledged(ClientInfo clientInfo,
             PrivilegedAction<T> action, AccessControlContext acc) {
         Subject subject = JaasUtils.createSubject(clientInfo);
-        T result = (T) Subject.doAsPrivileged(subject, action, acc);
+        T result = Subject.doAsPrivileged(subject, action, acc);
         return result;
     }
 }

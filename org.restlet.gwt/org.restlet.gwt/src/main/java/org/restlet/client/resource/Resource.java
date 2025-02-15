@@ -43,23 +43,23 @@ import org.restlet.client.util.Series;
 
 /**
  * Base resource class exposing the uniform REST interface. Intended conceptual
- * target of a hypertext reference. An uniform resource encapsulates a
+ * target of a hypertext reference. A uniform resource encapsulates a
  * {@link Context}, a {@link Request} and a {@link Response}, corresponding to a
  * specific target resource.<br>
  * <br>
  * It also defines a precise life cycle. First, the instance is created and the
  * {@link #init(Context, Request, Response)} method is invoked. If you need to
- * do some additional initialization, you should just override the
+ * do some additional initialization, you should override the
  * {@link #doInit()} method.<br>
  * <br>
  * Then, the abstract {@link #handle()} method can be invoked. For concrete
- * behavior, see the {@link ClientResource} and {@link ServerResource}
+ * behavior, see the {@link ClientResource}
  * subclasses. Note that the state of the resource can be changed several times
  * and the {@link #handle()} method called more than once, but always by the
  * same thread.<br>
  * <br>
- * Finally, the final {@link #release()} method can be called to clean-up the
- * resource, with a chance for the developer to do some additional clean-up by
+ * Finally, the final {@link #release()} method can be called to clean up the
+ * resource, with a chance for the developer to do some additional cleanup by
  * overriding the {@link #doRelease()} method.<br>
  * <br>
  * Note also that throwable raised such as {@link Error} and {@link Exception}
@@ -210,7 +210,7 @@ public abstract class Resource {
 
     /**
      * Set-up method that can be overridden in order to initialize the state of
-     * the resource. By default it does nothing.
+     * the resource. By default, it does nothing.
      * 
      * @see #init(Context, Request, Response)
      */
@@ -219,7 +219,7 @@ public abstract class Resource {
 
     /**
      * Clean-up method that can be overridden in order to release the state of
-     * the resource. By default it does nothing.
+     * the resource. By default, it does nothing.
      * 
      * @see #release()
      */
@@ -330,7 +330,7 @@ public abstract class Resource {
     /**
      * Returns the modifiable set of selecting dimensions on which the response
      * entity may vary. If some server-side content negotiation is done, this
-     * set should be properly updated, other it can be left empty. Creates a new
+     * set should be properly updated, other it can be left empty. Create a new
      * instance if no one has been set.
      * 
      * @return The set of dimensions on which the response entity may vary.
@@ -342,7 +342,7 @@ public abstract class Resource {
 
     /**
      * Returns the host reference. This may be different from the resourceRef's
-     * host, for example for URNs and other URIs that don't contain host
+     * host, for example, for URNs and other URIs that don't contain host
      * information.
      * 
      * @return The host reference.
@@ -673,7 +673,7 @@ public abstract class Resource {
 
     /**
      * Indicates if the message was or will be exchanged confidentially, for
-     * example via a SSL-secured connection.
+     * example, via an SSL-secured connection.
      * 
      * @return True if the message is confidential.
      * @see Request#isConfidential()

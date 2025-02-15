@@ -54,9 +54,9 @@ public class Query<T> implements Iterable<T> {
      * 
      * @author Thierry Boileau
      * 
-     * @param <T>
+     * @param <E>
      */
-    private class EntryIterator<E> implements Iterator<E> {
+    private static class EntryIterator<E> implements Iterator<E> {
 
         /** The class of the listed objects. */
         private Class<?> entityClass;
@@ -239,7 +239,7 @@ public class Query<T> implements Iterable<T> {
     public Query<T> addParameter(String name, String value) {
         Query<T> result = new Query<T>(this.getService(), this.getSubpath(),
                 (Class<T>) this.entityClass);
-        if (getQuery() == null || "".equals(getQuery())) {
+        if (getQuery() == null || getQuery().isEmpty()) {
             result.setQuery(name + "=" + value);
         } else {
             result.setQuery(getQuery() + "&" + name + "=" + value);
@@ -275,7 +275,7 @@ public class Query<T> implements Iterable<T> {
             }
         }
 
-        if (getQuery() == null || "".equals(getQuery())) {
+        if (getQuery() == null || getQuery().isEmpty()) {
             result.setQuery(builder.toString());
         } else {
             result.setQuery(getQuery() + "&" + builder.toString());
@@ -286,7 +286,7 @@ public class Query<T> implements Iterable<T> {
 
     /**
      * Returns the complete target URI reference for this query. It is composed
-     * of the data service base URI, the subpath and the query string.
+     * of the data service base URI, the sub-path and the query string.
      * 
      * @return The complete target URI reference.
      */

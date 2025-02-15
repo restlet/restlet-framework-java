@@ -78,15 +78,12 @@ public class Digest {
 
 		// In Java 6, use Arrays.copyOf.
 		this.value = new byte[value.length];
-		for (int i = 0; i < value.length; i++) {
-			this.value[i] = value[i];
-		}
+        System.arraycopy(value, 0, this.value, 0, value.length);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Digest) {
-			Digest that = (Digest) obj;
+		if (obj instanceof Digest that) {
 			if (getAlgorithm().equals(that.getAlgorithm())) {
 				return Arrays.equals(getValue(), that.getValue());
 			}
@@ -111,9 +108,7 @@ public class Digest {
 	public byte[] getValue() {
 		// In Java 6, use Arrays.copyOf.
 		byte[] result = new byte[this.value.length];
-		for (int i = 0; i < this.value.length; i++) {
-			result[i] = this.value[i];
-		}
+        System.arraycopy(this.value, 0, result, 0, this.value.length);
 
 		return result;
 	}

@@ -48,7 +48,7 @@ public class RangeReader {
                         - startIndex + 1));
             }
 
-            String strLength = value.substring(index1 + 1, value.length());
+            String strLength = value.substring(index1 + 1);
             if (!("*".equals(strLength))) {
                 representation.setSize(Long.parseLong(strLength));
             }

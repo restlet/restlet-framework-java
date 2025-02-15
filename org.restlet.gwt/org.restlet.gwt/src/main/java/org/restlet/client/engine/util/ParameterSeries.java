@@ -30,14 +30,9 @@ public class ParameterSeries extends Series<Parameter> {
 	 *            The series for which an unmodifiable view should be returned.
 	 * @return The unmodifiable view of the specified series.
 	 */
-	public static ParameterSeries unmodifiableSeries(
-			final Series<Parameter> series) {
+	public static ParameterSeries unmodifiableSeries(final Series<Parameter> series) {
 		ParameterSeries result = new ParameterSeries();
-		for (Iterator<Parameter> iterator = series.iterator(); iterator
-				.hasNext();) {
-			result.add(iterator.next());
-		}
-
+		result.addAll(series);
 		return result;
 	}
 

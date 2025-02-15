@@ -472,7 +472,7 @@ public class Template {
 										// The variable is used several times in
 										// the pattern, ensure that this
 										// constraint is enforced when parsing.
-										patternBuffer.append("\\" + (varIndex + 1));
+										patternBuffer.append("\\").append(varIndex + 1);
 									} else {
 										// New variable detected. Insert a
 										// capturing group.

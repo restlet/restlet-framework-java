@@ -871,7 +871,7 @@ public class ClientResource extends Resource {
 	 * @return The optional response entity.
 	 */
 	protected Representation handle(Method method, MediaType mediaType) {
-		return handle(method, (Representation) null, mediaType);
+		return handle(method, null, mediaType);
 	}
 
 	/**

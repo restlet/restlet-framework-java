@@ -31,7 +31,7 @@ public class HttpResponse extends Response {
 	 */
 	public static void addHeader(Response response, String headerName, String headerValue) {
 		if (response instanceof HttpResponse) {
-			((Message) response).getHeaders().add(headerName, headerValue);
+			response.getHeaders().add(headerName, headerValue);
 		}
 	}
 

@@ -1176,7 +1176,7 @@ public class Reference {
 			String parentRef = null;
 			String path = getPath();
 
-			if (!path.equals("/") && !path.equals("")) {
+			if (!path.equals("/") && !path.isEmpty()) {
 				if (path.endsWith("/")) {
 					path = path.substring(0, path.length() - 1);
 				}
@@ -1460,7 +1460,7 @@ public class Reference {
 
 							relativePath = sb.toString();
 
-							if (relativePath.equals("")) {
+							if (relativePath.isEmpty()) {
 								relativePath = ".";
 							}
 						}
@@ -1771,7 +1771,7 @@ public class Reference {
 			} else {
 				result.setAuthority(baseReference.getAuthority());
 
-				if ((path == null) || (path.equals(""))) {
+				if ((path == null) || (path.isEmpty())) {
 					result.setPath(baseReference.getPath());
 
 					if (query != null) {
@@ -1786,7 +1786,7 @@ public class Reference {
 						final String basePath = baseReference.getPath();
 						String mergedPath = null;
 
-						if ((baseReference.getAuthority() != null) && ((basePath == null) || (basePath.equals("")))) {
+						if ((baseReference.getAuthority() != null) && ((basePath == null) || (basePath.isEmpty()))) {
 							mergedPath = "/" + path;
 						} else {
 							// Remove the last segment which may be empty if
@@ -2192,9 +2192,9 @@ public class Reference {
 
 			if (extensionIndex != -1) {
 				// Extensions found
-				sb.append(lastSegment.substring(0, extensionIndex));
+				sb.append(lastSegment, 0, extensionIndex);
 
-				if ((extensions != null) && (extensions.length() > 0)) {
+				if ((extensions != null) && (!extensions.isEmpty())) {
 					sb.append('.').append(extensions);
 				}
 
@@ -2203,11 +2203,11 @@ public class Reference {
 				}
 			} else {
 				// Extensions not found
-				if ((extensions != null) && (extensions.length() > 0)) {
+				if ((extensions != null) && (!extensions.isEmpty())) {
 					if (matrixIndex != -1) {
 						// Matrix found, make sure we append it
 						// after the extensions
-						sb.append(lastSegment.substring(0, matrixIndex)).append('.').append(extensions)
+						sb.append(lastSegment, 0, matrixIndex).append('.').append(extensions)
 								.append(lastSegment.substring(matrixIndex));
 					} else {
 						// No matrix found, just append the extensions
@@ -2497,7 +2497,7 @@ public class Reference {
 	 */
 	public void setQuery(String query) {
 		query = encodeInvalidCharacters(query);
-		final boolean emptyQueryString = ((query == null) || (query.length() <= 0));
+		final boolean emptyQueryString = ((query == null) || query.isEmpty());
 
 		if (hasQuery()) {
 			// Query found

@@ -20,7 +20,7 @@ import org.restlet.ext.odata.Service;
  * 
  * @author Thierry Boileau
  * 
- * @param <T>
+ * @param <E>
  * @deprecated Will be removed in next major release.
  */
 @Deprecated

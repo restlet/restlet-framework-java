@@ -103,7 +103,8 @@ public class RangeWriter extends HeaderWriter<Range> {
             return this;
         }
 
-        append(ranges.get(0).getUnitName() + "=");
+        append(ranges.get(0).getUnitName());
+        append("=");
 
         for (int i = 0; i < ranges.size(); i++) {
             if (i > 0) {

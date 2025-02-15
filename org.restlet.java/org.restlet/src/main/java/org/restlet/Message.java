@@ -63,7 +63,7 @@ public abstract class Message {
 	 * Constructor.
 	 */
 	public Message() {
-		this((Representation) null);
+		this(null);
 	}
 
 	/**

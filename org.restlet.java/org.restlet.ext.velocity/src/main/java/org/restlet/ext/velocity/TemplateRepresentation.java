@@ -43,7 +43,7 @@ public class TemplateRepresentation extends WriterRepresentation {
      * 
      * @see Resolver
      */
-    private class ResolverContext implements org.apache.velocity.context.Context {
+    private static class ResolverContext implements org.apache.velocity.context.Context {
         /** The inner resolver instance. */
         private final Resolver<? extends Object> resolver;
 

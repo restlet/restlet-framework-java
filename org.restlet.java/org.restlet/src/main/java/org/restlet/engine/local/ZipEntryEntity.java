@@ -102,7 +102,7 @@ public class ZipEntryEntity extends Entity {
 
 	@Override
 	public Entity getParent() {
-		if ("".equals(entry.getName()))
+		if (entry.getName().isEmpty())
 			return null;
 
 		String n = entry.getName();
@@ -117,7 +117,7 @@ public class ZipEntryEntity extends Entity {
 
 	@Override
 	public boolean isDirectory() {
-		if ("".equals(entry.getName()))
+		if (entry.getName().isEmpty())
 			return true;
 		return entry.isDirectory();
 	}

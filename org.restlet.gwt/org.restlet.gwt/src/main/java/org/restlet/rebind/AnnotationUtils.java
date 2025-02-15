@@ -77,13 +77,11 @@ public class AnnotationUtils {
 
         if (javaMethod != null) {
             for (Annotation annotation : javaMethod.getAnnotations()) {
-                Annotation methodAnnotation = annotation.annotationType()
+                org.restlet.client.engine.connector.Method methodAnnotation = annotation.annotationType()
                         .getAnnotation(org.restlet.client.engine.connector.Method.class);
 
                 if (methodAnnotation != null) {
-                    Method restletMethod = Method
-                            .valueOf(((org.restlet.client.engine.connector.Method) methodAnnotation)
-                                    .value());
+                    Method restletMethod = Method.valueOf(methodAnnotation.value());
 
                     String value = extractAnnotationValue(annotation);
 

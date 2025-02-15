@@ -24,41 +24,9 @@ public final class Protocol {
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
 
-    /**
-     * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
-     */
-    public static final Protocol AJP = new Protocol("ajp", "AJP",
-            "Apache Jakarta Protocol", 8009);
-
-    /** All protocols wildcard. */
+    /** All protocols' wildcard. */
     public static final Protocol ALL = new Protocol("all", "ALL",
             "Wildcard for all protocols", UNKNOWN_PORT);
-
-    /**
-     * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
-     * representations via classloaders. Example URI:
-     * "clap://thread/org/restlet/Restlet.class".<br>
-     * <br>
-     * In order to work, CLAP requires a client connector provided by the core
-     * Restlet engine.
-     * 
-     * @see org.restlet.client.data.LocalReference
-     */
-    public static final Protocol CLAP = new Protocol("clap", "CLAP",
-            "Class Loader Access Protocol", UNKNOWN_PORT, true);
-
-    /**
-     * FILE is a standard scheme to access to representations stored in the file
-     * system (locally most of the time). Example URI:
-     * "file:///D/root/index.html".<br>
-     * <br>
-     * In order to work, FILE requires a client connector provided by the core
-     * Restlet engine.
-     * 
-     * @see org.restlet.client.data.LocalReference
-     */
-    public static final Protocol FILE = new Protocol("file", "FILE",
-            "Local File System Protocol", UNKNOWN_PORT, true);
 
     /** FTP protocol. */
     public static final Protocol FTP = new Protocol("ftp", "FTP",
@@ -72,22 +40,6 @@ public final class Protocol {
     public static final Protocol HTTPS = new Protocol("https", "HTTPS", "HTTP",
             "HyperText Transport Protocol (Secure)", 443, true, "1.1");
 
-    /**
-     * JAR (Java ARchive) is a common scheme to access to representations inside
-     * archive files. Example URI:
-     * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".
-     * 
-     * @see org.restlet.client.data.LocalReference#createJarReference(Reference,
-     *      String)
-     */
-    public static final Protocol JAR = new Protocol("jar", "JAR",
-            "Java ARchive", UNKNOWN_PORT, true);
-
-    /** JDBC protocol. */
-    public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
-            "Java DataBase Connectivity", UNKNOWN_PORT);
-
-
     /** POP protocol. */
     @Deprecated
     public static final Protocol POP = new Protocol("pop", "POP",
@@ -97,20 +49,6 @@ public final class Protocol {
     @Deprecated
     public static final Protocol POPS = new Protocol("pops", "POPS",
             "Post Office Protocol (Secure)", 995, true);
-
-    /**
-     * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
-     * representations via internal calls to virtual hosts/components. Example
-     * URIs: "riap://component/myAppPath/myResource" and
-     * "riap://application/myResource".<br>
-     * <br>
-     * In order to work, RIAP doesn't requires any client connector and is
-     * automatically supported by the Restlet engine.
-     * 
-     * @see org.restlet.client.data.LocalReference
-     */
-    public static final Protocol RIAP = new Protocol("riap", "RIAP",
-            "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
 
     /**
      * SDC (Secure Data Connector) protocol. <br>
@@ -142,20 +80,6 @@ public final class Protocol {
     public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
             "Simple Mail Transfer Protocol (Secure)", 465, true);
 
-    /** Local Web Archive access protocol. */
-    public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", UNKNOWN_PORT, true);
-
-    /**
-     * ZIP is a special scheme to access to representations inside Zip archive
-     * files. Example URI: "zip:file:///tmp/test.zip!/test.txt".
-     * 
-     * @see org.restlet.client.data.LocalReference#createZipReference(Reference,
-     *      String)
-     */
-    public static final Protocol ZIP = new Protocol("zip", "ZIP",
-            "Zip Archive Access Protocol", UNKNOWN_PORT, true);
-
     /**
      * Creates the protocol associated to a URI scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
@@ -168,28 +92,16 @@ public final class Protocol {
         Protocol result = null;
 
         if (!StringUtils.isNullOrEmpty(name)) {
-            if (name.equalsIgnoreCase(AJP.getSchemeName())) {
-                result = AJP;
-            } else if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
-                result = CLAP;
-            } else if (name.equalsIgnoreCase(FILE.getSchemeName())) {
-                result = FILE;
-            } else if (name.equalsIgnoreCase(FTP.getSchemeName())) {
+            if (name.equalsIgnoreCase(FTP.getSchemeName())) {
                 result = FTP;
             } else if (name.equalsIgnoreCase(HTTP.getSchemeName())) {
                 result = HTTP;
             } else if (name.equalsIgnoreCase(HTTPS.getSchemeName())) {
                 result = HTTPS;
-            } else if (name.equalsIgnoreCase(JAR.getSchemeName())) {
-                result = JAR;
-            } else if (name.equalsIgnoreCase(JDBC.getSchemeName())) {
-                result = JDBC;
             } else if (name.equalsIgnoreCase(POP.getSchemeName())) {
                 result = POP;
             } else if (name.equalsIgnoreCase(POPS.getSchemeName())) {
                 result = POPS;
-            } else if (name.equalsIgnoreCase(RIAP.getSchemeName())) {
-                result = RIAP;
             } else if (name.equalsIgnoreCase(SMTP.getSchemeName())) {
                 result = SMTP;
             } else if (name.equalsIgnoreCase(SMTPS.getSchemeName())) {
@@ -198,10 +110,6 @@ public final class Protocol {
                 result = SIP;
             } else if (name.equalsIgnoreCase(SIPS.getSchemeName())) {
                 result = SIPS;
-            } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
-                result = WAR;
-            } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {
-                result = ZIP;
             } else {
                 result = new Protocol(name);
             }
@@ -245,13 +153,13 @@ public final class Protocol {
     private final String name;
 
     /** The scheme name. */
-    private volatile String schemeName;
+    private final String schemeName;
 
     /** The technical name that appears on the wire. */
     private final String technicalName;
 
     /** The version. */
-    private volatile String version;
+    private final String version;
 
     /**
      * Constructor.
@@ -439,8 +347,8 @@ public final class Protocol {
     }
 
     /**
-     * Indicates if the protocol guarantees the confidentially of the messages
-     * exchanged, for example via a SSL-secured connection.
+     * Indicates if the protocol guarantees the confidentiality of the messages
+     * exchanged, for example, via an SSL-secured connection.
      * 
      * @return True if the protocol is confidential.
      */

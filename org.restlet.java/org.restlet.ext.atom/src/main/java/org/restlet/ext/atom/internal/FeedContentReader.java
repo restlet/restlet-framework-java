@@ -261,7 +261,7 @@ public class FeedContentReader extends FeedReader {
                     String content = this.currentContentWriter.getWriter()
                             .toString().trim();
                     contentDepth = -1;
-                    if ("".equals(content)) {
+                    if (content.isEmpty()) {
                         this.currentLink.setContent(null);
                     } else {
                         if (this.currentLink.getType() != null) {
@@ -303,7 +303,7 @@ public class FeedContentReader extends FeedReader {
                         String content = this.currentContentWriter.getWriter()
                                 .toString().trim();
                         contentDepth = -1;
-                        if ("".equals(content)) {
+                        if (content.isEmpty()) {
                             this.currentEntry.setContent(null);
                         } else {
                             currentContent

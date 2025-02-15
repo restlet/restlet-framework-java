@@ -54,7 +54,7 @@ public class ContextResolver implements URIResolver {
         if (this.context != null) {
             Reference targetRef = null;
 
-            if ((base != null) && !base.equals("")) {
+            if ((base != null) && !base.isEmpty()) {
                 // Potentially a relative reference
                 Reference baseRef = new Reference(base);
                 targetRef = new Reference(baseRef, href);

@@ -776,13 +776,13 @@ public class Engine {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerHelper(ClassLoader classLoader, String provider, List helpers, Class constructorClass) {
-		if ((provider != null) && (!provider.equals(""))) {
+		if ((provider != null) && (!provider.isEmpty())) {
 			// Instantiate the factory
 			try {
 				Class providerClass = classLoader.loadClass(provider);
 
 				if (constructorClass == null) {
-					helpers.add(providerClass.newInstance());
+					helpers.add(providerClass.getDeclaredConstructor().newInstance());
 				} else {
 					helpers.add(
 							providerClass.getConstructor(constructorClass).newInstance(constructorClass.cast(null)));

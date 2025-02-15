@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * after the wrapped representation has been entirely exhausted (that is to say
  * read or written).<br>
  * <br>
- * This wrapper allows to get the computed digest at the same time the
+ * This wrapper allows getting the computed digest at the same time the
  * representation is read or written. It does not need two separate operations
  * which may require specific attention for transient representations.
  *
@@ -75,8 +75,6 @@ public class DigesterRepresentation extends WrapperRepresentation {
 	 * since this method reads entirely the representation's stream, user must take
 	 * care of the content of the representation in case the latter is transient.
 	 *
-	 * {@link #isTransient}
-	 *
 	 * @return True if both digests are not null and equals.
 	 */
 	public boolean checkDigest() {
@@ -91,8 +89,6 @@ public class DigesterRepresentation extends WrapperRepresentation {
 	 * Since this method relies on the {@link #computeDigest(String)} method, and
 	 * since this method reads entirely the representation's stream, user must take
 	 * care of the content of the representation in case the latter is transient.
-	 *
-	 * {@link #isTransient}
 	 *
 	 * @param algorithm The algorithm used to compute the digest to compare with.
 	 *                  See constant values in {@link org.restlet.data.Digest}.
@@ -118,9 +114,9 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
 	/**
 	 * Compute the representation digest according to MD5 algorithm.<br>
-	 * If case this algorithm is the same than the one provided at instantiation,
+	 * If case this algorithm is the same as the one provided at instantiation,
 	 * the computation operation is made with the current stored computed value and
-	 * does not require to exhaust entirely the representation's stream.
+	 * does not require to entirely exhaust the representation's stream.
 	 */
 	public Digest computeDigest() {
 		return computeDigest(Digest.ALGORITHM_MD5);
@@ -128,10 +124,8 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
 	/**
 	 * Compute the representation digest according to the given algorithm.<br>
-	 * Since this method reads entirely the representation's stream, user must take
+	 * Since this method entirely reads the representation stream, user must take
 	 * care of the content of the representation in case the latter is transient.
-	 *
-	 * {@link #isTransient}
 	 *
 	 * @param algorithm The algorithm used to compute the digest. See constant
 	 *                  values in {@link org.restlet.data.Digest}.

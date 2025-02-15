@@ -194,7 +194,7 @@ public final class CharacterSet extends Metadata {
 		CharacterSet result = null;
 		name = getIanaName(name);
 
-		if ((name != null) && !name.equals("")) {
+		if ((name != null) && !name.isEmpty()) {
 			if (name.equalsIgnoreCase(ALL.getName())) {
 				result = ALL;
 			} else if (name.equalsIgnoreCase(ISO_8859_1.getName())) {

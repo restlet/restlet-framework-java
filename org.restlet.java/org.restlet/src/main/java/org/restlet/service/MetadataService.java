@@ -385,7 +385,6 @@ public class MetadataService extends Service {
 	 * @param extensions The extensions list to update.
 	 * @param extension  The extension name.
 	 * @param metadata   The associated metadata.
-	 * @param preferred  indicates if this mapping is the preferred one.
 	 * @return The new extension mapping.
 	 */
 	private void ext(List<MetadataExtension> extensions, String extension, Metadata metadata) {

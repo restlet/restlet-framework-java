@@ -61,7 +61,7 @@ public class ReferenceUtils {
 				result = requestRef.getPath();
 			}
 
-			if ((result == null) || (result.equals(""))) {
+			if ((result == null) || (result.isEmpty())) {
 				result = "/";
 			}
 		}

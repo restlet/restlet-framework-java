@@ -63,7 +63,7 @@ public final class Encoding extends Metadata {
     public static Encoding valueOf(final String name) {
         Encoding result = null;
 
-        if ((name != null) && !name.equals("")) {
+        if ((name != null) && !name.isEmpty()) {
             if (name.equalsIgnoreCase(ALL.getName())) {
                 result = ALL;
             } else if (name.equalsIgnoreCase(GZIP.getName())) {

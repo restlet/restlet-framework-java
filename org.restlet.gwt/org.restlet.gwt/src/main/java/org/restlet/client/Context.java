@@ -37,21 +37,9 @@ import org.restlet.client.util.Series;
 @Deprecated
 public class Context {
 
-
     /**
-     * Returns the context associated to the current {@link Restlet}. The
-     * context can be the one of a {@link Component}, an {@link Application}, a
-     * {@link org.restlet.client.routing.Filter} or any other {@link Restlet} subclass.<br>
-     * <br>
-     * Warning: this method should only be used under duress. You should by
-     * default prefer obtaining the current context using methods such as
-     * {@link org.restlet.client.Restlet#getContext()} or
-     * {@link org.restlet.client.resource.Resource#getContext()}.<br>
-     * <br>
-     * This variable is stored internally as a thread local variable and updated
-     * each time a request is handled by a {@link Restlet} via the
-     * {@link Restlet#handle(org.restlet.client.Request, org.restlet.client.Response)} method.
-     * 
+     * Returns the context associated to the current {@link Restlet}.
+     *
      * @return The current context.
      */
     public static Context getCurrent() {
@@ -64,10 +52,8 @@ public class Context {
      * @return The current context's logger.
      */
     public static Logger getCurrentLogger() {
-
          return Engine.getLogger("org.restlet.client");
     }
-
 
     /** The client dispatcher. */
     private volatile Restlet clientDispatcher;
@@ -120,7 +106,7 @@ public class Context {
     /**
      * Creates a protected child context. This is especially useful for new
      * application attached to their parent component, to ensure their isolation
-     * from the other applications. By default it creates a new context instance
+     * from the other applications. By default, it creates a new context instance
      * with empty or null properties, except the client and server dispatchers
      * that are wrapped for isolation purpose.
      * 
@@ -139,7 +125,7 @@ public class Context {
      * 
      * In addition, this map is a shared space between the developer and the
      * Restlet implementation. For this purpose, all attribute names starting
-     * with "org.restlet.client" are reserved. Currently the following attributes are
+     * with "org.restlet.client" are reserved. Currently, the following attributes are
      * used:
      * <table>
      * <tr>
@@ -165,8 +151,8 @@ public class Context {
      * Returns a request dispatcher to available client connectors. When you ask
      * the dispatcher to handle a request, it will automatically select the
      * appropriate client connector for your request, based on the
-     * request.protocol property or on the resource URI's scheme. This call is
-     * blocking and will return an updated response object.
+     * "request.protocol" property or on the resource URI's scheme. This call
+     * blocks and will return an updated response object.
      * 
      * @return A request dispatcher to available client connectors.
      */

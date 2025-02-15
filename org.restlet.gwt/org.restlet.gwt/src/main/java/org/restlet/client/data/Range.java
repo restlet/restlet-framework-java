@@ -56,7 +56,7 @@ public class Range {
     private volatile long index;
 
     /**
-     * Total size of the instance in number of bytes (or range unit). In case of "bytes" range, this attribute is
+     * Total size of the instance in number of bytes (or range unit). In the case of "bytes" range, this attribute is
      * ignored, as the instance size is taken from the entity.
      */
     private volatile long instanceSize;
@@ -69,14 +69,13 @@ public class Range {
 
     /**
      * Specifies the unit of the range. The HTTP/1.1 protocol specifies only
-     * 'bytes', but other ranges are allowed {@link http
-     * ://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12}
+     * 'bytes', but other ranges are allowed {@link <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">RFC 2616</a>}
      */
     private volatile String unitName;
 
     /**
      * Default constructor defining a range starting on the first byte and with
-     * a maximum size, i.e. covering the whole entity.
+     * a maximum size, i.e., covering the whole entity.
      */
     public Range() {
         this(INDEX_FIRST, SIZE_MAX);
@@ -147,8 +146,8 @@ public class Range {
     }
 
     /**
-     * Returns the total size of the instance in number of bytes (or range unit). In case of "bytes" range, this
-     * attribute is ignored, as the instance size is taken from the entity.
+     * Returns the total size of the instance in number of bytes (or range unit).
+     * In the case of "bytes" range, this attribute is ignored, as the instance size is taken from the entity.
      * 
      * @return The total size of the instance.
      */

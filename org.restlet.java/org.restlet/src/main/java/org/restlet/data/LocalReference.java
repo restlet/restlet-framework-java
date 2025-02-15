@@ -317,7 +317,7 @@ public final class LocalReference extends Reference {
 		if (Protocol.FILE.equals(getSchemeProtocol())) {
 			final String hostName = getAuthority();
 
-			if ((hostName == null) || hostName.equals("") || hostName.equalsIgnoreCase("localhost")) {
+			if ((hostName == null) || hostName.isEmpty() || hostName.equalsIgnoreCase("localhost")) {
 				final String filePath = Reference.decode(getPath());
 				result = new File(filePath);
 			} else {

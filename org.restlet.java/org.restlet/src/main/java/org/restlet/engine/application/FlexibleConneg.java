@@ -119,9 +119,10 @@ public class FlexibleConneg extends StrictConneg {
 	@SuppressWarnings("unchecked")
 	protected <T extends Metadata> List<Preference<T>> getEnrichedPreferences(List<Preference<T>> userPreferences,
 			T defaultValue, T allValue) {
-		List<Preference<T>> result = new ArrayList<Preference<T>>();
+		// 0) Add the user preferences
+		List<Preference<T>> result = new ArrayList<>(userPreferences);
 
-		// 0) List all undesired metadata
+        // 1) List all undesired metadata
 		List<T> undesired = null;
 		for (Preference<T> pref : userPreferences) {
 			if (pref.getQuality() == 0) {
@@ -132,17 +133,14 @@ public class FlexibleConneg extends StrictConneg {
 			}
 		}
 
-		// 1) Add the user preferences
-		result.addAll(userPreferences);
-
 		// 2) Add the user parent preferences
 		T parent;
 		for (int i = 0; i < result.size(); i++) {
 			Preference<T> userPref = result.get(i);
 			parent = (T) userPref.getMetadata().getParent();
 
-			// Add the parent, if it is not proscribed.
-			if ((parent != null)) {
+			// Add the parent if it is not proscribed.
+			if (parent != null) {
 				if (canAdd(parent, undesired)) {
 					result.add(new Preference<T>(parent, 0.005f + (0.001f * userPref.getQuality())));
 				}

@@ -149,7 +149,7 @@ public final class CacheDirective implements NamedValue<String> {
 
 		if (fieldNames != null) {
 			for (int i = 0; i < fieldNames.size(); i++) {
-				sb.append("\"" + fieldNames.get(i) + "\"");
+				sb.append("\"").append(fieldNames.get(i)).append("\"");
 
 				if (i < fieldNames.size() - 1) {
 					sb.append(',');
@@ -259,7 +259,7 @@ public final class CacheDirective implements NamedValue<String> {
 
 		if (fieldNames != null) {
 			for (int i = 0; i < fieldNames.size(); i++) {
-				sb.append("\"" + fieldNames.get(i) + "\"");
+				sb.append("\"").append(fieldNames.get(i)).append("\"");
 
 				if (i < fieldNames.size() - 1) {
 					sb.append(',');

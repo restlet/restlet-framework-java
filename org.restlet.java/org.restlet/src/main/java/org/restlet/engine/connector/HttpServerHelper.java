@@ -41,7 +41,7 @@ public class HttpServerHelper extends NetServerHelper {
 	@Override
 	public void start() throws Exception {
 		// Use ephemeral port
-		int port = getHelped().getPort() > 0 ? getHelped().getPort() : 0;
+		int port = Math.max(getHelped().getPort(), 0);
 		if (getHelped().getAddress() != null) {
 			// This call may throw UnknownHostException and otherwise always
 			// returns an instance of INetAddress.

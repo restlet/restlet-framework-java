@@ -13,35 +13,35 @@ import java.util.List;
 import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
 
 /**
- * Client specific data related to a call. When extracted from a request, most
+ * Client-specific data related to a call. When extracted from a request, most
  * of these data are directly taken from the underlying headers. There are some
- * exceptions: agentAttributes and mainAgentProduct which are taken from the
- * agent name (for example the "user-agent" header for HTTP requests).<br>
+ * exceptions: agentAttributes and mainAgentProduct that are taken from the
+ * agent name (for example, the "user-agent" header for HTTP requests).<br>
  * <br>
- * As described by the HTTP specification, the "user-agent" can be seen as a
- * ordered list of products name (ie a name and a version) and/or comments.<br>
+ * As described by the HTTP specification, the "user-agent" can be seen as an
+ * ordered list of products name (i.e., a name and a version) and/or comments.<br>
  * <br>
  * Each HTTP client (mainly browsers and web crawlers) defines its own
  * "user-agent" header which can be seen as the "signature" of the client.
- * Unfortunately, there is no rule to identify clearly a kind a client and its
- * version (let's say Firefox 2.x, Internet Explorer IE 7.0, Opera, etc)
- * according to its signature. Each signature follow its own rules which may
+ * Unfortunately, there is no rule to identify clearly a kind of client and its
+ * version (let's say Firefox 2.x, Internet Explorer IE 7.0, Opera, etc.)
+ * according to its signature. Each signature follows its own rules which may
  * vary according to the version of the client.<br>
  * <br>
- * In order to help retrieving interesting data such as product name (Firefox,
- * IE, etc), version, operating system, Restlet users has the ability to define
+ * In order to help retrieve interesting data such as product name (Firefox,
+ * IE, etc.), version, operating system, Restlet users can define
  * their own way to extract data from the "user-agent" header. It is based on a
  * list of templates declared in a file called "agent.properties" and located in
- * the classpath in the sub directory "org/restlet/data". Each template
+ * the classpath in the subdirectory "org/restlet/data". Each template
  * describes a typical user-agent string and allows to use predefined variables
  * that help to retrieve the content of the agent name, version, operating
  * system.<br>
  * <br>
- * The "user-agent" string is confronted to the each template from the beginning
+ * The "user-agent" string is confronted to each template from the beginning
  * of the property file to the end. The loop stops at the first matched
  * template.<br>
  * <br>
- * Here is a sample of such template:<br>
+ * Here is a sample of such a template:<br>
  * 
  * <pre>
  * #Firefox for Windows
@@ -88,21 +88,12 @@ import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
  * </tr>
  * </table>
  * <br>
- * <br>
- * These variables are used to generate a {@link Product} instance with the main
- * data (name, version, comment). This instance is accessible via the
- * {@link ClientInfo#getMainAgentProduct()} method. All other variables used in
- * the template aims at catching a sequence of characters and are accessible via
- * the {@link ClientInfo#getAgentAttributes()} method.
- * 
+ *
  * @author Jerome Louvel
  * @deprecated Will be removed in the next 2.7/3.0 release.
  */
 @Deprecated
 public final class ClientInfo {
-
-
-
 
     /** The character set preferences. */
     private volatile List<Preference<CharacterSet>> acceptedCharacterSets;
@@ -333,7 +324,6 @@ public final class ClientInfo {
      * address of the proxy.
      * 
      * @return The immediate client's IP address.
-     * @see #getUpstreamAddress()
      * @see #getForwardedAddresses()
      */
     public String getAddress() {
@@ -360,9 +350,9 @@ public final class ClientInfo {
     /**
      * Returns the list of forwarded IP addresses. This is useful when the user
      * agent is separated from the origin server by a chain of intermediary
-     * components. Creates a new instance if no one has been set. <br>
+     * components. Create a new instance if no one has been set. <br>
      * <br>
-     * The first address is the one of the immediate client component and the
+     * The first address is the one of the immediate client component, and the
      * last address should correspond to the origin client (frequently a user
      * agent).<br>
      * <br>
@@ -371,11 +361,10 @@ public final class ClientInfo {
      * header and should not be trusted for serious security checks.<br>
      * <br>
      * Note that your HTTP server connectors need to have a special
-     * "useForwardedForHeader" parameter explicitly set to "true" in order to
+     * "useForwardedForHeader" parameter explicitly set to "true" to
      * activate this feature, due to potential security issues.
      * 
      * @return The list of forwarded IP addresses.
-     * @see #getUpstreamAddress()
      * @see <a href="http://en.wikipedia.org/wiki/X-Forwarded-For">Wikipedia
      *      page for the "X-Forwarded-For" HTTP header</a>
      */
@@ -395,7 +384,7 @@ public final class ClientInfo {
 
     /**
      * Returns the email address of the human user controlling the user agent.
-     * Default value is null.
+     * The Default value is null.
      * 
      * @return The email address of the human user controlling the user agent.
      */
@@ -413,16 +402,6 @@ public final class ClientInfo {
     public int getPort() {
         return this.port;
     }
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Sets the character set preferences. Note that when used with HTTP
@@ -524,12 +503,6 @@ public final class ClientInfo {
         this.agent = agent;
     }
 
-
-
-
-
-
-
     /**
      * Sets the list of forwarded IP addresses.
      * 
@@ -565,8 +538,5 @@ public final class ClientInfo {
     public void setPort(int port) {
         this.port = port;
     }
-
-
-
 
 }

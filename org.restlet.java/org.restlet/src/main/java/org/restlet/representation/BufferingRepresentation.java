@@ -90,7 +90,7 @@ public class BufferingRepresentation extends WrapperRepresentation {
 			Context.getCurrentLogger().log(Level.WARNING, "Unable to buffer the wrapped representation", e);
 		}
 
-		return (getBuffer() != null) ? getBuffer().length : -1l;
+		return (getBuffer() != null) ? getBuffer().length : -1L;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class BufferingRepresentation extends WrapperRepresentation {
 		buffer();
 
 		if (getBuffer() != null) {
-			return (getCharacterSet() != null) ? new String(getBuffer(), getCharacterSet().toCharset().name())
+			return (getCharacterSet() != null) ? new String(getBuffer(), getCharacterSet().toCharset())
 					: new String(getBuffer());
 		}
 

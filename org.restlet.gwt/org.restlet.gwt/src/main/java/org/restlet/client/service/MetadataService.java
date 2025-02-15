@@ -50,7 +50,7 @@ public class MetadataService extends Service {
     /**
      * Constructor. Sets the default language to {@link Language#ENGLISH_US},
      * the default encoding to {@link Encoding#IDENTITY} (no encoding) and the
-     * default media type to {@link MediaType#APPLICATION_OCTET_STREAM}. It also
+     * default media type to {@link MediaType#APPLICATION_JSON}. It also
      * calls the {@link #addCommonExtensions()} method.
      */
     public MetadataService() {
@@ -65,7 +65,7 @@ public class MetadataService extends Service {
     /**
      * Adds a common list of associations from extensions to metadata.<br>
      * 
-     * The list of languages extensions:<br>
+     * The list of languages' extensions:<br>
      * <ul>
      * <li>en: English</li>
      * <li>es: Spanish</li>
@@ -268,8 +268,6 @@ public class MetadataService extends Service {
      *            The extension name.
      * @param metadata
      *            The associated metadata.
-     * @param preferred
-     *            indicates if this mapping is the preferred one.
      * @return The new extension mapping.
      */
     private void ext(List<MetadataExtension> extensions, String extension,
@@ -302,9 +300,9 @@ public class MetadataService extends Service {
     }
 
     /**
-     * Return the ordered list of extension names mapped to character set.
+     * Return the ordered list of extension names mapped to character sets.
      * 
-     * @return The ordered list of extension names mapped to character set.
+     * @return The ordered list of extension names mapped to character sets.
      */
     public List<String> getAllCharacterSetExtensionNames() {
         List<String> result = new ArrayList<String>();
@@ -503,11 +501,10 @@ public class MetadataService extends Service {
 
     /**
      * Returns the character set associated to this extension. It returns null
-     * if the extension was not declared of it is corresponds to another type of
-     * medatata such as a media type. If several metadata are associated to the
-     * same extension then only the first matching metadata is returned.
-     * 
-     * 
+     * if the extension was not declared, or it corresponds to another type of
+     * metadata such as a media type. If some metadata is associated with the same extension,
+     * then only the first matching metadata is returned.
+     *
      * @param extension
      *            The extension name without any delimiter.
      * @return The character set associated to this extension.
@@ -559,9 +556,9 @@ public class MetadataService extends Service {
 
     /**
      * Returns the encoding associated to this extension. It returns null if the
-     * extension was not declared of it is corresponds to another type of
-     * medatata such as a media type. If several metadata are associated to the
-     * same extension then only the first matching metadata is returned.
+     * extension was not declared, or it corresponds to another type of
+     * metadata such as a media type. If some metadata is associated with the same extension,
+     * then only the first matching metadata is returned.
      * 
      * @param extension
      *            The extension name without any delimiter.
@@ -597,9 +594,9 @@ public class MetadataService extends Service {
 
     /**
      * Returns the language associated to this extension. It returns null if the
-     * extension was not declared of it is corresponds to another type of
-     * medatata such as a media type. If several metadata are associated to the
-     * same extension then only the first matching metadata is returned.
+     * extension was not declared, or it corresponds to another type of
+     * metadata such as a media type. If some metadata is associated with the same extension,
+     * then only the first matching metadata is returned.
      * 
      * @param extension
      *            The extension name without any delimiter.
@@ -615,13 +612,12 @@ public class MetadataService extends Service {
     }
 
     /**
-     * Returns the mediatype associated to this extension. It returns null if
-     * the extension was not declared of it is corresponds to another type of
-     * medatata such as a language. If several metadata are associated to the
-     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml') then
+     * Returns the media-type associated to this extension. It returns null if
+     * the extension was not declared, or it corresponds to another type of
+     * metadata such as a language. If some metadata is associated with the
+     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml'), then
      * only the first matching metadata is returned.
-     * 
-     * 
+     *
      * @param extension
      *            The extension name without any delimiter.
      * @return The media type associated to this extension.
@@ -637,8 +633,8 @@ public class MetadataService extends Service {
 
     /**
      * Returns the metadata associated to this extension. It returns null if the
-     * extension was not declared. If several metadata are associated to the
-     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml') then
+     * extension was not declared. If some metadata is associated with the
+     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml'), then
      * only the first matching metadata is returned.
      * 
      * @param extension

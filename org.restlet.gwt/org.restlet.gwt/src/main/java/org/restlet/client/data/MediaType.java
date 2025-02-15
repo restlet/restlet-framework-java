@@ -36,7 +36,7 @@ public final class MediaType extends Metadata {
      * Illegal ASCII characters as defined in RFC 1521.<br>
      * Keep the underscore for the ordering
      * 
-     * @see http://www.ietf.org/rfc/rfc1521.txt
+     * @see <a href="https://www.ietf.org/rfc/rfc1521.txt">RFC 1521</a>
      */
     private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
 
@@ -319,7 +319,7 @@ public final class MediaType extends Metadata {
 
         // Makes sure we're not dealing with a "*" token.
         token = token.trim();
-        if ("".equals(token) || "*".equals(token))
+        if (token.isEmpty() || "*".equals(token))
             return "*";
 
         // Makes sure the token is RFC compliant.
@@ -354,7 +354,7 @@ public final class MediaType extends Metadata {
         if (name == null)
             return null;
 
-        // Check presence of parameters
+        // Check the presence of parameters
         if ((colonIndex = name.indexOf(';')) != -1) {
             params = new StringBuilder(name.substring(colonIndex));
             name = name.substring(0, colonIndex);
@@ -365,7 +365,7 @@ public final class MediaType extends Metadata {
             mainType = normalizeToken(name);
             subType = "*";
         } else {
-            // Normalizes the main and sub types.
+            // Normalizes the main and subtypes.
             mainType = normalizeToken(name.substring(0, slashIndex));
             subType = normalizeToken(name.substring(slashIndex + 1));
         }
@@ -403,7 +403,7 @@ public final class MediaType extends Metadata {
     /**
      * Register a media type as a known type that can later be retrieved using
      * {@link #valueOf(String)}. If the type already exists, the existing type
-     * is returned, otherwise a new instance is created.
+     * is returned; otherwise a new instance is created.
      * 
      * @param name
      *            The name.
@@ -478,7 +478,6 @@ public final class MediaType extends Metadata {
      * @param description
      *            The description.
      */
-    @SuppressWarnings("unchecked")
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
         super(normalizeType(name, parameters), description);
@@ -522,9 +521,8 @@ public final class MediaType extends Metadata {
 
         // if obj == this no need to go further
         if (!result) {
-            // if obj isn't a mediatype or is null don't evaluate further
-            if (obj instanceof MediaType) {
-                final MediaType that = (MediaType) obj;
+            // if obj isn't a media-type or is null, don't evaluate further
+            if (obj instanceof MediaType that) {
                 if (getMainType().equals(that.getMainType())
                         && getSubType().equals(that.getSubType())) {
                     result = ignoreParameters
@@ -568,7 +566,6 @@ public final class MediaType extends Metadata {
      * 
      * @return The list of parameters.
      */
-    @SuppressWarnings("unchecked")
     public Series<Parameter> getParameters() {
         // Lazy initialization with double-check.
         Series<Parameter> p = this.parameters;
@@ -626,9 +623,9 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Returns the sub-type.
+     * Returns the subtype.
      * 
-     * @return The sub-type.
+     * @return The subtype.
      */
     public String getSubType() {
         String result = null;
@@ -673,11 +670,11 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Indicates if a given media type is included in the current one @see
-     * {@link #includes(Metadata, boolean)}. The test is true if both types are
+     * Indicates if a given media type is included in the current one.
+     * The test is true if both types are
      * equal or if the given media type is within the range of the current one.
      * For example, ALL includes all media types. Parameters are ignored for
-     * this comparison. A null media type is considered as included into the
+     * this comparison. A null media type is considered as included in the
      * current one. It ignores the parameters.
      * <p>
      * Examples:
@@ -694,8 +691,7 @@ public final class MediaType extends Metadata {
     public boolean includes(Metadata included, boolean ignoreParameters) {
         boolean result = equals(ALL) || equals(included);
 
-        if (!result && (included instanceof MediaType)) {
-            MediaType includedMediaType = (MediaType) included;
+        if (!result && (included instanceof MediaType includedMediaType)) {
 
             if (getMainType().equals(includedMediaType.getMainType())) {
                 // Both media types are different
@@ -734,7 +730,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Checks if the current media type is concrete. A media type is concrete if
-     * neither the main type nor the sub-type are equal to "*".
+     * neither the main type nor the subtype are equal to "*".
      * 
      * @return True if this media type is concrete.
      */

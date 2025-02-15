@@ -173,7 +173,7 @@ public class InternetDateFormat extends DateFormat {
 		StringBuilder buf = new StringBuilder();
 		buf.append(df4.format(cal.get(Calendar.YEAR)));
 		buf.append("-");
-		buf.append(df2.format(cal.get(Calendar.MONTH) + 1l));
+		buf.append(df2.format(cal.get(Calendar.MONTH) + 1L));
 		buf.append("-");
 		buf.append(df2.format(cal.get(Calendar.DAY_OF_MONTH)));
 		buf.append("T");

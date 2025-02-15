@@ -713,7 +713,7 @@ public class DirectoryTestCase {
                 .baseRef(this.webSiteURL)
                 .handle(GET);
         assertEquals(SUCCESS_OK, response.getStatus());
-        assertTrue(response.getEntityAsText().equals("this is test 9a"));
+        assertEquals("this is test 9a", response.getEntityAsText());
 
         // Test 9c : Try to get the representation of the new file with an
         // equivalent URI
@@ -721,7 +721,7 @@ public class DirectoryTestCase {
                 .baseRef(this.webSiteURL)
                 .handle(GET);
         assertEquals(SUCCESS_OK, response.getStatus());
-        assertTrue(response.getEntityAsText().equals("this is test 9a"));
+        assertEquals("this is test 9a", response.getEntityAsText());
 
         // Test 9d : Try to delete the file
         response = new TestRequest(this.percentEncodedFileUrl)

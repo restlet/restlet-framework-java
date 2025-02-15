@@ -164,10 +164,9 @@ public class AnnotationUtils {
 	private List<AnnotationInfo> addThrowableAnnotationDescriptors(List<AnnotationInfo> descriptors, Class<?> clazz,
 			Class<?> initialClass) {
 		List<AnnotationInfo> result = descriptors;
-		Annotation annotation = clazz.getAnnotation(org.restlet.resource.Status.class);
+		Status status = clazz.getAnnotation(org.restlet.resource.Status.class);
 
-		if (annotation != null) {
-			Status status = (Status) annotation;
+		if (status != null) {
 			result.add(new ThrowableAnnotationInfo(initialClass, status.value(), status.serialize()));
 		}
 

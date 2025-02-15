@@ -528,7 +528,7 @@ public class DirectoryServerResource extends ServerResource {
 				this.fileContent.setLocationRef(getReference());
 			}
 
-			variantsGet = Arrays.asList((Variant) this.fileContent);
+			variantsGet = Arrays.asList(this.fileContent);
 
 			return variantsGet;
 		}
@@ -536,7 +536,7 @@ public class DirectoryServerResource extends ServerResource {
 		if ((this.directoryContent != null) && (getReference() != null) && (getReference().getBaseRef() != null)) {
 			// filter the directory listing
 
-			// Allow to sort the list of representations
+			// Allow sorting the list of representations
 			SortedSet<Representation> resultSet = new TreeSet<Representation>(getRepresentationsComparator());
 
 			// Compute the base reference (from a call's client point of view)

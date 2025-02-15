@@ -148,22 +148,15 @@ public final class Variable {
 	 * @return The encoded value, according to the variable type.
 	 */
 	public String encode(String value) {
-		switch (this.type) {
-		case Variable.TYPE_URI_ALL:
-			return Reference.encode(value);
-		case Variable.TYPE_URI_UNRESERVED:
-			return Reference.encode(value);
-		case Variable.TYPE_URI_FRAGMENT:
-			return Reference.encode(value);
-		case Variable.TYPE_URI_PATH:
-			return Reference.encode(value);
-		case Variable.TYPE_URI_QUERY:
-			return Reference.encode(value);
-		case Variable.TYPE_URI_SEGMENT:
-			return Reference.encode(value);
-		default:
-			return value;
-		}
+        return switch (this.type) {
+            case Variable.TYPE_URI_ALL,
+					Variable.TYPE_URI_UNRESERVED,
+					Variable.TYPE_URI_FRAGMENT,
+					Variable.TYPE_URI_PATH,
+					Variable.TYPE_URI_QUERY,
+					Variable.TYPE_URI_SEGMENT -> Reference.encode(value);
+            default -> value;
+        };
 	}
 
 	/**

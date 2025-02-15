@@ -59,7 +59,7 @@ public class Mapping {
      *            The path of the XML element of the feed that stores the value
      *            to set.
      * @param contentKind
-     *            The content type of the value of the mapped property..
+     *            The content type of the value of the mapped property.
      */
     public Mapping(EntityType type, String nsPrefix, String nsUri,
             String propertyPath, String valuePath, String contentKind) {
@@ -133,13 +133,13 @@ public class Mapping {
      * Returns the name of the attribute that stores the value to set, if
      * pertinent, and null otherwise.
      * 
-     * @return The he name of the attribute that stores the value to set.
+     * @return The name of the attribute that stores the value to set.
      */
     public String getValueAttributeName() {
         String result = null;
         if (isAttributeValue()) {
             int index = valuePath.lastIndexOf("/");
-            result = valuePath.substring(index + 2, valuePath.length());
+            result = valuePath.substring(index + 2);
         }
         return result;
     }
@@ -148,7 +148,7 @@ public class Mapping {
      * Returns the name of the attribute that stores the value to set, if
      * pertinent, and null otherwise.
      * 
-     * @return The he name of the attribute that stores the value to set.
+     * @return The name of the attribute that stores the value to set.
      */
     public String getValueNodePath() {
         return (isAttributeValue()) ? valuePath.substring(0,

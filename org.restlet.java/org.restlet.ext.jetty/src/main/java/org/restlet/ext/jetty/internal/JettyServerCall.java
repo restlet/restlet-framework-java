@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.cert.Certificate;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jetty.http.HttpField;
@@ -54,10 +53,12 @@ public class JettyServerCall extends ServerCall {
      * Constructor.
      * 
      * @param server  The parent server.
-     * @param channel The wrapped Jetty HTTP channel.
+     * @param request The wrapped Jetty HTTP request.
+     * @param response The wrapped Jetty HTTP response.
+     * @param callback The wrapped Jetty HTTP callback.
      */
     public JettyServerCall(Server server, Request request, Response response,
-            Callback callback) throws Exception {
+            Callback callback) {
         super(server);
         this.request = request;
         this.response = response;
@@ -93,7 +94,7 @@ public class JettyServerCall extends ServerCall {
     @Override
     public List<Certificate> getCertificates() {
         if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
-            return Arrays.asList((Certificate[]) sslEndPoint.getSslSessionData()
+            return Arrays.asList(sslEndPoint.getSslSessionData()
                     .peerCertificates());
         } else {
             return null;
@@ -171,9 +172,7 @@ public class JettyServerCall extends ServerCall {
 
         if (!this.requestHeadersAdded) {
             // Copy the headers from the request object
-            for (Iterator<HttpField> fields = getRequest().getHeaders()
-                    .iterator(); fields.hasNext();) {
-                HttpField field = fields.next();
+            for (HttpField field : getRequest().getHeaders()) {
                 result.add(field.getName(), field.getValue());
             }
 

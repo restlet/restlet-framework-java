@@ -38,7 +38,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
 	 * @return The list of supported encodings.
 	 */
 	public static List<Encoding> getSupportedEncodings() {
-		return Arrays.<Encoding>asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.DEFLATE_NOWRAP, Encoding.ZIP,
+		return Arrays.asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.DEFLATE_NOWRAP, Encoding.ZIP,
 				Encoding.IDENTITY);
 	}
 
