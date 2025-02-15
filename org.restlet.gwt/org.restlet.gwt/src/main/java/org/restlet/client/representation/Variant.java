@@ -32,7 +32,9 @@ import org.restlet.client.util.WrapperList;
  * For this, you need to use on of the {@link Representation} subclasses.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Variant {
 
     /** The character set or null if not applicable. */

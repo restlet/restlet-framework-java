@@ -16,7 +16,9 @@ package org.restlet.client.resource;
  * for example, or by {@link ClientResource#getChild(String, Class)}.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public interface ClientProxy {
 
     /**

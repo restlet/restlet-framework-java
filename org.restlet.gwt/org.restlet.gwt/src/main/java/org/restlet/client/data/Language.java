@@ -19,7 +19,9 @@ import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
  * sub-tags. When formatted as a string, parts are separated by hyphens.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Language extends Metadata {
     /** All languages acceptable. */
     public static final Language ALL = new Language("*", "All languages");

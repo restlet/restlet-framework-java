@@ -18,7 +18,9 @@ import org.restlet.client.util.NamedValue;
  * Represents an HTTP header.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Header implements NamedValue<String> {
 
     /** The name. */

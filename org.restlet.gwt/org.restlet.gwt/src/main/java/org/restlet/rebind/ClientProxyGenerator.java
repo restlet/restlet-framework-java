@@ -72,7 +72,9 @@ import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
  * such as {@link Get}, {@link Post}, {@link Put} or {@link Delete}.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
     /** The name of the proxy class that will be generated. */

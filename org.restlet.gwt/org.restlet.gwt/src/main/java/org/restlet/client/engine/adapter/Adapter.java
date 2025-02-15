@@ -17,7 +17,9 @@ import org.restlet.client.Context;
  * Converter between high-level and low-level HTTP calls.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Adapter {
 
     /** The context. */

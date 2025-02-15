@@ -13,7 +13,9 @@ package org.restlet.client.data;
  * Server specific data related to a call.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class ServerInfo {
     /** Indicates if the server accepts range requests for a resource. */
     private volatile boolean acceptingRanges;

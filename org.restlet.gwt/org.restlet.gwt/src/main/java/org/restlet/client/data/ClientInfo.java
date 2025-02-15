@@ -96,7 +96,9 @@ import org.restlet.client.engine.util.emul.CopyOnWriteArrayList;
  * the {@link ClientInfo#getAgentAttributes()} method.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class ClientInfo {
 
 

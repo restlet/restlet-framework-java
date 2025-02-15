@@ -23,7 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *      wrapper) pattern</a>
  * @see java.util.Collections
  * @see java.util.List
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class WrapperMap<K, V> implements Map<K, V> {
     /** The delegate map. */
     private final Map<K, V> delegate;

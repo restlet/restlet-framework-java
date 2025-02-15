@@ -23,7 +23,9 @@ import org.restlet.client.util.Series;
  * @see <a href="http://wiki.restlet.org/docs_2.2/58-restlet.html">User Guide -
  *      Getting parameter values</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Form extends Series<Parameter> {
     /**
      * Empty constructor.

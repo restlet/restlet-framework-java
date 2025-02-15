@@ -13,7 +13,9 @@ package org.restlet.client.util;
  * String couple between a name and a value.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public interface NamedValue<V> {
 
     /**

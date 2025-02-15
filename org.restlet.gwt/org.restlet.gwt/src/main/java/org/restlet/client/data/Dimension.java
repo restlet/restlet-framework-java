@@ -18,7 +18,9 @@ import org.restlet.client.Response;
  * @see Response#getDimensions()
  * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public enum Dimension {
     AUTHORIZATION, CHARACTER_SET, CLIENT_ADDRESS, CLIENT_AGENT, UNSPECIFIED, ENCODING, LANGUAGE, MEDIA_TYPE, TIME, ORIGIN
 }

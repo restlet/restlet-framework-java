@@ -21,7 +21,9 @@ import org.restlet.client.service.MetadataService;
  * Descriptor for method annotations.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class AnnotationInfo {
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;

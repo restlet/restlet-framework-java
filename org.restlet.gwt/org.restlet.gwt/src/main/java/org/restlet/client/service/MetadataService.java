@@ -28,7 +28,9 @@ import org.restlet.client.engine.application.MetadataExtension;
  * Internally, the mappings are stored as a list of "extension, metadata" pairs.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class MetadataService extends Service {
     /** The default character set for textual representations. */
     private volatile CharacterSet defaultCharacterSet;

@@ -14,7 +14,9 @@ package org.restlet.client.data;
  * without losing the identity of the underlying media type.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Encoding extends Metadata {
     /** All encodings acceptable. */
     public static final Encoding ALL = new Encoding("*", "All encodings");

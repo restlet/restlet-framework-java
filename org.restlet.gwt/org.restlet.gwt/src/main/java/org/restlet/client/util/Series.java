@@ -29,8 +29,10 @@ import java.util.Set;
  * @see org.restlet.client.data.Parameter
  * @see java.util.Collections
  * @see java.util.List
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
-     public abstract class Series<T extends NamedValue<String>> extends
+@Deprecated
+public abstract class Series<T extends NamedValue<String>> extends
      WrapperList<T>
      {
     /**

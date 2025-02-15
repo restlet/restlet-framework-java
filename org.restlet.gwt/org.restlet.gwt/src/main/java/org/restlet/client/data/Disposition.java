@@ -26,7 +26,9 @@ import org.restlet.client.util.Series;
  *      Header Field</a>
  * 
  * @author Thierry Boileau
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Disposition {
 
     /** The creation date parameter name as presented by the RFC 2183. */

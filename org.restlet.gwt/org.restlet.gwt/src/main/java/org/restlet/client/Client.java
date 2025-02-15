@@ -31,7 +31,9 @@ import org.restlet.client.engine.RestletHelper;
  * {@link Context} object.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Client extends Connector {
 
     /** The helper provided by the implementation. */

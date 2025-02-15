@@ -26,7 +26,9 @@ import com.google.gwt.xml.client.XMLParser;
  * model defined by the W3C.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class DomRepresentation extends Representation {
     /** The wrapped DOM document. */
     private Document dom;

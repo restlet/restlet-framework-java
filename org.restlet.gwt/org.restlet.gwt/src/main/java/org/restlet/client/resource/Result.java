@@ -17,7 +17,9 @@ package org.restlet.client.resource;
  * @param <T>
  *            The class of the result object returned in case of success.
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public interface Result<T> {
 
     /**

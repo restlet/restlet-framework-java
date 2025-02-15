@@ -21,7 +21,9 @@ package org.restlet.client.data;
  *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
  *      >Source dissertation</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class Metadata {
 
     /** The description of this metadata. */

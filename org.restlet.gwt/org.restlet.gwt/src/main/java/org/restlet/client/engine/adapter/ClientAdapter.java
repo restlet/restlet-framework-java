@@ -25,9 +25,11 @@ import org.restlet.client.util.Series;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.
- * 
+ *
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class ClientAdapter extends Adapter {
 
     /**

@@ -31,7 +31,9 @@ import org.restlet.client.representation.Representation;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
  *      wrapper) pattern</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class WrapperRepresentation extends Representation {
     /** The wrapped representation. */
     private final Representation wrappedRepresentation;

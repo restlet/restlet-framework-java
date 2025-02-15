@@ -24,7 +24,9 @@ import org.restlet.client.engine.util.SystemUtils;
  * "WWW-Authenticate" header.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class ChallengeRequest extends ChallengeMessage {
 
     /** The available options for quality of protection. */

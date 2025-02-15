@@ -83,7 +83,9 @@ import org.restlet.client.util.Series;
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class Resource {
 
     /**

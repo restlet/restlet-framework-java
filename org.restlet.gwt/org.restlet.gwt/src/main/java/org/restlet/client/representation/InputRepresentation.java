@@ -21,7 +21,9 @@ import org.restlet.client.engine.io.IoUtils;
  * Transient representation based on a BIO input stream.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class InputRepresentation extends StreamRepresentation {
 
     /** The representation's stream. */

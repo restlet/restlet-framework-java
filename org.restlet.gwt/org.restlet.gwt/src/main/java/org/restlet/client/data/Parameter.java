@@ -20,7 +20,9 @@ import org.restlet.client.util.NamedValue;
  * safe, stored in volatile members.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Parameter implements Comparable<Parameter>, NamedValue<String> {
 
     /** The first object. */

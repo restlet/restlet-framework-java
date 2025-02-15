@@ -13,7 +13,9 @@ package org.restlet.client.data;
  * Metadata used to specify the character set of textual representations.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class CharacterSet extends Metadata {
     /** All character sets acceptable. */
     public static final CharacterSet ALL = new CharacterSet("*",

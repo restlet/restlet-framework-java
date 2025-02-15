@@ -37,7 +37,9 @@ import org.restlet.client.engine.connector.ClientHelper;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class HttpClientHelper extends ClientHelper {
 
     /** The adapter from uniform calls to HTTP calls. */

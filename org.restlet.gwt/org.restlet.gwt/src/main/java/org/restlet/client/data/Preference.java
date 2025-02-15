@@ -15,7 +15,9 @@ import org.restlet.client.util.Series;
  * Metadata preference definition.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Preference<T extends Metadata> {
     /** The metadata associated with this preference. */
     private volatile T metadata;

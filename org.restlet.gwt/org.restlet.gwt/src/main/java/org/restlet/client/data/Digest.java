@@ -21,7 +21,9 @@ import org.restlet.client.representation.Representation;
  * 
  * @see Representation#getDigest()
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Digest {
 
     /** Digest algorithm defined in RFC 1319. */

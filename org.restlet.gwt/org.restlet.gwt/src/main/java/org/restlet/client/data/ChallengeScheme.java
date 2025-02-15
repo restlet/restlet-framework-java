@@ -17,7 +17,9 @@ import java.util.Map;
  * Challenge scheme used to authenticate remote clients.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class ChallengeScheme {
     /** Custom scheme based on IP address or cookies or query parameters, etc. */
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",

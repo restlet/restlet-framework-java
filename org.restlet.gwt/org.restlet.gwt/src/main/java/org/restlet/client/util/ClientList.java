@@ -19,7 +19,9 @@ import org.restlet.client.data.Protocol;
  * Modifiable list of client connectors.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class ClientList extends WrapperList<Client> {
 
     /** The context. */

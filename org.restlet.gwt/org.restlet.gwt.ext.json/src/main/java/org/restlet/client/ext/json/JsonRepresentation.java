@@ -34,7 +34,9 @@ import com.google.gwt.json.client.JSONValue;
  * 
  * @see <a href="http://www.json.org">JSON<a/>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class JsonRepresentation extends Representation {
     /** The source JSON representation. */
     private Representation jsonRepresentation;

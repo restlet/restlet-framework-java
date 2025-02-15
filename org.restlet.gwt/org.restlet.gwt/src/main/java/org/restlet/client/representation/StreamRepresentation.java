@@ -19,7 +19,9 @@ import org.restlet.client.engine.io.IoUtils;
  * Representation based on a BIO stream.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class StreamRepresentation extends Representation {
 
     /**

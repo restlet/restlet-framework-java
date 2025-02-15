@@ -21,7 +21,9 @@ import org.restlet.client.engine.Engine;
  * Method to execute when handling a call.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Method implements Comparable<Method> {
 
     /** Map of registered methods. */

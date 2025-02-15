@@ -24,7 +24,9 @@ import java.util.Vector;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @see java.util.Collections
  * @see java.util.List
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class WrapperList<E> implements List<E>, Iterable<E> {
     /** The delegate list. */
     private final List<E> delegate;

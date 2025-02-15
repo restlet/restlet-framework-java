@@ -26,7 +26,9 @@ import com.google.gwt.http.client.Response;
  * HTTP client connector call based on GWT's HTTP module.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class GwtClientCall extends ClientCall {
 
 	/**

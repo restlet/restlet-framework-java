@@ -23,7 +23,9 @@ import org.restlet.client.data.MediaType;
  * supported by Java.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class StringRepresentation extends CharacterRepresentation {
 
     /** The string value. */

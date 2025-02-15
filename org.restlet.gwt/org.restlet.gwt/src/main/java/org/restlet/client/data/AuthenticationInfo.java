@@ -23,7 +23,9 @@ import org.restlet.client.engine.util.SystemUtils;
  * 
  * @author Kelly McLaughlin
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class AuthenticationInfo {
 
     /** The next nonce value. */

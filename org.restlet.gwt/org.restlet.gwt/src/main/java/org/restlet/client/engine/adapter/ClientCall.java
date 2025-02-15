@@ -33,7 +33,9 @@ import org.restlet.client.util.Series;
  * Low-level HTTP client call.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class ClientCall extends Call {
 
     /**

@@ -23,7 +23,9 @@ import org.restlet.client.Restlet;
  * @author Thierry Boileau
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
  *      wrapper) pattern</a>
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class WrapperRestlet extends Restlet {
 
     /** The wrapped Restlet instance. */

@@ -22,9 +22,11 @@ import org.restlet.client.util.NamedValue;
  * <br>
  * Note that when used with HTTP connectors, this class maps to the
  * "Cache-Control" header.
- * 
+ *
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class CacheDirective implements NamedValue<String> {
 
     /**

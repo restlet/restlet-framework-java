@@ -23,7 +23,9 @@ import org.restlet.client.engine.util.SystemUtils;
  * 
  * @see Response#getCookieSettings()
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class CookieSetting extends Cookie {
     /**
      * Indicates whether to restrict cookie access to untrusted parties.

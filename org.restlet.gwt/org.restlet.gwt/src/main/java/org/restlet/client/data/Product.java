@@ -19,7 +19,9 @@ package org.restlet.client.data;
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">Product
  *      Tokens</a>
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Product {
 
     /** Comment. */

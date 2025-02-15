@@ -43,7 +43,9 @@ import org.restlet.client.util.Series;
  * @see org.restlet.client.Response
  * @see org.restlet.client.Uniform
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Request extends Message {
 
 

@@ -25,7 +25,9 @@ import org.restlet.client.util.Series;
  * Low-level call for the HTTP connectors.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class Call {
     /**
      * Returns true if the given exception is caused by a broken connection.

@@ -26,7 +26,9 @@ import org.restlet.client.engine.Engine;
  * should be especially careful when storing state in member variables.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";

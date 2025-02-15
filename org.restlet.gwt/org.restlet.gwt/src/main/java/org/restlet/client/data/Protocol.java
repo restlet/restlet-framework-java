@@ -16,7 +16,9 @@ import org.restlet.client.engine.util.StringUtils;
  * communication between components by implementing standard protocols.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Protocol {
 
     /** Indicates that the port number is undefined. */

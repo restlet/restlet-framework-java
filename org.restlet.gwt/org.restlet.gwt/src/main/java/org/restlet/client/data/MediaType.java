@@ -27,7 +27,9 @@ import org.restlet.client.util.Series;
  * 
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class MediaType extends Metadata {
 
     /**

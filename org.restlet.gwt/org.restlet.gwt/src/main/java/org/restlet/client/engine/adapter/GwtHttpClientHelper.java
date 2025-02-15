@@ -38,7 +38,9 @@ import org.restlet.client.engine.util.Base64;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class GwtHttpClientHelper extends HttpClientHelper {
     /**
      * Constructor.

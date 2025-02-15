@@ -15,7 +15,9 @@ import org.restlet.client.engine.Engine;
  * Status to return after handling a call.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Status {
     private static final String BASE_ADDED_HTTP = "http://tools.ietf.org/html/rfc6585";
 

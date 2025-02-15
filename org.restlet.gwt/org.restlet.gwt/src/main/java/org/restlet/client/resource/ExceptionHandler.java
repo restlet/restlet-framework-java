@@ -9,6 +9,11 @@
 
 package org.restlet.client.resource;
 
+/**
+ *
+ * @deprecated Will be removed in the next 2.7/3.0 release.
+ */
+@Deprecated
 public interface ExceptionHandler<E extends Throwable> {
     void handle(E throwable);
 }

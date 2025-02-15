@@ -84,7 +84,9 @@ import org.restlet.client.Context;
  *
  * @author Jerome Louvel
  * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class Reference {
 
     /** Helps to map characters and their validity as URI characters. */

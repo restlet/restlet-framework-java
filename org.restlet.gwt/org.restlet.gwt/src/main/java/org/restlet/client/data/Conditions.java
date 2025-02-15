@@ -38,7 +38,9 @@ import org.restlet.client.representation.RepresentationInfo;
  *      >If-Unmodified-Since</a>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public final class Conditions {
     /** The "if-match" condition. */
     private volatile List<Tag> match;
