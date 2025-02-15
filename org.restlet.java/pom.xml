@@ -35,9 +35,6 @@
 		<module>org.restlet.ext.thymeleaf</module>
 		<module>org.restlet.ext.velocity</module>
 		<module>org.restlet.ext.xml</module>
-		<!-- TODO dispatch examples in another repository and dispatch tests in each project when possible
-		<module>org.restlet.example</module>
-		 -->
 	</modules>
 
 </project>

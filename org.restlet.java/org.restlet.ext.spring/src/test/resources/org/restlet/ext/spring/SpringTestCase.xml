@@ -53,9 +53,9 @@
 				<constructor-arg ref="application" />
 				<property name="attachments">
 					<map>
-						<entry key="/users/{user}" value="org.restlet.example.tutorial.UserResource" />
-						<entry key="/users/{user}/orders" value="org.restlet.example.tutorial.OrdersResource" />
-						<entry key="/users/{user}/orders/{order}" value="org.restlet.example.tutorial.OrderResource" />
+						<entry key="/users/{user}" value="org.restlet.ext.spring.resources.UserResource" />
+						<entry key="/users/{user}/orders" value="org.restlet.ext.spring.resources.OrdersResource" />
+						<entry key="/users/{user}/orders/{order}" value="org.restlet.ext.spring.resources.OrderResource" />
 					</map>
 				</property>
 			</bean>
