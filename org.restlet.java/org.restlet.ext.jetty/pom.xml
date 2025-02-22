@@ -46,6 +46,11 @@
 			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-slf4j-impl</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>

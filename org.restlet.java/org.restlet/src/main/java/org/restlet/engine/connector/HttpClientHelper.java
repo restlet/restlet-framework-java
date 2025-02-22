@@ -89,9 +89,9 @@ import java.util.logging.Level;
  * the {@link #getHostnameVerifier()} method for details.
  * <p>
  * Note that by default, the {@link HttpURLConnection} class as implemented by
- * Sun will retry a request if an IO exception is caught, for example due to a
+ * Sun will retry a request if an IO exception is caught, for example, due to a
  * connection reset by the server. This can be annoying, especially because the
- * HTTP semantics of non idempotent methods like POST can be broken, but also
+ * HTTP semantics of non-idempotent methods like POST can be broken, but also
  * because the new request won't include an entity. There is one way to disable
  * this behavior for POST requests only by setting the system property
  * "sun.net.http.retryPost" to "false".
@@ -159,7 +159,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
 	/**
 	 * Returns the read timeout value. A timeout of zero is interpreted as an
-	 * infinite timeout. Defaults to 60000.
+	 * infinite timeout. Default to 60000.
 	 * 
 	 * @return The read timeout value.
 	 */
@@ -178,9 +178,9 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 	}
 
 	/**
-	 * Indicates if the protocol will automatically follow redirects.
+	 * Indicates if the protocol automatically follows redirects.
 	 * 
-	 * @return True if the protocol will automatically follow redirects.
+	 * @return True if the protocol automatically follows redirects.
 	 */
 	public boolean isFollowRedirects() {
 		return Boolean.parseBoolean(getHelpedParameters().getFirstValue("followRedirects", "false"));

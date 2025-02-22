@@ -9,6 +9,7 @@
 
 package org.restlet.ext.jetty.connectors;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -30,7 +31,9 @@ import org.restlet.representation.Representation;
 public class PostPutTestCase extends BaseConnectorsTestCase {
 
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         final Client client = new Client(Protocol.HTTP);
         try {
             testCall(client, Method.POST, uri);
@@ -50,7 +53,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
                     public void handle(Request request, Response response) {
                         Representation entity = request.getEntity();
                         if (entity != null) {
-                            Form form = new Form(entity);
+                            final Form form = new Form(entity);
                             response.setEntity(form.getWebRepresentation());
                         }
                     }

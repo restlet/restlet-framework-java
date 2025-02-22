@@ -18,6 +18,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -29,8 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
     private static final String text = "<?xml version='1.0'?><mail>" + "a".repeat(1000) + "</mail>";
+
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, uri);
         final Response response = client.handle(request);
@@ -51,7 +55,7 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", GetChunkedTestResource.class);
+                router.attachDefault(GetChunkedTestResource.class);
                 return router;
             }
         };

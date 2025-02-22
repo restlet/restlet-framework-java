@@ -20,7 +20,7 @@ import org.restlet.ext.jetty.JettyServerHelper;
 
 /**
  * Jetty handler that knows how to convert Jetty calls into Restlet calls. This
- * handler isn't a full server, if you use it you need to manually setup the
+ * handler isn't a full server, if you use it, you need to manually set up the
  * Jetty server connector and add this handler to a Jetty server.
  * 
  * @author Valdis Rigdon
@@ -48,10 +48,11 @@ public class JettyHandler extends Handler.Abstract {
      * @param secure Indicates if the server supports HTTP or HTTPS.
      */
     public JettyHandler(Server server, boolean secure) {
-        if (secure)
+        if (secure) {
             this.helper = new HttpsServerHelper(server);
-        else
+        } else {
             this.helper = new HttpServerHelper(server);
+        }
     }
 
     @Override
@@ -77,8 +78,9 @@ public class JettyHandler extends Handler.Abstract {
     @Override
     public boolean handle(Request request, Response response, Callback callback)
             throws Exception {
-        this.helper.handle(new JettyServerCall(this.helper.getHelped(), request,
-                response, callback));
+        JettyServerCall httpCall = new JettyServerCall(this.helper.getHelped(),
+                request, response, callback);
+        this.helper.handle(httpCall);
         return true;
     }
 

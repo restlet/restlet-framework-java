@@ -85,13 +85,7 @@ public abstract class HttpClientHelper extends ClientHelper {
 	 * @return The connection timeout.
 	 */
 	public int getSocketConnectTimeoutMs() {
-		int result = 0;
-
-		if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-			result = Integer.parseInt(getHelpedParameters().getFirstValue("socketConnectTimeoutMs", "15000"));
-		}
-
-		return result;
+		return Integer.parseInt(getHelpedParameters().getFirstValue("socketConnectTimeoutMs", "15000"));
 	}
 
 	@Override

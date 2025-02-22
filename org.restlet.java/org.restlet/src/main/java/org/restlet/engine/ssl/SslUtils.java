@@ -92,7 +92,7 @@ public class SslUtils {
 	}
 
 	/**
-	 * Returns the SSL context factory. It first look for a "sslContextFactory"
+	 * Returns the SSL context factory. It first looks for a "sslContextFactory"
 	 * attribute (instance), then for a "sslContextFactory" parameter (class name to
 	 * instantiate).
 	 * 
@@ -102,7 +102,8 @@ public class SslUtils {
 	 */
 	public static SslContextFactory getSslContextFactory(RestletHelper<?> helper) {
 
-		SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
+		SslContextFactory result = (SslContextFactory) ((helper.getContext() == null)
+				? null
 				: helper.getContext().getAttributes().get("sslContextFactory"));
 
 		if (result == null) {

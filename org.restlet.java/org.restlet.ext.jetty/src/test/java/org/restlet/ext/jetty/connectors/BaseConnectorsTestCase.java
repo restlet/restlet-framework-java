@@ -11,15 +11,16 @@ package org.restlet.ext.jetty.connectors;
 
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.restlet.Application;
-import org.restlet.Component;
-import org.restlet.Server;
+import org.restlet.*;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.HttpServerHelper;
 import org.restlet.engine.connector.ClientHelper;
+import org.restlet.engine.connector.HttpClientHelper;
 import org.restlet.engine.connector.ServerHelper;
 
+import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -32,79 +33,65 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
  * @author Jerome Louvel
  */
 public abstract class BaseConnectorsTestCase {
-
     private Component component;
     private int port;
 
-    protected abstract void doTestUri(String uri) throws Exception;
+    /**
+     * The method to implement in the tests
+     *
+     * @param serverPort The port that the server is listening to.
+     * @throws Exception
+     */
+    protected abstract void doTest(final int serverPort) throws Exception;
+
+    protected boolean shouldDebug() {
+        return false;
+    }
 
     protected Server configureServer(final Component component) {
-        // server.getContext().getParameters().add("tracing", "true");
-        return component.getServers().add(Protocol.HTTP, 0);
+        Server server = component.getServers().add(Protocol.HTTP, 0);
+        server.getContext().getParameters().add("threadPool.minThreads", "1");
+        server.getContext().getParameters().add("threadPool.maxThreads", "10");
+
+        if (shouldDebug()) {
+            server.getContext().getParameters().add("tracing", "true");
+        }
+
+        return server;
     }
 
     protected abstract Application createApplication();
 
-    protected String getCallUri(final int port) {
-        return "http://localhost:" + port + "/test";
-    }
-
-    protected Stream<ConnectorTestCase> listTestCases() {
-        return Stream.of(
-                // new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY), // restore while taking care of #1444
-                // new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL), // restore while taking care of #1444
-                // new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY), // restore while taking care of #1444
+    protected List<ConnectorTestCase> listTestCases() {
+        return List.of(
+                new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY),
+                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL),
+                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY),
                 new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.INTERNAL)
         );
     }
 
     @TestFactory
-    Stream<DynamicTest> dynamicTestsFromStream() {
-        return listTestCases()
+    Stream<DynamicTest> testsFactory() {
+        return listTestCases().stream()
                 .map(testCase -> dynamicTest(
                         testCase.getTestLabel(),
-                        () -> {
-                            runTest(testCase.httpServer, testCase.httpClient);
-                            resetEngine();
-                        }));
+                        () -> runTest(testCase.httpServer, testCase.httpClient)));
     }
 
     private void runTest(final HttpServer server, final HttpClient client) throws Exception {
-        // Engine.setLogLevel(Level.FINE);
-        Engine nre = Engine.register(false);
-        nre.getRegisteredServers().add(server.serverHelper);
-        nre.getRegisteredClients().add(client.clientHelper);
-        nre.registerDefaultAuthentications();
-        nre.registerDefaultConverters();
+        if (shouldDebug()) {
+            System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
+            System.setProperty("sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
+        }
 
+        initEngine(server, client);
         start();
         try {
-            doTestUri(getCallUri(port));
+            doTest(port);
         } finally {
             stop();
-        }
-    }
-
-    public enum HttpServer {
-        INTERNAL_HTTP(new org.restlet.engine.connector.HttpServerHelper(null)),
-        INTERNAL_HTTPS(new org.restlet.engine.connector.HttpsServerHelper(null)),
-        JETTY_HTTP(new org.restlet.ext.jetty.HttpServerHelper(null)),
-        JETTY_HTTPS(new org.restlet.ext.jetty.HttpsServerHelper(null));
-
-        final ServerHelper serverHelper;
-
-        HttpServer(HttpServerHelper serverHelper) {
-            this.serverHelper = serverHelper;
-        }
-    }
-
-    public enum HttpClient {
-        INTERNAL(new org.restlet.engine.connector.HttpClientHelper(null)), JETTY(new org.restlet.ext.jetty.HttpClientHelper(null));
-
-        final ClientHelper clientHelper;
-
-        HttpClient(ClientHelper clientHelper) {
-            this.clientHelper = clientHelper;
+            resetEngine();
         }
     }
 
@@ -125,9 +112,44 @@ public abstract class BaseConnectorsTestCase {
         this.component = null;
     }
 
+    private void initEngine(HttpServer server, HttpClient client) {
+        if (shouldDebug()) {
+            Engine.setLogLevel(Level.FINE);
+        }
+
+        Engine nre = Engine.register(false);
+        nre.getRegisteredServers().add(server.serverHelper);
+        nre.getRegisteredClients().add(client.clientHelper);
+        nre.registerDefaultAuthentications();
+        nre.registerDefaultConverters();
+    }
+
     private void resetEngine() {
         // Restore a clean engine
         org.restlet.engine.Engine.register();
+    }
+
+    public enum HttpServer {
+        INTERNAL_HTTP(new org.restlet.engine.connector.HttpServerHelper(null)),
+        INTERNAL_HTTPS(new org.restlet.engine.connector.HttpsServerHelper(null)),
+        JETTY_HTTP(new org.restlet.ext.jetty.HttpServerHelper(null)),
+        JETTY_HTTPS(new org.restlet.ext.jetty.HttpsServerHelper(null));
+
+        final ServerHelper serverHelper;
+
+        HttpServer(HttpServerHelper serverHelper) {
+            this.serverHelper = serverHelper;
+        }
+    }
+
+    public enum HttpClient {
+        INTERNAL(new HttpClientHelper(null)), JETTY(new org.restlet.ext.jetty.HttpClientHelper(null));
+
+        final ClientHelper clientHelper;
+
+        HttpClient(ClientHelper clientHelper) {
+            this.clientHelper = clientHelper;
+        }
     }
 
 }

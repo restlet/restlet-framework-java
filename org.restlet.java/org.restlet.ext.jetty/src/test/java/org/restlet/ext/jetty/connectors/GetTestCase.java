@@ -9,19 +9,16 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test that a simple get works for all the connectors.
@@ -31,7 +28,9 @@ import org.restlet.routing.Router;
 public class GetTestCase extends BaseConnectorsTestCase {
 
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         final Request request = new Request(Method.GET, uri);
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
@@ -54,7 +53,7 @@ public class GetTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
+                router.attachDefault(GetTestResource.class);
                 return router;
             }
         };

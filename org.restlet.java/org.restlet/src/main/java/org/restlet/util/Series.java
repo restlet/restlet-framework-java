@@ -205,7 +205,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	/**
 	 * Returns the value of the first parameter found with the given name.
 	 * 
-	 * @param name The parameter name (case sensitive).
+	 * @param name The parameter name (case-sensitive).
 	 * @return The value of the first parameter found with the given name.
 	 */
 	public String getFirstValue(String name) {
@@ -216,7 +216,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * Returns the value of the first parameter found with the given name.
 	 * 
 	 * @param name       The parameter name.
-	 * @param ignoreCase Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase Indicates if the name comparison is case-sensitive.
 	 * @return The value of the first parameter found with the given name.
 	 */
 	public String getFirstValue(String name, boolean ignoreCase) {

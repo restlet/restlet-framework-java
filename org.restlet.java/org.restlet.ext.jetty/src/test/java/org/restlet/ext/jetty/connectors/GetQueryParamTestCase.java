@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -32,12 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GetQueryParamTestCase extends BaseConnectorsTestCase {
 
     @Override
-    protected String getCallUri(int port) {
-        return super.getCallUri(port) + "?q1=a&q2=b";
-    }
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d?q1=a&q2=b", serverPort);
 
-    @Override
-    protected void doTestUri(String uri) throws Exception {
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, uri);
         final Response response = client.handle(request);
@@ -56,7 +54,7 @@ public class GetQueryParamTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
+                router.attachDefault(GetTestResource.class);
                 return router;
             }
         };

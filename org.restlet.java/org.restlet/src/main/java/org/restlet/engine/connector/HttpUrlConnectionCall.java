@@ -48,7 +48,7 @@ public class HttpUrlConnectionCall extends ClientCall {
 	 * @param helper     The parent HTTP client helper.
 	 * @param method     The method name.
 	 * @param requestUri The request URI.
-	 * @param hasEntity  Indicates if the call will have an entity to send to the
+	 * @param hasEntity  Indicates if the call has an entity to send to the
 	 *                   server.
 	 * @throws IOException
 	 */
@@ -60,8 +60,7 @@ public class HttpUrlConnectionCall extends ClientCall {
 			URL url = new URL(requestUri);
 			this.connection = (HttpURLConnection) url.openConnection();
 
-			// These properties can only be used with Java 1.5 and upper
-			// releases
+			// These properties can only be used with Java 1.5 and upper releases
 			int majorVersionNumber = SystemUtils.getJavaMajorVersion();
 			int minorVersionNumber = SystemUtils.getJavaMinorVersion();
 			if ((majorVersionNumber > 1) || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
@@ -201,7 +200,7 @@ public class HttpUrlConnectionCall extends ClientCall {
 					headerName = getConnection().getHeaderFieldKey(i);
 					headerValue = getConnection().getHeaderField(i);
 				} catch (java.util.NoSuchElementException e) {
-					// Some implementations especially the one for Google App
+					// Some implementations, especially the one for Google App
 					// Engine throws a NoSuchElementException though this is not
 					// stated by the contract of the abstract class
 					// HttpUrlConnection.
@@ -212,7 +211,7 @@ public class HttpUrlConnectionCall extends ClientCall {
 				} else {
 					// As stated by the HttpUrlConnection javadocs, some
 					// implementations may treat the 0th header field as
-					// special, i.e. as the status line returned by the HTTP
+					// special, i.e., as the status line returned by the HTTP
 					// server.
 					loop = (i == 0);
 				}
@@ -249,8 +248,8 @@ public class HttpUrlConnectionCall extends ClientCall {
 	}
 
 	/**
-	 * Sends the request to the client. Commits the request line, headers and
-	 * optional entity and send them over the network.
+	 * Sends the request to the client.
+	 * Commits the request line, headers, and optional entity and send them over the network.
 	 * 
 	 * @param request The high-level request.
 	 * @return The result status.

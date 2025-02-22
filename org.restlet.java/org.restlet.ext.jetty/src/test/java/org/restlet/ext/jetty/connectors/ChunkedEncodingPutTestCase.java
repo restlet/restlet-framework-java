@@ -19,6 +19,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,7 +33,9 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     private static final int LOOP_NUMBER = 200;
 
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
             sendPut(testIndex, uri, 10);
         }
@@ -50,7 +53,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
+                router.attachDefault(PutTestResource.class);
                 return router;
             }
         };
@@ -95,12 +98,12 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                 System.out.println(response.getStatus());
             }
 
-            assertNotNull(response.getEntity(), String.format("test #%d - size %d: response's entity is null", testIndex, size));
+            assertNotNull(response.getEntity(), format("test #%d - size %d: response's entity is null", testIndex, size));
             final String responseEntity = response.getEntity().getText();
-            assertNotNull(responseEntity, String.format("test #%d - size %d: response's entity content is null", testIndex, size));
-            assertEquals(size, responseEntity.length(), String.format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
+            assertNotNull(responseEntity, format("test #%d - size %d: response's entity content is null", testIndex, size));
+            assertEquals(size, responseEntity.length(), format("test #%d - size %d: length of response's entity is wrong", testIndex, size));
             final String expectedResponseEntity = createChunkedRepresentation(size).getText();
-            assertEquals(expectedResponseEntity, responseEntity, String.format("test #%d - size %d: response's entity is wrong", testIndex, size));
+            assertEquals(expectedResponseEntity, responseEntity, format("test #%d - size %d: response's entity is wrong", testIndex, size));
         } finally {
             response.release();
             client.stop();

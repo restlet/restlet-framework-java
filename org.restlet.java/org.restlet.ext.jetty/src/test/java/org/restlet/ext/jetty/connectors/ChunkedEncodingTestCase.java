@@ -21,6 +21,7 @@ import org.restlet.util.WrapperRepresentation;
 
 import java.io.IOException;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -37,7 +38,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         try {
             String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
             String text = entity.getText();
-            assertEquals(expected, text, String.format("test #%d: xml representation is wrong", testIndex));
+            assertEquals(expected, text, format("test #%d: xml representation is wrong", testIndex));
         } catch (IOException ex) {
             fail(ex.getMessage());
         }
@@ -59,7 +60,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
             sendGet(testIndex, uri);
             sendPut(testIndex, uri);
@@ -72,7 +75,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
+                router.attachDefault(PutTestResource.class);
                 return router;
             }
         };
@@ -84,7 +87,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         final Response response = client.handle(request);
 
         try {
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), String.format("test #%d: response's status is wrong", testIndex));
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), format("test #%d: response's status is wrong", testIndex));
             assertXML(testIndex, response.getEntity());
         } finally {
             response.release();
@@ -99,7 +102,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         try {
             assertChunkedHeader(response);
-            assertEquals(Status.SUCCESS_OK, response.getStatus(), String.format("test #%d: response's status is wrong", testIndex));
+            assertEquals(Status.SUCCESS_OK, response.getStatus(), format("test #%d: response's status is wrong", testIndex));
             assertXML(testIndex, response.getEntity());
         } finally {
             response.release();

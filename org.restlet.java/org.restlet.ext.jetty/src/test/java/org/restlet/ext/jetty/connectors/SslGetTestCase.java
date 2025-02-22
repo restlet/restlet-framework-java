@@ -9,22 +9,16 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Status;
+import org.restlet.*;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.util.Series;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -35,10 +29,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
+    @Override
+    protected boolean shouldDebug() {
+        return true;
+    }
+
+    @Override
+    protected void doTest(final int serverPort) throws Exception {
+        final Response response = sendGet(format("https://localhost:%d", serverPort));
+
+        assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
+        assertEquals("Hello world", response.getEntity().getText());
+    }
+
+    private Response sendGet(final String uri) {
+        final Client client = new Client(Protocol.HTTPS);
+        client.setContext(new Context());
+        configureSslClientParameters(client);
+
+        final Request request = new Request(Method.GET, uri);
+        return client.handle(request);
+    }
+
+    @Override
+    protected Application createApplication() {
+        return new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                final Router router = new Router(getContext());
+                router.attachDefault(GetTestResource.class);
+                return router;
+            }
+        };
+    }
+
     public static class GetTestResource extends ServerResource {
 
         public GetTestResource() {
-
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
@@ -48,30 +75,4 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
         }
     }
 
-    @Override
-    protected void doTestUri(String uri) throws Exception {
-        final Request request = new Request(Method.GET, uri);
-        final Client client = new Client(Protocol.HTTPS);
-        client.setContext(new Context());
-        configureSslClientParameters(client.getContext());
-        final Response r = client.handle(request);
-
-        assertEquals(Status.SUCCESS_OK, r.getStatus(), r.getStatus().getDescription());
-        assertEquals("Hello world", r.getEntity().getText());
-
-        Thread.sleep(200);
-        client.stop();
-    }
-
-    @Override
-    protected Application createApplication() {
-        return new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
-                return router;
-            }
-        };
-    }
 }

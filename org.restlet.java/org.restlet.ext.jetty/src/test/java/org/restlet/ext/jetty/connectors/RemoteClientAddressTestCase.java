@@ -9,19 +9,7 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -32,6 +20,15 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test that the client address is available for all the connectors
  * 
@@ -40,7 +37,9 @@ import org.restlet.routing.Router;
 public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
 
     @Override
-    protected void doTestUri(String uri) throws Exception {
+    protected void doTest(final int serverPort) throws Exception {
+        final String uri = format("http://localhost:%d", serverPort);
+
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, uri);
         final Response response = client.handle(request);
@@ -59,7 +58,7 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", RemoteClientAddressResource.class);
+                router.attachDefault(RemoteClientAddressResource.class);
                 return router;
             }
         };
