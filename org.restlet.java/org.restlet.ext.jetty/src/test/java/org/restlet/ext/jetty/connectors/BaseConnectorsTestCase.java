@@ -52,6 +52,7 @@ public abstract class BaseConnectorsTestCase {
         Server server = component.getServers().add(Protocol.HTTP, 0);
         server.getContext().getParameters().add("threadPool.minThreads", "1");
         server.getContext().getParameters().add("threadPool.maxThreads", "10");
+        server.getContext().getParameters().add("shutdown.gracefully", "false");
 
         if (shouldDebug()) {
             server.getContext().getParameters().add("tracing", "true");

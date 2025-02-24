@@ -338,7 +338,11 @@ public abstract class JettyServerHelper
         }
 
         jettyServer.setStopAtShutdown(getShutdownGracefully());
-        jettyServer.setStopTimeout(getShutdownTimeout());
+        if (getShutdownGracefully()) {
+            jettyServer.setStopTimeout(getShutdownTimeout());
+        } else {
+            jettyServer.setStopTimeout(0);
+        }
 
         jettyServer.setHandler(createJettyHandler());
 
