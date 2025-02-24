@@ -65,10 +65,14 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    protected Server configureServer(final Component component) {
-        final Server server = component.getServers().add(Protocol.HTTPS, 0);
+    protected Server createServer(Component component) {
+        return component.getServers().add(Protocol.HTTPS, 0);
+    }
+
+    @Override
+    protected void configureServer(final Server server) {
+        super.configureServer(server);
         configureSslServerParameters(server);
-        return server;
     }
 
     protected void configureSslClientParameters(final Client client) {

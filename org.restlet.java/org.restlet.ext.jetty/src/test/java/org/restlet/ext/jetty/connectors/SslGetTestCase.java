@@ -30,11 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
     @Override
-    protected boolean shouldDebug() {
-        return true;
-    }
-
-    @Override
     protected void doTest(final int serverPort) throws Exception {
         final Response response = sendGet(format("https://localhost:%d", serverPort));
 

@@ -48,8 +48,11 @@ public abstract class BaseConnectorsTestCase {
         return false;
     }
 
-    protected Server configureServer(final Component component) {
-        Server server = component.getServers().add(Protocol.HTTP, 0);
+    protected Server createServer(final Component component) {
+        return component.getServers().add(Protocol.HTTP, 0);
+    }
+
+    protected void configureServer(final Server server) {
         server.getContext().getParameters().add("threadPool.minThreads", "1");
         server.getContext().getParameters().add("threadPool.maxThreads", "10");
         server.getContext().getParameters().add("shutdown.gracefully", "false");
@@ -57,8 +60,6 @@ public abstract class BaseConnectorsTestCase {
         if (shouldDebug()) {
             server.getContext().getParameters().add("tracing", "true");
         }
-
-        return server;
     }
 
     protected abstract Application createApplication();
@@ -98,7 +99,8 @@ public abstract class BaseConnectorsTestCase {
 
     private void start() throws Exception {
         this.component = new Component();
-        Server server = configureServer(this.component);
+        final Server server = createServer(this.component);
+        configureServer(server);
         Application application = createApplication();
 
         this.component.getDefaultHost().attach(application);
