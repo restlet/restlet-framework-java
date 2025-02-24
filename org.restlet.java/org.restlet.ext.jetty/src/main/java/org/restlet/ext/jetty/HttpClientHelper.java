@@ -281,48 +281,25 @@ public class HttpClientHelper
         }
 
         HttpClientTransport httpTransport = null;
-        HTTP2Client http2Client = null;
-        HTTP3Client http3Client = null;
 
-        switch (getHttpClientTransportMode()) {
+        final String httpClientTransportMode = getHttpClientTransportMode();
+        switch (httpClientTransportMode) {
             case "HTTP2":
-                http2Client = new HTTP2Client();
-                HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(
-                        http2Client);
-                http2Transport.setUseALPN(true);
-                httpTransport = http2Transport;
+                httpTransport = getHttpClientTransportForHttp2();
                 break;
-
             case "HTTP3":
-                ClientQuicConfiguration clientQuicConfig = new ClientQuicConfiguration(
-                        sslContextFactory, null);
-                http3Client = new HTTP3Client(clientQuicConfig);
-                http3Client.getQuicConfiguration()
-                        .setSessionRecvWindow(64 * 1024 * 1024);
-                httpTransport = new HttpClientTransportOverHTTP3(http3Client);
+                httpTransport = getHttpClientTransportForHttp3(sslContextFactory);
                 break;
-
             case "DYNAMIC":
-                ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
-
-                http2Client = new HTTP2Client();
-                ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(
-                        http2Client);
-
-                ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(
-                        sslContextFactory, null);
-                http3Client = new HTTP3Client(quicConfiguration);
-                ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(
-                        http3Client);
-
-                HttpClientTransportDynamic httpDynamicTransport = new HttpClientTransportDynamic(
-                        new ClientConnector(), http1, http2, http3);
-                httpTransport = httpDynamicTransport;
+                httpTransport = getHttpClientTransportForDynamicMode(sslContextFactory);
                 break;
-
             case "HTTP11":
+                httpTransport = getHttpTransportForHttp1_1();
+                break;
             default:
-                httpTransport = new HttpClientTransportOverHTTP();
+                getLogger().log(Level.WARNING,
+                        "Unknown HTTP client transport mode: {0}, use HTTP11 instead", httpClientTransportMode);
+                httpTransport = getHttpTransportForHttp1_1();
                 break;
         }
 
@@ -356,11 +333,9 @@ public class HttpClientHelper
 
         httpClient.setHttpCookieStore(getCookieStore());
         httpClient.setIdleTimeout(getIdleTimeout());
-        httpClient.setMaxConnectionsPerDestination(
-                getMaxConnectionsPerDestination());
+        httpClient.setMaxConnectionsPerDestination(getMaxConnectionsPerDestination());
         httpClient.setMaxRedirects(getMaxRedirects());
-        httpClient.setMaxRequestsQueuedPerDestination(
-                getMaxRequestsQueuedPerDestination());
+        httpClient.setMaxRequestsQueuedPerDestination(getMaxRequestsQueuedPerDestination());
         httpClient.setMaxResponseHeadersSize(getMaxResponseHeadersSize());
 
         String httpProxyHost = getProxyHost();
@@ -382,6 +357,40 @@ public class HttpClientHelper
         }
 
         return httpClient;
+    }
+
+    private static HttpClientTransportOverHTTP getHttpTransportForHttp1_1() {
+        return new HttpClientTransportOverHTTP();
+    }
+
+    private static HttpClientTransport getHttpClientTransportForHttp2() {
+        HTTP2Client http2Client = new HTTP2Client();
+        HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(http2Client);
+        http2Transport.setUseALPN(true);
+
+        return http2Transport;
+    }
+
+    private static HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+        HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
+        http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
+
+        return new HttpClientTransportOverHTTP3(http3Client);
+    }
+
+    private static HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
+
+        ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
+
+        HTTP2Client http2Client = new HTTP2Client();
+        ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
+
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+        HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
+        ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
+
+        return new HttpClientTransportDynamic(new ClientConnector(), http1, http2, http3);
     }
 
     /**

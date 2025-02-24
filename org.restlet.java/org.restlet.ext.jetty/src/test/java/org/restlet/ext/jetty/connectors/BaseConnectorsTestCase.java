@@ -65,10 +65,10 @@ public abstract class BaseConnectorsTestCase {
 
     protected List<ConnectorTestCase> listTestCases() {
         return List.of(
-                new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY),
                 new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY),
-                new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.INTERNAL)
+                new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.INTERNAL),
+                new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY),
+                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY)
         );
     }
 

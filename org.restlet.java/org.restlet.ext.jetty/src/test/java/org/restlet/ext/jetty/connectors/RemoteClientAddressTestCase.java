@@ -46,6 +46,7 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
 
         try {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("OK", response.getEntityAsText());
         } finally {
             response.release();
             client.stop();
@@ -73,15 +74,15 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
         @Override
         public Representation get(Variant variant) {
             boolean localAddress = false;
+
             try {
-                Enumeration<NetworkInterface> n = NetworkInterface
-                        .getNetworkInterfaces();
-                for (; n.hasMoreElements();) {
-                    NetworkInterface e = n.nextElement();
-                    Enumeration<InetAddress> a = e.getInetAddresses();
-                    for (; a.hasMoreElements();) {
-                        InetAddress addr = a.nextElement();
-                        if (addr.getHostAddress().equals(
+                Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+                while (networkInterfaces.hasMoreElements()) {
+                    NetworkInterface networkInterface = networkInterfaces.nextElement();
+                    Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+                    while (inetAddresses.hasMoreElements()) {
+                        final InetAddress inetAddress = inetAddresses.nextElement();
+                        if (inetAddress.getHostAddress().equals(
                                 getRequest().getClientInfo().getAddress())) {
                             localAddress = true;
                         }
