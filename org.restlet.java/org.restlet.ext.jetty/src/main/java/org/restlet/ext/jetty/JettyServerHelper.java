@@ -266,6 +266,7 @@ public abstract class JettyServerHelper
      */
     private Connector createConnector(org.eclipse.jetty.server.Server server) {
         final HttpConfiguration configuration = createConfiguration();
+
         final ConnectionFactory[] connectionFactories = createConnectionFactories(
                 configuration);
 
@@ -399,7 +400,12 @@ public abstract class JettyServerHelper
         threadPool.setMaxThreads(getThreadPoolMaxThreads());
         threadPool.setThreadsPriority(getThreadPoolThreadsPriority());
         threadPool.setIdleTimeout(getThreadPoolIdleTimeout());
-        threadPool.setStopTimeout(getThreadPoolStopTimeout());
+        if (getShutdownGracefully()) {
+            threadPool.setStopTimeout(getThreadPoolStopTimeout());
+        } else {
+            threadPool.setStopTimeout(0); // The thread pool stops immediately.
+        }
+
         return threadPool;
     }
 
@@ -520,7 +526,7 @@ public abstract class JettyServerHelper
      */
     public int getHttpHeaderCacheSize() {
         return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("http.headerCacheSize", "512"));
+                .getFirstValue("http.headerCacheSize", "1024"));
     }
 
     /**
@@ -797,6 +803,8 @@ public abstract class JettyServerHelper
                 + " server on port " + getHelped().getPort());
         try {
             server.start();
+            // We won't know the local port until after the server starts
+            setEphemeralPort(connector.getLocalPort());
         } catch (Exception e) {
             // Make sure that all resources are released, otherwise thread-pool
             // may still be running.
@@ -804,8 +812,6 @@ public abstract class JettyServerHelper
             throw e;
         }
 
-        // We won't know the local port until after the server starts
-        setEphemeralPort(connector.getLocalPort());
     }
 
     @Override

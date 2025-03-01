@@ -24,6 +24,7 @@
 
 package org.restlet.ext.jetty;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.MediaType;
@@ -43,9 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShutdownHookTestCase {
     private static final Logger LOGGER = Logger.getLogger("ShutdownHookTest");
+    private static boolean shouldDebug = false;
 
-    static {
-         LOGGER.setLevel(Level.INFO);
+    @BeforeAll
+    private static void setUp() {
+        LOGGER.setLevel(Level.INFO);
     }
 
     /**
@@ -53,16 +56,15 @@ public class ShutdownHookTestCase {
      */
     @Test
     public void whenServerIsNotHandlingRequestThenItStopsImmediately() throws Exception {
-        // Given
-        final Duration requestHangingTime = Duration.ofMinutes(1); // Test ALWAYS fails before that
-        final Restlet hangingRestlet = newHangingRestlet(requestHangingTime);
-        final Duration shutdownTimeout = Duration.ofSeconds(2);
-        final Server server = startServerWithGracefulShutdown(shutdownTimeout, hangingRestlet);
+        // Given a server resource that takes 1 min to send a response
+        final Restlet hangingRestlet = newHangingRestlet(Duration.ofMinutes(1));
+        // Given a server with a 3-seconds graceful shutdown
+        final Server server = startServerWithGracefulShutdown(Duration.ofSeconds(3), hangingRestlet);
 
-        // When
+        // When the server stops
         final Instant serverAskedToStopInstant = stopServer(server);
 
-        // Then
+        // Then the server stops immediately (no pending request)
         assertIntervalBetweenDatesEquals(Duration.ZERO, serverAskedToStopInstant, Instant.now());
     }
 
@@ -73,23 +75,29 @@ public class ShutdownHookTestCase {
      */
     @Test
     public void whenServerIsHandlingBlockingRequestThenItStopsImmediately() throws Exception {
-        // Given
-        final Lock lock = new Lock();
-        final Duration requestHangingTime = Duration.ofMinutes(1); // Test ALWAYS fails before that
-        final Restlet hangingRestlet = newHangingAndLockedRestlet(requestHangingTime, lock);
+        // Given a server resource that takes 1 min to send a response
+        final Lock lock = new Lock("Server");
+        final Restlet hangingRestlet = newHangingAndLockedRestlet(Duration.ofMinutes(1), lock);
+        // Given a server without graceful shutdown
         Server server = startServerWithoutGracefulShutdown(hangingRestlet);
 
+        // Given a client that sends a request
         final TestClient testClient = new TestClient(server);
         new Thread(testClient).start();
 
-        // When
-        final boolean isResourceUnlocked = lock.awaitForUnlockingFor(Duration.ofSeconds(2));
+        // When we stop the server while there is a pending request
+        log("before resource unlock");
+        final boolean isResourceUnlocked = lock.awaitForUnlockingFor(Duration.ofSeconds(3));
+        log("after resource unlock");
+        log("before stopping server while request is pending");
         final Instant serverAskedToStopInstant = stopServer(server);
-        final boolean isClientResourceUnlocked = testClient.lock.awaitForUnlockingFor(Duration.ofSeconds(2));
+        log("before client unlock");
+        final boolean isClientResourceUnlocked = testClient.lock.awaitForUnlockingFor(Duration.ofSeconds(4));
+        log("after client unlock");
 
         // Then
         assertTrue(isResourceUnlocked, "The resource didn't receive the request");
-        assertTrue(isClientResourceUnlocked, "The client didn't achieved the request");
+        assertTrue(isClientResourceUnlocked, "The client didn't achieve the request");
         assertTrue(testClient.cr.getStatus().isError(), "The request should have ended in error");
         assertIntervalBetweenDatesEquals(Duration.ZERO, serverAskedToStopInstant, testClient.stoppedAt);
         assertIntervalBetweenDatesEquals(Duration.ZERO, serverAskedToStopInstant, Instant.now());
@@ -101,30 +109,32 @@ public class ShutdownHookTestCase {
      * This is done by making a request froze, then stopping the server, and checking that it waited the expected amount of time before shutting down.
      */
     @Test
-    public void whenServerIsHandlingBlockingRequestThenItGracefullyWaitsFor2SecondsBeforeStopping() throws Exception {
-        // Given
-        final Lock lock = new Lock();
-        final Duration requestHangingTime = Duration.ofMinutes(1); // Test ALWAYS fails before that
-        final Restlet hangingRestlet = newHangingAndLockedRestlet(requestHangingTime, lock);
+    public void whenServerIsHandlingBlockingRequestThenItGracefullyWaitsFor1SecondBeforeStopping() throws Exception {
+        // Given a server resource that takes 1 min to send a response
+        final Lock serverLock = new Lock("Server");
+        final Restlet hangingRestlet = newHangingAndLockedRestlet(Duration.ofMinutes(1), serverLock);
 
-        final Duration shutdownTimeout = Duration.ofSeconds(2);
+        // Given a server with a 1-second graceful shutdown
+        final Duration shutdownTimeout = Duration.ofSeconds(1);
         final Server server = startServerWithGracefulShutdown(shutdownTimeout, hangingRestlet);
 
-        final TestClient testClient = new TestClient(server);
-        new Thread(testClient).start();
+        // Given a client that sends a request
+        final TestClient hangingClient = new TestClient(server);
+        new Thread(hangingClient).start();
 
-        // When
-        final boolean isResourceUnlocked = lock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
+        // When we stop the server while there is a pending request
+        final boolean isResourceUnlocked = serverLock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
+        log("Before ask server to stop");
         final Instant serverAskedToStopInstant = stopServer(server);
-        final boolean isClientResourceUnlocked = testClient.lock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
+        log("After ask server to stop");
+        final boolean isClientResourceUnlocked = hangingClient.lock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
 
         // Then
         assertTrue(isResourceUnlocked, "The resource didn't receive the request");
         assertTrue(isClientResourceUnlocked, "The client didn't achieved the request");
-        assertTrue(testClient.cr.getStatus().isError(), "The request should have ended in error");
+        assertTrue(hangingClient.cr.getStatus().isError(), "The request should have ended in error");
 
-        Thread.sleep(100000);
-        assertIntervalBetweenDatesEquals(shutdownTimeout, serverAskedToStopInstant, testClient.stoppedAt);
+        assertIntervalBetweenDatesEquals(shutdownTimeout, serverAskedToStopInstant, hangingClient.stoppedAt);
         assertIntervalBetweenDatesEquals(toJettyEffectiveTimeout(shutdownTimeout), serverAskedToStopInstant, Instant.now());
     }
 
@@ -135,14 +145,15 @@ public class ShutdownHookTestCase {
      */
     @Test
     public void whenServerIsHandlingBlockingRequestThenItRefusesNewRequest() throws Exception {
-        // Given
-        final Lock lock = new Lock();
-        final Duration requestHangingTime = Duration.ofMinutes(1); // Test ALWAYS fails before that
-        final Restlet hangingRestlet = newHangingAndLockedRestlet(requestHangingTime, lock);
+        // Given a server resource that takes 1 min to send a response
+        final Lock lock = new Lock("Server");
+        final Restlet hangingRestlet = newHangingAndLockedRestlet(Duration.ofMinutes(1), lock);
 
-        final Duration shutdownTimeout = Duration.ofSeconds(2);
+        // Given a server with a 1-second graceful shutdown
+        final Duration shutdownTimeout = Duration.ofSeconds(1);
         final Server server = startServerWithGracefulShutdown(shutdownTimeout, hangingRestlet);
 
+        // Given a client that sends a request
         final TestClient firstTestClient = new TestClient(server);
         new Thread(firstTestClient).start();
 
@@ -171,23 +182,25 @@ public class ShutdownHookTestCase {
      */
     @Test
     public void whenServerIsHandlingLongRequestThenRequestIsHandledCorrectlyBeforeStopping() throws Exception {
-        // Given
-        final Lock lock = new Lock();
-        final Duration requestHangingTime = Duration.ofSeconds(2);
+        // Given a server resource that takes 1 sec to send a response
+        final Lock lock = new Lock("Server");
+        Duration requestHangingTime = Duration.ofSeconds(1);
         final Restlet hangingRestlet = newHangingAndLockedRestlet(requestHangingTime, lock);
 
+        // Given a server with a 20-seconds graceful shutdown
         final Duration shutdownTimeout = Duration.ofSeconds(20);
         final Server server = startServerWithGracefulShutdown(shutdownTimeout, hangingRestlet);
 
+        // Given a client that sends a request
         final TestClient testClient = new TestClient(server);
         new Thread(testClient).start();
 
         // When
         final boolean isResourceUnlocked = lock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
         final Instant serverAskedToStopInstant = stopServer(server);
-        LOGGER.fine("Client resource wait lock");
+        log("Client resource wait lock");
         final boolean isClientResourceUnlocked = testClient.lock.awaitForUnlockingFor(shutdownTimeout.multipliedBy(2));
-        LOGGER.fine("Client resource unlocked");
+        log("Client resource unlocked");
 
         // Then
         assertTrue(isResourceUnlocked, "The resource didn't receive the request");
@@ -206,7 +219,7 @@ public class ShutdownHookTestCase {
                 .abs()
                 .minus(tolerance)
                 .isNegative();
-        assertTrue(isDateDifferenceNearlyEqualToExpectedDuration, String.format("Expected delay: %d second(s) versus %d second(s)\n", expectedDuration.getSeconds(), dateDifference.getSeconds()));
+        assertTrue(isDateDifferenceNearlyEqualToExpectedDuration, String.format("Expected delay: %d second(s) versus %d second(s)\n", expectedDuration.toMillis(), dateDifference.toMillis()));
     }
 
     private static void assertIntervalBetweenDatesIsLessThan(final Duration expectedDuration, final Instant firstInstant, final Instant secondInstant) {
@@ -234,14 +247,22 @@ public class ShutdownHookTestCase {
         // 0 port means it will be computed when the server starts
         Server server = new Server(new Context(), singletonList(Protocol.HTTP), null, 0, restlet, HttpServerHelper.class.getCanonicalName());
 
+        if (shouldDebug) {
+            server.getContext().getParameters().add("tracing", "true");
+            System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
+            System.setProperty("sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
+            Engine.setLogLevel(Level.FINE);
+        }
+
         if (graceful) {
+            // Don't let the lowResource monitor mess with the current test
             server.getContext().getParameters().add("lowResource.idleTimeout", Long.toString(timeout.toMillis() * 10));
         }
         server.getContext().getParameters().add("shutdown.gracefully", Boolean.toString(graceful));
         server.getContext().getParameters().add("shutdown.timeout", Long.toString(timeout.toMillis()));
 
         server.start();
-        LOGGER.fine( "Server started on port " + server.getEphemeralPort());
+        log( "Server started on port " + server.getEphemeralPort());
         return server;
     }
 
@@ -253,16 +274,16 @@ public class ShutdownHookTestCase {
         return new Restlet() {
             @Override
             public void handle(final Request request, final Response response) {
-                LOGGER.fine("Restlet opens lock");
+                log("Restlet opens lock");
                 lock.unlock();
-                LOGGER.fine("Restlet starts sleeping");
+                log("Restlet starts sleeping");
                 try {
                     Thread.sleep(requestHangingTime.toMillis());
                 } catch (Exception e) {
                     // silently stops, especially when Jetty server will abruptly quit after time out
                     LOGGER.log(Level.FINE, "Restlet error", e);
                 }
-                LOGGER.fine("Restlet woke up, answering");
+                log("Restlet woke up, answering");
                 response.setEntity("hello, world", MediaType.TEXT_ALL);
             }
         };
@@ -296,7 +317,7 @@ public class ShutdownHookTestCase {
         public TestClient(final Server server) {
             cr = new ClientResource("http://localhost:" + server.getEphemeralPort());
             cr.setRetryOnError(false);
-            this.lock = new Lock();
+            this.lock = new Lock("TestClient");
         }
 
         @Override
@@ -315,15 +336,15 @@ public class ShutdownHookTestCase {
     }
 
     private synchronized Instant stopServer(final Server server) {
-        LOGGER.log(Level.FINE, "Server stopping");
+        log("Server stopping");
         Instant serverAskedToStopInstant = Instant.now();
         try {
             final HttpServerHelper serverHelper = (HttpServerHelper) server.getContext().getAttributes().get("org.restlet.engine.helper");
             serverHelper.getWrappedServer().stop();
-            LOGGER.log(Level.FINE, "Server stopped");
+            log("Server stopped");
         } catch (Exception e) {
             // silently ignore errors
-            LOGGER.log(Level.FINE, "Server stopped", e);
+            log("Server stopped", e);
         }
         return serverAskedToStopInstant;
     }
@@ -332,7 +353,15 @@ public class ShutdownHookTestCase {
      * Returns the effective Jetty timeout since there is an extra half-timeout in the {@link org.eclipse.jetty.util.thread.QueuedThreadPool}.
      */
     private Duration toJettyEffectiveTimeout(final Duration timeout) {
-        return timeout.multipliedBy(3).dividedBy(2); // FIXME: needs improvements
+        return timeout.plusMillis(500); // FIXME: needs improvements
+    }
+
+    private static void log(final String message) {
+        LOGGER.info(Instant.now().toString() + " " + message);
+    }
+
+    private static void log(final String message, final Exception exception) {
+        LOGGER.log(Level.INFO, Instant.now().toString() + " " + message, exception);
     }
 
 }
