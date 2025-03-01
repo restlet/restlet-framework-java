@@ -102,6 +102,12 @@ import java.util.logging.Level;
  * destinations</td>
  * </tr>
  * <tr>
+ * <td>destinationIdleTimeout</td>
+ * <td>long</td>
+ * <td>0</td>
+ * <td>the time in milliseconds after which idle destinations are removed</td>
+ * </tr>
+ * <tr>
  * <td>followRedirects</td>
  * <td>boolean</td>
  * <td>true</td>
@@ -124,14 +130,14 @@ import java.util.logging.Level;
  * <tr>
  * <td>idleTimeout</td>
  * <td>long</td>
- * <td>60000</td>
+ * <td>30000</td>
  * <td>The max time in milliseconds a connection can be idle (that is, without
  * traffic of bytes in either direction)</td>
  * </tr>
  * <tr>
  * <td>maxConnectionsPerDestination</td>
  * <td>int</td>
- * <td>10</td>
+ * <td>64</td>
  * <td>Sets the max number of connections to open to each destination</td>
  * </tr>
  * <tr>
@@ -315,7 +321,6 @@ public class HttpClientHelper
         httpClient.setExecutor(getExecutor());
         httpClient.setFollowRedirects(isFollowRedirects());
 
-
         switch (getHttpComplianceMode()) {
             case "RFC7230":
                 httpClient.setHttpCompliance(HttpCompliance.RFC7230);
@@ -470,13 +475,13 @@ public class HttpClientHelper
 
     /**
      * The timeout in milliseconds for idle destinations to be removed. Defaults
-     * to 15000.
+     * to 0.
      *
      * @return The address resolution timeout.
      */
     public long getDestinationIdleTimeout() {
         return Long.parseLong(getHelpedParameters()
-                .getFirstValue("destinationIdleTimeout", "15000"));
+                .getFirstValue("destinationIdleTimeout", "0"));
     }
 
     /**
@@ -533,18 +538,18 @@ public class HttpClientHelper
 
     /**
      * The max time in milliseconds a connection can be idle (that is, without
-     * traffic of bytes in either direction). Defaults to 60000.
+     * traffic of bytes in either direction). Defaults to 30000.
      *
      * @return The idle timeout.
      */
     public long getIdleTimeout() {
         return Long.parseLong(
-                getHelpedParameters().getFirstValue("idleTimeout", "60000"));
+                getHelpedParameters().getFirstValue("idleTimeout", "30000"));
     }
 
     /**
      * Sets the max number of connections to open to each destination. Defaults
-     * to 10.
+     * to 64.
      * <p>
      * RFC 2616 suggests that 2 connections should be opened per each
      * destination, but browsers commonly open 6. If this client is used for
@@ -557,7 +562,7 @@ public class HttpClientHelper
      */
     public int getMaxConnectionsPerDestination() {
         return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("maxConnectionsPerDestination", "10"));
+                .getFirstValue("maxConnectionsPerDestination", "64"));
     }
 
     /**

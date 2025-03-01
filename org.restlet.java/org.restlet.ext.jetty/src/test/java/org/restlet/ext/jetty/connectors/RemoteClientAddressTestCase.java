@@ -48,7 +48,6 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("OK", response.getEntityAsText());
         } finally {
-            response.release();
             client.stop();
         }
     }

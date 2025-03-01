@@ -45,7 +45,7 @@ public abstract class BaseConnectorsTestCase {
     protected abstract void doTest(final int serverPort) throws Exception;
 
     protected boolean shouldDebug() {
-        return false;
+        return true;
     }
 
     protected Server createServer(final Component component) {

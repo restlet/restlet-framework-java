@@ -31,19 +31,17 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
     @Override
     protected void doTest(final int serverPort) throws Exception {
-        final Response response = sendGet(format("https://localhost:%d", serverPort));
-
-        assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
-        assertEquals("Hello world", response.getEntity().getText());
-    }
-
-    private Response sendGet(final String uri) {
         final Client client = new Client(Protocol.HTTPS);
         client.setContext(new Context());
         configureSslClientParameters(client);
 
-        final Request request = new Request(Method.GET, uri);
-        return client.handle(request);
+        final Request request = new Request(Method.GET, format("https://localhost:%d", serverPort));
+        final Response response = client.handle(request);
+
+        assertEquals(Status.SUCCESS_OK, response.getStatus(), response.getStatus().getDescription());
+        assertEquals("Hello world", response.getEntity().getText());
+
+        client.stop();
     }
 
     @Override
