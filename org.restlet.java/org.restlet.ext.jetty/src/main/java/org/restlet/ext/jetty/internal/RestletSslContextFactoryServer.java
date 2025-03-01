@@ -52,11 +52,10 @@ public class RestletSslContextFactoryServer extends SslContextFactory.Server {
     @Override
     public SSLServerSocket newSslServerSocket(String host, int port, int backlog)
             throws IOException {
-        SSLServerSocketFactory factory = getSslContext()
-                .getServerSocketFactory();
-        return (SSLServerSocket) ((host == null) ? factory.createServerSocket(
-                port, backlog) : factory.createServerSocket(port, backlog,
-                InetAddress.getByName(host)));
+        SSLServerSocketFactory factory = getSslContext().getServerSocketFactory();
+        return (SSLServerSocket) ((host == null)
+                ? factory.createServerSocket(port, backlog)
+                : factory.createServerSocket(port, backlog, InetAddress.getByName(host)));
     }
 
     @Override

@@ -44,7 +44,7 @@ public class CertificateAuthenticator extends Authenticator {
 
 	/**
 	 * Extracts the Principal of the subject to use from a chain of certificate. By
-	 * default, this is the X500Principal of the subject subject of the first
+	 * default, this is the X500Principal of the subject of the first
 	 * certificate in the chain.
 	 * 
 	 * @see X509Certificate
@@ -55,7 +55,7 @@ public class CertificateAuthenticator extends Authenticator {
 	protected List<Principal> getPrincipals(List<Certificate> certificateChain) {
 		ArrayList<Principal> principals = null;
 
-		if ((certificateChain != null) && (certificateChain.size() > 0)) {
+		if ((certificateChain != null) && (!certificateChain.isEmpty())) {
 			Certificate userCert = certificateChain.get(0);
 
 			if (userCert instanceof X509Certificate) {

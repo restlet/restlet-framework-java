@@ -268,10 +268,13 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
 		if ((this.keyStorePath != null) || (this.keyStoreProvider != null) || (this.keyStoreType != null)) {
 			// Loads the key store.
-			KeyStore keyStore = (this.keyStoreProvider != null)
-					? KeyStore.getInstance((this.keyStoreType != null) ? this.keyStoreType : KeyStore.getDefaultType(),
-							this.keyStoreProvider)
-					: KeyStore.getInstance((this.keyStoreType != null) ? this.keyStoreType : KeyStore.getDefaultType());
+			final String nonNullKeyStoreType = (this.keyStoreType != null)
+					? this.keyStoreType
+					: KeyStore.getDefaultType();
+			final KeyStore keyStore = (this.keyStoreProvider != null)
+					? KeyStore.getInstance(nonNullKeyStoreType, this.keyStoreProvider)
+					: KeyStore.getInstance(nonNullKeyStoreType);
+
 			FileInputStream keyStoreInputStream = null;
 
 			try {
@@ -294,12 +297,11 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
 		if ((this.trustStorePath != null) || (this.trustStoreProvider != null) || (this.trustStoreType != null)) {
 			// Loads the trust store.
+			String nonNullTrustStoreType = (this.trustStoreType != null) ? this.trustStoreType : KeyStore.getDefaultType();
 			KeyStore trustStore = (this.trustStoreProvider != null)
-					? KeyStore.getInstance(
-							(this.trustStoreType != null) ? this.trustStoreType : KeyStore.getDefaultType(),
-							this.trustStoreProvider)
-					: KeyStore.getInstance(
-							(this.trustStoreType != null) ? this.trustStoreType : KeyStore.getDefaultType());
+					? KeyStore.getInstance(nonNullTrustStoreType, this.trustStoreProvider)
+					: KeyStore.getInstance(nonNullTrustStoreType);
+
 			FileInputStream trustStoreInputStream = null;
 
 			try {
@@ -329,7 +331,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 		sslContext.init(kmf != null ? kmf.getKeyManagers() : null, tmf != null ? tmf.getTrustManagers() : null, sr);
 
 		// Wraps the SSL context to be able to set cipher suites and other
-		// properties after SSL engine creation for example
+		// properties after SSL engine creation, for example
 		result = createWrapper(sslContext);
 		return result;
 	}

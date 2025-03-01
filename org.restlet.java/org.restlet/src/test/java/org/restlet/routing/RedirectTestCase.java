@@ -15,8 +15,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.routing.Redirector;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -61,14 +61,11 @@ public class RedirectTestCase {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
-                final String message = "Resource URI:  "
-                        + request.getResourceRef() + '\n' + "Base URI:      "
-                        + request.getResourceRef().getBaseRef() + '\n'
-                        + "Remaining part: "
-                        + request.getResourceRef().getRemainingPart() + '\n'
+                final String message = "Resource URI:  " + request.getResourceRef() + '\n'
+                        + "Base URI:      " + request.getResourceRef().getBaseRef() + '\n'
+                        + "Remaining part: " + request.getResourceRef().getRemainingPart() + '\n'
                         + "Method name:   " + request.getMethod() + '\n';
-                response.setEntity(new StringRepresentation(message,
-                        MediaType.TEXT_PLAIN));
+                response.setEntity(new StringRepresentation(message, MediaType.TEXT_PLAIN));
             }
         };
 
@@ -87,12 +84,11 @@ public class RedirectTestCase {
 
         // Tests
         final Context context = clientComponent.getContext();
-        String uri = "http://localhost:" + TEST_PORT + "/?foo=bar";
+        String uri = format("http://localhost:%d/?foo=bar", TEST_PORT);
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:" + TEST_PORT
-                + "/abcd/efgh/ijkl?foo=bar&foo=beer";
+        uri = format("http://localhost:%d/abcd/efgh/ijkl?foo=bar&foo=beer", TEST_PORT);
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 

@@ -12,7 +12,7 @@ package org.restlet.engine.connector;
 import org.restlet.Client;
 
 /**
- * Client connector helper. Base client helper based on NIO non blocking
+ * Client connector helper. Base client helper based on NIO non-blocking
  * sockets. Here is the list of parameters that are supported. They should be
  * set in the Client's context before it is started:
  * <table>

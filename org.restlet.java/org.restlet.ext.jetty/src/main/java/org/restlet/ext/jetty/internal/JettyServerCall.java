@@ -9,13 +9,6 @@
 
 package org.restlet.ext.jetty.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.Certificate;
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.io.EndPoint;
@@ -28,6 +21,13 @@ import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.util.Series;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Call that is used by the Jetty HTTP server connectors.
@@ -93,12 +93,20 @@ public class JettyServerCall extends ServerCall {
 
     @Override
     public List<Certificate> getCertificates() {
+        final List<Certificate> result;
+
         if (getEndPoint() instanceof SslEndPoint sslEndPoint) {
-            return Arrays.asList(sslEndPoint.getSslSessionData()
-                    .peerCertificates());
-        } else {
-            return null;
+            if (sslEndPoint.getSslSessionData() != null
+                    && sslEndPoint.getSslSessionData().peerCertificates() != null) {
+                result = Arrays.asList(sslEndPoint.getSslSessionData().peerCertificates());
+            } else {
+                result = null;
+            }
+       } else {
+            result = null;
         }
+
+        return result;
     }
 
     /**

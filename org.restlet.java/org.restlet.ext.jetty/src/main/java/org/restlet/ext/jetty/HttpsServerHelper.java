@@ -66,16 +66,19 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected ConnectionFactory[] createConnectionFactories(
             HttpConfiguration configuration) {
+        ConnectionFactory[] result;
+
         try {
             SslContextFactory.Server sslContextFactory = new RestletSslContextFactoryServer(
                     org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
-            return AbstractConnectionFactory.getFactories(sslContextFactory,
+            result = AbstractConnectionFactory.getFactories(sslContextFactory,
                     new HttpConnectionFactory(configuration));
         } catch (Exception e) {
+            result = null;
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);
         }
 
-        return null;
+        return result;
     }
 }
