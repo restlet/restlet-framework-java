@@ -15,8 +15,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.routing.Redirector;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
@@ -39,7 +39,7 @@ public class RedirectTestCase {
     /**
      * Tests the cookies parsing.
      */
-    // @Test TODO why does it fail in CI?
+    @Test
     public void testRedirect() throws Exception {
         // Create components
         final Component clientComponent = new Component();
@@ -84,12 +84,11 @@ public class RedirectTestCase {
 
         // Tests
         final Context context = clientComponent.getContext();
-        String uri = "http://localhost:" + TEST_PORT + "/?foo=bar";
+        String uri = format("http://localhost:%d/?foo=bar", TEST_PORT);
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:" + TEST_PORT
-                + "/abcd/efgh/ijkl?foo=bar&foo=beer";
+        uri = format("http://localhost:%d/abcd/efgh/ijkl?foo=bar&foo=beer", TEST_PORT);
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
