@@ -72,7 +72,7 @@ public class Engine {
     public static final String MINOR_NUMBER = "6";
 
     /** Release number. */
-    public static final String RELEASE_NUMBER = "-SNAPSHOT";
+    public static final String RELEASE_NUMBER = ".0-m2";
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
