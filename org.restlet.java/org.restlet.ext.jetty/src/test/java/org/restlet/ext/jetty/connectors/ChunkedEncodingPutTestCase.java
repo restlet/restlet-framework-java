@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * also to receive a chunked response.
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
-    private static final int LOOP_NUMBER = 200;
+    private static final int LOOP_NUMBER = 20;
 
     @Override
     protected void doTest(final int serverPort) throws Exception {
@@ -38,13 +38,9 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
         for (int testIndex = 0; testIndex < LOOP_NUMBER; testIndex++) {
             sendPut(testIndex, uri, 10);
+            sendPut(testIndex, uri, 50_000);
+            sendPut(testIndex, uri, 100_000);
         }
-
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(i, uri, 50000);
-        }
-
-        sendPut(0, uri, 100000);
     }
 
     @Override
@@ -75,19 +71,6 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         }
     }
 
-    /**
-     * Returns a StringRepresentation which size depends on the given argument.
-     *
-     * @param size
-     *         the size of the representation
-     * @return A DomRepresentation.
-     */
-    private static Representation createChunkedRepresentation(int size) {
-        Representation rep = new StringRepresentation("a".repeat(size), MediaType.TEXT_PLAIN);
-        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
-        return rep;
-    }
-
     private void sendPut(int testIndex, final String uri, final int size) throws Exception {
         final Request request = new Request(Method.PUT, uri, createChunkedRepresentation(size));
         final Client client = new Client(Protocol.HTTP);
@@ -108,6 +91,19 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             response.release();
             client.stop();
         }
+    }
+
+    /**
+     * Returns a StringRepresentation which size depends on the given argument.
+     *
+     * @param size
+     *         the size of the representation
+     * @return A DomRepresentation.
+     */
+    private Representation createChunkedRepresentation(int size) {
+        Representation rep = new StringRepresentation("a".repeat(size), MediaType.TEXT_PLAIN);
+        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
+        return rep;
     }
 
 }

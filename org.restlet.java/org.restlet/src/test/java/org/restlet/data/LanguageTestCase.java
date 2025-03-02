@@ -12,7 +12,7 @@ package org.restlet.data;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test {@link org.restlet.data.Language}.
@@ -32,11 +32,6 @@ public class LanguageTestCase {
 
     @Test
     public void testUnmodifiable() {
-        try {
-            Language.FRENCH_FRANCE.getSubTags().add("foo");
-            fail("The subtags shouldn't be modifiable");
-        } catch (UnsupportedOperationException uoe) {
-            // As expected
-        }
+        assertThrows(UnsupportedOperationException.class, () -> Language.FRENCH_FRANCE.getSubTags().add("foo"));
     }
 }

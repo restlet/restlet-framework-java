@@ -33,7 +33,6 @@ public class SpringTestCase {
         // Start the Restlet component
         Component component = (Component) ctx.getBean("component");
         component.start();
-        Thread.sleep(500);
         component.stop();
     }
 

@@ -36,7 +36,7 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
     private static final Logger LOGGER = Logger.getLogger(ServerMaxConnectionsTestCase.class.getCanonicalName());
     private final static int CONNECTIONS_NUMBER = 1;
     private final static int CONCURRENT_REQUESTS = 2;
-    private final static Duration SERVER_RESOURCE_FREEZE_DURATION = Duration.ofSeconds(1);
+    private final static Duration SERVER_RESOURCE_FREEZE_DURATION = Duration.ofMillis(100);
 
     @Override
     protected void configureServer(final Server server) {
@@ -79,14 +79,6 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
         LOGGER.fine(message + " " + Thread.currentThread());
     }
 
-    @Override
-    protected List<ConnectorTestCase> listTestCases() {
-        return List.of(
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL)
-        );
-    }
-
     private Status sendGet(final String uri) {
         final Status result;
 
@@ -99,7 +91,7 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
                 // Specific to the internal client
                 // When Jetty refuses the extra connection, this does not block the underlying native HttpClient...
                 // Let's set a timeout higher than the wait time imposed by the server (otherwise all requests will fail)
-                String readTimeoutInMs = Long.toString(SERVER_RESOURCE_FREEZE_DURATION.plus(Duration.ofSeconds(1)).toMillis());
+                String readTimeoutInMs = Long.toString(SERVER_RESOURCE_FREEZE_DURATION.toMillis() * 2);
                 client.getContext().getParameters().add("readTimeout", readTimeoutInMs);
             }
 

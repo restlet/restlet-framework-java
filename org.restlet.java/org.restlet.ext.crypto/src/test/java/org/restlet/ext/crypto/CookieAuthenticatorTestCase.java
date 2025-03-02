@@ -63,12 +63,8 @@ public class CookieAuthenticatorTestCase {
         cr.setNext(c);
 
         // 1) Attempt to connect without credentials
-        try {
-            cr.get();
-            Assertions.fail("A resource exception should have been thrown");
-        } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, re.getStatus());
-        }
+        ResourceException re = assertThrows(ResourceException.class, cr::get);
+        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, re.getStatus());
 
         // 2) Attempt to log in with wrong credentials
         ClientResource loginCr = cr.getChild("/login");

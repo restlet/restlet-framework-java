@@ -34,31 +34,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     private static final int LOOP_NUMBER = 50;
 
-    private static void assertXML(int testIndex, Representation entity) {
-        try {
-            String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
-            String text = entity.getText();
-            assertEquals(expected, text, format("test #%d: xml representation is wrong", testIndex));
-        } catch (IOException ex) {
-            fail(ex.getMessage());
-        }
-    }
-
-    private static void assertChunkedHeader(Message message) {
-        final Header transferEncoding = message.getHeaders()
-                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
-        assertNotNull(transferEncoding);
-        assertEquals("chunked", transferEncoding.getValue());
-    }
-
-    private static Representation createTestXml() {
-        String xmlRepresentationAsString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
-        Representation rep = new StringRepresentation(xmlRepresentationAsString);
-        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
-
-        return rep;
-    }
-
     @Override
     protected void doTest(final int serverPort) throws Exception {
         final String uri = format("http://localhost:%d", serverPort);
@@ -129,6 +104,31 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
             return new WrapperRepresentation(entity);
         }
+    }
+
+    private void assertXML(int testIndex, Representation entity) {
+        try {
+            String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
+            String text = entity.getText();
+            assertEquals(expected, text, format("test #%d: xml representation is wrong", testIndex));
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    private static void assertChunkedHeader(Message message) {
+        final Header transferEncoding = message.getHeaders()
+                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        assertNotNull(transferEncoding);
+        assertEquals("chunked", transferEncoding.getValue());
+    }
+
+    private static Representation createTestXml() {
+        String xmlRepresentationAsString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root><child-0 name=\"name-0\"/><child-1 name=\"name-1\"/></root>";
+        Representation rep = new StringRepresentation(xmlRepresentationAsString);
+        rep.setSize(Representation.UNKNOWN_SIZE); // force chunked encoding
+
+        return rep;
     }
 
 }

@@ -95,38 +95,23 @@ public class SpringBeanFinderTestCase {
 
     @Test
     public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory() {
-        try {
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (IllegalStateException iae) {
-            assertEquals(
-                    "Either a beanFactory or an applicationContext is required for SpringBeanFinder.",
-                    iae.getMessage());
-        }
+        IllegalStateException iae = assertThrows(IllegalStateException.class, () -> this.finder.create());
+        assertEquals("Either a beanFactory or an applicationContext is required for SpringBeanFinder.", iae.getMessage());
     }
 
     @Test
     public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory() {
-        try {
-            this.finder.setBeanFactory(beanFactory);
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (IllegalStateException iae) {
-            assertEquals("No bean named " + BEAN_NAME + " present.",
-                    iae.getMessage());
-        }
+        this.finder.setBeanFactory(beanFactory);
+
+        IllegalStateException iae = assertThrows(IllegalStateException.class, () -> this.finder.create());
+        assertEquals("No bean named " + BEAN_NAME + " present.", iae.getMessage());
     }
 
     @Test
     public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext() {
-        try {
-            this.finder.setApplicationContext(applicationContext);
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (IllegalStateException iae) {
-            assertEquals("No bean named " + BEAN_NAME + " present.",
-                    iae.getMessage());
-        }
+        this.finder.setApplicationContext(applicationContext);
+        IllegalStateException iae = assertThrows(IllegalStateException.class, () -> this.finder.create());
+        assertEquals("No bean named " + BEAN_NAME + " present.", iae.getMessage());
     }
 
     @Test
@@ -135,14 +120,10 @@ public class SpringBeanFinderTestCase {
 
         this.finder.setBeanFactory(beanFactory);
 
-        try {
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (ClassCastException cce) {
-            assertEquals(
-                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
-                    cce.getMessage());
-        }
+        ClassCastException classCastException = assertThrows(ClassCastException.class, () -> this.finder.create());
+        assertEquals(
+                "fish does not resolve to an instance of org.restlet.resource.ServerResource",
+                classCastException.getMessage());
     }
 
     @Test
@@ -151,14 +132,10 @@ public class SpringBeanFinderTestCase {
 
         this.finder.setBeanFactory(beanFactory);
 
-        try {
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (ClassCastException cce) {
-            assertEquals(
-                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
-                    cce.getMessage());
-        }
+        ClassCastException classCastException = assertThrows(ClassCastException.class, () -> this.finder.create());
+        assertEquals(
+                "fish does not resolve to an instance of org.restlet.resource.ServerResource",
+                classCastException.getMessage());
     }
 
     @Test

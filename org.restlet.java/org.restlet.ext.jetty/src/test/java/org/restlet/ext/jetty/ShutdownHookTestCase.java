@@ -47,7 +47,7 @@ public class ShutdownHookTestCase {
     private static boolean shouldDebug = false;
 
     @BeforeAll
-    private static void setUp() {
+    public static void setUp() {
         LOGGER.setLevel(Level.INFO);
     }
 

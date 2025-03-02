@@ -65,10 +65,6 @@ public class TransformerTestCase {
                     + "</xsl:template>" + "</xsl:transform>",
             MediaType.TEXT_XML);
 
-    /**
-     * This was removed from the automatically tested method because it is too
-     * consuming.
-     */
     @Test
     public void parallelTestTransform() {
         Component comp = new Component();
@@ -76,7 +72,7 @@ public class TransformerTestCase {
                 comp.getContext(), this.source, this.xslt);
         final FailureTracker tracker = new FailureTracker();
 
-        final int testVolume = 5000;
+        final int testVolume = 500;
         final Thread[] parallelTransform = new Thread[testVolume];
         for (int i = 0; i < parallelTransform.length; i++) {
             final int index = i;

@@ -10,6 +10,7 @@
 package org.restlet.ext.spring;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
@@ -162,16 +163,12 @@ public class SpringBeanRouterTestCase {
 
     @Test
     public void testExplicitRoutingForNonResourceNonRestletBeansFails() {
-        this.router.setAttachments(Collections.singletonMap("/fail",
-                "someOtherBean"));
-        try {
-            doPostProcess();
-            fail("Exception not thrown");
-        } catch (IllegalStateException ise) {
-            assertEquals(
-                    "someOtherBean is not routable.  It must be either a Resource, a ServerResource or a Restlet.",
-                    ise.getMessage());
-        }
+        this.router.setAttachments(Collections.singletonMap("/fail", "someOtherBean"));
+
+        IllegalStateException ise = assertThrows(IllegalStateException.class, this::doPostProcess);
+        assertEquals(
+                "someOtherBean is not routable.  It must be either a Resource, a ServerResource or a Restlet.",
+                ise.getMessage());
     }
 
     @Test

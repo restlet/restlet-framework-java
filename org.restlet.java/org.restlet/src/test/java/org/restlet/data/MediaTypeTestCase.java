@@ -356,16 +356,11 @@ public class MediaTypeTestCase {
     @Test
     @SuppressWarnings("unchecked")
     public void testUnmodifiable() {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("name1", "value1");
 
-        try {
-            Series<Parameter> unmodifiableForm = (Series<Parameter>) Series
-                    .unmodifiableSeries(form);
-            unmodifiableForm.add("name2", "value2");
-            fail("The series should be unmodifiable now");
-        } catch (UnsupportedOperationException uoe) {
-            // As expected
-        }
+        final Series<Parameter> unmodifiableForm = (Series<Parameter>) Series.unmodifiableSeries(form);
+
+        assertThrows(UnsupportedOperationException.class, () -> unmodifiableForm.add("name2", "value2"));
     }
 }

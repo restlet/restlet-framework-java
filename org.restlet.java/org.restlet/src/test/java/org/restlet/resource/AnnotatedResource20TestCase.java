@@ -14,7 +14,7 @@ import org.restlet.Application;
 import org.restlet.data.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -39,26 +39,14 @@ public class AnnotatedResource20TestCase extends AbstractAnnotatedResourceTestCa
 
     @Test
     public void testGet() {
-        try {
-            myResource.represent();
-            fail("Exception should be thrown");
-        } catch (MyException01 e) {
-            assertEquals(400, clientResource.getStatus().getCode());
-        } catch (ResourceException e) {
-            fail("Exception should be MyException01", e);
-        }
+        assertThrows(MyException01.class, () -> myResource.represent());
+        assertEquals(400, clientResource.getStatus().getCode());
     }
 
     @Test
     public void testGetAndSerializeException() {
-        try {
-            myResource.representAndSerializeException();
-            fail("Exception should be thrown");
-        } catch (MyException02 e) {
-            assertEquals("my custom error", e.getCustomProperty());
-            assertEquals(400, clientResource.getStatus().getCode());
-        } catch (ResourceException e) {
-            fail("Exception should be MyException02", e);
-        }
+        MyException02 e = assertThrows(MyException02.class, () -> myResource.representAndSerializeException());
+        assertEquals("my custom error", e.getCustomProperty());
+        assertEquals(400, clientResource.getStatus().getCode());
     }
 }

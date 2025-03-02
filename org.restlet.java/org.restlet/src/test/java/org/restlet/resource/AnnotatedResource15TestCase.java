@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test the annotated resources, client and server sides.
@@ -36,11 +37,7 @@ public class AnnotatedResource15TestCase extends AbstractAnnotatedResourceWithFi
     @Test
     public void shouldFailBecauseServerResourceAnnotationResidesOnGenericServerResource() {
         MyBean myBean = new MyBean("test", "description");
-        try {
-            clientResource.post(myBean, MediaType.APPLICATION_JAVA_OBJECT);
-            fail("Should fail");
-        } catch (ResourceException resourceException) {
-            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, resourceException.getStatus());
-        }
+        ResourceException resourceException = assertThrows(ResourceException.class, () -> clientResource.post(myBean, MediaType.APPLICATION_JAVA_OBJECT));
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, resourceException.getStatus());
     }
 }

@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test case for the Zip client connector.
@@ -96,19 +96,11 @@ public class ZipClientTestCase {
         assertEquals(test2FileEntryClientResource.getResponseEntity().getText(), text2);
 
         // Check that content negotiation does not work
-        try {
-            ClientResource rTest2 = new ClientResource(zr + "!test2");
-            rTest2.get();
-            fail();
-        } catch (ResourceException e) {
-        }
+        ClientResource rTest2 = new ClientResource(zr + "!test2");
+        assertThrows(ResourceException.class, rTest2::get);
 
         // Try to replace file by directory
-        try {
-            ClientResource r2d = new ClientResource(test2FileEntryReference + "/");
-            r2d.put(new EmptyRepresentation());
-            fail();
-        } catch (ResourceException e) {
-        }
+        ClientResource r2d = new ClientResource(test2FileEntryReference + "/");
+        assertThrows(ResourceException.class, () -> r2d.put(new EmptyRepresentation()));
     }
 }

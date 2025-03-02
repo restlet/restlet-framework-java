@@ -9,6 +9,7 @@
 
 package org.restlet.routing;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -106,12 +107,8 @@ public abstract class AbstractFilterTestCase {
         assertFalse(filter.hasNext());
         final Request request = getRequest();
         final Response response = getResponse(request);
-        try {
-            filter.handle(request, response);
-            fail("Filter handles call without a target");
-        } catch (Exception ex) {
-            // noop.
-        }
+
+        assertThrows(Exception.class, () -> filter.handle(request, response));
     }
 
 }
