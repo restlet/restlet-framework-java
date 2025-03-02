@@ -25,7 +25,7 @@ import org.restlet.client.engine.RestletHelper;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.<br>
  * <br>
- * For advanced cases, it is possible to obtained the wrapped
+ * For advanced cases, it is possible to obtain the wrapped
  * {@link RestletHelper} instance that is used by this client to handle the
  * calls via the "org.restlet.client.engine.helper" attribute stored in the
  * {@link Context} object.

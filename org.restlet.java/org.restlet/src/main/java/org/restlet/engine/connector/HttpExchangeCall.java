@@ -26,7 +26,9 @@ import java.util.List;
  * Call that is used by the Basic HTTP server.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class HttpExchangeCall extends ServerCall {
 
 	/** The wrapped HTTP exchange. */

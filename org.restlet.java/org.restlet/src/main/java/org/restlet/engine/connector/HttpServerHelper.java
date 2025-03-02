@@ -23,7 +23,9 @@ import java.net.InetSocketAddress;
  * Internal HTTP server connector.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class HttpServerHelper extends NetServerHelper {
 	/** The underlying HTTP server. */
 	private volatile HttpServer server;

@@ -100,7 +100,9 @@ import java.util.logging.Level;
  *      "https://docs.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
 
 	/**

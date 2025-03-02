@@ -3,7 +3,8 @@ Changes log
 
 - 2.6 Release Candidate 1 (??-02-2025)
     - Misc
-        - Deprecated the GWT edition.
+      - Deprecated the GWT edition.
+      - Deprecated the internal client and server HTTP/HTTPS connectors.
 
 - 2.6 Milestone 1 (26-01-2025)
     - Enhancements

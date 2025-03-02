@@ -68,7 +68,9 @@ import java.util.concurrent.*;
  * </table>
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public abstract class NetServerHelper extends HttpServerHelper {
 	/**
 	 * Socket this server is listening to.

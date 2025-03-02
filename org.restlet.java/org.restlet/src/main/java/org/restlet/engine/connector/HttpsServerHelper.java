@@ -47,7 +47,9 @@ import java.net.InetSocketAddress;
  * {@link DefaultSslContextFactory} class.
  * 
  * @author Jerome Louvel
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 public class HttpsServerHelper extends NetServerHelper {
 	/** The underlying HTTPS server. */
 	private volatile HttpsServer server;
