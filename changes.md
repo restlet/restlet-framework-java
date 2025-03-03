@@ -1,10 +1,25 @@
 Changes log
 ===========
 
-- 2.6 Release Candidate 1 (??-02-2025)
+- 2.6 Release Candidate 1 (??-03-2025)
+    - ...
+
+- 2.6 Milestone 2 (02-03-2025)
+    - Enhancements
+      - Added support for graceful shutdown to the Jetty server.
+      - Updated default configuration of Jetty connector and fixed unit tests.
     - Misc
-      - Deprecated the GWT edition.
-      - Deprecated the internal client and server HTTP/HTTPS connectors.
+      - Deprecated internal HTTP connector that will be removed in favor of Jetty in 2.7/3.0 version.
+      - Deprecated the GWT edition that will be removed in 2.7/3.0 version.
+      - Refactored unit tests to follow standard Maven location and removed "org.restlet.test" module.
+      - Moved "org.restlet.examples" module into [separate repository]([url](https://github.com/restlet/restlet-examples/tree/2.6))
+      - Updated FreeMarker library to version 2.3.34.
+      - Updated GSON library to version 2.12.1.
+      - Updated Jackson library to version 2.17.3.
+      - Updated JODA Time library to version 2.13.1.
+      - Updated JSON library to version 20250107.
+      - Updated JUnit library to version 5.11.4.
+      - Updated Spring Framework dependency to version 6.2.3.
 
 - 2.6 Milestone 1 (26-01-2025)
     - Enhancements
