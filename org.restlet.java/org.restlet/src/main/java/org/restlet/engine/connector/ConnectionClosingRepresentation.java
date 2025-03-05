@@ -19,7 +19,9 @@ import java.net.HttpURLConnection;
  * {@link HttpURLConnection} when the representation is released.
  * 
  * @author Kevin Conaway
+ * @deprecated Will be removed in the next 2.7/3.0 release.
  */
+@Deprecated
 class ConnectionClosingRepresentation extends WrapperRepresentation {
 
 	/** The parent connection. */
