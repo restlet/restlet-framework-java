@@ -34,6 +34,18 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+ 		<pluginManagement>
+ 			<plugins>
+ 				<plugin>
+ 					<groupId>net.ltgt.gwt.maven</groupId>
+ 					<artifactId>gwt-maven-plugin</artifactId>
+ 					<version>1.1.0</version>
+ 				</plugin>
+ 			</plugins>
+ 		</pluginManagement>
+ 	</build>
+
 	<profiles>
 		<profile>
 			<id>dev</id>

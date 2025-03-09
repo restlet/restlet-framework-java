@@ -1,6 +1,23 @@
 Changes log
 ===========
 
+- 2.5.2 (??-03-2025)
+    - Misc
+      - Upgraded the Commons-codec library version to 1.17.2.
+      - Upgraded the Commons-logging library version to 1.3.5.
+      - Upgraded the Freemarker library version to 2.3.34.
+      - Upgraded the Gson library version to 2.12.1.
+      - Upgraded the Guava library version to 33.4.0-jre.
+      - Upgraded the GWT server library version to 2.10.1.
+      - Upgraded the Jackson library version to 2.17.3.
+      - Upgraded the Jetty library version to 9.4.57.v20241219.
+      - Upgraded the Joda time library version to 2.13.1.
+      - Upgraded the Mime4j library version to 0.8.12.
+      - Upgraded the OSGi library version to 4.0.1.
+      - Upgraded the Slf4j library version to 2.0.17.
+      - Upgraded the Spring library version to 5.3.39.
+      - Upgraded the Thymeleaf library version to 3.1.3.RELEASE.
+
 - 2.5.1 (28-01-2025)
     - Bugs fixed
         - Fixed Engine's version. Issue #1448
