@@ -234,7 +234,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
 								t = (Throwable) getClientResource().toObject(response.getEntity(), throwableClazz);
 							} else {
 								try {
-									t = (Throwable) throwableClazz.newInstance();
+									t = (Throwable) throwableClazz.getDeclaredConstructor().newInstance();
 								} catch (Exception e) {
 									Context.getCurrentLogger().log(Level.FINE,
 											"Unable to instantiate the client-side exception using the default constructor.");

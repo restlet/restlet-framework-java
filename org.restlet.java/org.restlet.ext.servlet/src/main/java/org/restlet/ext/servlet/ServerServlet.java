@@ -415,11 +415,7 @@ public class ServerServlet extends HttpServlet {
             } catch (InvocationTargetException e) {
                 log("[Restlet] ServerServlet encountered an exception instantiating the target class "
                         + componentClassName, e.getTargetException());
-            } catch (InstantiationException e) {
-                log(String.format(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
-                        componentClassName, "an empty constructor"), e);
-            } catch (NoSuchMethodException e) {
+            } catch (InstantiationException | NoSuchMethodException e) {
                 log(String.format(
                         "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
                         componentClassName, "an empty constructor"), e);

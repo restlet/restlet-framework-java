@@ -60,7 +60,7 @@
         <lib-jaxb-ri-version>2.4.0-b180830.0438</lib-jaxb-ri-version>
         <lib-jaxb-api-version>2.4.0-b180830.0359</lib-jaxb-api-version>
         <lib-joda-time-version>2.13.1</lib-joda-time-version>
-        <lib-jetty-version>12.0.16</lib-jetty-version>
+        <lib-jetty-version>12.0.17</lib-jetty-version>
         <lib-json-version>20250107</lib-json-version>
         <lib-junit-version>5.11.4</lib-junit-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>

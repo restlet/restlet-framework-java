@@ -414,7 +414,8 @@ public class Engine {
 		String loggerFacadeClass = System.getProperty("org.restlet.engine.loggerFacadeClass",
 				"org.restlet.engine.log.LoggerFacade");
 		try {
-			this.loggerFacade = (LoggerFacade) getClassLoader().loadClass(loggerFacadeClass).newInstance();
+			this.loggerFacade = (LoggerFacade) getClassLoader().loadClass(loggerFacadeClass)
+					.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			this.loggerFacade = new LoggerFacade();
 			this.loggerFacade.getLogger("org.restlet").log(Level.WARNING, "Unable to register the logger facade", e);

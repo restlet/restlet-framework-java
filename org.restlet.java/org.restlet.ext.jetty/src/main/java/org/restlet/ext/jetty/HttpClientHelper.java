@@ -38,6 +38,7 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.jetty.internal.JettyClientCall;
 import org.restlet.ext.jetty.internal.RestletSslContextFactoryClient;
@@ -279,37 +280,26 @@ public class HttpClientHelper
         SslContextFactory.Client sslContextFactory = null;
 
         try {
-            sslContextFactory = new RestletSslContextFactoryClient(
-                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
+            sslContextFactory = new RestletSslContextFactoryClient(SslUtils.getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);
         }
 
-        HttpClientTransport httpTransport = null;
-
         final String httpClientTransportMode = getHttpClientTransportMode();
-        switch (httpClientTransportMode) {
-            case "HTTP2":
-                httpTransport = getHttpClientTransportForHttp2();
-                break;
-            case "HTTP3":
-                httpTransport = getHttpClientTransportForHttp3(sslContextFactory);
-                break;
-            case "DYNAMIC":
-                httpTransport = getHttpClientTransportForDynamicMode(sslContextFactory);
-                break;
-            case "HTTP11":
-                httpTransport = getHttpTransportForHttp1_1();
-                break;
-            default:
+        final HttpClientTransport httpTransport = switch (httpClientTransportMode) {
+            case "HTTP2" -> getHttpClientTransportForHttp2();
+            case "HTTP3" -> getHttpClientTransportForHttp3(sslContextFactory);
+            case "DYNAMIC" -> getHttpClientTransportForDynamicMode(sslContextFactory);
+            case "HTTP11" -> getHttpTransportForHttp1_1();
+            default -> {
                 getLogger().log(Level.WARNING,
-                        "Unknown HTTP client transport mode: {0}, use HTTP11 instead", httpClientTransportMode);
-                httpTransport = getHttpTransportForHttp1_1();
-                break;
-        }
+                        "Unknown HTTP client transport mode: {0}, default to HTTP11", httpClientTransportMode);
+                yield getHttpTransportForHttp1_1();
+            }
+        };
 
-        HttpClient httpClient = new HttpClient(httpTransport);
+        final HttpClient httpClient = new HttpClient(httpTransport);
         httpClient.setAddressResolutionTimeout(getAddressResolutionTimeout());
         if (getAuthenticationStore() != null) {
             httpClient.setAuthenticationStore(getAuthenticationStore());
@@ -321,20 +311,19 @@ public class HttpClientHelper
         httpClient.setExecutor(getExecutor());
         httpClient.setFollowRedirects(isFollowRedirects());
 
-        switch (getHttpComplianceMode()) {
-            case "RFC7230":
-                httpClient.setHttpCompliance(HttpCompliance.RFC7230);
-                break;
-            case "RFC7230_LEGACY":
-                httpClient.setHttpCompliance(HttpCompliance.RFC7230_LEGACY);
-                break;
-            case "RFC2616":
-                httpClient.setHttpCompliance(HttpCompliance.RFC2616);
-                break;
-            case "RFC2616_LEGACY":
-                httpClient.setHttpCompliance(HttpCompliance.RFC2616_LEGACY);
-                break;
-        }
+        final String httpComplianceMode = getHttpComplianceMode();
+        final HttpCompliance httpCompliance = switch (httpComplianceMode) {
+            case "RFC7230" -> HttpCompliance.RFC7230;
+            case "RFC7230_LEGACY" -> HttpCompliance.RFC7230_LEGACY;
+            case "RFC2616" -> HttpCompliance.RFC2616;
+            case "RFC2616_LEGACY" -> HttpCompliance.RFC2616_LEGACY;
+            default -> {
+                getLogger().log(Level.WARNING,
+                        "Unknown HTTP compliance mode: {0}, default to RFC7230", httpComplianceMode);
+                yield HttpCompliance.RFC7230;
+            }
+        };
+        httpClient.setHttpCompliance(httpCompliance);
 
         httpClient.setHttpCookieStore(getCookieStore());
         httpClient.setIdleTimeout(getIdleTimeout());
@@ -343,7 +332,7 @@ public class HttpClientHelper
         httpClient.setMaxRequestsQueuedPerDestination(getMaxRequestsQueuedPerDestination());
         httpClient.setMaxResponseHeadersSize(getMaxResponseHeadersSize());
 
-        String httpProxyHost = getProxyHost();
+        final String httpProxyHost = getProxyHost();
         if (httpProxyHost != null) {
             HttpProxy proxy = new HttpProxy(httpProxyHost, getProxyPort());
             httpClient.getProxyConfiguration().addProxy(proxy);
@@ -355,7 +344,7 @@ public class HttpClientHelper
         httpClient.setSslContextFactory(sslContextFactory);
         httpClient.setStrictEventOrdering(isStrictEventOrdering());
 
-        String userAgentField = getUserAgentField();
+        final String userAgentField = getUserAgentField();
         if (userAgentField != null) {
             httpClient.setUserAgentField(
                     new HttpField(HttpHeader.USER_AGENT, userAgentField));

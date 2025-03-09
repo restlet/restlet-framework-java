@@ -12,6 +12,7 @@ package org.restlet.engine.ssl;
 import org.restlet.Context;
 import org.restlet.engine.RestletHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -115,22 +116,24 @@ public class SslUtils {
 						try {
 							Class<? extends SslContextFactory> sslContextFactoryClass = Class
 									.forName(sslContextFactoryName).asSubclass(SslContextFactory.class);
-							result = sslContextFactoryClass.newInstance();
+							result = sslContextFactoryClass.getDeclaredConstructor().newInstance();
 							result.init(helper.getHelpedParameters());
 						} catch (ClassNotFoundException e) {
 							Context.getCurrentLogger().log(Level.WARNING,
 									"Unable to find SslContextFactory class: " + sslContextFactoryName, e);
 						} catch (ClassCastException e) {
 							Context.getCurrentLogger().log(Level.WARNING,
-									"Class " + sslContextFactoryName + " does not implement SslContextFactory.", e);
-						} catch (InstantiationException e) {
+									"Class " + sslContextFactoryName + " does not implement SslContextFactory", e);
+						} catch (InstantiationException | NoSuchMethodException e) {
 							Context.getCurrentLogger().log(Level.WARNING, "Could not instantiate class "
-									+ sslContextFactoryName + " with default constructor.", e);
+									+ sslContextFactoryName + " with default constructor", e);
 						} catch (IllegalAccessException e) {
 							Context.getCurrentLogger().log(Level.WARNING,
-									"Illegal access when instantiating class " + sslContextFactoryName + ".", e);
-						}
-					}
+									"Illegal access when instantiating class " + sslContextFactoryName, e);
+						} catch (InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
 				}
 			}
 		}

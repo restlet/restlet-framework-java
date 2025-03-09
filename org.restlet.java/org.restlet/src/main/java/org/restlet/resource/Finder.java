@@ -120,7 +120,7 @@ public class Finder extends Restlet {
 		if (targetClass != null) {
 			try {
 				// Invoke the default constructor
-				result = targetClass.newInstance();
+				result = targetClass.getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
 				getLogger().log(Level.WARNING, "Exception while instantiating the target server resource.", e);
 			}

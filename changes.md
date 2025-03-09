@@ -2,7 +2,8 @@ Changes log
 ===========
 
 - 2.6 Release Candidate 1 (??-03-2025)
-    - ...
+    - Misc
+        - Upgraded the Jetty library to version 2.0.17.
 
 - 2.6 Milestone 2 (02-03-2025)
     - Enhancements
