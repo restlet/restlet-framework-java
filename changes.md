@@ -3,7 +3,10 @@ Changes log
 
 - 2.6 Release Candidate 1 (??-03-2025)
     - Misc
-        - Upgraded the Jetty library to version 2.0.17.
+      - Upgrade the thymeleaf library to 3.1.3.RELEASE.
+      - Upgraded the Slf4j library to 5.12.0.
+      - Upgraded the GWT libraries to version 2.12.2.
+      - Upgraded the Jetty library to version 2.0.17.
 
 - 2.6 Milestone 2 (02-03-2025)
     - Enhancements
