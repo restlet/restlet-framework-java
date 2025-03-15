@@ -11,6 +11,7 @@ package org.restlet.engine.header;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 
 import java.io.IOException;
@@ -56,7 +57,14 @@ public class ContentType {
 		if ((mediaType.getParameters().getFirstValue("charset") == null) && (characterSet != null)) {
 			result = result + "; charset=" + characterSet.getName();
 		}
-
+        
+		for (Parameter param : mediaType.getParameters()) {
+            if ((param != null) && !param.getName().equals("charset")) {
+                result = result + "; " + param.getName() + "="
+                        + param.getValue();
+            }
+        }
+        
 		return result;
 
 	}
