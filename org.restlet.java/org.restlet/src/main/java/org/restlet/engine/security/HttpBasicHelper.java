@@ -22,6 +22,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -129,6 +130,11 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
 	@Override
 	public void parseResponse(ChallengeResponse challenge, Request request, Series<Header> httpHeaders) {
+		if (challenge.getRawValue() == null) {
+			getLogger().info("Cannot decode credentials: " + challenge.getRawValue());
+			return;
+		}
+
 		try {
 			String charset = challenge.getParameters().getFirstValue("charset");
 
@@ -145,10 +151,6 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 			}
 
 			byte[] credentialsEncoded = Base64.getDecoder().decode(challenge.getRawValue());
-
-			if (credentialsEncoded == null) {
-				getLogger().info("Cannot decode credentials: " + challenge.getRawValue());
-			}
 
 			String credentials = new String(credentialsEncoded, charset);
 			int separator = credentials.indexOf(':');
