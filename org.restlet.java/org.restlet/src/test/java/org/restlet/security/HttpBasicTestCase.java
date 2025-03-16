@@ -9,11 +9,10 @@
 
 package org.restlet.security;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +35,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Restlet unit tests for HTTP Basic authentication client/server.
