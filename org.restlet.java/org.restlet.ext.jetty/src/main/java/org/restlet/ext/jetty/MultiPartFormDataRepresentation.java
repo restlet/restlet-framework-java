@@ -19,9 +19,7 @@ import org.eclipse.jetty.http.MultiPart;
 import org.eclipse.jetty.http.MultiPart.Part;
 import org.eclipse.jetty.http.MultiPartConfig;
 import org.eclipse.jetty.http.MultiPartFormData;
-import org.eclipse.jetty.http.MultiPartFormData.Parts;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.io.content.InputStreamContentSource;
 import org.eclipse.jetty.util.Attributes;
 import org.eclipse.jetty.util.Promise;
 import org.restlet.data.MediaType;
@@ -44,11 +42,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
 	 * @return The updated media type.
 	 */
 	public static MediaType addBoundary(MediaType mediaType) {
-		// TODO should we duplicate the mediaType, in order to preserve the static
-		// constants defined in MediaType class?
-		String boundary = MultiPart.generateBoundary(null, 24);
-		mediaType.getParameters().add("boundary", boundary);
-		return mediaType;
+		return new MediaType(mediaType, "boundary", MultiPart.generateBoundary(null, 24));
 	}
 
 	/**

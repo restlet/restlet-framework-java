@@ -605,6 +605,38 @@ public final class MediaType extends Metadata {
 	/** The list of parameters. */
 	private volatile Series<Parameter> parameters;
 
+    /**
+     * Constructor that clones an original media type.
+     * 
+     * @param original   The original media type to clone.
+     * @param paramName  The name of the parameter to add.
+     * @param paramValue The value of the parameter to add.
+     */
+    public MediaType(MediaType original, String paramName, String paramValue) {
+        this(original, new Parameter(paramName, paramValue));
+    }
+
+    /**
+     * Constructor that clones an original media type.
+     * 
+     * @param original   The original media type to clone.
+     * @param parameter  The parameter to add.
+     */
+    public MediaType(MediaType original, Parameter parameter) {
+        this(original, parameter == null ? null : parameter.createSeries());
+    }
+
+    /**
+     * Constructor that clones an original media type.
+     * 
+     * @param original   The original media type to clone.
+     * @param parameters The list of parameters to add.
+     */
+    public MediaType(MediaType original, Series<Parameter> parameters) {
+        this((original == null) ? null : original.getName(), parameters,
+                (original == null) ? null : original.getDescription());
+    }
+
 	/**
 	 * Constructor.
 	 * 

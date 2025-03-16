@@ -5,6 +5,7 @@ Changes log
     - Enhancements
       - Added MultiPartFormDataRepresentation to Jetty extension to support generation and parsing.
       - Added support for the "charset" parameter in HTTP BASIC challenges. Reported by Marc Lafon.
+      - Added MediaType constructors to help with cloning and customization needs.
     - Misc
       - Upgraded Thymeleaf library to 3.1.3.RELEASE.
       - Upgraded Slf4j library to 5.12.0.

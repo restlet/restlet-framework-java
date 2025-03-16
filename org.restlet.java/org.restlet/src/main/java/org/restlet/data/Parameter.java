@@ -11,6 +11,7 @@ package org.restlet.data;
 
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.NamedValue;
+import org.restlet.util.Series;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -28,6 +29,19 @@ public class Parameter implements Comparable<Parameter>, NamedValue<String> {
 
 	/** The second object. */
 	private volatile String value;
+
+    /**
+     * Creates a series that includes the current parameter as the initial
+     * entry.
+     * 
+     * @return A series that includes the current parameter as the initial
+     *         entry.
+     */
+    public Series<Parameter> createSeries() {
+        Series<Parameter> result = new Form();
+        result.add(this);
+        return result;
+    }
 
 	/**
 	 * Creates a parameter.
