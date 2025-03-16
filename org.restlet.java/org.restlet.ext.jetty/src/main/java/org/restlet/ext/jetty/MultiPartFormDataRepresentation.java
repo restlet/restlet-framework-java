@@ -12,6 +12,7 @@ package org.restlet.ext.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 
 import org.eclipse.jetty.http.MultiPart;
 import org.eclipse.jetty.http.MultiPart.Part;
@@ -89,14 +90,16 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * Constructor that parses the content based on a given configuration into
      * {@link #getParts()}. Uses a default {@link MultiPartConfig}.
      * 
-     * @param content The multipart entity to parse which should have a media
-     *                type based on {@link MediaType#MULTIPART_FORM_DATA}, with
-     *                a "boundary" parameter.
+     * @param content  The multipart entity to parse which should have a media
+     *                 type based on {@link MediaType#MULTIPART_FORM_DATA}, with
+     *                 a "boundary" parameter.
+     * @param location The location where parsed files are stored for easier
+     *                 access.
      * @throws IOException
      */
-    public MultiPartFormDataRepresentation(Representation content)
-            throws IOException {
-        this(content, new MultiPartConfig.Builder().build());
+    public MultiPartFormDataRepresentation(Representation content,
+            Path location) throws IOException {
+        this(content, new MultiPartConfig.Builder().location(location).build());
     }
 
     /**
