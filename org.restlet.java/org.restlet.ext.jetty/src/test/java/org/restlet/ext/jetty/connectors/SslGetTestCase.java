@@ -16,7 +16,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-import org.restlet.util.Series;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;

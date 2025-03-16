@@ -12,7 +12,6 @@ package org.restlet.security;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.restlet.Component;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;

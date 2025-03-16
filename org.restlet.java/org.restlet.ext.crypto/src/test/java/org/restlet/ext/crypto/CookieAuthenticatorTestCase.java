@@ -9,7 +9,6 @@
 
 package org.restlet.ext.crypto;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.CookieSetting;

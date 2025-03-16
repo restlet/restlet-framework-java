@@ -14,7 +14,6 @@ import org.restlet.data.Reference;
 import org.restlet.resource.Directory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -10,8 +10,6 @@
 package org.restlet.resource;
 
 import org.restlet.data.Form;
-import org.restlet.resource.Get;
-import org.restlet.resource.Put;
 
 /**
  * Sample annotated interface.

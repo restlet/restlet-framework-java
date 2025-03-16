@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.restlet.engine.Engine;
 import org.restlet.representation.ObjectRepresentation;
-import org.restlet.resource.ClientResource;
 
 /**
  * Test the annotated resources, client and server sides.

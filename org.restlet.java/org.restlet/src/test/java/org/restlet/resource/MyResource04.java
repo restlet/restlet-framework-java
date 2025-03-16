@@ -9,9 +9,6 @@
 
 package org.restlet.resource;
 
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
-
 public class MyResource04 extends ServerResource {
 
     @Get("xml")

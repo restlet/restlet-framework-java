@@ -14,7 +14,6 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.routing.Router;
-import org.restlet.security.*;
 
 /**
  * Sample SAAS application with a Basic authenticator guarding a hello world

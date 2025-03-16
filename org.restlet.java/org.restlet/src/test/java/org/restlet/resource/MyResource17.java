@@ -9,8 +9,6 @@
 
 package org.restlet.resource;
 
-import org.restlet.resource.Post;
-
 public interface MyResource17<R> {
 
     @Post
