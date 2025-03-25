@@ -39,29 +39,6 @@ import org.restlet.representation.Representation;
 public class MultiPartRepresentation extends InputRepresentation {
 
     /**
-     * Sets a boundary to an existing media type. If the original mediatype
-     * already has a "boundary" parameter, it will be erased. *
-     * 
-     * @param mediaType The media type to update.
-     * @param boundary  The boundary to add as a parameter.
-     * @return The updated media type.
-     */
-    public static MediaType setBoundary(MediaType mediaType, String boundary) {
-        MediaType result = null;
-
-        if (mediaType != null) {
-            if (mediaType.getParameters().getFirst("boundary") != null) {
-                result = new MediaType(mediaType.getParent(), "boundary",
-                        boundary);
-            } else {
-                result = new MediaType(mediaType, "boundary", boundary);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Creates a #{@link Part} object based on a {@link Representation} plus
      * metadata.
      * 
@@ -97,6 +74,29 @@ public class MultiPartRepresentation extends InputRepresentation {
     }
 
     /**
+     * Sets a boundary to an existing media type. If the original mediatype
+     * already has a "boundary" parameter, it will be erased. *
+     * 
+     * @param mediaType The media type to update.
+     * @param boundary  The boundary to add as a parameter.
+     * @return The updated media type.
+     */
+    public static MediaType setBoundary(MediaType mediaType, String boundary) {
+        MediaType result = null;
+
+        if (mediaType != null) {
+            if (mediaType.getParameters().getFirst("boundary") != null) {
+                result = new MediaType(mediaType.getParent(), "boundary",
+                        boundary);
+            } else {
+                result = new MediaType(mediaType, "boundary", boundary);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * The boundary used to separate each part for the parsed or generated form.
      */
     private volatile String boundary;
@@ -111,43 +111,8 @@ public class MultiPartRepresentation extends InputRepresentation {
      * 
      * @param parts The source parts to use when generating the representation.
      */
-    public MultiPartRepresentation(Part... parts) {
-        this(Arrays.asList(parts));
-    }
-
-    /**
-     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
-     * content via {@link #getStream()} as a
-     * {@link MediaType#MULTIPART_FORM_DATA}.
-     * 
-     * @param parts The source parts to use when generating the representation.
-     */
-    public MultiPartRepresentation(String boundary, Part... parts) {
-        this(boundary, Arrays.asList(parts));
-    }
-
-    /**
-     * Constructor that wraps multiple parts, set a random boundary, then
-     * GENERATES the content via {@link #getStream()} as a
-     * {@link MediaType#MULTIPART_FORM_DATA}.
-     * 
-     * @param parts The source parts to use when generating the representation.
-     */
     public MultiPartRepresentation(List<Part> parts) {
         this(MultiPart.generateBoundary(null, 24), parts);
-    }
-
-    /**
-     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
-     * content via {@link #getStream()} as a
-     * {@link MediaType#MULTIPART_FORM_DATA}.
-     * 
-     * @param boundary The boundary to add as a parameter.
-     * @param parts    The source parts to use when generating the
-     *                 representation.
-     */
-    public MultiPartRepresentation(String boundary, List<Part> parts) {
-        this(MediaType.MULTIPART_FORM_DATA, boundary, parts);
     }
 
     /**
@@ -165,6 +130,17 @@ public class MultiPartRepresentation extends InputRepresentation {
         super(null, setBoundary(mediaType, boundary));
         this.boundary = boundary;
         this.parts = parts;
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a random boundary, then
+     * GENERATES the content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
+     * 
+     * @param parts The source parts to use when generating the representation.
+     */
+    public MultiPartRepresentation(Part... parts) {
+        this(Arrays.asList(parts));
     }
 
     /**
@@ -248,6 +224,30 @@ public class MultiPartRepresentation extends InputRepresentation {
                         }
                     });
         }
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
+     * content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
+     * 
+     * @param boundary The boundary to add as a parameter.
+     * @param parts    The source parts to use when generating the
+     *                 representation.
+     */
+    public MultiPartRepresentation(String boundary, List<Part> parts) {
+        this(MediaType.MULTIPART_FORM_DATA, boundary, parts);
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
+     * content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
+     * 
+     * @param parts The source parts to use when generating the representation.
+     */
+    public MultiPartRepresentation(String boundary, Part... parts) {
+        this(boundary, Arrays.asList(parts));
     }
 
     /**
