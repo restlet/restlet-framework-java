@@ -39,6 +39,29 @@ import org.restlet.representation.Representation;
 public class MultiPartFormDataRepresentation extends InputRepresentation {
 
     /**
+     * Sets a boundary to an existing media type. If the original mediatype
+     * already has a "boundary" parameter, it will be erased. *
+     * 
+     * @param mediaType The media type to update.
+     * @param boundary  The boundary to add as a parameter.
+     * @return The updated media type.
+     */
+    public static MediaType setBoundary(MediaType mediaType, String boundary) {
+        MediaType result = null;
+
+        if (mediaType != null) {
+            if (mediaType.getParameters().getFirst("boundary") != null) {
+                result = new MediaType(mediaType.getParent(), "boundary",
+                        boundary);
+            } else {
+                result = new MediaType(mediaType, "boundary", boundary);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Creates a #{@link Part} object based on a {@link Representation} plus
      * metadata.
      * 
@@ -82,11 +105,9 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
     private volatile List<Part> parts;
 
     /**
-     * Constructor that wraps multiple parts and GENERATES the content via
-     * {@link #getStream()} as a {@link MediaType#MULTIPART_FORM_DATA}.
-     * 
-     * Unless a boundary is manually set via {@link #setBoundary(String)}, one
-     * will be randomly generated when {@link #getStream()} is invoked.
+     * Constructor that wraps multiple parts, set a random boundary, then
+     * GENERATES the content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
      * 
      * @param parts The source parts to use when generating the representation.
      */
@@ -95,17 +116,54 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
     }
 
     /**
-     * Constructor that wraps multiple parts and GENERATES the content via
-     * {@link #getStream()} as a {@link MediaType#MULTIPART_FORM_DATA}.
+     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
+     * content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
      * 
-     * Unless a boundary is manually set via {@link #setBoundary(String)}, one
-     * will be randomly generated when {@link #getStream()} is invoked.
+     * @param parts The source parts to use when generating the representation.
+     */
+    public MultiPartFormDataRepresentation(String boundary, Part... parts) {
+        this(boundary, Arrays.asList(parts));
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a random boundary, then
+     * GENERATES the content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
      * 
      * @param parts The source parts to use when generating the representation.
      */
     public MultiPartFormDataRepresentation(List<Part> parts) {
-        super(null, MediaType.MULTIPART_FORM_DATA);
-        this.boundary = null;
+        this(MultiPart.generateBoundary(null, 24), parts);
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a boundary, then GENERATES the
+     * content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
+     * 
+     * @param boundary The boundary to add as a parameter.
+     * @param parts    The source parts to use when generating the
+     *                 representation.
+     */
+    public MultiPartFormDataRepresentation(String boundary, List<Part> parts) {
+        this(MediaType.MULTIPART_FORM_DATA, boundary, parts);
+    }
+
+    /**
+     * Constructor that wraps multiple parts, set a media type with a boundary,
+     * then GENERATES the content via {@link #getStream()} as a
+     * {@link MediaType#MULTIPART_FORM_DATA}.
+     * 
+     * @param mediaType The media type to set.
+     * @param boundary  The boundary to add as a parameter.
+     * @param parts     The source parts to use when generating the
+     *                  representation.
+     */
+    public MultiPartFormDataRepresentation(MediaType mediaType, String boundary,
+            List<Part> parts) {
+        super(null, setBoundary(mediaType, boundary));
+        this.boundary = boundary;
         this.parts = parts;
     }
 
@@ -134,14 +192,14 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      *                        media type based on
      *                        {@link MediaType#MULTIPART_FORM_DATA}, with a
      *                        "boundary" parameter.
-     * @param storeLocation   The location where parsed files are stored for
+     * @param storageLocation The location where parsed files are stored for
      *                        easier access.
      * @throws IOException
      */
     public MultiPartFormDataRepresentation(Representation multiPartEntity,
-            Path storeLocation) throws IOException {
-        this(multiPartEntity,
-                new MultiPartConfig.Builder().location(storeLocation).build());
+            Path storageLocation) throws IOException {
+        this(multiPartEntity, new MultiPartConfig.Builder()
+                .location(storageLocation).build());
     }
 
     /**
@@ -214,26 +272,15 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
 
     /**
      * Returns an input stream that generates the multipart form data
-     * serialization for the wrapped {@link #getParts()} object.
-     * 
-     * If the {@link #getBoundary()} is null, as random one is generated and set
-     * as an attribute of the {@link #getMediaType()}.
-     * 
+     * serialization for the wrapped {@link #getParts()} object. The "boundary"
+     * must be non null when invoking this method.
      * 
      * @return An input stream that generates the multipart form data.
      */
     @Override
     public InputStream getStream() throws IOException {
         if (getBoundary() == null) {
-            setBoundary(MultiPart.generateBoundary(null, 24));
-        }
-
-        if (getMediaType() == null) {
-            setMediaType(new MediaType(MediaType.MULTIPART_FORM_DATA,
-                    "boundary", getBoundary()));
-        } else {
-            setMediaType(
-                    new MediaType(getMediaType(), "boundary", getBoundary()));
+            throw new IllegalArgumentException("The boundary can't be null");
         }
 
         MultiPartFormData.ContentSource content = new MultiPartFormData.ContentSource(
@@ -250,13 +297,20 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
 
     /**
      * Sets the boundary used to separate each part for the parsed or generated
-     * form.
+     * form. It will also update the {@link MediaType}'s "boundary" attribute.
      * 
      * @param boundary The boundary used to separate each part for the parsed or
      *                 generated form.
      */
     public void setBoundary(String boundary) {
         this.boundary = boundary;
+
+        if (getMediaType() == null) {
+            setMediaType(new MediaType(MediaType.MULTIPART_FORM_DATA,
+                    "boundary", boundary));
+        } else {
+            setMediaType(setBoundary(getMediaType(), boundary));
+        }
     }
 
 }

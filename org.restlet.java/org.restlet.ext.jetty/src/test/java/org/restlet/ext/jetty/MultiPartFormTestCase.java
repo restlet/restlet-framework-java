@@ -9,18 +9,17 @@
 
 package org.restlet.ext.jetty;
 
-import org.eclipse.jetty.client.StringRequestContent;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.MultiPart;
-import org.junit.jupiter.api.Test;
-import org.restlet.data.MediaType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.MultiPart;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case for the {@link MultiPartFormDataRepresentation} class in multipart
@@ -30,47 +29,51 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class MultiPartFormTestCase {
 
-	@Test
-	public void testWriteFromParts() throws IOException {
-		Path textFilePath = Files.createTempFile("multiPart", "");
-		Files.write(textFilePath, "this is the content of the file".getBytes(StandardCharsets.UTF_8));
-		MultiPart.PathPart filePart = new MultiPart.PathPart("icon", "text.txt", HttpFields.EMPTY, textFilePath);
+    @Test
+    public void testWriteFromParts() throws IOException {
+        Path textFilePath = Files.createTempFile("multiPart", "");
+        Files.write(textFilePath, "this is the content of the file"
+                .getBytes(StandardCharsets.UTF_8));
+        MultiPart.PathPart filePart = new MultiPart.PathPart("icon", "text.txt",
+                HttpFields.EMPTY, textFilePath);
 
-		MultiPart.ContentSourcePart contentSourcePart = new MultiPart.ContentSourcePart("field", null, HttpFields.EMPTY,
-				new StringRequestContent("foo"));
+        MultiPart.ContentSourcePart contentSourcePart = new MultiPart.ContentSourcePart(
+                "field", null, HttpFields.EMPTY,
+                new StringRequestContent("foo"));
 
-		final String boundary = "-----------------------------1294919323195";
+        final String boundary = "-----------------------------1294919323195";
 
-		MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(contentSourcePart, filePart);
-		rep.setBoundary(boundary);
+        MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(
+                contentSourcePart, filePart);
+        rep.setBoundary(boundary);
 
-		final String expected = """
-				--%s\r
-				Content-Disposition: form-data; name="field"\r
-				\r
-				foo\r
-				--%s\r
-				Content-Disposition: form-data; name="icon"; filename="text.txt"\r
-				\r
-				this is the content of the file\r
-				--%s--\r
-				""".replace("%s", boundary);
-		assertEquals(expected, rep.getText());
-	}
+        final String expected = """
+                --%s\r
+                Content-Disposition: form-data; name="field"\r
+                \r
+                foo\r
+                --%s\r
+                Content-Disposition: form-data; name="icon"; filename="text.txt"\r
+                \r
+                this is the content of the file\r
+                --%s--\r
+                """
+                .replace("%s", boundary);
+        assertEquals(expected, rep.getText());
+    }
 
-	/**
-	 * Tests the multipart content-type.
-	 */
-	@Test
-	public void testContentType() {
-		MultiPart.ContentSourcePart contentSourcePart = new MultiPart.ContentSourcePart("field", null, HttpFields.EMPTY,
-				new StringRequestContent("foo"));
-		MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(contentSourcePart);
-		rep.setBoundary("myBoundary");
-		assertEquals(MediaType.MULTIPART_FORM_DATA, rep.getMediaType());
-
-		// Is this test really correct?
-		// assertEquals("myBoundary",
-		// rep.getMediaType().getParameters().getFirstValue("boundary"));
-	}
+    /**
+     * Tests the multipart content-type.
+     */
+    @Test
+    public void testContentType() {
+        MultiPart.ContentSourcePart contentSourcePart = new MultiPart.ContentSourcePart(
+                "field", null, HttpFields.EMPTY,
+                new StringRequestContent("foo"));
+        MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(
+                "myInitialBoundary", contentSourcePart);
+        rep.setBoundary("myActualBoundary");
+        assertEquals("multipart/form-data; boundary=myActualBoundary",
+                rep.getMediaType().toString());
+    }
 }
