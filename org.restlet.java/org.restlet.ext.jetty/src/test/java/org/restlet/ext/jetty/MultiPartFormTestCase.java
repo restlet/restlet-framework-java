@@ -22,7 +22,7 @@ import org.eclipse.jetty.http.MultiPart;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test case for the {@link MultiPartFormDataRepresentation} class in multipart
+ * Test case for the {@link MultiPartRepresentation} class in multipart
  * mode.
  * 
  * @author Jerome Louvel
@@ -43,7 +43,7 @@ public class MultiPartFormTestCase {
 
         final String boundary = "-----------------------------1294919323195";
 
-        MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(
+        MultiPartRepresentation rep = new MultiPartRepresentation(
                 contentSourcePart, filePart);
         rep.setBoundary(boundary);
 
@@ -70,7 +70,7 @@ public class MultiPartFormTestCase {
         MultiPart.ContentSourcePart contentSourcePart = new MultiPart.ContentSourcePart(
                 "field", null, HttpFields.EMPTY,
                 new StringRequestContent("foo"));
-        MultiPartFormDataRepresentation rep = new MultiPartFormDataRepresentation(
+        MultiPartRepresentation rep = new MultiPartRepresentation(
                 "myInitialBoundary", contentSourcePart);
         rep.setBoundary("myActualBoundary");
         assertEquals("multipart/form-data; boundary=myActualBoundary",

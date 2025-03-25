@@ -36,7 +36,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class MultiPartFormDataRepresentation extends InputRepresentation {
+public class MultiPartRepresentation extends InputRepresentation {
 
     /**
      * Sets a boundary to an existing media type. If the original mediatype
@@ -111,7 +111,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * 
      * @param parts The source parts to use when generating the representation.
      */
-    public MultiPartFormDataRepresentation(Part... parts) {
+    public MultiPartRepresentation(Part... parts) {
         this(Arrays.asList(parts));
     }
 
@@ -122,7 +122,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * 
      * @param parts The source parts to use when generating the representation.
      */
-    public MultiPartFormDataRepresentation(String boundary, Part... parts) {
+    public MultiPartRepresentation(String boundary, Part... parts) {
         this(boundary, Arrays.asList(parts));
     }
 
@@ -133,7 +133,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * 
      * @param parts The source parts to use when generating the representation.
      */
-    public MultiPartFormDataRepresentation(List<Part> parts) {
+    public MultiPartRepresentation(List<Part> parts) {
         this(MultiPart.generateBoundary(null, 24), parts);
     }
 
@@ -146,7 +146,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * @param parts    The source parts to use when generating the
      *                 representation.
      */
-    public MultiPartFormDataRepresentation(String boundary, List<Part> parts) {
+    public MultiPartRepresentation(String boundary, List<Part> parts) {
         this(MediaType.MULTIPART_FORM_DATA, boundary, parts);
     }
 
@@ -160,7 +160,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * @param parts     The source parts to use when generating the
      *                  representation.
      */
-    public MultiPartFormDataRepresentation(MediaType mediaType, String boundary,
+    public MultiPartRepresentation(MediaType mediaType, String boundary,
             List<Part> parts) {
         super(null, setBoundary(mediaType, boundary));
         this.boundary = boundary;
@@ -178,7 +178,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * @param config          The multipart configuration.
      * @throws IOException
      */
-    public MultiPartFormDataRepresentation(Representation multiPartEntity,
+    public MultiPartRepresentation(Representation multiPartEntity,
             MultiPartConfig config) throws IOException {
         this(ContentType.writeHeader(multiPartEntity),
                 multiPartEntity.getStream(), config);
@@ -196,7 +196,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      *                        easier access.
      * @throws IOException
      */
-    public MultiPartFormDataRepresentation(Representation multiPartEntity,
+    public MultiPartRepresentation(Representation multiPartEntity,
             Path storageLocation) throws IOException {
         this(multiPartEntity, new MultiPartConfig.Builder()
                 .location(storageLocation).build());
@@ -213,7 +213,7 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
      * @param config          The multipart configuration.
      * @throws IOException
      */
-    public MultiPartFormDataRepresentation(String contentType,
+    public MultiPartRepresentation(String contentType,
             InputStream multiPartEntity, MultiPartConfig config)
             throws IOException {
         super(null, MediaType.MULTIPART_FORM_DATA);
@@ -241,9 +241,9 @@ public class MultiPartFormDataRepresentation extends InputRepresentation {
                         @Override
                         public void succeeded(MultiPartFormData.Parts parts) {
                             // Store the resulting parts
-                            MultiPartFormDataRepresentation.this.parts = new ArrayList<>();
+                            MultiPartRepresentation.this.parts = new ArrayList<>();
                             parts.iterator().forEachRemaining(
-                                    part -> MultiPartFormDataRepresentation.this.parts
+                                    part -> MultiPartRepresentation.this.parts
                                             .add(part));
                         }
                     });
