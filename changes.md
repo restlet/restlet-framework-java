@@ -3,7 +3,7 @@ Changes log
 
 - 2.6 Release Candidate 1 (??-03-2025)
     - Enhancements
-      - Added MultiPartFormDataRepresentation to Jetty extension to support generation and parsing.
+      - Added MultiPartRepresentation to Jetty extension to support generation and parsing.
       - Added support for the "charset" parameter in HTTP BASIC challenges. Reported by Marc Lafon.
       - Added MediaType constructors to help with cloning and customization needs.
     - Misc
