@@ -10,8 +10,10 @@
 package org.restlet.ext.jetty;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,15 +21,17 @@ import java.nio.file.Path;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.MultiPart;
+import org.eclipse.jetty.http.MultiPart.Part;
 import org.junit.jupiter.api.Test;
+import org.restlet.data.MediaType;
+import org.restlet.representation.StringRepresentation;
 
 /**
- * Test case for the {@link MultiPartRepresentation} class in multipart
- * mode.
+ * Test case for the {@link MultiPartRepresentation} class in multipart mode.
  * 
  * @author Jerome Louvel
  */
-public class MultiPartFormTestCase {
+public class MultiPartRepresentationTestCase {
 
     @Test
     public void testWriteFromParts() throws IOException {
@@ -76,4 +80,45 @@ public class MultiPartFormTestCase {
         assertEquals("multipart/form-data; boundary=myActualBoundary",
                 rep.getMediaType().toString());
     }
+
+    @Test
+    public void testParseIntoParts() throws IOException {
+        final String boundary = "-----------------------------1294919323195";
+        final String multipartEntityContent = """
+                --%s\r
+                Content-Disposition: form-data; name="field"\r
+                \r
+                foo\r
+                --%s\r
+                Content-Disposition: form-data; name="icon"; filename="text.txt"\r
+                \r
+                this is the content of the file\r
+                --%s--\r
+                """
+                .replace("%s", boundary);
+
+        StringRepresentation multipartEntity = new StringRepresentation(
+                multipartEntityContent);
+        multipartEntity.setMediaType(
+                MediaType.valueOf("multipart/form-data; boundary=" + boundary));
+        Path tempDir = Files
+                .createTempDirectory("multipartRepresentationTestCase");
+        MultiPartRepresentation rep = new MultiPartRepresentation(
+                multipartEntity, tempDir);
+
+        Part part1 = rep.getParts().get(0);
+        assertEquals("field", part1.getName());
+        assertNull(part1.getFileName());
+        assertEquals(3, part1.getLength());
+        assertEquals("foo", part1.getContentAsString(null));
+
+        Part part2 = rep.getParts().get(1);
+        assertEquals("icon", part2.getName());
+        assertEquals("text.txt", part2.getFileName());
+        assertEquals(31, part2.getLength());
+        assertEquals("this is the content of the file",
+                part2.getContentAsString(null));
+
+    }
+
 }

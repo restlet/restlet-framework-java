@@ -26,7 +26,6 @@ import org.eclipse.jetty.io.content.InputStreamContentSource;
 import org.eclipse.jetty.util.Attributes;
 import org.eclipse.jetty.util.Promise;
 import org.restlet.data.MediaType;
-import org.restlet.engine.header.ContentType;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -156,8 +155,8 @@ public class MultiPartRepresentation extends InputRepresentation {
      */
     public MultiPartRepresentation(Representation multiPartEntity,
             MultiPartConfig config) throws IOException {
-        this(ContentType.writeHeader(multiPartEntity),
-                multiPartEntity.getStream(), config);
+        this(multiPartEntity.getMediaType(), multiPartEntity.getStream(),
+                config);
     }
 
     /**
@@ -182,47 +181,65 @@ public class MultiPartRepresentation extends InputRepresentation {
      * Constructor that PARSES the content based on a given configuration into
      * {@link #getParts()}.
      * 
-     * @param contentType     The media type that should be based on
+     * @param mediaType       The media type that should be based on
      *                        {@link MediaType#MULTIPART_FORM_DATA}, with a
      *                        "boundary" parameter.
      * @param multiPartEntity The multipart entity to parse.
      * @param config          The multipart configuration.
      * @throws IOException
      */
-    public MultiPartRepresentation(String contentType,
+    public MultiPartRepresentation(MediaType mediaType,
             InputStream multiPartEntity, MultiPartConfig config)
             throws IOException {
-        super(null, MediaType.MULTIPART_FORM_DATA);
-        this.boundary = boundary;
+        super(null, mediaType);
 
-        if (multiPartEntity != null) {
-            Content.Source contentSource = Content.Source.from(multiPartEntity);
-            Attributes.Mapped attributes = new Attributes.Mapped();
+        if (MediaType.MULTIPART_FORM_DATA.equals(getMediaType(), true)) {
+            this.boundary = getMediaType().getParameters()
+                    .getFirstValue("boundary");
 
-            // Convert the request content into parts.
-            MultiPartFormData.onParts(contentSource, attributes, contentType,
-                    config, new Promise.Invocable<>() {
-                        @Override
-                        public void failed(Throwable failure) {
-                            throw new IllegalStateException(
-                                    "Unable to parse the multipart form data representation",
-                                    failure);
-                        }
+            if (this.boundary != null) {
+                if (multiPartEntity != null) {
+                    Content.Source contentSource = Content.Source
+                            .from(multiPartEntity);
+                    Attributes.Mapped attributes = new Attributes.Mapped();
 
-                        @Override
-                        public InvocationType getInvocationType() {
-                            return InvocationType.BLOCKING;
-                        }
+                    // Convert the request content into parts.
+                    MultiPartFormData.onParts(contentSource, attributes,
+                            mediaType.toString(), config,
+                            new Promise.Invocable<>() {
+                                @Override
+                                public void failed(Throwable failure) {
+                                    throw new IllegalStateException(
+                                            "Unable to parse the multipart form data representation",
+                                            failure);
+                                }
 
-                        @Override
-                        public void succeeded(MultiPartFormData.Parts parts) {
-                            // Store the resulting parts
-                            MultiPartRepresentation.this.parts = new ArrayList<>();
-                            parts.iterator().forEachRemaining(
-                                    part -> MultiPartRepresentation.this.parts
-                                            .add(part));
-                        }
-                    });
+                                @Override
+                                public InvocationType getInvocationType() {
+                                    return InvocationType.BLOCKING;
+                                }
+
+                                @Override
+                                public void succeeded(
+                                        MultiPartFormData.Parts parts) {
+                                    // Store the resulting parts
+                                    MultiPartRepresentation.this.parts = new ArrayList<>();
+                                    parts.iterator().forEachRemaining(
+                                            part -> MultiPartRepresentation.this.parts
+                                                    .add(part));
+                                }
+                            });
+                } else {
+                    throw new IllegalArgumentException(
+                            "The multipart entity can't be null");
+                }
+            } else {
+                throw new IllegalArgumentException(
+                        "The content type must have a \"boundary\" parameter");
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "The content type must be \"multipart/form-data\" with a \"boundary\" parameter");
         }
     }
 
