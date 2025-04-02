@@ -290,7 +290,7 @@ public class MultiPartRepresentation extends InputRepresentation {
     /**
      * Returns an input stream that generates the multipart form data
      * serialization for the wrapped {@link #getParts()} object. The "boundary"
-     * must be non null when invoking this method.
+     * must be non-null when invoking this method.
      * 
      * @return An input stream that generates the multipart form data.
      */
