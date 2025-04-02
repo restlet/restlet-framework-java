@@ -42,7 +42,7 @@ public class MultiPartRepresentation extends InputRepresentation {
      * metadata.
      * 
      * @param name        The name of the part.
-     * @param fileName    The client suggest file name for storing the part.
+     * @param fileName    The client suggests file name for storing the part.
      * @param partContent The part content.
      * @return The Jetty #{@link Part} object created.
      * @throws IOException
