@@ -54,7 +54,7 @@ public class MultiPartRepresentation extends InputRepresentation {
     }
 
     /**
-     * Returns the value of the first mediatype parameter with "boundary" name.
+     * Returns the value of the first media-type parameter with "boundary" name.
      * 
      * @param mediaType The media type that might contain a "boundary"
      *                  parameter.
