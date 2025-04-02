@@ -58,7 +58,7 @@ public class MultiPartRepresentation extends InputRepresentation {
      * 
      * @param mediaType The media type that might contain a "boundary"
      *                  parameter.
-     * @return The value of the first mediatype parameter with "boundary" name.
+     * @return The value of the first media-type parameter with "boundary" name.
      */
     public static String getBoundary(MediaType mediaType) {
         final String result;
