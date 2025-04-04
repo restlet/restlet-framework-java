@@ -11,9 +11,6 @@ package org.restlet.resource;
 
 import java.io.IOException;
 
-import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
-
 public class MyResource06 extends ServerResource {
 
     @Post("txt:xml")

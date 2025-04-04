@@ -11,10 +11,8 @@ package org.restlet.data;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.engine.Engine;
-import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
 
 import java.io.File;
 import java.io.IOException;

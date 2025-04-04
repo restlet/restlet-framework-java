@@ -9,8 +9,6 @@
 
 package org.restlet.resource;
 
-import org.restlet.resource.Status;
-
 @Status(value = 400)
 public class MyException02 extends Throwable {
 

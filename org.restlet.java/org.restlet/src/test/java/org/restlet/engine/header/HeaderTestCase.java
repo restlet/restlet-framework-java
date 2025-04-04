@@ -9,18 +9,15 @@
 
 package org.restlet.engine.header;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.representation.Representation;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 

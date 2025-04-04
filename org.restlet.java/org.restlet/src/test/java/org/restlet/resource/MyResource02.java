@@ -12,8 +12,6 @@ package org.restlet.resource;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
 
 public class MyResource02 extends ServerResource {
 

@@ -11,6 +11,7 @@ package org.restlet.engine.header;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 
 import java.io.IOException;
@@ -50,15 +51,29 @@ public class ContentType {
 	 * @return The HTTP "Content-Type" header.
 	 */
 	public static String writeHeader(MediaType mediaType, CharacterSet characterSet) {
-		String result = mediaType.toString();
+		StringBuilder result = new StringBuilder(mediaType.toString());
 
 		// Specify the character set parameter if required
+		// TODO I wonder if the given parameter "characterSet" overrides the mediaType's charset'?
+		/*
 		if ((mediaType.getParameters().getFirstValue("charset") == null) && (characterSet != null)) {
 			result = result + "; charset=" + characterSet.getName();
 		}
+		*/
 
-		return result;
-
+		for (Parameter param : mediaType.getParameters()) {
+            if (param == null) {
+				continue;
+			}
+            if (characterSet != null && param.getName().equals("charset")) {
+				// TODO I wonder if the given parameter "characterSet" overrides the mediaType's charset'?
+				result.append("; ").append(param.getName()).append("=").append(characterSet);
+			} else {
+				result.append("; ").append(param.getName()).append("=").append(param.getValue());
+			}
+        }
+        
+		return result.toString();
 	}
 
 	/**

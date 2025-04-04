@@ -9,7 +9,6 @@
 
 package org.restlet.routing;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.restlet.Request;
 import org.restlet.Response;

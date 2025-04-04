@@ -9,9 +9,6 @@
 
 package org.restlet.resource;
 
-import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
-
 public class MyResource07 extends ServerResource {
 
     @Post("json:xml")

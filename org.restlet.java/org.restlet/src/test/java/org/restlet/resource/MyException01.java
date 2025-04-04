@@ -11,8 +11,6 @@ package org.restlet.resource;
 
 import java.util.Date;
 
-import org.restlet.resource.Status;
-
 @Status(value = 400, serialize = false)
 public class MyException01 extends Throwable {
 
