@@ -247,7 +247,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	/**
 	 * Returns the value of the first parameter found with the given name.
 	 * 
-	 * @param name         The parameter name (case sensitive).
+	 * @param name         The parameter name (case-sensitive).
 	 * @param defaultValue The default value to return if no matching parameter
 	 *                     found or if the parameter has a null value.
 	 * @return The value of the first parameter found with the given name or the
@@ -258,7 +258,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	}
 
 	/**
-	 * Returns the set of parameter names (case sensitive).
+	 * Returns the set of parameter names (case-sensitive).
 	 * 
 	 * @return The set of parameter names.
 	 */
@@ -345,7 +345,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * Returns an array of all the values associated to the given parameter name.
 	 * 
 	 * @param name         The parameter name to match.
-	 * @param ignoreCase   Indicates if the name comparison is case sensitive.
+	 * @param ignoreCase   Indicates if the name comparison is case-sensitive.
 	 * @param defaultValue The default value to return if no matching parameter
 	 *                     found or if the parameter has a null value.
 	 * @return The array of values.
@@ -402,7 +402,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	/**
 	 * Removes all the parameters with a given name.
 	 * 
-	 * @param name The parameter name (case sensitive).
+	 * @param name The parameter name (case-sensitive).
 	 * @return True if the list changed.
 	 */
 	public boolean removeAll(String name) {
@@ -413,7 +413,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * Removes all the parameters with a given name.
 	 * 
 	 * @param name       The parameter name.
-	 * @param ignoreCase Indicates if the name comparison is case insensitive.
+	 * @param ignoreCase Indicates if the name comparison is case-insensitive.
 	 * @return True if the list changed.
 	 */
 	public boolean removeAll(String name, boolean ignoreCase) {
@@ -436,7 +436,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * Removes from this list the first entry whose name equals the specified name
 	 * ignoring the case.
 	 * 
-	 * @param name The name of the entries to be removed (case sensitive).
+	 * @param name The name of the entries to be removed (case-sensitive).
 	 * @return false if no entry has been removed, true otherwise.
 	 */
 	public boolean removeFirst(String name) {
@@ -448,7 +448,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * ignoring the case or not.
 	 * 
 	 * @param name       The name of the entries to be removed.
-	 * @param ignoreCase Indicates if the name comparison is case insensitive.
+	 * @param ignoreCase Indicates if the name comparison is case-insensitive.
 	 * @return false if no entry has been removed, true otherwise.
 	 */
 	public boolean removeFirst(String name, boolean ignoreCase) {
@@ -468,7 +468,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 
 	/**
 	 * Replaces the value of the first parameter with the given name and removes all
-	 * other parameters with the same name. The name matching is case sensitive.
+	 * other parameters with the same name. The name matching is case-sensitive.
 	 * 
 	 * @param name  The parameter name.
 	 * @param value The value to set.
@@ -484,7 +484,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * 
 	 * @param name       The parameter name.
 	 * @param value      The value to set.
-	 * @param ignoreCase Indicates if the name comparison is case insensitive.
+	 * @param ignoreCase Indicates if the name comparison is case-insensitive.
 	 * @return The parameter set or added.
 	 */
 	public T set(String name, String value, boolean ignoreCase) {
@@ -531,7 +531,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	/**
 	 * Returns a list of all the values associated to the parameter name.
 	 * 
-	 * @param name The parameter name (case sensitive).
+	 * @param name The parameter name (case-sensitive).
 	 * @return The list of values.
 	 */
 	public Series<T> subList(String name) {
@@ -542,7 +542,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 	 * Returns a list of all the values associated to the parameter name.
 	 * 
 	 * @param name       The parameter name.
-	 * @param ignoreCase Indicates if the name comparison is case insensitive.
+	 * @param ignoreCase Indicates if the name comparison is case-insensitive.
 	 * @return The list of values.
 	 */
 	public Series<T> subList(String name, boolean ignoreCase) {

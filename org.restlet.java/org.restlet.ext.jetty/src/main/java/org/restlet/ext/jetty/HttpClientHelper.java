@@ -124,9 +124,9 @@ import java.util.logging.Level;
  * <tr>
  * <td>httpClientTransportMode</td>
  * <td>String</td>
- * <td>HTTP11</td>
+ * <td>HTTP1_1</td>
  * <td>Indicate the HTTP client transport mode among the following options:
- * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.</td>
+ * "HTTP1_1", "HTTP2", "HTTP3", "DYNAMIC". See {@link HttpClientTransport}.</td>
  * </tr>
  * <tr>
  * <td>idleTimeout</td>
@@ -291,10 +291,10 @@ public class HttpClientHelper
             case "HTTP2" -> getHttpClientTransportForHttp2();
             case "HTTP3" -> getHttpClientTransportForHttp3(sslContextFactory);
             case "DYNAMIC" -> getHttpClientTransportForDynamicMode(sslContextFactory);
-            case "HTTP11" -> getHttpTransportForHttp1_1();
+            case "HTTP1_1" -> getHttpTransportForHttp1_1();
             default -> {
                 getLogger().log(Level.WARNING,
-                        "Unknown HTTP client transport mode: {0}, default to HTTP11", httpClientTransportMode);
+                        "Unknown HTTP client transport mode: {0}, default to HTTP1_1", httpClientTransportMode);
                 yield getHttpTransportForHttp1_1();
             }
         };
@@ -515,14 +515,14 @@ public class HttpClientHelper
 
     /**
      * Returns the HTTP client transport mode among the following options:
-     * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.
-     * Defaults to "HTTP11".
+     * "HTTP1_1", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.
+     * Default to "HTTP1_1".
      *
      * @return The HTTP client transport mode.
      */
     public String getHttpClientTransportMode() {
         return getHelpedParameters().getFirstValue("httpClientTransportMode",
-                "HTTP11");
+                "HTTP1_1");
     }
 
     /**

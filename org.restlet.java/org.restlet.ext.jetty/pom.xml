@@ -17,13 +17,38 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-client</artifactId>
+			<artifactId>jetty-server</artifactId>
+            <version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>jetty-http2-server</artifactId>
 			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-            <version>${lib-jetty-version}</version>
+			<artifactId>jetty-alpn-server</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-alpn-java-server</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http3</groupId>
+			<artifactId>jetty-http3-server</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.quic</groupId>
+			<artifactId>jetty-quic-server</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.http2</groupId>

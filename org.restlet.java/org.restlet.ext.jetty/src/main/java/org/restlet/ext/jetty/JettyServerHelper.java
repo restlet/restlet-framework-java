@@ -23,6 +23,7 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
 
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /**
@@ -79,7 +80,7 @@ import java.util.concurrent.Executor;
  * <td>int</td>
  * <td>-1</td>
  * <td>Connector selector thread count; When less or equal than 0,
- * Jetty computes a default value derived from a heuristic over available CPUs and thread pool size.}</td>
+ * Jetty computes a default value derived from a heuristic over available CPUs and thread pool size.</td>
  * </tr>
  * <tr>
  * <td>connector.acceptQueueSize</td>
@@ -95,13 +96,6 @@ import java.util.concurrent.Executor;
  * {@link Socket#setSoTimeout(int)}; this value is interpreted as the maximum
  * time between some progress being made on the connection; so if a single byte
  * is read or written, then the timeout is reset</td>
- * </tr>
- * <tr>
- * <td>connector.soLingerTime</td>
- * <td>int</td>
- * <td>-1</td>
- * <td>Connector TCP/IP SO linger time in milliseconds; when -1 is disabled; see
- * {@link Socket#setSoLinger(boolean, int)}</td>
  * </tr>
  * <tr>
  * <td>connector.stopTimeout</td>
@@ -210,8 +204,7 @@ import java.util.concurrent.Executor;
  * </table>
  * 
  * @see <a href=
- *      "https://eclipse.dev/jetty/documentation/jetty-9/index.html">Jetty SPDY
- *      and NPN page</a>
+ *      "https://jetty.org/docs/jetty/12/index.html">Jetty 12 documentation</a>
  * @author Jerome Louvel
  * @author Tal Liron
  */
@@ -264,17 +257,17 @@ public abstract class JettyServerHelper
      * @param server The Jetty server.
      * @return A Jetty connector.
      */
-    private Connector createConnector(org.eclipse.jetty.server.Server server) {
+    protected Connector createConnector(org.eclipse.jetty.server.Server server) {
         final HttpConfiguration configuration = createConfiguration();
-
-        final ConnectionFactory[] connectionFactories = createConnectionFactories(
-                configuration);
 
         final int acceptors = getConnectorAcceptors();
         final int selectors = getConnectorSelectors();
         final Executor executor = getConnectorExecutor();
         final Scheduler scheduler = getConnectorScheduler();
         final ByteBufferPool byteBufferPool = getConnectorByteBufferPool();
+
+        final ConnectionFactory[] connectionFactories = createConnectionFactories(
+                configuration);
 
         final ServerConnector connector = new ServerConnector(server, executor,
                 scheduler, byteBufferPool, acceptors, selectors,
@@ -289,7 +282,6 @@ public abstract class JettyServerHelper
         connector.setAcceptQueueSize(getConnectorAcceptQueueSize());
         connector.setIdleTimeout(getConnectorIdleTimeout());
         connector.setShutdownIdleTimeout(getShutdownTimeout());
-        // connector.setSoLingerTime(getConnectorSoLingerTime());
 
         return connector;
     }
@@ -490,19 +482,6 @@ public abstract class JettyServerHelper
     public int getConnectorSelectors() {
         return Integer.parseInt(getHelpedParameters()
                 .getFirstValue("connector.selectors", "-1"));
-    }
-
-    /**
-     * Connector TCP/IP SO linger time in milliseconds. Defaults to -1
-     * (disabled).
-     * <p>
-     * See {@link Socket#setSoLinger(boolean, int)}.
-     * 
-     * @return Connector TCP/IP SO linger time.
-     */
-    public int getConnectorSoLingerTime() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("connector.soLingerTime", "-1"));
     }
 
     /**
@@ -791,6 +770,7 @@ public abstract class JettyServerHelper
      * @param wrappedServer The wrapped Jetty server.
      */
     protected void setWrappedServer(org.eclipse.jetty.server.Server wrappedServer) {
+        Objects.requireNonNull(wrappedServer);
         this.wrappedServer = wrappedServer;
     }
 
@@ -799,6 +779,7 @@ public abstract class JettyServerHelper
         super.start();
         org.eclipse.jetty.server.Server server = getWrappedServer();
         ServerConnector connector = (ServerConnector) server.getConnectors()[0];
+
         getLogger().info("Starting the Jetty " + getProtocols()
                 + " server on port " + getHelped().getPort());
         try {
@@ -818,7 +799,9 @@ public abstract class JettyServerHelper
     public void stop() throws Exception {
         getLogger().info("Stopping the Jetty " + getProtocols()
                 + " server on port " + getHelped().getPort());
-        getWrappedServer().stop();
+        if (this.wrappedServer != null) {
+            getWrappedServer().stop();
+        }
         super.stop();
     }
 }
