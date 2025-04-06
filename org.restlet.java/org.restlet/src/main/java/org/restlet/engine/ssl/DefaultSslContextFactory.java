@@ -650,7 +650,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 	 * @return a keystore.
 	 * @throws Exception
 	 */
-	private static KeyStore loadKeyStore(String path, String provider, String type, char[] password) throws Exception {
+	protected KeyStore loadKeyStore(String path, String provider, String type, char[] password) throws Exception {
 		final String nonNullKeyStoreType = (type != null) ? type : KeyStore.getDefaultType();
 		final KeyStore keyStore = (provider != null)
 				? KeyStore.getInstance(nonNullKeyStoreType, provider)

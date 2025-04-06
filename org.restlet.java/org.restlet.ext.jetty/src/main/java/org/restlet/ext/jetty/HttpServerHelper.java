@@ -24,10 +24,9 @@ import org.restlet.data.Protocol;
  * <tr>
  * <td>http.transport.mode</td>
  * <td>string</td>
- * <td>http1</td>
- * <td>Supported protocol. Values: http1 or http2. The protocol HTTP 1.1 is
- * always supported, the support of HTTP 2 is done thanks to upgrade from HTTP
- * 1.1 protocol.</td>
+ * <td>HTTP1_1</td>
+ * <td>Supported protocol. Values: HTTP1_1 or HTTP2. The protocol HTTP 1.1 is always supported, the support of HTTP 2 is
+ * done thanks to upgrade from HTTP 1.1 protocol.</td>
  * </tr>
  * </table>
  * 
@@ -36,48 +35,49 @@ import org.restlet.data.Protocol;
  */
 public class HttpServerHelper extends JettyServerHelper {
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param server The server to help.
-	 */
-	public HttpServerHelper(Server server) {
-		super(server);
-		getProtocols().add(Protocol.HTTP);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param server The server to help.
+     */
+    public HttpServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTP);
+    }
 
-	/**
-	 * Create and configure the Jetty HTTP connector
-	 * 
-	 * @param configuration The HTTP configuration.
-	 */
-	@Override
-	protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-		final ConnectionFactory[] result;
+    /**
+     * Create and configure the Jetty HTTP connector
+     * 
+     * @param configuration The HTTP configuration.
+     */
+    @Override
+    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
+        final ConnectionFactory[] result;
 
-		final String httpTransportProtocolAsString = getHttpTransportProtocol();
-		result = switch (httpTransportProtocolAsString) {
-		case "http1" -> new ConnectionFactory[] { new HttpConnectionFactory(configuration) };
-		case "http2" -> new ConnectionFactory[] { new HttpConnectionFactory(configuration), // still necessary to
-																							// support protocol upgrade
-				new HTTP2CServerConnectionFactory(configuration) };
-		default -> {
-			final String errorMessage = String.format("'%s' is not one of the supported value: [http1, http2]",
-					httpTransportProtocolAsString);
-			throw new IllegalArgumentException(errorMessage);
-		}
-		};
+        final String httpTransportProtocolAsString = getHttpTransportProtocol();
+        result = switch (httpTransportProtocolAsString) {
+        case "HTTP1_1" -> new ConnectionFactory[] {
+                new HttpConnectionFactory(configuration) };
+        case "HTTP2" -> new ConnectionFactory[] {
+                new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
+                new HTTP2CServerConnectionFactory(configuration) };
+        default -> {
+            final String errorMessage = String.format("'%s' is not one of the supported value: [HTTP1_1, HTTP2]",
+                    httpTransportProtocolAsString);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        };
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Supported HTTP transport protocol. Defaults to http1.
-	 *
-	 * @return Supported HTTP transport protocol.
-	 */
-	public String getHttpTransportProtocol() {
-		return getHelpedParameters().getFirstValue("http.transport.protocol", "http1");
-	}
+    /**
+     * Supported HTTP transport protocol. Defaults to http1.
+     *
+     * @return Supported HTTP transport protocol.
+     */
+    public String getHttpTransportProtocol() {
+        return getHelpedParameters().getFirstValue("http.transport.protocol", "HTTP1_1");
+    }
 
 }
