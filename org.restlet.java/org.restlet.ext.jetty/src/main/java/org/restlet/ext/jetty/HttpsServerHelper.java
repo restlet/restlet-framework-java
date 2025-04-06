@@ -50,7 +50,8 @@ import java.util.logging.Level;
  * <td>http.transport.protocols</td>
  * <td>string</td>
  * <td>http1</td>
- * <td>Coma separated and sorted list of supported protocols. Values: http1, http2, http3.</td>
+ * <td>Coma separated and sorted list of supported protocols. Values: http1,
+ * http2, http3.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
@@ -64,61 +65,63 @@ import java.util.logging.Level;
  */
 public class HttpsServerHelper extends JettyServerHelper {
 
-    /**
-     * Constructor.
-     *
-     * @param server The server to help.
-     */
-    public HttpsServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTPS);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param server The server to help.
+	 */
+	public HttpsServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.HTTPS);
+	}
 
-    @Override
-    protected ConnectionFactory[] createConnectionFactories(HttpConfiguration configuration) {
-        ConnectionFactory[] result;
+	@Override
+	protected ConnectionFactory[] createConnectionFactories(HttpConfiguration configuration) {
+		ConnectionFactory[] result;
 
-        try {
-            final List<ConnectionFactory> connectionFactories = new ArrayList<>();
+		try {
+			final List<ConnectionFactory> connectionFactories = new ArrayList<>();
 
-            for (String httpTransportProtocolAsString : getHttpTransportProtocols()) {
-                switch (httpTransportProtocolAsString) {
-                    case "http1":
-                        connectionFactories.add(new HttpConnectionFactory(configuration));
-                        break;
-                    case "http2":
-                        connectionFactories.add(new ALPNServerConnectionFactory());
-                        connectionFactories.add(new HTTP2ServerConnectionFactory(configuration));
-                        break;
-                    default:
-                        final String errorMessage = String.format("'%s' is not one of the supported value: [http1, http2]", httpTransportProtocolAsString);
-                        throw new IllegalArgumentException(errorMessage);
-                }
-            }
+			for (String httpTransportProtocolAsString : getHttpTransportProtocols()) {
+				switch (httpTransportProtocolAsString) {
+				case "http1":
+					connectionFactories.add(new HttpConnectionFactory(configuration));
+					break;
+				case "http2":
+					connectionFactories.add(new ALPNServerConnectionFactory());
+					connectionFactories.add(new HTTP2ServerConnectionFactory(configuration));
+					break;
+				default:
+					final String errorMessage = String.format("'%s' is not one of the supported value: [http1, http2]",
+							httpTransportProtocolAsString);
+					throw new IllegalArgumentException(errorMessage);
+				}
+			}
 
-            SslContextFactory.Server sslContextFactory = new RestletSslContextFactoryServer(
-                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
+			SslContextFactory.Server sslContextFactory = new RestletSslContextFactoryServer(
+					org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
 
-            result = AbstractConnectionFactory.getFactories(sslContextFactory, connectionFactories.toArray(new ConnectionFactory[0]));
-        } catch (RuntimeException e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
-            throw e;
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
-            throw new RuntimeException(e);
-        }
+			result = AbstractConnectionFactory.getFactories(sslContextFactory,
+					connectionFactories.toArray(new ConnectionFactory[0]));
+		} catch (RuntimeException e) {
+			getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
+			throw e;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
+			throw new RuntimeException(e);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Supported HTTP transport protocol. Defaults to http1.
-     *
-     * @return Supported HTTP transport protocol.
-     */
-    public List<String> getHttpTransportProtocols() {
-        String httpTransportProtocolsAsString = getHelpedParameters().getFirstValue("http.transport.protocols", "http1");
-        return Arrays.stream(httpTransportProtocolsAsString.split(","))
-                .toList();
-    }
+	/**
+	 * Supported HTTP transport protocol. Defaults to http1.
+	 *
+	 * @return Supported HTTP transport protocol.
+	 */
+	public List<String> getHttpTransportProtocols() {
+		String httpTransportProtocolsAsString = getHelpedParameters().getFirstValue("http.transport.protocols",
+				"http1");
+		return Arrays.stream(httpTransportProtocolsAsString.split(",")).toList();
+	}
 }
