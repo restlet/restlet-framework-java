@@ -11,19 +11,21 @@ package org.restlet.ext.jetty;
 
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.server.AbstractConnectionFactory;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.http3.server.HTTP3ServerConnectionFactory;
+import org.eclipse.jetty.quic.server.QuicServerConnector;
+import org.eclipse.jetty.quic.server.ServerQuicConfiguration;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.ext.jetty.internal.RestletSslContextFactoryServer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -48,7 +50,13 @@ import java.util.logging.Level;
  * <td>http.transport.protocols</td>
  * <td>string</td>
  * <td>HTTP1_1</td>
- * <td>Coma separated and sorted list of supported protocols. Values: HTTP1_1, HTTP2, HTTP3.</td>
+ * <td>Comma separated and sorted list of supported protocols. Available values: HTTP1_1, HTTP2, HTTP3.</td>
+ * </tr>
+ * <tr>
+ * <td>http3.pem.workdir</td>
+ * <td>string</td>
+ * <td>No default value</td>
+ * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let you configure a secured enough directory.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
@@ -70,43 +78,81 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     @Override
-    protected ConnectionFactory[] createConnectionFactories(HttpConfiguration configuration) {
+    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
         ConnectionFactory[] result;
 
-        try {
-            final List<ConnectionFactory> connectionFactories = new ArrayList<>();
+        final List<ConnectionFactory> connectionFactories = new ArrayList<>();
 
-            for (String httpTransportProtocolAsString : getHttpTransportProtocols()) {
-                switch (httpTransportProtocolAsString) {
-                case "HTTP1_1":
-                    connectionFactories.add(new HttpConnectionFactory(configuration));
-                    break;
-                case "HTTP2":
-                    connectionFactories.add(new ALPNServerConnectionFactory());
-                    connectionFactories.add(new HTTP2ServerConnectionFactory(configuration));
-                    break;
-                default:
-                    final String errorMessage = String.format(
-                            "'%s' is not one of the supported value: [HTTP1_1, HTTP2]", httpTransportProtocolAsString);
-                    throw new IllegalArgumentException(errorMessage);
-                }
+        final List<String> httpTransportProtocols = new ArrayList<>(getHttpTransportProtocols());
+        httpTransportProtocols.remove("HTTP3");
+
+        for (String httpTransportProtocolAsString : httpTransportProtocols) {
+            connectionFactories.addAll(createConnectionFactories(configuration, httpTransportProtocolAsString));
+        }
+
+        SslContextFactory.Server sslContextFactory = getServerSslContextFactory();
+
+        result = AbstractConnectionFactory.getFactories(sslContextFactory,
+                connectionFactories.toArray(new ConnectionFactory[0]));
+
+        return result;
+    }
+
+    @Override
+    protected List<Connector> createConnectors(org.eclipse.jetty.server.Server server) {
+        final List<Connector> result = new ArrayList<>();
+
+        final List<String> httpTransportProtocols = getHttpTransportProtocols();
+
+        Optional<String> unknownProtocol = httpTransportProtocols.stream()
+                .filter(httpTransportProtocol -> List.of("HTTP3", "HTTP2", "HTTP1.1").contains(httpTransportProtocol))
+                .findAny();
+        if (unknownProtocol.isPresent()) {
+            final String errorMessage = String.format(
+                    "'%s' is not one of the supported value: [HTTP1_1, HTTP2, HTTP3]", unknownProtocol.get());
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        if (httpTransportProtocols.contains("HTTP3")) {
+            SslContextFactory.Server sslContextFactory = getServerSslContextFactory();
+            ServerQuicConfiguration configuration = new ServerQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
+            configuration.setOutputBufferSize(getHttpOutputBufferSize());
+
+            QuicServerConnector connector = new QuicServerConnector(server, configuration, new HTTP3ServerConnectionFactory(configuration));
+            final String address = getHelped().getAddress();
+            if (address != null) {
+                connector.setHost(address);
             }
+            connector.setPort(getHelped().getPort());
+            connector.setIdleTimeout(getConnectorIdleTimeout());
+            connector.setShutdownIdleTimeout(getShutdownTimeout());
 
-            SslContextFactory.Server sslContextFactory = new RestletSslContextFactoryServer(
-                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
-
-            result = AbstractConnectionFactory.getFactories(sslContextFactory,
-                    connectionFactories.toArray(new ConnectionFactory[0]));
-        } catch (RuntimeException e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
-            throw e;
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
-            throw new RuntimeException(e);
+            result.add(connector);
+        } else if (httpTransportProtocols.contains("HTTP1_1") || httpTransportProtocols.contains("HTTP2")) {
+            result.add(createTcpConnector(server));
         }
 
         return result;
     }
+
+    /**
+     * Creates new internal Jetty connection factories.
+     *
+     * @param configuration The HTTP configuration.
+     * @param protocol The connection factory's protocol name.
+     * @return New internal Jetty connection factories.
+     */
+    private List<ConnectionFactory> createConnectionFactories(final HttpConfiguration configuration, final String protocol) {
+        return switch (protocol) {
+            case "HTTP1_1" -> List.of(new HttpConnectionFactory(configuration));
+            case "HTTP2" -> List.of(new ALPNServerConnectionFactory(), new HTTP2ServerConnectionFactory(configuration));
+            default -> {
+                final String errorMessage = String.format(
+                        "'%s' is not one of the supported value: [HTTP1_1, HTTP2]", protocol);
+                throw new IllegalArgumentException(errorMessage);
+            }
+        };
+    };
 
     /**
      * Supported HTTP transport protocol. Defaults to http1.
@@ -116,6 +162,30 @@ public class HttpsServerHelper extends JettyServerHelper {
     public List<String> getHttpTransportProtocols() {
         String httpTransportProtocolsAsString = getHelpedParameters().getFirstValue("http.transport.protocols",
                 "HTTP1_1");
-        return Arrays.stream(httpTransportProtocolsAsString.split(",")).toList();
+        return Arrays.stream(httpTransportProtocolsAsString.split(","))
+                .map(String::trim)
+                .toList();
     }
+
+    /**
+     * Directory where are extracted the supported certificates.
+     * @return Directory where are extracted the supported certificates.
+     */
+    public String getHttp3PemWorkDir() {
+        return getHelpedParameters().getFirstValue("http3.pem.workdir");
+    }
+
+    private SslContextFactory.Server getServerSslContextFactory() {
+        try {
+            return new RestletSslContextFactoryServer(
+                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
+        } catch (RuntimeException e) {
+            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
+            throw e;
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
+            throw new RuntimeException(e);
+        }
+    }
+
 }

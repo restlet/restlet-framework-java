@@ -23,6 +23,7 @@ import org.restlet.ext.jetty.internal.JettyServerCall;
 
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
@@ -238,15 +239,24 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * @param configuration The HTTP configuration.
      * @return New internal Jetty connection factories.
      */
-    protected abstract ConnectionFactory[] createConnectionFactories(HttpConfiguration configuration);
+    protected abstract ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration);
 
     /**
-     * Creates a Jetty connector.
+     * Creates the Jetty connectors.
+     *
+     * @param server The Jetty server.
+     * @return The Jetty connectors.
+     */
+    protected abstract List<Connector> createConnectors(org.eclipse.jetty.server.Server server);
+
+
+    /**
+     * Creates a Jetty connector based on a classical TCP type of transport.
      * 
      * @param server The Jetty server.
      * @return A Jetty connector.
      */
-    protected Connector createConnector(org.eclipse.jetty.server.Server server) {
+    protected Connector createTcpConnector(org.eclipse.jetty.server.Server server) {
         final HttpConfiguration configuration = createConfiguration();
 
         final int acceptors = getConnectorAcceptors();
@@ -265,11 +275,10 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
             connector.setHost(address);
         }
         connector.setPort(getHelped().getPort());
-
-        connector.setAcceptQueueSize(getConnectorAcceptQueueSize());
         connector.setIdleTimeout(getConnectorIdleTimeout());
         connector.setShutdownIdleTimeout(getShutdownTimeout());
 
+        connector.setAcceptQueueSize(getConnectorAcceptQueueSize());
         return connector;
     }
 
@@ -325,9 +334,9 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
 
         jettyServer.setHandler(createJettyHandler());
 
-        // Connector
-        final Connector connector = createConnector(jettyServer);
-        jettyServer.addConnector(connector);
+        // Connectors
+        createConnectors(jettyServer)
+                .forEach(jettyServer::addConnector);
 
         // Low-resource monitor (must be created after connectors have been added)
         LowResourceMonitor lowResourceMonitor = createLowResourceMonitor(jettyServer);

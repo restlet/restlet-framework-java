@@ -214,13 +214,12 @@ public class HttpTransportProtocolsTestCase {
         }
 
         @ParameterizedTest(name = "server: {0}")
-        @ValueSource(strings = {
-                "", "invalid", "http3" })
+        @ValueSource(strings = { "", "invalid", "http3" })
         public void invalidServerConfiguration(final String httpTransportProtocol) {
             final Server server = newServer(httpTransportProtocol);
 
             final Exception exception = assertThrows(IllegalArgumentException.class, server::start);
-            assertEquals(format("'%s' is not one of the supported value: [HTTP1_1, HTTP2]", httpTransportProtocol),
+            assertEquals(format("'%s' is not one of the supported value: [HTTP1_1, HTTP2, HTTP3]", httpTransportProtocol),
                     exception.getMessage());
         }
 

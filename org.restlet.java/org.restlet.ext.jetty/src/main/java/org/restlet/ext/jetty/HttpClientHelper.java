@@ -46,6 +46,7 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactoryClient;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
@@ -196,6 +197,12 @@ import java.util.logging.Level;
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a parameter, or an instance as an attribute
  * for a more complete and flexible SSL context setting</td>
  * </tr>
+ * <tr>
+ * <td>http3PemWorkDir</td>
+ * <td>string</td>
+ * <td>No default value</td>
+ * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let you configure a secured enough directory.</td>
+ * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
  *
@@ -339,7 +346,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         return new HttpClientTransportOverHTTP();
     }
 
-    private static HttpClientTransport getHttpClientTransportForHttp2() {
+    private HttpClientTransport getHttpClientTransportForHttp2() {
         HTTP2Client http2Client = new HTTP2Client();
         HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(http2Client);
         http2Transport.setUseALPN(true);
@@ -347,23 +354,22 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         return http2Transport;
     }
 
-    private static HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+    private HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
 
         return new HttpClientTransportOverHTTP3(http3Client);
     }
 
-    private static HttpClientTransport getHttpClientTransportForDynamicMode(
-            SslContextFactory.Client sslContextFactory) {
+    private HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
 
         ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
 
         HTTP2Client http2Client = new HTTP2Client();
         ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
 
@@ -494,6 +500,14 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      */
     public String getHttpClientTransportMode() {
         return getHelpedParameters().getFirstValue("httpClientTransportMode", "HTTP1_1");
+    }
+
+    /**
+     * Directory where are extracted the supported certificates.
+     * @return Directory where are extracted the supported certificates.
+     */
+    public String getHttp3PemWorkDir() {
+        return getHelpedParameters().getFirstValue("http3PemWorkDir");
     }
 
     /**

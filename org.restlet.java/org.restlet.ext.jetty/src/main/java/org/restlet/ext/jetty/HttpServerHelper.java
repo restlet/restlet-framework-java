@@ -11,10 +11,13 @@ package org.restlet.ext.jetty;
 
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+
+import java.util.List;
 
 /**
  * Jetty HTTP server connector.
@@ -52,27 +55,28 @@ public class HttpServerHelper extends JettyServerHelper {
      */
     @Override
     protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-        final ConnectionFactory[] result;
-
         final String httpTransportProtocolAsString = getHttpTransportProtocol();
-        result = switch (httpTransportProtocolAsString) {
-        case "HTTP1_1" -> new ConnectionFactory[] {
-                new HttpConnectionFactory(configuration) };
-        case "HTTP2" -> new ConnectionFactory[] {
-                new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
-                new HTTP2CServerConnectionFactory(configuration) };
-        default -> {
-            final String errorMessage = String.format("'%s' is not one of the supported value: [HTTP1_1, HTTP2]",
-                    httpTransportProtocolAsString);
-            throw new IllegalArgumentException(errorMessage);
-        }
-        };
 
-        return result;
+        return switch (httpTransportProtocolAsString) {
+            case "HTTP1_1" -> new ConnectionFactory[] { new HttpConnectionFactory(configuration) };
+            case "HTTP2" -> new ConnectionFactory[] {
+                    new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
+                    new HTTP2CServerConnectionFactory(configuration) };
+            default -> {
+                final String errorMessage = String.format("'%s' is not one of the supported value: [HTTP1_1, HTTP2]",
+                        httpTransportProtocolAsString);
+                throw new IllegalArgumentException(errorMessage);
+            }
+        };
+    }
+
+    @Override
+    protected List<Connector> createConnectors(org.eclipse.jetty.server.Server server) {
+        return List.of(createTcpConnector(server));
     }
 
     /**
-     * Supported HTTP transport protocol. Defaults to http1.
+     * Supported HTTP transport protocol. Defaults to HTTP1_1.
      *
      * @return Supported HTTP transport protocol.
      */
