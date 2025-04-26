@@ -137,7 +137,6 @@ public class HttpTransportProtocolsTestCase {
             Engine.clearThreadLocalVariables();
         }
 
-
         @Override
         List<String> expectedProtocols() {
             return List.of("HTTP1_1", "HTTP2", "HTTP3");
@@ -227,12 +226,14 @@ public class HttpTransportProtocolsTestCase {
         }
 
         @ParameterizedTest(name = "server: {0}")
-        @ValueSource(strings = { "", "invalid", "http3" })
+        @ValueSource(strings = {
+                "", "invalid", "http3" })
         public void invalidServerConfiguration(final String httpTransportProtocol) {
             final Server server = newServer(httpTransportProtocol);
 
             final Exception exception = assertThrows(IllegalArgumentException.class, server::start);
-            assertEquals(format("'%s' is not one of the supported values: %s", httpTransportProtocol, expectedProtocols()),
+            assertEquals(
+                    format("'%s' is not one of the supported values: %s", httpTransportProtocol, expectedProtocols()),
                     exception.getMessage());
         }
 
@@ -338,7 +339,7 @@ public class HttpTransportProtocolsTestCase {
         protected Context newClientContext() {
             Context context = new Context();
             context.getParameters().add("httpClientTransportMode", httpClientTransportMode);
-            //context.getParameters().add("http3PemWorkDir", );
+            // context.getParameters().add("http3PemWorkDir", );
 
             if (Protocol.HTTPS.equals(protocol)) {
                 context.getParameters().add("truststorePath", testKeystoreFile.getPath());

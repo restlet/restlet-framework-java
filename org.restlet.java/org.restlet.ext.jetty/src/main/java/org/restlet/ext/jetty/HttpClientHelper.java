@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.file.Path;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
@@ -203,7 +203,8 @@ import java.util.logging.Level;
  * <td>http3PemWorkDir</td>
  * <td>string</td>
  * <td>No default value</td>
- * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let you configure a secured enough directory.</td>
+ * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let
+ * you configure a secured enough directory.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
@@ -279,17 +280,12 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
             getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
         }
 
-        final String httpClientTransportMode = getHttpClientTransportMode();
-        final HttpClientTransport httpTransport = switch (httpClientTransportMode) {
-        case "HTTP2" -> getHttpClientTransportForHttp2();
-        case "HTTP3" -> getHttpClientTransportForHttp3(sslContextFactory);
-        case "DYNAMIC" -> getHttpClientTransportForDynamicMode(sslContextFactory);
-        case "HTTP1_1" -> getHttpTransportForHttp1_1();
-        default -> {
-            getLogger().log(Level.WARNING, "Unknown HTTP client transport mode: {0}, default to HTTP1_1",
-                    httpClientTransportMode);
-            yield getHttpTransportForHttp1_1();
-        }
+        HttpTransportProtocol httpTransportProtocol = HttpTransportProtocol.fromName(getHttpClientTransportMode());
+        final HttpClientTransport httpTransport = switch (httpTransportProtocol) {
+        case HTTP1_1 -> getHttpTransportForHttp1_1();
+        case HTTP2 -> getHttpClientTransportForHttp2();
+        case HTTP3 -> getHttpClientTransportForHttp3(sslContextFactory);
+        case DYNAMIC -> getHttpClientTransportForDynamicMode(sslContextFactory);
         };
 
         final HttpClient httpClient = new HttpClient(httpTransport);
@@ -365,10 +361,6 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         return new HttpClientTransportOverHTTP3(http3Client);
     }
 
-    private Path getHttp3PemWorkDirectoryPath() {
-        return Optional.ofNullable(getHttp3PemWorkDir()).map(Path::of).orElse(null);
-    }
-
     private HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
 
         ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
@@ -376,7 +368,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         HTTP2Client http2Client = new HTTP2Client();
         ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, getHttp3PemWorkDirectoryPath());
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory,
+                getHttp3PemWorkDirectoryPath());
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
 
@@ -420,7 +413,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         final String bindPort = getHelpedParameters().getFirstValue("bindPort", null);
 
         if ((bindAddress != null) && (bindPort != null)) {
-            return new InetSocketAddress(bindAddress, Integer.parseInt(bindPort));            
+            return new InetSocketAddress(bindAddress, Integer.parseInt(bindPort));
         } else {
             return null;
         }
@@ -506,15 +499,20 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
      * @return The HTTP client transport mode.
      */
     public String getHttpClientTransportMode() {
-        return getHelpedParameters().getFirstValue("httpClientTransportMode", "HTTP1_1");
+        return getHelpedParameters().getFirstValue("httpClientTransportMode", HttpTransportProtocol.HTTP1_1.name());
     }
 
     /**
      * Directory where are extracted the supported certificates.
+     * 
      * @return Directory where are extracted the supported certificates.
      */
     public String getHttp3PemWorkDir() {
         return getHelpedParameters().getFirstValue("http3PemWorkDir");
+    }
+
+    private Path getHttp3PemWorkDirectoryPath() {
+        return Optional.ofNullable(getHttp3PemWorkDir()).map(Path::of).orElse(null);
     }
 
     /**
@@ -684,7 +682,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         super.start();
 
         if (this.httpClient == null) {
-            this.httpClient = createHttpClient();            
+            this.httpClient = createHttpClient();
         }
 
         final HttpClient httpClient = getHttpClient();
@@ -703,5 +701,25 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         }
 
         super.stop();
+    }
+
+    /**
+     * Supported HTTP transport protocols.
+     */
+    private enum HttpTransportProtocol {
+        HTTP1_1, HTTP2, HTTP3, DYNAMIC;
+
+        static HttpTransportProtocol fromName(final String name) {
+            try {
+                return HttpTransportProtocol.valueOf(name);
+            } catch (final IllegalArgumentException iae) {
+                String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
+
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
+                        supportedHttpTransportProtocols);
+
+                throw new IllegalArgumentException(errorMessage);
+            }
+        }
     }
 }

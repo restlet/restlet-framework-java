@@ -29,8 +29,8 @@ import java.util.List;
  * <td>http.transport.mode</td>
  * <td>string</td>
  * <td>HTTP1_1</td>
- * <td>Supported protocol. Values: HTTP1_1 or HTTP2. The protocol HTTP 1.1 is always supported,
- * the support of HTTP2 (in clear text mode) is done thanks to upgrade from HTTP 1.1 protocol.</td>
+ * <td>Supported protocol. Values: HTTP1_1 or HTTP2. The protocol HTTP 1.1 is always supported, the support of HTTP2 (in
+ * clear text mode) is done thanks to upgrade from HTTP 1.1 protocol.</td>
  * </tr>
  * </table>
  *
@@ -59,10 +59,11 @@ public class HttpServerHelper extends JettyServerHelper {
         HttpTransportProtocol httpTransportProtocol = HttpTransportProtocol.fromName(getHttpTransportProtocol());
 
         return switch (httpTransportProtocol) {
-            case HTTP1_1 -> new ConnectionFactory[]{new HttpConnectionFactory(configuration)};
-            case HTTP2 -> new ConnectionFactory[]{
-                    new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
-                    new HTTP2CServerConnectionFactory(configuration)};
+        case HTTP1_1 -> new ConnectionFactory[] {
+                new HttpConnectionFactory(configuration) };
+        case HTTP2 -> new ConnectionFactory[] {
+                new HttpConnectionFactory(configuration), // still necessary to support protocol upgrade
+                new HTTP2CServerConnectionFactory(configuration) };
         };
     }
 
@@ -92,8 +93,8 @@ public class HttpServerHelper extends JettyServerHelper {
             } catch (final IllegalArgumentException iae) {
                 String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
 
-                final String errorMessage = String.format("'%s' is not one of the supported values: %s",
-                        name, supportedHttpTransportProtocols);
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
+                        supportedHttpTransportProtocols);
 
                 throw new IllegalArgumentException(errorMessage);
             }

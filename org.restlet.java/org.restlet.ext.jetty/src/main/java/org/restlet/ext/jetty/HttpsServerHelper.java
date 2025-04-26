@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -55,7 +56,8 @@ import java.util.logging.Level;
  * <td>http3.pem.workdir</td>
  * <td>string</td>
  * <td>No default value</td>
- * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let you configure a secured enough directory.</td>
+ * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let
+ * you configure a secured enough directory.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
@@ -81,8 +83,7 @@ public class HttpsServerHelper extends JettyServerHelper {
         final List<Connector> result = new ArrayList<>();
 
         final List<HttpTransportProtocol> httpTransportProtocols = getHttpTransportProtocols().stream()
-                .map(HttpTransportProtocol::fromName)
-                .toList();
+                .map(HttpTransportProtocol::fromName).toList();
 
         if (httpTransportProtocols.stream().anyMatch(HttpTransportProtocol::isTcpProtocol)) {
             HttpConfiguration configuration = createHttpConfiguration();
@@ -102,20 +103,18 @@ public class HttpsServerHelper extends JettyServerHelper {
         final List<ConnectionFactory> connectionFactories = new ArrayList<>();
 
         final List<HttpTransportProtocol> tcpBasedTransportProtocols = getHttpTransportProtocols().stream()
-                .map(HttpTransportProtocol::fromName)
-                .filter(HttpTransportProtocol::isTcpProtocol)
-                .toList();
+                .map(HttpTransportProtocol::fromName).filter(HttpTransportProtocol::isTcpProtocol).toList();
 
         for (HttpTransportProtocol tcpBasedTransportProtocol : tcpBasedTransportProtocols) {
             final List<ConnectionFactory> protocolConnectionFactories = switch (tcpBasedTransportProtocol) {
-                case HTTP1_1 -> List.of(new HttpConnectionFactory(configuration));
-                case HTTP2 -> List.of(new ALPNServerConnectionFactory(), new HTTP2ServerConnectionFactory(configuration));
-                default -> {
-                    String supportedHttpTransportProtocols = tcpBasedTransportProtocols.toString();
-                    final String errorMessage = String.format("'%s' is not one of the supported values: %s",
-                            tcpBasedTransportProtocol, supportedHttpTransportProtocols);
-                    throw new IllegalArgumentException(errorMessage);
-                }
+            case HTTP1_1 -> List.of(new HttpConnectionFactory(configuration));
+            case HTTP2 -> List.of(new ALPNServerConnectionFactory(), new HTTP2ServerConnectionFactory(configuration));
+            default -> {
+                String supportedHttpTransportProtocols = tcpBasedTransportProtocols.toString();
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s",
+                        tcpBasedTransportProtocol, supportedHttpTransportProtocols);
+                throw new IllegalArgumentException(errorMessage);
+            }
             };
             connectionFactories.addAll(protocolConnectionFactories);
         }
@@ -126,8 +125,10 @@ public class HttpsServerHelper extends JettyServerHelper {
                 connectionFactories.toArray(new ConnectionFactory[0]));
     }
 
-    private QuicServerConnector createQuicServerConnector(org.eclipse.jetty.server.Server server, ServerQuicConfiguration configuration) {
-        QuicServerConnector connector = new QuicServerConnector(server, configuration, new HTTP3ServerConnectionFactory(configuration));
+    private QuicServerConnector createQuicServerConnector(org.eclipse.jetty.server.Server server,
+            ServerQuicConfiguration configuration) {
+        QuicServerConnector connector = new QuicServerConnector(server, configuration,
+                new HTTP3ServerConnectionFactory(configuration));
         final String address = getHelped().getAddress();
         if (address != null) {
             connector.setHost(address);
@@ -145,25 +146,26 @@ public class HttpsServerHelper extends JettyServerHelper {
      */
     public List<String> getHttpTransportProtocols() {
         String httpTransportProtocolsAsString = getHelpedParameters().getFirstValue("http.transport.protocols",
-                "HTTP1_1");
-        return Arrays.stream(httpTransportProtocolsAsString.split(","))
-                .map(String::trim)
-                .distinct()
-                .toList();
+                HttpTransportProtocol.HTTP1_1.name());
+        return Arrays.stream(httpTransportProtocolsAsString.split(",")).map(String::trim).distinct().toList();
     }
 
     /**
      * Directory where are extracted the supported certificates.
+     * 
      * @return Directory where are extracted the supported certificates.
      */
     public String getHttp3PemWorkDir() {
         return getHelpedParameters().getFirstValue("http3.pem.workdir");
     }
 
+    private Path getHttp3PemWorkDirectoryPath() {
+        return Optional.ofNullable(getHttp3PemWorkDir()).map(Path::of).orElse(null);
+    }
+
     private SslContextFactory.Server getServerSslContextFactory() {
         try {
-            return new RestletSslContextFactoryServer(
-                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
+            return new RestletSslContextFactoryServer(org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
         } catch (RuntimeException e) {
             getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
             throw e;
@@ -174,7 +176,8 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     private ServerQuicConfiguration createQuicConfiguration(SslContextFactory.Server sslContextFactory) {
-        ServerQuicConfiguration configuration = new ServerQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
+        Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
+        ServerQuicConfiguration configuration = new ServerQuicConfiguration(sslContextFactory, pemWorkDirectory);
         configuration.setOutputBufferSize(getHttpOutputBufferSize());
         return configuration;
     }
@@ -193,8 +196,8 @@ public class HttpsServerHelper extends JettyServerHelper {
             } catch (final IllegalArgumentException iae) {
                 String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
 
-                final String errorMessage = String.format("'%s' is not one of the supported values: %s",
-                        name, supportedHttpTransportProtocols);
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
+                        supportedHttpTransportProtocols);
 
                 throw new IllegalArgumentException(errorMessage);
             }
