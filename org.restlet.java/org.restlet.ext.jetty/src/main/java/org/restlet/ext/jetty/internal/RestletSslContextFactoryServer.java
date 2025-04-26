@@ -11,6 +11,7 @@ package org.restlet.ext.jetty.internal;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLServerSocket;
@@ -52,10 +53,11 @@ public class RestletSslContextFactoryServer extends SslContextFactory.Server {
     @Override
     public SSLServerSocket newSslServerSocket(String host, int port, int backlog)
             throws IOException {
-        SSLServerSocketFactory factory = getSslContext().getServerSocketFactory();
-        return (SSLServerSocket) ((host == null)
+        final SSLServerSocketFactory factory = getSslContext().getServerSocketFactory();
+        final ServerSocket serverSocket = (host == null)
                 ? factory.createServerSocket(port, backlog)
-                : factory.createServerSocket(port, backlog, InetAddress.getByName(host)));
+                : factory.createServerSocket(port, backlog, InetAddress.getByName(host));
+        return (SSLServerSocket) serverSocket;
     }
 
     @Override

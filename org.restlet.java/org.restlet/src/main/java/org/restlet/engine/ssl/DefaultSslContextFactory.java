@@ -16,8 +16,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.FileInputStream;
-import java.security.KeyStore;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -263,71 +262,39 @@ public class DefaultSslContextFactory extends SslContextFactory {
 	 */
 	@Override
 	public javax.net.ssl.SSLContext createSslContext() throws Exception {
-		javax.net.ssl.SSLContext result = null;
-		javax.net.ssl.KeyManagerFactory kmf = null;
+		final javax.net.ssl.SSLContext result;
 
+		final javax.net.ssl.KeyManagerFactory kmf;
 		if ((this.keyStorePath != null) || (this.keyStoreProvider != null) || (this.keyStoreType != null)) {
-			// Loads the key store.
-			final String nonNullKeyStoreType = (this.keyStoreType != null)
-					? this.keyStoreType
-					: KeyStore.getDefaultType();
-			final KeyStore keyStore = (this.keyStoreProvider != null)
-					? KeyStore.getInstance(nonNullKeyStoreType, this.keyStoreProvider)
-					: KeyStore.getInstance(nonNullKeyStoreType);
-
-			FileInputStream keyStoreInputStream = null;
-
-			try {
-				keyStoreInputStream = ((this.keyStorePath != null) && (!"NONE".equals(this.keyStorePath)))
-						? new FileInputStream(this.keyStorePath)
-						: null;
-				keyStore.load(keyStoreInputStream, this.keyStorePassword);
-			} finally {
-				if (keyStoreInputStream != null) {
-					keyStoreInputStream.close();
-				}
-			}
+			final KeyStore keyStore = loadKeyStore(this.keyStorePath, this.keyStoreProvider, this.keyStoreType, this.keyStorePassword);
 
 			// Creates the key-manager factory.
 			kmf = javax.net.ssl.KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
 			kmf.init(keyStore, this.keyStoreKeyPassword);
+		} else {
+			kmf = null;
 		}
 
-		javax.net.ssl.TrustManagerFactory tmf = null;
-
+		final javax.net.ssl.TrustManagerFactory tmf;
 		if ((this.trustStorePath != null) || (this.trustStoreProvider != null) || (this.trustStoreType != null)) {
-			// Loads the trust store.
-			String nonNullTrustStoreType = (this.trustStoreType != null) ? this.trustStoreType : KeyStore.getDefaultType();
-			KeyStore trustStore = (this.trustStoreProvider != null)
-					? KeyStore.getInstance(nonNullTrustStoreType, this.trustStoreProvider)
-					: KeyStore.getInstance(nonNullTrustStoreType);
-
-			FileInputStream trustStoreInputStream = null;
-
-			try {
-				trustStoreInputStream = ((this.trustStorePath != null) && (!"NONE".equals(this.trustStorePath)))
-						? new FileInputStream(this.trustStorePath)
-						: null;
-				trustStore.load(trustStoreInputStream, this.trustStorePassword);
-			} finally {
-				if (trustStoreInputStream != null) {
-					trustStoreInputStream.close();
-				}
-			}
+			final KeyStore trustStore = loadKeyStore(this.trustStorePath, this.trustStoreProvider, this.trustStoreType, this.trustStorePassword);
 
 			// Creates the trust-manager factory.
 			tmf = javax.net.ssl.TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
 			tmf.init(trustStore);
+		} else {
+			tmf = null;
+		}
+
+		final SecureRandom sr;
+		if (this.secureRandomAlgorithm != null) {
+			sr = SecureRandom.getInstance(this.secureRandomAlgorithm);
+		} else {
+			sr = null;
 		}
 
 		// Creates the SSL context
-		javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(this.protocol);
-		SecureRandom sr = null;
-
-		if (this.secureRandomAlgorithm != null) {
-			sr = SecureRandom.getInstance(this.secureRandomAlgorithm);
-		}
-
+		final javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(this.protocol);
 		sslContext.init(kmf != null ? kmf.getKeyManagers() : null, tmf != null ? tmf.getTrustManagers() : null, sr);
 
 		// Wraps the SSL context to be able to set cipher suites and other
@@ -458,7 +425,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
 	/**
 	 * Returns the selected cipher suites. The selection is the subset of supported
-	 * suites that are both in the enable suites and out of the disabled suites.
+	 * suites that are both in the enabled suites and out of the disabled suites.
 	 * 
 	 * @param supportedCipherSuites The initial cipher suites to restrict.
 	 * @return The selected cipher suites.
@@ -483,8 +450,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
 	/**
 	 * Returns the selected SSL protocols. The selection is the subset of supported
-	 * protocols whose name starts with the name of of
-	 * {@link #getEnabledProtocols()} name.
+	 * protocols whose name starts with the name of {@link #getEnabledProtocols()} name.
 	 * 
 	 * @param supportedProtocols The selected SSL protocols.
 	 * @return The selected SSL protocols.
@@ -673,6 +639,30 @@ public class DefaultSslContextFactory extends SslContextFactory {
 	 */
 	public boolean isWantClientAuthentication() {
 		return wantClientAuthentication;
+	}
+
+	/**
+	 * Loads a keystore according to its file path, type and password.
+	 * @param path The file path of the keystore.
+	 * @param provider The name of the keystore provider.
+	 * @param type The keystore type of the keystore.
+	 * @param password the optional password of the keystore.
+	 * @return a keystore.
+	 * @throws Exception
+	 */
+	protected KeyStore loadKeyStore(String path, String provider, String type, char[] password) throws Exception {
+		final String nonNullKeyStoreType = (type != null) ? type : KeyStore.getDefaultType();
+		final KeyStore keyStore = (provider != null)
+				? KeyStore.getInstance(nonNullKeyStoreType, provider)
+				: KeyStore.getInstance(nonNullKeyStoreType);
+
+		try (FileInputStream keyStoreInputStream = ((path != null) && (!"NONE".equals(path)))
+				? new FileInputStream(path)
+				: null) {
+			keyStore.load(keyStoreInputStream, password);
+		}
+
+		return keyStore;
 	}
 
 	/**

@@ -46,13 +46,15 @@ import org.restlet.ext.jetty.internal.RestletSslContextFactoryClient;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
 /**
- * HTTP client connector using the Jetty project. Here is the list of parameters
- * that are supported. They should be set in the Client's context before it is
- * started:
+ * HTTP client connector using the Jetty project. Here is the list of parameters that are supported. They should be set
+ * in the Client's context before it is started:
  * <table>
  * <caption>list of supported parameters</caption>
  * <tr>
@@ -71,36 +73,31 @@ import java.util.logging.Level;
  * <td>bindAddress</td>
  * <td>String</td>
  * <td>null</td>
- * <td>The address to bind socket channels to. You must set <i>both</i> this and
- * bindPort</td>
+ * <td>The address to bind socket channels to. You must set <i>both</i> this and bindPort</td>
  * </tr>
  * <tr>
  * <td>bindPort</td>
  * <td>int</td>
  * <td>null</td>
- * <td>The address to bind socket channels to. You must set <i>both</i> this and
- * bindAddress</td>
+ * <td>The address to bind socket channels to. You must set <i>both</i> this and bindAddress</td>
  * </tr>
  * <tr>
  * <td>cookieSupported</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Whether to support HTTP cookie, storing and automatically sending them
- * back</td>
+ * <td>Whether to support HTTP cookie, storing and automatically sending them back</td>
  * </tr>
  * <tr>
  * <td>connectBlocking</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates whether the connect operation is blocking. See
- * {@link HttpClient#isConnectBlocking()}.</td>
+ * <td>Indicates whether the connect operation is blocking. See {@link HttpClient#isConnectBlocking()}.</td>
  * </tr>
  * <tr>
  * <td>connectTimeout</td>
  * <td>long</td>
  * <td>15000</td>
- * <td>The max time in milliseconds a connection can take to connect to
- * destinations</td>
+ * <td>The max time in milliseconds a connection can take to connect to destinations</td>
  * </tr>
  * <tr>
  * <td>destinationIdleTimeout</td>
@@ -118,22 +115,22 @@ import java.util.logging.Level;
  * <td>httpComplianceMode</td>
  * <td>String</td>
  * <td>RFC7230</td>
- * <td>Indicate the HTTP compliance mode among the following options: "RFC7230",
- * "RFC2616", "LEGACY", "RFC7230_LEGACY". See {@link HttpCompliance}.</td>
+ * <td>Indicate the HTTP compliance mode among the following options: "RFC7230", "RFC2616", "LEGACY", "RFC7230_LEGACY".
+ * See {@link HttpCompliance}.</td>
  * </tr>
  * <tr>
  * <td>httpClientTransportMode</td>
  * <td>String</td>
- * <td>HTTP11</td>
- * <td>Indicate the HTTP client transport mode among the following options:
- * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.</td>
+ * <td>HTTP1_1</td>
+ * <td>Indicate the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2", "HTTP3", "DYNAMIC". See
+ * {@link HttpClientTransport}.</td>
  * </tr>
  * <tr>
  * <td>idleTimeout</td>
  * <td>long</td>
  * <td>30000</td>
- * <td>The max time in milliseconds a connection can be idle (that is, without
- * traffic of bytes in either direction)</td>
+ * <td>The max time in milliseconds a connection can be idle (that is, without traffic of bytes in either
+ * direction)</td>
  * </tr>
  * <tr>
  * <td>maxConnectionsPerDestination</td>
@@ -193,26 +190,29 @@ import java.util.logging.Level;
  * <td>userAgentField</td>
  * <td>String</td>
  * <td>null</td>
- * <td>The "User-Agent" HTTP header string; when null, uses the Jetty
- * default</td>
+ * <td>The "User-Agent" HTTP header string; when null, uses the Jetty default</td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
- * <td>Let you specify a {@link SslContextFactory} qualified class name as a
- * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a parameter, or an instance as an attribute
+ * for a more complete and flexible SSL context setting</td>
+ * </tr>
+ * <tr>
+ * <td>http3PemWorkDir</td>
+ * <td>string</td>
+ * <td>No default value</td>
+ * <td>Directory where are exported trusted certificates, required for HTTP3 support. There is no default value to let
+ * you configure a secured enough directory.</td>
  * </tr>
  * </table>
- * For the default SSL parameters see the Javadocs of the
- * {@link DefaultSslContextFactory} class.
+ * For the default SSL parameters see the Javadocs of the {@link DefaultSslContextFactory} class.
  *
  * @author Jerome Louvel
  * @author Tal Liron
  */
-public class HttpClientHelper
-        extends org.restlet.engine.adapter.HttpClientHelper {
+public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
 
     /**
      * The wrapped Jetty HTTP client.
@@ -233,9 +233,8 @@ public class HttpClientHelper
     private volatile Executor executor;
 
     /**
-     * Constructor. Properties can still be set before the wrapped Jetty HTTP
-     * client is effectively created and configured via the
-     * {@link #createHttpClient()} method.
+     * Constructor. Properties can still be set before the wrapped Jetty HTTP client is effectively created and
+     * configured via the {@link #createHttpClient()} method.
      *
      * @param client The client connector to help.
      */
@@ -244,9 +243,7 @@ public class HttpClientHelper
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
         this.authenticationStore = null;
-        this.cookieStore = isCookieSupported()
-                ? new HttpCookieStore.Default()
-                : new HttpCookieStore.Empty();
+        this.cookieStore = isCookieSupported() ? new HttpCookieStore.Default() : new HttpCookieStore.Empty();
         this.executor = null;
     }
 
@@ -261,11 +258,9 @@ public class HttpClientHelper
 
         try {
             result = new JettyClientCall(this, request.getMethod().toString(),
-                    ReferenceUtils.update(request.getResourceRef(), request)
-                            .toString());
+                    ReferenceUtils.update(request.getResourceRef(), request).toString());
         } catch (IOException e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to create the Jetty HTTP/HTTPS client call", e);
+            getLogger().log(Level.WARNING, "Unable to create the Jetty HTTP/HTTPS client call", e);
         }
 
         return result;
@@ -282,21 +277,15 @@ public class HttpClientHelper
         try {
             sslContextFactory = new RestletSslContextFactoryClient(SslUtils.getSslContextFactory(this));
         } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Unable to create the Jetty SSL context factory", e);
+            getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
         }
 
-        final String httpClientTransportMode = getHttpClientTransportMode();
-        final HttpClientTransport httpTransport = switch (httpClientTransportMode) {
-            case "HTTP2" -> getHttpClientTransportForHttp2();
-            case "HTTP3" -> getHttpClientTransportForHttp3(sslContextFactory);
-            case "DYNAMIC" -> getHttpClientTransportForDynamicMode(sslContextFactory);
-            case "HTTP11" -> getHttpTransportForHttp1_1();
-            default -> {
-                getLogger().log(Level.WARNING,
-                        "Unknown HTTP client transport mode: {0}, default to HTTP11", httpClientTransportMode);
-                yield getHttpTransportForHttp1_1();
-            }
+        HttpTransportProtocol httpTransportProtocol = HttpTransportProtocol.fromName(getHttpClientTransportMode());
+        final HttpClientTransport httpTransport = switch (httpTransportProtocol) {
+        case HTTP1_1 -> getHttpTransportForHttp1_1();
+        case HTTP2 -> getHttpClientTransportForHttp2();
+        case HTTP3 -> getHttpClientTransportForHttp3(sslContextFactory);
+        case DYNAMIC -> getHttpClientTransportForDynamicMode(sslContextFactory);
         };
 
         final HttpClient httpClient = new HttpClient(httpTransport);
@@ -313,15 +302,14 @@ public class HttpClientHelper
 
         final String httpComplianceMode = getHttpComplianceMode();
         final HttpCompliance httpCompliance = switch (httpComplianceMode) {
-            case "RFC7230" -> HttpCompliance.RFC7230;
-            case "RFC7230_LEGACY" -> HttpCompliance.RFC7230_LEGACY;
-            case "RFC2616" -> HttpCompliance.RFC2616;
-            case "RFC2616_LEGACY" -> HttpCompliance.RFC2616_LEGACY;
-            default -> {
-                getLogger().log(Level.WARNING,
-                        "Unknown HTTP compliance mode: {0}, default to RFC7230", httpComplianceMode);
-                yield HttpCompliance.RFC7230;
-            }
+        case "RFC7230" -> HttpCompliance.RFC7230;
+        case "RFC7230_LEGACY" -> HttpCompliance.RFC7230_LEGACY;
+        case "RFC2616" -> HttpCompliance.RFC2616;
+        case "RFC2616_LEGACY" -> HttpCompliance.RFC2616_LEGACY;
+        default -> {
+            getLogger().log(Level.WARNING, "Unknown HTTP compliance mode: {0}, default to RFC7230", httpComplianceMode);
+            yield HttpCompliance.RFC7230;
+        }
         };
         httpClient.setHttpCompliance(httpCompliance);
 
@@ -346,8 +334,7 @@ public class HttpClientHelper
 
         final String userAgentField = getUserAgentField();
         if (userAgentField != null) {
-            httpClient.setUserAgentField(
-                    new HttpField(HttpHeader.USER_AGENT, userAgentField));
+            httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, userAgentField));
         }
 
         return httpClient;
@@ -357,7 +344,7 @@ public class HttpClientHelper
         return new HttpClientTransportOverHTTP();
     }
 
-    private static HttpClientTransport getHttpClientTransportForHttp2() {
+    private HttpClientTransport getHttpClientTransportForHttp2() {
         HTTP2Client http2Client = new HTTP2Client();
         HttpClientTransportOverHTTP2 http2Transport = new HttpClientTransportOverHTTP2(http2Client);
         http2Transport.setUseALPN(true);
@@ -365,22 +352,24 @@ public class HttpClientHelper
         return http2Transport;
     }
 
-    private static HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+    private HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
+        Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, pemWorkDirectory);
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
 
         return new HttpClientTransportOverHTTP3(http3Client);
     }
 
-    private static HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
+    private HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
 
         ClientConnectionFactory.Info http1 = HttpClientConnectionFactory.HTTP11;
 
         HTTP2Client http2Client = new HTTP2Client();
         ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, null);
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory,
+                getHttp3PemWorkDirectoryPath());
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
 
@@ -388,14 +377,12 @@ public class HttpClientHelper
     }
 
     /**
-     * The timeout in milliseconds for the DNS resolution of host addresses.
-     * Defaults to 15000.
+     * The timeout in milliseconds for the DNS resolution of host addresses. Defaults to 15000.
      *
      * @return The address resolution timeout.
      */
     public long getAddressResolutionTimeout() {
-        return Long.parseLong(getHelpedParameters()
-                .getFirstValue("addressResolutionTimeout", "15000"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("addressResolutionTimeout", "15000"));
     }
 
     /**
@@ -412,8 +399,7 @@ public class HttpClientHelper
      *
      * @param authenticationStore The wrapped Jetty authentication store.
      */
-    public void setAuthenticationStore(
-            AuthenticationStore authenticationStore) {
+    public void setAuthenticationStore(AuthenticationStore authenticationStore) {
         this.authenticationStore = authenticationStore;
     }
 
@@ -423,25 +409,23 @@ public class HttpClientHelper
      * @return The bind address or null.
      */
     public SocketAddress getBindAddress() {
-        final String bindAddress = getHelpedParameters()
-                .getFirstValue("bindAddress", null);
-        final String bindPort = getHelpedParameters().getFirstValue("bindPort",
-                null);
-        if ((bindAddress != null) && (bindPort != null))
-            return new InetSocketAddress(bindAddress,
-                    Integer.parseInt(bindPort));
-        return null;
+        final String bindAddress = getHelpedParameters().getFirstValue("bindAddress", null);
+        final String bindPort = getHelpedParameters().getFirstValue("bindPort", null);
+
+        if ((bindAddress != null) && (bindPort != null)) {
+            return new InetSocketAddress(bindAddress, Integer.parseInt(bindPort));
+        } else {
+            return null;
+        }
     }
 
     /**
-     * The max time in milliseconds a connection can take to connect to
-     * destinations. Defaults to 15000.
+     * The max time in milliseconds a connection can take to connect to destinations. Defaults to 15000.
      *
      * @return The connect timeout.
      */
     public long getConnectTimeout() {
-        return Long.parseLong(
-                getHelpedParameters().getFirstValue("connectTimeout", "15000"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("connectTimeout", "15000"));
     }
 
     /**
@@ -463,19 +447,16 @@ public class HttpClientHelper
     }
 
     /**
-     * The timeout in milliseconds for idle destinations to be removed. Defaults
-     * to 0.
+     * The timeout in milliseconds for idle destinations to be removed. Defaults to 0.
      *
      * @return The address resolution timeout.
      */
     public long getDestinationIdleTimeout() {
-        return Long.parseLong(getHelpedParameters()
-                .getFirstValue("destinationIdleTimeout", "0"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("destinationIdleTimeout", "0"));
     }
 
     /**
-     * Returns the executor. By default, returns an instance of
-     * {@link QueuedThreadPool}.
+     * Returns the executor. By default, returns an instance of {@link QueuedThreadPool}.
      *
      * @return Returns the executor.
      */
@@ -502,56 +483,60 @@ public class HttpClientHelper
     }
 
     /**
-     * Returns the HTTP compliance mode among the following options: "RFC7230",
-     * "RFC2616", "LEGACY", "RFC7230_LEGACY". See {@link HttpCompliance}.
-     * Default to "RFC7230".
+     * Returns the HTTP compliance mode among the following options: "RFC7230", "RFC2616", "LEGACY", "RFC7230_LEGACY".
+     * See {@link HttpCompliance}. Default to "RFC7230".
      *
      * @return The HTTP compliance mode.
      */
     public String getHttpComplianceMode() {
-        return getHelpedParameters().getFirstValue("httpComplianceMode",
-                "RFC7230");
+        return getHelpedParameters().getFirstValue("httpComplianceMode", "RFC7230");
     }
 
     /**
-     * Returns the HTTP client transport mode among the following options:
-     * "HTTP11", "HTTP2", "HTTP3", "DYNAMIC. See {@link HttpClientTransport}.
-     * Defaults to "HTTP11".
+     * Returns the HTTP client transport mode among the following options: "HTTP1_1", "HTTP2", "HTTP3", "DYNAMIC. See
+     * {@link HttpClientTransport}. Default to "HTTP1_1".
      *
      * @return The HTTP client transport mode.
      */
     public String getHttpClientTransportMode() {
-        return getHelpedParameters().getFirstValue("httpClientTransportMode",
-                "HTTP11");
+        return getHelpedParameters().getFirstValue("httpClientTransportMode", HttpTransportProtocol.HTTP1_1.name());
     }
 
     /**
-     * The max time in milliseconds a connection can be idle (that is, without
-     * traffic of bytes in either direction). Defaults to 30000.
+     * Directory where are extracted the supported certificates.
+     * 
+     * @return Directory where are extracted the supported certificates.
+     */
+    public String getHttp3PemWorkDir() {
+        return getHelpedParameters().getFirstValue("http3PemWorkDir");
+    }
+
+    private Path getHttp3PemWorkDirectoryPath() {
+        return Optional.ofNullable(getHttp3PemWorkDir()).map(Path::of).orElse(null);
+    }
+
+    /**
+     * The max time in milliseconds a connection can be idle (that is, without traffic of bytes in either direction).
+     * Defaults to 30000.
      *
      * @return The idle timeout.
      */
     public long getIdleTimeout() {
-        return Long.parseLong(
-                getHelpedParameters().getFirstValue("idleTimeout", "30000"));
+        return Long.parseLong(getHelpedParameters().getFirstValue("idleTimeout", "30000"));
     }
 
     /**
-     * Sets the max number of connections to open to each destination. Defaults
-     * to 64.
+     * Sets the max number of connections to open to each destination. Defaults to 64.
      * <p>
-     * RFC 2616 suggests that 2 connections should be opened per each
-     * destination, but browsers commonly open 6. If this client is used for
-     * load testing, it is common to have only one destination (the server to
-     * load test), and it is recommended to set this value to a high value (at
-     * least as much as the threads present in the {@link #getExecutor()
-     * executor}).
+     * RFC 2616 suggests that 2 connections should be opened per each destination, but browsers commonly open 6. If this
+     * client is used for load testing, it is common to have only one destination (the server to load test), and it is
+     * recommended to set this value to a high value (at least as much as the threads present in the
+     * {@link #getExecutor() executor}).
      *
      * @return The maximum connections per destination.
      */
     public int getMaxConnectionsPerDestination() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("maxConnectionsPerDestination", "64"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxConnectionsPerDestination", "64"));
     }
 
     /**
@@ -560,38 +545,31 @@ public class HttpClientHelper
      * @return The maximum redirects.
      */
     public int getMaxRedirects() {
-        return Integer.parseInt(
-                getHelpedParameters().getFirstValue("maxRedirects", "8"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxRedirects", "8"));
     }
 
     /**
-     * Sets the max number of requests that may be queued to a destination.
-     * Defaults to 1024.
+     * Sets the max number of requests that may be queued to a destination. Defaults to 1024.
      * <p>
-     * If this client performs a high rate of requests to a destination, and all
-     * the connections managed by that destination are busy with other requests,
-     * then new requests will be queued up in the destination. This parameter
-     * controls how many requests can be queued before starting to reject them.
-     * If this client is used for load testing, it is common to have this
-     * parameter set to a high value, although this may impact latency (requests
-     * sit in the queue for a long time before being sent).
+     * If this client performs a high rate of requests to a destination, and all the connections managed by that
+     * destination are busy with other requests, then new requests will be queued up in the destination. This parameter
+     * controls how many requests can be queued before starting to reject them. If this client is used for load testing,
+     * it is common to have this parameter set to a high value, although this may impact latency (requests sit in the
+     * queue for a long time before being sent).
      *
      * @return The maximum requests queues per destination.
      */
     public int getMaxRequestsQueuedPerDestination() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("maxRequestsQueuedPerDestination", "1024"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxRequestsQueuedPerDestination", "1024"));
     }
 
     /**
-     * Returns the max size in bytes of the response headers. Default is -1
-     * that is unlimited.
+     * Returns the max size in bytes of the response headers. Default is -1 that is unlimited.
      *
      * @return the max size in bytes of the response headers.
      */
     public int getMaxResponseHeadersSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("maxResponseHeadersSize", "-1"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxResponseHeadersSize", "-1"));
     }
 
     /**
@@ -600,8 +578,7 @@ public class HttpClientHelper
      * @return the host name of the HTTP proxy, if specified.
      */
     public String getProxyHost() {
-        return getHelpedParameters().getFirstValue("proxyHost",
-                System.getProperty("http.proxyHost"));
+        return getHelpedParameters().getFirstValue("proxyHost", System.getProperty("http.proxyHost"));
     }
 
     /**
@@ -610,8 +587,8 @@ public class HttpClientHelper
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("proxyPort",
-                System.getProperty("http.proxyPort", "3128")));
+        return Integer.parseInt(
+                getHelpedParameters().getFirstValue("proxyPort", System.getProperty("http.proxyPort", "3128")));
     }
 
     /**
@@ -620,24 +597,20 @@ public class HttpClientHelper
      * @return The request buffer size.
      */
     public int getRequestBufferSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("requestBufferSize", "4096"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("requestBufferSize", "4096"));
     }
 
     /**
-     * The size in bytes of the buffer used to read responses. Defaults to
-     * 16384.
+     * The size in bytes of the buffer used to read responses. Defaults to 16384.
      *
      * @return The response buffer size.
      */
     public int getResponseBufferSize() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("responseBufferSize", "16384"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("responseBufferSize", "16384"));
     }
 
     /**
-     * The scheduler. Defaults to null. When null, creates a new instance of
-     * {@link ScheduledExecutorScheduler}.
+     * The scheduler. Defaults to null. When null, creates a new instance of {@link ScheduledExecutorScheduler}.
      *
      * @return The scheduler.
      */
@@ -646,8 +619,7 @@ public class HttpClientHelper
     }
 
     /**
-     * The "User-Agent" HTTP header string. When null, uses the Jetty default.
-     * Default to null.
+     * The "User-Agent" HTTP header string. When null, uses the Jetty default. Default to null.
      *
      * @return The user agent field or null.
      */
@@ -656,25 +628,21 @@ public class HttpClientHelper
     }
 
     /**
-     * Indicates whether the connect operation is blocking. See
-     * {@link HttpClient#isConnectBlocking()}.
+     * Indicates whether the connect operation is blocking. See {@link HttpClient#isConnectBlocking()}.
      *
      * @return True if the connect operation is blocking.
      */
     public boolean isConnectBlocking() {
-        return Boolean.parseBoolean(getHelpedParameters()
-                .getFirstValue("connectBlocking", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("connectBlocking", "false"));
     }
 
     /**
-     * Whether to support cookies, storing and automatically sending them back.
-     * Defaults to false.
+     * Whether to support cookies, storing and automatically sending them back. Defaults to false.
      *
      * @return Whether to support cookies.
      */
     public boolean isCookieSupported() {
-        return Boolean.parseBoolean(getHelpedParameters()
-                .getFirstValue("cookieSupported", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("cookieSupported", "false"));
     }
 
     /**
@@ -683,45 +651,39 @@ public class HttpClientHelper
      * @return Whether to follow redirects.
      */
     public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(
-                getHelpedParameters().getFirstValue("followRedirects", "true"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("followRedirects", "true"));
     }
 
     /**
      * Whether request events must be strictly ordered. Defaults to false.
      * <p>
-     * Client listeners may send a second request. If the second request is for
-     * the same destination, there is an inherent race condition for the use of
-     * the connection: the first request may still be associated with the
-     * connection, so the second request cannot use that connection and is
-     * forced to open another one.
+     * Client listeners may send a second request. If the second request is for the same destination, there is an
+     * inherent race condition for the use of the connection: the first request may still be associated with the
+     * connection, so the second request cannot use that connection and is forced to open another one.
      * <p>
-     * From the point of view of connection usage, the connection is reusable
-     * just before the "complete" event, so it would be possible to reuse that
-     * connection from complete listeners; but in this case the second request's
-     * events will fire before the "complete" events of the first request.
+     * From the point of view of connection usage, the connection is reusable just before the "complete" event, so it
+     * would be possible to reuse that connection from complete listeners; but in this case the second request's events
+     * will fire before the "complete" events of the first request.
      * <p>
-     * This setting enforces strict event ordering so that a "begin" event of a
-     * second request can never fire before the "complete" event of a first
-     * request, but at the expense of an increased usage of connections.
+     * This setting enforces strict event ordering so that a "begin" event of a second request can never fire before the
+     * "complete" event of a first request, but at the expense of an increased usage of connections.
      * <p>
-     * When not enforced, a "begin" event of a second request may happen before
-     * the "complete" event of a first request and allow for better usage of
-     * connections.
+     * When not enforced, a "begin" event of a second request may happen before the "complete" event of a first request
+     * and allow for better usage of connections.
      *
      * @return Whether request events must be strictly ordered.
      */
     public boolean isStrictEventOrdering() {
-        return Boolean.parseBoolean(getHelpedParameters()
-                .getFirstValue("strictEventOrdering", "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("strictEventOrdering", "false"));
     }
 
     @Override
     public void start() throws Exception {
         super.start();
 
-        if (this.httpClient == null)
+        if (this.httpClient == null) {
             this.httpClient = createHttpClient();
+        }
 
         final HttpClient httpClient = getHttpClient();
         if (httpClient != null) {
@@ -739,5 +701,25 @@ public class HttpClientHelper
         }
 
         super.stop();
+    }
+
+    /**
+     * Supported HTTP transport protocols.
+     */
+    private enum HttpTransportProtocol {
+        HTTP1_1, HTTP2, HTTP3, DYNAMIC;
+
+        static HttpTransportProtocol fromName(final String name) {
+            try {
+                return HttpTransportProtocol.valueOf(name);
+            } catch (final IllegalArgumentException iae) {
+                String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
+
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s", name,
+                        supportedHttpTransportProtocols);
+
+                throw new IllegalArgumentException(errorMessage);
+            }
+        }
     }
 }

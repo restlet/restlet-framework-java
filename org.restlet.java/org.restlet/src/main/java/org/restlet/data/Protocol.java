@@ -22,7 +22,7 @@ public final class Protocol {
 	/** Indicates that the port number is undefined. */
 	public static final int UNKNOWN_PORT = -1;
 
-	/** All protocols wildcard. */
+	/** All-protocols wildcard. */
 	public static final Protocol ALL = new Protocol("all", "ALL", "Wildcard for all protocols", UNKNOWN_PORT);
 
 	/**
@@ -78,7 +78,7 @@ public final class Protocol {
 	 * "riap://component/myAppPath/myResource" and
 	 * "riap://application/myResource".<br>
 	 * <br>
-	 * In order to work, RIAP doesn't requires any client connector and is
+	 * In order to work, RIAP doesn't require any client connector and is
 	 * automatically supported by the Restlet engine.
 	 * 
 	 * @see org.restlet.data.LocalReference
@@ -168,13 +168,13 @@ public final class Protocol {
 	private final String name;
 
 	/** The scheme name. */
-	private volatile String schemeName;
+	private final String schemeName;
 
 	/** The technical name that appears on the wire. */
 	private final String technicalName;
 
 	/** The version. */
-	private volatile String version;
+	private final String version;
 
 	/**
 	 * Constructor.
