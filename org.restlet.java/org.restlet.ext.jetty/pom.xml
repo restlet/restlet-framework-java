@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-            <version>${lib-jetty-version}</version>
+			<version>${lib-jetty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.http2</groupId>

@@ -9,7 +9,6 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.*;
 import org.restlet.representation.Representation;
@@ -29,19 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Bruno Harbulot
  */
 public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
-
-    @Test
-    public void testHttp() {
-        final Client client = new Client(Protocol.HTTPS);
-        client.setContext(new Context());
-        client.getContext().getParameters().add("httpClientTransportMode", "HTTP3");
-        client.getContext().getParameters().add("http3PemWorkDir", "/tmp");
-
-        final Request request = new Request(Method.GET, "https://www.google.com");
-        final Response response = client.handle(request);
-        System.out.println(response.getStatus());
-        System.out.println(response.getEntityAsText());
-    }
 
     @Override
     protected void doTest(final int serverPort) throws Exception {
