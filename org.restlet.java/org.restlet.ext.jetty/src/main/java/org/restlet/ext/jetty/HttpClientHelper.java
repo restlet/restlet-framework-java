@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.file.Path;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
@@ -355,11 +357,16 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
     }
 
     private HttpClientTransport getHttpClientTransportForHttp3(SslContextFactory.Client sslContextFactory) {
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
+        Path pemWorkDirectory = getHttp3PemWorkDirectoryPath();
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, pemWorkDirectory);
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         http3Client.getQuicConfiguration().setSessionRecvWindow(64 * 1024 * 1024);
 
         return new HttpClientTransportOverHTTP3(http3Client);
+    }
+
+    private Path getHttp3PemWorkDirectoryPath() {
+        return Optional.ofNullable(getHttp3PemWorkDir()).map(Path::of).orElse(null);
     }
 
     private HttpClientTransport getHttpClientTransportForDynamicMode(SslContextFactory.Client sslContextFactory) {
@@ -369,7 +376,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         HTTP2Client http2Client = new HTTP2Client();
         ClientConnectionFactoryOverHTTP2.HTTP2 http2 = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
 
-        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
+        ClientQuicConfiguration quicConfiguration = new ClientQuicConfiguration(sslContextFactory, getHttp3PemWorkDirectoryPath());
         HTTP3Client http3Client = new HTTP3Client(quicConfiguration);
         ClientConnectionFactoryOverHTTP3.HTTP3 http3 = new ClientConnectionFactoryOverHTTP3.HTTP3(http3Client);
 

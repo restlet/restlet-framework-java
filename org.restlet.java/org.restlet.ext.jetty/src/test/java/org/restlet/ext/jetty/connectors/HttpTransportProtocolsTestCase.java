@@ -90,6 +90,11 @@ public class HttpTransportProtocolsTestCase {
             return new Server(context, Protocol.HTTP, null, 0, HELLO_WORLD_RESTLET);
         }
 
+        @Override
+        List<String> expectedProtocols() {
+            return List.of("HTTP1_1", "HTTP2");
+        }
+
         static Stream<Arguments> validTestCases() {
             return Stream.of(Arguments.of(null, newJdkHttpClient(HttpClient.Version.HTTP_1_1)), // server default to
                                                                                                 // HTTP1_1
@@ -130,6 +135,12 @@ public class HttpTransportProtocolsTestCase {
             // Restore a clean engine
             Engine.register();
             Engine.clearThreadLocalVariables();
+        }
+
+
+        @Override
+        List<String> expectedProtocols() {
+            return List.of("HTTP1_1", "HTTP2", "HTTP3");
         }
 
         static Stream<Arguments> validTestCases() {
@@ -191,6 +202,8 @@ public class HttpTransportProtocolsTestCase {
 
         abstract Server newServer(final String httpTransportProtocolOption);
 
+        abstract List<String> expectedProtocols();
+
         @ParameterizedTest(name = "server: {0} / client: {1}")
         @MethodSource("validTestCases")
         public void clientCompliesWithServer(final String httpTransportProtocol, final TestHttpClient testHttpClient)
@@ -219,7 +232,7 @@ public class HttpTransportProtocolsTestCase {
             final Server server = newServer(httpTransportProtocol);
 
             final Exception exception = assertThrows(IllegalArgumentException.class, server::start);
-            assertEquals(format("'%s' is not one of the supported value: [HTTP1_1, HTTP2, HTTP3]", httpTransportProtocol),
+            assertEquals(format("'%s' is not one of the supported values: %s", httpTransportProtocol, expectedProtocols()),
                     exception.getMessage());
         }
 
@@ -325,6 +338,7 @@ public class HttpTransportProtocolsTestCase {
         protected Context newClientContext() {
             Context context = new Context();
             context.getParameters().add("httpClientTransportMode", httpClientTransportMode);
+            //context.getParameters().add("http3PemWorkDir", );
 
             if (Protocol.HTTPS.equals(protocol)) {
                 context.getParameters().add("truststorePath", testKeystoreFile.getPath());

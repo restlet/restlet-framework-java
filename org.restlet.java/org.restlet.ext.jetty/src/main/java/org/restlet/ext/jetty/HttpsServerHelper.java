@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -78,92 +77,78 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     @Override
-    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
-        ConnectionFactory[] result;
+    protected List<Connector> createConnectors(org.eclipse.jetty.server.Server server) {
+        final List<Connector> result = new ArrayList<>();
 
-        final List<ConnectionFactory> connectionFactories = new ArrayList<>();
+        final List<HttpTransportProtocol> httpTransportProtocols = getHttpTransportProtocols().stream()
+                .map(HttpTransportProtocol::fromName)
+                .toList();
 
-        final List<String> httpTransportProtocols = new ArrayList<>(getHttpTransportProtocols());
-        httpTransportProtocols.remove("HTTP3");
-
-        for (String httpTransportProtocolAsString : httpTransportProtocols) {
-            connectionFactories.addAll(createConnectionFactories(configuration, httpTransportProtocolAsString));
+        if (httpTransportProtocols.stream().anyMatch(HttpTransportProtocol::isTcpProtocol)) {
+            HttpConfiguration configuration = createHttpConfiguration();
+            ServerConnector connector = createServerConnector(server, configuration);
+            result.add(connector);
+        } else if (httpTransportProtocols.contains(HttpTransportProtocol.HTTP3)) {
+            ServerQuicConfiguration configuration = createQuicConfiguration(getServerSslContextFactory());
+            QuicServerConnector connector = createQuicServerConnector(server, configuration);
+            result.add(connector);
         }
-
-        SslContextFactory.Server sslContextFactory = getServerSslContextFactory();
-
-        result = AbstractConnectionFactory.getFactories(sslContextFactory,
-                connectionFactories.toArray(new ConnectionFactory[0]));
 
         return result;
     }
 
     @Override
-    protected List<Connector> createConnectors(org.eclipse.jetty.server.Server server) {
-        final List<Connector> result = new ArrayList<>();
+    protected ConnectionFactory[] createConnectionFactories(final HttpConfiguration configuration) {
+        final List<ConnectionFactory> connectionFactories = new ArrayList<>();
 
-        final List<String> httpTransportProtocols = getHttpTransportProtocols();
+        final List<HttpTransportProtocol> tcpBasedTransportProtocols = getHttpTransportProtocols().stream()
+                .map(HttpTransportProtocol::fromName)
+                .filter(HttpTransportProtocol::isTcpProtocol)
+                .toList();
 
-        Optional<String> unknownProtocol = httpTransportProtocols.stream()
-                .filter(httpTransportProtocol -> List.of("HTTP3", "HTTP2", "HTTP1.1").contains(httpTransportProtocol))
-                .findAny();
-        if (unknownProtocol.isPresent()) {
-            final String errorMessage = String.format(
-                    "'%s' is not one of the supported value: [HTTP1_1, HTTP2, HTTP3]", unknownProtocol.get());
-            throw new IllegalArgumentException(errorMessage);
+        for (HttpTransportProtocol tcpBasedTransportProtocol : tcpBasedTransportProtocols) {
+            final List<ConnectionFactory> protocolConnectionFactories = switch (tcpBasedTransportProtocol) {
+                case HTTP1_1 -> List.of(new HttpConnectionFactory(configuration));
+                case HTTP2 -> List.of(new ALPNServerConnectionFactory(), new HTTP2ServerConnectionFactory(configuration));
+                default -> {
+                    String supportedHttpTransportProtocols = tcpBasedTransportProtocols.toString();
+                    final String errorMessage = String.format("'%s' is not one of the supported values: %s",
+                            tcpBasedTransportProtocol, supportedHttpTransportProtocols);
+                    throw new IllegalArgumentException(errorMessage);
+                }
+            };
+            connectionFactories.addAll(protocolConnectionFactories);
         }
 
-        if (httpTransportProtocols.contains("HTTP3")) {
-            SslContextFactory.Server sslContextFactory = getServerSslContextFactory();
-            ServerQuicConfiguration configuration = new ServerQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
-            configuration.setOutputBufferSize(getHttpOutputBufferSize());
+        SslContextFactory.Server sslContextFactory = getServerSslContextFactory();
 
-            QuicServerConnector connector = new QuicServerConnector(server, configuration, new HTTP3ServerConnectionFactory(configuration));
-            final String address = getHelped().getAddress();
-            if (address != null) {
-                connector.setHost(address);
-            }
-            connector.setPort(getHelped().getPort());
-            connector.setIdleTimeout(getConnectorIdleTimeout());
-            connector.setShutdownIdleTimeout(getShutdownTimeout());
+        return AbstractConnectionFactory.getFactories(sslContextFactory,
+                connectionFactories.toArray(new ConnectionFactory[0]));
+    }
 
-            result.add(connector);
-        } else if (httpTransportProtocols.contains("HTTP1_1") || httpTransportProtocols.contains("HTTP2")) {
-            result.add(createTcpConnector(server));
+    private QuicServerConnector createQuicServerConnector(org.eclipse.jetty.server.Server server, ServerQuicConfiguration configuration) {
+        QuicServerConnector connector = new QuicServerConnector(server, configuration, new HTTP3ServerConnectionFactory(configuration));
+        final String address = getHelped().getAddress();
+        if (address != null) {
+            connector.setHost(address);
         }
-
-        return result;
+        connector.setPort(getHelped().getPort());
+        connector.setIdleTimeout(getConnectorIdleTimeout());
+        connector.setShutdownIdleTimeout(getShutdownTimeout());
+        return connector;
     }
 
     /**
-     * Creates new internal Jetty connection factories.
+     * Supported HTTP transport protocols. Defaults to HTTP1_1.
      *
-     * @param configuration The HTTP configuration.
-     * @param protocol The connection factory's protocol name.
-     * @return New internal Jetty connection factories.
-     */
-    private List<ConnectionFactory> createConnectionFactories(final HttpConfiguration configuration, final String protocol) {
-        return switch (protocol) {
-            case "HTTP1_1" -> List.of(new HttpConnectionFactory(configuration));
-            case "HTTP2" -> List.of(new ALPNServerConnectionFactory(), new HTTP2ServerConnectionFactory(configuration));
-            default -> {
-                final String errorMessage = String.format(
-                        "'%s' is not one of the supported value: [HTTP1_1, HTTP2]", protocol);
-                throw new IllegalArgumentException(errorMessage);
-            }
-        };
-    };
-
-    /**
-     * Supported HTTP transport protocol. Defaults to http1.
-     *
-     * @return Supported HTTP transport protocol.
+     * @return Supported HTTP transport protocols.
      */
     public List<String> getHttpTransportProtocols() {
         String httpTransportProtocolsAsString = getHelpedParameters().getFirstValue("http.transport.protocols",
                 "HTTP1_1");
         return Arrays.stream(httpTransportProtocolsAsString.split(","))
                 .map(String::trim)
+                .distinct()
                 .toList();
     }
 
@@ -185,6 +170,42 @@ public class HttpsServerHelper extends JettyServerHelper {
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private ServerQuicConfiguration createQuicConfiguration(SslContextFactory.Server sslContextFactory) {
+        ServerQuicConfiguration configuration = new ServerQuicConfiguration(sslContextFactory, Path.of(getHttp3PemWorkDir()));
+        configuration.setOutputBufferSize(getHttpOutputBufferSize());
+        return configuration;
+    }
+
+    /**
+     * Supported HTTP transport protocols.
+     */
+    private enum HttpTransportProtocol {
+        HTTP1_1(true), HTTP2(true), HTTP3(false);
+
+        private final boolean tcpProtocol;
+
+        static HttpTransportProtocol fromName(final String name) {
+            try {
+                return HttpTransportProtocol.valueOf(name);
+            } catch (final IllegalArgumentException iae) {
+                String supportedHttpTransportProtocols = Arrays.toString(HttpTransportProtocol.values());
+
+                final String errorMessage = String.format("'%s' is not one of the supported values: %s",
+                        name, supportedHttpTransportProtocols);
+
+                throw new IllegalArgumentException(errorMessage);
+            }
+        }
+
+        HttpTransportProtocol(boolean tcpProtocol) {
+            this.tcpProtocol = tcpProtocol;
+        }
+
+        public boolean isTcpProtocol() {
+            return tcpProtocol;
         }
     }
 

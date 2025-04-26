@@ -219,7 +219,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      * 
      * @return A Jetty HTTP configuration.
      */
-    private HttpConfiguration createConfiguration() {
+    protected HttpConfiguration createHttpConfiguration() {
         final HttpConfiguration configuration = new HttpConfiguration();
         configuration.setHeaderCacheSize(getHttpHeaderCacheSize());
         configuration.setRequestHeaderSize(getHttpRequestHeaderSize());
@@ -249,16 +249,13 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
      */
     protected abstract List<Connector> createConnectors(org.eclipse.jetty.server.Server server);
 
-
     /**
      * Creates a Jetty connector based on a classical TCP type of transport.
      * 
      * @param server The Jetty server.
      * @return A Jetty connector.
      */
-    protected Connector createTcpConnector(org.eclipse.jetty.server.Server server) {
-        final HttpConfiguration configuration = createConfiguration();
-
+    protected ServerConnector createServerConnector(final org.eclipse.jetty.server.Server server, final HttpConfiguration configuration) {
         final int acceptors = getConnectorAcceptors();
         final int selectors = getConnectorSelectors();
         final Executor executor = getConnectorExecutor();
