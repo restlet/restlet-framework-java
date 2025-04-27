@@ -724,7 +724,7 @@ public abstract class JettyServerHelper extends org.restlet.engine.adapter.HttpS
     public void start() throws Exception {
         super.start();
         org.eclipse.jetty.server.Server server = getWrappedServer();
-        ServerConnector connector = (ServerConnector) server.getConnectors()[0];
+        AbstractNetworkConnector connector = (AbstractNetworkConnector) server.getConnectors()[0];
 
         getLogger().info("Starting the Jetty " + getProtocols() + " server on port " + getHelped().getPort());
         try {

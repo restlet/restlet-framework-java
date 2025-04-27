@@ -417,7 +417,7 @@ public class Request extends Message {
 
 	/**
 	 * Returns the host reference. This may be different from the resourceRef's
-	 * host, for example for URNs and other URIs that don't contain host
+	 * host, for example, for URNs and other URIs that don't contain host
 	 * information.<br>
 	 * <br>
 	 * Note that when used with HTTP connectors, this property maps to the "Host"
@@ -738,7 +738,7 @@ public class Request extends Message {
 	}
 
 	/**
-	 * Sets the host reference using an URI string. Note that when used with HTTP
+	 * Sets the host reference using a URI string. Note that when used with HTTP
 	 * connectors, this property maps to the "Host" header.
 	 * 
 	 * @param hostUri The host URI.

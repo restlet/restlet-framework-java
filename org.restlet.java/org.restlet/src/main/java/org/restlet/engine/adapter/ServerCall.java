@@ -152,7 +152,7 @@ public abstract class ServerCall extends Call {
 		Representation result;
 		long contentLength = getContentLength();
 		boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(getRequestHeaders());
-		// In some cases there is an entity without a content-length header
+		// In some cases, there is an entity without a content-length header
 		boolean connectionClosed = HeaderUtils.isConnectionClose(getRequestHeaders());
 
 		// Create the representation
@@ -177,13 +177,12 @@ public abstract class ServerCall extends Call {
 					}
 				} catch (IOException e) {
 					getLogger().fine("Unable to read request entity");
-					
-                    if(pbi != null)
-                        try {
-                            pbi.close();
-                        } catch (IOException e1) {
-                            getLogger().fine("Unable to close request entity");
-                        }
+
+                    try {
+                        pbi.close();
+                    } catch (IOException e1) {
+                        getLogger().fine("Unable to close request entity");
+                    }
                 }
 			}
 
@@ -306,7 +305,7 @@ public abstract class ServerCall extends Call {
 
 			if (colonIndex != -1) {
 				super.setHostDomain(host.substring(0, colonIndex));
-				super.setHostPort(Integer.valueOf(host.substring(colonIndex + 1)));
+				super.setHostPort(Integer.parseInt(host.substring(colonIndex + 1)));
 			} else {
 				super.setHostDomain(host);
 				super.setHostPort(getProtocol().getDefaultPort());

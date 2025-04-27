@@ -20,6 +20,7 @@ import org.eclipse.jetty.util.Callback;
 import org.restlet.Server;
 import org.restlet.data.Header;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
 import java.io.IOException;
@@ -172,6 +173,16 @@ public class JettyServerCall extends ServerCall {
     @Override
     public InputStream getRequestEntityStream(long size) {
         return Request.asInputStream(getRequest());
+    }
+
+    @Override
+    public String getHostDomain() {
+        return request.getHttpURI().getHost();
+    }
+
+    @Override
+    public int getHostPort() {
+        return request.getHttpURI().getPort();
     }
 
     @Override

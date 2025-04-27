@@ -90,7 +90,7 @@ public class HttpsServerHelper extends JettyServerHelper {
             ServerConnector connector = createServerConnector(server, configuration);
             result.add(connector);
         } else if (httpTransportProtocols.contains(HttpTransportProtocol.HTTP3)) {
-            ServerQuicConfiguration configuration = createQuicConfiguration(getServerSslContextFactory());
+            ServerQuicConfiguration configuration = createQuicConfiguration(getQuicServerSslContextFactory());
             QuicServerConnector connector = createQuicServerConnector(server, configuration);
             result.add(connector);
         }
@@ -173,6 +173,27 @@ public class HttpsServerHelper extends JettyServerHelper {
             getLogger().log(Level.WARNING, "Unable to create the Jetty SSL context factory", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private SslContextFactory.Server getQuicServerSslContextFactory() {
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+
+        sslContextFactory.setKeyStorePassword(getHelpedParameters().getFirstValue("keyStorePassword", true,
+                System.getProperty("javax.net.ssl.keyStorePassword", "")));
+        sslContextFactory.setKeyStorePath(
+                getHelpedParameters().getFirstValue("keyStorePath", true, System.getProperty("javax.net.ssl.keyStore")));
+        sslContextFactory.setKeyStoreType(
+                getHelpedParameters().getFirstValue("keyStoreType", true, System.getProperty("javax.net.ssl.keyStoreType")));
+        sslContextFactory.setProtocol(getHelpedParameters().getFirstValue("protocol", true, "TLS"));
+        sslContextFactory.setSecureRandomAlgorithm(getHelpedParameters().getFirstValue("secureRandomAlgorithm", true));
+        sslContextFactory.setTrustStorePassword(getHelpedParameters().getFirstValue("trustStorePassword", true,
+                System.getProperty("javax.net.ssl.trustStorePassword")));
+        sslContextFactory.setTrustStorePath(
+                getHelpedParameters().getFirstValue("trustStorePath", true, System.getProperty("javax.net.ssl.trustStore")));
+        sslContextFactory.setTrustStoreType(getHelpedParameters().getFirstValue("trustStoreType", true,
+                System.getProperty("javax.net.ssl.trustStoreType")));
+
+        return sslContextFactory;
     }
 
     private ServerQuicConfiguration createQuicConfiguration(SslContextFactory.Server sslContextFactory) {

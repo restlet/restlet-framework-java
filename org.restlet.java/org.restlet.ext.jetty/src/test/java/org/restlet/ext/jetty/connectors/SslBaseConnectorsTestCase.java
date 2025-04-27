@@ -90,13 +90,13 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
     protected void configureSslServerParameters(final Server server) {
         Series<Parameter> parameters = server.getContext().getParameters();
 
-        parameters.add("keystorePath", testKeystoreFile.getPath());
-        parameters.add("keystorePassword", KEYSTORE_PASSWORD);
+        parameters.add("keyStorePath", testKeystoreFile.getPath());
+        parameters.add("keyStorePassword", KEYSTORE_PASSWORD);
         parameters.add("keyStoreType", KEYSTORE_TYPE);
         parameters.add("keyPassword", KEYSTORE_PASSWORD);
 
-        parameters.add("truststorePath", testKeystoreFile.getPath());
-        parameters.add("truststorePassword", KEYSTORE_PASSWORD);
+        parameters.add("trustStorePath", testKeystoreFile.getPath());
+        parameters.add("trustStorePassword", KEYSTORE_PASSWORD);
         parameters.add("trustStoreType", KEYSTORE_TYPE);
 
         if (shouldDebug()) {
