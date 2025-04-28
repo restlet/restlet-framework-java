@@ -1,11 +1,13 @@
 Changes log
 ===========
 
-- 2.6 Release Candidate 1 (??-03-2025)
+- 2.6 Release Candidate 1 (28-04-2025)
     - Enhancements
-      - Added MultiPartRepresentation to Jetty extension to support generation and parsing.
+      - Added MultiPartRepresentation to the Jetty extension to support generation and parsing.
       - Added support for the "charset" parameter in HTTP BASIC challenges. Reported by Marc Lafon.
       - Added MediaType constructors to help with cloning and customization needs.
+      - Added support for HTTP2 and HTTP3 protocols by the Jetty HTTP server connector.
+      - Added support for HTTP2 and HTTP3 protocols by the Jetty HTTP client connector.
     - Misc
       - Upgraded Thymeleaf library to 3.1.3.RELEASE.
       - Upgraded Slf4j library to 5.12.0.
