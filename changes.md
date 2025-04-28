@@ -1,6 +1,8 @@
 Changes log
 ===========
 
+- 2.6.0 (??-05-2025)
+
 - 2.6 Release Candidate 1 (28-04-2025)
     - Enhancements
       - Added MultiPartRepresentation to the Jetty extension to support generation and parsing.
