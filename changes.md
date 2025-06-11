@@ -2,6 +2,11 @@ Changes log
 ===========
 
 - 2.6.0 (??-05-2025)
+    - Misc
+        - Upgraded Joda-time library to 2.14.0.
+        - Upgraded Gson library to 2.13.1.
+        - Upgraded OSGi library to 4.3.0.
+        - Upgraded Spring library to 6.2.7.
 
 - 2.6 Release Candidate 1 (28-04-2025)
     - Enhancements
