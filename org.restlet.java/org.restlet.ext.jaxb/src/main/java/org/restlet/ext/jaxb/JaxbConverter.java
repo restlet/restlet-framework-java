@@ -12,8 +12,7 @@ package org.restlet.ext.jaxb;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
