@@ -4,7 +4,8 @@ Changes log
 - 2.6.0 (??-05-2025)
     - Misc
         - Upgraded to Jakarta EE 10
-          - JaxB 4.0.0 
+          - JaxB to 4.0.0
+          - Servlet API to 6.0.0 
         - Upgraded Gson library to 2.13.1.
         - Upgraded Jackson library to 2.19.1.
         - Upgraded Jetty library to version 2.0.17.
