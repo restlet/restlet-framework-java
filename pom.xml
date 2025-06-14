@@ -55,7 +55,7 @@
         <lib-cglib-version>3.3.0</lib-cglib-version>
         <lib-commons-codec-version>1.17.2</lib-commons-codec-version>
         <lib-commons-collections-version>3.2.2</lib-commons-collections-version>
-        <lib-commons-fileupload-version>1.5</lib-commons-fileupload-version>
+        <lib-commons-fileupload-version>1.6.0</lib-commons-fileupload-version>
         <lib-commons-httpclient-version>4.5.14</lib-commons-httpclient-version>
         <lib-commons-httpcore-version>4.4.16</lib-commons-httpcore-version>
         <lib-commons-httpmime-version>4.5.14</lib-commons-httpmime-version>
