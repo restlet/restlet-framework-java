@@ -14,8 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 
-import javax.xml.bind.JAXBException;
-
+import jakarta.xml.bind.JAXBException;
 import org.restlet.Context;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 
@@ -42,31 +41,32 @@ public class Marshaller<T> {
     /** The parent JAXB representation. */
     private final JaxbRepresentation<T> jaxbRepresentation;
 
-    /** Use thread identity to preserve safety of access to marshalers. */
-    private final ThreadLocal<javax.xml.bind.Marshaller> marshaller = new ThreadLocal<javax.xml.bind.Marshaller>() {
+    /** Use thread identity to preserve the safety of access to marshalers. */
+    private final ThreadLocal<jakarta.xml.bind.Marshaller> marshaller = new ThreadLocal<>() {
 
         @Override
-        protected synchronized javax.xml.bind.Marshaller initialValue() {
-            javax.xml.bind.Marshaller m = null;
+        protected synchronized jakarta.xml.bind.Marshaller initialValue() {
+            jakarta.xml.bind.Marshaller m = null;
 
             try {
                 m = JaxbRepresentation.getContext(getContextPath(),
                         getClassLoader()).createMarshaller();
-                m.setProperty("jaxb.formatted.output", getJaxbRepresentation()
+
+                m.setProperty(jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, getJaxbRepresentation()
                         .isFormattedOutput());
 
                 if (getJaxbRepresentation().getSchemaLocation() != null) {
-                    m.setProperty("jaxb.schemaLocation",
+                    m.setProperty(jakarta.xml.bind.Marshaller.JAXB_SCHEMA_LOCATION,
                             getJaxbRepresentation().getSchemaLocation());
                 }
                 if (getJaxbRepresentation().getNoNamespaceSchemaLocation() != null) {
-                    m.setProperty("jaxb.noNamespaceSchemaLocation",
+                    m.setProperty(jakarta.xml.bind.Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION,
                             getJaxbRepresentation()
                                     .getNoNamespaceSchemaLocation());
                 }
 
                 if (Marshaller.this.jaxbRepresentation.getCharacterSet() != null) {
-                    m.setProperty("jaxb.encoding",
+                    m.setProperty(jakarta.xml.bind.Marshaller.JAXB_ENCODING,
                             Marshaller.this.jaxbRepresentation
                                     .getCharacterSet().getName());
                 }
@@ -76,7 +76,7 @@ public class Marshaller<T> {
                             getJaxbRepresentation().getNamespacePrefixMapper());
                 }
 
-                m.setProperty("jaxb.fragment", getJaxbRepresentation()
+                m.setProperty(jakarta.xml.bind.Marshaller.JAXB_FRAGMENT, getJaxbRepresentation()
                         .isFragment());
             } catch (Exception e) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -143,8 +143,8 @@ public class Marshaller<T> {
      * @return The JAXB marshaller.
      * @throws JAXBException
      */
-    private javax.xml.bind.Marshaller getMarshaller() throws JAXBException {
-        final javax.xml.bind.Marshaller m = this.marshaller.get();
+    private jakarta.xml.bind.Marshaller getMarshaller() throws JAXBException {
+        final jakarta.xml.bind.Marshaller m = this.marshaller.get();
         if (m == null) {
             Context.getCurrentLogger().warning("Unable to locate marshaller.");
             throw new JAXBException("Unable to locate marshaller.");
@@ -157,11 +157,11 @@ public class Marshaller<T> {
      * stream.
      * 
      * @param jaxbElement
-     *            The root of the content tree to be marshalled.
+     *            The root of the content tree to be marshaled.
      * @param stream
-     *            The target output stream write the XML to.
+     *            The target output stream writes the XML to.
      * @throws JAXBException
-     *             If any unexpected problem occurs during marshalling.
+     *             If any unexpected problem occurs during marshaling.
      */
     public void marshal(Object jaxbElement, OutputStream stream)
             throws JAXBException {

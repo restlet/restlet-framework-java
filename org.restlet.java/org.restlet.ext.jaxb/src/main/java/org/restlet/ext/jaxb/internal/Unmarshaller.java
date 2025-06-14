@@ -15,16 +15,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.logging.Level;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXSource;
-
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.ValidationEventHandler;
 import org.restlet.Context;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 
 /**
  * This is a utility class to assist in unmarshaling XML into a new Java content
@@ -47,15 +47,14 @@ public class Unmarshaller<T> {
     private final String contextPath;
 
     /**
-     * Use thread identity to preserve safety of access to unmarshallers.
+     * Use thread identity to preserve the safety of access to unmarshallers.
      */
-    private final ThreadLocal<javax.xml.bind.Unmarshaller> unmarshaller = new ThreadLocal<javax.xml.bind.Unmarshaller>() {
+    private final ThreadLocal<jakarta.xml.bind.Unmarshaller> unmarshaller = new ThreadLocal<>() {
         @Override
-        protected synchronized javax.xml.bind.Unmarshaller initialValue() {
-            javax.xml.bind.Unmarshaller m = null;
+        protected synchronized jakarta.xml.bind.Unmarshaller initialValue() {
+            jakarta.xml.bind.Unmarshaller m = null;
             try {
-                m = JaxbRepresentation.getContext(getContextPath(),
-                        getClassLoader()).createUnmarshaller();
+                m = JaxbRepresentation.getContext(getContextPath(), getClassLoader()).createUnmarshaller();
             } catch (Exception e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Problem creating Unmarshaller", e);
@@ -102,8 +101,8 @@ public class Unmarshaller<T> {
      * @return The JAXB unmarshaller.
      * @throws JAXBException
      */
-    private javax.xml.bind.Unmarshaller getUnmarshaller() throws JAXBException {
-        final javax.xml.bind.Unmarshaller m = this.unmarshaller.get();
+    private jakarta.xml.bind.Unmarshaller getUnmarshaller() throws JAXBException {
+        final jakarta.xml.bind.Unmarshaller m = this.unmarshaller.get();
         if (m == null) {
             Context.getCurrentLogger()
                     .warning("Unable to locate unmarshaller.");
