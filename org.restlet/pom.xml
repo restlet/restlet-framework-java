@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.restlet</groupId>
+        <artifactId>org.restlet.parent</artifactId>
+        <version>2.7-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>org.restlet</artifactId>
+    <name>Restlet Framework - Core</name>
+    <packaging>bundle</packaging>
+    <description>Restlet API and Engine</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${lib-osgi-version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${lib-junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${lib-hamcrest-version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <excludePackageNames>org.restlet.engine.internal</excludePackageNames>
+                    <groups>
+                        <group>
+                            <title>Restlet API</title>
+                            <packages>org.restlet:org.restlet.data*:org.restlet.representation*:org.restlet.resource*:org.restlet.routing*:org.restlet.security*:org.restlet.service*:org.restlet.util*</packages>
+                        </group>
+                        <group>
+                            <title>Restlet Engine</title>
+                            <packages>org.restlet.engine*</packages>
+                        </group>
+                    </groups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Private-Package>org.restlet.engine.internal</Private-Package>
+                        <Bundle-Activator>org.restlet.engine.internal.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

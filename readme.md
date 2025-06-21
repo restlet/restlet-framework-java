@@ -17,10 +17,10 @@ While Restlet applications can still be deployed in Servlet containers, they can
 To learn more about Restlet Framework, please have a look at the following resources:
 
 * [Download](https://restlet.talend.com/downloads/current/)
-* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.6/)
-* [User Guide](https://restlet.talend.com/documentation/user-guide/2.6/)
-* [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.6/)
-* [Change Log](https://restlet.talend.com/documentation/2.6/changelog)
+* [Tutorials](https://restlet.talend.com/documentation/tutorials/2.7/)
+* [User Guide](https://restlet.talend.com/documentation/user-guide/2.7/)
+* [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.7/)
+* [Change Log](https://restlet.talend.com/documentation/2.7/changelog)
 * [Issues](https://github.com/restlet/restlet-framework-java/issues)
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)

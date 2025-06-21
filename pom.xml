@@ -52,27 +52,38 @@
         <!-- dependencies -->
         <lib-freemarker-version>2.3.34</lib-freemarker-version>
         <lib-gson-version>2.13.1</lib-gson-version>
-        <lib-guice-version>7.0.0</lib-guice-version>
-        <lib-gwt-version>2.12.2</lib-gwt-version>
-        <lib-gwt-server-version>2.12.2</lib-gwt-server-version>
-        <lib-istack-version>3.0.12</lib-istack-version>
         <lib-jackson-version>2.19.1</lib-jackson-version>
-        <lib-jaxb-ri-version>4.0.0</lib-jaxb-ri-version>
-        <lib-jaxb-api-version>4.0.0</lib-jaxb-api-version>
         <lib-joda-time-version>2.14.0</lib-joda-time-version>
         <lib-jetty-version>12.0.22</lib-jetty-version>
         <lib-json-version>20250517</lib-json-version>
         <lib-log4j-version>1.2.17</lib-log4j-version>
         <lib-hamcrest-version>1.3</lib-hamcrest-version>
         <lib-osgi-version>4.3.1</lib-osgi-version>
-        <lib-servlet-version>6.0.0</lib-servlet-version>
         <lib-slf4j-version>2.0.17</lib-slf4j-version>
         <lib-spring-version>6.2.8</lib-spring-version>
+        <lib-servlet-version>6.0.0</lib-servlet-version>
         <lib-thymeleaf-version>3.1.3.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
         <!-- tests -->
         <lib-junit-version>5.13.1</lib-junit-version>
     </properties>
+
+    <modules>
+        <module>org.restlet</module>
+        <module>org.restlet.ext.crypto</module>
+        <module>org.restlet.ext.freemarker</module>
+        <module>org.restlet.ext.gson</module>
+        <module>org.restlet.ext.jaas</module>
+        <module>org.restlet.ext.jackson</module>
+        <module>org.restlet.ext.jetty</module>
+        <module>org.restlet.ext.json</module>
+        <module>org.restlet.ext.servlet</module>
+        <module>org.restlet.ext.slf4j</module>
+        <module>org.restlet.ext.spring</module>
+        <module>org.restlet.ext.thymeleaf</module>
+        <module>org.restlet.ext.velocity</module>
+        <module>org.restlet.ext.xml</module>
+    </modules>
 
     <profiles>
         <profile>
@@ -235,11 +246,6 @@
             </build>
         </profile>
     </profiles>
-
-    <modules>
-        <module>org.restlet.java</module>
-        <module>org.restlet.gwt</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>
