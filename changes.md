@@ -1,6 +1,8 @@
 Changes log
 ===========
 
+- 2.6.0 (??-07-2025)
+
 - 2.6 Release Candidate 2 (21-06-2025)
     - Misc
         - Upgraded to Jakarta EE 10
