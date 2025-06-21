@@ -1,6 +1,8 @@
 Changes log
 ===========
 
+- 2.5.3 (??-??-2025)
+
 - 2.5.2 (21-06-2025)
     - Misc
       - Upgraded the Commons-codec library version to 1.18.0.
