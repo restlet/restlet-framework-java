@@ -1,6 +1,9 @@
 Changes log
 ===========
 
+- 2.7 Milestone 2 (??-07-2025)
+    - Misc
+
 - 2.7 Milestone 1 (21-06-2025)
     - Misc
         - Remove deprecated extension Atom, Guice, GWT, JAXB, OData
