@@ -6,14 +6,14 @@ Changes log
 - 2.6 Release Candidate 2 (21-06-2025)
     - Misc
         - Upgraded to Jakarta EE 10
-          - JaxB to 4.0.0
+          - JAXB to 4.0.0
           - Servlet API to 6.0.0 
         - Upgraded Gson library to 2.13.1.
         - Upgraded Jackson library to 2.19.1.
-        - Upgraded Jetty library to version 2.0.17.
-        - Upgraded Joda-time library to 2.14.0.
+        - Upgraded Jetty library to version 12.0.22.
+        - Upgraded Joda-Time library to 2.14.0.
         - Upgraded Json library to 20250517.
-        - Upgraded OSGi library to 4.3.0.
+        - Upgraded OSGi library to 4.3.1.
         - Upgraded Spring library to 6.2.8.
 
 - 2.6 Release Candidate 1 (28-04-2025)
@@ -25,9 +25,9 @@ Changes log
             - Added support for HTTP2 and HTTP3 protocols by the Jetty HTTP client connector.
         - Misc
             - Upgraded Thymeleaf library to 3.1.3.RELEASE.
-            - Upgraded Slf4j library to 5.12.0.
+            - Upgraded Slf4j library to 2.0.17.
             - Upgraded GWT libraries to version 2.12.2.
-            - Upgraded Jetty library to version 2.0.17.
+            - Upgraded Jetty library to version 12.0.17.
 
 - 2.6 Milestone 2 (02-03-2025)
     - Enhancements
@@ -42,7 +42,7 @@ Changes log
         - Updated FreeMarker library to version 2.3.34.
         - Updated GSON library to version 2.12.1.
         - Updated Jackson library to version 2.17.3.
-        - Updated JODA Time library to version 2.13.1.
+        - Updated Joda-Time library to version 2.13.1.
         - Updated JSON library to version 20250107.
         - Updated JUnit library to version 5.11.4.
         - Updated Spring Framework dependency to version 6.2.3.
