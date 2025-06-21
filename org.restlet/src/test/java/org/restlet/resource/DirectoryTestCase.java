@@ -9,35 +9,52 @@
 
 package org.restlet.resource;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.restlet.*;
-import org.restlet.data.Status;
-import org.restlet.data.*;
-import org.restlet.engine.Engine;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.engine.connector.HttpServerHelper;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.local.FileClientHelper;
-import org.restlet.engine.util.ReferenceUtils;
-import org.restlet.representation.StringRepresentation;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import static java.io.File.createTempFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.restlet.data.Language.FRENCH;
 import static org.restlet.data.Language.SPANISH;
 import static org.restlet.data.LocalReference.createFileReference;
-import static org.restlet.data.Method.*;
+import static org.restlet.data.Method.DELETE;
+import static org.restlet.data.Method.GET;
+import static org.restlet.data.Method.HEAD;
+import static org.restlet.data.Method.PUT;
 import static org.restlet.data.Protocol.FILE;
-import static org.restlet.data.Status.*;
+import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
+import static org.restlet.data.Status.CLIENT_ERROR_FORBIDDEN;
+import static org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED;
+import static org.restlet.data.Status.CLIENT_ERROR_NOT_FOUND;
+import static org.restlet.data.Status.REDIRECTION_SEE_OTHER;
+import static org.restlet.data.Status.SUCCESS_CREATED;
+import static org.restlet.data.Status.SUCCESS_NO_CONTENT;
+import static org.restlet.data.Status.SUCCESS_OK;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.Header;
+import org.restlet.data.Language;
+import org.restlet.data.Metadata;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.adapter.HttpServerHelper;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.local.FileClientHelper;
+import org.restlet.engine.util.ReferenceUtils;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Unit tests for the Directory class.
@@ -80,7 +97,6 @@ public class DirectoryTestCase {
     public static void setUp() throws Exception {
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();
-        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
         Engine.getInstance().getRegisteredClients().add(new FileClientHelper(null));
         Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
 

@@ -9,17 +9,23 @@
 
 package org.restlet.ext.jetty.connectors;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.restlet.*;
+import org.restlet.Client;
+import org.restlet.Component;
+import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.util.List;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -39,10 +45,13 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
 
     @BeforeAll
     public static void globalSetUp() throws IOException {
-        testKeystoreFile = Files.createTempFile("sslBaseConnectorsTest", KEYSTORE_FILE_NAME).toFile();
+        testKeystoreFile = Files
+                .createTempFile("sslBaseConnectorsTest", KEYSTORE_FILE_NAME)
+                .toFile();
         testKeystoreFile.delete();
 
-        InputStream resourceAsStream = SslBaseConnectorsTestCase.class.getResourceAsStream(KEYSTORE_FILE_NAME);
+        InputStream resourceAsStream = SslBaseConnectorsTestCase.class
+                .getResourceAsStream(KEYSTORE_FILE_NAME);
         if (resourceAsStream != null) {
             OutputStream outputStream = new FileOutputStream(testKeystoreFile);
             IoUtils.copy(resourceAsStream, outputStream);
@@ -56,13 +65,8 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected List<ConnectorTestCase> listTestCases() {
-        return List.of(
-                // let's focus on Jetty server extension
-                // new ConnectorTestCase(HttpServer.INTERNAL_HTTPS, HttpClient.JETTY),
-                // new ConnectorTestCase(HttpServer.INTERNAL_HTTPS, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY_HTTPS, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY_HTTPS, HttpClient.JETTY)
-        );
+        return List.of(new ConnectorTestCase(HttpServer.JETTY_HTTPS,
+                HttpClient.JETTY));
     }
 
     @Override

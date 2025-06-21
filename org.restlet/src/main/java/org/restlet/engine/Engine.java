@@ -737,17 +737,9 @@ public class Engine {
 	 * Registers the default client and server connectors.
 	 */
 	public void registerDefaultConnectors() {
-		getRegisteredClients().add(new org.restlet.engine.connector.FtpClientHelper(null));
-		getRegisteredClients().add(new org.restlet.engine.connector.HttpClientHelper(null));
 		getRegisteredClients().add(new org.restlet.engine.local.ClapClientHelper(null));
 		getRegisteredClients().add(new org.restlet.engine.local.RiapClientHelper(null));
 		getRegisteredServers().add(new org.restlet.engine.local.RiapServerHelper(null));
-
-		if (Edition.ANDROID.isNotCurrentEdition()) {
-			getRegisteredServers().add(new org.restlet.engine.connector.HttpServerHelper(null));
-			getRegisteredServers().add(new org.restlet.engine.connector.HttpsServerHelper(null));
-		}
-
 		getRegisteredClients().add(new org.restlet.engine.local.FileClientHelper(null));
 		getRegisteredClients().add(new org.restlet.engine.local.ZipClientHelper(null));
 	}

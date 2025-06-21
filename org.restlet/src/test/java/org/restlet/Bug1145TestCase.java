@@ -9,6 +9,11 @@
 
 package org.restlet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.HashSet;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,15 +21,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.representation.StringRepresentation;
-
-import java.util.HashSet;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Bug1145TestCase {
     public static class Bug1145TestCaseRestlet extends Restlet {
@@ -46,8 +43,6 @@ public class Bug1145TestCase {
 
     @BeforeEach
     public void setUpEach() throws Exception {
-        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
-        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
         this.client = new Client(Protocol.HTTP);
 
         this.component = new Component();

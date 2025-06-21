@@ -9,21 +9,29 @@
 
 package org.restlet.representation;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.restlet.*;
-import org.restlet.data.*;
-import org.restlet.engine.Engine;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.engine.connector.HttpServerHelper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
+import org.restlet.data.Disposition;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 
 /**
  * Unit tests for the FileRepresentation class.
@@ -40,9 +48,6 @@ public class FileRepresentationTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
-        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
-        Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
-
         component = new Component();
         Server server = component.getServers().add(Protocol.HTTP, 0);
         component.start();

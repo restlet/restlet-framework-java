@@ -9,7 +9,6 @@
 
 package org.restlet.engine.adapter;
 
-import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ServerInfo;

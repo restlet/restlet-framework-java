@@ -9,13 +9,9 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import org.restlet.*;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Status;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.util.Series;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -25,9 +21,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.restlet.Application;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Server;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
+import org.restlet.data.Status;
+import org.restlet.util.Series;
 
 /**
  * This tests the ability of the server to accept a fixed number of incoming connections.
@@ -86,15 +91,6 @@ public class ServerMaxConnectionsTestCase extends BaseConnectorsTestCase {
         try {
             final Request request = new Request(Method.GET, uri + "/" + Thread.currentThread().getName());
             final Client client = new Client(new Context(), Protocol.HTTP);
-
-            if (client.getContext().getAttributes().get("org.restlet.engine.helper") instanceof HttpClientHelper) {
-                // Specific to the internal client
-                // When Jetty refuses the extra connection, this does not block the underlying native HttpClient...
-                // Let's set a timeout higher than the wait time imposed by the server (otherwise all requests will fail)
-                String readTimeoutInMs = Long.toString(SERVER_RESOURCE_FREEZE_DURATION.toMillis() * 2);
-                client.getContext().getParameters().add("readTimeout", readTimeoutInMs);
-            }
-
             final Response response = client.handle(request);
             log("client get sent " + Thread.currentThread().getName());
             result = response.getStatus();

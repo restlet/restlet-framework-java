@@ -294,33 +294,11 @@ public final class ChallengeResponse extends ChallengeMessage {
 
 	/**
 	 * Returns the server nonce count.
-	 * 
-	 * @return The server nonce count.
-	 * @deprecated Use {@code getServerNonceCount} instead.
-	 */
-	@Deprecated
-	public int getServerNounceCount() {
-		return getServerNonceCount();
-	}
-
-	/**
-	 * Returns the server nonce count.
 	 *
 	 * @return The server nonce count.
 	 */
 	public int getServerNonceCount() {
 		return serverNonceCount;
-	}
-
-	/**
-	 * Returns the server nonce count as a hexadecimal string of eight characters.
-	 *
-	 * @return The server nonce count as a hexadecimal string.
-	 * @deprecated Use {@code getServerNonceCountAsHex} instead.
-	 */
-	@Deprecated
-	public String getServerNounceCountAsHex() {
-		return getServerNonceCountAsHex();
 	}
 
 	/**
@@ -412,17 +390,6 @@ public final class ChallengeResponse extends ChallengeMessage {
 	 */
 	public void setSecretAlgorithm(String secretDigestAlgorithm) {
 		this.secretAlgorithm = secretDigestAlgorithm;
-	}
-
-	/**
-	 * Sets the server nonce count.
-	 * 
-	 * @param serverNonceCount The server nonce count.
-	 * @deprecated Use {@code setServerNonceCount} instead.
-	 */
-	@Deprecated
-	public void setServerNounceCount(int serverNonceCount) {
-		setServerNonceCount(serverNonceCount);
 	}
 
 	/**

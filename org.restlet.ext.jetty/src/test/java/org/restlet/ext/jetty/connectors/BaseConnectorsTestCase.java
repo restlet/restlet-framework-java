@@ -9,21 +9,22 @@
 
 package org.restlet.ext.jetty.connectors;
 
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import org.restlet.*;
-import org.restlet.data.Protocol;
-import org.restlet.engine.Engine;
-import org.restlet.engine.adapter.HttpServerHelper;
-import org.restlet.engine.connector.ClientHelper;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.engine.connector.ServerHelper;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.engine.adapter.HttpServerHelper;
+import org.restlet.engine.connector.ClientHelper;
+import org.restlet.engine.connector.ServerHelper;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -66,26 +67,22 @@ public abstract class BaseConnectorsTestCase {
 
     protected List<ConnectorTestCase> listTestCases() {
         return List.of(
-                // let's focus on Jetty server extension
-                // new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.INTERNAL),
-                // new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY)
-        );
+                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY));
     }
 
     @TestFactory
     Stream<DynamicTest> testsFactory() {
-        return listTestCases().stream()
-                .map(testCase -> dynamicTest(
-                        testCase.getTestLabel(),
-                        () -> runTest(testCase.httpServer, testCase.httpClient)));
+        return listTestCases().stream().map(testCase -> dynamicTest(
+                testCase.getTestLabel(),
+                () -> runTest(testCase.httpServer, testCase.httpClient)));
     }
 
-    private void runTest(final HttpServer server, final HttpClient client) throws Exception {
+    private void runTest(final HttpServer server, final HttpClient client)
+            throws Exception {
         if (shouldDebug()) {
             System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
-            System.setProperty("sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
+            System.setProperty(
+                    "sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
         }
 
         initEngine(server, client);
@@ -134,8 +131,6 @@ public abstract class BaseConnectorsTestCase {
     }
 
     public enum HttpServer {
-        INTERNAL_HTTP(new org.restlet.engine.connector.HttpServerHelper(null)),
-        INTERNAL_HTTPS(new org.restlet.engine.connector.HttpsServerHelper(null)),
         JETTY_HTTP(new org.restlet.ext.jetty.HttpServerHelper(null)),
         JETTY_HTTPS(new org.restlet.ext.jetty.HttpsServerHelper(null));
 
@@ -147,7 +142,7 @@ public abstract class BaseConnectorsTestCase {
     }
 
     public enum HttpClient {
-        INTERNAL(new HttpClientHelper(null)), JETTY(new org.restlet.ext.jetty.HttpClientHelper(null));
+        JETTY(new org.restlet.ext.jetty.HttpClientHelper(null));
 
         final ClientHelper clientHelper;
 

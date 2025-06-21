@@ -171,7 +171,8 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 	 * @return A list of request variants.
 	 * @throws IOException
 	 */
-	public List<Variant> getRequestVariants(MetadataService metadataService,
+	@SuppressWarnings("unchecked")
+    public List<Variant> getRequestVariants(MetadataService metadataService,
 			org.restlet.service.ConverterService converterService) throws IOException {
 		List<Variant> result = null;
 		Class<?>[] classes = getJavaInputTypes();
@@ -199,7 +200,8 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 	 * @return A list of response variants.
 	 * @throws IOException
 	 */
-	public List<Variant> getResponseVariants(MetadataService metadataService,
+	@SuppressWarnings("unchecked")
+    public List<Variant> getResponseVariants(MetadataService metadataService,
 			org.restlet.service.ConverterService converterService) throws IOException {
 		List<Variant> result = null;
 
