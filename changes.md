@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-- 2.6.0 (??-05-2025)
+- 2.6 Release Candidate 2 (21-06-2025)
     - Misc
         - Upgraded to Jakarta EE 10
           - JaxB to 4.0.0
