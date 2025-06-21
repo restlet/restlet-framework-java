@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.restlet.gwt</groupId>
         <artifactId>org.restlet.gwt.parent</artifactId>
-        <version>2.5.1</version>
+        <version>2.5.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
