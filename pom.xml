@@ -74,7 +74,6 @@
         <module>org.restlet.ext.gson</module>
         <module>org.restlet.ext.jaas</module>
         <module>org.restlet.ext.jackson</module>
-        <module>org.restlet.ext.jetty</module>
         <module>org.restlet.ext.json</module>
         <module>org.restlet.ext.slf4j</module>
         <module>org.restlet.ext.spring</module>
