@@ -11,7 +11,7 @@ concurrency:
     ${{ github.repository }}-${{ github.workflow }}-${{ github.event.number || github.head_ref || github.run_id || github.sha }}
   cancel-in-progress: true
 env:
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
 jobs:
   build:
     runs-on: ubuntu-latest
