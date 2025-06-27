@@ -52,41 +52,39 @@ public class SslUtils {
 				 * 8 8 RC4_40 Stream 5 16 40 0 N/A RC4_128 Stream 16 16 128 0 N/A DES40_CBC
 				 * Block 5 8 40 8 8 DES_CBC Block 8 8 56 8 8 3DES_EDE_CBC Block 24 24 168 8 8
 				 */
-				if (encAlgorithm != null) {
-					if (encAlgorithm.startsWith("NULL_")) {
-						keySize = Integer.valueOf(0);
-					} else if (encAlgorithm.startsWith("IDEA_CBC_")) {
-						keySize = Integer.valueOf(128);
-					} else if (encAlgorithm.startsWith("RC2_CBC_40_")) {
-						keySize = Integer.valueOf(40);
-					} else if (encAlgorithm.startsWith("RC4_40_")) {
-						keySize = Integer.valueOf(40);
-					} else if (encAlgorithm.startsWith("RC4_128_")) {
-						keySize = Integer.valueOf(128);
-					} else if (encAlgorithm.startsWith("DES40_CBC_")) {
-						keySize = Integer.valueOf(40);
-					} else if (encAlgorithm.startsWith("DES_CBC_")) {
-						keySize = Integer.valueOf(56);
-					} else if (encAlgorithm.startsWith("3DES_EDE_CBC_")) {
-						keySize = Integer.valueOf(168);
-					} else {
-						final StringTokenizer st = new StringTokenizer(encAlgorithm, "_");
+                if (encAlgorithm.startsWith("NULL_")) {
+                    keySize = 0;
+                } else if (encAlgorithm.startsWith("IDEA_CBC_")) {
+                    keySize = 128;
+                } else if (encAlgorithm.startsWith("RC2_CBC_40_")) {
+                    keySize = 40;
+                } else if (encAlgorithm.startsWith("RC4_40_")) {
+                    keySize = 40;
+                } else if (encAlgorithm.startsWith("RC4_128_")) {
+                    keySize = 128;
+                } else if (encAlgorithm.startsWith("DES40_CBC_")) {
+                    keySize = 40;
+                } else if (encAlgorithm.startsWith("DES_CBC_")) {
+                    keySize = 56;
+                } else if (encAlgorithm.startsWith("3DES_EDE_CBC_")) {
+                    keySize = 168;
+                } else {
+                    final StringTokenizer st = new StringTokenizer(encAlgorithm, "_");
 
-						while (st.hasMoreTokens()) {
-							try {
-								keySize = Integer.valueOf(st.nextToken());
-								break;
-							} catch (NumberFormatException e) {
-								// Tokens that are not integers are ignored.
-							}
-						}
-					}
+                    while (st.hasMoreTokens()) {
+                        try {
+                            keySize = Integer.valueOf(st.nextToken());
+                            break;
+                        } catch (NumberFormatException e) {
+// Tokens that are not integers are ignored.
+                        }
+                    }
+                }
 
-					if (keySize != null) {
-						keySizesCache.put(sslCipherSuite, keySize);
-					}
-				}
-			}
+                if (keySize != null) {
+                    keySizesCache.put(sslCipherSuite, keySize);
+                }
+            }
 		}
 
 		return keySize;

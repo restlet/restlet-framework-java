@@ -92,7 +92,6 @@ public abstract class ServerCall extends Call {
 	 * Returns the chain of client SSL certificates, if available and accessible.
 	 *
 	 * @return The chain of client SSL certificates, if available and accessible.
-	 * @throws SSLPeerUnverifiedException 
 	 */
 	public List<Certificate> getCertificates() {
 		return null;

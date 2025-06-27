@@ -154,10 +154,10 @@ public abstract class HeaderWriter<V> extends StringWriter {
 	 * @return This writer.
 	 */
 	public HeaderWriter<V> appendExtension(String name, String value) {
-		if ((name != null) && (name.length() > 0)) {
+		if ((name != null) && (!name.isEmpty())) {
 			append(name);
 
-			if ((value != null) && (value.length() > 0)) {
+			if ((value != null) && (!value.isEmpty())) {
 				append("=");
 
 				if (HeaderUtils.isToken(value)) {
@@ -214,7 +214,7 @@ public abstract class HeaderWriter<V> extends StringWriter {
 	 * @return This writer.
 	 */
 	public HeaderWriter<V> appendQuotedString(String content) {
-		if ((content != null) && (content.length() > 0)) {
+		if ((content != null) && (!content.isEmpty())) {
 			append('"');
 			char c;
 

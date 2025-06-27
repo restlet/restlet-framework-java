@@ -36,7 +36,7 @@ public final class ServerList extends WrapperList<Server> {
 	 * @param next    The next Restlet of added servers.
 	 */
 	public ServerList(Context context, Restlet next) {
-		super(new CopyOnWriteArrayList<Server>());
+		super(new CopyOnWriteArrayList<>());
 		this.context = context;
 		this.next = next;
 	}

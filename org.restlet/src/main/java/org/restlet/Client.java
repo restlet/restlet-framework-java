@@ -129,13 +129,10 @@ public class Client extends Connector {
         if (getHelper() != null) {
             getHelper().handle(request, response);
         } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append(
-                    "No available client connector supports the required protocol: ");
-            sb.append("'").append(request.getProtocol().getName()).append("'.");
-            sb.append(
-                    " Please add the JAR of a matching connector to your classpath.");
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb.toString());
+            String sb = "No available client connector supports the required protocol: " +
+                    "'" + request.getProtocol().getName() + "'." +
+                    " Please add the JAR of a matching connector to your classpath.";
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb);
         }
     }
 

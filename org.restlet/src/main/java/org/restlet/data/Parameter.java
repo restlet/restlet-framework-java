@@ -123,13 +123,13 @@ public class Parameter implements Comparable<Parameter>, NamedValue<String> {
 		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Parameter)) {
-			return false;
-		}
+        if (obj instanceof Parameter that) {
+            return Objects.equals(getName(), that.getName())
+                    && Objects.equals(getValue(), that.getValue());
+        }
+        return false;
 
-		Parameter that = (Parameter) obj;
-		return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
-	}
+    }
 
 	/*
 	 * (non-Javadoc)

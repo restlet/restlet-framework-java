@@ -51,12 +51,12 @@ public class Header implements NamedValue<String> {
 		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof Header)) {
+		if (!(obj instanceof Header that)) {
 			return false;
 		}
 
-		Header that = (Header) obj;
-		return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
+		return Objects.equals(getName(), that.getName())
+				&& Objects.equals(getValue(), that.getValue());
 	}
 
 	/**

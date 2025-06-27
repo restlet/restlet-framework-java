@@ -48,14 +48,14 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 		String value = cookieSetting.getValue();
 		int version = cookieSetting.getVersion();
 
-		if ((name == null) || (name.length() == 0)) {
+		if ((name == null) || (name.isEmpty())) {
 			throw new IllegalArgumentException("Can't write cookie. Invalid name detected");
 		}
 
 		append(name).append('=');
 
 		// Append the value
-		if ((value != null) && (value.length() > 0)) {
+		if ((value != null) && (!value.isEmpty())) {
 			appendValue(value, version);
 		}
 
@@ -68,7 +68,7 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 		// Append the path
 		String path = cookieSetting.getPath();
 
-		if ((path != null) && (path.length() > 0)) {
+		if ((path != null) && (!path.isEmpty())) {
 			append("; Path=");
 
 			if (version == 0) {
@@ -106,7 +106,7 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 		// Append the domain
 		String domain = cookieSetting.getDomain();
 
-		if ((domain != null) && (domain.length() > 0)) {
+		if ((domain != null) && (!domain.isEmpty())) {
 			append("; Domain=");
 			appendValue(domain.toLowerCase(), version);
 		}
@@ -125,7 +125,7 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
 		if (version > 0) {
 			String comment = cookieSetting.getComment();
 
-			if ((comment != null) && (comment.length() > 0)) {
+			if ((comment != null) && (!comment.isEmpty())) {
 				append("; Comment=");
 				appendValue(comment, version);
 			}

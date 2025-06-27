@@ -33,7 +33,7 @@ public class ProductWriter {
 		for (Iterator<Product> iterator = products.iterator(); iterator.hasNext();) {
 			Product product = iterator.next();
 
-			if ((product.getName() == null) || (product.getName().length() == 0)) {
+			if ((product.getName() == null) || (product.getName().isEmpty())) {
 				throw new IllegalArgumentException("Product name cannot be null.");
 			}
 

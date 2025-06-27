@@ -13,10 +13,7 @@ import org.restlet.data.*;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.WrapperList;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Descriptor for available representations of a resource. It contains all the
@@ -337,13 +334,13 @@ public class Variant {
 		// Compare the languages
 		if (result) {
 			result = (getLanguages().isEmpty()) || getLanguages().contains(Language.ALL)
-					|| getLanguages().containsAll(other.getLanguages());
+					|| new HashSet<>(getLanguages()).containsAll(other.getLanguages());
 		}
 
 		// Compare the encodings
 		if (result) {
 			result = (getEncodings().isEmpty()) || getEncodings().contains(Encoding.ALL)
-					|| getEncodings().containsAll(other.getEncodings());
+					|| new HashSet<>(getEncodings()).containsAll(other.getEncodings());
 		}
 
 		return result;

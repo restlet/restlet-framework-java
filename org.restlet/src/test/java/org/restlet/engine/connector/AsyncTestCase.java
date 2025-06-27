@@ -32,6 +32,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -61,26 +62,23 @@ public class AsyncTestCase {
     private void testCall(Context context, int count, Method method) throws Exception {
         final CountDownLatch latch = new CountDownLatch(count);
 
-        final Uniform responseHandler = new Uniform() {
-            @Override
-            public void handle(Request request, Response response) {
-                String item = request.getResourceRef().getQueryAsForm()
-                        .getFirstValue("item");
+        final Uniform responseHandler = (request, response) -> {
+            String item = request.getResourceRef().getQueryAsForm()
+                    .getFirstValue("item");
 
-                try {
-                    assertEquals(item, Integer.toString(response.getAge()));
-                    if (responseEntityExpected(request.getMethod())) {
-                        assertEquals(Status.SUCCESS_OK, response.getStatus());
-                        assertTrue(response.isEntityAvailable());
-                        assertNotNull(response.getEntityAsText());
-                    } else {
-                        assertEquals(Status.SUCCESS_NO_CONTENT,
-                                response.getStatus());
-                        assertFalse(response.isEntityAvailable());
-                    }
-                } finally {
-                    latch.countDown();
+            try {
+                assertEquals(item, Integer.toString(response.getAge()));
+                if (responseEntityExpected(request.getMethod())) {
+                    assertEquals(Status.SUCCESS_OK, response.getStatus());
+                    assertTrue(response.isEntityAvailable());
+                    assertNotNull(response.getEntityAsText());
+                } else {
+                    assertEquals(Status.SUCCESS_NO_CONTENT,
+                            response.getStatus());
+                    assertFalse(response.isEntityAvailable());
                 }
+            } finally {
+                latch.countDown();
             }
         };
 
@@ -103,6 +101,7 @@ public class AsyncTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.register(true);
         // Create components
         clientComponent = new Component();
         originComponent = new Component();

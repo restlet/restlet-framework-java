@@ -188,8 +188,7 @@ public final class Language extends Metadata {
 	public boolean includes(Metadata included) {
 		boolean result = equals(ALL) || (included == null) || equals(included);
 
-		if (!result && (included instanceof Language)) {
-			Language includedLanguage = (Language) included;
+		if (!result && (included instanceof Language includedLanguage)) {
 
 			if (getPrimaryTag().equals(includedLanguage.getPrimaryTag())) {
 				// Both languages are different

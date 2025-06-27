@@ -42,7 +42,7 @@ public class HeaderReader<V> {
 	 * @param resultClass The named value class to return.
 	 * @return The new named value.
 	 */
-	private static final <NV extends NamedValue<String>> NV createNamedValue(Class<NV> resultClass, String name) {
+	private static <NV extends NamedValue<String>> NV createNamedValue(Class<NV> resultClass, String name) {
 		return createNamedValue(resultClass, name, null);
 	}
 
@@ -89,7 +89,7 @@ public class HeaderReader<V> {
 	public static Header readHeader(CharSequence header) throws IOException {
 		Header result = null;
 
-		if (header.length() > 0) {
+		if (!header.isEmpty()) {
 			// Detect the end of headers
 			int start = 0;
 			int index = 0;
@@ -221,7 +221,7 @@ public class HeaderReader<V> {
 	 */
 	public HeaderReader(String header) {
 		this.header = header;
-		this.index = ((header == null) || (header.length() == 0)) ? -1 : 0;
+		this.index = ((header == null) || (header.isEmpty())) ? -1 : 0;
 		this.mark = index;
 	}
 
@@ -435,20 +435,20 @@ public class HeaderReader<V> {
 		String name = readToken();
 		int nextChar = read();
 
-		if (name.length() > 0) {
-			if (nextChar == '=') {
-				// The parameter has a value
-				result = createNamedValue(resultClass, name, readActualNamedValue());
-			} else {
-				// The parameter has not value
-				unread();
-				result = createNamedValue(resultClass, name);
-			}
-		} else {
-			throw new IOException("Parameter or extension has no name. Please check your value");
-		}
+        if (name.isEmpty()) {
+            throw new IOException("Parameter or extension has no name. Please check your value");
+        } else {
+            if (nextChar == '=') {
+                // The parameter has a value
+                result = createNamedValue(resultClass, name, readActualNamedValue());
+            } else {
+                // The parameter has no value
+                unread();
+                result = createNamedValue(resultClass, name);
+            }
+        }
 
-		return result;
+        return result;
 	}
 
 	/**

@@ -169,7 +169,7 @@ public final class RouteList extends WrapperList<Route> {
 			boolean loopedAround = false;
 
 			do {
-				if ((j == length) && (loopedAround == false)) {
+				if ((j == length) && (!loopedAround)) {
 					j = 0;
 					loopedAround = true;
 				}

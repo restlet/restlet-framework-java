@@ -77,10 +77,10 @@ public class CookieReader extends HeaderReader<Cookie> {
 			nextChar = read();
 
 			if (readingName) {
-				if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
+				if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.isEmpty())) {
 					// Skip spaces
 				} else if ((nextChar == -1) || (nextChar == ';') || (nextChar == ',')) {
-					if (nameBuffer.length() > 0) {
+					if (!nameBuffer.isEmpty()) {
 						// End of pair with no value
 						result = Parameter.create(nameBuffer, null);
 					} else if (nextChar == -1) {
@@ -91,7 +91,7 @@ public class CookieReader extends HeaderReader<Cookie> {
 				} else if (nextChar == '=') {
 					readingName = false;
 				} else if (HeaderUtils.isTokenChar(nextChar) || (this.globalVersion < 1)) {
-					if (readAttribute && nextChar != '$' && (nameBuffer.length() == 0)) {
+					if (readAttribute && nextChar != '$' && (nameBuffer.isEmpty())) {
 						unread();
 						nextChar = -1;
 					} else {
@@ -103,12 +103,12 @@ public class CookieReader extends HeaderReader<Cookie> {
 				}
 			} else {
 				// reading value
-				if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.length() == 0)) {
+				if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.isEmpty())) {
 					// Skip spaces
 				} else if ((nextChar == -1) || (nextChar == ';')) {
 					// End of pair
 					result = Parameter.create(nameBuffer, valueBuffer);
-				} else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+				} else if ((nextChar == '"') && (valueBuffer.isEmpty())) {
 					// Step back
 					unread();
 					valueBuffer.append(readQuotedString());

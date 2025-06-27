@@ -251,7 +251,7 @@ public abstract class Authenticator extends Filter {
 
 		if (request.getChallengeResponse() != null && loggable) {
 			getLogger().log(Level.FINE,
-					"The authentication failed for the identifer \"" + request.getChallengeResponse().getIdentifier()
+					"The authentication failed for the identifier \"" + request.getChallengeResponse().getIdentifier()
 							+ "\" using the " + request.getChallengeResponse().getScheme() + " scheme.");
 		}
 

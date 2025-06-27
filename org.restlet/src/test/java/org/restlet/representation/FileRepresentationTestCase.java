@@ -32,6 +32,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 
 /**
  * Unit tests for the FileRepresentation class.
@@ -48,6 +49,7 @@ public class FileRepresentationTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.register(true);
         component = new Component();
         Server server = component.getServers().add(Protocol.HTTP, 0);
         component.start();

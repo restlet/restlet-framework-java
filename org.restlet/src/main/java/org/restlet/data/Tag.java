@@ -124,18 +124,16 @@ public final class Tag {
 	 * @return True if both tags are equal.
 	 */
 	public boolean equals(final Object object, boolean checkWeakness) {
-		if (!(object instanceof Tag)) {
-			return false;
-		}
+        if (object instanceof Tag that) {
+            if (checkWeakness && that.isWeak() != isWeak()) {
+                return false;
+            }
 
-		final Tag that = (Tag) object;
-
-		if (checkWeakness && that.isWeak() != isWeak()) {
-			return false;
-		}
-
-		return Objects.equals(getName(), that.getName());
-	}
+            return Objects.equals(getName(), that.getName());
+        } else {
+            return false;
+        }
+    }
 
 	/**
 	 * Returns tag formatted as an HTTP tag string.

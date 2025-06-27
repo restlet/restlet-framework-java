@@ -39,8 +39,7 @@ public abstract class Restlet implements Uniform {
 	 */
 	private static void fireContextChanged(Restlet restlet, Context context) {
 		if (context != null) {
-			if (context instanceof org.restlet.engine.util.ChildContext) {
-				org.restlet.engine.util.ChildContext childContext = (org.restlet.engine.util.ChildContext) context;
+			if (context instanceof org.restlet.engine.util.ChildContext childContext) {
 
 				if (childContext.getChild() == null) {
 					childContext.setChild(restlet);

@@ -304,8 +304,8 @@ public class LogService extends Service {
 	 * @return True if the call should be logged during the processing chain.
 	 */
 	public boolean isLoggable(Request request) {
-		return (getLoggableTemplate() == null) ? true
-				: getLoggableTemplate().match(request.getResourceRef().getTargetRef().toString()) > 0;
+		return getLoggableTemplate() == null
+				|| getLoggableTemplate().match(request.getResourceRef().getTargetRef().toString()) > 0;
 	}
 
 	/**

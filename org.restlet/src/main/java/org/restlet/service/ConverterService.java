@@ -174,7 +174,7 @@ public class ConverterService extends Service {
 	 */
 	public <T> T toObject(Representation source, Class<T> target, Resource resource) throws IOException {
 		T result = null;
-		boolean loggable = (resource == null) ? true : resource.isLoggable();
+		boolean loggable = resource == null || resource.isLoggable();
 
 		if ((source != null) && source.isAvailable() && (source.getSize() != 0)) {
 			ConverterHelper ch = ConverterUtils.getBestHelper(source, target, resource);
@@ -187,8 +187,7 @@ public class ConverterService extends Service {
 
 				result = ch.toObject(source, target, resource);
 
-				if (result instanceof Representation) {
-					Representation resultRepresentation = (Representation) result;
+				if (result instanceof Representation resultRepresentation) {
 
 					// Copy the variant metadata
 					resultRepresentation.setCharacterSet(source.getCharacterSet());

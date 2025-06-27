@@ -60,30 +60,24 @@ public class ReferenceList extends WrapperList<Reference> {
 	 * @throws IOException
 	 */
 	public ReferenceList(Representation uriList) throws IOException {
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(uriList.getReader(), IoUtils.BUFFER_SIZE);
+        try (BufferedReader br = new BufferedReader(uriList.getReader(), IoUtils.BUFFER_SIZE)) {
 
-			String line = br.readLine();
+            String line = br.readLine();
 
-			// Checks if the list reference is specified as the first comment.
-			if ((line != null) && line.startsWith("#")) {
-				setIdentifier(new Reference(line.substring(1).trim()));
-				line = br.readLine();
-			}
+            // Checks if the list reference is specified as the first comment.
+            if ((line != null) && line.startsWith("#")) {
+                setIdentifier(new Reference(line.substring(1).trim()));
+                line = br.readLine();
+            }
 
-			while (line != null) {
-				if (!line.startsWith("#")) {
-					add(new Reference(line.trim()));
-				}
+            while (line != null) {
+                if (!line.startsWith("#")) {
+                    add(new Reference(line.trim()));
+                }
 
-				line = br.readLine();
-			}
-		} finally {
-			if (br != null) {
-				br.close();
-			}
-		}
+                line = br.readLine();
+            }
+        }
 	}
 
 	/**

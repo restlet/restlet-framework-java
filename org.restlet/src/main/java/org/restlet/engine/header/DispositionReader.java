@@ -35,7 +35,7 @@ public class DispositionReader extends HeaderReader<Disposition> {
 		Disposition result = null;
 		String type = readToken();
 
-		if (type.length() > 0) {
+		if (!type.isEmpty()) {
 			result = new Disposition();
 			result.setType(type);
 

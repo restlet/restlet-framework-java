@@ -65,19 +65,18 @@ public final class ChallengeRequest extends ChallengeMessage {
 		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof ChallengeRequest)) {
+		if (!(obj instanceof ChallengeRequest that)) {
 			return false;
 		}
 
-		final ChallengeRequest that = (ChallengeRequest) obj;
-
-		return getParameters().equals(that.getParameters()) && Objects.equals(getRealm(), that.getRealm())
+		return getParameters().equals(that.getParameters())
+				&& Objects.equals(getRealm(), that.getRealm())
 				&& Objects.equals(getScheme(), that.getScheme());
 	}
 
 	/**
 	 * Returns the base URI references that collectively define the protected
-	 * domains for the digest authentication. By default it return a list with a
+	 * domains for the digest authentication. By default, it returns a list with a
 	 * single "/" URI reference.
 	 * 
 	 * @return The base URI references.

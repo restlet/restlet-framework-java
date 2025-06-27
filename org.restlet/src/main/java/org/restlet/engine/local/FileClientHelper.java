@@ -25,10 +25,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.String.format;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -116,7 +113,7 @@ public class FileClientHelper extends EntityClientHelper {
 
 			// "var" contains the theoretical correct metadata
 			if (!var.getLanguages().isEmpty() && !representation.getLanguages().isEmpty()
-					&& !var.getLanguages().containsAll(representation.getLanguages())) {
+					&& !new HashSet<>(var.getLanguages()).containsAll(representation.getLanguages())) {
 				return false;
 			}
 
@@ -126,7 +123,7 @@ public class FileClientHelper extends EntityClientHelper {
 			}
 
 			if (!var.getEncodings().isEmpty() && !representation.getEncodings().isEmpty()
-					&& !var.getEncodings().containsAll(representation.getEncodings())) {
+					&& !new HashSet<>(var.getEncodings()).containsAll(representation.getEncodings())) {
 				return false;
 			}
 		}
@@ -567,22 +564,18 @@ public class FileClientHelper extends EntityClientHelper {
 		boolean defaultMetadata = true;
 
 		if (getMetadataService() != null) {
-			if (metadata instanceof Language) {
-				Language language = (Language) metadata;
+			if (metadata instanceof Language language) {
 				defaultMetadata = language.equals(getMetadataService().getDefaultLanguage());
-			} else if (metadata instanceof MediaType) {
-				MediaType mediaType = (MediaType) metadata;
+			} else if (metadata instanceof MediaType mediaType) {
 				defaultMetadata = mediaType.equals(getMetadataService().getDefaultMediaType());
-			} else if (metadata instanceof CharacterSet) {
-				CharacterSet characterSet = (CharacterSet) metadata;
+			} else if (metadata instanceof CharacterSet characterSet) {
 				defaultMetadata = characterSet.equals(getMetadataService().getDefaultCharacterSet());
-			} else if (metadata instanceof Encoding) {
-				Encoding encoding = (Encoding) metadata;
+			} else if (metadata instanceof Encoding encoding) {
 				defaultMetadata = encoding.equals(getMetadataService().getDefaultEncoding());
 			}
 		}
 
-		// We only add extension for metadata that differs from default ones
+		// We only add an extension for metadata that differs from default ones
 		if (!defaultMetadata) {
 			String extension = getMetadataService().getExtension(metadata);
 

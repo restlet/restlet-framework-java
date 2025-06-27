@@ -54,7 +54,7 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 	 * 
 	 * @param cookieSetting
 	 * @return the CookieSetting parsed from the String
-	 * @throws IllegalArgumentException Thrown if the String can not be parsed as
+	 * @throws IllegalArgumentException Thrown if the String cannot be parsed as
 	 *                                  CookieSetting.
 	 */
 	public static CookieSetting read(String cookieSetting) throws IllegalArgumentException {
@@ -108,10 +108,10 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 			nextChar = read();
 
 			if (readingName) {
-				if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.length() == 0)) {
+				if ((HeaderUtils.isSpace(nextChar)) && (nameBuffer.isEmpty())) {
 					// Skip spaces
 				} else if ((nextChar == -1) || (nextChar == ';') || (nextChar == ',')) {
-					if (nameBuffer.length() > 0) {
+					if (!nameBuffer.isEmpty()) {
 						// End of pair with no value
 						result = Parameter.create(nameBuffer, null);
 					} else if (nextChar == -1) {
@@ -129,12 +129,12 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 				}
 			} else {
 				// reading value
-				if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.length() == 0)) {
+				if ((HeaderUtils.isSpace(nextChar)) && (valueBuffer.isEmpty())) {
 					// Skip spaces
 				} else if ((nextChar == -1) || (nextChar == ';')) {
 					// End of pair
 					result = Parameter.create(nameBuffer, valueBuffer);
-				} else if ((nextChar == '"') && (valueBuffer.length() == 0)) {
+				} else if ((nextChar == '"') && (valueBuffer.isEmpty())) {
 					// Step back
 					unread();
 					valueBuffer.append(readQuotedString());
@@ -201,7 +201,7 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 				}
 			} else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE)) {
 				try {
-					result.setMaxAge(Integer.valueOf(pair.getValue()));
+					result.setMaxAge(Integer.parseInt(pair.getValue()));
 				} catch (NumberFormatException numberFormatException) {
 					result.setMaxAge(Integer.MAX_VALUE);
 					Context.getCurrentLogger().warning("Unable to parse the cookie setting max-age value \""
@@ -218,7 +218,7 @@ public class CookieSettingReader extends HeaderReader<CookieSetting> {
 					result.setAccessRestricted(true);
 				}
 			} else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION)) {
-				result.setVersion(Integer.valueOf(pair.getValue()));
+				result.setVersion(Integer.parseInt(pair.getValue()));
 			} else {
 				// Unexpected special attribute
 				// Silently ignore it as it may have been introduced by new specifications

@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class Expectation implements NamedValue<String> {
 
 	/**
-	 * Creates a "100-continue" expectation. If a client will wait for a 100
+	 * Creates a "100-continue" expectation. If a client waits for a 100
 	 * (Continue) provisional response before sending the request body, it MUST send
 	 * this expectation. A client MUST NOT send this expectation if it does not
 	 * intend to send a request entity.
@@ -76,13 +76,12 @@ public final class Expectation implements NamedValue<String> {
 			return true;
 		}
 
-		if (!(obj instanceof Expectation)) {
+		if (!(obj instanceof Expectation that)) {
 			return false;
 		}
 
-		Expectation that = (Expectation) obj;
-
-		return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue())
+		return Objects.equals(getName(), that.getName())
+				&& Objects.equals(getValue(), that.getValue())
 				&& getParameters().equals(that.getParameters());
 	}
 

@@ -111,12 +111,14 @@ public class StatusFilter extends Filter {
 		} catch (Throwable throwable) {
 			Status status = getStatusService().toStatus(throwable, request, response);
 
-			Level level = Level.INFO;
+			final Level level;
 			if (status.isServerError()) {
 				level = Level.WARNING;
 			} else if (status.isConnectorError()) {
 				level = Level.INFO;
 			} else if (status.isClientError()) {
+				level = Level.FINE;
+			} else {
 				level = Level.FINE;
 			}
 			getLogger().log(level, "Exception or error caught by status service", throwable);

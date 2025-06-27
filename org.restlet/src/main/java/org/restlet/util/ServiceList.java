@@ -33,7 +33,7 @@ public final class ServiceList extends WrapperList<Service> {
 	 * @param context The context.
 	 */
 	public ServiceList(Context context) {
-		super(new CopyOnWriteArrayList<Service>());
+		super(new CopyOnWriteArrayList<>());
 		this.context = context;
 	}
 

@@ -127,22 +127,22 @@ public class Encoder extends Filter {
 		Preference<Encoding> currentPref = null;
 		float bestScore = 0F;
 
-		for (Iterator<Encoding> iter = getSupportedEncodings().iterator(); iter.hasNext();) {
-			currentEncoding = iter.next();
+        for (Encoding encoding : getSupportedEncodings()) {
+            currentEncoding = encoding;
 
-			for (Iterator<Preference<Encoding>> iter2 = client.getAcceptedEncodings().iterator(); iter2.hasNext();) {
-				currentPref = iter2.next();
+            for (Preference<Encoding> encodingPreference : client.getAcceptedEncodings()) {
+                currentPref = encodingPreference;
 
-				if (currentPref.getMetadata().equals(Encoding.ALL)
-						|| currentPref.getMetadata().equals(currentEncoding)) {
-					// A match was found, compute its score
-					if (currentPref.getQuality() > bestScore) {
-						bestScore = currentPref.getQuality();
-						bestEncoding = currentEncoding;
-					}
-				}
-			}
-		}
+                if (currentPref.getMetadata().equals(Encoding.ALL)
+                        || currentPref.getMetadata().equals(currentEncoding)) {
+                    // A match was found, compute its score
+                    if (currentPref.getQuality() > bestScore) {
+                        bestScore = currentPref.getQuality();
+                        bestEncoding = currentEncoding;
+                    }
+                }
+            }
+        }
 
 		return bestEncoding;
 	}

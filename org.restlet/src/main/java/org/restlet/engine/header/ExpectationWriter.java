@@ -33,7 +33,7 @@ public class ExpectationWriter extends HeaderWriter<Expectation> {
 
 	@Override
 	public ExpectationWriter append(Expectation expectation) {
-		if ((expectation.getName() != null) && (expectation.getName().length() > 0)) {
+		if ((expectation.getName() != null) && (!expectation.getName().isEmpty())) {
 			appendExtension(expectation);
 
 			if (!expectation.getParameters().isEmpty()) {

@@ -59,7 +59,7 @@ import java.util.logging.Level;
  * @author Jerome Louvel
  */
 public class Application extends Restlet {
-	private static final ThreadLocal<Application> CURRENT = new ThreadLocal<Application>();
+	private static final ThreadLocal<Application> CURRENT = new ThreadLocal<>();
 
 	/**
 	 * This variable is stored internally as a thread local variable and updated

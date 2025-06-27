@@ -120,8 +120,8 @@ public abstract class Metadata {
 	 * @see #includes(Metadata)
 	 */
 	public boolean isCompatible(Metadata otherMetadata) {
-		boolean result = (otherMetadata != null) && (includes(otherMetadata) || otherMetadata.includes(this));
-		return result;
+        return (otherMetadata != null)
+				&& (includes(otherMetadata) || otherMetadata.includes(this));
 	}
 
 	/**

@@ -64,25 +64,25 @@ public class RangeReader {
 			rangeHeader = rangeHeader.substring(prefix.length());
 
 			String[] array = rangeHeader.split(",");
-			for (int i = 0; i < array.length; i++) {
-				String value = array[i].trim();
-				long index = 0;
-				long length = 0;
-				if (value.startsWith("-")) {
-					index = Range.INDEX_LAST;
-					length = Long.parseLong(value.substring(1));
-				} else if (value.endsWith("-")) {
-					index = Long.parseLong(value.substring(0, value.length() - 1));
-					length = Range.SIZE_MAX;
-				} else {
-					String[] tab = value.split("-");
-					if (tab.length == 2) {
-						index = Long.parseLong(tab[0]);
-						length = Long.parseLong(tab[1]) - index + 1;
-					}
-				}
-				result.add(new Range(index, length));
-			}
+            for (String s : array) {
+                String value = s.trim();
+                long index = 0;
+                long length = 0;
+                if (value.startsWith("-")) {
+                    index = Range.INDEX_LAST;
+                    length = Long.parseLong(value.substring(1));
+                } else if (value.endsWith("-")) {
+                    index = Long.parseLong(value.substring(0, value.length() - 1));
+                    length = Range.SIZE_MAX;
+                } else {
+                    String[] tab = value.split("-");
+                    if (tab.length == 2) {
+                        index = Long.parseLong(tab[0]);
+                        length = Long.parseLong(tab[1]) - index + 1;
+                    }
+                }
+                result.add(new Range(index, length));
+            }
 		}
 
 		return result;

@@ -98,40 +98,40 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 		NamedValue<String> param;
 		Object currentValue = null;
 
-		for (Iterator<T> iter = iterator(); iter.hasNext();) {
-			param = iter.next();
+        for (T t : this) {
+            param = t;
 
-			if (params.containsKey(param.getName())) {
-				currentValue = params.get(param.getName());
+            if (params.containsKey(param.getName())) {
+                currentValue = params.get(param.getName());
 
-				if (currentValue != null) {
-					List<Object> values = null;
+                if (currentValue != null) {
+                    List<Object> values = null;
 
-					if (currentValue instanceof List) {
-						// Multiple values already found for this entry
-						values = (List<Object>) currentValue;
-					} else {
-						// Second value found for this entry
-						// Create a list of values
-						values = new ArrayList<Object>();
-						values.add(currentValue);
-						params.put(param.getName(), values);
-					}
+                    if (currentValue instanceof List) {
+                        // Multiple values already found for this entry
+                        values = (List<Object>) currentValue;
+                    } else {
+                        // Second value found for this entry
+                        // Create a list of values
+                        values = new ArrayList<Object>();
+                        values.add(currentValue);
+                        params.put(param.getName(), values);
+                    }
 
-					if (param.getValue() == null) {
-						values.add(Series.EMPTY_VALUE);
-					} else {
-						values.add(param.getValue());
-					}
-				} else {
-					if (param.getValue() == null) {
-						params.put(param.getName(), Series.EMPTY_VALUE);
-					} else {
-						params.put(param.getName(), param.getValue());
-					}
-				}
-			}
-		}
+                    if (param.getValue() == null) {
+                        values.add(Series.EMPTY_VALUE);
+                    } else {
+                        values.add(param.getValue());
+                    }
+                } else {
+                    if (param.getValue() == null) {
+                        params.put(param.getName(), Series.EMPTY_VALUE);
+                    } else {
+                        params.put(param.getName(), param.getValue());
+                    }
+                }
+            }
+        }
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
 		String[] result = null;
 		List<T> params = subList(name, ignoreCase);
 
-		if ((params.size() == 0) && (defaultValue != null)) {
+		if ((params.isEmpty()) && (defaultValue != null)) {
 			result = new String[1];
 			result[0] = defaultValue;
 		} else {

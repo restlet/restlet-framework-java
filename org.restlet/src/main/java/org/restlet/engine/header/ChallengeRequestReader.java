@@ -38,7 +38,7 @@ public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
 		ChallengeRequest result = null;
 
 		// The challenge is that this header is a comma separated lst of
-		// challenges, and that each challenges is also a comma separated list,
+		// challenges, and that each challenge is also a comma separated list,
 		// but of parameters.
 		skipSpaces();
 		if (peek() != -1) {

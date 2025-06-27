@@ -181,33 +181,16 @@ public final class LocalReference extends Reference {
 	 * @return The name.
 	 */
 	public static String getAuthorityName(int authority) {
-		String result = null;
-
-		switch (authority) {
-		case CLAP_DEFAULT:
-			result = "";
-			break;
-		case CLAP_CLASS:
-			result = "class";
-			break;
-		case CLAP_SYSTEM:
-			result = "system";
-			break;
-		case CLAP_THREAD:
-			result = "thread";
-			break;
-		case RIAP_APPLICATION:
-			result = "application";
-			break;
-		case RIAP_COMPONENT:
-			result = "component";
-			break;
-		case RIAP_HOST:
-			result = "host";
-			break;
-		}
-
-		return result;
+		return switch (authority) {
+            case CLAP_DEFAULT -> "";
+            case CLAP_CLASS -> "class";
+            case CLAP_SYSTEM -> "system";
+            case CLAP_THREAD -> "thread";
+            case RIAP_APPLICATION -> "application";
+            case RIAP_COMPONENT -> "component";
+            case RIAP_HOST -> "host";
+            default -> null;
+        };
 	}
 
 	/**

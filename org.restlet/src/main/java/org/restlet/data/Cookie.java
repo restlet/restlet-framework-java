@@ -97,15 +97,15 @@ public class Cookie implements NamedValue<String> {
 			return true;
 		}
 
-		if (!(obj instanceof Cookie)) {
+		if (!(obj instanceof Cookie that)) {
 			// if obj isn't a cookie or is null don't evaluate further
 			return false;
 		}
 
-		Cookie that = (Cookie) obj;
-
-		return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue())
-				&& (this.version == that.version) && Objects.equals(getDomain(), that.getDomain())
+		return Objects.equals(getName(), that.getName())
+				&& Objects.equals(getValue(), that.getValue())
+				&& (this.version == that.version)
+				&& Objects.equals(getDomain(), that.getDomain())
 				&& Objects.equals(getPath(), that.getPath());
 	}
 

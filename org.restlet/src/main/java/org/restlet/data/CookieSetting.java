@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 public final class CookieSetting extends Cookie {
 	/**
-	 * Indicates whether to restrict cookie access to untrusted parties. Currently
+	 * Indicates whether to restrict cookie access to untrusted parties. Currently,
 	 * this toggles the non-standard but widely supported HttpOnly cookie parameter.
 	 */
 	private volatile boolean accessRestricted;
@@ -139,13 +139,13 @@ public final class CookieSetting extends Cookie {
 		if (obj == this) {
 			return true;
 		}
-		if (!(obj instanceof CookieSetting)) {
+		if (!(obj instanceof CookieSetting that)) {
 			return false;
 		}
 
-		CookieSetting that = (CookieSetting) obj;
-
-		return super.equals(obj) && this.maxAge == that.maxAge && this.secure == that.secure
+		return super.equals(obj)
+				&& this.maxAge == that.maxAge
+				&& this.secure == that.secure
 				&& Objects.equals(this.comment, that.comment);
 	}
 

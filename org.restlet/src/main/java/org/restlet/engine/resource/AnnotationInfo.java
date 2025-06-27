@@ -195,8 +195,7 @@ public abstract class AnnotationInfo {
 		Class<?> result = initialType;
 
 		try {
-			if (genericType instanceof TypeVariable<?>) {
-				TypeVariable<?> genericTypeVariable = (TypeVariable<?>) genericType;
+			if (genericType instanceof TypeVariable<?> genericTypeVariable) {
 				String genericTypeName = genericTypeVariable.getName();
 				result = getJavaActualType(getJavaClass(), genericTypeName);
 			}

@@ -102,7 +102,7 @@ public class CertificateAuthenticator extends Authenticator {
 		List<Certificate> certchain = request.getClientInfo().getCertificates();
 		List<Principal> principals = getPrincipals(certchain);
 
-		if ((principals != null) && (principals.size() > 0)) {
+		if ((principals != null) && (!principals.isEmpty())) {
 			request.getClientInfo().getPrincipals().addAll(principals);
 			User user = getUser(principals.get(0));
 

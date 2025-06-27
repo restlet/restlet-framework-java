@@ -149,7 +149,7 @@ public class EngineClassLoader extends ClassLoader {
 				while (allUrls.hasMoreElements()) {
 					url = allUrls.nextElement();
 
-					if (result.indexOf(url) == -1) {
+					if (!result.contains(url)) {
 						result.add(url);
 					}
 				}

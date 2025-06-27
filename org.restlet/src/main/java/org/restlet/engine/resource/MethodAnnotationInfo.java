@@ -251,7 +251,7 @@ public class MethodAnnotationInfo extends AnnotationInfo {
 				StringTokenizer stExtension = new StringTokenizer(variantValue, "\\+");
 				while (stExtension.hasMoreTokens()) {
 					String extension = stExtension.nextToken().trim();
-					if (extension == null) {
+					if (extension.isEmpty()) {
 						continue;
 					}
 

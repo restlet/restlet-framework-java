@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -350,7 +351,7 @@ public class Engine {
      * @return The registered engine.
      */
     public static synchronized Engine register(boolean discoverPlugins) {
-        if (Edition.JEE.isNotCurrentEdition() && !logConfigured) {
+        if (!logConfigured) {
             configureLog();
         }
 
@@ -499,7 +500,7 @@ public class Engine {
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
-                if (connector.getProtocols()
+                if (new HashSet<>(connector.getProtocols())
                         .containsAll(client.getProtocols())) {
                     if ((helperClass == null) || connector.getClass()
                             .getCanonicalName().equals(helperClass)) {
@@ -561,7 +562,7 @@ public class Engine {
 
                 if ((helperClass == null) || connector.getClass()
                         .getCanonicalName().equals(helperClass)) {
-                    if (connector.getProtocols()
+                    if (new HashSet<>(connector.getProtocols())
                             .containsAll(server.getProtocols())) {
                         try {
                             result = connector.getClass()
@@ -677,9 +678,8 @@ public class Engine {
             current = helpers.get(i);
 
             if (current.getChallengeScheme().equals(challengeScheme)
-                    && ((clientSide && current.isClientSide()) || !clientSide)
-                    && ((serverSide && current.isServerSide())
-                            || !serverSide)) {
+                    && (!clientSide || current.isClientSide())
+                    && (!serverSide || current.isServerSide())) {
                 result = helpers.get(i);
             }
         }
@@ -910,16 +910,15 @@ public class Engine {
                 .getResources(descriptorPath);
 
         if (configUrls != null) {
-            for (Enumeration<java.net.URL> configEnum = configUrls; configEnum
-                    .hasMoreElements();) {
-                registerHelpers(classLoader, configEnum.nextElement(), helpers,
+            while (configUrls.hasMoreElements()) {
+                registerHelpers(classLoader, configUrls.nextElement(), helpers,
                         constructorClass);
             }
         }
     }
 
     /**
-     * Registers a factory that is used by the URL class to create the
+     * Registers a factory used by the URL class to create the
      * {@link java.net.URLConnection} instances when the
      * {@link java.net.URL#openConnection()} or
      * {@link java.net.URL#openStream()} methods are invoked.
@@ -934,7 +933,7 @@ public class Engine {
                 new java.net.URLStreamHandlerFactory() {
                     public java.net.URLStreamHandler createURLStreamHandler(
                             String protocol) {
-                        final java.net.URLStreamHandler result = new java.net.URLStreamHandler() {
+                        return new java.net.URLStreamHandler() {
 
                             @Override
                             protected java.net.URLConnection openConnection(
@@ -948,7 +947,7 @@ public class Engine {
                                     @Override
                                     public InputStream getInputStream()
                                             throws IOException {
-                                        InputStream result = null;
+                                        InputStream result1 = null;
 
                                         // Retrieve the current context
                                         final Context context = Context
@@ -963,19 +962,17 @@ public class Engine {
 
                                             if (response.getStatus()
                                                     .isSuccess()) {
-                                                result = response.getEntity()
+                                                result1 = response.getEntity()
                                                         .getStream();
                                             }
                                         }
 
-                                        return result;
+                                        return result1;
                                     }
                                 };
                             }
 
                         };
-
-                        return result;
                     }
 
                 });
@@ -1092,7 +1089,7 @@ public class Engine {
     }
 
     /**
-     * Sets the user class loader that should used in priority.
+     * Sets the user class loader that should be used in priority.
      * 
      * @param newClassLoader The new user class loader to use.
      */

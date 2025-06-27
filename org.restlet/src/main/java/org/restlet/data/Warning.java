@@ -23,7 +23,7 @@ import java.util.Date;
  */
 public class Warning {
 
-	/** The agent. Typically a caching agent. */
+	/** The agent. Typically, a caching agent. */
 	private volatile String agent;
 
 	/** The warning date. */

@@ -79,13 +79,11 @@ public abstract class BaseConnectorsTestCase {
             throws Exception {
         if (shouldDebug()) {
             System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
-            System.setProperty(
-                    "sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
         }
 
-        initEngine(server, client);
-        start();
         try {
+            initEngine(server, client);
+            start();
             doTest(port);
         } finally {
             stop();

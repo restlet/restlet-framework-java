@@ -53,9 +53,7 @@ public class IdentClient {
 			BufferedReader in = null;
 			try {
 				// Compose the IDENT request
-				final StringBuilder sb = new StringBuilder();
-				sb.append(clientPort).append(" , ").append(serverPort).append("\r\n");
-				final String request = sb.toString();
+				final String request = clientPort + " , " + serverPort + "\r\n";
 
 				// Send the request to the remote server
 				socket = new Socket();

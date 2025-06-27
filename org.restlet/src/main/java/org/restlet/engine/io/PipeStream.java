@@ -57,7 +57,7 @@ public class PipeStream {
 						throw new IOException("Timeout while reading from the queue-based input stream");
 					} else {
 						this.endReached = (value == -1);
-						return value.intValue();
+						return value;
 					}
 				} catch (InterruptedException ie) {
 					throw new IOException("Interruption occurred while writing in the queue");

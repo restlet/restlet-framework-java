@@ -50,9 +50,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
 	 */
 	public Reference createReference(String scheme, String encodedParentDirPath, String encodedEntityName,
 			String decodedVariantName) {
-		Reference result = new Reference(scheme + "://" + encodedParentDirPath + "/"
+        return new Reference(scheme + "://" + encodedParentDirPath + "/"
 				+ getReencodedVariantEntityName(encodedEntityName, decodedVariantName));
-		return result;
 	}
 
 	/**

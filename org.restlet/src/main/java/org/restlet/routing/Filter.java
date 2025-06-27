@@ -162,15 +162,10 @@ public abstract class Filter extends Restlet {
 
 		switch (beforeHandle(request, response)) {
 		case CONTINUE:
-			switch (doHandle(request, response)) {
-			case CONTINUE:
-				afterHandle(request, response);
-				break;
-
-			default:
-				// Stop the processing
-				break;
-			}
+            // Stop the processing
+            if (doHandle(request, response) == CONTINUE) {
+                afterHandle(request, response);
+            }
 			break;
 
 		case SKIP:

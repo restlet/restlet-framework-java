@@ -254,7 +254,6 @@ public class ShutdownHookTestCase {
         if (shouldDebug) {
             server.getContext().getParameters().add("tracing", "true");
             System.setProperty("org.eclipse.jetty.LEVEL", "TRACE");
-            System.setProperty("sun.net.www.protocol.http.HttpURLConnection.LEVEL", "ALL");
             Engine.setLogLevel(Level.FINE);
         }
 

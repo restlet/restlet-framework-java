@@ -223,13 +223,13 @@ public class FormReader {
 
 					if (readingName) {
 						if (nextChar == '=') {
-							if (nameBuffer.length() > 0) {
+							if (!nameBuffer.isEmpty()) {
 								readingName = false;
 							} else {
 								throw new IOException("Empty parameter name detected. Please check your form data");
 							}
 						} else if (endOfCurrentParameterReached(nextChar)) {
-							if (nameBuffer.length() > 0) {
+							if (!nameBuffer.isEmpty()) {
 								result = FormUtils.create(nameBuffer, null, this.decode, this.characterSet);
 							} else if (nextChar == -1) {
 								// Do nothing return null preference

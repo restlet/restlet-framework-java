@@ -49,11 +49,10 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
 
 	@Override
 	protected int doHandle(Request request, Response response) {
-		int result = CONTINUE;
-		// Ask the server router to actually handle the call
+        // Ask the server router to actually handle the call
 		getComponentContext().getComponentHelper().getServerRouter().handle(request, response);
 
-		return result;
+		return CONTINUE;
 	}
 
 	/**

@@ -58,8 +58,8 @@ public class ChildClientDispatcher extends TemplateDispatcher {
 			LocalReference cr = new LocalReference(request.getResourceRef());
 
 			if (cr.getRiapAuthorityType() == LocalReference.RIAP_APPLICATION) {
-				if ((getChildContext() != null) && (getChildContext().getChild() instanceof Application)) {
-					Application application = (Application) getChildContext().getChild();
+				if ((getChildContext() != null)
+						&& (getChildContext().getChild() instanceof Application application)) {
 					request.getResourceRef().setBaseRef(request.getResourceRef().getHostIdentifier());
 					application.getInboundRoot().handle(request, response);
 				}
@@ -73,8 +73,8 @@ public class ChildClientDispatcher extends TemplateDispatcher {
 				result = STOP;
 			}
 		} else {
-			if ((getChildContext() != null) && (getChildContext().getChild() instanceof Application)) {
-				Application application = (Application) getChildContext().getChild();
+			if ((getChildContext() != null)
+					&& (getChildContext().getChild() instanceof Application application)) {
 
 				if (!application.getConnectorService().getClientProtocols().contains(protocol)) {
 					getLogger().fine(

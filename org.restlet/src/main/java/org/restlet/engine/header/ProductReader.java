@@ -103,7 +103,7 @@ public class ProductReader {
 					version = versionBuilder.toString();
 					result.add(new Product(token, version, null));
 				} else {
-					if (insideToken && (tokenBuilder.length() > 0)) {
+					if (insideToken && (!tokenBuilder.isEmpty())) {
 						token = tokenBuilder.toString();
 						result.add(new Product(token, null, null));
 					}

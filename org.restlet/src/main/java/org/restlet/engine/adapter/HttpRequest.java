@@ -296,10 +296,10 @@ public class HttpRequest extends Request {
 							.getValues(HeaderConstants.HEADER_X_FORWARDED_FOR);
 					if (header != null) {
 						final String[] addresses = header.split(",");
-						for (int i = 0; i < addresses.length; i++) {
-							String address = addresses[i].trim();
-							result.getForwardedAddresses().add(address);
-						}
+                        for (String s : addresses) {
+                            String address = s.trim();
+                            result.getForwardedAddresses().add(address);
+                        }
 					}
 				}
 			}

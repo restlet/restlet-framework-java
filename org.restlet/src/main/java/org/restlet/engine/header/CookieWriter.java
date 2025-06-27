@@ -68,14 +68,14 @@ public class CookieWriter extends HeaderWriter<Cookie> {
 		String value = cookie.getValue();
 		int version = cookie.getVersion();
 
-		if ((name == null) || (name.length() == 0)) {
+		if ((name == null) || (name.isEmpty())) {
 			throw new IllegalArgumentException("Can't write cookie. Invalid name detected");
 		}
 
 		appendValue(name, 0).append('=');
 
 		// Append the value
-		if ((value != null) && (value.length() > 0)) {
+		if ((value != null) && (!value.isEmpty())) {
 			appendValue(value, version);
 		}
 
@@ -83,7 +83,7 @@ public class CookieWriter extends HeaderWriter<Cookie> {
 			// Append the path
 			String path = cookie.getPath();
 
-			if ((path != null) && (path.length() > 0)) {
+			if ((path != null) && (!path.isEmpty())) {
 				append("; $Path=");
 				appendQuotedString(path);
 			}
@@ -91,7 +91,7 @@ public class CookieWriter extends HeaderWriter<Cookie> {
 			// Append the domain
 			String domain = cookie.getDomain();
 
-			if ((domain != null) && (domain.length() > 0)) {
+			if ((domain != null) && (!domain.isEmpty())) {
 				append("; $Domain=");
 				appendQuotedString(domain);
 			}

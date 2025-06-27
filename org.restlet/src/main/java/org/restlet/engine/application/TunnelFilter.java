@@ -561,20 +561,18 @@ public class TunnelFilter extends Filter {
 	 * @param metadata   The metadata to use.
 	 */
 	private void updateMetadata(ClientInfo clientInfo, Metadata metadata) {
-		if (metadata != null) {
-			if (metadata instanceof CharacterSet) {
-				clientInfo.getAcceptedCharacterSets().clear();
-				clientInfo.getAcceptedCharacterSets().add(new Preference<>((CharacterSet) metadata));
-			} else if (metadata instanceof Encoding) {
-				clientInfo.getAcceptedEncodings().clear();
-				clientInfo.getAcceptedEncodings().add(new Preference<>((Encoding) metadata));
-			} else if (metadata instanceof Language) {
-				clientInfo.getAcceptedLanguages().clear();
-				clientInfo.getAcceptedLanguages().add(new Preference<>((Language) metadata));
-			} else if (metadata instanceof MediaType) {
-				clientInfo.getAcceptedMediaTypes().clear();
-				clientInfo.getAcceptedMediaTypes().add(new Preference<>((MediaType) metadata));
-			}
+		if (metadata instanceof CharacterSet) {
+			clientInfo.getAcceptedCharacterSets().clear();
+			clientInfo.getAcceptedCharacterSets().add(new Preference<>((CharacterSet) metadata));
+		} else if (metadata instanceof Encoding) {
+			clientInfo.getAcceptedEncodings().clear();
+			clientInfo.getAcceptedEncodings().add(new Preference<>((Encoding) metadata));
+		} else if (metadata instanceof Language) {
+			clientInfo.getAcceptedLanguages().clear();
+			clientInfo.getAcceptedLanguages().add(new Preference<>((Language) metadata));
+		} else if (metadata instanceof MediaType) {
+			clientInfo.getAcceptedMediaTypes().clear();
+			clientInfo.getAcceptedMediaTypes().add(new Preference<>((MediaType) metadata));
 		}
 	}
 

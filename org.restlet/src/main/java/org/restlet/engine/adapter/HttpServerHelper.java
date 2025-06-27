@@ -85,22 +85,16 @@ public class HttpServerHelper extends ServerHelper {
 						"org.restlet.engine.adapter.ServerAdapter");
 				this.adapter = (ServerAdapter) Engine.loadClass(adapterClass).getConstructor(Context.class)
 						.newInstance(getContext());
-			} catch (IllegalArgumentException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (SecurityException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (InstantiationException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (IllegalAccessException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (InvocationTargetException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (NoSuchMethodException e) {
-				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
-			} catch (ClassNotFoundException e) {
+			} catch (IllegalArgumentException
+					 | SecurityException
+					 | InstantiationException
+					 | IllegalAccessException
+					 | InvocationTargetException
+					 | NoSuchMethodException
+					 | ClassNotFoundException e) {
 				getLogger().log(Level.SEVERE, "Unable to create the HTTP server adapter", e);
 			}
-		}
+        }
 
 		return this.adapter;
 	}

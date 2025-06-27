@@ -55,7 +55,7 @@ public abstract class ConverterHelper extends Helper {
 	protected List<VariantInfo> addVariant(List<VariantInfo> variants, VariantInfo userVariant) {
 		if (userVariant != null) {
 			if (variants == null) {
-				variants = new ArrayList<VariantInfo>();
+				variants = new ArrayList<>();
 			}
 
 			variants.add(userVariant);

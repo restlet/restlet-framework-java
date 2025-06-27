@@ -479,9 +479,7 @@ public abstract class ServerResource extends Resource {
 				result = toRepresentation(resultObject, variant);
 			}
 
-		} catch (IllegalArgumentException e) {
-			throw new ResourceException(e);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | IOException e) {
 			throw new ResourceException(e);
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException() instanceof ResourceException) {
@@ -489,11 +487,9 @@ public abstract class ServerResource extends Resource {
 			}
 
 			throw new ResourceException(e.getTargetException());
-		} catch (IOException e) {
-			throw new ResourceException(e);
 		}
 
-		return result;
+        return result;
 	}
 
 	/**

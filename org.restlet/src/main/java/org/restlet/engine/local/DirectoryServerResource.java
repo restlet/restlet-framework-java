@@ -460,32 +460,29 @@ public class DirectoryServerResource extends ServerResource {
 	}
 
 	/**
-	 * Allows to sort the list of representations set by the resource.
+	 * Allows sorting the list of representations set by the resource.
 	 * 
 	 * @return A Comparator instance imposing a sort order of representations or
 	 *         null if no special order is wanted.
 	 */
 	private Comparator<Representation> getRepresentationsComparator() {
 		// Sort the list of representations by their identifier.
-		Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
-			public int compare(Representation rep0, Representation rep1) {
-				boolean bRep0Null = (rep0.getLocationRef() == null);
-				boolean bRep1Null = (rep1.getLocationRef() == null);
+        return (rep0, rep1) -> {
+            boolean bRep0Null = (rep0.getLocationRef() == null);
+            boolean bRep1Null = (rep1.getLocationRef() == null);
 
-				if (bRep0Null && bRep1Null) {
-					return 0;
-				}
-				if (bRep0Null) {
-					return -1;
-				}
-				if (bRep1Null) {
-					return 1;
-				}
+            if (bRep0Null && bRep1Null) {
+                return 0;
+            }
+            if (bRep0Null) {
+                return -1;
+            }
+            if (bRep1Null) {
+                return 1;
+            }
 
-				return rep0.getLocationRef().getLastSegment().compareTo(rep1.getLocationRef().getLastSegment());
-			}
-		};
-		return identifiersComparator;
+            return rep0.getLocationRef().getLastSegment().compareTo(rep1.getLocationRef().getLastSegment());
+        };
 	}
 
 	/**

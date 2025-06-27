@@ -102,7 +102,7 @@ public class ApplicationHelper extends CompositeHelper<Application> {
 			getLogger().fine(
 					"By default, an application should be attached to a parent component in order to let application's outbound root handle calls properly.");
 			setOutboundNext(new Restlet() {
-				Map<Protocol, Client> clients = new ConcurrentHashMap<Protocol, Client>();
+				final Map<Protocol, Client> clients = new ConcurrentHashMap<Protocol, Client>();
 
 				@Override
 				public void handle(Request request, Response response) {

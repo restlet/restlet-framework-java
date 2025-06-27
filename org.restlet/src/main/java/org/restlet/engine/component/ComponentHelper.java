@@ -57,8 +57,7 @@ public class ComponentHelper extends CompositeHelper<Component> {
 			for (Route route : host.getRoutes()) {
 				Restlet next = route.getNext();
 
-				if (next instanceof Application) {
-					Application application = (Application) next;
+				if (next instanceof Application application) {
 
 					if (application.getConnectorService() != null) {
 						if (application.getConnectorService().getClientProtocols() != null) {

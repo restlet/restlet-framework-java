@@ -9,6 +9,7 @@
 
 package org.restlet.engine.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,17 +77,17 @@ public class StringUtils {
 	 */
 	private static class CharacterEntitySolver {
 		/** Map of names of entities according to their numeric value. */
-		private String[] toName;
+		private final String[] toName;
 
 		/** Map of numeric values of entities according to their name. */
-		private Map<String, Integer> toValue;
+		private final Map<String, Integer> toValue;
 
 		/**
 		 * Constructor.
 		 */
 		public CharacterEntitySolver() {
 			toName = new String[10000];
-			toValue = new HashMap<String, Integer>();
+			toValue = new HashMap<>();
 		}
 
 		/**
@@ -450,7 +451,7 @@ public class StringUtils {
 	public static byte[] getAsciiBytes(String string) {
 		if (string != null) {
 			try {
-				return string.getBytes("US-ASCII");
+				return string.getBytes(StandardCharsets.US_ASCII);
 			} catch (Exception e) {
 				// Should not happen.
 				return null;
@@ -470,7 +471,7 @@ public class StringUtils {
 	public static byte[] getLatin1Bytes(String string) {
 		if (string != null) {
 			try {
-				return string.getBytes("ISO-8859-1");
+				return string.getBytes(StandardCharsets.ISO_8859_1);
 			} catch (Exception e) {
 				// Should not happen.
 				return null;
@@ -569,7 +570,7 @@ public class StringUtils {
 						} else {
 							Integer val = html40Entities.getValue(entityName);
 							if (val != null) {
-								entityValue = val.intValue();
+								entityValue = val;
 							}
 						}
 						if (entityValue == -1) {

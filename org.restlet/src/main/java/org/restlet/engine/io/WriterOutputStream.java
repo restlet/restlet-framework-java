@@ -17,6 +17,7 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Output stream wrapping a character writer.
@@ -40,7 +41,7 @@ public class WriterOutputStream extends OutputStream {
 	 */
 	public WriterOutputStream(Writer writer, CharacterSet characterSet) {
 		this.writer = writer;
-		this.charSet = (characterSet == null) ? Charset.forName("ISO-8859-1") : characterSet.toCharset();
+		this.charSet = (characterSet == null) ? StandardCharsets.ISO_8859_1 : characterSet.toCharset();
 	}
 
 	@Override

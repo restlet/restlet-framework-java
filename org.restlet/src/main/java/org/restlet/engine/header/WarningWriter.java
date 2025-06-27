@@ -40,11 +40,11 @@ public class WarningWriter extends HeaderWriter<Warning> {
 			throw new IllegalArgumentException("Can't write warning. Invalid status code detected");
 		}
 
-		if ((agent == null) || (agent.length() == 0)) {
+		if ((agent == null) || (agent.isEmpty())) {
 			throw new IllegalArgumentException("Can't write warning. Invalid agent detected");
 		}
 
-		if ((text == null) || (text.length() == 0)) {
+		if ((text == null) || (text.isEmpty())) {
 			throw new IllegalArgumentException("Can't write warning. Invalid text detected");
 		}
 
