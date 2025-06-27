@@ -53,6 +53,7 @@ public class ShutdownHookTestCase {
     @BeforeAll
     public static void setUp() {
         LOGGER.setLevel(Level.INFO);
+        Engine.register(true);
     }
 
     /**

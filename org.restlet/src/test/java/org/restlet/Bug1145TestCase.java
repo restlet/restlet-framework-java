@@ -21,6 +21,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 
 public class Bug1145TestCase {
@@ -43,6 +44,7 @@ public class Bug1145TestCase {
 
     @BeforeEach
     public void setUpEach() throws Exception {
+        Engine.register(true);
         this.client = new Client(Protocol.HTTP);
 
         this.component = new Component();
