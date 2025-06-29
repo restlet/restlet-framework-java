@@ -40,6 +40,7 @@ public class FileRepresentationTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
         Engine.getInstance().getRegisteredServers().add(new HttpServerHelper(null));
 
@@ -55,6 +56,7 @@ public class FileRepresentationTestCase {
 
     @AfterEach
     protected void tearDownEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         component.stop();
         component = null;
     }

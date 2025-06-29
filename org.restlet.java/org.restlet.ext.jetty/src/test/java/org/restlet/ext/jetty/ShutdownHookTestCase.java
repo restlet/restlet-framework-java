@@ -24,7 +24,9 @@
 
 package org.restlet.ext.jetty;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.MediaType;
@@ -46,9 +48,17 @@ public class ShutdownHookTestCase {
     private static final Logger LOGGER = Logger.getLogger("ShutdownHookTest");
     private static boolean shouldDebug = false;
 
-    @BeforeAll
-    public static void setUp() {
-        LOGGER.setLevel(Level.INFO);
+    @BeforeEach
+    public void setUp() {
+        LOGGER.setLevel(Level.FINE);
+        Engine.clearThreadLocalVariables();
+        Engine.register(true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Engine.clearThreadLocalVariables();
+        Engine.register(true);
     }
 
     /**

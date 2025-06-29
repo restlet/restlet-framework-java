@@ -37,6 +37,7 @@ public class DigesterRepresentationTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         Engine.register();
         component = new Component();
         final Server server = component.getServers().add(Protocol.HTTP, 0);
@@ -47,6 +48,8 @@ public class DigesterRepresentationTestCase {
 
     @AfterEach
     protected void tearDownEach() throws Exception {
+        Engine.clearThreadLocalVariables();
+        Engine.register();
         component.stop();
         component = null;
     }

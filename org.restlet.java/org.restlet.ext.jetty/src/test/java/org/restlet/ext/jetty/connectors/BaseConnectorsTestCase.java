@@ -121,6 +121,7 @@ public abstract class BaseConnectorsTestCase {
             Engine.setLogLevel(Level.FINE);
         }
 
+        Engine.clearThreadLocalVariables();
         Engine nre = Engine.register(false);
         nre.getRegisteredServers().add(server.serverHelper);
         nre.getRegisteredClients().add(client.clientHelper);
@@ -130,7 +131,8 @@ public abstract class BaseConnectorsTestCase {
 
     private void resetEngine() {
         // Restore a clean engine
-        org.restlet.engine.Engine.register();
+        Engine.register();
+        Engine.clearThreadLocalVariables();
     }
 
     public enum HttpServer {

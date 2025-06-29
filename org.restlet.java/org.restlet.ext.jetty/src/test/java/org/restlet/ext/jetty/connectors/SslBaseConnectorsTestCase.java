@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.restlet.*;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
 
@@ -39,6 +40,8 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
 
     @BeforeAll
     public static void globalSetUp() throws IOException {
+        Engine.clearThreadLocalVariables();
+        Engine.register();
         testKeystoreFile = Files.createTempFile("sslBaseConnectorsTest", KEYSTORE_FILE_NAME).toFile();
         testKeystoreFile.delete();
 
@@ -110,7 +113,8 @@ public abstract class SslBaseConnectorsTestCase extends BaseConnectorsTestCase {
         testKeystoreFile.delete();
 
         // Restore a clean engine
-        org.restlet.engine.Engine.register();
+        Engine.clearThreadLocalVariables();
+        Engine.register();
     }
 
 }

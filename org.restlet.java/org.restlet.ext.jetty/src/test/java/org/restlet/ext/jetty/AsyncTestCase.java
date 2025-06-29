@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.*;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -89,12 +90,13 @@ public class AsyncTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         // Create components
         clientComponent = new Component();
         originComponent = new Component();
 
         // Create a new Restlet that will display some path information.
-        final Restlet trace = new Restlet(originComponent.getContext()
+            final Restlet trace = new Restlet(originComponent.getContext()
                 .createChildContext()) {
             @Override
             public void handle(Request request, Response response) {
@@ -172,6 +174,7 @@ public class AsyncTestCase {
 
     @AfterEach
     protected void tearDownEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         // Stop the components
         clientComponent.stop();
         originComponent.stop();
