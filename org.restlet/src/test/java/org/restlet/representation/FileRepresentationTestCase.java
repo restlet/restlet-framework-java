@@ -49,6 +49,7 @@ public class FileRepresentationTestCase {
 
     @BeforeEach
     protected void setUpEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         Engine.register(true);
         component = new Component();
         Server server = component.getServers().add(Protocol.HTTP, 0);
@@ -62,6 +63,7 @@ public class FileRepresentationTestCase {
 
     @AfterEach
     protected void tearDownEach() throws Exception {
+        Engine.clearThreadLocalVariables();
         component.stop();
         component = null;
     }

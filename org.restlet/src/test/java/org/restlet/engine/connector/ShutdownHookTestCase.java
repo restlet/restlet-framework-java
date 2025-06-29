@@ -33,7 +33,9 @@ import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -50,9 +52,16 @@ public class ShutdownHookTestCase {
     private static final Logger LOGGER = Logger.getLogger("ShutdownHookTest");
     private static boolean shouldDebug = false;
 
-    @BeforeAll
-    public static void setUp() {
-        LOGGER.setLevel(Level.INFO);
+    @BeforeEach
+    public void setUp() {
+        LOGGER.setLevel(Level.FINE);
+        Engine.clearThreadLocalVariables();
+        Engine.register(true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Engine.clearThreadLocalVariables();
         Engine.register(true);
     }
 
@@ -78,7 +87,7 @@ public class ShutdownHookTestCase {
      *
      * This is done by making a request froze, then stopping the server, and checking that it didn't wait.
      */
-    // FIXME @Test
+    @Test
     public void whenServerIsHandlingBlockingRequestThenItStopsImmediately() throws Exception {
         // Given a server resource that takes 1 min to send a response
         final Lock lock = new Lock("Server");
@@ -113,7 +122,7 @@ public class ShutdownHookTestCase {
      *
      * This is done by making a request froze, then stopping the server, and checking that it waited the expected amount of time before shutting down.
      */
-    // FIXME @Test
+    @Test
     public void whenServerIsHandlingBlockingRequestThenItGracefullyWaitsFor1SecondBeforeStopping() throws Exception {
         // Given a server resource that takes 1 min to send a response
         final Lock serverLock = new Lock("Server");
@@ -148,7 +157,7 @@ public class ShutdownHookTestCase {
      *
      * This is done by making a request froze, then stopping the server, and checking that a new request is not taken into account.
      */
-    // FIXME @Test
+    @Test
     public void whenServerIsHandlingBlockingRequestThenItRefusesNewRequest() throws Exception {
         // Given a server resource that takes 1 min to send a response
         final Lock lock = new Lock("Server");
@@ -185,7 +194,7 @@ public class ShutdownHookTestCase {
      *
      * This is done by making a request froze for a short amount of time, then stopping the server, and checking that the request has been handled.
      */
-    // FIXME @Test
+    @Test
     public void whenServerIsHandlingLongRequestThenRequestIsHandledCorrectlyBeforeStopping() throws Exception {
         // Given a server resource that takes 1 sec to send a response
         final Lock lock = new Lock("Server");

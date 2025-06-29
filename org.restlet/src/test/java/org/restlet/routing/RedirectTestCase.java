@@ -9,11 +9,14 @@
 
 package org.restlet.routing;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
 
 import static java.lang.String.format;
@@ -34,6 +37,18 @@ public class RedirectTestCase {
                 new Request(method, uri));
         assertNotNull(response.getEntity());
         response.getEntity().write(System.out);
+    }
+
+    @BeforeEach
+    public void setUp() {
+        Engine.clearThreadLocalVariables();
+        Engine.register();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Engine.clearThreadLocalVariables();
+        Engine.register();
     }
 
     /**

@@ -81,6 +81,11 @@ public class HttpTransportProtocolsTestCase {
             nre.getRegisteredClients().add(0, new HttpClientHelper(null));
         }
 
+        @BeforeAll
+        public static void tearDown() {
+            Engine.clearThreadLocalVariables();
+        }
+
         @Override
         Server newServer(String httpTransportProtocolOption) {
             final Context context = new Context();
