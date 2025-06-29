@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-- 2.7 Milestone 2 (??-07-2025)
+- 2.7 Milestone 2 (29-07-2025)
     - Misc
       - Removed deprecated Servlet extension and related classes in Spring extension
       - Removed deprecated methods in Restlet API
