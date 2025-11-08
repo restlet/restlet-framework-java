@@ -20,7 +20,7 @@ To learn more about Restlet Framework, please have a look at the following resou
 * [Tutorials](https://restlet.talend.com/documentation/tutorials/2.6/)
 * [User Guide](https://restlet.talend.com/documentation/user-guide/2.6/)
 * [JavaDocs](https://restlet.talend.com/documentation/javadocs/2.6/)
-* [Change Log](https://restlet.talend.com/documentation/2.6/changelog)
+* [What's New](https://restlet.talend.com/documentation/whats-new/2.6/)
 * [Issues](https://github.com/restlet/restlet-framework-java/issues)
 * [Discussions](https://github.com/restlet/restlet-framework-java/discussions)
 * [Stack Overflow](http://stackoverflow.com/questions/tagged/restlet)
