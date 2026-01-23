@@ -40,7 +40,7 @@ public class ReferenceTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
-     * Returns a reference that is initialized with http://restlet.org.
+     * Returns a reference initialized with http://restlet.org.
      * 
      * @return Reference instance.
      */

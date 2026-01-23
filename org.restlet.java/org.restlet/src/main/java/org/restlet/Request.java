@@ -753,7 +753,7 @@ public class Request extends Message {
 	}
 
 	/**
-	 * Sets the host reference using an URI string. Note that when used with HTTP
+	 * Sets the host reference using a URI string. Note that when used with HTTP
 	 * connectors, this property maps to the "Host" header.
 	 * 
 	 * @param hostUri The host URI.
@@ -866,7 +866,7 @@ public class Request extends Message {
 	}
 
 	/**
-	 * Sets the referrer reference if available using an URI string. Note that when
+	 * Sets the referrer reference if available using a URI string. Note that when
 	 * used with HTTP connectors, this property maps to the "Referer" header.
 	 * 
 	 * @param referrerUri The referrer URI.
@@ -890,7 +890,7 @@ public class Request extends Message {
 	}
 
 	/**
-	 * Sets the target resource reference using an URI string. Note that the URI can
+	 * Sets the target resource reference using a URI string. Note that the URI can
 	 * be either absolute or relative to the context's base reference.
 	 * 
 	 * @param resourceUri The resource URI.
