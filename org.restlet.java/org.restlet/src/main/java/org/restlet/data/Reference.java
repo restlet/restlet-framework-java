@@ -516,85 +516,119 @@ public class Reference {
 	}
 
     public void validateInternalRef(String url) {
-        java.util.Map<String, String> components = new java.util.HashMap<>();
-
         if (url == null || url.isEmpty()) {
-            throw new IllegalArgumentException("URL cannot be null or empty");
+            return;
         }
 
+        String authority = getAuthority(url);
+
+        if (authority.startsWith("[")) {
+            int ipv6End = authority.indexOf(']');
+            if (ipv6End != -1) {
+                validateIPv6(authority.substring(0, ipv6End + 1));
+                if (ipv6End + 1 < authority.length() && authority.charAt(ipv6End + 1) == ':') {
+                    validateHostPort(authority.substring(ipv6End + 2));
+                } else if (ipv6End + 1 < authority.length()) {
+                    throw new IllegalArgumentException("Invalid authority format");
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
+            }
+        } else if (authority.indexOf('[') != -1) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        } else {
+            int atIndex = authority.indexOf('@');
+            if (atIndex != -1) {
+                authority = authority.substring(atIndex + 1);
+            }
+
+            int portIndex = authority.indexOf(':');
+            if (portIndex != -1) {
+                validateHostPort(authority.substring(portIndex + 1));
+            }
+        }
+    }
+
+    private static String getAuthority(final String url) {
         String remaining = url;
 
         // Parse scheme
-        int schemeEnd = remaining.indexOf(':');
+        int schemeEnd = remaining.indexOf("://");
         if (schemeEnd > 0) {
-            components.put("scheme", remaining.substring(0, schemeEnd).toLowerCase());
-            remaining = remaining.substring(schemeEnd + 1);
-        } else {
-            components.put("scheme", null);
+            remaining = remaining.substring(schemeEnd + 3);
         }
 
-        if (remaining.startsWith("//")) {
-            remaining = remaining.substring(2);
-            int authorityEnd = remaining.indexOf('/');
-            if (authorityEnd == -1) {
-                authorityEnd = remaining.indexOf('?');
-            }
-            if (authorityEnd == -1) {
-                authorityEnd = remaining.indexOf('#');
-            }
-            if (authorityEnd == -1) {
-                authorityEnd = remaining.length();
-            }
-
-            String authority = remaining.substring(0, authorityEnd);
-
-            // Parse host and port
-            // Handle IPv6 addresses [::1]
-            if (authority.startsWith("[")) {
-                int ipv6End = authority.indexOf(']');
-                if (ipv6End != -1) {
-                    components.put("hostName", authority.substring(0, ipv6End + 1));
-                    if () {
-
-                    }
-                    if (ipv6End + 1 < authority.length() && authority.charAt(ipv6End + 1) == ':') {
-                        components.put("hostPort", authority.substring(ipv6End + 2));
-                    } else if (ipv6End + 1 < authority.length()) {
-                        throw new IllegalArgumentException("Invalid authority format");
-                    } else {
-                        components.put("hostPort", null);
-                    }
-                } else {
-                    throw new IllegalArgumentException("Invalid IPv6 address format");
-                }
-            } else if (authority.indexOf('[') != -1) {
-                throw new IllegalArgumentException("Invalid IPv6 address format");
-            } else {
-                int atIndex = authority.indexOf('@');
-                if (atIndex != -1) {
-                    authority = authority.substring(atIndex + 1);
-                }
-
-                int portIndex = authority.indexOf(':');
-                if (portIndex != -1) {
-                    components.put("hostName", authority.substring(0, portIndex));
-                    components.put("hostPort", authority.substring(portIndex + 1));
-                } else {
-                    components.put("hostName", authority);
-                    components.put("hostPort", null);
-                }
-            }
+        int authorityEnd = remaining.indexOf('/');
+        if (authorityEnd == -1) {
+            authorityEnd = remaining.indexOf('?');
+        }
+        if (authorityEnd == -1) {
+            authorityEnd = remaining.indexOf('#');
+        }
+        if (authorityEnd == -1) {
+            authorityEnd = remaining.length();
         }
 
-        if (components.get("hostPort") != null) {
+        return remaining.substring(0, authorityEnd);
+    }
+
+    private static void validateHostPort(final String hostPort) {
+        if (hostPort != null) {
             try {
-                Integer.parseInt(components.get("hostPort"));
+                Integer.parseInt(hostPort);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid port number format");
             }
         }
     }
 
+    // RFC 2373
+    private static void validateIPv6(String ipv6) {
+        if (ipv6 == null || ipv6.isEmpty()) {
+            throw new IllegalArgumentException("Invalid IPv6 address");
+        }
+
+        if (ipv6.startsWith("[")) {
+            ipv6 = ipv6.substring(1);
+        }
+        if (ipv6.endsWith("]")) {
+            ipv6 = ipv6.substring(0, ipv6.length() - 1);
+        }
+
+        // Check for double colon compression (only one allowed)
+        int doubleColonCount = 0;
+        int idx = ipv6.indexOf("::");
+        while (idx != -1) {
+            doubleColonCount++;
+            idx = ipv6.indexOf("::", idx + 2);
+        }
+        if (doubleColonCount > 1) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        }
+
+        String[] parts = ipv6.split(":", -1);
+        int maxParts = 8;
+
+        if (parts.length > maxParts) {
+            throw new IllegalArgumentException("Invalid IPv6 address format");
+        }
+
+        for (String part : parts) {
+            if (part.isEmpty() && doubleColonCount == 0) {
+                throw new IllegalArgumentException("Invalid IPv6 address format");
+            }
+            if (!part.isEmpty()) {
+                if (part.length() > 4) {
+                    throw new IllegalArgumentException("Invalid IPv6 address format");
+                }
+                for (char c : part.toCharArray()) {
+                    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                        throw new IllegalArgumentException("Invalid IPv6 address format");
+                    }
+                }
+            }
+        }
+    }
 	/**
 	 * Constructor of relative reference from its parts.
 	 * 
