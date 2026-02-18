@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.SpecVersion;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -78,7 +79,7 @@ class RestletOpenApiReader implements OpenApiReader {
             OpenApiAnnotationProcessor.documentOpenApiDefinition(openAPI, openAPIDefinitionAnnotation);
         }
 
-        completeOpenApiInfo();
+        completeOpenApiInfo(router);
 
         List<Route> allRoutes = new ArrayList<>(router.getRoutes());
         if (router.getDefaultRoute() != null) {
@@ -90,6 +91,8 @@ class RestletOpenApiReader implements OpenApiReader {
         }
 
         openAPI.setComponents(components);
+        openAPI.setOpenapi("3.1.0");
+        openAPI.setSpecVersion(SpecVersion.V31);
 
         return openAPI;
     }
@@ -148,14 +151,22 @@ class RestletOpenApiReader implements OpenApiReader {
         }
     }
 
-    private void completeOpenApiInfo() {
+    private void completeOpenApiInfo(Router router) {
+        var applicationClassName = router.getApplication().getClass().getSimpleName();
+
+        var applicationName = applicationClassName.endsWith("Application")
+            ? applicationClassName.substring(0, applicationClassName.length() - "Application".length())
+            : applicationClassName;
+
+        var defaultTitle = applicationName + " REST API";
+
         if (openAPI.getInfo() == null) {
             openAPI.setInfo(new Info()
-                .title("Generated API")
+                .title(defaultTitle)
                 .version("1.0.0")
             );
         } else if (openAPI.getInfo().getTitle() == null) {
-            openAPI.getInfo().setTitle("Generated API");
+            openAPI.getInfo().setTitle(defaultTitle);
         } else if (openAPI.getInfo().getVersion() == null) {
             openAPI.getInfo().setVersion("1.0.0");
         }
@@ -276,7 +287,7 @@ class RestletOpenApiReader implements OpenApiReader {
                 "200",
                 new ApiResponse()
                     .content(content)
-                    .description("Successful response")
+                    .description("Success")
             ));
     }
 

@@ -15,7 +15,7 @@ public class OpenApiGenerationTest {
 
     @Test
     public void testLibraryApplicationOpenApi() throws Exception {
-        var application = new LibraryApplication.Restlet();
+        var application = new Library.LibraryApplication();
         var component = new Component();
 
         var server = component.getServers().add(

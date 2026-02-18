@@ -6,7 +6,7 @@ import org.restlet.routing.Router;
 
 import java.util.List;
 
-public class LibraryApplication {
+public class Library {
     public record Book(String id, String title, String author) {
     }
 
@@ -20,7 +20,7 @@ public class LibraryApplication {
         }
     }
 
-    public static class Restlet extends RestletOpenApiApplication {
+    public static class LibraryApplication extends RestletOpenApiApplication {
         @Override
         public org.restlet.Restlet createInboundRoot() {
             var router = new Router(getContext());
