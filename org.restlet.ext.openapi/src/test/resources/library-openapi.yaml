@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: Generated API
+  version: 1.0.0
+paths:
+  /books:
+    get:
+      operationId: getBooks
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string

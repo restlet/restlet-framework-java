@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -76,6 +77,8 @@ class RestletOpenApiReader implements OpenApiReader {
         if (openAPIDefinitionAnnotation != null) {
             OpenApiAnnotationProcessor.documentOpenApiDefinition(openAPI, openAPIDefinitionAnnotation);
         }
+
+        completeOpenApiInfo();
 
         List<Route> allRoutes = new ArrayList<>(router.getRoutes());
         if (router.getDefaultRoute() != null) {
@@ -142,6 +145,19 @@ class RestletOpenApiReader implements OpenApiReader {
 
                 openAPI.setPaths(this.paths);
             }
+        }
+    }
+
+    private void completeOpenApiInfo() {
+        if (openAPI.getInfo() == null) {
+            openAPI.setInfo(new Info()
+                .title("Generated API")
+                .version("1.0.0")
+            );
+        } else if (openAPI.getInfo().getTitle() == null) {
+            openAPI.getInfo().setTitle("Generated API");
+        } else if (openAPI.getInfo().getVersion() == null) {
+            openAPI.getInfo().setVersion("1.0.0");
         }
     }
 
@@ -248,13 +264,19 @@ class RestletOpenApiReader implements OpenApiReader {
         Type returnType,
         List<Variant> responseVariants
     ) {
+        if (responseVariants == null || responseVariants.isEmpty()) {
+            return;
+        }
+
         Variant firstVariant = responseVariants.getFirst();
 
         processTypeToContent(returnType, List.of(firstVariant))
             .ifPresent(content -> Operations.addApiResponse(
                 operation,
                 "200",
-                new ApiResponse().content(content)
+                new ApiResponse()
+                    .content(content)
+                    .description("Successful response")
             ));
     }
 

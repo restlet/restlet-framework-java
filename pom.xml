@@ -62,7 +62,8 @@
         <lib-osgi-version>4.3.1</lib-osgi-version>
         <lib-slf4j-version>2.0.17</lib-slf4j-version>
         <lib-spring-version>6.2.8</lib-spring-version>
-        <lib-swagger-version>2.2.40</lib-swagger-version>
+        <lib-swagger-core-version>2.2.40</lib-swagger-core-version>
+        <lib-swagger-parser-version>2.1.38</lib-swagger-parser-version>
         <lib-thymeleaf-version>3.1.3.RELEASE</lib-thymeleaf-version>
         <lib-velocity-version>2.4.1</lib-velocity-version>
         <!-- tests -->
@@ -223,7 +224,8 @@
                                 </goals>
                                 <configuration>
                                     <rules>
-                                        <CheckMavenCentral implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                        <CheckMavenCentral
+                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
                                             <strict>false</strict>
                                             <release>${release}</release>
                                         </CheckMavenCentral>

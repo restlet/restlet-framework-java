@@ -19,25 +19,46 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>${lib-swagger-version}</version>
+            <version>${lib-swagger-core-version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>${lib-swagger-version}</version>
+            <version>${lib-swagger-core-version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-integration</artifactId>
-            <version>${lib-swagger-version}</version>
+            <version>${lib-swagger-core-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.restlet</groupId>
             <artifactId>org.restlet</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${lib-junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.restlet</groupId>
+            <artifactId>org.restlet.ext.jackson</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${lib-swagger-parser-version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

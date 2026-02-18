@@ -10,7 +10,7 @@ public class RestletOpenApiApplication extends Application {
      * Default path for the OpenAPI specification. Can be overridden by overriding the
      * {@link #getOpenapiSpecificationPath()} method.
      */
-    private static final String OPENAPI_SPECIFICATION_DEFAULT_PATH = "/openapi";
+    static final String OPENAPI_SPECIFICATION_DEFAULT_PATH = "/openapi";
 
     /**
      * Indicates if this application has already been documented or not.
