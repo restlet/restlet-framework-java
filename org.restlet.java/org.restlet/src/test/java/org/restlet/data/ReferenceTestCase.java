@@ -9,31 +9,34 @@
 
 package org.restlet.data;
 
-import org.junit.jupiter.api.Test;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.util.ReferenceUtils;
-import org.restlet.util.Series;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.util.ReferenceUtils;
+import org.restlet.util.Series;
 
-/**
- * Test {@link org.restlet.data.Reference}.
- * 
- * @author Jerome Louvel
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
- */
 public class ReferenceTestCase {
+
     protected final static String DEFAULT_SCHEME = "http";
 
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
-     * Returns a reference that is initialized with http://restlet.org.
-     * 
+     * Returns a reference initialized with http://restlet.org.
+     *
      * @return Reference instance.
      */
     protected Reference getDefaultReference() {
@@ -44,7 +47,7 @@ public class ReferenceTestCase {
 
     /**
      * Returns a reference with uri == http://
-     * 
+     *
      * @return Reference instance.
      */
     protected Reference getReference() {
@@ -118,6 +121,23 @@ public class ReferenceTestCase {
         reference.setSegments(segments); // must not produce NPE
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "http://localhost/abc,/def",
+            "http://localhost/abc/,/def",
+            "http://localhost/abc?query,/def",
+            "http://localhost/abc#fragment,/def",
+             "http://localhost/abc?query#fragment,/def",
+             "http://localhost/abc#fragment?query,/def",
+             "http://localhost#fragment/abc?query,/def",
+             "http://localhost?query/abc,/def"
+    })
+    public void testSetPath(String reference, String path) {
+        final Reference ref = new Reference(reference);
+        ref.setPath(path);
+        assertEquals(path, ref.getPath());
+    }
+
     /**
      * Equality tests.
      */
@@ -126,26 +146,25 @@ public class ReferenceTestCase {
         final Reference ref1 = getDefaultReference();
         final Reference ref2 = getDefaultReference();
         assertEquals(ref1, ref2);
-        assertEquals(ref1, ref2);
     }
 
-	@Test
+    @Test
     public void testGetLastSegment() {
         Reference reference = new Reference("http://hostname");
         assertNull(reference.getLastSegment());
-        
+
         reference = new Reference("http://hostname/");
         assertNull(reference.getLastSegment());
-        
+
         reference = new Reference("http://hostname/abc");
         assertEquals("abc", reference.getLastSegment());
-        
+
         reference = new Reference("http://hostname/abc/");
         assertEquals("abc", reference.getLastSegment());
-        
+
         reference = new Reference("http://hostname/123/abc/");
         assertEquals("abc", reference.getLastSegment());
-        
+
         reference = new Reference("http://hostname/123/abc");
         assertEquals("abc", reference.getLastSegment());
     }
@@ -206,8 +225,8 @@ public class ReferenceTestCase {
         headers.add(HeaderConstants.HEADER_X_FORWARDED_PORT, "123");
 
         Reference originalRef = ReferenceUtils.getOriginalRef(ref, headers);
-        assertEquals(originalRef.getSchemeProtocol(), Protocol.HTTPS);
-        assertEquals(originalRef.getHostPort(), 123);
+        assertEquals(Protocol.HTTPS, originalRef.getSchemeProtocol());
+        assertEquals(123, originalRef.getHostPort());
     }
 
     /**
@@ -225,258 +244,212 @@ public class ReferenceTestCase {
         assertEquals("/foo/", parentRef.toString());
     }
 
-    /**
-     * Tests the URI parsing.
-     */
-    @Test
-    public void testParsing() {
-        final String base = "http://a/b/c/d;p?q";
+    @Nested
+    class TestParsing {
 
-        final String uri01 = "g:h";
-        final String uri02 = "g";
-        final String uri03 = "./g";
-        final String uri04 = "g/";
-        final String uri05 = "/g";
-        final String uri06 = "//g";
-        final String uri07 = "?y";
-        final String uri08 = "g?y";
-        final String uri09 = "#s";
-        final String uri10 = "g#s";
-        final String uri11 = "g?y#s";
-        final String uri12 = ";x";
-        final String uri13 = "g;x";
-        final String uri14 = "g;x?y#s";
-        final String uri15 = "";
-        final String uri16 = ".";
-        final String uri17 = "./";
-        final String uri18 = "..";
-        final String uri19 = "../";
-        final String uri20 = "../g";
-        final String uri21 = "../..";
-        final String uri22 = "../../";
-        final String uri23 = "../../g";
-        final String uri24 = "../../../g";
-        final String uri25 = "../../../../g";
-        final String uri26 = "/./g";
-        final String uri27 = "/../g";
-        final String uri28 = "g.";
-        final String uri29 = ".g";
-        final String uri30 = "g..";
-        final String uri31 = "..g";
-        final String uri32 = "./../g";
-        final String uri33 = "./g/.";
-        final String uri34 = "g/./h";
-        final String uri35 = "g/../h";
-        final String uri36 = "g;x=1/./y";
-        final String uri37 = "g;x=1/../y";
+        @ParameterizedTest
+        @CsvSource({
+                "urn:example:animal:ferret:nose,urn,,example:animal:ferret:nose,,",
+                "foo://example.com:8042/over/there?name=ferret#nose,foo,example.com:8042,/over/there,name=ferret,nose",
+                "mailto:fred@example.com,mailto,,fred@example.com,,",
+                "foo://info.example.com?fred,foo,info.example.com,,fred,",
+                "http://localhost?query,http,localhost,,query,",
+                "http://localhost#?query,http,localhost,,,?query",
+                "http://localhost/?query,http,localhost,/,query,",
+                "http://localhost/#?query,http,localhost,/,,?query",
+                "http://localhost/path#frag/ment,http,localhost,/path,,frag/ment",
+                "http://localhost/path?qu/ery,http,localhost,/path,qu/ery,"
+        } )
+        public void testComponentsParsing(String reference,
+                                         String scheme, String authority, String path, String query, String fragment) {
+            final Reference ref = new Reference(reference);
+            assertEquals(scheme, ref.getScheme());
+            assertEquals(authority, ref.getAuthority());
+            assertEquals(path, ref.getPath());
+            assertEquals(query, ref.getQuery());
+            assertEquals(fragment, ref.getFragment());
+        }
 
-        final String uri101 = "g:h";
-        final String uri102 = "http://a/b/c/g";
-        final String uri103 = "http://a/b/c/g";
-        final String uri104 = "http://a/b/c/g/";
-        final String uri105 = "http://a/g";
-        final String uri106 = "http://g";
-        final String uri107 = "http://a/b/c/d;p?y";
-        final String uri108 = "http://a/b/c/g?y";
-        final String uri109 = "http://a/b/c/d;p?q#s";
-        final String uri110 = "http://a/b/c/g#s";
-        final String uri111 = "http://a/b/c/g?y#s";
-        final String uri112 = "http://a/b/c/;x";
-        final String uri113 = "http://a/b/c/g;x";
-        final String uri114 = "http://a/b/c/g;x?y#s";
-        final String uri115 = "http://a/b/c/d;p?q";
-        final String uri116 = "http://a/b/c/";
-        final String uri117 = "http://a/b/c/";
-        final String uri118 = "http://a/b/";
-        final String uri119 = "http://a/b/";
-        final String uri120 = "http://a/b/g";
-        final String uri121 = "http://a/";
-        final String uri122 = "http://a/";
-        final String uri123 = "http://a/g";
-        final String uri124 = "http://a/g";
-        final String uri125 = "http://a/g";
-        final String uri126 = "http://a/g";
-        final String uri127 = "http://a/g";
-        final String uri128 = "http://a/b/c/g.";
-        final String uri129 = "http://a/b/c/.g";
-        final String uri130 = "http://a/b/c/g..";
-        final String uri131 = "http://a/b/c/..g";
-        final String uri132 = "http://a/b/g";
-        final String uri133 = "http://a/b/c/g/";
-        final String uri134 = "http://a/b/c/g/h";
-        final String uri135 = "http://a/b/c/h";
-        final String uri136 = "http://a/b/c/g;x=1/y";
-        final String uri137 = "http://a/b/c/y";
+        @ParameterizedTest
+        @CsvSource({
+                "http://localhost/path#fragment,true,true,http://localhost/path#fragment",
+                "http://localhost/path#fragment,true,false,http://localhost/path",
+                "http://localhost/path#fragment,false,true,http://localhost/path#fragment",
+                "http://localhost/path#fragment,false,false,http://localhost/path",
+                "http://localhost/path?query,true,true,http://localhost/path?query",
+                "http://localhost/path?query,true,false,http://localhost/path?query",
+                "http://localhost/path?query,false,true,http://localhost/path",
+                "http://localhost/path?query,false,false,http://localhost/path",
+                "http://localhost/path?query#fragment,true,true,http://localhost/path?query#fragment",
+                "http://localhost/path?query#fragment,true,false,http://localhost/path?query",
+                "http://localhost/path?query#fragment,false,true,http://localhost/path#fragment",
+                "http://localhost/path?query#fragment,false,false,http://localhost/path",
+                "http://localhost/path#fragment?query,true,true,http://localhost/path#fragment?query",
+                "http://localhost/path#fragment?query,true,false,http://localhost/path",
+                "http://localhost/path#fragment?query,false,true,http://localhost/path#fragment?query",
+                "http://localhost/path#fragment?query,false,false,http://localhost/path"
+        } )
+        public void testParsingOfQueryAndFragment(String reference, boolean query, boolean fragment, String toString) {
+            final Reference ref = new Reference(reference);
+            assertEquals(ref.toString(query, fragment), toString);
+        }
 
-        final Reference host = new Reference("http://host.com");
-        final Reference slashdir = new Reference(host, "/dir");
-        final Reference dir = new Reference(host, "dir");
-        final Reference dirslash = new Reference(host, "dir/");
-        final Reference fulldir = new Reference("http://host.com/dir");
-        final Reference fulldirsub = new Reference(fulldir, "sub");
-        final Reference fulldirslashsub = new Reference(fulldir, "/sub");
-        final Reference slashdirsub = new Reference(slashdir, "sub");
-        final Reference slashdirslashsub = new Reference(slashdir, "/sub");
-        final Reference dirslashsub = new Reference(dirslash, "sub");
-        final Reference fullsub = new Reference("http://host.com/dir/sub");
+        @Test
+        public void testGetters() {
+            final Reference host = new Reference("http://host.com");
+            final Reference slashdir = new Reference(host, "/dir");
+            final Reference dir = new Reference(host, "dir");
+            final Reference dirslash = new Reference(host, "dir/");
+            final Reference fulldir = new Reference("http://host.com/dir");
+            final Reference fulldirsub = new Reference(fulldir, "sub");
+            final Reference fulldirslashsub = new Reference(fulldir, "/sub");
+            final Reference slashdirsub = new Reference(slashdir, "sub");
+            final Reference slashdirslashsub = new Reference(slashdir, "/sub");
+            final Reference dirslashsub = new Reference(dirslash, "sub");
+            final Reference fullsub = new Reference("http://host.com/dir/sub");
+            final Reference fullsubQuery = new Reference("http://host.com/dir/sub?query");
 
-        // Test the parsing of references into its components
-        testRef0("foo://example.com:8042/over/there?name=ferret#nose", "foo",
-                "example.com:8042", "/over/there", "name=ferret", "nose");
-        testRef0("urn:example:animal:ferret:nose", "urn", null,
-                "example:animal:ferret:nose", null, null);
-        testRef0("mailto:fred@example.com", "mailto", null, "fred@example.com",
-                null, null);
-        testRef0("foo://info.example.com?fred", "foo", "info.example.com",
-                null, "fred", null);
-        testRef0("*", null, null, "*", null, null);
-        testRef0("http://localhost?query", "http", "localhost", null, "query",
-                null);
-        testRef0("http://localhost#?query", "http", "localhost", null, null,
-                "?query");
-        testRef0("http://localhost/?query", "http", "localhost", "/", "query",
-                null);
-        testRef0("http://localhost/#?query", "http", "localhost", "/", null,
-                "?query");
-        testRef0("http://localhost/path#frag/ment", "http", "localhost",
-                "/path", null, "frag/ment");
-        testRef0("http://localhost/path?qu/ery", "http", "localhost", "/path",
-                "qu/ery", null);
+            testGetters(host, "http", "host.com", null,
+                    "http://host.com", "http://host.com",
+                    "http://host.com", null, null);
+            testGetters(slashdir, null, null, "/dir",
+                    null, "/dir",
+                    "http://host.com/dir", null, "/dir");
+            testGetters(dir, null, null, "dir",
+                    null, "dir",
+                    "http://host.com/dir", null, "dir");
+            testGetters(dirslash, null, null, "dir/",
+                    null, "dir/",
+                    "http://host.com/dir/", null, "dir/");
+            testGetters(fulldir, "http", "host.com", "/dir",
+                    "http://host.com/dir", "http://host.com/dir",
+                    "http://host.com/dir", null, null);
+            testGetters(fulldirsub, null, null, "sub",
+                    null, "sub",
+                    "http://host.com/sub", null, "sub");
+            testGetters(fulldirslashsub, null, null, "/sub",
+                    null, "/sub",
+                    "http://host.com/sub", null, "/sub");
+            testGetters(slashdirsub, null, null, "sub",
+                    null, "sub",
+                    "http://host.com/sub", null, "sub");
+            testGetters(slashdirslashsub, null, null, "/sub",
+                    null, "/sub",
+                    "http://host.com/sub", null, "/sub");
+            testGetters(dirslashsub, null, null, "sub",
+                    null, "sub",
+                    "http://host.com/dir/sub", null, "sub");
+            testGetters(fullsub, "http", "host.com", "/dir/sub",
+                    "http://host.com/dir/sub", "http://host.com/dir/sub",
+                    "http://host.com/dir/sub", null, null);
+            testGetters(fullsubQuery, "http", "host.com", "/dir/sub",
+                    "http://host.com/dir/sub?query", "http://host.com/dir/sub?query",
+                    "http://host.com/dir/sub?query", "query", null);
+        }
+        private void testGetters(Reference reference, String scheme, String authority,
+                                String path, String remainingPart, String toString,
+                                String targetRef, String query, String relativePart) {
+            assertEquals(reference.getScheme(), scheme);
+            assertEquals(reference.getAuthority(), authority);
+            assertEquals(reference.getPath(), path);
+            assertEquals(reference.getRemainingPart(), remainingPart);
+            assertEquals(reference.toString(), toString);
+            assertEquals(reference.getTargetRef().toString(), targetRef);
+            assertEquals(reference.getQuery(), query);
+            assertEquals(reference.getRelativePart(), relativePart);
+        }
 
-        // Test the resolution of relative references
-        testRef1(base, uri01, uri101);
-        testRef1(base, uri02, uri102);
-        testRef1(base, uri03, uri103);
-        testRef1(base, uri04, uri104);
-        testRef1(base, uri05, uri105);
-        testRef1(base, uri06, uri106);
-        testRef1(base, uri07, uri107);
-        testRef1(base, uri08, uri108);
-        testRef1(base, uri09, uri109);
-        testRef1(base, uri10, uri110);
-        testRef1(base, uri11, uri111);
-        testRef1(base, uri12, uri112);
-        testRef1(base, uri13, uri113);
-        testRef1(base, uri14, uri114);
-        testRef1(base, uri15, uri115);
-        testRef1(base, uri16, uri116);
-        testRef1(base, uri17, uri117);
-        testRef1(base, uri18, uri118);
-        testRef1(base, uri19, uri119);
-        testRef1(base, uri20, uri120);
-        testRef1(base, uri21, uri121);
-        testRef1(base, uri22, uri122);
-        testRef1(base, uri23, uri123);
-        testRef1(base, uri24, uri124);
-        testRef1(base, uri25, uri125);
-        testRef1(base, uri26, uri126);
-        testRef1(base, uri27, uri127);
-        testRef1(base, uri28, uri128);
-        testRef1(base, uri29, uri129);
-        testRef1(base, uri30, uri130);
-        testRef1(base, uri31, uri131);
-        testRef1(base, uri32, uri132);
-        testRef1(base, uri33, uri133);
-        testRef1(base, uri34, uri134);
-        testRef1(base, uri35, uri135);
-        testRef1(base, uri36, uri136);
-        testRef1(base, uri37, uri137);
+        @ParameterizedTest
+        @CsvSource({
+                "http://a/b/c/d;p?q,g:h,g:h",
+                "http://a/b/c/d;p?q,g,http://a/b/c/g",
+                "http://a/b/c/d;p?q,./g,http://a/b/c/g",
+                "http://a/b/c/d;p?q,g/,http://a/b/c/g/",
+                "http://a/b/c/d;p?q,/g,http://a/g",
+                "http://a/b/c/d;p?q,//g,http://g",
+                "http://a/b/c/d;p?q,?y,http://a/b/c/d;p?y",
+                "http://a/b/c/d;p?q,g?y,http://a/b/c/g?y",
+                "http://a/b/c/d;p?q,#s,http://a/b/c/d;p?q#s",
+                "http://a/b/c/d;p?q,g#s,http://a/b/c/g#s",
+                "http://a/b/c/d;p?q,g?y#s,http://a/b/c/g?y#s",
+                "http://a/b/c/d;p?q,;x,http://a/b/c/;x",
+                "http://a/b/c/d;p?q,g;x,http://a/b/c/g;x",
+                "http://a/b/c/d;p?q,g;x?y#s,http://a/b/c/g;x?y#s",
+                "http://a/b/c/d;p?q,,http://a/b/c/d;p?q",
+                "http://a/b/c/d;p?q,.,http://a/b/c/",
+                "http://a/b/c/d;p?q,./,http://a/b/c/",
+                "http://a/b/c/d;p?q,..,http://a/b/",
+                "http://a/b/c/d;p?q,../,http://a/b/",
+                "http://a/b/c/d;p?q,../g,http://a/b/g",
+                "http://a/b/c/d;p?q,../..,http://a/",
+                "http://a/b/c/d;p?q,../../,http://a/",
+                "http://a/b/c/d;p?q,../../g,http://a/g",
+                "http://a/b/c/d;p?q,../../../g,http://a/g",
+                "http://a/b/c/d;p?q,../../../../g,http://a/g",
+                "http://a/b/c/d;p?q,/./g,http://a/g",
+                "http://a/b/c/d;p?q,/../g,http://a/g",
+                "http://a/b/c/d;p?q,g.,http://a/b/c/g.",
+                "http://a/b/c/d;p?q,.g,http://a/b/c/.g",
+                "http://a/b/c/d;p?q,g..,http://a/b/c/g..",
+                "http://a/b/c/d;p?q,..g,http://a/b/c/..g",
+                "http://a/b/c/d;p?q,./../g,http://a/b/g",
+                "http://a/b/c/d;p?q,./g/.,http://a/b/c/g/",
+                "http://a/b/c/d;p?q,g/./h,http://a/b/c/g/h",
+                "http://a/b/c/d;p?q,g/../h,http://a/b/c/h",
+                "http://a/b/c/d;p?q,g;x=1/./y,http://a/b/c/g;x=1/y",
+                "http://a/b/c/d;p?q,g;x=1/../y,http://a/b/c/y"
+        })
+        public void testResolutionRelativeReference(String baseUri, String relativeUri,
+                                                     String expectedAbsoluteUri) {
+            final Reference baseRef = new Reference(baseUri);
+            final Reference relativeRef = new Reference(baseRef, relativeUri);
+            final Reference absoluteRef = relativeRef.getTargetRef();
+            assertEquals(expectedAbsoluteUri, absoluteRef.toString());
+        }
 
-        // Test the relativization of absolute references
-        testRef2(base, uri102, uri02);
-        testRef2(base, uri104, uri04);
-        testRef2(base, uri107, uri07);
-        testRef2(base, uri108, uri08);
-        testRef2(base, uri109, uri09);
-        testRef2(base, uri110, uri10);
-        testRef2(base, uri111, uri11);
-        testRef2(base, uri112, uri12);
-        testRef2(base, uri113, uri13);
-        testRef2(base, uri114, uri14);
-        testRef2(base, uri116, uri16);
-        testRef2(base, uri118, uri18);
-        testRef2(base, uri120, uri20);
-        testRef2(base, uri121, uri21);
-        testRef2(base, uri123, uri23);
-        testRef2(uri104, uri116, uri18);
-        testRef2(uri104, uri118, uri21);
-
-        // Test the toString method with or without query/fragment
-        testRef3("http://localhost/path#fragment", true, true,
-                "http://localhost/path#fragment");
-        testRef3("http://localhost/path#fragment", true, false,
-                "http://localhost/path");
-        testRef3("http://localhost/path#fragment", false, true,
-                "http://localhost/path#fragment");
-        testRef3("http://localhost/path#fragment", false, false,
-                "http://localhost/path");
-
-        testRef3("http://localhost/path?query", true, true,
-                "http://localhost/path?query");
-        testRef3("http://localhost/path?query", true, false,
-                "http://localhost/path?query");
-        testRef3("http://localhost/path?query", false, true,
-                "http://localhost/path");
-        testRef3("http://localhost/path?query", false, false,
-                "http://localhost/path");
-
-        testRef3("http://localhost/path?query#fragment", true, true,
-                "http://localhost/path?query#fragment");
-        testRef3("http://localhost/path?query#fragment", true, false,
-                "http://localhost/path?query");
-        testRef3("http://localhost/path?query#fragment", false, true,
-                "http://localhost/path#fragment");
-        testRef3("http://localhost/path?query#fragment", false, false,
-                "http://localhost/path");
-
-        testRef3("http://localhost/path#fragment?query", true, true,
-                "http://localhost/path#fragment?query");
-        testRef3("http://localhost/path#fragment?query", true, false,
-                "http://localhost/path");
-        testRef3("http://localhost/path#fragment?query", false, true,
-                "http://localhost/path#fragment?query");
-        testRef3("http://localhost/path#fragment?query", false, false,
-                "http://localhost/path");
-
-        testRef4(host, "http", "host.com", null, "http://host.com",
-                "http://host.com", "http://host.com", null, null);
-        testRef4(slashdir, null, null, "/dir", null, "/dir",
-                "http://host.com/dir", null, "/dir");
-        testRef4(dir, null, null, "dir", null, "dir", "http://host.com/dir",
-                null, "dir");
-        testRef4(dirslash, null, null, "dir/", null, "dir/",
-                "http://host.com/dir/", null, "dir/");
-        testRef4(fulldir, "http", "host.com", "/dir", "http://host.com/dir",
-                "http://host.com/dir", "http://host.com/dir", null, null);
-
-        testRef4(fulldirsub, null, null, "sub", null, "sub",
-                "http://host.com/sub", null, "sub");
-        testRef4(fulldirslashsub, null, null, "/sub", null, "/sub",
-                "http://host.com/sub", null, "/sub");
-        testRef4(slashdirsub, null, null, "sub", null, "sub",
-                "http://host.com/sub", null, "sub");
-        testRef4(slashdirslashsub, null, null, "/sub", null, "/sub",
-                "http://host.com/sub", null, "/sub");
-        testRef4(dirslashsub, null, null, "sub", null, "sub",
-                "http://host.com/dir/sub", null, "sub");
-        testRef4(fullsub, "http", "host.com", "/dir/sub",
-                "http://host.com/dir/sub", "http://host.com/dir/sub",
-                "http://host.com/dir/sub", null, null);
+        @ParameterizedTest
+        @CsvSource({
+                "http://a/b/c/d;p?q,http://a/b/c/g,g",
+                "http://a/b/c/d;p?q,http://a/b/c/g/,g/",
+                "http://a/b/c/d;p?q,http://a/b/c/d;p?y,?y",
+                "http://a/b/c/d;p?q,http://a/b/c/g?y,g?y",
+                "http://a/b/c/d;p?q,http://a/b/c/d;p?q#s,#s",
+                "http://a/b/c/d;p?q,http://a/b/c/g#s,g#s",
+                "http://a/b/c/d;p?q,http://a/b/c/g?y#s,g?y#s",
+                "http://a/b/c/d;p?q,http://a/b/c/;x,;x",
+                "http://a/b/c/d;p?q,http://a/b/c/g;x,g;x",
+                "http://a/b/c/d;p?q,http://a/b/c/g;x?y#s,g;x?y#s",
+                "http://a/b/c/d;p?q,http://a/b/c/,.",
+                "http://a/b/c/d;p?q,http://a/b/,..",
+                "http://a/b/c/d;p?q,http://a/b/g,../g",
+                "http://a/b/c/d;p?q,http://a/,../..",
+                "http://a/b/c/d;p?q,http://a/g,../../g",
+                "http://a/b/c/g/,http://a/b/c/,..",
+                "http://a/b/c/g/,http://a/b/,../.."
+        })
+        public void testRelativizeAbsoluteReference(String baseUri, String absoluteUri,
+                                                         String expectedRelativeUri) {
+            final Reference baseRef = new Reference(baseUri);
+            final Reference absoluteRef = new Reference(absoluteUri);
+            final Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
+            assertEquals(expectedRelativeUri, relativeRef.toString());
+        }
     }
 
     /**
      * Test port getting/setting.
      */
-    @Test
-    public void testPort() {
+    @ParameterizedTest
+    @ValueSource(ints = {8080, 9090})
+    public void testPort(int port) {
         Reference ref = getDefaultReference();
-        int port = 8080;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
-        port = 9090;
-        ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort());
-        ref = new Reference("http://[::1]:8182");
+    }
+
+    @Test
+    public void testPortIPv6() {
+        Reference ref = new Reference("http://[::1]:8182");
         assertEquals(8182, ref.getHostPort());
     }
 
@@ -503,103 +476,20 @@ public class ReferenceTestCase {
         Form queryForm = ref1.getQueryAsForm();
         assertEquals("anythingelse%", queryForm.getFirstValue("q"));
 
-        Form extJsQuery = new Form(
-                "&_dc=1244741620627&callback=stcCallback1001");
+        Form extJsQuery = new Form("&_dc=1244741620627&callback=stcCallback1001");
         assertEquals("1244741620627", extJsQuery.getFirstValue("_dc"));
         assertEquals("stcCallback1001", extJsQuery.getFirstValue("callback"));
 
         Reference ref = new Reference("http://localhost/v1/projects/13404");
         ref.addQueryParameter("dyn", "true");
-        assertEquals("http://localhost/v1/projects/13404?dyn=true",
-                ref.toString());
+        assertEquals("http://localhost/v1/projects/13404?dyn=true", ref.toString());
     }
 
     @Test
     public void testQueryWithUri() {
         Reference ref = new Reference(new Reference("http://localhost:8111/"),
                 "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
-        assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef()
-                .toString());
-    }
-
-    /**
-     * Tests the parsing of a reference into its components
-     * 
-     * @param reference
-     * @param scheme
-     * @param authority
-     * @param path
-     * @param query
-     * @param fragment
-     */
-    private void testRef0(String reference, String scheme, String authority,
-            String path, String query, String fragment) {
-        final Reference ref = new Reference(reference);
-        assertEquals(scheme, ref.getScheme());
-        assertEquals(authority, ref.getAuthority());
-        assertEquals(path, ref.getPath());
-        assertEquals(query, ref.getQuery());
-        assertEquals(fragment, ref.getFragment());
-    }
-
-    /**
-     * Test the resolution of relative references.
-     * 
-     * @param baseUri
-     * @param relativeUri
-     * @param expectedAbsoluteUri
-     */
-    private void testRef1(String baseUri, String relativeUri,
-            String expectedAbsoluteUri) {
-        final Reference baseRef = new Reference(baseUri);
-        final Reference relativeRef = new Reference(baseRef, relativeUri);
-        final Reference absoluteRef = relativeRef.getTargetRef();
-        assertEquals(expectedAbsoluteUri, absoluteRef.toString());
-    }
-
-    /**
-     * Test the relativization of absolute references
-     * 
-     * @param baseUri
-     * @param absoluteUri
-     * @param expectedRelativeUri
-     */
-    private void testRef2(String baseUri, String absoluteUri,
-            String expectedRelativeUri) {
-        final Reference baseRef = new Reference(baseUri);
-        final Reference absoluteRef = new Reference(absoluteUri);
-        final Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
-        assertEquals(expectedRelativeUri, relativeRef.toString());
-    }
-
-    /**
-     * Test the toString method with or without query/fragment
-     * 
-     * @param reference
-     * @param query
-     * @param fragment
-     * @param toString
-     */
-    private void testRef3(String reference, boolean query, boolean fragment,
-            String toString) {
-        final Reference ref = new Reference(reference);
-        assertEquals(ref.toString(query, fragment), toString);
-    }
-
-    /**
-     * Test the behaviour of several getters upon a Reference object.
-     */
-    private void testRef4(Reference reference, String scheme, String authority,
-            String path, String remainingPart, String toString,
-            String targetRef, String query, String relativePart) {
-        assertEquals(reference.getScheme(), scheme);
-        assertEquals(reference.getAuthority(), authority);
-        assertEquals(reference.getPath(), path);
-        assertEquals(reference.getRemainingPart(), remainingPart);
-        assertEquals(reference.toString(), toString);
-        assertEquals(reference.getTargetRef().toString(), targetRef);
-        assertEquals(reference.getQuery(), query);
-        assertEquals(reference.getRelativePart(), relativePart);
+        assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef().toString());
     }
 
     @Test
@@ -660,6 +550,56 @@ public class ReferenceTestCase {
         assertEquals("http://localhost:1234/test/last", ref.toString());
     }
 
+
+    @ParameterizedTest
+    @CsvSource({
+            "http://localhost:81,//localhost:81",
+            "http://localhost:81?query,//localhost:81?query",
+            "http://localhost:81?query#fragment,//localhost:81?query",
+            "http://localhost:81#fragment,//localhost:81",
+            "http://localhost:81/#fragment,//localhost:81/",
+            "http://localhost:81/?query,//localhost:81/?query",
+            "http://localhost:81/?query=https://perdu.com,//localhost:81/?query=https://perdu.com",
+    })
+    public void testSchemeSpecificPart(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getSchemeSpecificPart());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "http://localhost:81,localhost:81",
+            "http://localhost:81?query,localhost:81",
+            "http://localhost:81?query#fragment,localhost:81",
+            "http://localhost:81#fragment,localhost:81",
+            "http://localhost:81/#fragment,localhost:81",
+            "http://localhost:81/?query,localhost:81",
+            "http://localhost:81/?query=https://perdu.com,localhost:81",
+            "http://localhost:81?query=https://perdu.com,localhost:81",
+    })
+    public void testAuthority(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getAuthority());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "http://localhost:81,",
+            "http://localhost:81/a,/a",
+            "http://localhost:81?query,",
+            "http://localhost:81/a?query,/a",
+            "http://localhost:81?query#fragment,",
+            "http://localhost:81#fragment/1234,",
+            "http://localhost:81/a#fragment/1234,/a",
+            "http://localhost:81/?query,/",
+            "http://localhost:81/?query=https://perdu.com/1234,/",
+            "http://localhost:81?query=https://perdu.com/1234,"
+    })
+    public void testPath(final String uri, final String expected) {
+        Reference ref = new Reference(uri);
+        assertEquals(expected, ref.getPath());
+    }
+
     @Test
     public void testTargetRef() {
         Reference ref = new Reference(
@@ -669,7 +609,7 @@ public class ReferenceTestCase {
                         "http://www.gamasutra.com/view/feature/177267/devil_may_cry_born_again.php"),
                 ref).getTargetRef();
         assertEquals(
-                "http://twitter.com?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http:?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http://www.gamasutra.com/view/feature/177267/",
+                "http://twitter.com?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http://www.gamasutra.com/view/feature/177267/",
                 targetRef.toString());
     }
 
@@ -683,13 +623,12 @@ public class ReferenceTestCase {
         final Reference ref1 = new Reference(uri1);
         final Reference ref2 = new Reference(uri2);
         assertNotEquals(ref1, ref2);
-        assertNotEquals(null, ref1);
     }
 
     @Test
     public void testUserinfo() {
         final Reference reference = new Reference("http://localhost:81");
-        // This format is depre. however, we may prevent failures.
+        // This format is deprecated; however, we may prevent failures.
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());
@@ -703,15 +642,13 @@ public class ReferenceTestCase {
         assertEquals("login:password", reference.getUserInfo());
 
         reference.setHostDomain("www.example.com");
-        assertEquals("login:password@www.example.com:81",
-                reference.getAuthority());
+        assertEquals("login:password@www.example.com:81", reference.getAuthority());
         assertEquals("www.example.com", reference.getHostDomain());
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
 
         reference.setHostPort(82);
-        assertEquals("login:password@www.example.com:82",
-                reference.getAuthority());
+        assertEquals("login:password@www.example.com:82", reference.getAuthority());
         assertEquals("www.example.com", reference.getHostDomain());
         assertEquals(82, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
@@ -732,5 +669,48 @@ public class ReferenceTestCase {
         uri = "file:///C|/wherever\\whatever.swf";
         ref = new Reference(uri);
         assertEquals("file:///C%7C/wherever%5Cwhatever.swf", ref.toString());
+    }
+
+    @Nested
+    class TestFailures {
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "https://[192.168.0.1]127.0.0.1/",
+                "https://[192.168.0.1]vulndetector.com/",
+                "https://[normal.com@]vulndetector.com/",
+                "https://normal.com[user@vulndetector].com/",
+                "https://normal.com[@]vulndetector.com/"
+        })
+        public void shouldFailWhenParsingIncorrectHosts(String reference) {
+            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "https://[1:2:3:4:5:6:7:8:9]",
+                "https://[1::1::1]",
+                "https://[1:2:3:]",
+                "https://[ffff::127.0.0.4000]",
+                "https://[0:0::vulndetector.com]:80",
+                "https://[2001:db8::vulndetector.com]"})
+        public void shouldFailWhenParsingIncorrectIPv6Hosts(String reference) {
+            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "http://localhost:18:19",
+                "http://localhost:18ab"})
+        public void shouldFailWhenParsingIncorrectPort(String reference) {
+            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "https>://vulndetector.com/path",
+                "https%25://vulndetector.com/path"})
+        public void shouldFailWhenParsingIncorrectScheme(String reference) {
+            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getScheme());
+        }
     }
 }
