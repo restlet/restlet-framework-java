@@ -190,6 +190,7 @@ public class RestletOpenApiReader implements OpenApiReader {
                         .name(pathVariableName)
                         .in("path")
                         .required(true)
+                        .schema(new Schema<>().type("string"))
                 );
             }
         }

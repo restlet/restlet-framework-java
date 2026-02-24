@@ -31,6 +31,22 @@ paths:
               style: simple
               schema:
                 type: string
+  /books/{bookId}:
+    get:
+      operationId: getBook
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
 components:
   schemas:
     Book:

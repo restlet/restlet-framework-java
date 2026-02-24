@@ -13,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.restlet.ext.openapi.OpenApiApplication.OPENAPI_SPECIFICATION_DEFAULT_PATH;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
@@ -21,6 +24,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 public class OpenApiGenerationTest {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
 
     @Test
     public void testLibraryApplicationOpenApi() throws Exception {
@@ -49,8 +53,10 @@ public class OpenApiGenerationTest {
             fail("Failed to retrieve OpenAPI specification: " + clientResource.getStatus());
         }
 
-        String actualYamlResponse = representation.getText();
-        String expectedYamlResponse = OpenApiSpecifications.readFromClasspath("/library-openapi.yaml");
+        String actualYamlResponse = parseAndFormatYaml(representation.getText());
+        String expectedYamlResponse = parseAndFormatYaml(
+            OpenApiSpecifications.readFromClasspath("/library-openapi.yaml")
+        );
 
         assertEquals(expectedYamlResponse, actualYamlResponse);
 
@@ -58,6 +64,15 @@ public class OpenApiGenerationTest {
 
         if (validationResult instanceof Invalid(var validationErrors)) {
             fail("Generated OpenAPI specification is invalid: " + validationErrors);
+        }
+    }
+
+    private String parseAndFormatYaml(String yaml) {
+        try {
+            var tree = OBJECT_MAPPER.readTree(yaml);
+            return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -23,18 +23,29 @@ import org.restlet.routing.Router;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Library {
+    private static final List<Book> BOOKS = List.of(
+        new Book("1", "The Great Gatsby", "F. Scott Fitzgerald"),
+        new Book("2", "To Kill a Mockingbird", "Harper Lee")
+    );
+
     public record Book(String id, String title, String author) {
     }
 
-    @SuppressWarnings("unused")
+    public static class BookResource extends ServerResource {
+        @Get
+        public Book getBook() {
+            String bookId = getAttribute("bookId");
+            getContext().getLogger().info("Retrieving book with ID: " + bookId);
+            return BOOKS.getFirst();
+        }
+    }
+
     public static class BooksResource extends ServerResource {
         @Get
         public List<Book> getBooks() {
-            return List.of(
-                new Book("1", "The Great Gatsby", "F. Scott Fitzgerald"),
-                new Book("2", "To Kill a Mockingbird", "Harper Lee")
-            );
+            return BOOKS;
         }
 
         @Post
@@ -63,6 +74,7 @@ public class Library {
         public org.restlet.Restlet createInboundRoot() {
             var router = new Router(getContext());
             router.attach("/books", BooksResource.class);
+            router.attach("/books/{bookId}", BookResource.class);
             return router;
         }
     }
