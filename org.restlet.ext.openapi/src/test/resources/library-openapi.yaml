@@ -15,6 +15,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Book"
+    post:
+      summary: Add a new book
+      operationId: addBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        "201":
+          description: 201 response
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
 components:
   schemas:
     Book:

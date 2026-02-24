@@ -11,6 +11,8 @@ package org.restlet.ext.openapi;
 
 import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -47,6 +49,44 @@ public class OpenApiAnnotationProcessor {
                     .ifPresent(operation::addParametersItem);
             }
         }
+
+        if (operationAnnotation.responses() != null) {
+            for (ApiResponse apiResponseAnnotation : operationAnnotation.responses()) {
+                documentOperationResponse(operation, apiResponseAnnotation);
+            }
+        }
+    }
+
+    public static void documentOperationResponse(
+        Operation operation,
+        ApiResponse apiResponseAnnotation
+    ) {
+        var defaultDescription = apiResponseAnnotation.responseCode() + " response";
+
+        io.swagger.v3.oas.models.responses.ApiResponse apiResponse =
+            new io.swagger.v3.oas.models.responses.ApiResponse()
+                .description(apiResponseAnnotation.description() == null
+                    ? defaultDescription
+                    : apiResponseAnnotation.description().isEmpty()
+                        ? defaultDescription
+                        : apiResponseAnnotation.description()
+                );
+
+        if (!isContentEmpty(apiResponseAnnotation)) {
+            AnnotationsUtils.getContent(
+                apiResponseAnnotation.content(),
+                null,
+                null,
+                null,
+                null,
+                null
+            ).ifPresent(apiResponse::content);
+        }
+
+        AnnotationsUtils.getHeaders(apiResponseAnnotation.headers(), null)
+            .ifPresent(apiResponse::headers);
+
+        Operations.addApiResponse(operation, apiResponseAnnotation.responseCode(), apiResponse);
     }
 
     private static Optional<Parameter> resolveParameterFromAnnotation(io.swagger.v3.oas.annotations.Parameter parameterAnnotation) {
@@ -68,5 +108,17 @@ public class OpenApiAnnotationProcessor {
                 yield Optional.of(parameter);
             }
         };
+    }
+
+    private static boolean isContentEmpty(ApiResponse apiResponseAnnotation) {
+        if (apiResponseAnnotation.content() == null || apiResponseAnnotation.content().length == 0) {
+            return true;
+        }
+
+        Content content = apiResponseAnnotation.content()[0];
+
+        return content.mediaType().isEmpty() &&
+            content.schema().implementation() == Void.class &&
+            content.schema().ref().isEmpty();
     }
 }

@@ -9,7 +9,15 @@
 
 package org.restlet.ext.openapi;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
@@ -19,14 +27,34 @@ public class Library {
     public record Book(String id, String title, String author) {
     }
 
+    @SuppressWarnings("unused")
     public static class BooksResource extends ServerResource {
-        @SuppressWarnings("unused")
         @Get
         public List<Book> getBooks() {
             return List.of(
                 new Book("1", "The Great Gatsby", "F. Scott Fitzgerald"),
                 new Book("2", "To Kill a Mockingbird", "Harper Lee")
             );
+        }
+
+        @Post
+        @Operation(
+            summary = "Add a new book",
+            responses = {
+                @ApiResponse(
+                    responseCode = "201",
+                    headers = @Header(
+                        name = "Location",
+                        schema = @Schema(type = "string")
+                    ),
+                    content = @Content()
+                )
+            }
+        )
+        public void addBook(Book book) {
+            getResponse().setStatus(Status.SUCCESS_CREATED);
+            Reference locationRef = getRequest().getResourceRef().addSegment(book.id);
+            getResponse().setLocationRef(locationRef);
         }
     }
 

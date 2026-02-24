@@ -214,12 +214,12 @@ public class RestletOpenApiReader implements OpenApiReader {
                 io.swagger.v3.oas.annotations.Operation.class
             );
 
+            completeOperationInput(serverResource, operation, methodAnnotationInfo);
+            completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
+
             if (methodOperationAnnotation != null) {
                 OpenApiAnnotationProcessor.documentOperation(operation, methodOperationAnnotation);
             }
-
-            completeOperationInput(serverResource, operation, methodAnnotationInfo);
-            completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
         } catch (IOException e) {
             throw new ResourceException(e);
         }
