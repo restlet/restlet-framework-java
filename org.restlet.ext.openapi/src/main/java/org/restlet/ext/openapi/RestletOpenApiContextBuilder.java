@@ -1,3 +1,12 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import io.swagger.v3.oas.integration.GenericOpenApiContextBuilder;
@@ -7,10 +16,10 @@ import io.swagger.v3.oas.integration.api.OpenApiContext;
 import org.apache.commons.lang3.StringUtils;
 import org.restlet.routing.Router;
 
-class RestletOpenApiContextBuilder extends GenericOpenApiContextBuilder<RestletOpenApiContextBuilder> {
+public class RestletOpenApiContextBuilder extends GenericOpenApiContextBuilder<RestletOpenApiContextBuilder> {
     private Router router;
 
-    RestletOpenApiContextBuilder router(Router router) {
+    public RestletOpenApiContextBuilder router(Router router) {
         this.router = router;
         return this;
     }

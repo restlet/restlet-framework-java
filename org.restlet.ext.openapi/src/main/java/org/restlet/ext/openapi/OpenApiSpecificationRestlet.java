@@ -1,3 +1,12 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,7 +28,7 @@ import org.restlet.routing.Router;
 
 import java.util.List;
 
-class OpenApiSpecificationRestlet extends Restlet {
+public class OpenApiSpecificationRestlet extends Restlet {
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
         MediaType.APPLICATION_JSON
     );
@@ -30,7 +39,7 @@ class OpenApiSpecificationRestlet extends Restlet {
 
     private final Router router;
 
-    OpenApiSpecificationRestlet(Router router) {
+    public OpenApiSpecificationRestlet(Router router) {
         super(router.getContext());
         this.router = router;
     }

@@ -1,3 +1,12 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import io.swagger.v3.core.util.AnnotationsUtils;
@@ -8,9 +17,9 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 
 import java.util.Optional;
 
-class OpenApiAnnotationProcessor {
+public class OpenApiAnnotationProcessor {
 
-    static void documentOpenApiDefinition(
+    public static void documentOpenApiDefinition(
         OpenAPI openAPIDefinition,
         OpenAPIDefinition openAPIDefinitionAnnotation
     ) {
@@ -20,7 +29,7 @@ class OpenApiAnnotationProcessor {
         }
     }
 
-    static void documentOperation(
+    public static void documentOperation(
         Operation operation,
         io.swagger.v3.oas.annotations.Operation operationAnnotation
     ) {

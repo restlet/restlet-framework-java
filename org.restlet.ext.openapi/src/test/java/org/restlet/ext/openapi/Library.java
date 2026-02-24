@@ -1,3 +1,12 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import org.restlet.resource.Get;
@@ -11,6 +20,7 @@ public class Library {
     }
 
     public static class BooksResource extends ServerResource {
+        @SuppressWarnings("unused")
         @Get
         public List<Book> getBooks() {
             return List.of(
@@ -20,7 +30,7 @@ public class Library {
         }
     }
 
-    public static class LibraryApplication extends RestletOpenApiApplication {
+    public static class LibraryApplication extends OpenApiApplication {
         @Override
         public org.restlet.Restlet createInboundRoot() {
             var router = new Router(getContext());

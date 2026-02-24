@@ -1,8 +1,17 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.restlet.ext.openapi.RestletOpenApiApplication.OPENAPI_SPECIFICATION_DEFAULT_PATH;
+import static org.restlet.ext.openapi.OpenApiApplication.OPENAPI_SPECIFICATION_DEFAULT_PATH;
 
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;

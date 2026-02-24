@@ -1,3 +1,12 @@
+/**
+ * Copyright 2005-2026 Qlik
+ *
+ * The contents of this file is subject to the terms of the Apache 2.0 open source license available at
+ * http://www.opensource.org/licenses/apache-2.0
+ *
+ * Restlet is a registered trademark of QlikTech International AB.
+ */
+
 package org.restlet.ext.openapi;
 
 import io.swagger.v3.core.converter.AnnotatedType;
@@ -18,6 +27,7 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import org.restlet.Context;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.engine.resource.MethodAnnotationInfo;
@@ -29,8 +39,6 @@ import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.service.MetadataService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -40,8 +48,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-class RestletOpenApiReader implements OpenApiReader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestletOpenApiReader.class);
+public class RestletOpenApiReader implements OpenApiReader {
 
     private final MetadataService metadataService = new MetadataService();
 
@@ -49,11 +56,11 @@ class RestletOpenApiReader implements OpenApiReader {
 
     private OpenAPIConfiguration config;
 
-    private Paths paths = new Paths();
+    private final Paths paths = new Paths();
 
-    private OpenAPI openAPI = new OpenAPI();
+    private final OpenAPI openApi = new OpenAPI();
 
-    private Components components = new Components();
+    private final Components components = new Components();
 
     public void setRouter(Router router) {
         this.router = router;
@@ -76,7 +83,7 @@ class RestletOpenApiReader implements OpenApiReader {
         );
 
         if (openAPIDefinitionAnnotation != null) {
-            OpenApiAnnotationProcessor.documentOpenApiDefinition(openAPI, openAPIDefinitionAnnotation);
+            OpenApiAnnotationProcessor.documentOpenApiDefinition(openApi, openAPIDefinitionAnnotation);
         }
 
         completeOpenApiInfo(router);
@@ -90,11 +97,11 @@ class RestletOpenApiReader implements OpenApiReader {
             processRoute(route);
         }
 
-        openAPI.setComponents(components);
-        openAPI.setOpenapi("3.1.0");
-        openAPI.setSpecVersion(SpecVersion.V31);
+        openApi.setComponents(components);
+        openApi.setOpenapi("3.1.0");
+        openApi.setSpecVersion(SpecVersion.V31);
 
-        return openAPI;
+        return openApi;
     }
 
     private void processRoute(Route route) {
@@ -111,7 +118,7 @@ class RestletOpenApiReader implements OpenApiReader {
                 }
             }
         } else {
-            LOGGER.info("Route type ignored: {}", route.getClass());
+            Context.getCurrentLogger().info("Route type ignored: " + route.getClass());
         }
     }
 
@@ -130,7 +137,7 @@ class RestletOpenApiReader implements OpenApiReader {
 
         for (AnnotationInfo annotationInfo : annotations) {
             if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo) {
-                PathItem pathItem = Optional.ofNullable(openAPI.getPaths())
+                PathItem pathItem = Optional.ofNullable(openApi.getPaths())
                     .map(paths -> paths.get(operationPath))
                     .orElseGet(PathItem::new);
 
@@ -142,11 +149,11 @@ class RestletOpenApiReader implements OpenApiReader {
                 PathItems.setOperation(pathItem, methodAnnotationInfo.getRestletMethod(), operation);
 
                 paths.addPathItem(operationPath, pathItem);
-                if (openAPI.getPaths() != null) {
-                    this.paths.putAll(openAPI.getPaths());
+                if (openApi.getPaths() != null) {
+                    this.paths.putAll(openApi.getPaths());
                 }
 
-                openAPI.setPaths(this.paths);
+                openApi.setPaths(this.paths);
             }
         }
     }
@@ -160,15 +167,15 @@ class RestletOpenApiReader implements OpenApiReader {
 
         var defaultTitle = applicationName + " REST API";
 
-        if (openAPI.getInfo() == null) {
-            openAPI.setInfo(new Info()
+        if (openApi.getInfo() == null) {
+            openApi.setInfo(new Info()
                 .title(defaultTitle)
                 .version("1.0.0")
             );
-        } else if (openAPI.getInfo().getTitle() == null) {
-            openAPI.getInfo().setTitle(defaultTitle);
-        } else if (openAPI.getInfo().getVersion() == null) {
-            openAPI.getInfo().setVersion("1.0.0");
+        } else if (openApi.getInfo().getTitle() == null) {
+            openApi.getInfo().setTitle(defaultTitle);
+        } else if (openApi.getInfo().getVersion() == null) {
+            openApi.getInfo().setVersion("1.0.0");
         }
     }
 
@@ -242,12 +249,10 @@ class RestletOpenApiReader implements OpenApiReader {
         Variant firstVariant = requestVariants.getFirst();
 
         processTypeToContent(firstParameterType, List.of(firstVariant))
-            .ifPresent(content -> {
-                operation.requestBody(
-                    new io.swagger.v3.oas.models.parameters.RequestBody()
-                        .content(content)
-                );
-            });
+            .ifPresent(content -> operation.requestBody(
+                new io.swagger.v3.oas.models.parameters.RequestBody()
+                    .content(content)
+            ));
     }
 
     private void completeOperationSuccessfulOutput(
@@ -308,7 +313,7 @@ class RestletOpenApiReader implements OpenApiReader {
 
         for (Variant variant : variants) {
             if (variant.getMediaType() == null) {
-                LOGGER.warn("Variant has no media type: {}", variant);
+                Context.getCurrentLogger().warning("Variant has no media type: " + variant);
                 continue;
             }
 
@@ -318,7 +323,7 @@ class RestletOpenApiReader implements OpenApiReader {
         @SuppressWarnings("rawtypes") // Imposed by the ModelConverters API
         Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
         if (schemaMap != null) {
-            schemaMap.forEach((key, schema) -> components.addSchemas(key, schema));
+            schemaMap.forEach(components::addSchemas);
         }
 
         return Optional.of(content);
