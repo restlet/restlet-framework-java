@@ -28,7 +28,7 @@ public class OpenApiGenerationTest {
 
     @Test
     public void testLibraryApplicationOpenApi() throws Exception {
-        var application = new Library.LibraryApplication();
+        var application = new LibraryExample.LibraryApplication();
         var component = new Component();
 
         var server = component.getServers().add(

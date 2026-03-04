@@ -1,23 +1,32 @@
-openapi: 3.1.0
+---
+openapi: "3.1.0"
 info:
-  title: Library REST API
-  version: 1.0.0
+  title: "Library REST API"
+  version: "1.0.0"
 paths:
   /books:
     get:
-      operationId: getBooks
+      summary: "Get a list of all books"
+      operationId: "getBooks"
+      parameters:
+        - name: "filter"
+          in: "query"
+          description: "Filter books"
+          required: false
+          schema:
+            type: "string"
       responses:
         "200":
-          description: Success
+          description: "Success"
           content:
             application/json:
               schema:
-                type: array
+                type: "array"
                 items:
                   $ref: "#/components/schemas/Book"
     post:
-      summary: Add a new book
-      operationId: addBook
+      summary: "Add a new book"
+      operationId: "addBook"
       requestBody:
         content:
           application/json:
@@ -25,36 +34,49 @@ paths:
               $ref: "#/components/schemas/Book"
       responses:
         "201":
-          description: 201 response
+          description: "201 response"
           headers:
             Location:
-              style: simple
+              style: "simple"
               schema:
-                type: string
+                type: "string"
   /books/{bookId}:
     get:
-      operationId: getBook
+      summary: "Get a book by ID"
+      operationId: "getBook"
       parameters:
-        - name: bookId
-          in: path
+        - name: "bookId"
+          in: "path"
           required: true
           schema:
-            type: string
+            type: "string"
       responses:
         "200":
-          description: Success
+          description: "Success"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Book"
+    delete:
+      summary: "Delete a book by ID"
+      operationId: "deleteBook"
+      parameters:
+        - name: "bookId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Success"
 components:
   schemas:
     Book:
-      type: object
+      type: "object"
       properties:
         id:
-          type: string
+          type: "string"
         title:
-          type: string
+          type: "string"
         author:
-          type: string
+          type: "string"

@@ -10,12 +10,14 @@
 package org.restlet.ext.openapi;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -24,7 +26,7 @@ import org.restlet.routing.Router;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class Library {
+public class LibraryExample {
     private static final List<Book> BOOKS = List.of(
         new Book("1", "The Great Gatsby", "F. Scott Fitzgerald"),
         new Book("2", "To Kill a Mockingbird", "Harper Lee")
@@ -34,7 +36,17 @@ public class Library {
     }
 
     public static class BookResource extends ServerResource {
+        @Delete
+        @Operation(
+            summary = "Delete a book by ID"
+        )
+        public void deleteBook() {
+        }
+
         @Get
+        @Operation(
+            summary = "Get a book by ID"
+        )
         public Book getBook() {
             String bookId = getAttribute("bookId");
             getContext().getLogger().info("Retrieving book with ID: " + bookId);
@@ -44,6 +56,17 @@ public class Library {
 
     public static class BooksResource extends ServerResource {
         @Get
+        @Operation(
+            summary = "Get a list of all books",
+            parameters = {
+                @Parameter(
+                    name = "filter",
+                    description = "Filter books",
+                    in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+                    schema = @Schema(type = "string")
+                )
+            }
+        )
         public List<Book> getBooks() {
             return BOOKS;
         }

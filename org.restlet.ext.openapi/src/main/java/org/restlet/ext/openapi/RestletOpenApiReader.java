@@ -215,12 +215,13 @@ public class RestletOpenApiReader implements OpenApiReader {
                 io.swagger.v3.oas.annotations.Operation.class
             );
 
-            completeOperationInput(serverResource, operation, methodAnnotationInfo);
-            completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
-
             if (methodOperationAnnotation != null) {
                 OpenApiAnnotationProcessor.documentOperation(operation, methodOperationAnnotation);
             }
+
+            completeOperationInput(serverResource, operation, methodAnnotationInfo);
+            completeOperationSuccessfulOutput(serverResource, operation, methodAnnotationInfo);
+
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -268,10 +269,13 @@ public class RestletOpenApiReader implements OpenApiReader {
 
         Type javaMethodReturnType = methodAnnotationInfo.getJavaMethod().getGenericReturnType();
 
-        boolean shouldIgnoreClass = methodAnnotationInfo.getJavaMethod().getReturnType() == Void.class
-            || methodAnnotationInfo.getJavaMethod().getReturnType() == void.class;
+        if (responseVariants == null || responseVariants.isEmpty()) {
+            var hasResponsesDefined = operation.getResponses() != null && !operation.getResponses().isEmpty();
 
-        if (!shouldIgnoreClass) {
+            if (!hasResponsesDefined) {
+                Operations.addApiResponse(operation, "200", new ApiResponse().description("Success"));
+            }
+        } else {
             processMethodReturnType(operation, javaMethodReturnType, responseVariants);
         }
     }
@@ -281,10 +285,6 @@ public class RestletOpenApiReader implements OpenApiReader {
         Type returnType,
         List<Variant> responseVariants
     ) {
-        if (responseVariants == null || responseVariants.isEmpty()) {
-            return;
-        }
-
         Variant firstVariant = responseVariants.getFirst();
 
         processTypeToContent(returnType, List.of(firstVariant))
