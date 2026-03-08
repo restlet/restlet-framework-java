@@ -638,8 +638,16 @@ public class Reference {
 		return this;
 	}
 
+	/**
+	 * @deprecated Use the {@code copy} method instead.
+	 */
 	@Override
+	@Deprecated
 	public Reference clone() {
+		return copy();
+	}
+
+	public Reference copy() {
 		final Reference newRef = new Reference();
 
 		if (this.baseRef == null) {
@@ -647,7 +655,7 @@ public class Reference {
 		} else if (equals(this.baseRef)) {
 			newRef.baseRef = newRef;
 		} else {
-			newRef.baseRef = this.baseRef.clone();
+			newRef.baseRef = this.baseRef.copy();
 		}
 
 		newRef.fragmentIndex = this.fragmentIndex;

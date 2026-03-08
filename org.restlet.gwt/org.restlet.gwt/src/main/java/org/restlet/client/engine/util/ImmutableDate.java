@@ -38,7 +38,7 @@ public final class ImmutableDate extends Date {
 
 	/** {@inheritDoc} */
 	@Override
-	public Object clone() {
+	public Object clone() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("ImmutableDate is immutable");
 	}
 

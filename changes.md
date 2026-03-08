@@ -5,7 +5,7 @@ Changes log
     - Bugs fixed
         - Reuse an instance of Random class in RandomUtils. Issue #1487.
         - Complete test classes. Issue #1490.
-- 
+-       - Deprecate the implementations of the clone method. Issue #1498.
 - 2.6.0 (29-06-2025)
 
 - 2.6 Release Candidate 2 (21-06-2025)
