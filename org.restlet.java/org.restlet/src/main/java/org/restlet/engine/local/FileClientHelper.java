@@ -106,7 +106,7 @@ public class FileClientHelper extends EntityClientHelper {
 	 * 
 	 * @param fileName       The name of the resource
 	 * @param representation The provided representation.
-	 * @return True if the metadata of the representation are compatible with the
+	 * @return True if the metadata of the representation is compatible with the
 	 *         metadata extracted from the filename
 	 */
 	private boolean checkMetadataConsistency(String fileName, Representation representation) {
@@ -208,7 +208,7 @@ public class FileClientHelper extends EntityClientHelper {
 			final String fileAbsolute = directory.getRootRef().getPath(true);
 			final String filePath;
 
-			if (fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
+			if (fileAbsolute.indexOf(':') == 2 || fileAbsolute.indexOf('|') == 2) {
 				filePath = fileAbsolute.substring(1);
 			} else {
 				filePath = fileAbsolute;
@@ -541,7 +541,7 @@ public class FileClientHelper extends EntityClientHelper {
 	}
 
 	private void cleanTemporaryFileIfUploadNotResumed(File tmp) {
-		if (tmp.exists() && !isResumeUpload()) {
+		if (tmp!= null && tmp.exists() && !isResumeUpload()) {
 			IoUtils.delete(tmp);
 		}
 	}
@@ -567,18 +567,14 @@ public class FileClientHelper extends EntityClientHelper {
 		boolean defaultMetadata = true;
 
 		if (getMetadataService() != null) {
-			if (metadata instanceof Language) {
-				Language language = (Language) metadata;
-				defaultMetadata = language.equals(getMetadataService().getDefaultLanguage());
-			} else if (metadata instanceof MediaType) {
-				MediaType mediaType = (MediaType) metadata;
-				defaultMetadata = mediaType.equals(getMetadataService().getDefaultMediaType());
-			} else if (metadata instanceof CharacterSet) {
-				CharacterSet characterSet = (CharacterSet) metadata;
-				defaultMetadata = characterSet.equals(getMetadataService().getDefaultCharacterSet());
-			} else if (metadata instanceof Encoding) {
-				Encoding encoding = (Encoding) metadata;
-				defaultMetadata = encoding.equals(getMetadataService().getDefaultEncoding());
+			if (metadata instanceof final Language language) {
+                defaultMetadata = language.equals(getMetadataService().getDefaultLanguage());
+			} else if (metadata instanceof final MediaType mediaType) {
+                defaultMetadata = mediaType.equals(getMetadataService().getDefaultMediaType());
+			} else if (metadata instanceof final CharacterSet characterSet) {
+                defaultMetadata = characterSet.equals(getMetadataService().getDefaultCharacterSet());
+			} else if (metadata instanceof final Encoding encoding) {
+                defaultMetadata = encoding.equals(getMetadataService().getDefaultEncoding());
 			}
 		}
 
