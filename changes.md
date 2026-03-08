@@ -6,6 +6,7 @@ Changes log
       - Reuse an instance of Random class in RandomUtils. Issue #1487.
       - Complete test classes. Issue #1490.
       - Avoid non-short-circuit logic in FileClientHelper. Issue #1495.
+      - Drop the implementations of the clone method. Issue #1498.
 
 - 2.7 Milestone 2 (29-06-2025)
     - Misc
