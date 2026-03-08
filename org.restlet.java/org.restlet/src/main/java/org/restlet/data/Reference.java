@@ -141,8 +141,8 @@ public class Reference {
 		try {
 			result = (characterSet == null) ? toDecode : java.net.URLDecoder.decode(toDecode, characterSet.getName());
 		} catch (UnsupportedEncodingException uee) {
-			Context.getCurrentLogger().log(Level.WARNING,
-					"Unable to decode the string with the " + characterSet.getName() + " character set.", uee);
+			Context.getCurrentLogger().log(Level.WARNING, uee,
+					() -> "Unable to decode the string with the " + characterSet.getName() + " character set.");
 		}
 
 		return result;
@@ -2855,50 +2855,36 @@ public class Reference {
 			return;
 		}
 
-		int atIndex = authority.indexOf('@');
-		int ipV6StartIndex = authority.indexOf('[');
+		authority = validateUserInfoAndReturnRemaining(authority);
+		authority = validateIpV6AndReturnRemaining(authority);
 
-		if (atIndex != -1) {
-			if (ipV6StartIndex != -1) {
-				if (atIndex < ipV6StartIndex) {
-					authority = authority.substring(atIndex + 1);
-					ipV6StartIndex -= atIndex + 1;
-				} else {
-					throw new IllegalArgumentException("Invalid authority format");
-				}
-			} else {
-				authority = authority.substring(atIndex + 1);
-			}
-		}
-
-		if (ipV6StartIndex == -1) {
-			int portIndex = authority.indexOf(':');
-
-			if (portIndex != -1) {
-				validateHostPort(authority.substring(portIndex + 1));
-			}
-		} else if (ipV6StartIndex == 0) {
-			int ipV6EndIndex = authority.indexOf(']');
-			if (ipV6EndIndex == -1) {
-				throw new IllegalArgumentException("Invalid IPv6 address format: no closing bracket");
-			} else {
-				validateIPv6(authority.substring(0, ipV6EndIndex + 1));
-				if (ipV6EndIndex + 1 < authority.length()) {
-					if (authority.charAt(ipV6EndIndex + 1) == ':') {
-						validateHostPort(authority.substring(ipV6EndIndex + 2));
-					} else {
-						throw new IllegalArgumentException(
-								"Invalid authority format: unexpected character after closing bracket");
-					}
-				}
-			}
-		} else {
-			throw new IllegalArgumentException(
-					"Invalid IPv6 address format: unexpected character before opening bracket");
+		int portIndex = authority.indexOf(':');
+		if (portIndex != -1) {
+			validateHostPort(authority.substring(portIndex + 1));
 		}
 	}
 
-    /**
+	/**
+	 * Validate the user info part of the authority, and return the remaining part of the authority.
+	 */
+	private String validateUserInfoAndReturnRemaining(final String authority) {
+		int atIndex = authority.indexOf('@');
+
+		if (atIndex != -1) {
+			final int ipV6StartIndex = authority.indexOf('[');
+
+			if (ipV6StartIndex != -1) {
+				if (atIndex >= ipV6StartIndex) {
+					throw new IllegalArgumentException("Invalid authority format");
+				}
+			}
+			return authority.substring(atIndex + 1);
+		}
+
+		return authority;
+	}
+
+	/**
      * Validate an host port.
      * 
      * @param hostPort The port to validate.
@@ -2913,35 +2899,54 @@ public class Reference {
 		}
 	}
 
+	private String validateIpV6AndReturnRemaining(String authority) {
+		int ipV6StartIndex = authority.indexOf('[');
+		int ipV6EndIndex = authority.indexOf(']');
+
+		if (ipV6StartIndex > 0) {
+			throw new IllegalArgumentException(
+					"Invalid IPv6 address format: unexpected character before opening bracket");
+		}
+		if (ipV6StartIndex == -1) {
+			return authority;
+		}
+
+		if (ipV6EndIndex == -1) {
+			throw new IllegalArgumentException("Invalid IPv6 address format: no closing bracket");
+		}
+		validateIpV6(authority.substring(1, ipV6EndIndex)); // trim brackets
+
+		if (ipV6EndIndex + 1 < authority.length()) {
+			if (authority.charAt(ipV6EndIndex + 1) != ':') {
+				throw new IllegalArgumentException(
+						"Invalid authority format: unexpected character after closing bracket");
+			}
+		}
+
+		return authority.substring(ipV6EndIndex + 1);
+	}
+
     /**
      * Validate an IP v6 according to RFC 2373.
-     * 
-     * @param ipv6 The IP v6 to validate.
      */
-	private void validateIPv6(String ipv6) {
-		if (ipv6 == null || ipv6.isEmpty()) {
+	private void validateIpV6(String ipV6) {
+		if (ipV6 == null || ipV6.isEmpty()) {
 			throw new IllegalArgumentException("Invalid IPv6 address");
 		}
 
-		if (ipv6.startsWith("[")) {
-			ipv6 = ipv6.substring(1);
-		}
-		if (ipv6.endsWith("]")) {
-			ipv6 = ipv6.substring(0, ipv6.length() - 1);
-		}
 
 		// Check for double colon compression (only one allowed)
 		int doubleColonCount = 0;
-		int idx = ipv6.indexOf("::");
+		int idx = ipV6.indexOf("::");
 		while (idx != -1) {
 			doubleColonCount++;
-			idx = ipv6.indexOf("::", idx + 2);
+			idx = ipV6.indexOf("::", idx + 2);
 		}
 		if (doubleColonCount > 1) {
 			throw new IllegalArgumentException("Invalid IPv6 address format");
 		}
 
-		String[] parts = ipv6.split(":", -1);
+		String[] parts = ipV6.split(":", -1);
 		int maxParts = 8;
 
 		if (parts.length > maxParts) {
@@ -2949,23 +2954,30 @@ public class Reference {
 		}
 
 		for (String part : parts) {
-			if (part.isEmpty() && doubleColonCount == 0) {
+			validateIpV6Part(part, doubleColonCount);
+		}
+	}
+
+	/**
+	 * Validate a segment of an IP V6 according to RFC 2373.
+	 */
+	private void validateIpV6Part(final String part, final int doubleColonCount) {
+		if (part.isEmpty() && doubleColonCount == 0) {
+			throw new IllegalArgumentException("Invalid IPv6 address format");
+		}
+		if (!part.isEmpty()) {
+			if (part.length() > 4) {
 				throw new IllegalArgumentException("Invalid IPv6 address format");
 			}
-			if (!part.isEmpty()) {
-				if (part.length() > 4) {
+			for (char c : part.toCharArray()) {
+				if (!isAlpha(c) && !isDigit(c)) {
 					throw new IllegalArgumentException("Invalid IPv6 address format");
-				}
-				for (char c : part.toCharArray()) {
-					if (!isAlpha(c) && !isDigit(c)) {
-						throw new IllegalArgumentException("Invalid IPv6 address format");
-					}
 				}
 			}
 		}
 	}
 
-    /**
+	/**
      * Validate a scheme according to RFC 3986.
      * 
      * @param scheme The scheme to validate.

@@ -61,7 +61,7 @@ public class ReferenceTestCase {
      * Test addition methods.
      */
     @Test
-    public void testAdditions() throws Exception {
+    void testAdditions() {
         final Reference ref = new Reference("http://restlet.org");
         ref.addQueryParameter("abc", "123");
         assertEquals("http://restlet.org?abc=123", ref.toString());
@@ -74,7 +74,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testEmptyRef() {
+    void testEmptyRef() {
         Reference reference = new Reference();
         reference.setAuthority("testAuthority"); // must not produce NPE
 
@@ -87,7 +87,7 @@ public class ReferenceTestCase {
         reference = new Reference();
         reference.setHostDomain("localhost"); // must not produce NPE
         assertEquals("localhost", reference.getAuthority());
-        reference.setHostPort(Integer.valueOf(4711)); // must not produce NPE
+        reference.setHostPort(4711); // must not produce NPE
         assertEquals("localhost:4711", reference.getAuthority());
         reference.setUserInfo("sdgj:skdfj"); // must not produce NPE
         assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
@@ -132,7 +132,7 @@ public class ReferenceTestCase {
              "http://localhost#fragment/abc?query,/def",
              "http://localhost?query/abc,/def"
     })
-    public void testSetPath(String reference, String path) {
+    void testSetPath(String reference, String path) {
         final Reference ref = new Reference(reference);
         ref.setPath(path);
         assertEquals(path, ref.getPath());
@@ -149,7 +149,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testGetLastSegment() {
+    void testGetLastSegment() {
         Reference reference = new Reference("http://hostname");
         assertNull(reference.getLastSegment());
 
@@ -173,7 +173,7 @@ public class ReferenceTestCase {
      * Test hostname getting/setting.
      */
     @Test
-    public void testHostName() {
+    void testHostName() {
         final Reference ref = getReference();
         String host = "restlet.org";
         ref.setHostDomain(host);
@@ -186,7 +186,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testMatrix() {
+    void testMatrix() {
         final Reference ref1 = new Reference(
                 "http://domain.tld/whatever/a=1;b=2;c=4?x=a&y=b");
         final Reference ref2 = new Reference(
@@ -218,7 +218,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testOriginalRef() {
+    void testOriginalRef() {
         Reference ref = new Reference("http://localhost/test");
         Series<Header> headers = new Series<>(Header.class);
         headers.add(HeaderConstants.HEADER_X_FORWARDED_PROTO, "HTTPS");
@@ -234,7 +234,7 @@ public class ReferenceTestCase {
      * URIs.
      */
     @Test
-    public void testParentRef() {
+    void testParentRef() {
         Reference baseRef = new Reference("http://test.com/foo/bar");
         Reference parentRef = baseRef.getParentRef();
         assertEquals("http://test.com/foo/", parentRef.toString());
@@ -260,7 +260,7 @@ public class ReferenceTestCase {
                 "http://localhost/path#frag/ment,http,localhost,/path,,frag/ment",
                 "http://localhost/path?qu/ery,http,localhost,/path,qu/ery,"
         } )
-        public void testComponentsParsing(String reference,
+        void testComponentsParsing(String reference,
                                          String scheme, String authority, String path, String query, String fragment) {
             final Reference ref = new Reference(reference);
             assertEquals(scheme, ref.getScheme());
@@ -289,13 +289,13 @@ public class ReferenceTestCase {
                 "http://localhost/path#fragment?query,false,true,http://localhost/path#fragment?query",
                 "http://localhost/path#fragment?query,false,false,http://localhost/path"
         } )
-        public void testParsingOfQueryAndFragment(String reference, boolean query, boolean fragment, String toString) {
+        void testParsingOfQueryAndFragment(String reference, boolean query, boolean fragment, String toString) {
             final Reference ref = new Reference(reference);
             assertEquals(ref.toString(query, fragment), toString);
         }
 
         @Test
-        public void testGetters() {
+        void testGetters() {
             final Reference host = new Reference("http://host.com");
             final Reference slashdir = new Reference(host, "/dir");
             final Reference dir = new Reference(host, "dir");
@@ -346,6 +346,7 @@ public class ReferenceTestCase {
                     "http://host.com/dir/sub?query", "http://host.com/dir/sub?query",
                     "http://host.com/dir/sub?query", "query", null);
         }
+
         private void testGetters(Reference reference, String scheme, String authority,
                                 String path, String remainingPart, String toString,
                                 String targetRef, String query, String relativePart) {
@@ -399,7 +400,7 @@ public class ReferenceTestCase {
                 "http://a/b/c/d;p?q,g;x=1/./y,http://a/b/c/g;x=1/y",
                 "http://a/b/c/d;p?q,g;x=1/../y,http://a/b/c/y"
         })
-        public void testResolutionRelativeReference(String baseUri, String relativeUri,
+        void testResolutionRelativeReference(String baseUri, String relativeUri,
                                                      String expectedAbsoluteUri) {
             final Reference baseRef = new Reference(baseUri);
             final Reference relativeRef = new Reference(baseRef, relativeUri);
@@ -427,7 +428,7 @@ public class ReferenceTestCase {
                 "http://a/b/c/g/,http://a/b/c/,..",
                 "http://a/b/c/g/,http://a/b/,../.."
         })
-        public void testRelativizeAbsoluteReference(String baseUri, String absoluteUri,
+        void testRelativizeAbsoluteReference(String baseUri, String absoluteUri,
                                                          String expectedRelativeUri) {
             final Reference baseRef = new Reference(baseUri);
             final Reference absoluteRef = new Reference(absoluteUri);
@@ -441,20 +442,20 @@ public class ReferenceTestCase {
      */
     @ParameterizedTest
     @ValueSource(ints = {8080, 9090})
-    public void testPort(int port) {
+    void testPort(int port) {
         Reference ref = getDefaultReference();
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
     }
 
     @Test
-    public void testPortIPv6() {
+    void testPortIPv6() {
         Reference ref = new Reference("http://[::1]:8182");
         assertEquals(8182, ref.getHostPort());
     }
 
     @Test
-    public void testProtocolConstructors() {
+    void testProtocolConstructors() {
         assertEquals("http://restlet.org", new Reference(Protocol.HTTP,
                 "restlet.org").toString());
         assertEquals("https://restlet.org:8443", new Reference(Protocol.HTTPS,
@@ -466,7 +467,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testQuery() {
+    void testQuery() {
 
         Reference ref1 = new Reference(
                 "http://localhost/search?q=anythingelse%");
@@ -486,14 +487,14 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testQueryWithUri() {
+    void testQueryWithUri() {
         Reference ref = new Reference(new Reference("http://localhost:8111/"),
                 "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
         assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef().toString());
     }
 
     @Test
-    public void testRiap() {
+    void testRiap() {
         Reference baseRef = new Reference("riap://component/exist/db/");
         Reference ref = new Reference(baseRef, "something.xq");
         assertEquals("riap://component/exist/db/something.xq", ref
@@ -504,7 +505,7 @@ public class ReferenceTestCase {
      * Test scheme getting/setting.
      */
     @Test
-    public void testScheme() {
+    void testScheme() {
         final Reference ref = getDefaultReference();
         assertEquals(DEFAULT_SCHEME, ref.getScheme());
         final String scheme = "https";
@@ -518,7 +519,7 @@ public class ReferenceTestCase {
      * Test scheme specific part getting/setting.
      */
     @Test
-    public void testSchemeSpecificPart() {
+    void testSchemeSpecificPart() {
         final Reference ref = getDefaultReference();
         String part = "//restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
@@ -531,7 +532,7 @@ public class ReferenceTestCase {
      * Test setting of the last segment.
      */
     @Test
-    public void testSetLastSegment() {
+    void testSetLastSegment() {
         Reference ref = new Reference("http://localhost:1234");
         ref.addSegment("test");
         assertEquals("http://localhost:1234/test", ref.toString());
@@ -561,7 +562,7 @@ public class ReferenceTestCase {
             "http://localhost:81/?query,//localhost:81/?query",
             "http://localhost:81/?query=https://perdu.com,//localhost:81/?query=https://perdu.com",
     })
-    public void testSchemeSpecificPart(final String uri, final String expected) {
+    void testSchemeSpecificPart(final String uri, final String expected) {
         Reference ref = new Reference(uri);
         assertEquals(expected, ref.getSchemeSpecificPart());
     }
@@ -577,7 +578,7 @@ public class ReferenceTestCase {
             "http://localhost:81/?query=https://perdu.com,localhost:81",
             "http://localhost:81?query=https://perdu.com,localhost:81",
     })
-    public void testAuthority(final String uri, final String expected) {
+    void testAuthority(final String uri, final String expected) {
         Reference ref = new Reference(uri);
         assertEquals(expected, ref.getAuthority());
     }
@@ -595,13 +596,13 @@ public class ReferenceTestCase {
             "http://localhost:81/?query=https://perdu.com/1234,/",
             "http://localhost:81?query=https://perdu.com/1234,"
     })
-    public void testPath(final String uri, final String expected) {
+    void testPath(final String uri, final String expected) {
         Reference ref = new Reference(uri);
         assertEquals(expected, ref.getPath());
     }
 
     @Test
-    public void testTargetRef() {
+    void testTargetRef() {
         Reference ref = new Reference(
                 "http://twitter.com?status=RT @gamasutra:  Devil May Cry : Born Again http://www.gamasutra.com/view/feature/177267/");
         Reference targetRef = new Reference(
@@ -617,7 +618,7 @@ public class ReferenceTestCase {
      * Test references that are unequal.
      */
     @Test
-    public void testUnEquals() throws Exception {
+    void testUnEquals() {
         final String uri1 = "http://restlet.org/";
         final String uri2 = "http://restlet.net/";
         final Reference ref1 = new Reference(uri1);
@@ -626,7 +627,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testUserinfo() {
+    void testUserinfo() {
         final Reference reference = new Reference("http://localhost:81");
         // This format is deprecated; however, we may prevent failures.
         reference.setUserInfo("login:password");
@@ -661,7 +662,7 @@ public class ReferenceTestCase {
     }
 
     @Test
-    public void testValidity() {
+    void testValidity() {
         String uri = "http ://domain.tld/whatever/";
         Reference ref = new Reference(uri);
         assertEquals("http%20://domain.tld/whatever/", ref.toString());
@@ -679,38 +680,29 @@ public class ReferenceTestCase {
                 "https://[192.168.0.1]vulndetector.com/",
                 "https://[normal.com@]vulndetector.com/",
                 "https://normal.com[user@vulndetector].com/",
-                "https://normal.com[@]vulndetector.com/"
-        })
-        public void shouldFailWhenParsingIncorrectHosts(String reference) {
-            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
+                "https://normal.com[@]vulndetector.com/",
+                "https://user:pwd@a[1:2:3:4]/",
                 "https://[1:2:3:4:5:6:7:8:9]",
                 "https://[1::1::1]",
                 "https://[1:2:3:]",
                 "https://[ffff::127.0.0.4000]",
                 "https://[0:0::vulndetector.com]:80",
-                "https://[2001:db8::vulndetector.com]"})
-        public void shouldFailWhenParsingIncorrectIPv6Hosts(String reference) {
-            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {
+                "https://[2001:db8::vulndetector.com]",
                 "http://localhost:18:19",
-                "http://localhost:18ab"})
-        public void shouldFailWhenParsingIncorrectPort(String reference) {
-            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getAuthority());
+                "http://localhost:18ab"
+        })
+        void shouldFailWhenParsingIncorrectHosts(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getAuthority);
         }
 
         @ParameterizedTest
         @ValueSource(strings = {
                 "https>://vulndetector.com/path",
                 "https%25://vulndetector.com/path"})
-        public void shouldFailWhenParsingIncorrectScheme(String reference) {
-            assertThrows(IllegalArgumentException.class, () -> new Reference(reference).getScheme());
+        void shouldFailWhenParsingIncorrectScheme(String url) {
+            final Reference reference = new Reference(url);
+            assertThrows(IllegalArgumentException.class, reference::getScheme);
         }
     }
 }
