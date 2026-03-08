@@ -9,7 +9,6 @@
 
 package org.restlet.engine.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -60,7 +59,7 @@ public class AlphaNumericComparatorTestCase {
             "200,66",
             "18,2"
     })
-    public void testFirstIsLessThan(final String first, final String second) {
+    void testFirstIsLessThan(final String first, final String second) {
         AlphaNumericComparator anc = new AlphaNumericComparator();
         assertTrue(anc.compare(first, second) < 0);
     }

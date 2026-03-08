@@ -48,7 +48,7 @@ public class ZipClientTestCase {
     }
 
     @Test
-    public void testFileClient() throws IOException {
+    void testFileClient() throws IOException {
         String text = "Test content\r\nLine 2\r\nLine2";
         String text2 = "Test content\nLine 2";
         LocalReference fr = LocalReference.createFileReference(zipFile);

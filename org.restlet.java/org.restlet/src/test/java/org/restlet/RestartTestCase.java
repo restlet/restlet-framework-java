@@ -19,13 +19,13 @@ import java.time.Duration;
 
 /**
  * Test the ability of a connector to be restarted.
- * 
+ *
  * @author Jerome Louvel
  */
 public class RestartTestCase {
 
-	@Test
-    public void testRestart() throws Exception {
+    @Test
+    void testRestart() throws Exception {
         final Duration waitTime = Duration.ofMillis(10);
 
         final Server connector = new Server(Protocol.HTTP, 0, (Restlet) null);
