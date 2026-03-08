@@ -205,7 +205,7 @@ public class FileClientHelper extends EntityClientHelper {
 			final String fileAbsolute = directory.getRootRef().getPath(true);
 			final String filePath;
 
-			if (fileAbsolute.indexOf(':') == 2 | fileAbsolute.indexOf('|') == 2) {
+			if (fileAbsolute.indexOf(':') == 2 || fileAbsolute.indexOf('|') == 2) {
 				filePath = fileAbsolute.substring(1);
 			} else {
 				filePath = fileAbsolute;
