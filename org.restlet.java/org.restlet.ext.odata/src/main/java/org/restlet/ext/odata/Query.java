@@ -395,6 +395,7 @@ public class Query<T> implements Iterable<T> {
                             entities.add(entryContentHandler.getEntity());
                         }
                     }
+                    break;
                 default:
                     // Can only guess entity and entity set, a priori.
                     // TODO May we go a step further by analyzing the metadata
