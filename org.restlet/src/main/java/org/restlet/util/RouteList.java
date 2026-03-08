@@ -14,6 +14,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.routing.Route;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -34,14 +35,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see java.util.List
  */
 public final class RouteList extends WrapperList<Route> {
-	/** The index of the last route used in the round robin mode. */
+	/** The index of the last route used in the round-robin mode. */
 	private volatile int lastIndex;
+	/** Used when asked to return a random route. */
+	private final SecureRandom random = new SecureRandom();
 
 	/**
 	 * Constructor.
 	 */
 	public RouteList() {
-		super(new CopyOnWriteArrayList<Route>());
+		super(new CopyOnWriteArrayList<>());
 		this.lastIndex = -1;
 	}
 
@@ -51,7 +54,7 @@ public final class RouteList extends WrapperList<Route> {
 	 * @param delegate The delegate list.
 	 */
 	public RouteList(List<Route> delegate) {
-		super(new CopyOnWriteArrayList<Route>(delegate));
+		super(new CopyOnWriteArrayList<>(delegate));
 		this.lastIndex = -1;
 	}
 
@@ -159,7 +162,7 @@ public final class RouteList extends WrapperList<Route> {
 		int length = size();
 
 		if (length > 0) {
-			int j = new Random().nextInt(length);
+			int j = random.nextInt(length);
 			Route route = get(j);
 
 			if (route.score(request, response) >= requiredScore) {
@@ -169,7 +172,7 @@ public final class RouteList extends WrapperList<Route> {
 			boolean loopedAround = false;
 
 			do {
-				if ((j == length) && (!loopedAround)) {
+				if ((j == length) && !loopedAround) {
 					j = 0;
 					loopedAround = true;
 				}
@@ -187,7 +190,7 @@ public final class RouteList extends WrapperList<Route> {
 	}
 
 	/**
-	 * Removes all routes routing to a given target.
+	 * Removes all routes to a given target.
 	 * 
 	 * @param target The target Restlet to detach.
 	 */
