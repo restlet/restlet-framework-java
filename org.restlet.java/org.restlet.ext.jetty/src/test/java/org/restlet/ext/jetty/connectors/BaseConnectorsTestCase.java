@@ -64,13 +64,13 @@ public abstract class BaseConnectorsTestCase {
 
     protected abstract Application createApplication();
 
-    protected List<ConnectorTestCase> listTestCases() {
+    protected List<ConnectorsPair> listTestCases() {
         return List.of(
                 // let's focus on Jetty server extension
                 // new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.INTERNAL),
                 // new ConnectorTestCase(HttpServer.INTERNAL_HTTP, HttpClient.JETTY),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.INTERNAL),
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY)
+                new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.INTERNAL),
+                new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.JETTY)
         );
     }
 

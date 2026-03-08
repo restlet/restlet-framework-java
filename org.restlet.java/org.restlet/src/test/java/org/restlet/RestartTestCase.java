@@ -9,6 +9,9 @@
 
 package org.restlet;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.restlet.data.Protocol;
 
@@ -27,21 +30,19 @@ public class RestartTestCase {
 
         final Server connector = new Server(Protocol.HTTP, 0, (Restlet) null);
 
-        System.out.print("Starting connector... ");
         connector.start();
-        System.out.println("done");
+        assertTrue(connector.isStarted());
         Thread.sleep(waitTime.toMillis());
 
-        System.out.print("Stopping connector... ");
         connector.stop();
-        System.out.println("done");
+        assertFalse(connector.isStarted());
         Thread.sleep(waitTime.toMillis());
 
-        System.out.print("Restarting connector... ");
         connector.start();
-        System.out.println("done");
+        assertTrue(connector.isStarted());
         Thread.sleep(waitTime.toMillis());
         connector.stop();
+        assertFalse(connector.isStarted());
     }
 
 }

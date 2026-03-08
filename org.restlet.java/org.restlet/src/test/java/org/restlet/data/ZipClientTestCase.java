@@ -11,6 +11,8 @@ package org.restlet.data;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -29,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @author Remi Dewitte
  */
+@Disabled("flaky on github")
 public class ZipClientTestCase {
 
     private File zipFile;
@@ -44,7 +47,7 @@ public class ZipClientTestCase {
         zipFile.delete();
     }
 
-    // @Test TODO seems flaky on github
+    @Test
     public void testFileClient() throws IOException {
         String text = "Test content\r\nLine 2\r\nLine2";
         String text2 = "Test content\nLine 2";
@@ -58,42 +61,42 @@ public class ZipClientTestCase {
         // Write test.txt as first entry
         ClientResource testFileEntryClientResource = new ClientResource(testFileEntryReference);
         testFileEntryClientResource.put(new StringRepresentation(text));
-        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_CREATED);
+        assertEquals(Status.SUCCESS_CREATED, testFileEntryClientResource.getStatus());
 
         // Get the text and compare to the original
         testFileEntryClientResource.get();
-        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_OK);
-        assertEquals(testFileEntryClientResource.getResponseEntity().getText(), text);
+        assertEquals(Status.SUCCESS_OK, testFileEntryClientResource.getStatus());
+        assertEquals(text, testFileEntryClientResource.getResponseEntity().getText());
         testFileEntryClientResource.release();
 
         // Write test2.txt as second entry
         ClientResource test2FileEntryClientResource = new ClientResource(test2FileEntryReference);
         test2FileEntryClientResource.put(new StringRepresentation(text2));
-        assertEquals(test2FileEntryClientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, test2FileEntryClientResource.getStatus());
 
         // Check that the first entry has not been overwritten
         testFileEntryClientResource.get();
-        assertEquals(testFileEntryClientResource.getStatus(), Status.SUCCESS_OK);
-        assertEquals(testFileEntryClientResource.getResponseEntity().getText(), text);
+        assertEquals(Status.SUCCESS_OK, testFileEntryClientResource.getStatus());
+        assertEquals(text, testFileEntryClientResource.getResponseEntity().getText());
         testFileEntryClientResource.release();
 
         // Put a directory
         ClientResource dirEntryClientResource = new ClientResource(dirEntryReference);
         dirEntryClientResource.put(new EmptyRepresentation());
-        assertEquals(dirEntryClientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, dirEntryClientResource.getStatus());
 
         dirEntryClientResource.get();
-        assertEquals(dirEntryClientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, dirEntryClientResource.getStatus());
 
         // Add a file inside the directory
         ClientResource testFileInDirEntryCLientResource = new ClientResource(test3FileInDirEntryReference);
         testFileInDirEntryCLientResource.put(new StringRepresentation(text));
-        assertEquals(testFileInDirEntryCLientResource.getStatus(), Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, testFileInDirEntryCLientResource.getStatus());
 
         // Check that the second entry is still there
         test2FileEntryClientResource.get();
-        assertEquals(test2FileEntryClientResource.getStatus(), Status.SUCCESS_OK, "Could not get " + test2FileEntryReference);
-        assertEquals(test2FileEntryClientResource.getResponseEntity().getText(), text2);
+        assertEquals(Status.SUCCESS_OK, test2FileEntryClientResource.getStatus(), "Could not get " + test2FileEntryReference);
+        assertEquals(text2, test2FileEntryClientResource.getResponseEntity().getText());
 
         // Check that content negotiation does not work
         ClientResource rTest2 = new ClientResource(zr + "!test2");

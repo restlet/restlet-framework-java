@@ -9,7 +9,10 @@
 
 package org.restlet.engine.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.restlet.data.Reference;
 import org.restlet.resource.Directory;
 
@@ -18,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test case for the alphanum algorithm used by {@link Directory}.
@@ -49,13 +53,16 @@ public class AlphaNumericComparatorTestCase {
         assertEquals(expected, result);
     }
 
-    @Test
-    public void test02() {
+    @ParameterizedTest
+    @CsvSource({
+            "Intel 5000X,Intel 5500",
+            "3,66",
+            "200,66",
+            "18,2"
+    })
+    public void testFirstIsLessThan(final String first, final String second) {
         AlphaNumericComparator anc = new AlphaNumericComparator();
-        System.out.println(anc.compare("Intel 5000X", "Intel 5500"));
-        System.out.println(anc.compare("66", "3"));
-        System.out.println(anc.compare("200", "66"));
-        System.out.println(anc.compare("18", "2"));
+        assertTrue(anc.compare(first, second) < 0);
     }
 
 }

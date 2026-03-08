@@ -10,6 +10,7 @@
 package org.restlet.ext.spring;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.restlet.Component;
@@ -18,6 +19,8 @@ import org.restlet.engine.Engine;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test case for the Spring extension.
@@ -33,7 +36,9 @@ public class SpringTestCase {
         // Start the Restlet component
         Component component = (Component) ctx.getBean("component");
         component.start();
+        assertTrue(component.isStarted());
         component.stop();
+        assertFalse(component.isStarted());
     }
 
     @Test
