@@ -2,11 +2,11 @@ package org.restlet.engine.connector;
 
 import static java.lang.String.format;
 
-public class ConnectorTestCase {
+public class ConnectorsPair {
     final BaseConnectorsTestCase.HttpServer httpServer;
     final BaseConnectorsTestCase.HttpClient httpClient;
 
-    public ConnectorTestCase(BaseConnectorsTestCase.HttpServer httpServer, BaseConnectorsTestCase.HttpClient httpClient) {
+    public ConnectorsPair(BaseConnectorsTestCase.HttpServer httpServer, BaseConnectorsTestCase.HttpClient httpClient) {
         this.httpServer = httpServer;
         this.httpClient = httpClient;
     }
