@@ -1,8 +1,9 @@
 Changes log
 ===========
 
-- 2.6.1 (??-??-2025)
-
+- 2.6.1 (??-??-2026)
+    - Bugs fixed
+        - Reuse an instance of Random class in RandomUtils. Issue #1487.
 - 2.6.0 (29-06-2025)
 
 - 2.6 Release Candidate 2 (21-06-2025)

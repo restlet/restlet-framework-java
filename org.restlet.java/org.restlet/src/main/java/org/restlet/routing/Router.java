@@ -94,7 +94,7 @@ public class Router extends Restlet {
 
 	/**
 	 * Each call will be randomly routed to one of the routes that reached the
-	 * required score. If the random route selected is not a match then the
+	 * required score. If the random route selected is not a match, then the
 	 * immediate next route is evaluated until one matching route is found. If we
 	 * get back to the initial random route selected with no match, then we return
 	 * null. Unless all the routes score above the required score, this mode will
