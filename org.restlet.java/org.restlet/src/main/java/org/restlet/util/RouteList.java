@@ -14,9 +14,9 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.routing.Route;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -37,7 +37,7 @@ public final class RouteList extends WrapperList<Route> {
 	/** The index of the last route used in the round-robin mode. */
 	private volatile int lastIndex;
 	/** Used when asked to return a random route. */
-	private final Random random = new Random();
+	private final SecureRandom random = new SecureRandom();
 
 	/**
 	 * Constructor.
