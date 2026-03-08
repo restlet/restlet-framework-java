@@ -12,28 +12,28 @@ package org.restlet.engine.util;
 /**
  * Optimized public-domain implementation of a Java alphanumeric sort.
  * <p>
- * 
+ *
  * This implementation uses a single comparison pass over the characters in a
- * CharSequence, and returns as soon as a differing character is found, unless
+ *  CharSequence and returns as soon as a differing character is found, unless
  * the difference occurs in a series of numeric characters, in which case that
  * series is followed to its end. Numeric series of equal length are compared
  * numerically, that is, according to the most significant (leftmost) differing
  * digit. Series of unequal length are compared by their length.
  * <p>
- * 
+ *
  * This implementation appears to be 2-5 times faster than alphanumeric
- * comparators based based on substring analysis, with a lighter memory
+ * comparators based on substring analysis, with a lighter memory
  * footprint.
  * <p>
- * 
+ *
  * This alphanumeric comparator has approximately 20%-50% the performance of the
  * lexical String.compareTo() operation. Character sequences without numeric
  * data are compared more quickly.
  * <p>
- * 
+ *
  * Dedicated to the public domain by the original author:
- * http://creativecommons.org/licenses/publicdomain/
- * 
+ * <a href="https://creativecommons.org/licenses/publicdomain/">Public Domain List</a>
+ *
  * @author Rob Heittman, <a href="http://www.solertium.com">Solertium
  *         Corporation</a>
  */
@@ -51,7 +51,7 @@ public class AlphaNumericComparator extends AlphabeticalComparator {
 		final int rlength = uri1.length();
 		final int min = Math.min(rlength, llength);
 
-        boolean rAtEnd, rHasNoMoreDigits;
+		boolean rAtEnd, rHasNoMoreDigits;
 
 		while (ptr < min) {
 			a = uri0.charAt(ptr);
@@ -112,7 +112,7 @@ public class AlphaNumericComparator extends AlphabeticalComparator {
 
 	/**
 	 * Indicates if the character is a digit.
-	 * 
+	 *
 	 * @param x The character to test.
 	 * @return True if the character is a digit.
 	 */

@@ -11,6 +11,8 @@ package org.restlet.data;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -29,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @author Remi Dewitte
  */
+@Disabled("flaky on github")
 public class ZipClientTestCase {
 
     private File zipFile;
@@ -44,8 +47,8 @@ public class ZipClientTestCase {
         zipFile.delete();
     }
 
-    // @Test TODO seems flaky on github
-    public void testFileClient() throws IOException {
+    @Test
+    void testFileClient() throws IOException {
         String text = "Test content\r\nLine 2\r\nLine2";
         String text2 = "Test content\nLine 2";
         LocalReference fr = LocalReference.createFileReference(zipFile);

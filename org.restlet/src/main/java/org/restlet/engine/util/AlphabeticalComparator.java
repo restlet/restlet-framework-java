@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * Allows to sort the list of references set by the resource.
+ * Allows sorting the list of references set by the resource.
  * 
  * @author Jerome Louvel
  */

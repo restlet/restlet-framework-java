@@ -4,6 +4,8 @@ Changes log
 - 2.7 Milestone 3 (??-??-2025)
   - Bugs fixed
     - Reuse an instance of Random class in RandomUtils. Issue #1487.
+    - Complete test classes. Issue #1490.
+
 - 2.7 Milestone 2 (29-06-2025)
     - Misc
       - Removed deprecated Servlet extension and related classes in Spring extension

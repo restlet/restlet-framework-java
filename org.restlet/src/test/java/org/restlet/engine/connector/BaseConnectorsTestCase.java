@@ -63,9 +63,9 @@ public abstract class BaseConnectorsTestCase {
 
     protected abstract Application createApplication();
 
-    protected List<ConnectorTestCase> listTestCases() {
+    protected List<ConnectorsPair> listTestCases() {
         return List.of(
-                new ConnectorTestCase(HttpServer.JETTY_HTTP, HttpClient.JETTY));
+                new ConnectorsPair(HttpServer.JETTY_HTTP, HttpClient.JETTY));
     }
 
     @TestFactory
