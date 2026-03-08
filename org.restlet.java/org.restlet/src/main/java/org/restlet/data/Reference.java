@@ -2873,11 +2873,10 @@ public class Reference {
 		if (atIndex != -1) {
 			final int ipV6StartIndex = authority.indexOf('[');
 
-			if (ipV6StartIndex != -1) {
-				if (atIndex >= ipV6StartIndex) {
-					throw new IllegalArgumentException("Invalid authority format");
-				}
+			if (ipV6StartIndex != -1 && ipV6StartIndex < atIndex) {
+				throw new IllegalArgumentException("Invalid authority format");
 			}
+
 			return authority.substring(atIndex + 1);
 		}
 
@@ -2916,11 +2915,10 @@ public class Reference {
 		}
 		validateIpV6(authority.substring(1, ipV6EndIndex)); // trim brackets
 
-		if (ipV6EndIndex + 1 < authority.length()) {
-			if (authority.charAt(ipV6EndIndex + 1) != ':') {
-				throw new IllegalArgumentException(
-						"Invalid authority format: unexpected character after closing bracket");
-			}
+		if (ipV6EndIndex + 1 < authority.length()
+				&& (authority.charAt(ipV6EndIndex + 1) != ':')) {
+			throw new IllegalArgumentException(
+					"Invalid authority format: unexpected character after closing bracket");
 		}
 
 		return authority.substring(ipV6EndIndex + 1);
