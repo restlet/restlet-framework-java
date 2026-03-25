@@ -21,6 +21,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.VariantInfo;
+import org.restlet.ext.openapi.internal.RestletOpenApiContextBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
