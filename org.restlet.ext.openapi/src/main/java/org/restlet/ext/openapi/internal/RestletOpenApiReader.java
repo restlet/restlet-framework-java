@@ -73,6 +73,14 @@ public class RestletOpenApiReader implements OpenApiReader {
 
     @Override
     public OpenAPI read(Set<Class<?>> classes, Map<String, Object> resources) {
+        if (config == null) {
+            throw new IllegalStateException("configuration must be set before processing OpenAPI definition");
+        }
+
+        if (router == null) {
+            throw new IllegalStateException("router must be set before processing OpenAPI definition");
+        }
+
         return processRouter(router);
     }
 
