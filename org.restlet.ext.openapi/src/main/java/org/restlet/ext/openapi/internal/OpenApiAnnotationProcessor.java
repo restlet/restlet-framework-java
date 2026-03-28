@@ -21,8 +21,6 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 
 import java.util.Optional;
 
-import org.restlet.engine.util.StringUtils;
-
 public class OpenApiAnnotationProcessor {
 
     private OpenApiAnnotationProcessor () {} // utility class
@@ -99,9 +97,9 @@ public class OpenApiAnnotationProcessor {
             case COOKIE, HEADER, QUERY -> {
                 Parameter parameter = new Parameter()
                     .name(parameterAnnotation.name())
-                    .description(parameterAnnotation.description() == null
+                    .description(isNullOrEmpty(parameterAnnotation.description())
                         ? null
-                        : parameterAnnotation.description().isEmpty() ? null : parameterAnnotation.description()
+                        : parameterAnnotation.description()
                     )
                     .in(parameterAnnotation.in().name().toLowerCase())
                     .required(parameterAnnotation.required());

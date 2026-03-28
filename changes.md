@@ -2,6 +2,8 @@ Changes log
 ===========
 
 - 2.7 Milestone 3 (??-??-2025)
+  - Enhancements
+    - New OpenApi extension (OAS 3.1 only). Contributed by Antoine Nicolas.
   - Bugs fixed
       - Reuse an instance of Random class in RandomUtils. Issue #1487.
       - Complete test classes. Issue #1490.
