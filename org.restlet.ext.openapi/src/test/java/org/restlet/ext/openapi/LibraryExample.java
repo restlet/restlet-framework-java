@@ -24,6 +24,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class LibraryExample {
@@ -41,6 +42,8 @@ public class LibraryExample {
             summary = "Delete a book by ID"
         )
         public void deleteBook() {
+            Optional.ofNullable(getBook())
+                    .ifPresent(BOOKS::remove); // Yes, this is an immutable list :)
         }
 
         @Get

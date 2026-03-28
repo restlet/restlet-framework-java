@@ -21,6 +21,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.VariantInfo;
+import org.restlet.ext.openapi.internal.OpenApiApplicationException;
 import org.restlet.ext.openapi.internal.RestletOpenApiContextBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -92,7 +93,7 @@ public class OpenApiSpecificationRestlet extends Restlet {
                 return new StringRepresentation(openApiAsYaml, MediaType.APPLICATION_YAML);
             }
         } catch (OpenApiConfigurationException | JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new OpenApiApplicationException("Can't generate OpenAPI representation", e);
         }
     }
 

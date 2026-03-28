@@ -62,10 +62,11 @@ public class OpenApiApplication extends Application {
      */
     private static Router getNextRouter(Restlet current) {
         Router result = null;
-        if (current instanceof Router) {
-            result = (Router) current;
-        } else if (current instanceof Filter) {
-            result = getNextRouter(((Filter) current).getNext());
+
+        if (current instanceof Router router) {
+            result = router;
+        } else if (current instanceof Filter filter) {
+            result = getNextRouter(filter.getNext());
         }
 
         return result;

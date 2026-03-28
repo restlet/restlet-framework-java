@@ -9,6 +9,8 @@
 
 package org.restlet.ext.openapi.internal;
 
+import static org.restlet.engine.util.StringUtils.isNullOrEmpty;
+
 import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,7 +21,11 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 
 import java.util.Optional;
 
+import org.restlet.engine.util.StringUtils;
+
 public class OpenApiAnnotationProcessor {
+
+    private OpenApiAnnotationProcessor () {} // utility class
 
     public static void documentOpenApiDefinition(
         OpenAPI openAPIDefinition,
@@ -65,11 +71,9 @@ public class OpenApiAnnotationProcessor {
 
         io.swagger.v3.oas.models.responses.ApiResponse apiResponse =
             new io.swagger.v3.oas.models.responses.ApiResponse()
-                .description(apiResponseAnnotation.description() == null
+                .description(isNullOrEmpty(apiResponseAnnotation.description())
                     ? defaultDescription
-                    : apiResponseAnnotation.description().isEmpty()
-                        ? defaultDescription
-                        : apiResponseAnnotation.description()
+                    : apiResponseAnnotation.description()
                 );
 
         if (!isContentEmpty(apiResponseAnnotation)) {

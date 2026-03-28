@@ -145,14 +145,15 @@ public class RestletOpenApiReader implements OpenApiReader {
 
         for (AnnotationInfo annotationInfo : annotations) {
             if (annotationInfo instanceof MethodAnnotationInfo methodAnnotationInfo) {
-                PathItem pathItem = Optional.ofNullable(openApi.getPaths())
-                    .map(paths -> paths.get(operationPath))
-                    .orElseGet(PathItem::new);
 
                 Operation operation = buildOperationFromRestletMethod(methodAnnotationInfo);
 
                 completePathParameters(operation, pathVariableNames);
                 completeOperation(serverResource, operation, methodAnnotationInfo);
+
+                PathItem pathItem = Optional.ofNullable(openApi.getPaths())
+                        .map(openApiPaths -> openApiPaths.get(operationPath))
+                        .orElseGet(PathItem::new);
 
                 PathItems.setOperation(pathItem, methodAnnotationInfo.getRestletMethod(), operation);
 
@@ -322,7 +323,7 @@ public class RestletOpenApiReader implements OpenApiReader {
 
         for (Variant variant : variants) {
             if (variant.getMediaType() == null) {
-                Context.getCurrentLogger().warning("Variant has no media type: " + variant);
+                Context.getCurrentLogger().warning(() -> "Variant has no media type: " + variant);
                 continue;
             }
 

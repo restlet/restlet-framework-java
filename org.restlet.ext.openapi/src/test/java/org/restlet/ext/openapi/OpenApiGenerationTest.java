@@ -23,11 +23,11 @@ import org.restlet.ext.openapi.OpenApiSpecifications.ValidationResult.Invalid;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-public class OpenApiGenerationTest {
+class OpenApiGenerationTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
 
     @Test
-    public void testLibraryApplicationOpenApi() throws Exception {
+    void testLibraryApplicationOpenApi() throws Exception {
         var application = new LibraryExample.LibraryApplication();
         var component = new Component();
 
